@@ -13,6 +13,9 @@ import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurably generated filters
 
@@ -184,7 +187,7 @@ protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirectedOrder
   exact .iUnion_of_monotone (compl_anti.comp hsm) fun i ↦ (hs i).compl
 
 /-!
-### Typeclasses on `Subtype MeasurableSet`
+# Typeclasses on `Subtype MeasurableSet`
 -/
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=

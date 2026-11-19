@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Tactic.Spread
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative and additive equivs
 
@@ -71,7 +74,7 @@ def funUnique [Unique α] : (α → M) ≃* M where
 end Mul
 
 /-!
-## Monoids
+# Monoids
 -/
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
@@ -187,18 +190,21 @@ lemma monoidHomCongrRight_trans (e₁₂ : N₁ ≃* N₂) (e₂₃ : N₂ ≃* 
 
 end monoidHomCongr
 
-/-- A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
+/--
+A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
 multiplicative equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
 This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent version of
 `MulEquiv.arrowCongr`.
 -/
 @[to_additive (attr := simps apply)
-  /-- A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
-  generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
+  /--
+  A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
+generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
-  `AddEquiv.arrowCongr`. -/]
+`AddEquiv.arrowCongr`.
+  -/]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with

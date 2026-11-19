@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Monotone.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotone functions on bounded orders
 -/
@@ -22,7 +25,9 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
-/-! ### Top, bottom element -/
+/-!
+# Top, bottom element
+-/
 
 section OrderTop
 
@@ -50,7 +55,7 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
 section Logic
 
 /-!
-#### In this section we prove some properties about monotone and antitone operations on `Prop`
+# In this section we prove some properties about monotone and antitone operations on `Prop`
 -/
 
 

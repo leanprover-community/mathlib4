@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Finsupp.SMulWithZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pointwise product on `Finsupp`.
 
@@ -32,7 +35,9 @@ variable {α : Type u₁} {β : Type u₂} {γ : Type u₃}
 
 namespace Finsupp
 
-/-! ### Declarations about the pointwise product on `Finsupp`s -/
+/-!
+# Declarations about the pointwise product on `Finsupp`s
+-/
 
 
 section

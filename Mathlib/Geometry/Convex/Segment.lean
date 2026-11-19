@@ -8,10 +8,14 @@ module
 
 public import Mathlib.Geometry.Convex.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Segments in convex spaces
 
 In an R-convex space, we define the following objects:
+
 * `Icc R x y`: Closed segment joining `x` and `y`.
 * `Ioo R x y`: Open segment joining `x` and `y`.
 * `Ico R x y`: Half-open segment joining `x` and `y`.
@@ -20,7 +24,6 @@ In an R-convex space, we define the following objects:
 
 We don't provide the left-open equivalent to `Set.Ioc` since `Ico x y = Ioc y x`. This is in
 contrast to `Set.Ico` and `Set.Ioc`. See also `Ioo_insert_left` and `Ioo_insert_right`.
-
 -/
 
 namespace Convexity
@@ -52,7 +55,9 @@ def Ico (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha.le hb hab x y = z }
 
-/-- [x,y] = [y,x] -/
+/--
+‍\[x,y\] = \[y,x\]
+-/
 theorem Icc_symm (x y : X) : Icc R x y = Icc R y x := by
   ext z
   constructor

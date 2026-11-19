@@ -9,6 +9,9 @@ public meta import Mathlib.Algebra.GroupWithZero.Nat
 public meta import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Tactic.Linarith.Datatypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parsing input expressions into linear form
 
@@ -62,7 +65,9 @@ local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [
 
 namespace Mathlib.Tactic.Linarith
 
-/-! ### Parsing datatypes -/
+/-!
+# Parsing datatypes
+-/
 
 /-- Variables (represented by natural numbers) map to their power. -/
 abbrev Monom : Type := TreeMap ℕ ℕ
@@ -122,7 +127,9 @@ def var (n : ℕ) : Sum :=
   TreeMap.empty.insert (TreeMap.empty.insert n 1) 1
 
 
-/-! ### Parsing algorithms -/
+/-!
+# Parsing algorithms
+-/
 
 open Lean Elab Tactic Meta
 

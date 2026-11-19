@@ -12,6 +12,9 @@ public import Mathlib.Order.Setoid.Partition
 
 import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graph Coloring
 
@@ -27,32 +30,25 @@ the colors.
   with `α` being the set of available colors. The type is defined to
   be homomorphisms from `G` into the complete graph on `α`, and
   colorings have a coercion to `V → α`.
-
 * `G.Colorable n` is the proposition that `G` is `n`-colorable, which
-  is whether there exists a coloring with at most *n* colors.
-
+  is whether there exists a coloring with at most _n_ colors.
 * `G.chromaticNumber` is the minimal `n` such that `G` is `n`-colorable,
   or `⊤` if it cannot be colored with finitely many colors.
   (Cardinal-valued chromatic numbers are more niche, so we stick to `ℕ∞`.)
   We write `G.chromaticNumber ≠ ⊤` to mean a graph is colorable with finitely many colors.
-
 * `C.colorClass c` is the set of vertices colored by `c : α` in the coloring `C : G.Coloring α`.
-
 * `C.colorClasses` is the set containing all color classes.
 
 ## TODO
 
-  * Gather material from:
-    * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
-    * https://github.com/kmill/lean-graphcoloring/blob/master/src/graph.lean
+* Gather material from:
 
-  * Trees
-
-  * Planar graphs
-
-  * Chromatic polynomials
-
-  * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
+  * https://github.com/leanprover-community/mathlib/blob/simple\_graph\_matching/src/combinatorics/simple\_graph/coloring.lean
+  * https://github.com/kmill/lean-graphcoloring/blob/master/src/graph.lean
+* Trees
+* Planar graphs
+* Chromatic polynomials
+* develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
 @[expose] public section
@@ -81,7 +77,8 @@ lemma Coloring.injective_comp_of_pairwise_adj (C : G.Coloring α) (f : ι → V)
     (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : (C ∘ f).Injective :=
   Function.injective_iff_pairwise_ne.2 <| hf.mono fun _ _ ↦ C.valid
 
-/-- Construct a term of `SimpleGraph.Coloring` using a function that
+/--
+Construct a term of `SimpleGraph.Coloring` using a function that
 assigns vertices to colors and a proof that it is as proper coloring.
 
 (Note: this is a definitionally the constructor for `SimpleGraph.Hom`,
@@ -201,10 +198,12 @@ variable (G) in
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
 variable (G) in
-/-- The chromatic number of a graph is the minimal number of colors needed to color it.
+/--
+The chromatic number of a graph is the minimal number of colors needed to color it.
 This is `⊤` (infinity) iff `G` isn't colorable with finitely many colors.
 
-If `G` is colorable, then `ENat.toNat G.chromaticNumber` is the `ℕ`-valued chromatic number. -/
+If `G` is colorable, then `ENat.toNat G.chromaticNumber` is the `ℕ`-valued chromatic number.
+-/
 noncomputable def chromaticNumber : ℕ∞ := ⨅ n ∈ Set.ofPred G.Colorable, (n : ℕ∞)
 
 lemma le_chromaticNumber_iff_colorable : n ≤ G.chromaticNumber ↔ ∀ m, G.Colorable m → n ≤ m := by
@@ -532,7 +531,9 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
-/-! ### Cliques -/
+/-!
+# Cliques
+-/
 
 theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) (hc : G.Colorable n) :
     s.card ≤ n := by
@@ -615,7 +616,9 @@ theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free 
   contrapose nhc with hc'
   exact hc.of_hom hc'.some.toHom
 
-/-! ### Isomorphisms -/
+/-!
+# Isomorphisms
+-/
 
 /-- Equivalence of colorings induced by isomorphisms of graphs and equivalence of colors. -/
 def coloringCongr (f : G ≃g H) (g : α ≃ β) : G.Coloring α ≃ H.Coloring β :=

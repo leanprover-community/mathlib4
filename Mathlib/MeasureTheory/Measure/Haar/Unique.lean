@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.Metrizable.Urysohn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness of Haar measure in locally compact groups
 
@@ -20,6 +23,7 @@ public import Mathlib.Topology.Metrizable.Urysohn
 In a locally compact group, we prove that two left-invariant measures `μ'` and `μ` which are finite
 on compact sets coincide, up to a normalizing scalar that we denote with `haarScalarFactor μ' μ`,
 in the following sense:
+
 * `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`: they give the same value to the
   integral of continuous compactly supported functions, up to a scalar.
 * `measure_isMulInvariant_eq_smul_of_isCompact_closure`: they give the same value to sets with
@@ -61,8 +65,8 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 ## References
 
-[Halmos, Measure Theory][halmos1950measure]
-[Fremlin, *Measure Theory* (volume 4)][fremlin_vol4]
+‍\[Halmos, Measure Theory\]\[halmos1950measure\]
+‍\[Fremlin, _Measure Theory_ (volume 4)\]\[fremlin\_vol4\]
 -/
 
 @[expose] public section
@@ -108,10 +112,10 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
 
 /-!
-### Uniqueness of integrals of compactly supported functions
+# Uniqueness of integrals of compactly supported functions
 
 Two left invariant measures coincide when integrating continuous compactly supported functions,
-up to a scalar that we denote with `haarScalarFactor μ' μ `.
+up to a scalar that we denote with `haarScalarFactor μ' μ  `.
 
 This is proved by relating the integral for arbitrary left invariant and right invariant measures,
 applying a version of Fubini.
@@ -259,22 +263,27 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   simp [B, integral_smul_nnreal_measure, c, NNReal.smul_def]
 
 open scoped Classical in
-/-- Given two left-invariant measures which are finite on compacts, `haarScalarFactor μ' μ` is a
+/--
+Given two left-invariant measures which are finite on compacts, `haarScalarFactor μ' μ` is a
 scalar such that `∫ f dμ' = (haarScalarFactor μ' μ) ∫ f dμ` for any compactly supported continuous
 function `f`.
 
 Note that there is a dissymmetry in the assumptions between `μ'` and `μ`: the measure `μ'` needs
 only be finite on compact sets, while `μ` has to be finite on compact sets and positive on open
 sets, i.e., a Haar measure, to exclude for instance the case where `μ = 0`, where the definition
-doesn't make sense. -/
-@[to_additive /-- Given two left-invariant measures which are finite on compacts,
-`addHaarScalarFactor μ' μ` is a scalar such that `∫ f dμ' = (addHaarScalarFactor μ' μ) ∫ f dμ` for
-any compactly supported continuous function `f`.
+doesn't make sense.
+-/
+@[to_additive /--
+              Given two left-invariant measures which are finite on compacts,
+`addHaarScalarFactor μ' μ` is a scalar such that
+`∫ f dμ' = (addHaarScalarFactor μ' μ) ∫ f dμ` for any compactly supported continuous
+function `f`.
 
-Note that there is a dissymmetry in the assumptions between `μ'` and `μ`: the measure `μ'` needs
-only be finite on compact sets, while `μ` has to be finite on compact sets and positive on open
-sets, i.e., an additive Haar measure, to exclude for instance the case where `μ = 0`, where the
-definition doesn't make sense. -/]
+              Note that there is a dissymmetry in the assumptions between `μ'` and `μ`: the measure
+`μ'` needs only be finite on compact sets, while `μ` has to be finite on compact sets
+and positive on open sets, i.e., an additive Haar measure, to exclude for instance the
+case where `μ = 0`, where the definition doesn't make sense.
+              -/]
 noncomputable def haarScalarFactor
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     ℝ≥0 :=
@@ -426,7 +435,7 @@ lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure 
   pos_iff_ne_zero.2 (fun H ↦ by simpa [H] using haarScalarFactor_eq_mul μ' μ μ')
 
 /-!
-### Uniqueness of measure of sets with compact closure
+# Uniqueness of measure of sets with compact closure
 
 Two left invariant measures give the same measure to sets with compact closure, up to the
 scalar `haarScalarFactor μ' μ`.
@@ -463,19 +472,23 @@ and `μ'` coincide on these supersets, this yields `μ s = μ' s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure`.
 -/
 
-/-- Two left invariant measures give the same mass to level sets of continuous compactly supported
+/--
+Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `haarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure. -/
+compact closure.
+-/
 @[to_additive measure_preimage_isAddLeftInvariant_eq_smul_of_hasCompactSupport
-/-- Two left invariant measures give the same mass to level sets of continuous compactly supported
+/--
+Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure. -/]
+compact closure.
+-/]
 lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
@@ -540,19 +553,23 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   rw [measureReal_eq_measureReal_iff C.measure_lt_top.ne C.measure_lt_top.ne] at J2
   simpa using J2
 
-/-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
+/--
+If an invariant measure is inner regular, then it gives less mass to sets with compact closure
 than any other invariant measure, up to the scalar `haarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which gives equality for any
-set with compact closure. -/
+set with compact closure.
+-/
 @[to_additive smul_measure_isAddInvariant_le_of_isCompact_closure
-/-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
+/--
+If an invariant measure is inner regular, then it gives less mass to sets with compact closure
 than any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which gives equality for any
-set with compact closure. -/]
+set with compact closure.
+-/]
 lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     [InnerRegularCompactLTTop μ]
@@ -571,19 +588,23 @@ lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G
     (measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp).symm
   _ ≤ μ' s := measure_mono hf
 
-/-- If an invariant measure is inner regular, then it gives the same mass to measurable sets with
+/--
+If an invariant measure is inner regular, then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `haarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure, and removes the inner regularity assumption. -/
+compact closure, and removes the inner regularity assumption.
+-/
 @[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompactLTTop
-/-- If an invariant measure is inner regular, then it gives the same mass to measurable sets with
+/--
+If an invariant measure is inner regular, then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure, and removes the inner regularity assumption. -/]
+compact closure, and removes the inner regularity assumption.
+-/]
 lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompactLTTop
     [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
@@ -612,19 +633,23 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
   · exact ((measure_mono st).trans_lt t_comp.measure_lt_top).ne
   · exact ((measure_mono st).trans_lt t_comp.measure_lt_top).ne
 
-/-- Given an invariant measure then it gives the same mass to measurable sets with
+/--
+Given an invariant measure then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `haarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which removes the
-measurability assumption. -/
+measurability assumption.
+-/
 @[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure_of_measurableSet
-/-- Given an invariant measure then it gives the same mass to measurable sets with
+/--
+Given an invariant measure then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which removes the
-measurability assumption. -/]
+measurability assumption.
+-/]
 lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
@@ -714,10 +739,10 @@ lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ :
   simp [A s, ← Z]
 
 /-!
-### Uniqueness of measure of open sets
+# Uniqueness of measure of open sets
 
 Two Haar measures give the same measure to open sets (or more generally to sets which are everywhere
-positive), up to the scalar `haarScalarFactor μ' μ `.
+positive), up to the scalar `haarScalarFactor μ' μ  `.
 -/
 
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
@@ -834,7 +859,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isOpen [LocallyCompactSpace G]
   measure_isHaarMeasure_eq_smul_of_isEverywherePos μ' μ hs.measurableSet hs.isEverywherePos
 
 /-!
-### Uniqueness of Haar measure under regularity assumptions.
+# Uniqueness of Haar measure under regularity assumptions.
 -/
 
 /-- **Uniqueness of left-invariant measures**:

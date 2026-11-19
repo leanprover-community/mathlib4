@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 public import Mathlib.Analysis.Complex.AbsMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Phragmen-Lindelöf principle
 
@@ -18,23 +21,17 @@ modulus principle for an unbounded domain.
 
 * `PhragmenLindelof.horizontal_strip`: the Phragmen-Lindelöf principle in a horizontal strip
   `{z : ℂ | a < complex.im z < b}`;
-
 * `PhragmenLindelof.eq_zero_on_horizontal_strip`, `PhragmenLindelof.eqOn_horizontal_strip`:
   extensionality lemmas based on the Phragmen-Lindelöf principle in a horizontal strip;
-
 * `PhragmenLindelof.vertical_strip`: the Phragmen-Lindelöf principle in a vertical strip
   `{z : ℂ | a < complex.re z < b}`;
-
 * `PhragmenLindelof.eq_zero_on_vertical_strip`, `PhragmenLindelof.eqOn_vertical_strip`:
   extensionality lemmas based on the Phragmen-Lindelöf principle in a vertical strip;
-
 * `PhragmenLindelof.quadrant_I`, `PhragmenLindelof.quadrant_II`, `PhragmenLindelof.quadrant_III`,
   `PhragmenLindelof.quadrant_IV`: the Phragmen-Lindelöf principle in the coordinate quadrants;
-
 * `PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real`,
   `PhragmenLindelof.right_half_plane_of_bounded_on_real`: two versions of the Phragmen-Lindelöf
   principle in the right half-plane;
-
 * `PhragmenLindelof.eq_zero_on_right_half_plane_of_superexponential_decay`,
   `PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay`: extensionality lemmas based
   on the Phragmen-Lindelöf principle in the right half-plane.
@@ -54,7 +51,7 @@ local notation "expR" => Real.exp
 namespace PhragmenLindelof
 
 /-!
-### Auxiliary lemmas
+# Auxiliary lemmas
 -/
 
 
@@ -96,10 +93,11 @@ theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
 variable [NormedSpace ℂ E] {a b C : ℝ} {f g : ℂ → E} {z : ℂ}
 
 /-!
-### Phragmen-Lindelöf principle in a horizontal strip
+# Phragmen-Lindelöf principle in a horizontal strip
 -/
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < im z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < im z < b}`.
 Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable on `U` and is continuous on its closure;
@@ -219,7 +217,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   · rw [closure_reProdIm, closure_Ioo hab.ne, closure_Ioo (neg_lt_self hR₀).ne]
     exact ⟨abs_le.1 hzR.le, ⟨hza.le, hzb.le⟩⟩
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < im z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < im z < b}`.
 Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable on `U` and is continuous on its closure;
@@ -236,7 +235,8 @@ theorem eq_zero_on_horizontal_strip (hd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b)
   norm_le_zero_iff.1 <| horizontal_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
     (fun z hz => (hb z hz).symm ▸ norm_zero.le) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < im z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < im z < b}`.
 Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable on `U` and are continuous on its closure;
@@ -258,10 +258,11 @@ theorem eqOn_horizontal_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (im ⁻�
     (fun w hw => sub_eq_zero.2 (ha w hw)) (fun w hw => sub_eq_zero.2 (hb w hw)) hz)
 
 /-!
-### Phragmen-Lindelöf principle in a vertical strip
+# Phragmen-Lindelöf principle in a vertical strip
 -/
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < re z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < re z < b}`.
 Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable on `U` and is continuous on its closure;
@@ -291,7 +292,8 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     simpa [Function.comp_def] using hO.comp_tendsto this
   all_goals simpa
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < re z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < re z < b}`.
 Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable on `U` and is continuous on its closure;
@@ -308,7 +310,8 @@ theorem eq_zero_on_vertical_strip (hd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
   norm_le_zero_iff.1 <| vertical_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
     (fun z hz => (hb z hz).symm ▸ norm_zero.le) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < re z < b}`.
+/--
+*Phragmen-Lindelöf principle* in a strip `U = {z : ℂ | a < re z < b}`.
 Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable on `U` and are continuous on its closure;
@@ -330,17 +333,19 @@ theorem eqOn_vertical_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (re ⁻¹'
     (fun w hw => sub_eq_zero.2 (ha w hw)) (fun w hw => sub_eq_zero.2 (hb w hw)) hz)
 
 /-!
-### Phragmen-Lindelöf principle in coordinate quadrants
+# Phragmen-Lindelöf principle in coordinate quadrants
 -/
 
-/-- **Phragmen-Lindelöf principle** in the first quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the first quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open first quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open first quadrant
   for some `c < 2`;
 * `‖f z‖` is bounded from above by a constant `C` on the boundary of the first quadrant.
 
-Then `‖f z‖` is bounded from above by the same constant on the closed first quadrant. -/
+Then `‖f z‖` is bounded from above by the same constant on the closed first quadrant.
+-/
 nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -398,14 +403,16 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       ofReal_exp]
     exact him _ (Real.exp_pos _).le
 
-/-- **Phragmen-Lindelöf principle** in the first quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the first quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open first quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open first quadrant
   for some `A`, `B`, and `c < 2`;
 * `f` is equal to zero on the boundary of the first quadrant.
 
-Then `f` is equal to zero on the closed first quadrant. -/
+Then `f` is equal to zero on the closed first quadrant.
+-/
 theorem eq_zero_on_quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -415,14 +422,16 @@ theorem eq_zero_on_quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     quadrant_I hd hB (fun x hx => norm_le_zero_iff.2 <| hre x hx)
       (fun x hx => norm_le_zero_iff.2 <| him x hx) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in the first quadrant. Let `f g : ℂ → E` be functions such that
+/--
+*Phragmen-Lindelöf principle* in the first quadrant. Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable in the open first quadrant and are continuous on its closure;
 * `‖f z‖` and `‖g z‖` are bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open first
   quadrant for some `A`, `B`, and `c < 2`;
 * `f` is equal to `g` on the boundary of the first quadrant.
 
-Then `f` is equal to `g` on the closed first quadrant. -/
+Then `f` is equal to `g` on the closed first quadrant.
+-/
 theorem eqOn_quadrant_I (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     (hBf : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -435,14 +444,16 @@ theorem eqOn_quadrant_I (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     eq_zero_on_quadrant_I (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
       (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
-/-- **Phragmen-Lindelöf principle** in the second quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the second quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open second quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open second quadrant
   for some `c < 2`;
 * `‖f z‖` is bounded from above by a constant `C` on the boundary of the second quadrant.
 
-Then `‖f z‖` is bounded from above by the same constant on the closed second quadrant. -/
+Then `‖f z‖` is bounded from above by the same constant on the closed second quadrant.
+-/
 theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -461,14 +472,16 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
   · rw [comp_apply, mul_assoc, I_mul_I, mul_neg_one, ← ofReal_neg]
     exact hre _ (neg_nonpos.2 hx)
 
-/-- **Phragmen-Lindelöf principle** in the second quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the second quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open second quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open second quadrant
   for some `A`, `B`, and `c < 2`;
 * `f` is equal to zero on the boundary of the second quadrant.
 
-Then `f` is equal to zero on the closed second quadrant. -/
+Then `f` is equal to zero on the closed second quadrant.
+-/
 theorem eq_zero_on_quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -478,14 +491,16 @@ theorem eq_zero_on_quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
     quadrant_II hd hB (fun x hx => norm_le_zero_iff.2 <| hre x hx)
       (fun x hx => norm_le_zero_iff.2 <| him x hx) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in the second quadrant. Let `f g : ℂ → E` be functions such that
+/--
+*Phragmen-Lindelöf principle* in the second quadrant. Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable in the open second quadrant and are continuous on its closure;
 * `‖f z‖` and `‖g z‖` are bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open second
   quadrant for some `A`, `B`, and `c < 2`;
 * `f` is equal to `g` on the boundary of the second quadrant.
 
-Then `f` is equal to `g` on the closed second quadrant. -/
+Then `f` is equal to `g` on the closed second quadrant.
+-/
 theorem eqOn_quadrant_II (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
     (hBf : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -497,14 +512,16 @@ theorem eqOn_quadrant_II (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
   sub_eq_zero.1 <| eq_zero_on_quadrant_II (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
     (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
-/-- **Phragmen-Lindelöf principle** in the third quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the third quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open third quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp (B * ‖z‖ ^ c)` on the open third quadrant
   for some `c < 2`;
 * `‖f z‖` is bounded from above by a constant `C` on the boundary of the third quadrant.
 
-Then `‖f z‖` is bounded from above by the same constant on the closed third quadrant. -/
+Then `‖f z‖` is bounded from above by the same constant on the closed third quadrant.
+-/
 theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -528,14 +545,16 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]
     exact him (-x) (neg_nonpos.2 hx)
 
-/-- **Phragmen-Lindelöf principle** in the third quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the third quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open third quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open third quadrant
   for some `A`, `B`, and `c < 2`;
 * `f` is equal to zero on the boundary of the third quadrant.
 
-Then `f` is equal to zero on the closed third quadrant. -/
+Then `f` is equal to zero on the closed third quadrant.
+-/
 theorem eq_zero_on_quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -544,14 +563,16 @@ theorem eq_zero_on_quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   norm_le_zero_iff.1 <| quadrant_III hd hB (fun x hx => norm_le_zero_iff.2 <| hre x hx)
     (fun x hx => norm_le_zero_iff.2 <| him x hx) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in the third quadrant. Let `f g : ℂ → E` be functions such that
+/--
+*Phragmen-Lindelöf principle* in the third quadrant. Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable in the open third quadrant and are continuous on its closure;
 * `‖f z‖` and `‖g z‖` are bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open third
   quadrant for some `A`, `B`, and `c < 2`;
 * `f` is equal to `g` on the boundary of the third quadrant.
 
-Then `f` is equal to `g` on the closed third quadrant. -/
+Then `f` is equal to `g` on the closed third quadrant.
+-/
 theorem eqOn_quadrant_III (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
     (hBf : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -563,14 +584,16 @@ theorem eqOn_quadrant_III (hdf : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   sub_eq_zero.1 <| eq_zero_on_quadrant_III (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
     (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
-/-- **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the fourth quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open fourth quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open fourth quadrant
   for some `c < 2`;
 * `‖f z‖` is bounded from above by a constant `C` on the boundary of the fourth quadrant.
 
-Then `‖f z‖` is bounded from above by the same constant on the closed fourth quadrant. -/
+Then `‖f z‖` is bounded from above by the same constant on the closed fourth quadrant.
+-/
 theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -592,14 +615,16 @@ theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]
     exact him (-x) (neg_nonpos.2 hx)
 
-/-- **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the fourth quadrant. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open fourth quadrant and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open fourth quadrant
   for some `A`, `B`, and `c < 2`;
 * `f` is equal to zero on the boundary of the fourth quadrant.
 
-Then `f` is equal to zero on the closed fourth quadrant. -/
+Then `f` is equal to zero on the closed fourth quadrant.
+-/
 theorem eq_zero_on_quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     (hB : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -609,14 +634,16 @@ theorem eq_zero_on_quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     quadrant_IV hd hB (fun x hx => norm_le_zero_iff.2 <| hre x hx)
       (fun x hx => norm_le_zero_iff.2 <| him x hx) hz.1 hz.2
 
-/-- **Phragmen-Lindelöf principle** in the fourth quadrant. Let `f g : ℂ → E` be functions such that
+/--
+*Phragmen-Lindelöf principle* in the fourth quadrant. Let `f g : ℂ → E` be functions such that
 
 * `f` and `g` are differentiable in the open fourth quadrant and are continuous on its closure;
 * `‖f z‖` and `‖g z‖` are bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open fourth
   quadrant for some `A`, `B`, and `c < 2`;
 * `f` is equal to `g` on the boundary of the fourth quadrant.
 
-Then `f` is equal to `g` on the closed fourth quadrant. -/
+Then `f` is equal to `g` on the closed fourth quadrant.
+-/
 theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     (hBf : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * ‖z‖ ^ c))
@@ -629,11 +656,12 @@ theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     (fun x hx => sub_eq_zero.2 <| hre x hx) (fun x hx => sub_eq_zero.2 <| him x hx) hz
 
 /-!
-### Phragmen-Lindelöf principle in the right half-plane
+# Phragmen-Lindelöf principle in the right half-plane
 -/
 
 
-/-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the right half-plane. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open right half-plane and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open right half-plane
@@ -642,7 +670,8 @@ theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
 * `f x → 0` as `x : ℝ` tends to infinity.
 
 Then `‖f z‖` is bounded from above by the same constant on the closed right half-plane.
-See also `PhragmenLindelof.right_half_plane_of_bounded_on_real` for a stronger version. -/
+See also `PhragmenLindelof.right_half_plane_of_bounded_on_real` for a stronger version.
+-/
 theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * ‖z‖ ^ c))
@@ -704,7 +733,8 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     refine (h.not_ge <| this ▸ ?_).elim
     simpa using him 0
 
-/-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the right half-plane. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open right half-plane and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open right half-plane
@@ -713,7 +743,8 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
 * `‖f x‖` is bounded from above by a constant for large real values of `x`.
 
 Then `‖f z‖` is bounded from above by `C` on the closed right half-plane.
-See also `PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real` for a weaker version. -/
+See also `PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real` for a weaker version.
+-/
 theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * ‖z‖ ^ c))
@@ -746,7 +777,8 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
       one_mul]
     exact him y
 
-/-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
+/--
+*Phragmen-Lindelöf principle* in the right half-plane. Let `f : ℂ → E` be a function such that
 
 * `f` is differentiable in the open right half-plane and is continuous on its closure;
 * `‖f z‖` is bounded from above by `A * exp(B * ‖z‖ ^ c)` on the open right half-plane
@@ -755,7 +787,8 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
 * `f x`, `x : ℝ`, tends to zero superexponentially fast as `x → ∞`:
   for any natural `n`, `exp (n * x) * ‖f x‖` tends to zero as `x → ∞`.
 
-Then `f` is equal to zero on the closed right half-plane. -/
+Then `f` is equal to zero on the closed right half-plane.
+-/
 theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * ‖z‖ ^ c))
@@ -799,7 +832,8 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   · rw [hg, re_ofReal_mul, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
     exact hC y
 
-/-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f g : ℂ → E` be functions such
+/--
+*Phragmen-Lindelöf principle* in the right half-plane. Let `f g : ℂ → E` be functions such
 that
 
 * `f` and `g` are differentiable in the open right half-plane and are continuous on its closure;
@@ -809,7 +843,8 @@ that
 * `f x - g x`, `x : ℝ`, tends to zero superexponentially fast as `x → ∞`:
   for any natural `n`, `exp (n * x) * ‖f x - g x‖` tends to zero as `x → ∞`.
 
-Then `f` is equal to `g` on the closed right half-plane. -/
+Then `f` is equal to `g` on the closed right half-plane.
+-/
 theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
     (hfd : DiffContOnCl ℂ f {z | 0 < z.re}) (hgd : DiffContOnCl ℂ g {z | 0 < z.re})
     (hfexp : ∃ c < (2 : ℝ), ∃ B,

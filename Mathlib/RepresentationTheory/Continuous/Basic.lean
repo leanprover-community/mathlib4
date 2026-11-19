@@ -11,6 +11,9 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 
 import Mathlib.CategoryTheory.Category.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous representations
 
@@ -22,34 +25,29 @@ related basic results.
 * `ContRepresentation R G V` is the type of continuous representations of a monoid `G` on a
   `R`-module `V` which is a topological additive group. The monoid `G` is not assumed to have a
   topology, but for each element of `G`, the action on `V` is a continuous linear map.
-
 * `ContIntertwiningMap π₁ π₂` is the type of continuous intertwining maps between two continuous
   representations `π₁` and `π₂`.
-
 * `ContRepresentation.coind φ π`. If `H` is a topological group, `G` is a group with a topology,
   `φ : G →ₜ* H` is a continuous homomorphism and `π` is a continuous representation of `G` on
   `V`, then `π.coind φ` is the coinduced continuous representation of `H` on the submodule of
   `C(H, V)` of functions `f` satisfying `f (φ g * h) = π g (f h)` for all `g : G` and `h : H`.
-
 * `ContRepresentation.coind₁ π`. If `π` is a continuous representation of a topological group `G` on
   `V` then `π.coind₁` is the continuous representation of `G` on `C(G, V)` in which `g : G` acts by
   `f ↦ (x ↦ π g (f (g⁻¹ * x)))`. The functor `coind₁` is used to construct a resolution of `π` of
   the form `0 → π → π.coind₁ → π.coind₁.coind₁ → π.coind₁.coind₁.coind₁ → ...`, which is used in
   the definition of `continuousCohomology`.
-
 * `ContRepresentation.coindEquivCoind₁`. In the case that the action `G × V → V` is continuous,
   `π.coind₁` is isomorphic to the coinduction along `1 : Unit →ₜ* G` of the trivial representation
   of the trivial group on `V`.
-
 * `ContIntertwiningMap.mapInvariantsOfRes φ f` is the continuous linear map
   `π.invariants →L[R] π'.invariants` induced by a monoid homomorphism `φ : H →* G` and a
   continuous intertwining map `f : π.restrict φ →ⁱL π'`.
-
 * `ContRepresentation.coind₁ResMap φ f` is the continuous intertwining map
   `π.coind₁.restrict φ →ⁱL π'.coind₁` induced by a continuous group homomorphism `φ : H →ₜ* G`
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 

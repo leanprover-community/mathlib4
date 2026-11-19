@@ -9,12 +9,15 @@ public import Mathlib.CategoryTheory.Limits.Final
 
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finality on Costructured Arrow categories
 
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8(i)
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Proposition 3.1.8(i)
 -/
 
 public section

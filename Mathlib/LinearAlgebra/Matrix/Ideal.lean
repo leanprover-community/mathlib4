@@ -9,6 +9,9 @@ public import Mathlib.Data.Matrix.Basis
 public import Mathlib.GroupTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Jacobson.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals in a matrix ring
 
@@ -19,14 +22,16 @@ We also characterize Jacobson radicals of ideals in such rings.
 ## Main results
 
 * `TwoSidedIdeal.equivMatrix` and `TwoSidedIdeal.orderIsoMatrix`
-  establish an order isomorphism between two-sided ideals in $R$ and those in $Mₙ(R)$.
-* `TwoSidedIdeal.jacobson_matrix` shows that $J(Mₙ(I)) = Mₙ(J(I))$
-  for any two-sided ideal $I ≤ R$.
+  establish an order isomorphism between two-sided ideals in $`R` and those in $`Mₙ(R)`.
+* `TwoSidedIdeal.jacobson_matrix` shows that $`J(Mₙ(I)) = Mₙ(J(I))`
+  for any two-sided ideal $`I ≤ R`.
 -/
 
 @[expose] public section
 
-/-! ### Left ideals in a matrix semiring -/
+/-!
+# Left ideals in a matrix semiring
+-/
 
 namespace Ideal
 open Matrix
@@ -72,15 +77,19 @@ theorem matrix_top : (⊤ : Ideal R).matrix n = ⊤ := by
 
 end Ideal
 
-/-! ### Jacobson radicals of left ideals in a matrix ring -/
+/-!
+# Jacobson radicals of left ideals in a matrix ring
+-/
 
 namespace Ideal
 open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-/-- A standard basis matrix is in $J(Mₙ(I))$
-as long as its one possibly non-zero entry is in $J(I)$. -/
+/--
+A standard basis matrix is in $`J(Mₙ(I))`
+as long as its one possibly non-zero entry is in $`J(I)`.
+-/
 theorem single_mem_jacobson_matrix (I : Ideal R) :
     ∀ x ∈ I.jacobson, ∀ (i j : n), single i j x ∈ (I.matrix n).jacobson := by
   -- Proof generalized from example 8 in
@@ -99,7 +108,9 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, Matrix.sum_apply, Matrix.mul_apply]
 
-/-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
+/--
+For any left ideal $`I ≤ R`, we have $`Mₙ(J(I)) ≤ J(Mₙ(I))`.
+-/
 theorem matrix_jacobson_le (I : Ideal R) :
     I.jacobson.matrix n ≤ (I.matrix n).jacobson := by
   intro M MI
@@ -112,7 +123,9 @@ theorem matrix_jacobson_le (I : Ideal R) :
 
 end Ideal
 
-/-! ### Two-sided ideals in a matrix ring -/
+/-!
+# Two-sided ideals in a matrix ring
+-/
 
 namespace RingCon
 variable {R n : Type*}
@@ -275,9 +288,9 @@ variable [NonAssocRing R] [Fintype n] [Nonempty n] [DecidableEq n]
 variable {n}
 
 /--
-Two-sided ideals in $R$ correspond bijectively to those in $Mₙ(R)$.
-Given an ideal $I ≤ R$, we send it to $Mₙ(I)$.
-Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
+Two-sided ideals in $`R` correspond bijectively to those in $`Mₙ(R)`.
+Given an ideal $`I ≤ R`, we send it to $`Mₙ(I)`.
+Given an ideal $`J ≤ Mₙ(R)`, we send it to $`\{Nᵢⱼ ∣ ∃ N ∈ J\}`.
 -/
 @[simps]
 def equivMatrix : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
@@ -298,7 +311,7 @@ theorem coe_equivMatrix_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) 
     exact ⟨n, 0, (I.mem_iff n).mp hn, rfl, rfl⟩
 
 /--
-Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
+Two-sided ideals in $`R` are order-isomorphic with those in $`Mₙ(R)`.
 See also `equivMatrix`.
 -/
 @[simps!]
@@ -326,7 +339,9 @@ end Ring
 
 end TwoSidedIdeal
 
-/-! ### Jacobson radicals of two-sided ideals in a matrix ring -/
+/-!
+# Jacobson radicals of two-sided ideals in a matrix ring
+-/
 
 namespace TwoSidedIdeal
 open Matrix
@@ -348,7 +363,9 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   use N p p
   simpa [Matrix.mul_apply, single, ite_and] using! NxMI p p
 
-/-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
+/--
+For any two-sided ideal $`I ≤ R`, we have $`J(Mₙ(I)) = Mₙ(J(I))`.
+-/
 theorem jacobson_matrix (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson = I.jacobson.matrix n := by
   apply le_antisymm

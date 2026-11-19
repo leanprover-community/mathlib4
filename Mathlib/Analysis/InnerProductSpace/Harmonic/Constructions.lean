@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of Harmonic Functions
 
@@ -30,7 +33,7 @@ variable
   {f : ℂ → F} {x : ℂ}
 
 /-!
-## Harmonicity of Analytic Functions on the Complex Plane
+# Harmonicity of Analytic Functions on the Complex Plane
 -/
 
 /--
@@ -69,7 +72,7 @@ theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) : 
   (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
 
 /-!
-## Harmonicity of `log ‖analytic‖`
+# Harmonicity of `log ‖analytic‖`
 -/
 
 /- Helper lemma for AnalyticAt.harmonicAt_log_norm -/

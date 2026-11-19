@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded linear maps
 
@@ -73,11 +76,13 @@ variable {𝕜 E F G : Type*} [Semiring 𝕜]
     {f g : E → F}
 
 variable (𝕜 f) in
-/-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
+/--
+A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`.
 
 (We put only the typeclasses strictly necessary for the definition, although the main case of
-interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.) -/
+interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.)
+-/
 @[wikidata Q2342396]
 structure IsBoundedLinearMap : Prop
     extends IsLinearMap 𝕜 f where
@@ -534,7 +539,7 @@ open Set
 open scoped Topology
 
 /-!
-### The set of continuous linear equivalences between two Banach spaces is open
+# The set of continuous linear equivalences between two Banach spaces is open
 
 In this section we establish that the set of continuous linear equivalences between two Banach
 spaces is an open subset of the space of linear maps between them.

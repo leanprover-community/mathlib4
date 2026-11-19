@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Edge labelings
 
@@ -14,9 +17,8 @@ This module defines labelings of the edges of a graph.
 
 ## Main definitions
 
-- `SimpleGraph.EdgeLabeling`: An assignment of a label from a given type to each edge of the graph.
-
-- `SimpleGraph.EdgeLabeling.labelGraph`: the graph consisting of all edges with a given label.
+* `SimpleGraph.EdgeLabeling`: An assignment of a label from a given type to each edge of the graph.
+* `SimpleGraph.EdgeLabeling.labelGraph`: the graph consisting of all edges with a given label.
 -/
 
 @[expose] public section

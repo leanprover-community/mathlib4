@@ -10,7 +10,12 @@ public import Mathlib.Order.TypeTags
 
 import Mathlib.Tactic.Basify.Attr
 
-/-! # Definition and notation for extended natural numbers -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Definition and notation for extended natural numbers
+-/
 
 @[expose] public section
 

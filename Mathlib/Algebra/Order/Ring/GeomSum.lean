@@ -9,11 +9,14 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial sums of geometric series in an ordered ring
 
-This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
-$\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some bounds on the
+This file upper- and lower-bounds the values of the geometric series $`\sum_{i=0}^{n-1} x^i` and
+$`\sum_{i=0}^{n-1} x^i y^{n-1-i}` and variants thereof. We also provide some bounds on the
 "geometric" sum of `a/b^i` where `a b : ℕ`.
 -/
 
@@ -149,7 +152,9 @@ lemma geom_sum_neg_iff (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i < 0 ↔ Even n 
 end LinearOrder
 end Ring
 
-/-! ### Geometric sum with `ℕ`-division -/
+/-!
+# Geometric sum with `ℕ`-division
+-/
 
 lemma Nat.pred_mul_geom_sum_le (a b n : ℕ) :
     ((b - 1) * ∑ i ∈ range n.succ, a / b ^ i) ≤ a * b - a / b ^ n :=

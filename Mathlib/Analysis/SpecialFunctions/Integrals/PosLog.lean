@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representation of `log⁺` as a Circle Average
 
@@ -26,7 +29,7 @@ open scoped Interval
 variable {a c : ℂ} {R : ℝ}
 
 /-!
-## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
+# Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
 -/
 
 /--
@@ -60,7 +63,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     rwa [← hCon, CStarRing.norm_of_mem_unitary (unitary ℂ).one_mem, lt_self_iff_false] at this
 
 /-!
-## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
+# Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
 -/
 
 -- Integral computation used in `circleAverage_log_norm_sub_const₁`
@@ -112,7 +115,7 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
   ring
 
 /-!
-## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
+# Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
 -/
 
 /--
@@ -130,7 +133,7 @@ theorem circleAverage_log_norm_sub_const₂ (h : 1 < ‖a‖) :
   linarith
 
 /-!
-## Presentation of `log⁺` in Terms of Circle Averages
+# Presentation of `log⁺` in Terms of Circle Averages
 -/
 
 /--

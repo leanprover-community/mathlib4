@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 import Mathlib.Order.CompleteLattice.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `NonUnitalSubring`s
 
@@ -31,28 +34,20 @@ Notation used here:
 
 * `instance : CompleteLattice (NonUnitalSubring R)` : the complete lattice structure on the
   non-unital subrings.
-
 * `NonUnitalSubring.center` : the center of a non-unital ring `R`.
-
 * `NonUnitalSubring.closure` : non-unital subring closure of a set, i.e., the smallest
   non-unital subring that includes the set.
-
 * `NonUnitalSubring.gi` : `closure : Set M → NonUnitalSubring M` and coercion
   `coe : NonUnitalSubring M → Set M`
   form a `GaloisInsertion`.
-
 * `comap f B : NonUnitalSubring A` : the preimage of a non-unital subring `B` along the
   non-unital ring homomorphism `f`
-
 * `map f A : NonUnitalSubring B` : the image of a non-unital subring `A` along the
   non-unital ring homomorphism `f`.
-
 * `Prod A B : NonUnitalSubring (R × S)` : the product of non-unital subrings
-
 * `f.range : NonUnitalSubring B` : the range of the non-unital ring homomorphism `f`.
-
 * `eq_locus f g : NonUnitalSubring R` : given non-unital ring homomorphisms `f g : R →ₙ+* S`,
-     the non-unital subring of `R` where `f x = g x`
+  the non-unital subring of `R` where `f x = g x`
 
 ## Implementation notes
 
@@ -63,6 +58,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a non-unital subring's underlying set.
 
 ## Tags
+
 non-unital subring
 -/
 
@@ -95,7 +91,9 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
     {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 
-/-! ## top -/
+/-!
+# top
+-/
 
 
 /-- The non-unital subring `R` of the ring `R`. -/
@@ -138,7 +136,9 @@ variable {R : Type u} {S : Type v} {T : Type*}
   [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   (s : NonUnitalSubring R)
 
-/-! ## comap -/
+/-!
+# comap
+-/
 
 
 /-- The preimage of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
@@ -160,7 +160,9 @@ theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* 
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
-/-! ## map -/
+/-!
+# map
+-/
 
 /-- The image of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
 def map {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
@@ -212,10 +214,14 @@ variable {R : Type u} {S : Type v} {T : Type*}
   [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   (g : S →ₙ+* T) (f : R →ₙ+* S)
 
-/-! ## range -/
+/-!
+# range
+-/
 
-/-- The range of a ring homomorphism, as a `NonUnitalSubring` of the target.
-See Note [range copy pattern]. -/
+/--
+The range of a ring homomorphism, as a `NonUnitalSubring` of the target.
+See Note \[range copy pattern\].
+-/
 def range {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     (f : R →ₙ+* S) : NonUnitalSubring S :=
   ((⊤ : NonUnitalSubring R).map f).copy (Set.range f) Set.image_univ.symm
@@ -250,7 +256,9 @@ section Order
 
 variable {R : Type u} [NonUnitalNonAssocRing R]
 
-/-! ## bot -/
+/-!
+# bot
+-/
 
 
 instance : Bot (NonUnitalSubring R) :=
@@ -265,7 +273,9 @@ theorem coe_bot : ((⊥ : NonUnitalSubring R) : Set R) = {0} :=
 theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
   show x ∈ ((⊥ : NonUnitalSubring R) : Set R) ↔ x = 0 by rw [coe_bot, Set.mem_singleton_iff]
 
-/-! ## inf -/
+/-!
+# inf
+-/
 
 /-- The inf of two `NonUnitalSubring`s is their intersection. -/
 instance : Min (NonUnitalSubring R) :=
@@ -333,7 +343,9 @@ theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 end Order
 
-/-! ## Center of a ring -/
+/-!
+# Center of a ring
+-/
 
 section Center
 variable {R : Type u} {S : Type v}
@@ -447,7 +459,9 @@ end Centralizer
 
 end Center
 
-/-! ## `NonUnitalSubring` closure of a subset -/
+/-!
+# `NonUnitalSubring` closure of a subset
+-/
 
 variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
 
@@ -741,9 +755,11 @@ variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocR
 
 open NonUnitalSubring
 
-/-- Restriction of a ring homomorphism to its range interpreted as a `NonUnitalSubring`.
+/--
+Restriction of a ring homomorphism to its range interpreted as a `NonUnitalSubring`.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 def rangeRestrict (f : R →ₙ+* S) : R →ₙ+* f.range :=
   NonUnitalRingHom.codRestrict f f.range fun x => ⟨x, rfl⟩
 

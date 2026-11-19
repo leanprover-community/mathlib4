@@ -14,6 +14,9 @@ public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.Set.Pairwise.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise actions on sets
 
@@ -23,9 +26,9 @@ of `α`/`Set α` on `Set β`.
 ## Implementation notes
 
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
-  default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the scope to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`).
+  default. Note that we do not mark them as reducible (as argued by note \[reducible
+  non-instances\]) since we expect the scope to be open whenever the instances are actually used
+  (and making the instances reducible changes the behavior of `simp`).
 -/
 
 @[expose] public section
@@ -39,7 +42,9 @@ variable {F α β γ : Type*}
 
 namespace Set
 
-/-! ### Translation/scaling of sets -/
+/-!
+# Translation/scaling of sets
+-/
 
 @[to_additive vadd_set_prod]
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
@@ -365,12 +370,15 @@ lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s)
   exact ⟨fun h a ↦ by simpa using @h a 1,
     fun h i j ne ↦ by simpa [inv_mul_eq_one, eq_comm] using h _ ne⟩
 
-/-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+/--
+Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(s⁻¹ * s) ∩ (t⁻¹ * t)`.
 
-This is useful to show that the intersection of approximate subgroups is an approximate subgroup. -/
+This is useful to show that the intersection of approximate subgroups is an approximate subgroup.
+-/
 @[to_additive
-/-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+/--
+Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(-s + s) ∩ (-t + t)`.
 
 This is useful to show that the intersection of approximate subgroups is an approximate subgroup.

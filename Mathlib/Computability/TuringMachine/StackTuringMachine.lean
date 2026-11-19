@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turing machines
 
@@ -75,7 +78,7 @@ namespace Turing
 
 
 /-!
-## The TM2 model
+# The TM2 model
 
 The TM2 model removes the tape entirely from the TM1 model, replacing it with an arbitrary (finite)
 collection of stacks, each with elements of different types (the alphabet of stack `k : K` is
@@ -290,7 +293,7 @@ def eval (M : Λ → Stmt Γ Λ σ) (k : K) (L : List (Γ k)) : Part (List (Γ k
 end TM2
 
 /-!
-## TM2 emulator in TM1
+# TM2 emulator in TM1
 
 To prove that TM2 computable functions are TM1 computable, we need to reduce each TM2 program to a
 TM1 program. So suppose a TM2 program is given. This program has to maintain a whole collection of

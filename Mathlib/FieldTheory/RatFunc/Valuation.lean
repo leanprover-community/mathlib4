@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Degree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuations on F(t)
 
@@ -14,17 +17,19 @@ This file defines the valuation at infinity on the field of rational functions `
 
 ## Main definitions
 
-- `RatFunc.inftyValuation` : The place at infinity on `F(t)` is the nonarchimedean
+* `RatFunc.inftyValuation` : The place at infinity on `F(t)` is the nonarchimedean
   valuation on `F(t)` with uniformizer `1/t`.
-- `RatFunc.CompletionAtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
+* `RatFunc.CompletionAtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
   valuation at infinity.
 
 ## References
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
+
 function field, ring of integers
 -/
 
@@ -37,7 +42,9 @@ namespace RatFunc
 
 variable (F : Type*) [Field F]
 
-/-! ### The place at infinity on F(t) -/
+/-!
+# The place at infinity on F(t)
+-/
 
 section InftyValuation
 

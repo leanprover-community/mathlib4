@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler's quadrilateral theorem
 
@@ -24,14 +27,13 @@ parallelogram law in point form, together with its converse.
 ## Main results
 
 * `dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq`:
-  **Euler's quadrilateral theorem**.
+  *Euler's quadrilateral theorem*.
 * `dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_iff_midpoint_eq`: the
   parallelogram law, together with its converse.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Euler%27s_quadrilateral_theorem
-
+* https://en.wikipedia.org/wiki/Euler%27s\_quadrilateral\_theorem
 -/
 
 public section

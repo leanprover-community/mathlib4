@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.ScottTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lawson topology
 
@@ -14,20 +17,20 @@ This file introduces the Lawson topology on a preorder.
 
 ## Main definitions
 
-- `Topology.lawson` - the Lawson topology is defined as the meet of the lower topology and the
+* `Topology.lawson` - the Lawson topology is defined as the meet of the lower topology and the
   Scott topology.
-- `Topology.IsLawson.lawsonBasis` - The complements of the upper closures of finite sets
+* `Topology.IsLawson.lawsonBasis` - The complements of the upper closures of finite sets
   intersected with Scott open sets.
 
 ## Main statements
 
-- `Topology.IsLawson.isTopologicalBasis` - `Topology.IsLawson.lawsonBasis` is a basis for
+* `Topology.IsLawson.isTopologicalBasis` - `Topology.IsLawson.lawsonBasis` is a basis for
   `Topology.IsLawson`
-- `Topology.lawsonOpen_iff_scottOpen_of_isUpperSet'` - An upper set is Lawson open if and only if it
+* `Topology.lawsonOpen_iff_scottOpen_of_isUpperSet'` - An upper set is Lawson open if and only if it
   is Scott open
-- `Topology.lawsonClosed_iff_dirSupClosed_of_isLowerSet` - A lower set is Lawson closed if and only
+* `Topology.lawsonClosed_iff_dirSupClosed_of_isLowerSet` - A lower set is Lawson closed if and only
   if it is closed under sups of directed sets
-- `Topology.IsLawson.t0Space` - The Lawson topology is T₀
+* `Topology.IsLawson.t0Space` - The Lawson topology is T₀
 
 ## Implementation notes
 
@@ -40,7 +43,7 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 
 ## References
 
-* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+* ‍\[Gierz et al, _A Compendium of Continuous Lattices_\]\[GierzEtAl1980\]
 
 ## Tags
 
@@ -55,7 +58,9 @@ variable {α : Type*}
 
 namespace Topology
 
-/-! ### Lawson topology -/
+/-!
+# Lawson topology
+-/
 
 section Lawson
 section Preorder
@@ -68,7 +73,8 @@ def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scot
 
 variable (α) [Preorder α] [TopologicalSpace α]
 
-/-- Predicate for an ordered topological space to be equipped with its Lawson topology.
+/--
+Predicate for an ordered topological space to be equipped with its Lawson topology.
 
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/

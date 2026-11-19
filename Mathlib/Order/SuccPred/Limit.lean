@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SuccPred.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successor and predecessor limits
 
@@ -27,25 +30,31 @@ namespace Order
 
 open Function Set OrderDual
 
-/-! ### Successor and predecessor limits -/
+/-!
+# Successor and predecessor limits
+-/
 
 section LT
 
 variable [LT α]
 
-/-- A successor pre-limit is a value that doesn't cover any other.
+/--
+A successor pre-limit is a value that doesn't cover any other.
 
 It's so named because in a successor order, a successor pre-limit can't be the successor of anything
 smaller.
 
-Use `IsSuccLimit` if you want to exclude the case of a minimal element. -/
+Use `IsSuccLimit` if you want to exclude the case of a minimal element.
+-/
 @[to_dual
-/-- A predecessor pre-limit is a value that isn't covered by any other.
+/--
+A predecessor pre-limit is a value that isn't covered by any other.
 
 It's so named because in a predecessor order, a predecessor pre-limit can't be the predecessor of
 anything smaller.
 
-Use `IsPredLimit` to exclude the case of a maximal element. -/]
+Use `IsPredLimit` to exclude the case of a maximal element.
+-/]
 def IsSuccPrelimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 
@@ -70,12 +79,14 @@ section Preorder
 
 variable [Preorder α]
 
-/-- A successor limit is a value that isn't minimal and doesn't cover any other.
+/--
+A successor limit is a value that isn't minimal and doesn't cover any other.
 
 It's so named because in a successor order, a successor limit can't be the successor of anything
 smaller.
 
-Use `IsSuccPrelimit` if you want to include the case of a minimal element. -/
+Use `IsSuccPrelimit` if you want to include the case of a minimal element.
+-/
 @[mk_iff]
 structure IsSuccLimit (a : α) : Prop where
   /-- Successor limits aren't minimal. -/
@@ -83,12 +94,14 @@ structure IsSuccLimit (a : α) : Prop where
   /-- Successor limits don't cover any other elements. -/
   protected isSuccPrelimit : IsSuccPrelimit a
 
-/-- A predecessor limit is a value that isn't maximal and isn't covered by any other.
+/--
+A predecessor limit is a value that isn't maximal and isn't covered by any other.
 
 It's so named because in a predecessor order, a predecessor limit can't be the predecessor of
 anything larger.
 
-Use `IsPredPrelimit` if you want to include the case of a maximal element. -/
+Use `IsPredPrelimit` if you want to include the case of a maximal element.
+-/
 @[mk_iff, to_dual existing]
 structure IsPredLimit (a : α) : Prop where
   /-- Predecessor limits aren't maximal. -/
@@ -541,7 +554,9 @@ end LinearOrder
 
 end Order
 
-/-! ### Induction principles -/
+/-!
+# Induction principles
+-/
 
 variable {motive : α → Sort*}
 

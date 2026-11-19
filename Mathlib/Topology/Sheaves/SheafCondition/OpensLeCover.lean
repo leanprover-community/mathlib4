@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Another version of the sheaf condition.
 
@@ -29,7 +32,8 @@ sheaf condition. This result will be used to further connect to other sheaf cond
 like `pairwise_intersections` and `equalizer_products`.
 
 ## References
-* This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
+
+* This is the definition Lurie uses in \[Spectral Algebraic Geometry\]\[LurieSAG\].
 -/
 
 @[expose] public section
@@ -75,7 +79,8 @@ def homToIndex (V : OpensLeCover U) : V.obj ⟶ U (index V) :=
 
 end OpensLeCover
 
-/-- `iSup U` as a cocone over the opens sets contained in some element of the cover.
+/--
+`iSup U` as a cocone over the opens sets contained in some element of the cover.
 
 (In fact this is a colimit cocone.)
 -/
@@ -87,7 +92,8 @@ end SheafCondition
 
 open SheafCondition
 
-/-- An equivalent formulation of the sheaf condition
+/--
+An equivalent formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
 `isSheaf_iff_isSheafOpensLeCover`).
 

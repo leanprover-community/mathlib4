@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # There are only `v`-many natural transformations between Ind-objects
 

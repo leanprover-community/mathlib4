@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.LinearAlgebra.Quotient.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion groups
 
@@ -222,7 +225,8 @@ variable (G) [CommMonoid G] [CommMonoid H]
 
 namespace CommMonoid
 
-/-- The torsion submonoid of a commutative monoid.
+/--
+The torsion submonoid of a commutative monoid.
 
 (Note that by `IsMulTorsion.group` torsion monoids are truthfully groups.)
 -/

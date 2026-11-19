@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `funProp` missing function from standard library
+# `funProp` missing function from standard library
 -/
 
 public meta section
@@ -71,8 +74,9 @@ For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.
 We need to know the total size of the product to be considered.
 
 For example for `xyz : X × Y × Z`
-  - `mkProdProj xyz 1 3` returns `xyz.snd.fst`.
-  - `mkProdProj xyz 1 2` returns `xyz.snd`.
+
+* `mkProdProj xyz 1 3` returns `xyz.snd.fst`.
+* `mkProdProj xyz 1 2` returns `xyz.snd`.
 -/
 def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   -- let X ← inferType x
@@ -103,15 +107,18 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
 
-/-- Eta expand `f` in only one variable and reduce in others.
+/--
+Eta expand `f` in only one variable and reduce in others.
 
 Examples:
+
 ```
   f                ==> fun x => f x
   fun x y => f x y ==> fun x => f x
   HAdd.hAdd y      ==> fun x => HAdd.hAdd y x
   HAdd.hAdd        ==> fun x => HAdd.hAdd x
-``` -/
+```
+-/
 def etaExpand1 (f : Expr) : MetaM Expr := do
   let f := f.eta
   if f.isLambda then
@@ -129,10 +136,12 @@ private def betaThroughLetAux (f : Expr) (args : List Expr) : Expr :=
   | .mdata _ b, args => betaThroughLetAux b args
   | f, args => mkAppN f args.toArray
 
-/-- Apply the given arguments to `f`, beta-reducing if `f` is a lambda expression. This variant
+/--
+Apply the given arguments to `f`, beta-reducing if `f` is a lambda expression. This variant
 does beta-reduction through let bindings without inlining them.
 
 Example
+
 ```
 beta' (fun x => let y := x * x; fun z => x + y + z) #[a,b]
 ==>
@@ -142,10 +151,12 @@ let y := a * a; a + y + b
 def betaThroughLet (f : Expr) (args : Array Expr) : Expr :=
   betaThroughLetAux f args.toList
 
-/-- Beta reduces head of an expression, `(fun x => e) a` ==> `e[x/a]`. This version applies
+/--
+Beta reduces head of an expression, `(fun x => e) a` ==> `e[x/a]`. This version applies
 arguments through let bindings without inlining them.
 
 Example
+
 ```
 headBeta' ((fun x => let y := x * x; fun z => x + y + z) a b)
 ==>

@@ -9,6 +9,9 @@ public import Mathlib.Topology.Instances.Rat
 public import Mathlib.Topology.UniformSpace.AbsoluteValue
 public import Mathlib.Topology.UniformSpace.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison of Cauchy reals and Bourbaki reals
 
@@ -31,6 +34,7 @@ Historical note: mathlib used to define real numbers in an intermediate way, usi
 of uniform spaces but extending multiplication in an ad-hoc way.
 
 TODO:
+
 * Upgrade this isomorphism to a topological ring isomorphism.
 * Do the same comparison for p-adic numbers
 
@@ -44,7 +48,7 @@ does use ℝ).
 
 ## References
 
-* [N. Bourbaki, *Topologie générale*][bourbaki1966]
+* ‍\[N. Bourbaki, _Topologie générale_\]\[bourbaki1966\]
 
 ## Tags
 

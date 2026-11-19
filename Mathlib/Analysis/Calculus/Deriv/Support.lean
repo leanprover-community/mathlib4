@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of the derivative of a function
 
@@ -28,7 +31,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {f : 𝕜 → E} {x : 𝕜}
 
-/-! ### Support of derivatives -/
+/-!
+# Support of derivatives
+-/
 
 
 section Support

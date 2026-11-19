@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushing a Haar measure by a linear map
 
@@ -19,7 +22,7 @@ it suffices to check that it is true ae along all translates of a given vector s
 See `MeasureTheory.ae_mem_of_ae_add_linearMap_mem`.
 
 TODO: this holds more generally in any locally compact group, see
-[Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
+‍\[Fremlin, _Measure Theory_ (volume 4, 443Q)\]\[fremlin\_vol4\]
 -/
 
 public section

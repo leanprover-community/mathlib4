@@ -16,6 +16,9 @@ import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Empirical measures and the Krylov–Bogolyubov theorem
 
@@ -26,19 +29,19 @@ spaces.
 
 ## Main definitions
 
-- `empiricalMeasure`: an empirical measure for `n` iterations of a map `f` starting at a point `x`.
+* `empiricalMeasure`: an empirical measure for `n` iterations of a map `f` starting at a point `x`.
 
 ## Main results
 
-- `exists_measurePreserving_probabilityMeasure` gives an invariant probability measure for
+* `exists_measurePreserving_probabilityMeasure` gives an invariant probability measure for
   a continuous map on a compact Hausdorff space. This is the classical Krylov-Bogolyubov theorem.
-- `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` gives an invariant
+* `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` gives an invariant
   probability measure defined over a (not necessarily compact) ambient space, supported on a
   compact, forward invariant subset.
 
 ## TODO
 
-- When the `Measurable` requirement of `MeasurePreserving` is relaxed,
+* When the `Measurable` requirement of `MeasurePreserving` is relaxed,
   `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` can be generalized.
 -/
 

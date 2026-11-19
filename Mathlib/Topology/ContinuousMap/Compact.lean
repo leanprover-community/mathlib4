@@ -10,6 +10,9 @@ public import Mathlib.Topology.Sets.Compacts
 
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous functions on a compact space
 
@@ -463,11 +466,13 @@ namespace ContinuousMap
 
 section LocalNormalConvergence
 
-/-! ### Local normal convergence
+/-!
+# Local normal convergence
 
 A sum of continuous functions (on a locally compact space) is "locally normally convergent" if the
 sum of its sup-norms on any compact subset is summable. This implies convergence in the topology
-of `C(X, E)` (i.e. locally uniform convergence). -/
+of `C(X, E)` (i.e. locally uniform convergence).
+-/
 
 open TopologicalSpace
 
@@ -489,12 +494,13 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
 end LocalNormalConvergence
 
 /-!
-### Star structures
+# Star structures
 
 In this section, if `β` is a normed ⋆-group, then so is the space of
 continuous functions from `α` to `β`, by using the star operation pointwise.
 
-Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C⋆-ring. -/
+Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C⋆-ring.
+-/
 
 
 section NormedSpace

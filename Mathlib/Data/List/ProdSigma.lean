@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lists in product and sigma types
 
@@ -25,7 +28,9 @@ variable {α β : Type*}
 
 namespace List
 
-/-! ### product -/
+/-!
+# product
+-/
 
 
 @[simp]
@@ -55,7 +60,9 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
     simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
       Nat.add_comm]
 
-/-! ### sigma -/
+/-!
+# sigma
+-/
 
 
 variable {σ : α → Type*}
@@ -80,7 +87,9 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
   simp [List.sigma, mem_flatMap, mem_map, exists_and_left, and_left_comm,
     exists_eq_left, exists_eq_right]
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inversion in an affine space
 
@@ -50,7 +53,7 @@ theorem inversion_def :
   rfl
 
 /-!
-### Basic properties
+# Basic properties
 
 In this section we prove that `EuclideanGeometry.inversion c R` is involutive and preserves the
 sphere `Metric.sphere c R`. We also prove that the distance to the center of the image of `x` under
@@ -144,7 +147,7 @@ theorem center_eq_inversion' : c = inversion c R x ↔ x = c ∨ R = 0 :=
   eq_comm.trans inversion_eq_center'
 
 /-!
-### Similarity of triangles
+# Similarity of triangles
 
 If inversion with center `O` sends `A` to `A'` and `B` to `B'`, then the triangle `OB'A'` is similar
 to the triangle `OAB` with coefficient `R ^ 2 / (|OA|*|OB|)` and the triangle `OA'B` is similar to
@@ -169,7 +172,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   field [dist_ne_zero.2 hx]
 
 /-!
-### Ptolemy's inequality
+# Ptolemy's inequality
 -/
 
 include V in
@@ -200,7 +203,7 @@ end EuclideanGeometry
 open EuclideanGeometry
 
 /-!
-### Continuity of inversion
+# Continuity of inversion
 -/
 
 protected theorem Filter.Tendsto.inversion {α : Type*} {x c : P} {R : ℝ} {l : Filter α}

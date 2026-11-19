@@ -14,10 +14,13 @@ public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.Probability.Kernel.SetIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ionescu-Tulcea theorem
 
-This file proves the *Ionescu-Tulcea theorem*. The idea of the statement is as follows:
+This file proves the _Ionescu-Tulcea theorem_. The idea of the statement is as follows:
 consider a family of kernels `κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))`.
 One can interpret `κ n` as a kernel which takes as an input the trajectory of a point started in
 `X 0` and moving `X 0 → X 1 → X 2 → ... → X n` and which outputs the distribution of the next
@@ -61,7 +64,6 @@ expectation.
 * `condDistrib_trajMeasure`: a regular conditional probability distribution of the point at time
   `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
 
-
 ## Implementation notes
 
 The kernel `traj κ a` is built using the Carathéodory extension theorem. First we build a projective
@@ -73,9 +75,9 @@ family of measures using `inducedFamily` and `partialTraj κ a`. Then we build a
 ## References
 
 We follow the proof of Theorem 8.24 in
-[O. Kallenberg, *Foundations of Modern Probability*][kallenberg2021]. For a more detailed proof
+‍\[O. Kallenberg, _Foundations of Modern Probability_\]\[kallenberg2021\]. For a more detailed proof
 in the case of constant kernels (i.e. measures),
-see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure].
+see Proposition 10.6.1 in \[D. L. Cohn, _Measure Theory_\]\[cohn2013measure\].
 
 ## Tags
 
@@ -141,7 +143,9 @@ section ProjectiveFamily
 
 namespace MeasureTheory
 
-/-! ### Projective families indexed by `Finset ℕ` -/
+/-!
+# Projective families indexed by `Finset ℕ`
+-/
 
 variable {μ : (n : ℕ) → Measure (Π i : Iic n, X i)}
 
@@ -216,7 +220,9 @@ namespace ProbabilityTheory.Kernel
 
 section definition
 
-/-! ### Definition and basic properties of `traj` -/
+/-!
+# Definition and basic properties of `traj`
+-/
 
 variable (κ)
 
@@ -337,13 +343,15 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   rw [mem_coe, mem_Iic] at hi
   lia
 
-/-- This is the key theorem to prove the existence of the `traj`:
+/--
+This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
 converges to `0`.
 
 This implies the `σ`-additivity of `trajContent`
 (see `addContent_iUnion_eq_sum_of_tendsto_zero`),
-which allows to extend it to the `σ`-algebra by Carathéodory's theorem. -/
+which allows to extend it to the `σ`-algebra by Carathéodory's theorem.
+-/
 theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     (A_mem : ∀ n, A n ∈ measurableCylinders X) (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅)
     {p : ℕ} (x₀ : Π i : Iic p, X i) :
@@ -508,14 +516,16 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     simpa [measure_compl mt (measure_ne_top _ _)] using Measurable.const_sub ht _
   · simpa [measure_iUnion disf mf] using Measurable.tsum hf
 
-/-- *Ionescu-Tulcea Theorem* : Given a family of kernels `κ n` taking variables in `Iic n` with
+/--
+_Ionescu-Tulcea Theorem_ : Given a family of kernels `κ n` taking variables in `Iic n` with
 value in `X (n + 1)`, the kernel `traj κ a` takes a variable `x` depending on the
 variables `i ≤ a` and associates to it a kernel on trajectories depending on all variables,
 where the entries with index `≤ a` are those of `x`, and then one follows iteratively the
 kernels `κ a`, then `κ (a + 1)`, and so on.
 
 The fact that such a kernel exists on infinite trajectories is not obvious, and is the content of
-the Ionescu-Tulcea theorem. -/
+the Ionescu-Tulcea theorem.
+-/
 noncomputable def traj (a : ℕ) : Kernel (Π i : Iic a, X i) (Π n, X n) where
   toFun := trajFun κ a
   measurable' := measurable_trajFun a
@@ -608,7 +618,9 @@ end basic
 
 section integral
 
-/-! ### Integrals and `traj` -/
+/-!
+# Integrals and `traj`
+-/
 
 theorem lintegral_traj₀ {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
     (mf : AEMeasurable f (traj κ a x₀)) :

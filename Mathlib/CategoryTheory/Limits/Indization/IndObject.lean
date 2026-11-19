@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ind-objects
 
@@ -38,7 +41,8 @@ as a property of presheaves `C ⥤ Type max v w`. This comes with significant te
 The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` instead.
 
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Chapter 6
 -/
 
 @[expose] public section
@@ -179,9 +183,11 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
   exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, _,
     (Functor.Final.isColimitWhiskerEquiv _ _).symm (denseAtYoneda A)⟩
 
-/-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
+/--
+The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.
-Theorem 6.1.5 of [Kashiwara2006] -/
+Theorem 6.1.5 of \[Kashiwara2006\]
+-/
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,

@@ -9,10 +9,13 @@ public import Mathlib.Analysis.Complex.Harmonic.Analytic
 public import Mathlib.Analysis.Complex.Poisson
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson Integral Formula
 
-This file establishes several versions of the **Poisson Integral Formula** for harmonic functions on
+This file establishes several versions of the *Poisson Integral Formula* for harmonic functions on
 arbitrary disks in the complex plane, formulated with the real part of the Herglotz–Riesz kernel of
 integration and with the Poisson kernel, respectively.
 

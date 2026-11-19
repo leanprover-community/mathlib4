@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Positivity
 
 import Mathlib.Analysis.Analytic.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse of analytic functions
 
@@ -28,7 +31,6 @@ inverse of an analytic open partial homeomorphism is analytic.
 * `p.leftInv_eq_rightInv`: the two inverses coincide.
 * `p.radius_rightInv_pos_of_radius_pos`: if a power series has a positive radius of convergence,
   then so does its inverse.
-
 * `OpenPartialHomeomorph.hasFPowerSeriesAt_symm` shows that, if an open partial homeomorph has a
   power series `p` at a point, with invertible linear part, then the inverse also has a power series
   at the image point, given by `p.leftInv`.
@@ -47,10 +49,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 namespace FormalMultilinearSeries
 
-/-! ### The left inverse of a formal multilinear series -/
+/-!
+# The left inverse of a formal multilinear series
+-/
 
 
-/-- The left inverse of a formal multilinear series, where the `n`-th term is defined inductively
+/--
+The left inverse of a formal multilinear series, where the `n`-th term is defined inductively
 in terms of the previous ones to make sure that `(leftInv p i) ∘ p = id`. For this, the linear term
 `p₁` in `p` should be invertible. In the definition, `i` is a linear isomorphism that should
 coincide with `p₁`, so that one can use its inverse in the construction. The definition does not
@@ -150,10 +155,13 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
       applyComposition_ones, C, D, -Set.toFinset_ofPred, -Finset.union_singleton]
 
-/-! ### The right inverse of a formal multilinear series -/
+/-!
+# The right inverse of a formal multilinear series
+-/
 
 
-/-- The right inverse of a formal multilinear series, where the `n`-th term is defined inductively
+/--
+The right inverse of a formal multilinear series, where the `n`-th term is defined inductively
 in terms of the previous ones to make sure that `p ∘ (rightInv p i) = id`. For this, the linear
 term `p₁` in `p` should be invertible. In the definition, `i` is a linear isomorphism that should
 coincide with `p₁`, so that one can use its inverse in the construction. The definition does not
@@ -277,7 +285,9 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_ofPred]
 
-/-! ### Coincidence of the left and the right inverse -/
+/-!
+# Coincidence of the left and the right inverse
+-/
 
 
 theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
@@ -291,13 +301,11 @@ theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     _ = rightInv p i x := by simp [id_comp' _ _ 0]
 
 /-!
-### Convergence of the inverse of a power series
+# Convergence of the inverse of a power series
 
 Assume that `p` is a convergent multilinear series, and let `q` be its (left or right) inverse.
 Using the left-inverse formula gives
-$$
-q_n = - (p_1)^{-n} \sum_{k=0}^{n-1} \sum_{i_1 + \dotsc + i_k = n} q_k (p_{i_1}, \dotsc, p_{i_k}).
-$$
+$$`  q_n = - (p_1)^{-n} \sum_{k=0}^{n-1} \sum_{i_1 + \dotsc + i_k = n} q_k (p_{i_1}, \dotsc, p_{i_k}).  `
 Assume for simplicity that we are in dimension `1` and `p₁ = 1`. In the formula for `qₙ`, the term
 `q_{n-1}` appears with a multiplicity of `n-1` (choosing the index `i_j` for which `i_j = 2` while
 all the other indices are equal to `1`), which indicates that `qₙ` might grow like `n!`. This is
@@ -305,31 +313,18 @@ bad for summability properties.
 
 It turns out that the right-inverse formula is better behaved, and should instead be used for this
 kind of estimate. It reads
-$$
-q_n = - (p_1)^{-1} \sum_{k=2}^n \sum_{i_1 + \dotsc + i_k = n} p_k (q_{i_1}, \dotsc, q_{i_k}).
-$$
+$$`  q_n = - (p_1)^{-1} \sum_{k=2}^n \sum_{i_1 + \dotsc + i_k = n} p_k (q_{i_1}, \dotsc, q_{i_k}).  `
 Here, `q_{n-1}` can only appear in the term with `k = 2`, and it only appears twice, so there is
 hope this formula can lead to an at most geometric behavior.
 
 Let `Qₙ = ‖qₙ‖`. Bounding `‖pₖ‖` with `C r^k` gives an inequality
-$$
-Q_n ≤ C' \sum_{k=2}^n r^k \sum_{i_1 + \dotsc + i_k = n} Q_{i_1} \dotsm Q_{i_k}.
-$$
+$$`  Q_n ≤ C' \sum_{k=2}^n r^k \sum_{i_1 + \dotsc + i_k = n} Q_{i_1} \dotsm Q_{i_k}.  `
 
 This formula is not enough to prove by naive induction on `n` a bound of the form `Qₙ ≤ D R^n`.
 However, assuming that the inequality above were an equality, one could get a formula for the
 generating series of the `Qₙ`:
 
-$$
-\begin{align}
-Q(z) & := \sum Q_n z^n = Q_1 z + C' \sum_{2 \leq k \leq n} \sum_{i_1 + \dotsc + i_k = n}
-  (r z^{i_1} Q_{i_1}) \dotsm (r z^{i_k} Q_{i_k})
-\\ & = Q_1 z + C' \sum_{k = 2}^\infty (\sum_{i_1 \geq 1} r z^{i_1} Q_{i_1})
-  \dotsm (\sum_{i_k \geq 1} r z^{i_k} Q_{i_k})
-\\ & = Q_1 z + C' \sum_{k = 2}^\infty (r Q(z))^k
-= Q_1 z + C' (r Q(z))^2 / (1 - r Q(z)).
-\end{align}
-$$
+$$`  \begin{align} Q(z) & := \sum Q_n z^n = Q_1 z + C' \sum_{2 \leq k \leq n} \sum_{i_1 + \dotsc + i_k = n} (r z^{i_1} Q_{i_1}) \dotsm (r z^{i_k} Q_{i_k}) \\ & = Q_1 z + C' \sum_{k = 2}^\infty (\sum_{i_1 \geq 1} r z^{i_1} Q_{i_1}) \dotsm (\sum_{i_k \geq 1} r z^{i_k} Q_{i_k}) \\ & = Q_1 z + C' \sum_{k = 2}^\infty (r Q(z))^k = Q_1 z + C' (r Q(z))^2 / (1 - r Q(z)). \end{align}  `
 
 One can solve this formula explicitly. The solution is analytic in a neighborhood of `0` in `ℂ`,
 hence its coefficients grow at most geometrically (by a contour integral argument), and therefore
@@ -340,18 +335,16 @@ analytic function. Another option would be to compute explicitly its terms (with
 coefficients) to obtain an explicit geometric bound, but this would be very painful.
 
 Instead, we will use the above intuition, but in a slightly different form, with finite sums and an
-induction. I learnt this trick in [poeschel2017siegelsternberg]. Let
-$S_n = \sum_{k=1}^n Q_k a^k$ (where `a` is a positive real parameter to be chosen suitably small).
+induction. I learnt this trick in \[poeschel2017siegelsternberg\]. Let
+$`S_n = \sum_{k=1}^n Q_k a^k` (where `a` is a positive real parameter to be chosen suitably small).
 The above computation but with finite sums shows that
 
-$$
-S_n \leq Q_1 a + C' \sum_{k=2}^n (r S_{n-1})^k.
-$$
+$$`  S_n \leq Q_1 a + C' \sum_{k=2}^n (r S_{n-1})^k.  `
 
-In particular, $S_n \leq Q_1 a + C' (r S_{n-1})^2 / (1- r S_{n-1})$.
-Assume that $S_{n-1} \leq K a$, where `K > Q₁` is fixed and `a` is small enough so that
+In particular, $`S_n \leq Q_1 a + C' (r S_{n-1})^2 / (1- r S_{n-1})`.
+Assume that $`S_{n-1} \leq K a`, where `K > Q₁` is fixed and `a` is small enough so that
 `r K a ≤ 1/2` (to control the denominator). Then this equation gives a bound
-$S_n \leq Q_1 a + 2 C' r^2 K^2 a^2$.
+$`S_n \leq Q_1 a + 2 C' r^2 K^2 a^2`.
 If `a` is small enough, this is bounded by `K a` as the second term is quadratic in `a`, and
 therefore negligible.
 
@@ -560,7 +553,7 @@ theorem radius_leftInv_pos_of_radius_pos
 end FormalMultilinearSeries
 
 /-!
-### The inverse of an analytic open partial homeomorphism is analytic
+# The inverse of an analytic open partial homeomorphism is analytic
 -/
 
 open FormalMultilinearSeries

@@ -10,42 +10,52 @@ public import Mathlib.RingTheory.Algebraic.Integral
 
 import Mathlib.Algebra.CharP.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The field structure of rational functions
 
 ## Main definitions
+
 Working with rational functions as polynomials:
-- `RatFunc.instField` provides a field structure
+
+* `RatFunc.instField` provides a field structure
 
 You can use `IsFractionRing` API to treat `RatFunc` as the field of fractions of polynomials:
+
 * `algebraMap K[X] K⟮X⟯` maps polynomials to rational functions
 * `IsFractionRing.algEquiv` maps other fields of fractions of `K[X]` to `K⟮X⟯`.
 
 In particular:
+
 * `FractionRing.algEquiv K[X] K⟮X⟯` maps the generic field of
   fraction construction to `K⟮X⟯`. Combine this with `AlgEquiv.restrictScalars` to change
   the `FractionRing K[X] ≃ₐ[K[X]] K⟮X⟯` to `FractionRing K[X] ≃ₐ[K] K⟮X⟯`.
 
 Working with rational functions as fractions:
-- `RatFunc.num` and `RatFunc.denom` give the numerator and denominator.
+
+* `RatFunc.num` and `RatFunc.denom` give the numerator and denominator.
   These values are chosen to be coprime and such that `RatFunc.denom` is monic.
 
 Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
 as the homomorphism retains the non-zero-divisor property:
-- `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
+
+* `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
   a `K⟮X⟯ →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
-- `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
+* `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
   where `[CommRing K] [Field L]`
-- `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`,
+* `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`,
   where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
 
 This is satisfied by injective homs.
 
 We also have lifting homomorphisms of polynomials to other polynomials,
 with the same condition on retaining the non-zero-divisor property across the map:
-- `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
-- `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
-- `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
+
+* `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
+* `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
+* `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
   `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 -/
 
@@ -213,7 +223,8 @@ instance : Inhabited K⟮X⟯ :=
 instance instNontrivial [Nontrivial K] : Nontrivial K⟮X⟯ :=
   ofFractionRing_injective.nontrivial
 
-/-- `K⟮X⟯` is isomorphic to the field of fractions of `K[X]`, as rings.
+/--
+`K⟮X⟯` is isomorphic to the field of fractions of `K[X]`, as rings.
 
 This is an auxiliary definition; `simp`-normal form is `IsLocalization.algEquiv`.
 -/
@@ -253,7 +264,8 @@ local macro "smul_tac" : tactic => `(tactic|
 section CommRing
 
 variable (K) [CommRing K]
-/-- `K⟮X⟯` is a commutative monoid.
+/--
+`K⟮X⟯` is a commutative monoid.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
@@ -265,7 +277,8 @@ def instCommMonoid : CommMonoid K⟮X⟯ where
   mul_one := by frac_tac
   npow := npowRec
 
-/-- `K⟮X⟯` is an additive commutative group.
+/--
+`K⟮X⟯` is an additive commutative group.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
@@ -475,7 +488,9 @@ instance instField [IsDomain K] : Field K⟮X⟯ where
 
 section IsFractionRing
 
-/-! ### `RatFunc` as field of fractions of `Polynomial` -/
+/-!
+# `RatFunc` as field of fractions of `Polynomial`
+-/
 
 section IsDomain
 
@@ -690,7 +705,8 @@ theorem liftOn'_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : �
   rw [RatFunc.liftOn'_def, liftOn_div _ _ _ f0]
   apply liftOn_condition_of_liftOn'_condition H
 
-/-- Induction principle for `K⟮X⟯`: if `f p q : P (p / q)` for all `p q : K[X]`,
+/--
+Induction principle for `K⟮X⟯`: if `f p q : P (p / q)` for all `p q : K[X]`,
 then `P` holds on all elements of `K⟮X⟯`.
 
 See also `induction_on'`, which is a recursion principle defined in terms of `RatFunc.mk`.
@@ -742,9 +758,11 @@ As `R⟮X⟯` is a one-field-struct, we need to specialize the following instanc
 
 variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
 
-/-- `FractionRing.liftAlgebra` specialized to `R⟮X⟯`.
+/--
+`FractionRing.liftAlgebra` specialized to `R⟮X⟯`.
 
-This is a scoped instance because it creates a diamond when `L = R⟮X⟯`. -/
+This is a scoped instance because it creates a diamond when `L = R⟮X⟯`.
+-/
 scoped instance liftAlgebra : Algebra R⟮X⟯ L :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
 
@@ -823,7 +841,9 @@ end CommRing
 
 section NumDenom
 
-/-! ### Numerator and denominator -/
+/-!
+# Numerator and denominator
+-/
 
 open GCDMonoid Polynomial
 

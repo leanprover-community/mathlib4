@@ -9,23 +9,26 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Star.BigOperators
 public import Mathlib.Algebra.Star.StarProjection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star-orthogonality
 
 This file develops the basic API for `IsStarOrtho`, the predicate that two elements `p` and `q`
-of a ⋆-ring are *star-orthogonal*, i.e., `p * star q = 0` and `star q * p = 0`. This is denoted
+of a ⋆-ring are _star-orthogonal_, i.e., `p * star q = 0` and `star q * p = 0`. This is denoted
 `p ⋆⟂ q` with the notation available in the `StarRing` namespace. The definition is in
 `Mathlib/Algebra/Star/Basic.lean`.
 
 ## Main declarations
 
-+ `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`: self-adjoint elements are star-orthogonal if and
+* `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`: self-adjoint elements are star-orthogonal if and
   only if their product is zero.
-+ `IsStarOrtho.star_add_mul_add`: if `p ⋆⟂ q`, then
+* `IsStarOrtho.star_add_mul_add`: if `p ⋆⟂ q`, then
   `star (p + q) * (p + q) = star p * p + star q * q`.
-+ `IsStarProjection.add_iff_isStarOrtho`: the sum of star projections is a star projection if and
+* `IsStarProjection.add_iff_isStarOrtho`: the sum of star projections is a star projection if and
   only if they are star-orthogonal.
-+ `IsStarProjection.sum`: a finite sum of pairwise star-orthogonal star projections is a star
+* `IsStarProjection.sum`: a finite sum of pairwise star-orthogonal star projections is a star
   projection.
 -/
 
@@ -122,11 +125,13 @@ lemma sum_right {ι : Type*} {s : Finset ι} {f : ι → R} (h : ∀ i ∈ s, p 
     p ⋆⟂ (∑ i ∈ s, f i) :=
   (sum_left fun i hi ↦ (h i hi).symm).symm
 
-/-! ### Multiplication
+/-!
+# Multiplication
 
 The properties of star-orthogonality involving multiplication below could be proven manually,
 and sometimes with weaker hypotheses, but these are provided for convenience because they come up
-in practice. -/
+in practice.
+-/
 
 /-- A version of `IsStarOrtho.mul_left` with slightly weaker hypotheses. -/
 lemma mul_left' {p₁ p₂ q : R} (h₁ : star q * p₁ = 0) (h₂ : p₂ * star q = 0) :

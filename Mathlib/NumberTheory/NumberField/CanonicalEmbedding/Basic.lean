@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical embedding of a number field
 
@@ -22,11 +25,9 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 * `NumberField.canonicalEmbedding`: the ring homomorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
   sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
-
 * `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
   image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
   radius is finite.
-
 * `NumberField.mixedEmbedding`: the ring homomorphism from `K` to the mixed space
   `K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
   where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real

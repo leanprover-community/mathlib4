@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orders
 
@@ -29,7 +32,7 @@ variable {α : Type*}
 section LinearOrder
 
 /-!
-### Definition of `LinearOrder` and lemmas about types with a linear order
+# Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
 /-- Default definition of `max`. -/
@@ -40,7 +43,8 @@ def maxDefault [LE α] [DecidableLE α] (a b : α) :=
 def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
-/-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
+/--
+This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
 
 1. seeing if `rfl` works
@@ -256,9 +260,11 @@ instance : Std.LawfulBCmp (compare (α := α)) where
 
 end Ord
 
-/-- The category of linear orders.
+/--
+The category of linear orders.
 
-This will get reused to define `OrderType`. -/
+This will get reused to define `OrderType`.
+-/
 structure LinOrd where
   /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
   of ::

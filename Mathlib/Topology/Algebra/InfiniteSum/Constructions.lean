@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Algebra.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological sums and functorial constructions
 
@@ -26,7 +29,9 @@ open scoped Topology
 variable {α β γ : Type*} {L : SummationFilter β}
 
 
-/-! ## Product, Sigma and Pi types -/
+/-!
+# Product, Sigma and Pi types
+-/
 
 section ProdDomain
 
@@ -291,7 +296,9 @@ theorem Pi.tprod_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} 
 end Pi
 
 
-/-! ## Multiplicative opposite -/
+/-!
+# Multiplicative opposite
+-/
 
 section MulOpposite
 
@@ -336,7 +343,9 @@ theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} : ∑'[L] x, unop (f x) 
 
 end MulOpposite
 
-/-! ## Interaction with the star -/
+/-!
+# Interaction with the star
+-/
 
 section ContinuousStar
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on `Subsemigroup`s
 
@@ -71,7 +74,7 @@ assert_not_exists MonoidWithZero
 variable {M N P σ : Type*}
 
 /-!
-### Conversion to/from `Additive`/`Multiplicative`
+# Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
@@ -157,7 +160,7 @@ namespace Subsemigroup
 open Set
 
 /-!
-### `comap` and `map`
+# `comap` and `map`
 -/
 
 
@@ -538,7 +541,9 @@ open Subsemigroup
 
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
-/-- The range of a semigroup homomorphism is a subsemigroup. See Note [range copy pattern]. -/
+/--
+The range of a semigroup homomorphism is a subsemigroup. See Note \[range copy pattern\].
+-/
 @[to_additive /-- The range of an `AddHom` is an `AddSubsemigroup`. -/]
 def srange (f : M →ₙ* N) : Subsemigroup N :=
   ((⊤ : Subsemigroup M).map f).copy (Set.range f) Set.image_univ.symm
@@ -711,10 +716,12 @@ def subsemigroupCongr (h : S = T) : S ≃* T :=
   { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.srange` can be unprimed.
-/-- A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative
+/--
+A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.srange`.
 
-This is a bidirectional version of `MulHom.srangeRestrict`. -/
+This is a bidirectional version of `MulHom.srangeRestrict`.
+-/
 @[to_additive (attr := simps +simpRhs)
       /-- An additive semigroup homomorphism `f : M →+ N` with a left-inverse
       `g : N → M` defines an additive equivalence between `M` and `f.srange`.

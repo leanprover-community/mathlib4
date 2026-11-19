@@ -12,7 +12,11 @@ public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.RCLike.Lemmas
 
-/-! # Instances of the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Instances of the continuous functional calculus
 
 ## Main theorems
 
@@ -40,7 +44,7 @@ local notation "σₙ" => quasispectrum
 local notation "σ" => spectrum
 
 /-!
-### Pull back a non-unital instance from a unital one on the unitization
+# Pull back a non-unital instance from a unital one on the unitization
 -/
 
 section RCLike
@@ -56,6 +60,8 @@ variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) 
 
 open scoped ContinuousMapZero
 
+
+set_option doc.verso false
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
@@ -78,6 +84,8 @@ noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
 
+
+set_option doc.verso true
 lemma cfcₙAux_id : cfcₙAux hp₁ a ha (.id _) = a := cfcHom_id (hp₁.mpr ha)
 
 lemma continuous_cfcₙAux : Continuous (cfcₙAux hp₁ a ha) :=
@@ -179,7 +187,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
 end RCLike
 
 /-!
-### Continuous functional calculus for selfadjoint elements
+# Continuous functional calculus for selfadjoint elements
 -/
 
 section SelfAdjointNonUnital
@@ -240,7 +248,7 @@ instance IsSelfAdjoint.instContinuousFunctionalCalculus :
 end SelfAdjointUnital
 
 /-!
-### Continuous functional calculus for nonnegative elements
+# Continuous functional calculus for nonnegative elements
 -/
 
 section Nonneg
@@ -321,7 +329,7 @@ theorem IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
 end Nonneg
 
 /-!
-### The restriction of a continuous functional calculus is equal to the original one
+# The restriction of a continuous functional calculus is equal to the original one
 -/
 section RealEqComplex
 

@@ -11,8 +11,11 @@ public meta import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Linarith.Frontend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## The `bound` tactic
+# The `bound` tactic
 
 `bound` is an `aesop` wrapper that proves inequalities by straightforward recursion on structure,
 assuming that intermediate terms are nonnegative or positive as needed.  It also has some support
@@ -21,7 +24,7 @@ as the bound or whether to assume a power is less than or greater than one.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
-  `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
+`0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
 by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 
@@ -30,7 +33,7 @@ them via `have` before calling `bound`.
 
 See `MathlibTest/Bound/bound.lean` for tests.
 
-### Calc usage
+## Calc usage
 
 Since `bound` requires the inequality proof to exactly match the structure of the expression, it is
 often useful to iterate between `bound` and `rw / simp` using `calc`.  Here is an example:
@@ -46,7 +49,7 @@ lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
     _ ≥ 2 * abs z := by bound
 ```
 
-### Aesop rules
+## Aesop rules
 
 `bound` uses threes types of aesop rules: `apply`, `forward`, and closing `tactic`s.  To register a
 lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically converted into either a
@@ -67,7 +70,7 @@ inequalities.  Another example is `HasFPowerSeriesOnBall.r_pos`, so that `bound`
 power series present in the context have positive radius of convergence.  Custom `@[bound_forward]`
 rules that similarly expose inequalities inside structures are often useful.
 
-### Guessing apply rules
+## Guessing apply rules
 
 There are several cases where there are two standard ways to recurse down an inequality, and it is
 not obvious which is correct without more information.  For example, `a ≤ min b c` is registered as
@@ -79,10 +82,11 @@ it as `@[bound]` will add a +100 penalty to the score, so that it will be used o
 Aesop will then try both ways by splitting on the resulting `∨` hypothesis.
 
 Currently the two types of guessing rules are
+
 1. `min` and `max` rules, for both `≤` and `<`
 2. `pow` and `rpow` monotonicity rules which branch on `1 ≤ a` or `a ≤ 1`.
 
-### Closing tactics
+## Closing tactics
 
 We close numerical goals with `norm_num` and `linarith`.
 -/
@@ -95,11 +99,11 @@ open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 namespace Mathlib.Tactic.Bound
 
 /-!
-### `.mpr` lemmas of iff statements for use as Aesop apply rules
+# `.mpr` lemmas of iff statements for use as Aesop apply rules
 
 Once Aesop can do general terms directly, we can remove these:
 
-  https://github.com/leanprover-community/aesop/issues/107
+https://github.com/leanprover-community/aesop/issues/107
 -/
 
 lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRing R] [Nontrivial R]
@@ -112,7 +116,7 @@ lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder 
   Nat.one_le_cast.mpr
 
 /-!
-### Apply rules for `bound`
+# Apply rules for `bound`
 
 Most `bound` lemmas are registered in-place where the lemma is declared. These are only the lemmas
 that do not require additional imports within this file.
@@ -145,14 +149,14 @@ attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_l
 attribute [bound] zero_le_one zero_lt_one zero_le_two zero_lt_two
 
 /-!
-### Forward rules for `bound`
+# Forward rules for `bound`
 -/
 
 -- Bound applies `le_of_lt` to all hypotheses
 attribute [bound_forward] le_of_lt
 
 /-!
-### Guessing rules: when we don't know how to recurse
+# Guessing rules: when we don't know how to recurse
 -/
 
 section Guessing
@@ -177,7 +181,7 @@ attribute [bound]
 end Guessing
 
 /-!
-### Closing tactics
+# Closing tactics
 
 TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
@@ -199,7 +203,7 @@ meta def boundLinarith : Aesop.RuleTac :=
 attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 
 /-!
-### `bound` tactic implementation
+# `bound` tactic implementation
 -/
 
 /-- Aesop configuration for `bound` -/
@@ -210,7 +214,8 @@ def boundConfig : Aesop.Options := {
 
 end Mathlib.Tactic.Bound
 
-/-- `bound` tactic for proving inequalities via straightforward recursion on expression structure.
+/--
+`bound` tactic for proving inequalities via straightforward recursion on expression structure.
 
 An example use case is
 
@@ -227,6 +232,7 @@ lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
 ```
 
 `bound` is built on top of `aesop`, and uses
+
 1. Apply lemmas registered via the `@[bound]` attribute
 2. Forward lemmas registered via the `@[bound_forward]` attribute
 3. Local hypotheses from the context
@@ -235,11 +241,12 @@ lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
-  `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
+`0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
 by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
-faster since it is more specialized (not built atop `aesop`). -/
+faster since it is more specialized (not built atop `aesop`).
+-/
 syntax "bound" (" [" term,* "]")? : tactic
 
 -- Plain `bound` elaboration, with no hypotheses

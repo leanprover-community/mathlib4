@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set neighborhoods of intervals
 
@@ -30,7 +33,7 @@ section OrderClosedTopology
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
-### Formulae for `𝓝ˢ` of intervals
+# Formulae for `𝓝ˢ` of intervals
 -/
 
 @[simp] theorem nhdsSet_Ioi : 𝓝ˢ (Ioi a) = 𝓟 (Ioi a) := isOpen_Ioi.nhdsSet_eq
@@ -54,7 +57,7 @@ theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ �
   · rw [← insert_left_Ioc h, nhdsSet_insert, nhdsSet_Ioc hlt, sup_assoc]
 
 /-!
-### Lemmas about `Ixi _ ∈ 𝓝ˢ (Set.Ici _)`
+# Lemmas about `Ixi _ ∈ 𝓝ˢ (Set.Ici _)`
 -/
 
 @[simp]
@@ -67,7 +70,7 @@ theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
   mem_of_superset (Ioi_mem_nhdsSet_Ici h) Ioi_subset_Ici_self
 
 /-!
-### Lemmas about `Iix _ ∈ 𝓝ˢ (Set.Iic _)`
+# Lemmas about `Iix _ ∈ 𝓝ˢ (Set.Iic _)`
 -/
 
 theorem Iio_mem_nhdsSet_Iic_iff : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b :=
@@ -79,7 +82,7 @@ theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
   Ici_mem_nhdsSet_Ici (α := αᵒᵈ) h
 
 /-!
-### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Icc _ _)`
+# Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Icc _ _)`
 -/
 
 theorem Ioi_mem_nhdsSet_Icc (h : a < b) : Ioi a ∈ 𝓝ˢ (Icc b c) :=
@@ -107,7 +110,7 @@ theorem Icc_mem_nhdsSet_Icc (h : a < b) (h' : c < d) : Icc a d ∈ 𝓝ˢ (Icc b
   inter_mem (Ici_mem_nhdsSet_Icc h) (Iic_mem_nhdsSet_Icc h')
 
 /-!
-### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ico _ _)`
+# Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ico _ _)`
 -/
 
 theorem Ici_mem_nhdsSet_Ico (h : a < b) : Ici a ∈ 𝓝ˢ (Ico b c) :=
@@ -135,7 +138,7 @@ theorem Ico_mem_nhdsSet_Ico (h : a < b) (h' : c ≤ d) : Ico a d ∈ 𝓝ˢ (Ico
   inter_mem (Ici_mem_nhdsSet_Ico h) (Iio_mem_nhdsSet_Ico h')
 
 /-!
-### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ioc _ _)`
+# Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ioc _ _)`
 -/
 
 theorem Ioi_mem_nhdsSet_Ioc (h : a ≤ b) : Ioi a ∈ 𝓝ˢ (Ioc b c) :=
@@ -165,7 +168,7 @@ theorem Ico_mem_nhdsSet_Ioc (h : a ≤ b) (h' : c < d) : Ico a d ∈ 𝓝ˢ (Ioc
 end OrderClosedTopology
 
 /-!
-### Filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`
+# Filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`
 -/
 
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]

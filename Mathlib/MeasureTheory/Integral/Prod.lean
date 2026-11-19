@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration with respect to the product measure
 
@@ -16,6 +19,7 @@ In this file we prove Fubini's theorem.
 ## Main results
 
 * `MeasureTheory.integrable_prod_iff` states that a binary function is integrable iff both
+
   * `y ↦ f (x, y)` is integrable for almost every `x`, and
   * the function `x ↦ ∫ ‖f (x, y)‖ dy` is integrable.
 * `MeasureTheory.integral_prod`: Fubini's theorem. It states that for an integrable function
@@ -48,7 +52,8 @@ open Filter hiding prod_eq map
 variable {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
 variable [NormedAddCommGroup E]
 
-/-! ### Measurability
+/-!
+# Measurability
 
 Before we define the product measure, we can talk about the measurability of operations on binary
 functions. We show that if `f` is a binary measurable function, then the function that integrates
@@ -90,7 +95,9 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_left' [SFinite μ] ⦃f :
 
 end
 
-/-! ### The product measure -/
+/-!
+# The product measure
+-/
 
 
 namespace MeasureTheory
@@ -180,7 +187,9 @@ namespace MeasureTheory
 
 variable [SFinite ν]
 
-/-! ### Integrability on a product -/
+/-!
+# Integrability on a product
+-/
 
 section
 
@@ -342,7 +351,9 @@ theorem Integrable.integral_prod_right [SFinite μ] ⦃f : α × β → E⦄
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, f (x, y) ∂μ) ν :=
   hf.swap.integral_prod_left
 
-/-! ### The Bochner integral on a product -/
+/-!
+# The Bochner integral on a product
+-/
 
 variable [SFinite μ]
 
@@ -596,9 +607,11 @@ variable {X Y : Type*}
     [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
     [OpensMeasurableSpace X] [OpensMeasurableSpace Y]
 
-/-- A version of *Fubini theorem* for continuous functions with compact support: one may swap
+/--
+A version of _Fubini theorem_ for continuous functions with compact support: one may swap
 the order of integration with respect to locally finite measures. One does not assume that the
-measures are σ-finite, contrary to the usual Fubini theorem. -/
+measures are σ-finite, contrary to the usual Fubini theorem.
+-/
 lemma integral_integral_swap_of_hasCompactSupport
     {f : X → Y → E} (hf : Continuous f.uncurry) (h'f : HasCompactSupport f.uncurry)
     {μ : Measure X} {ν : Measure Y} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] :

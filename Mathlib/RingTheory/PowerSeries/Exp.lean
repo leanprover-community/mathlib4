@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Nat.Cast.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponential Power Series
 
@@ -66,7 +69,9 @@ theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
 
-/-! ### Derivative of exp -/
+/-!
+# Derivative of exp
+-/
 
 theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
     d⁄dX (exp A) = exp A := by
@@ -78,14 +83,18 @@ theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
   congr 1
   field_simp
 
-/-! ### Uniqueness characterization -/
+/-!
+# Uniqueness characterization
+-/
 
 variable {A : Type*}
 
-/-- A power series with derivative equal to itself and constant term 1 must be `exp`.
+/--
+A power series with derivative equal to itself and constant term 1 must be `exp`.
 
 The proof uses induction on coefficients: if `f' = f` and `f(0) = 1`, then
-`coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely. -/
+`coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely.
+-/
 theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [HasUniqueDiv A]
     {f : PowerSeries A} (hd : d⁄dX f = f) (hc : constantCoeff f = 1) :
     f = exp A := by
@@ -104,7 +113,9 @@ theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [HasUnique
     rw [← Nat.cast_succ, mul_comm, ← nsmul_eq_mul, mul_comm, ← nsmul_eq_mul] at h
     exact (smul_right_inj (Nat.succ_ne_zero n)).mp h
 
-/-! ### Order and invertibility -/
+/-!
+# Order and invertibility
+-/
 
 theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
   isUnit_iff_constantCoeff.mpr (by simp)
@@ -120,7 +131,9 @@ open Finset Nat
 
 variable {A : Type*} [CommRing A]
 
-/-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
+/--
+Shows that $`e^{aX} * e^{bX} = e^{(a + b)X}`
+-/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext n
@@ -147,11 +160,15 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     apply factorial_ne_zero n
     rw [cast_eq_zero.1 h]
 
-/-- Shows that $e^{x} * e^{-x} = 1$ -/
+/--
+Shows that $`e^{x} * e^{-x} = 1`
+-/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert! exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 
-/-- Shows that $(e^{X})^k = e^{kX}$. -/
+/--
+Shows that $`(e^{X})^k = e^{kX}`.
+-/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction k with
   | zero =>
@@ -161,8 +178,10 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
     simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
       id_apply, rescale_one] using pow_succ (exp A) k
 
-/-- Shows that
-$\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
+/--
+Shows that
+$`\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p`.
+-/
 theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
     ((Finset.range n).sum fun k => exp A ^ k) =
       PowerSeries.mk fun p => (Finset.range n).sum

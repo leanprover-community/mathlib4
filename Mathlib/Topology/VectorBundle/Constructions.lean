@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.VectorBundle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard constructions on vector bundles
 
@@ -16,15 +19,14 @@ This file contains several standard constructions on vector bundles:
 
 * `Bundle.Trivial.vectorBundle 𝕜 B F`: the trivial vector bundle with scalar field `𝕜` and model
   fiber `F` over the base `B`
-
 * `VectorBundle.prod`: for vector bundles `E₁` and `E₂` with scalar field `𝕜` over a common base,
   a vector bundle structure on their direct sum `E₁ ×ᵇ E₂` (the notation stands for
   `fun x ↦ E₁ x × E₂ x`).
-
 * `VectorBundle.pullback`: for a vector bundle `E` over `B`, a vector bundle structure on its
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).
 
 ## Tags
+
 Vector bundle, direct sum, pullback
 -/
 
@@ -34,7 +36,9 @@ noncomputable section
 
 open Bundle Set FiberBundle
 
-/-! ### The trivial vector bundle -/
+/-!
+# The trivial vector bundle
+-/
 
 namespace Bundle.Trivial
 
@@ -88,7 +92,9 @@ set_option backward.isDefEq.respectTransparency false in
 
 end Bundle.Trivial
 
-/-! ### Direct sum of two vector bundles -/
+/-!
+# Direct sum of two vector bundles
+-/
 
 section
 
@@ -175,7 +181,9 @@ theorem Bundle.Trivialization.continuousLinearEquivAt_prod {e₁ : Trivializatio
 
 end
 
-/-! ### Pullbacks of vector bundles -/
+/-!
+# Pullbacks of vector bundles
+-/
 
 section
 

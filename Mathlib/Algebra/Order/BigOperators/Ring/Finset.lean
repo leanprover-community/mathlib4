@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a finset in ordered rings
 
@@ -128,13 +131,17 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
 
 end CanonicallyOrderedAdd
 
-/-! ### Named inequalities -/
+/-!
+# Named inequalities
+-/
 
-/-- **Cauchy-Schwarz inequality** for finsets.
+/--
+*Cauchy-Schwarz inequality* for finsets.
 
 This is written in terms of sequences `f`, `g`, and `r`, where `r` is usually a stand-in for
 `√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
-sequences. -/
+sequences.
+-/
 lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
@@ -174,10 +181,12 @@ lemma sum_mul_sq_le_sq_mul_sq [CommSemiring R] [LinearOrder R] [IsStrictOrderedR
   sum_sq_le_sum_mul_sum_of_sq_le_mul s
     (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ (mul_pow ..).le)
 
-/-- **Sedrakyan's lemma**, aka **Titu's lemma** or **Engel's form**.
+/--
+*Sedrakyan's lemma*, aka *Titu's lemma* or *Engel's form*.
 
 This is a specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and
-`√(g n)`, though here it is proven without relying on square roots. -/
+`√(g n)`, though here it is proven without relying on square roots.
+-/
 theorem sq_sum_div_le_sum_sq_div [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R] (s : Finset ι)
     (f : ι → R) {g : ι → R} (hg : ∀ i ∈ s, 0 < g i) :
@@ -191,7 +200,9 @@ theorem sq_sum_div_le_sum_sq_div [Semifield R] [LinearOrder R] [IsStrictOrderedR
 
 end Finset
 
-/-! ### Absolute values -/
+/-!
+# Absolute values
+-/
 
 section AbsoluteValue
 
@@ -219,7 +230,9 @@ lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
 
 end AbsoluteValue
 
-/-! ### Positivity extension -/
+/-!
+# Positivity extension
+-/
 
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
@@ -227,13 +240,16 @@ open Qq Lean Meta Finset
 alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
+/--
+The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 
 TODO: The following example does not work
+
 ```
 example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.prod f := by positivity
 ```
+
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rotate
 
@@ -35,13 +38,17 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 variable [HasShift C ℤ]
 variable (X : C)
 
-/-- If you rotate a triangle, you get another triangle.
+/--
+If you rotate a triangle, you get another triangle.
 Given a triangle of the form:
+
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
+
 applying `rotate` gives a triangle of the form:
+
 ```
       g       h        -f⟦1⟧'
   Y  ───> Z  ───>  X⟦1⟧ ───> Y⟦1⟧
@@ -53,16 +60,21 @@ def Triangle.rotate (T : Triangle C) : Triangle C :=
 
 section
 
-/-- Given a triangle of the form:
+/--
+Given a triangle of the form:
+
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
+
 applying `invRotate` gives a triangle that can be thought of as:
+
 ```
         -h⟦-1⟧'     f       g
   Z⟦-1⟧  ───>  X  ───> Y  ───> Z
 ```
+
 (note that this diagram doesn't technically fit the definition of triangle, as `Z⟦-1⟧⟦1⟧` is
 not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shiftEquiv C 1`)
 -/

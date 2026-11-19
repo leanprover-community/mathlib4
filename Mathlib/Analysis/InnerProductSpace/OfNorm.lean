@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Convex
 
 import Mathlib.Algebra.Module.LinearMap.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner product space derived from a norm
 
@@ -18,25 +21,25 @@ parallelogram identity. The parallelogram identity is a way to express the inner
 
 ## Main results
 
-- `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallelogram identity,
+* `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallelogram identity,
   can be seen as an inner product space.
 
 ## Implementation notes
 
 We define `inner_`
 
-$$\langle x, y \rangle := \frac{1}{4} (‖x + y‖^2 - ‖x - y‖^2 + i ‖ix + y‖ ^ 2 - i ‖ix - y‖^2)$$
+$$`\langle x, y \rangle := \frac{1}{4} (‖x + y‖^2 - ‖x - y‖^2 + i ‖ix + y‖ ^ 2 - i ‖ix - y‖^2)`
 
 and use the parallelogram identity
 
-$$‖x + y‖^2 + ‖x - y‖^2 = 2 (‖x‖^2 + ‖y‖^2)$$
+$$`‖x + y‖^2 + ‖x - y‖^2 = 2 (‖x‖^2 + ‖y‖^2)`
 
 to prove it is an inner product, i.e., that it is conjugate-symmetric (`inner_.conj_symm`) and
 linear in the first argument. `add_left` is proved by judicious application of the parallelogram
 identity followed by tedious arithmetic. `smul_left` is proved step by step, first noting that
-$\langle λ x, y \rangle = λ \langle x, y \rangle$ for $λ ∈ ℕ$, $λ = -1$, hence $λ ∈ ℤ$ and $λ ∈ ℚ$
-by arithmetic. Then by continuity and the fact that ℚ is dense in ℝ, the same is true for ℝ.
-The case of ℂ then follows by applying the result for ℝ and more arithmetic.
+$`\langle λ x, y \rangle = λ \langle x, y \rangle` for $`λ ∈ ℕ`, $`λ = -1`, hence $`λ ∈ ℤ` and
+$`λ ∈ ℚ` by arithmetic. Then by continuity and the fact that ℚ is dense in ℝ, the same is true for
+ℝ. The case of ℂ then follows by applying the result for ℝ and more arithmetic.
 
 ## TODO
 
@@ -44,9 +47,9 @@ Move upstream to `Analysis.InnerProductSpace.Basic`.
 
 ## References
 
-- [Jordan, P. and von Neumann, J., *On inner products in linear, metric spaces*][Jordan1935]
-- https://math.stackexchange.com/questions/21792/norms-induced-by-inner-products-and-the-parallelogram-law
-- https://math.dartmouth.edu/archive/m113w10/public_html/jordan-vneumann-thm.pdf
+* ‍\[Jordan, P. and von Neumann, J., _On inner products in linear, metric spaces_\]\[Jordan1935\]
+* https://math.stackexchange.com/questions/21792/norms-induced-by-inner-products-and-the-parallelogram-law
+* https://math.dartmouth.edu/archive/m113w10/public\_html/jordan-vneumann-thm.pdf
 
 ## Tags
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submersive presentations
 
@@ -24,22 +27,22 @@ Algebras that admit such a presentation are called standard smooth. See
 
 All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 
-- `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
+* `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
   map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
-- `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
+* `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
   viewed as a presubmersive presentation via the (empty) map from its relations to its generators.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
 
-- `PreSubmersivePresentation.differential`: A linear endomorphism of `σ → P.Ring` sending
+* `PreSubmersivePresentation.differential`: A linear endomorphism of `σ → P.Ring` sending
   the `j`-th standard basis vector, corresponding to the `j`-th relation, to the vector
   of partial derivatives of `P.relation j` with respect to the coordinates `P.map i` for
   `i : σ`.
-- `PreSubmersivePresentation.jacobian`: The determinant of `P.differential`.
-- `PreSubmersivePresentation.jacobiMatrix`: If `σ` has a `Fintype` instance, we may form
+* `PreSubmersivePresentation.jacobian`: The determinant of `P.differential`.
+* `PreSubmersivePresentation.jacobiMatrix`: If `σ` has a `Fintype` instance, we may form
   the matrix corresponding to `P.differential`. Its determinant is `P.jacobian`.
-- `SubmersivePresentation`: A submersive presentation is a finite, presubmersive presentation `P`
+* `SubmersivePresentation`: A submersive presentation is a finite, presubmersive presentation `P`
   with in `S` invertible Jacobian.
 
 ## Notes
@@ -296,7 +299,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
 section
 
 /-!
-### Jacobian of composition
+# Jacobian of composition
 
 Let `S` be an `R`-algebra and `T` be an `S`-algebra with presentations `P` and `Q` respectively.
 In this section we compute the Jacobian of the composition of `Q` and `P` to be

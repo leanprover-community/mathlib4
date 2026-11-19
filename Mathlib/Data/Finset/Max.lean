@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximum and minimum of finite sets
 -/
@@ -21,7 +24,9 @@ variable {α β ι : Type*}
 
 namespace Finset
 
-/-! ### max and min of finite sets -/
+/-!
+# max and min of finite sets
+-/
 
 section MaxMin
 
@@ -319,19 +324,23 @@ theorem card_le_sdiff_of_interleaved {s t : Finset α}
 @[deprecated (since := "2026-06-03")]
 alias card_le_diff_of_interleaved := card_le_sdiff_of_interleaved
 
-/-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
+/--
+Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
 
 * it is true on the empty `Finset`,
 * for every `s : Finset α` and an element `a` strictly greater than all elements of `s`, `p s`
-  implies `p (insert a s)`. -/
+  implies `p (insert a s)`.
+-/
 @[to_dual (attr := elab_as_elim)
-/-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
+/--
+Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
 
 * it is true on the empty `Finset`,
 * for every `s : Finset α` and an element `a` strictly less than all elements of `s`, `p s`
-  implies `p (insert a s)`. -/]
+  implies `p (insert a s)`.
+-/]
 theorem induction_on_max
     [DecidableEq α] {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
     (insert : ∀ a s, (∀ x ∈ s, x < a) → motive s → motive (insert a s)) : motive s := by
@@ -348,19 +357,23 @@ section MaxMinInductionValue
 
 variable [LinearOrder α] [LinearOrder β]
 
-/-- Induction principle for `Finset`s in any type from which a given function `f` maps to a linearly
+/--
+Induction principle for `Finset`s in any type from which a given function `f` maps to a linearly
 ordered type : a predicate is true on all `s : Finset α` provided that:
 
 * it is true on the empty `Finset`,
 * for every `s : Finset α` and an element `a` such that for elements of `s` denoted by `x` we have
-  `f x ≤ f a`, `p s` implies `p (insert a s)`. -/
+  `f x ≤ f a`, `p s` implies `p (insert a s)`.
+-/
 @[to_dual (attr := elab_as_elim)
-/-- Induction principle for `Finset`s in any type from which a given function `f` maps to a linearly
+/--
+Induction principle for `Finset`s in any type from which a given function `f` maps to a linearly
 ordered type : a predicate is true on all `s : Finset α` provided that:
 
 * it is true on the empty `Finset`,
 * for every `s : Finset α` and an element `a` such that for elements of `s` denoted by `x` we have
-  `f a ≤ f x`, `p s` implies `p (insert a s)`. -/]
+  `f a ≤ f x`, `p s` implies `p (insert a s)`.
+-/]
 theorem induction_on_max_value
     [DecidableEq ι] (f : ι → α) {motive : Finset ι → Prop} (s : Finset ι) (empty : motive ∅)
     (insert : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → motive s → motive (insert a s)) : motive s := by

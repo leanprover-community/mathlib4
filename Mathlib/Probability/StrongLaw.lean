@@ -13,6 +13,9 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Probability.Independence.Integrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The strong law of large numbers
 
@@ -32,17 +35,19 @@ of Banach-space-valued random variables follows from this case and approximation
 functions. The real version is given in `ProbabilityTheory.strong_law_ae_real`.
 
 We follow the proof by Etemadi
-[Etemadi, *An elementary proof of the strong law of large numbers*][etemadi_strong_law],
+‍\[Etemadi, _An elementary proof of the strong law of large numbers_\]\[etemadi\_strong\_law\],
 which goes as follows.
 
 It suffices to prove the result for nonnegative `X`, as one can prove the general result by
 splitting a general `X` into its positive part and negative part.
 Consider `Xₙ` a sequence of nonnegative integrable identically distributed pairwise independent
 random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim that
+
 * Almost surely, `Xₙ = Yₙ` for all but finitely many indices. Indeed, `∑ ℙ (Xₙ ≠ Yₙ)` is bounded by
   `1 + 𝔼[X]` (see `sum_prob_mem_Ioc_le` and `tsum_prob_mem_Ioi_lt_top`).
 * Let `c > 1`. Along the sequence `n = c ^ k`, then `(∑_{i=0}^{n-1} Yᵢ - 𝔼[Yᵢ])/n` converges almost
   surely to `0`. This follows from a variance control, as
+
   ```
   ∑_k ℙ (|∑_{i=0}^{c^k - 1} Yᵢ - 𝔼[Yᵢ]| > c^k ε)
     ≤ ∑_k (c^k ε)^{-2} ∑_{i=0}^{c^k - 1} Var[Yᵢ]    (by Markov inequality)
@@ -71,7 +76,9 @@ open scoped Function -- required for scoped `on` notation
 
 namespace ProbabilityTheory
 
-/-! ### Prerequisites on truncations -/
+/-!
+# Prerequisites on truncations
+-/
 
 
 section Truncation

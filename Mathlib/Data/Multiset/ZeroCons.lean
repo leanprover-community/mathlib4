@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Order.BoundedOrder.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `0` and `::ₘ`
 
@@ -46,7 +49,9 @@ variable {α : Type*} {β : Type v} {γ : Type*}
 
 namespace Multiset
 
-/-! ### Empty multiset -/
+/-!
+# Empty multiset
+-/
 
 
 /-- `0 : Multiset α` is the empty set -/
@@ -81,7 +86,9 @@ theorem coe_eq_zero (l : List α) : (l : Multiset α) = 0 ↔ l = [] :=
 theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEmpty :=
   Iff.trans (coe_eq_zero l) isEmpty_iff.symm
 
-/-! ### `Multiset.cons` -/
+/-!
+# `Multiset.cons`
+-/
 
 /-- `cons a s` is the multiset which contains `s` plus one more instance of `a`. -/
 def cons (a : α) (s : Multiset α) : Multiset α :=
@@ -129,8 +136,9 @@ section Rec
 
 variable {C : Multiset α → Sort*}
 
-/-- Dependent recursor on multisets.
-TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
+/--
+Dependent recursor on multisets.
+TODO: should be @\[recursor 6\], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
 protected
@@ -239,7 +247,9 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
 
 end Mem
 
-/-! ### Singleton -/
+/-!
+# Singleton
+-/
 
 
 instance : Singleton α (Multiset α) :=
@@ -281,7 +291,9 @@ theorem singleton_eq_cons_iff {a b : α} (m : Multiset α) : {a} = b ::ₘ m ↔
 theorem pair_comm (x y : α) : ({x, y} : Multiset α) = {y, x} :=
   cons_swap x y 0
 
-/-! ### `Multiset.Subset` -/
+/-!
+# `Multiset.Subset`
+-/
 
 
 section Subset
@@ -323,7 +335,9 @@ theorem induction_on' {p : Multiset α → Prop} (S : Multiset α) (h₁ : p 0)
 
 end Subset
 
-/-! ### Partial order on `Multiset`s -/
+/-!
+# Partial order on `Multiset`s
+-/
 
 section
 
@@ -414,7 +428,9 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
 
 end
 
-/-! ### Cardinality -/
+/-!
+# Cardinality
+-/
 
 @[simp]
 theorem card_zero : @card α 0 = 0 :=
@@ -472,7 +488,9 @@ theorem card_eq_succ_iff {s : Multiset α} {n : ℕ} :
   refine ⟨?_, by aesop⟩
   induction s using Multiset.induction generalizing n with aesop
 
-/-! ### Map for partial functions -/
+/-!
+# Map for partial functions
+-/
 
 @[simp]
 theorem pmap_zero {p : α → Prop} (f : ∀ a, p a → β) (h : ∀ a ∈ (0 : Multiset α), p a) :
@@ -490,7 +508,9 @@ theorem pmap_cons {p : α → Prop} (f : ∀ a, p a → β) (a : α) (m : Multis
 theorem attach_zero : (0 : Multiset α).attach = 0 :=
   rfl
 
-/-! ### Lift a relation to `Multiset`s -/
+/-!
+# Lift a relation to `Multiset`s
+-/
 
 section Rel
 

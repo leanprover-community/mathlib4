@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Ring
 
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boolean rings
 
@@ -30,6 +33,7 @@ algebras.
 ## Implementation notes
 
 We provide two ways of turning a Boolean algebra/ring into a Boolean ring/algebra:
+
 * Instances on the same type accessible in locales `BooleanAlgebraOfBooleanRing` and
   `BooleanRingOfBooleanAlgebra`.
 * Type-synonyms `AsBoolAlg` and `AsBoolRing`.
@@ -115,7 +119,9 @@ end BooleanRing
 instance : BooleanRing PUnit :=
   ⟨fun _ => Subsingleton.elim _ _⟩
 
-/-! ### Turning a Boolean ring into a Boolean algebra -/
+/-!
+# Turning a Boolean ring into a Boolean algebra
+-/
 
 
 section RingToAlgebra
@@ -218,9 +224,11 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
 protected theorem sup_def (a b : α) : a ⊔ b = a + b + a * b := rfl
 protected theorem inf_def (a b : α) : a ⊓ b = a * b := rfl
 
-/-- The Boolean algebra structure on a Boolean ring.
+/--
+The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
+
 * `a ⊔ b` unfolds to `a + b + a * b`
 * `a ⊓ b` unfolds to `a * b`
 * `a ≤ b` unfolds to `a + b + a * b = b`
@@ -333,7 +341,9 @@ theorem RingHom.asBoolAlg_comp (g : β →+* γ) (f : α →+* β) :
 
 end RingToAlgebra
 
-/-! ### Turning a Boolean algebra into a Boolean ring -/
+/-!
+# Turning a Boolean algebra into a Boolean ring
+-/
 
 
 section AlgebraToRing
@@ -382,7 +392,8 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ⟨default (α := α)⟩
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
+/--
+Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -416,7 +427,8 @@ instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 
 -- See note [reducible non-instances]
-/-- Every Boolean algebra has the structure of a Boolean ring with the following data:
+/--
+Every Boolean algebra has the structure of a Boolean ring with the following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
 * `a * b` unfolds to `a ⊓ b`
@@ -517,7 +529,9 @@ theorem BoundedLatticeHom.asBoolRing_comp (g : BoundedLatticeHom β γ) (f : Bou
 
 end AlgebraToRing
 
-/-! ### Equivalence between Boolean rings and Boolean algebras -/
+/-!
+# Equivalence between Boolean rings and Boolean algebras
+-/
 
 
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and

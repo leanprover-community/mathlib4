@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 public import Mathlib.MeasureTheory.SetAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separable measure
 
@@ -19,7 +22,7 @@ We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is s-finit
 is separable. We then prove that if `μ` is separable and `E` is second-countable,
 then `Lp E p μ` is second-countable.
 
-A family `𝒜` of subsets of `X` is said to be **measure-dense** if it contains only measurable sets
+A family `𝒜` of subsets of `X` is said to be *measure-dense* if it contains only measurable sets
 and can approximate any measurable set with finite measure, in the sense that
 for any measurable set `s` such that `μ s ≠ ∞`, `μ (s ∆ t)` can be made
 arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be chosen to contain only
@@ -28,7 +31,7 @@ The term "measure-dense" is justified by the fact that the approximating conditi
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `Lᵖ` norm.
 
-A measure `μ` is **separable** if it admits a countable and measure-dense family of sets.
+A measure `μ` is *separable* if it admits a countable and measure-dense family of sets.
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm.
 
@@ -58,7 +61,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 
 ## References
 
-* [D. L. Cohn, *Measure Theory*][cohn2013measure]
+* ‍\[D. L. Cohn, _Measure Theory_\]\[cohn2013measure\]
 
 ## Tags
 
@@ -76,9 +79,12 @@ variable {p : ℝ≥0∞} [one_le_p : Fact (1 ≤ p)] [p_ne_top : Fact (p ≠ �
 
 section MeasureDense
 
-/-! ### Definition of a measure-dense family, basic properties and sufficient conditions -/
+/-!
+# Definition of a measure-dense family, basic properties and sufficient conditions
+-/
 
-/-- A family `𝒜` of sets of a measure space is said to be measure-dense if it contains only
+/--
+A family `𝒜` of sets of a measure space is said to be measure-dense if it contains only
 measurable sets and can approximate any measurable set with finite measure, in the sense that
 for any measurable set `s` with finite measure the symmetric difference `s ∆ t` can be made
 arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be chosen to contain only
@@ -86,7 +92,8 @@ sets with finite measure.
 
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
-equipped with the `Lᵖ` norm. -/
+equipped with the `Lᵖ` norm.
+-/
 structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop where
   /-- Each set has to be measurable. -/
   measurable : ∀ s ∈ 𝒜, MeasurableSet s
@@ -329,12 +336,16 @@ end MeasureDense
 
 section IsSeparable
 
-/-! ### Definition of a separable measure space, sufficient condition -/
+/-!
+# Definition of a separable measure space, sufficient condition
+-/
 
-/-- A measure `μ` is separable if there exists a countable and measure-dense family of sets.
+/--
+A measure `μ` is separable if there exists a countable and measure-dense family of sets.
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
-of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm. -/
+of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm.
+-/
 class IsSeparable (μ : Measure X) : Prop where
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
@@ -418,7 +429,9 @@ end IsSeparable
 
 section SecondCountableLp
 
-/-! ### A sufficient condition for $L^p$ spaces to be second-countable -/
+/-!
+# A sufficient condition for $`L^p` spaces to be second-countable
+-/
 
 /-- If the measure `μ` is separable (in particular if `X` is countably generated and `μ` is
 `s`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,

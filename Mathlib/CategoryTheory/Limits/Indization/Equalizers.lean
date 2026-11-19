@@ -9,13 +9,17 @@ public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equalizers of ind-objects
 
 We show that if a category `C` has equalizers, then ind-objects are closed under equalizers.
 
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Section 6.1
 -/
 
 public section
@@ -50,7 +54,7 @@ we are taking the limit of comes from a diagram in a functor category `I ⥤ C`.
 that this is the case for any parallel pair of morphisms in `Ind C` and deduce that ind-objects
 are closed under equalizers.
 
-This is Proposition 6.1.16(i) in [Kashiwara2006].
+This is Proposition 6.1.16(i) in \[Kashiwara2006\].
 -/
 theorem isIndObject_limit_comp_yoneda_comp_colim
     (hF : ∀ i, IsIndObject (limit (F.flip.obj i ⋙ yoneda))) :
@@ -63,9 +67,10 @@ theorem isIndObject_limit_comp_yoneda_comp_colim
 
 end
 
-/-- If `C` has equalizers. then ind-objects are closed under equalizers.
+/--
+If `C` has equalizers. then ind-objects are closed under equalizers.
 
-This is Proposition 6.1.17(i) in [Kashiwara2006].
+This is Proposition 6.1.17(i) in \[Kashiwara2006\].
 -/
 instance isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair [HasEqualizers C] :
     ObjectProperty.IsClosedUnderLimitsOfShape (IsIndObject (C := C)) WalkingParallelPair :=

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of continuous linear maps from the base field
 
@@ -39,7 +42,9 @@ variable {L : Filter (𝕜 × 𝕜)}
 
 section ContinuousLinearMap
 
-/-! ### Derivative of continuous linear maps -/
+/-!
+# Derivative of continuous linear maps
+-/
 
 variable (e : 𝕜 →L[𝕜] F)
 
@@ -67,7 +72,9 @@ end ContinuousLinearMap
 
 section LinearMap
 
-/-! ### Derivative of bundled linear maps -/
+/-!
+# Derivative of bundled linear maps
+-/
 
 variable (e : 𝕜 →ₗ[𝕜] F)
 

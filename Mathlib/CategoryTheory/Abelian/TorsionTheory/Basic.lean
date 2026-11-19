@@ -9,13 +9,16 @@ public import Mathlib.CategoryTheory.Abelian.OrthogonalClosed
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion Theory
 
-A **torsion theory** on an abelian category `C` is a pair of classes `T` and `F` of objects from `C`
+A *torsion theory* on an abelian category `C` is a pair of classes `T` and `F` of objects from `C`
 such that `T` is the left orthogonal of `F` and `F` is the right orthogonal of `T`. We call `T`
-the *torsion class* and its objects *torsion objects*.  We call `F` the *torsion-free class*
-and its objects *torsion-free objects*.
+the _torsion class_ and its objects _torsion objects_.  We call `F` the _torsion-free class_
+and its objects _torsion-free objects_.
 
 ## Main definitions
 
@@ -37,9 +40,9 @@ and its objects *torsion-free objects*.
 
 ## References
 
-* [S. E. Dickson, *A torsion theory for Abelian categories*][dickson1966]
-* [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
-* [Bo Stenström, *Rings of Quotients*][stenstrom1975]
+* ‍\[S. E. Dickson, _A torsion theory for Abelian categories_\]\[dickson1966\]
+* ‍\[Bo Stenström, _Rings and Modules of Quotients_\]\[stenstrom1971\]
+* ‍\[Bo Stenström, _Rings of Quotients_\]\[stenstrom1975\]
 
 ## Tags
 
@@ -67,7 +70,8 @@ structure TorsionTheory (T F : ObjectProperty C) : Prop where
   leftOrthogonal_eq : F.leftOrthogonal = T := by cat_disch
   rightOrthogonal_eq : T.rightOrthogonal = F := by cat_disch
 
-/-- A property of objects `P` is a torsion class if `P` is the left orthogonal of its right
+/--
+A property of objects `P` is a torsion class if `P` is the left orthogonal of its right
 orthogonal, i.e. `P.rightOrthogonal.leftOrthogonal = P`. Equivalently, `P` is the torsion
 class of some torsion theory, namely `TorsionTheory P P.rightOrthogonal`; see
 `IsTorsionClass.torsionTheory`.
@@ -75,7 +79,8 @@ class of some torsion theory, namely `TorsionTheory P P.rightOrthogonal`; see
 This is a typeclass, on the model of `Functor.IsLeftAdjoint`: every construction of a torsion
 theory registers an instance for its torsion class, and the closure properties of torsion
 classes are then available by instance search. See `IsTorsionClass.torsionTheory` for the
-torsion theory itself. -/
+torsion theory itself.
+-/
 @[mk_iff]
 class IsTorsionClass (P : ObjectProperty C) : Prop where
   leftOrthogonal_rightOrthogonal_eq (P) : P.rightOrthogonal.leftOrthogonal = P := by cat_disch
@@ -219,10 +224,12 @@ instance {Q : ObjectProperty Cᵒᵖ} [IsTorsionFreeClass Q] : IsTorsionClass Q.
 
 end IsTorsionFreeClass
 
-/-- In a well-powered abelian category with coproducts, a property of objects `P` is a torsion
+/--
+In a well-powered abelian category with coproducts, a property of objects `P` is a torsion
 class if and only if it is closed under quotients, extensions, and coproducts. This is a
-theorem of [S. E. Dickson][dickson1966]; see also
-[Bo Stenström, *Rings of Quotients*][stenstrom1975], Chapter VI. -/
+theorem of \[S. E. Dickson\]\[dickson1966\]; see also
+‍\[Bo Stenström, _Rings of Quotients_\]\[stenstrom1975\], Chapter VI.
+-/
 theorem isTorsionClass_iff_of_wellPowered (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     IsTorsionClass P ↔

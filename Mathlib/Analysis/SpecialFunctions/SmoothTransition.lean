@@ -12,6 +12,9 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinitely smooth transition function
 
@@ -20,7 +23,6 @@ cannot have:
 
 * `expNegInvGlue` is equal to zero for `x ≤ 0` and is strictly positive otherwise; it is given by
   `x ↦ exp (-1/x)` for `x > 0`;
-
 * `Real.smoothTransition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
@@ -78,16 +80,18 @@ theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
     (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
 
 /-!
-### Smoothness of `expNegInvGlue`
+# Smoothness of `expNegInvGlue`
 
 In this section we prove that the function `f = expNegInvGlue` is infinitely smooth. To do
-this, we show that $g_p(x)=p(x^{-1})f(x)$ is infinitely smooth for any polynomial `p` with real
-coefficients. First we show that $g_p(x)$ tends to zero at zero, then we show that it is
-differentiable with derivative $g_p'=g_{x^2(p-p')}$. Finally, we prove smoothness of $g_p$ by
-induction, then deduce smoothness of $f$ by setting $p=1$.
+this, we show that $`g_p(x)=p(x^{-1})f(x)` is infinitely smooth for any polynomial `p` with real
+coefficients. First we show that $`g_p(x)` tends to zero at zero, then we show that it is
+differentiable with derivative $`g_p'=g_{x^2(p-p')}`. Finally, we prove smoothness of $`g_p` by
+induction, then deduce smoothness of $`f` by setting $`p=1`.
 -/
 
-/-- Our function tends to zero at zero faster than any $P(x^{-1})$, $P∈ℝ[X]$, tends to infinity. -/
+/--
+Our function tends to zero at zero faster than any $`P(x^{-1})`, $`P∈ℝ[X]`, tends to infinity.
+-/
 theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
     Tendsto (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) (𝓝 0) (𝓝 0) := by
   simp only [expNegInvGlue, mul_ite, mul_zero]
@@ -176,8 +180,10 @@ protected theorem zero : smoothTransition 0 = 0 :=
 protected theorem one : smoothTransition 1 = 1 :=
   one_of_one_le le_rfl
 
-/-- Since `Real.smoothTransition` is constant on $(-∞, 0]$ and $[1, ∞)$, applying it to the
-projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`. -/
+/--
+Since `Real.smoothTransition` is constant on $`(-∞, 0]` and $`[1, ∞)`, applying it to the
+projection of `x : ℝ` to $`[0, 1]` gives the same result as applying it to `x`.
+-/
 @[simp]
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by

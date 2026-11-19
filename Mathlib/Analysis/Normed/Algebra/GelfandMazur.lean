@@ -7,15 +7,19 @@ module
 
 public import Mathlib.Analysis.Polynomial.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem
 
-We provide a formalization of proofs of the following versions of the *Gelfand-Mazur Theorem*.
+We provide a formalization of proofs of the following versions of the _Gelfand-Mazur Theorem_.
 
 * `NormedAlgebra.Complex.algEquivOfNormMul`: if `F` is a nontrivial normed `ℂ`-algebra
   with multiplicative norm, then we obtain a `ℂ`-algebra equivalence with `ℂ`.
 
   This differs from `NormedRing.algEquivComplexOfComplete` in the assumptions: there,
+
   * `F` is assumed to be complete,
   * `F` is assumed to be a (nontrivial) division ring,
   * but the norm is only required to be submultiplicative.
@@ -24,20 +28,19 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
 * `NormedAlgebra.Real.nonempty_algEquiv_or`: if a field `F` is a normed `ℝ`-algebra,
   then `F` is isomorphic as an `ℝ`-algebra either to `ℝ` or to `ℂ`.
 
-  With some additional work (TODO), this implies a
-  [Theorem of Ostrowski](https://en.wikipedia.org/wiki/Ostrowski%27s_theorem#Another_Ostrowski's_theorem),
-  which says that any field that is complete with respect to an archimedean absolute value
-  is isomorphic to either `ℝ` or `ℂ` as a field with absolute value. The additional input needed
-  for this is to show that any such field is in fact a normed `ℝ`-algebra.
+  With some additional work (TODO), this implies a [Theorem of
+  Ostrowski](https://en.wikipedia.org/wiki/Ostrowski%27s_theorem#Another_Ostrowski's_theorem), which
+  says that any field that is complete with respect to an archimedean absolute value is isomorphic
+  to either `ℝ` or `ℂ` as a field with absolute value. The additional input needed for this is to
+  show that any such field is in fact a normed `ℝ`-algebra.
 
-### The complex case
+## The complex case
 
-The proof we use here is a variant of a proof for the complex case (any normed `ℂ`-algebra
-is isomorphic to `ℂ`) that is originally due to Ostrowski
-[A. Ostrowski, *Über einige Lösungen der Funktionalgleichung φ(x)⋅φ(y)=φ(xy)*
-  (Section 7)][ostrowski1916].
-See also the concise version provided by Peter Scholze on
-[Math Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
+The proof we use here is a variant of a proof for the complex case (any normed `ℂ`-algebra is
+isomorphic to `ℂ`) that is originally due to Ostrowski ‍\[A. Ostrowski, _Über einige Lösungen der
+Funktionalgleichung φ(x)⋅φ(y)=φ(xy)_ (Section 7)\]\[ostrowski1916\]. See also the concise version
+provided by Peter Scholze on [Math
+Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
 
 (In the following, we write `a • 1` instead of `algebraMap _ F a` for easier reading.
 In the code, we use `algebraMap`.)
@@ -55,7 +58,7 @@ This implies that the set of `z` such that `‖x - z • 1‖ = M` is closed and
 (and nonempty), so it is all of `ℂ`, which contradicts `‖x - z • 1‖ ≥ |z| - M`
 when `|z|` is sufficiently large.
 
-### The real case
+## The real case
 
 The usual proof for the real case is "either `F` contains a square root of `-1`;
 then `F` is in fact a normed `ℂ`-algebra and we can use the result above, or else
@@ -114,7 +117,7 @@ which is bounded by `(M ^ n + c ^ n) / M ^ (n - 1) = M * (1 + (c / M) ^ n)`, whe
 @[expose] public section
 
 /-!
-### Auxiliary results used in both cases
+# Auxiliary results used in both cases
 -/
 
 open Polynomial
@@ -156,7 +159,7 @@ lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
   simpa [isBounded_def, compl_ofPred, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
 
 /-!
-### The complex case
+# The complex case
 -/
 
 namespace Complex
@@ -232,10 +235,12 @@ lemma exists_norm_sub_smul_one_eq_zero (x : F) :
 variable (F) [Nontrivial F]
 
 open Algebra in
-/-- A version of the **Gelfand-Mazur Theorem**.
+/--
+A version of the *Gelfand-Mazur Theorem*.
 
 If `F` is a nontrivial normed `ℂ`-algebra with multiplicative norm, then we obtain a
-`ℂ`-algebra equivalence with `ℂ`. -/
+`ℂ`-algebra equivalence with `ℂ`.
+-/
 noncomputable
 def algEquivOfNormMul : ℂ ≃ₐ[ℂ] F :=
   .ofBijective (ofId ℂ F) <| by
@@ -252,7 +257,7 @@ end Complex
 
 
 /-!
-### The real case
+# The real case
 -/
 
 namespace Real
@@ -399,10 +404,12 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this
   exact Filter.not_tendsto_const_atTop _ _ this
 
-/-- A version of the **Gelfand-Mazur Theorem** over `ℝ`.
+/--
+A version of the *Gelfand-Mazur Theorem* over `ℝ`.
 
 If a field `F` is a normed `ℝ`-algebra, then `F` is isomorphic as an `ℝ`-algebra
-either to `ℝ` or to `ℂ`. -/
+either to `ℝ` or to `ℂ`.
+-/
 theorem nonempty_algEquiv_or (F : Type*) [NormedField F] [NormedAlgebra ℝ F] :
     Nonempty (F ≃ₐ[ℝ] ℝ) ∨ Nonempty (F ≃ₐ[ℝ] ℂ) := by
   have : Algebra.IsAlgebraic ℝ F := by

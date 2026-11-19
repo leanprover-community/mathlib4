@@ -13,6 +13,9 @@ public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Tactic.Positivity.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about (linear) ordered (semi)fields
 -/
@@ -31,7 +34,7 @@ variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] {a b c d e : α} 
 attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 
 /-!
-### Relating one division and involving `1`
+# Relating one division and involving `1`
 -/
 
 @[bound]
@@ -63,7 +66,7 @@ theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
 @[bound] lemma Bound.div_lt_one_of_pos_of_lt (b0 : 0 < b) : a < b → a / b < 1 := (div_lt_one b0).mpr
 
 /-!
-### Relating two divisions, involving `1`
+# Relating two divisions, involving `1`
 -/
 
 theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
@@ -105,7 +108,8 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
   rwa [le_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
 
 /-!
-### Results about halving.
+# Results about halving.
+
 The equalities also hold in semifields of characteristic `0`.
 -/
 
@@ -145,7 +149,7 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
-### Miscellaneous lemmas
+# Miscellaneous lemmas
 -/
 
 @[simp] lemma div_pos_iff_of_pos_left (ha : 0 < a) : 0 < a / b ↔ 0 < b := by
@@ -248,7 +252,9 @@ theorem div_nat_le_self_of_nonneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
 theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
   div_lt_self ha (n.one_lt_cast.mpr hn)
 
-/-! ### Results about `IsGLB` -/
+/-!
+# Results about `IsGLB`
+-/
 
 
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
@@ -262,7 +268,9 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
-/-! ### Results about `IsLUB` -/
+/-!
+# Results about `IsLUB`
+-/
 
 
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
@@ -312,7 +320,9 @@ variable [Field α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing 
 
 attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 
-/-! ### Lemmas about pos, nonneg, nonpos, neg -/
+/-!
+# Lemmas about pos, nonneg, nonpos, neg
+-/
 
 /-- A version of `inv_lt_zero` which holds with different assumptions. In particular, the type
 must be a field, not just a `GroupWithZero`, but the order assumptions replace `LinearOrder` and
@@ -340,7 +350,9 @@ theorem div_neg_of_neg_of_pos (ha : a < 0) (hb : 0 < b) : a / b < 0 :=
 theorem div_neg_of_pos_of_neg (ha : 0 < a) (hb : b < 0) : a / b < 0 :=
   div_eq_mul_inv a b ▸ mul_neg_of_pos_of_neg ha (inv_lt_zero'.2 hb)
 
-/-! ### Relating one division with another term -/
+/-!
+# Relating one division with another term
+-/
 
 theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b where
   mp h := div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le
@@ -377,7 +389,9 @@ theorem lt_div_iff_of_neg' (hc : c < 0) : a < b / c ↔ b < c * a := by
 theorem div_le_one_of_ge (h : b ≤ a) (hb : b ≤ 0) : a / b ≤ 1 := by
   simpa only [neg_div_neg_eq] using div_le_one_of_le₀ (neg_le_neg h) (neg_nonneg_of_nonpos hb)
 
-/-! ### Bi-implications of inequalities using inversions -/
+/-!
+# Bi-implications of inequalities using inversions
+-/
 
 theorem inv_le_inv_of_neg (ha : a < 0) (hb : b < 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
   rw [← one_div, div_le_iff_of_neg ha, ← div_eq_inv_mul, div_le_iff_of_neg hb, one_mul]
@@ -399,7 +413,7 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ := b
   simpa using inv_lt_inv_of_neg (inv_lt_zero'.2 ha) hb
 
 /-!
-### Monotonicity results involving inversion
+# Monotonicity results involving inversion
 -/
 
 
@@ -445,7 +459,9 @@ theorem inv_antitoneOn_Icc_left (hb : b < 0) :
   convert! sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 
-/-! ### Relating two divisions -/
+/-!
+# Relating two divisions
+-/
 
 
 theorem div_le_div_of_nonpos_of_le (hc : c ≤ 0) (h : b ≤ a) : a / c ≤ b / c := by
@@ -462,7 +478,9 @@ theorem div_le_div_right_of_neg (hc : c < 0) : a / c ≤ b / c ↔ b ≤ a := by
 theorem div_lt_div_right_of_neg (hc : c < 0) : a / c < b / c ↔ b < a := by
   rw [div_lt_iff_of_neg hc, div_mul_cancel₀ _ hc.ne]
 
-/-! ### Relating one division and involving `1` -/
+/-!
+# Relating one division and involving `1`
+-/
 
 
 theorem one_le_div_of_neg (hb : b < 0) : 1 ≤ a / b ↔ a ≤ b := by rw [le_div_iff_of_neg hb, one_mul]
@@ -485,7 +503,9 @@ theorem le_one_div_of_neg (ha : a < 0) (hb : b < 0) : a ≤ 1 / b ↔ b ≤ 1 / 
 theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a := by
   simpa using lt_inv_of_neg ha hb
 
-/-! ### Relating two divisions, involving `1` -/
+/-!
+# Relating two divisions, involving `1`
+-/
 
 
 theorem one_div_le_one_div_of_neg_of_le (hb : b < 0) (h : a ≤ b) : 1 / b ≤ 1 / a := by
@@ -518,7 +538,9 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
   suffices 1 / a ≤ 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_le_one_div_of_neg_of_le h1 h2
 
-/-! ### Results about halving -/
+/-!
+# Results about halving
+-/
 
 omit [PosMulReflectLT α] in
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
@@ -546,7 +568,9 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 
 omit [PosMulReflectLT α] in

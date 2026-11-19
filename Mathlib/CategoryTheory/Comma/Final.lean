@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Filtered.Final
 
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finality of Projections in Comma Categories
 
@@ -24,7 +27,7 @@ and `A` and `B` are filtered.
 
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Lemma 3.4.3 -- 3.4.5
 -/
 
 public section
@@ -136,7 +139,8 @@ connected. -/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
   rwa [isConnected_iff_of_initial (snd L R)]
 
-/-- Let the following diagram commute up to isomorphism:
+/--
+Let the following diagram commute up to isomorphism:
 
 ```
       L       R
@@ -149,7 +153,8 @@ instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected 
 ```
 
 Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
-categories of the first and second row of the diagram is final. -/
+categories of the first and second row of the diagram is final.
+-/
 lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {T : Type u₃}
     [Category.{v₃} T] {L : A ⥤ T} {R : B ⥤ T} {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅}
     [Category.{v₅} B'] {T' : Type u₆} [Category.{v₆} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}

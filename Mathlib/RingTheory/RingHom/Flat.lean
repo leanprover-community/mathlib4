@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 import Mathlib.RingTheory.Flat.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat ring homomorphisms
 

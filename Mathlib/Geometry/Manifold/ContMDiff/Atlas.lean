@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smoothness of charts and local structomorphisms
 
@@ -42,7 +45,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare functions, sets, points and smoothness indices
   {e : OpenPartialHomeomorph M H} {x : M}
 
-/-! ### Atlas members are `C^n` -/
+/-!
+# Atlas members are `C^n`
+-/
 
 section Atlas
 
@@ -208,7 +213,9 @@ lemma IsManifold.mem_maximalAtlas_iff_contMDiffOn [IsManifold I n M]
 
 end Atlas
 
-/-! ### (local) structomorphisms are `C^n` -/
+/-!
+# (local) structomorphisms are `C^n`
+-/
 
 section IsLocalStructomorph
 

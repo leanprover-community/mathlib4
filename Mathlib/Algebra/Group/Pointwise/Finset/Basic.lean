@@ -12,6 +12,9 @@ public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.Preimage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations of finsets
 
@@ -20,6 +23,7 @@ This file defines pointwise algebraic operations on finsets.
 ## Main declarations
 
 For finsets `s` and `t`:
+
 * `0` (`Finset.zero`): The singleton `{0}`.
 * `1` (`Finset.one`): The singleton `{1}`.
 * `-s` (`Finset.neg`): Negation, finset of all `-x` where `x ∈ s`.
@@ -32,12 +36,12 @@ For finsets `s` and `t`:
 For `α` a semigroup/monoid, `Finset α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
+the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note \[pointwise nat action\].
 
 ## Implementation notes
 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
-default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+default. Note that we do not mark them as reducible (as argued by note \[reducible non-instances\])
 since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`).
 
@@ -59,7 +63,9 @@ variable {F α β : Type*}
 
 namespace Finset
 
-/-! ### `0`/`1` as finsets -/
+/-!
+# `0`/`1` as finsets
+-/
 
 section One
 
@@ -177,7 +183,9 @@ lemma one_product_one [One β] : (1 ×ˢ 1 : Finset (α × β)) = 1 := by ext; s
 
 end One
 
-/-! ### Finset negation/inversion -/
+/-!
+# Finset negation/inversion
+-/
 
 section Inv
 
@@ -307,7 +315,9 @@ end InvolutiveInv
 
 open scoped Pointwise
 
-/-! ### Finset addition/multiplication -/
+/-!
+# Finset addition/multiplication
+-/
 
 
 section Mul
@@ -528,7 +538,9 @@ lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : IsRightRegular a
 
 end Mul
 
-/-! ### Finset subtraction/division -/
+/-!
+# Finset subtraction/division
+-/
 
 section Div
 
@@ -689,25 +701,35 @@ lemma inf_div_right [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α 
 
 end Div
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 section Instances
 
 variable [DecidableEq α] [DecidableEq β]
 
-/-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`Finset`. See note [pointwise nat action]. -/
+/--
+Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
+`Finset`. See note \[pointwise nat action\].
+-/
 @[to_additive (attr := instance_reducible)
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
-note [pointwise nat action]. -/]
+/--
+Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
+note \[pointwise nat action\].
+-/]
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
-/-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
+/--
+Repeated pointwise multiplication/division (not the same as pointwise repeated
+multiplication/division!) of a `Finset`. See note \[pointwise nat action\].
+-/
 @[to_additive (attr := instance_reducible)
-/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/]
+/--
+Repeated pointwise addition/subtraction (not the same as pointwise repeated
+addition/subtraction!) of a `Finset`. See note \[pointwise nat action\].
+-/]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 

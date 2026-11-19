@@ -11,6 +11,9 @@ public meta import Lean.Parser.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "emptyLine" linter
 
@@ -30,7 +33,7 @@ def Substring.Raw.getRange : Substring.Raw → Syntax.Range
 
 namespace Syntax
 /-!
-### `Syntax` filters
+# `Syntax` filters
 -/
 
 /--

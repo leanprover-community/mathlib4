@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.Harmonic.Analytic
 public import Mathlib.Analysis.Complex.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Mean Value Property of Vector-Valued Harmonic Functions
 
@@ -33,7 +36,7 @@ open InnerProductSpace Metric Real
 namespace InnerProductSpace
 
 /-!
-## Compatibility of `HarmonicContOnCl` with Linear Maps
+# Compatibility of `HarmonicContOnCl` with Linear Maps
 -/
 
 section
@@ -53,7 +56,7 @@ theorem HarmonicContOnCl.comp_CLM {f : E → F} {s : Set E} (h : HarmonicContOnC
 end
 
 /-!
-## The Mean Value Property
+# The Mean Value Property
 -/
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic order homomorphism classes
 
@@ -17,6 +20,7 @@ This file defines hom classes for common properties at the intersection of order
 ## Typeclasses
 
 Basic typeclasses
+
 * `NonnegHomClass`: Homs are nonnegative: `∀ f a, 0 ≤ f a`
 * `SubadditiveHomClass`: Homs are subadditive: `∀ f a b, f (a + b) ≤ f a + f b`
 * `SubmultiplicativeHomClass`: Homs are submultiplicative: `∀ f a b, f (a * b) ≤ f a * f b`
@@ -39,30 +43,43 @@ public section
 assert_not_exists Ring
 
 library_note «out-param inheritance» /--
-Diamond inheritance cannot depend on `outParam`s in the following circumstances:
-* there are three classes `Top`, `Middle`, `Bottom`
+                                     Diamond inheritance cannot depend on `outParam`s in the
+following circumstances:
+
+                                     * there are three classes `Top`, `Middle`, `Bottom`
 * all of these classes have a parameter `(α : outParam _)`
-* all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
-* the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+* all of these classes have an instance parameter `[Root α]`
+  that depends on this `outParam`
+* the `Root` class has two child classes: `Left` and `Right`,
+  these are siblings in the hierarchy
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
-* there is a `Leaf` class that inherits from both `Left` and `Right`.
+* there is a `Leaf` class that inherits from both `Left` and
+  `Right`.
 
-In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
-even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
+                                     In that case, given instances `Bottom α` and `Leaf α`, Lean
+cannot synthesize a `Top α` instance, even though the
+hypotheses of the instances `Bottom.toMiddle` and
+`Middle.toTop` are satisfied.
 
-There are two workarounds:
-* You could replace the bundled inheritance implemented by the instance `Middle.toTop` with
-  unbundled inheritance implemented by adding a `[Top α]` parameter to the `Middle` class. This is
-  the preferred option since it is also more compatible with Lean 4, at the cost of being more work
-  to implement and more verbose to use.
-* You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
-  `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
--/
+                                     There are two workarounds:
+
+                                     * You could replace the bundled inheritance implemented by the
+  instance `Middle.toTop` with unbundled inheritance
+  implemented by adding a `[Top α]` parameter to the `Middle`
+  class. This is the preferred option since it is also more
+  compatible with Lean 4, at the cost of being more work to
+  implement and more verbose to use.
+* You could weaken the `Bottom.toMiddle` instance by making it
+  depend on a subclass of `Middle.toTop`'s parameter, in this
+  example replacing `[Left α]` with `[Leaf α]`.
+                                     -/
 
 variable {F α β : Type*}
 
-/-! ### Basics -/
+/-!
+# Basics
+-/
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type*) (α β : outParam Type*) [Zero β] [LE β] [FunLike F α β] : Prop where

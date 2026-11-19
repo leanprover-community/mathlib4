@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.ProdApproximation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abstract measures on topological spaces
 
@@ -26,7 +29,7 @@ variable {X Y R E : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 section Defs
 
 /-!
-### Basic definitions
+# Basic definitions
 -/
 
 variable (X R E) in
@@ -152,7 +155,7 @@ lemma coe_arrowCongrLeft (φ : X ≃ₜ Y) :
 section Prod
 
 /-!
-### Product structure
+# Product structure
 -/
 
 -- note we define `contractSnd` first, because `f.curry` only works one way round

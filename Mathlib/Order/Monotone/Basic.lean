@@ -15,6 +15,9 @@ public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Contrapose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotonicity
 
@@ -59,7 +62,8 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
-/-! ### Monotonicity on the dual order
+/-!
+# Monotonicity on the dual order
 
 Strictly, many of the `*On.dual` lemmas in this section should use `ofDual ⁻¹' s` instead of `s`,
 but right now this is not possible as `Set.preimage` is not defined yet, and importing it creates
@@ -240,7 +244,9 @@ theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFo
 
 end WellFounded
 
-/-! ### Miscellaneous monotonicity results -/
+/-!
+# Miscellaneous monotonicity results
+-/
 
 section PreorderPartialOrder
 
@@ -332,7 +338,9 @@ end Fold
 
 end List
 
-/-! ### Monotonicity in linear orders  -/
+/-!
+# Monotonicity in linear orders
+-/
 
 
 section LinearOrder
@@ -487,7 +495,7 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
   (rintro rfl; simp at h)
 
 /-!
-### Strictly monotone functions and `cmp`
+# Strictly monotone functions and `cmp`
 -/
 
 
@@ -507,7 +515,9 @@ theorem StrictAnti.cmp_map_eq (hf : StrictAnti f) (x y : α) : cmp (f x) (f y) =
 
 end LinearOrder
 
-/-! ### Monotonicity in `ℕ` and `ℤ` -/
+/-!
+# Monotonicity in `ℕ` and `ℤ`
+-/
 
 
 section Preorder
@@ -726,12 +736,14 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
 
-/-- An antitone function `f : ℕ → ℕ` which is constant after stabilising for the first time,
+/--
+An antitone function `f : ℕ → ℕ` which is constant after stabilising for the first time,
 stabilises in at most `f 0` steps.
 
 Compared to `WellFoundedLT.antitone_chain_condition`, this lemma requires the extra hypothesis
 `hfstab` and only applies to `ℕ`-valued functions, but in return it gives an explicit bound on the
-stabilisation index. -/
+stabilisation index.
+-/
 lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
     (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) :
     ∃ n ≤ f 0, ∀ m, n ≤ m → f m = f n := by

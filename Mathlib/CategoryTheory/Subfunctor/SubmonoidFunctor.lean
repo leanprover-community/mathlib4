@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors of submonoids
 
@@ -21,7 +24,7 @@ We provide the complete lattice structure and the basic functoriality properties
 
 ## TODO
 
-- Show the Galois connection between `SubmonoidFunctor.image` and `SubmonoidFunctor.comap`
+* Show the Galois connection between `SubmonoidFunctor.image` and `SubmonoidFunctor.comap`
   and provide the related API.
 -/
 

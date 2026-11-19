@@ -11,6 +11,9 @@ public meta import Mathlib.Lean.Expr.Basic
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linters for Unused Instances in Types
 
@@ -20,7 +23,7 @@ in the remainder of the type. They are registered as linters in `Mathlib.Tactic.
 Currently, these linters only handle theorems. (This also includes `lemma`s and `instance`s of
 `Prop` classes.)
 
-- `unusedDecidableInType` linter (currently off by default): suggests replacing type-unused
+* `unusedDecidableInType` linter (currently off by default): suggests replacing type-unused
   `Decidable*` instance hypotheses, and could therefore be replaced by `classical` in the proof.
 
 TODO: log on type signature instead of whole command
@@ -67,6 +70,8 @@ instance : ToMessageData Parameter where
       msg := m!"{msg} (used in type, but only in a proof)"
     return msg
 
+
+set_option doc.verso false
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
@@ -90,6 +95,8 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}"
 
 /- Perf note: could cache visited exprs like `collectFVars` does. -/
+
+set_option doc.verso true
 /-- Collects free variables that do not appear in proofs. Ignores `sorry`s (and their types). -/
 def collectFVarsOutsideOfProofs (e : Expr) : StateRefT FVarIdSet MetaM Unit :=
   Meta.forEachExpr' e fun subExpr =>
@@ -112,9 +119,10 @@ structure InstanceOfConcern where
 /--
 Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
 `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
-- the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
--  `p Aᵢ` is `true`
-- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ` outside of proofs.
+
+* the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
+* `p Aᵢ` is `true`
+* The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ` outside of proofs.
 
 This is like `getForallUnusedInstanceBinderIdxsWhere`, but ignores dependence that arises from
 within proof terms.
@@ -126,17 +134,19 @@ partial def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxsWhere (p : Expr
   let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
   return instances.filterMap fun i => if fvarIdSet.contains i.fvarId then none else some i.idx
 where
-  /-- Enter foralls recursively, creating a telescope for binders which are instances of concern
-  and instantiating all other bvars with `sorry`. The only free variables therefore arise from
-  instances of concern which we want to track the usage of.
+  /--
+  Enter foralls recursively, creating a telescope for binders which are instances of concern
+and instantiating all other bvars with `sorry`. The only free variables therefore arise from
+instances of concern which we want to track the usage of.
 
   By instantiating ordinary binders with `sorry`, `collectFVarsOutsideOfProofs` can use the
-  computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
-  that do not contain a free variable for an instance of concern, which helps performance.
+computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
+that do not contain a free variable for an instance of concern, which helps performance.
 
   Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
-  returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
-  used or not. -/
+returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
+used or not.
+  -/
   go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
       StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
     let e := e.cleanupAnnotations
@@ -180,7 +190,7 @@ whose types satisfy `p`. (Does not consider the body of the declaration.) Collec
 Since `logOnUnused` will only be run if its argument is nonempty, it is allowed to be expensive.
 
 Note that `p` is non-monadic, and may encounter loose bvars in its argument. This is a performance
-optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
+optimization. However, the `Parameter`s are created in a telescope, and their fields will _not_
 have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
@@ -204,6 +214,8 @@ def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
               }
           logOnUnused unusedInstances
 
+
+set_option doc.verso false
 /--
 Checks the type of `thm` to see if it contains instance hypotheses
 that (1) are unused in the remainder of the type (2) have types which satisfy `instanceTypeFilter`.
@@ -244,17 +256,20 @@ def _root_.Lean.ConstantVal.logOnUnusedInstancesInTypeWhere (thm : ConstantVal)
   if thm.type.hasInstanceBinderOf instanceTypeFilter then
     thm.onUnusedInstancesWhere instanceTypeFilter log
 
+
+set_option doc.verso true
 section Decidable
 
 /--
 Checks if `type` is an application of (or forall with return type which is an application of) a
 `Decidable*` constant. Specifically, checks if the constant is one of:
-- `Decidable`
-- `DecidablePred`
-- `DecidableRel`
-- `DecidableEq`
-- `DecidableLE`
-- `DecidableLT`
+
+* `Decidable`
+* `DecidablePred`
+* `DecidableRel`
+* `DecidableEq`
+* `DecidableLE`
+* `DecidableLT`
 
 Ignores metadata and cleans up annotations.
 -/
@@ -294,8 +309,9 @@ which are not used in the remainder of the type. If so, it suggests removing the
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 
-Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the
-outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
+Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the outermost
+level of a command due to working around [
+lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
 public register_option linter.unusedDecidableInType : Bool := {
   defValue := false

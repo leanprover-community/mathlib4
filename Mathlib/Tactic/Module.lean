@@ -10,7 +10,11 @@ public meta import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Tactic.Ring
 
-/-! # A tactic for normalization over modules
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# A tactic for normalization over modules
 
 This file provides the two tactics `match_scalars` and `module`.  Given a goal which is an equality
 in a type `M` (with `M` an `AddCommMonoid`), the `match_scalars` tactic parses the LHS and RHS of
@@ -38,19 +42,22 @@ namespace Mathlib.Tactic.Module
 
 @[expose] section
 
-/-! ### Theory of lists of pairs (scalar, vector)
+/-!
+# Theory of lists of pairs (scalar, vector)
 
 This section contains the lemmas which are orchestrated by the `match_scalars` and `module` tactics
 to prove goals in modules.  The basic object which these lemmas concern is `NF R M`, a type synonym
 for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.
 -/
 
-/-- Basic theoretical "normal form" object of the `match_scalars` and `module` tactics: a type
+/--
+Basic theoretical "normal form" object of the `match_scalars` and `module` tactics: a type
 synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.  This is the
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
-ring-normalized. But this partial normal form is more convenient for our purposes.) -/
+ring-normalized. But this partial normal form is more convenient for our purposes.)
+-/
 def NF (R : Type*) (M : Type*) := List (R × M)
 
 namespace NF
@@ -240,9 +247,12 @@ end
 meta section
 variable {u v : Level}
 
-/-! ### Lists of expressions representing scalars and vectors, and operations on such lists -/
+/-!
+# Lists of expressions representing scalars and vectors, and operations on such lists
+-/
 
-/-- Basic meta-code "normal form" object of the `match_scalars` and `module` tactics: a type synonym
+/--
+Basic meta-code "normal form" object of the `match_scalars` and `module` tactics: a type synonym
 for a list of ordered triples comprising expressions representing terms of two types `R` and `M`
 (where typically `M` is an `R`-module), together with a natural number "index".
 
@@ -254,7 +264,8 @@ list are in strictly increasing order by natural-number index.
 
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.Module.NF`
 object can be built from a `Module.qNF` object; this construction is provided as
-`Mathlib.Tactic.Module.qNF.toNF`. -/
+`Mathlib.Tactic.Module.qNF.toNF`.
+-/
 abbrev qNF (R : Q(Type u)) (M : Q(Type v)) := List ((Q($R) × Q($M)) × ℕ)
 
 namespace qNF
@@ -276,7 +287,8 @@ def onScalar {u₁ u₂ : Level} {R₁ : Q(Type u₁)} {R₂ : Q(Type u₂)} (l 
     qNF R₂ M :=
   l.map fun ((a, x), k) ↦ ((q($f $a), x), k)
 
-/-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
+/--
+Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct another such term `l`, which will have the property that in the
 `$R`-module `$M`, the sum of the "linear combinations" represented by `l₁` and `l₂` is the linear
 combination represented by `l`.
@@ -287,7 +299,8 @@ the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 
 The construction is as follows: merge the two lists, except that if pairs `(a₁, x₁)` and `(a₂, x₂)`
 appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then contribute a term
-`(a₁ + a₂, x₁)` to the output list with `ℕ`-component `k`. -/
+`(a₁ + a₂, x₁)` to the output list with `ℕ`-component `k`.
+-/
 meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
@@ -320,7 +333,8 @@ meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Mo
       let pf := mkAddProof iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
-/-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
+/--
+Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct another such term `l`, which will have the property that in the
 `$R`-module `$M`, the difference of the "linear combinations" represented by `l₁` and `l₂` is the
 linear combination represented by `l`.
@@ -369,7 +383,8 @@ variable {iM : Q(AddCommMonoid $M)}
   {u₁ : Level} {R₁ : Q(Type u₁)} {iR₁ : Q(Semiring $R₁)} (iRM₁ : Q(@Module $R₁ $M $iR₁ $iM))
   {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ $iM))
 
-/-- Given an expression `M` representing a type which is an `AddCommMonoid` and a module over *two*
+/--
+Given an expression `M` representing a type which is an `AddCommMonoid` and a module over _two_
 semirings `R₁` and `R₂`, find the "bigger" of the two semirings.  That is, we assume that it will
 turn out to be the case that either (1) `R₁` is an `R₂`-algebra and the `R₂` scalar action on `M` is
 induced from `R₁`'s scalar action on `M`, or (2) vice versa; we return the semiring `R₁` in the
@@ -377,7 +392,8 @@ first case and `R₂` in the second case.
 
 Moreover, given expressions representing particular scalar multiplications of `R₁` and/or `R₂` on
 `M` (a `List (R₁ × M)`, a `List (R₂ × M)`, a pair `(r, x) : R₂ × M`), bump these up to the "big"
-ring by applying the algebra-map where needed. -/
+ring by applying the algebra-map where needed.
+-/
 def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)) :
     MetaM <| Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
       (Σ l₁' : qNF R M, Q(NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)))
@@ -412,12 +428,15 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
 
 end qNF
 
-/-! ### Core of the `module` tactic -/
+/-!
+# Core of the `module` tactic
+-/
 
 variable {M : Q(Type v)}
 
-/-- The main algorithm behind the `match_scalars` and `module` tactics: partially-normalizing an
-expression in an additive commutative monoid `M` into the form c1 • x1 + c2 • x2 + ... c_k • x_k,
+/--
+The main algorithm behind the `match_scalars` and `module` tactics: partially-normalizing an
+expression in an additive commutative monoid `M` into the form c1 • x1 + c2 • x2 + ... c\_k • x\_k,
 where x1, x2, ... are distinct atoms in `M`, and c1, c2, ... are scalars. The scalar type of the
 expression is not pre-determined: instead it starts as `ℕ` (when each atom is initially given a
 scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are encountered.
@@ -426,13 +445,14 @@ It is assumed that there is a "linear order" on all the semirings which appear i
 for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`.
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
-instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a
-proof-of-concept implementation of this variant, but it would need some polishing before joining
-Mathlib.
+instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR
+https://github.com/leanprover-community/mathlib4/pull/16984 provides a proof-of-concept
+implementation of this variant, but it would need some polishing before joining Mathlib.
 
 Possible TODO, if poor performance on large problems is witnessed: switch the implementation from
 `AtomM` to `CanonM`, per the discussion
-https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
+https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191
+-/
 partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     AtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
@@ -540,12 +560,14 @@ partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ :
       let (mvars, pf) ← reduceCoefficientwise iRM l₁ L₂
       pure (mvar.mvarId! :: mvars, (q(NF.eq_const_cons $x₂ $mvar $pf):))
 
-/-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
+/--
+Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
 RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and reduce the goal to
 the respective equalities of the `R`-coefficients of each atom.
 
 This is an auxiliary function which produces slightly awkward goals in `R`; they are later cleaned
-up by the function `Mathlib.Tactic.Module.postprocess`. -/
+up by the function `Mathlib.Tactic.Module.postprocess`.
+-/
 def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
   /- Parse the goal as an equality in a type `M` of two expressions `lhs` and `rhs`, with `M`
   carrying an `AddCommMonoid` instance. -/
@@ -646,12 +668,14 @@ def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
     let ⟨e, pfT⟩ ← qNF.rebuild iM iR iRM postCtx t
     pure ⟨q($r' • $x + $e), (q(NF.eval_cons_eq $x $hr $pfT) :)⟩
 
-/-- Attempt to lift the scalars of `l` into the ring `base`.
+/--
+Attempt to lift the scalars of `l` into the ring `base`.
 
 `base` must be a semiring acting on `M`, and `qNF.matchRings` must be able to relate the parsed ring
 `R` to it (it throws when the two rings are not comparable; this is caught here and returned as
 `none`).  On success, the lifted list is returned together with a proof that its evaluation agrees
-with that of `l`. -/
+with that of `l`.
+-/
 def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
     (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (base : Σ w : Level, Q(Type w))
     (l : qNF R M) :
@@ -666,12 +690,14 @@ def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
     return some ⟨w', B', iB', iBM', l', pfL⟩
   catch _ => return none
 
-/-- Normalize an expression in an `AddCommMonoid` into the form `c₁ • x₁ + (c₂ • x₂ + ... + 0)`
+/--
+Normalize an expression in an `AddCommMonoid` into the form `c₁ • x₁ + (c₂ • x₂ + ... + 0)`
 with normalized scalars by chaining `parse` and `qNF.rebuild`.
 
 When `base?` is provided, `eval` will also attempt to lift the coefficients into `base?`. If `base?`
 is not a semiring acting on `M` or when `qNF.matchRings` cannot relate the parsed ring to `base?`
-then the result falls back to the parsed ring. -/
+then the result falls back to the parsed ring.
+-/
 def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (base? : Option (Σ u : Level, Q(Type u)))
     (postCtx : Simp.Context) (e : Q($M)) : AtomM Simp.Result := do
   let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM e
@@ -691,7 +717,8 @@ def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (base? : Option (Σ u : Leve
       pure ((e' : Expr), (pf' : Expr))
   return { expr := e', proof? := some (← mkEqTrans pf pf') }
 
-/-- Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
+/--
+Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
 `match_scalars` splits up the goal into equalities of the scalars for each respective atom. This
 means the example goal above is replaced by goals `⊢ a = c` (from `x`), ..., `⊢ b = d` (from `y`).
 
@@ -711,6 +738,7 @@ If the set of scalar types encountered is not totally ordered (in the sense that
 `S` encountered, it holds that either `Algebra R S` or `Algebra S R`), then `match_scalars` fails.
 
 Examples:
+
 ```
 example [AddCommMonoid M] [Semiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
@@ -732,7 +760,8 @@ example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
 -/
 elab "match_scalars" : tactic => Tactic.liftMetaTactic matchScalars
 
-/-- Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
+/--
+Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
 `module` proves the equalities of the scalars for each respective atom, by ring normalization.
 This means the example goal above is solved if `ring` can prove `⊢ a = c` (from `x`), ..., `⊢ b = d`
 (from `y`).
@@ -741,6 +770,7 @@ This means the example goal above is solved if `ring` can prove `⊢ a = c` (fro
 equalities, you can instead use `match_scalars` followed by specialized proofs for each scalar.
 
 Examples:
+
 ```
 example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by

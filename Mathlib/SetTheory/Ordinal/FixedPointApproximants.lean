@@ -7,12 +7,15 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal Approximants for the Fixed points on complete lattices
 
 This file sets up the ordinal-indexed approximation theory of fixed points
-of a monotone function in a complete lattice [Cousot1979].
-The proof follows loosely the one from [Echenique2005].
+of a monotone function in a complete lattice \[Cousot1979\].
+The proof follows loosely the one from \[Echenique2005\].
 
 However, the proof given here is not constructive as we use the non-constructive axiomatization of
 ordinals from mathlib. It still allows an approximation scheme indexed over the ordinals.
@@ -25,14 +28,17 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
   less or equal than an initial value of a bundled monotone function.
 
 ## Main theorems
+
 * `OrdinalApprox.lfp_mem_range_lfpApprox`: The ordinal-indexed approximation of
   the least fixed point eventually reaches the least fixed point
 * `OrdinalApprox.gfp_mem_range_gfpApprox`: The ordinal-indexed approximation of
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
-* [F. Echenique, *A short and constructive proof of Tarski’s fixed-point theorem*][Echenique2005]
-* [P. Cousot & R. Cousot, *Constructive Versions of Tarski's Fixed Point Theorems*][Cousot1979]
+
+* ‍\[F. Echenique, _A short and constructive proof of Tarski’s fixed-point
+  theorem_\]\[Echenique2005\]
+* ‍\[P. Cousot & R. Cousot, _Constructive Versions of Tarski's Fixed Point Theorems_\]\[Cousot1979\]
 
 ## Tags
 

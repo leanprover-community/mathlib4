@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Log
 public import Mathlib.SetTheory.Ordinal.Family
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal exponential
 
@@ -25,9 +28,11 @@ universe u v w
 
 namespace Ordinal
 
-/-- The ordinal exponential, defined by transfinite recursion.
+/--
+The ordinal exponential, defined by transfinite recursion.
 
-We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+We call this `opow` in theorems in order to disambiguate from other exponentials.
+-/
 @[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
@@ -279,12 +284,16 @@ theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u)
 theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u * v < b ^ x := by
   simpa using opow_mul_add_lt_opow hv (opow_pos _ hv.pos) hu
 
-/-! ### Ordinal logarithm -/
+/-!
+# Ordinal logarithm
+-/
 
-/-- The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and
+/--
+The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and
 `w < b ^ u`.
 
-We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`. -/
+We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`.
+-/
 @[pp_nodot]
 def log (b x : Ordinal) : Ordinal :=
   sSup ((b ^ ·) ⁻¹' Iic x)
@@ -310,20 +319,24 @@ theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
     convert csSup_empty
     aesop
 
-/-- `opow b` and `log b` (almost) form a Galois connection.
+/--
+`opow b` and `log b` (almost) form a Galois connection.
 
 See `opow_le_iff_le_log'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`. See also
 `le_log_of_opow_le` and `opow_le_of_le_log`, which are both separate implications under weaker
-assumptions. -/
+assumptions.
+-/
 theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x :=
   (isNormal_opow hb).le_iff_le_sSup' ⟨0, by simpa [one_le_iff_ne_zero]⟩
 
-/-- `opow b` and `log b` (almost) form a Galois connection.
+/--
+`opow b` and `log b` (almost) form a Galois connection.
 
 See `opow_le_iff_le_log` for a variant assuming `x ≠ 0` rather than `c ≠ 0`. See also
 `le_log_of_opow_le` and `opow_le_of_le_log`, which are both separate implications under weaker
-assumptions. -/
+assumptions.
+-/
 theorem opow_le_iff_le_log' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   obtain rfl | hx := eq_or_ne x 0
@@ -342,19 +355,23 @@ theorem opow_le_of_le_log {b x c : Ordinal} (hc : c ≠ 0) (h : c ≤ log b x) :
     exact (h.not_gt (pos_iff_ne_zero.2 hc)).elim
   · rwa [opow_le_iff_le_log' hb hc]
 
-/-- `opow b` and `log b` (almost) form a Galois connection.
+/--
+`opow b` and `log b` (almost) form a Galois connection.
 
 See `lt_opow_iff_log_lt'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`. See also
 `lt_opow_of_log_lt` and `lt_log_of_lt_opow`, which are both separate implications under weaker
-assumptions. -/
+assumptions.
+-/
 theorem lt_opow_iff_log_lt {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log hb hx)
 
-/-- `opow b` and `log b` (almost) form a Galois connection.
+/--
+`opow b` and `log b` (almost) form a Galois connection.
 
 See `lt_opow_iff_log_lt` for a variant assuming `x ≠ 0` rather than `c ≠ 0`. See also
 `lt_opow_of_log_lt` and `lt_log_of_lt_opow`, which are both separate implications under weaker
-assumptions. -/
+assumptions.
+-/
 theorem lt_opow_iff_log_lt' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log' hb hc)
 
@@ -524,7 +541,9 @@ theorem lt_omega0_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
     · simp [mul_lt_mul_iff_right₀, opow_pos]
     · simpa
 
-/-! ### Interaction with `Nat.cast` -/
+/-!
+# Interaction with `Nat.cast`
+-/
 
 @[simp, norm_cast]
 theorem natCast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ n

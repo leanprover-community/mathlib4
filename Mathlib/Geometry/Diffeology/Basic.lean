@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diffeological spaces
 
@@ -18,6 +21,7 @@ and smooth maps between them.
 
 Concretely, this means that for our purposes a diffeological space is a type `X` together with a set
 `plots n` of maps ℝⁿ → X for each n (called plots), such that the following three properties hold:
+
 * Every constant map is a plot.
 * For every plot p : ℝⁿ → X and smooth map f : ℝᵐ → ℝⁿ, p ∘ f is a plot.
 * Every map p : ℝⁿ → X that is locally smooth is a plot, where by locally smooth we mean that ℝⁿ can
@@ -67,6 +71,7 @@ implementation details below.
 Instead of defining diffeologies as collections of plots ℝⁿ → X whose domains are the spaces ℝⁿ, we
 could have also defined them in terms of maps from some other collection of test spaces; for
 example:
+
 * all open balls in the spaces ℝⁿ
 * all open subsets of the spaces ℝⁿ
 * all finite-dimensional normed spaces, or open balls therein / open subsets thereof
@@ -77,6 +82,7 @@ this is that the corresponding sites are all dense subsites of the site of finit
 manifolds, and hence give rise to equivalent sheaf topoi. Which of those sites / collections of test
 spaces to use is hence mainly a matter of convenience; we have gone with the cartesian spaces ℝⁿ
 mainly for two reasons:
+
 * They are the simplest to work with for practical purposes: maps between subsets are more annoying
   to deal with formally than maps between types, and e.g. smooth manifolds are extremely annoying
   to quantify over, while the cartesian spaces ℝⁿ are indexed simply by the natural numbers ℕ.
@@ -124,22 +130,25 @@ possible to extend this to all normed spaces though in the future.
 Much of the basic theory of diffeological spaces has already been formalised at
 https://github.com/peabrainiac/lean-orbifolds and just needs to be upstreamed. However, some TODOs
 that haven't been formalised at all yet and only depend on the material here are:
+
 * Generalise `NormedSpace.toDiffeology` to infinite-dimensional normed spaces. The hard part of this
   is showing that the D-topology of any normed space is just its usual topology, as is needed to
   make that equality definitional. On paper, this is relatively straightforward:
-  for a set U ⊆ X that is not open under the standard normed space topology, take a sequence x_i
+  for a set U ⊆ X that is not open under the standard normed space topology, take a sequence x\_i
   outside of U that converges to a point in U, a smooth map ℝ → X under which a convergent sequence
-  in ℝ maps to this sequence (x_i), and use it to conclude that U is not D-open either. However,
+  in ℝ maps to this sequence (x\_i), and use it to conclude that U is not D-open either. However,
   constructing the needed smooth map explicitly is probably a lot of work.
 * Generalise `dSmooth_iff_contDiff` to infinite-dimensional normed spaces if possible. There should
   be some references at least for the case of Banach spaces in the literature.
 
 ## References
 
-* [Patrick Iglesias-Zemmour, *Diffeology*][zemmour2013diffeology]
-* <https://ncatlab.org/nlab/show/diffeological+space>
+* ‍\[Patrick Iglesias-Zemmour, _Diffeology_\]\[zemmour2013diffeology\]
+* [
+  https://ncatlab.org/nlab/show/diffeological+space](https://ncatlab.org/nlab/show/diffeological+space)
 
 ## Tags
+
 diffeology, diffeological space, smoothness, smooth function
 -/
 
@@ -169,8 +178,10 @@ class DiffeologicalSpace (X : Type*) where
   /-- Every locally smooth map `EuclideanSpace ℝ (Fin n) → X` is a plot. -/
   locality {n : ℕ} {p : 𝔼ⁿ → X} (hp : ∀ x : 𝔼ⁿ, ∃ u : Set 𝔼ⁿ, IsOpen u ∧ x ∈ u ∧
     ∀ {m : ℕ} {f : 𝔼ᵐ → 𝔼ⁿ}, (∀ x, f x ∈ u) → ContDiff ℝ ∞ f → p ∘ f ∈ plots m) : p ∈ plots n
-  /-- The D-topology of the diffeology. This is included as part of the data in order to give
-  control over what the D-topology is defeq to. See also note [forgetful inheritance]. -/
+  /--
+  The D-topology of the diffeology. This is included as part of the data in order to give
+control over what the D-topology is defeq to. See also note \[forgetful inheritance\].
+  -/
   dTopology : TopologicalSpace X := {
     IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p ∈ plots n, IsOpen (p ⁻¹' u)
     isOpen_univ := fun _ _ _ ↦ isOpen_univ

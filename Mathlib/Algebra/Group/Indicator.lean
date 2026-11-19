@@ -10,14 +10,16 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Notation.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function
 
 In this file, we prove basic results about the indicator of a set.
 
-- `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
-- `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
-
+* `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
+* `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
 
 ## Implementation note
 
@@ -32,6 +34,7 @@ The indicator function is implemented non-computably, to avoid having to pass ar
 arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`.
 
 ## Tags
+
 indicator, characteristic
 -/
 
@@ -214,7 +217,9 @@ lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ 
 
 end One
 
-/-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
+/-!
+# Relationship with `Pi.mulSingle`/`Pi.single`
+-/
 
 variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
 

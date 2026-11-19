@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Factorization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induction principles involving factorizations
 -/
@@ -18,7 +21,9 @@ open Nat Finsupp
 namespace Nat
 variable {a b n p : ℕ}
 
-/-! ## Definitions -/
+/-!
+# Definitions
+-/
 
 
 /-- Given `P 0, P 1` and a way to extend `P a` to `P (p ^ n * a)` for prime `p` not dividing `a`,
@@ -101,7 +106,9 @@ lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one :
   · simpa using prime _ hp
   · exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha
 
-/-! ## Lemmas on multiplicative functions -/
+/-!
+# Lemmas on multiplicative functions
+-/
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/

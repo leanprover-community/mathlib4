@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chunk of the increment partition for Szemerédi Regularity Lemma
 
@@ -33,7 +36,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section
@@ -51,7 +54,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Fi
 local notation3 "m" => (card α / stepBound #P.parts : ℕ)
 
 /-!
-### Definitions
+# Definitions
 
 We define `chunk`, the partition of a part, and `star`, the sets of parts of `chunk` that are
 contained in the corresponding witness of non-uniformity.
@@ -72,7 +75,7 @@ noncomputable def star (V : Finset α) : Finset (Finset α) :=
   {A ∈ (chunk hP G ε hU).parts | A ⊆ G.nonuniformWitness ε U V}
 
 /-!
-### Density estimates
+# Density estimates
 
 We estimate the density between parts of `chunk`.
 -/
@@ -167,7 +170,9 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
         card_sdiff_of_subset (biUnion_star_subset_nonuniformWitness hP G ε hU V)]
       exact mod_cast card_nonuniformWitness_sdiff_biUnion_star hV hUV hunif
 
-/-! ### `chunk` -/
+/-!
+# `chunk`
+-/
 
 
 theorem card_chunk (hm : m ≠ 0) : #(chunk hP G ε hU).parts = 4 ^ #P.parts := by
@@ -409,7 +414,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
       linarith
 
 /-!
-### Final bounds
+# Final bounds
 
 Those inequalities are the end result of all this hard work.
 -/

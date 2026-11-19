@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
 -/

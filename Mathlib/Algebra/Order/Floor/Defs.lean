@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Ring.Cast
 
 import Mathlib.Order.Int.LeastGreatest
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Floor and ceil
 
@@ -20,7 +23,6 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `FloorSemiring`: An ordered semiring with natural-valued floor and ceil.
 * `Nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
 * `Nat.ceil a`: Least natural `n` such that `a ≤ n`.
-
 * `FloorRing`: A linearly ordered ring with integer-valued floor and ceil.
 * `Int.floor a`: Greatest integer `z` such that `z ≤ a`.
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
@@ -51,7 +53,9 @@ assert_not_exists Finset
 
 variable {α β : Type*}
 
-/-! ### Floor semiring -/
+/-!
+# Floor semiring
+-/
 
 /-- A `FloorSemiring` is an ordered semiring over `α` with a function
 `floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x`.
@@ -172,7 +176,9 @@ end LinearOrderedSemiring
 
 end Nat
 
-/-! ### Floor rings -/
+/-!
+# Floor rings
+-/
 
 /-- A `FloorRing` is a linear ordered ring over `α` with a function
 `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a`.
@@ -292,7 +298,9 @@ theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
 theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
   rfl
 
-/-! #### Floor -/
+/-!
+# Floor
+-/
 
 theorem gc_coe_floor : GaloisConnection ((↑) : ℤ → α) floor :=
   FloorRing.gc_coe_floor
@@ -315,7 +323,9 @@ theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_ze
 
 theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
 
-/-! #### Ceil -/
+/-!
+# Ceil
+-/
 
 theorem gc_ceil_coe : GaloisConnection ceil ((↑) : ℤ → α) :=
   FloorRing.gc_ceil_coe
@@ -345,7 +355,9 @@ section FloorRingToSemiring
 
 variable [Ring α] [LinearOrder α] [FloorRing α]
 
-/-! #### A floor ring as a floor semiring -/
+/-!
+# A floor ring as a floor semiring
+-/
 
 -- see Note [lower instance priority]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
@@ -373,7 +385,9 @@ end FloorRingToSemiring
 
 namespace FloorRing
 
-/-! #### `Int.cast` is strictly monotone on floor rings -/
+/-!
+# `Int.cast` is strictly monotone on floor rings
+-/
 
 variable [Ring α] [LinearOrder α] [FloorRing α]
 

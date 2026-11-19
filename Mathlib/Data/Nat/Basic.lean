@@ -12,13 +12,16 @@ public import Mathlib.Data.Set.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic operations on the natural numbers
 
 This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -50,17 +53,21 @@ instance : PartialOrder ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-/-! ### `succ`, `pred` -/
+/-!
+# `succ`, `pred`
+-/
 
 lemma succ_injective : Injective Nat.succ := @succ.inj
 
-/-! ### `div` -/
+/-!
+# `div`
+-/
 
 protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
   rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
 
 /-!
-### `pow`
+# `pow`
 -/
 
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
@@ -74,7 +81,7 @@ protected theorem pow_sub_one {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
   rw [← Nat.pow_div (one_le_iff_ne_zero.mpr ha) (Nat.pos_iff_ne_zero.mpr hx), Nat.pow_one]
 
 /-!
-### Recursion and induction principles
+# Recursion and induction principles
 
 This section is here due to dependencies -- the lemmas here require some of the lemmas
 proved above, and some of the results in later sections depend on the definitions in this section.
@@ -116,7 +123,9 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
     n ∈ S :=
   set_induction_bounded hb h_ind (zero_le n)
 
-/-! ### `mod`, `dvd` -/
+/-!
+# `mod`, `dvd`
+-/
 
 /-- Two natural numbers dividing each other are equal. -/
 protected lemma dvd_antisymm_iff : m = n ↔ m ∣ n ∧ n ∣ m :=
@@ -144,7 +153,9 @@ protected lemma dvd_sub_self_right {n m : ℕ} :
   · simp [h]
   · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
 
-/-! ### Miscellaneous -/
+/-!
+# Miscellaneous
+-/
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
     a * b ≤ a ^ b := by

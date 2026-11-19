@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
 
@@ -24,12 +27,12 @@ up naturally in the proof of the Besicovitch theorem (which goes through a greed
 ensure that in the end one needs at most `N` families of balls, the crucial property of the
 underlying metric space is that there should be no satellite configuration of `N + 1` points.
 
-This file is devoted to the study of this property in vector spaces: we prove the main result
-of [Füredi and Loeb, On the best constant for the Besicovitch covering theorem][furedi-loeb1994],
-which shows that the optimal such `N` in a vector space coincides with the maximal number
-of points one can put inside the unit ball of radius `2` under the condition that their distances
-are bounded below by `1`.
-In particular, this number is bounded by `5 ^ dim` by a straightforward measure argument.
+This file is devoted to the study of this property in vector spaces: we prove the main result of
+‍\[Füredi and Loeb, On the best constant for the Besicovitch covering theorem\]\[furedi-loeb1994\],
+which shows that the optimal such `N` in a vector space coincides with the maximal number of points
+one can put inside the unit ball of radius `2` under the condition that their distances are bounded
+below by `1`. In particular, this number is bounded by `5 ^ dim` by a straightforward measure
+argument.
 
 ## Main definitions and results
 
@@ -91,7 +94,9 @@ theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ
 
 end SatelliteConfig
 
-/-! ### Disjoint balls of radius close to `1` in the radius `2` ball. -/
+/-!
+# Disjoint balls of radius close to `1` in the radius `2` ball.
+-/
 
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
@@ -293,7 +298,7 @@ end
 namespace SatelliteConfig
 
 /-!
-### Relating satellite configurations to separated points in the ball of radius `2`.
+# Relating satellite configurations to separated points in the ball of radius `2`.
 
 We prove that the number of points in a satellite configuration is bounded by the maximal number
 of `1`-separated points in the ball of radius `2`. For this, start from a satellite configuration

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform structure induced by an absolute value
 
@@ -19,7 +22,7 @@ follows exactly the same path.
 
 ## References
 
-* [N. Bourbaki, *Topologie générale*][bourbaki1966]
+* ‍\[N. Bourbaki, _Topologie générale_\]\[bourbaki1966\]
 
 ## Tags
 

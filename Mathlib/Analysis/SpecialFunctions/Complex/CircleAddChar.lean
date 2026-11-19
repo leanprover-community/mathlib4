@@ -10,10 +10,14 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive characters valued in the unit circle
 
 This file defines additive characters, valued in the unit circle, from either
+
 * the ring `ZMod N` for any non-zero natural `N`,
 * the additive circle `ℝ / T ⬝ ℤ`, for any real `T`.
 
@@ -38,7 +42,7 @@ open AddCircle
 namespace ZMod
 
 /-!
-### Additive characters valued in the complex circle
+# Additive characters valued in the complex circle
 -/
 
 open scoped Real

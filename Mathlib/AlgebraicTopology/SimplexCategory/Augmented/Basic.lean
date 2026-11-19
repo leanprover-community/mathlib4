@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Augmented simplex category
 

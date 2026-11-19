@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Cone.Dual
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner dual cone of a set
 
@@ -17,6 +20,7 @@ consisting of all points `y` such that `0 ≤ ⟪x, y⟫` for all `x ∈ s`.
 ## Main statements
 
 We prove the following theorems:
+
 * `ProperCone.innerDual_innerDual`: The double inner dual of a proper convex cone is itself.
 * `ProperCone.hyperplane_separation'`:
   This variant of the
@@ -89,7 +93,9 @@ lemma innerDual_iUnion {ι : Sort*} (f : ι → Set E) :
 lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
   ext; simp [forall_comm (α := E)]
 
-/-! ### Farkas' lemma and double dual of a cone in a Hilbert space -/
+/-!
+# Farkas' lemma and double dual of a cone in a Hilbert space
+-/
 
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
 
@@ -34,7 +37,7 @@ assert_not_exists MonoidWithZero Units FaithfulSMul MonoidHom
 variable {M N α β : Type*}
 
 /-!
-### Actions _on_ the opposite type
+# Actions _on_ the opposite type
 
 Actions on the opposite type just act on the underlying type.
 -/
@@ -72,7 +75,7 @@ lemma unop_smul_eq_unop_smul_unop [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralSca
 end MulOpposite
 
 /-!
-### Right actions
+# Right actions
 
 In this section we establish `SMul αᵐᵒᵖ β` as the canonical spelling of right scalar multiplication
 of `β` by `α`, and provide convenient notations.
@@ -80,24 +83,32 @@ of `β` by `α`, and provide convenient notations.
 
 namespace RightActions
 
-/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+/--
+With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
-In lemma names this is still called `smul`. -/
+In lemma names this is still called `smul`.
+-/
 scoped notation3:74 r:75 " •> " m:74 => r • m
 
-/-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
+/--
+With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
 
-In lemma names this is still called `op_smul`. -/
+In lemma names this is still called `op_smul`.
+-/
 scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
 
-/-- With `open scoped RightActions`, an alternative symbol for left actions, `r +ᵥ m`.
+/--
+With `open scoped RightActions`, an alternative symbol for left actions, `r +ᵥ m`.
 
-In lemma names this is still called `vadd`. -/
+In lemma names this is still called `vadd`.
+-/
 scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
 
-/-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
+/--
+With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
 
-In lemma names this is still called `op_vadd`. -/
+In lemma names this is still called `op_vadd`.
+-/
 scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
 section examples
@@ -140,7 +151,9 @@ lemma op_smul_mul (b : β) (a₁ a₂ : α) : b <• (a₁ * a₂) = b <• a₁
 
 end
 
-/-! ### Actions _by_ the opposite type (right actions) -/
+/-!
+# Actions _by_ the opposite type (right actions)
+-/
 
 open MulOpposite
 

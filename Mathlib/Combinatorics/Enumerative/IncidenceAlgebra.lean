@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 
 import Mathlib.Algebra.Module.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Incidence algebras
 
@@ -50,24 +53,25 @@ left and right inverses agree if they exist.
 ## TODOs
 
 Here are some additions to this file that could be made in the future:
-- Generalize the construction of `mu` to invert any element of the incidence algebra `f` which has
+
+* Generalize the construction of `mu` to invert any element of the incidence algebra `f` which has
   `f x x` a unit for all `x`.
-- Give formulas for higher powers of zeta.
-- A formula for the möbius function on a pi type similar to the one for products
-- More examples / applications to different posets.
-- Connection with Galois insertions
-- Finsum version of Möbius inversion that holds even when an order doesn't have top/bot?
-- Connect this theory to (infinite) matrices, giving maps of the incidence algebra to matrix rings
-- Connect to the more advanced theory of arithmetic functions, and Dirichlet convolution.
+* Give formulas for higher powers of zeta.
+* A formula for the möbius function on a pi type similar to the one for products
+* More examples / applications to different posets.
+* Connection with Galois insertions
+* Finsum version of Möbius inversion that holds even when an order doesn't have top/bot?
+* Connect this theory to (infinite) matrices, giving maps of the incidence algebra to matrix rings
+* Connect to the more advanced theory of arithmetic functions, and Dirichlet convolution.
 
 ## References
 
-* [Aigner, *Combinatorial Theory, Chapter IV*][aigner1997]
-* [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
-* [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
-  VI*][doubilet_rota_stanley_vi]
-* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
-* [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
+* ‍\[Aigner, _Combinatorial Theory, Chapter IV_\]\[aigner1997\]
+* ‍\[Jacobson, _Basic Algebra I, 8.6_\]\[jacobson1974\]
+* ‍\[Doubilet, Rota, Stanley, _On the foundations of Combinatorial Theory
+  VI_\]\[doubilet\_rota\_stanley\_vi\]
+* ‍\[Spiegel, O'Donnell, _Incidence Algebras_\]\[spiegel\_odonnell1997\]
+* ‍\[Kung, Rota, Yan, _Combinatorics: The Rota Way, Chapter 3_\]\[kung\_rota\_yan2009\]
 -/
 
 @[expose] public section
@@ -78,10 +82,12 @@ variable {𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
-  /-- The underlying function of an element of the incidence algebra.
+  /--
+  The underlying function of an element of the incidence algebra.
 
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
-  instance. -/
+instance.
+  -/
   toFun : α → α → 𝕜
   eq_zero_of_not_le' ⦃a b : α⦄ : ¬a ≤ b → toFun a b = 0
 
@@ -122,7 +128,9 @@ lemma ext ⦃f g : IncidenceAlgebra 𝕜 α⦄ (h : ∀ a b, a ≤ b → f a b =
 
 end Coes
 
-/-! ### Additive and multiplicative structure -/
+/-!
+# Additive and multiplicative structure
+-/
 
 instance instZero : Zero (IncidenceAlgebra 𝕜 α) := ⟨⟨fun _ _ ↦ 0, fun _ _ _ ↦ rfl⟩⟩
 instance instInhabited : Inhabited (IncidenceAlgebra 𝕜 α) := ⟨0⟩
@@ -244,7 +252,9 @@ instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring �
   __ := instSemiring
   __ := instAddGroup
 
-/-! ### Scalar multiplication between incidence algebras -/
+/-!
+# Scalar multiplication between incidence algebras
+-/
 
 section SMul
 variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMonoid 𝕝] [SMul 𝕜 𝕝]
@@ -310,7 +320,9 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
   smul_def' c f := by
     classical ext a b hab; simp [ite_eq_left hab, constSMul_apply, Algebra.smul_def]
 
-/-! ### The Lambda function -/
+/-!
+# The Lambda function
+-/
 
 section Lambda
 variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [DecidableRel (α := α) (· ⩿ ·)]
@@ -323,7 +335,9 @@ def lambda : IncidenceAlgebra 𝕜 α :=
 
 end Lambda
 
-/-! ### The Zeta and Möbius functions -/
+/-!
+# The Zeta and Möbius functions
+-/
 
 section Zeta
 variable (𝕜) [Zero 𝕜] [One 𝕜] [LE α] [DecidableLE α] {a b : α}

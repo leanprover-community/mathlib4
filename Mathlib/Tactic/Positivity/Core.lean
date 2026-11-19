@@ -11,8 +11,11 @@ public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `positivity` core functionality
+# `positivity` core functionality
 
 This file sets up the `positivity` tactic and the `@[positivity]` attribute,
 which allow for plugging in new positivity functionality around a positivity-based driver.
@@ -25,6 +28,8 @@ public meta section
 open Lean
 open Lean.Meta Qq Lean.Elab Term
 
+
+set_option doc.verso false
 /-- A definition of type `PositivityExt` tagged `@[positivity t]` extends the `positivity` tactic.
 The term (with underscores) `t` indicates which expressions this extension accepts.
 An extension will be given an expression `e : α`, together with hypotheses
@@ -50,6 +55,8 @@ Example:
 -/
 syntax (name := positivity) "positivity " term,+ : attr
 
+
+set_option doc.verso true
 lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
 namespace Mathlib.Meta.Positivity
@@ -560,12 +567,14 @@ namespace Tactic.Positivity
 
 open Tactic
 
-/-- `positivity` solves goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`. The tactic works recursively
+/--
+`positivity` solves goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`. The tactic works recursively
 according to the syntax of the expression `x`, by attempting to prove subexpressions are
 positive/nonnegative/nonzero and combining this into a final proof. This tactic either closes the
 goal or fails.
 
 For each subexpression `e`, `positivity` will try to:
+
 * try `@[positivity]`-tagged extensions to recursively prove `e` is positive/nonnegative/nonzero
   based on its subexpressions (see the `positivity` attribute for more details), or
 * try the `norm_num` tactic to prove `e` is positive/nonnegative/nonzero, or
@@ -579,6 +588,7 @@ This tactic is extensible. See the `positivity` attribute documentation for more
   for division/reciprocal, or `0 ≤ x` for real powers.
 
 Examples:
+
 ```
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 

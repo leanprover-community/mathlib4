@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.WittVector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Teichmüller lifts
 
@@ -15,16 +18,15 @@ This file defines `WittVector.teichmuller`, a monoid hom `R →* 𝕎 R`, which 
 
 ## Main declarations
 
-- `WittVector.teichmuller`: the Teichmuller map.
-- `WittVector.map_teichmuller`: `WittVector.teichmuller` is a natural transformation.
-- `WittVector.ghostComponent_teichmuller`:
+* `WittVector.teichmuller`: the Teichmuller map.
+* `WittVector.map_teichmuller`: `WittVector.teichmuller` is a natural transformation.
+* `WittVector.ghostComponent_teichmuller`:
   the `n`-th ghost component of `WittVector.teichmuller p r` is `r ^ p ^ n`.
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -45,7 +47,7 @@ def teichmullerFun (r : R) : 𝕎 R :=
   mk p fun n => if n = 0 then r else 0
 
 /-!
-## `teichmuller` is a monoid homomorphism
+# `teichmuller` is a monoid homomorphism
 
 On ghost components, it is clear that `teichmullerFun` is a monoid homomorphism.
 But in general the ghost map is not injective.

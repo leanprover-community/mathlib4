@@ -7,26 +7,30 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Containment of graphs
 
 This file introduces the concept of one simple graph containing a copy of another.
 
-For two simple graphs `G` and `H`, a *copy* of `G` in `H` is a (not necessarily induced) subgraph of
+For two simple graphs `G` and `H`, a _copy_ of `G` in `H` is a (not necessarily induced) subgraph of
 `H` isomorphic to `G`.
 
-If there exists a copy of `G` in `H`, we say that `H` *contains* `G`. This is equivalent to saying
-that there is an injective graph homomorphism `G → H` between them (this is **not** the same as a
+If there exists a copy of `G` in `H`, we say that `H` _contains_ `G`. This is equivalent to saying
+that there is an injective graph homomorphism `G → H` between them (this is *not* the same as a
 graph embedding, as we do not require the subgraph to be induced).
 
-If there exists an induced copy of `G` in `H`, we say that `H` *inducingly contains* `G`. This is
+If there exists an induced copy of `G` in `H`, we say that `H` _inducingly contains_ `G`. This is
 equivalent to saying that there is a graph embedding `G ↪ H`.
 
 ## Main declarations
 
 Containment:
+
 * `SimpleGraph.Copy G H` is the type of copies of `G` in `H`, implemented as the subtype of
-  *injective* homomorphisms.
+  _injective_ homomorphisms.
 * `SimpleGraph.IsContained G H`, `G ⊑ H` is the relation that `H` contains a copy of `G`, that
   is, the type of copies of `G` in `H` is nonempty. This is equivalent to the existence of an
   isomorphism from `G` to a subgraph of `H`.
@@ -43,12 +47,14 @@ Containment:
   graph embeddings from `H` to `G`.
 
 Induced containment:
+
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
 * `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
 
 ## Notation
 
 The following notation is declared in scope `SimpleGraph`:
+
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
@@ -68,9 +74,9 @@ namespace SimpleGraph
 variable {V W X : Type*} {G G₁ G₂ G₃ : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph X}
 
 /-!
-### Copies
+# Copies
 
-#### Not necessarily induced copies
+## Not necessarily induced copies
 
 A copy of a subgraph `G` inside a subgraph `H` is an embedding of the vertices of `G` into the
 vertices of `H`, such that adjacency in `G` implies adjacency in `H`.
@@ -80,7 +86,9 @@ We capture this concept by injective graph homomorphisms.
 
 section Copy
 
-/-- The type of copies as a subtype of *injective* homomorphisms. -/
+/--
+The type of copies as a subtype of _injective_ homomorphisms.
+-/
 structure Copy (H : SimpleGraph W) (G : SimpleGraph V) where
   /-- A copy gives rise to a homomorphism. -/
   toHom : H →g G
@@ -214,18 +222,18 @@ def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_inje
 end Copy
 
 /-!
-#### Induced copies
+# Induced copies
 
 An induced copy of a graph `G` inside a graph `H` is an embedding from the vertices of
 `G` into the vertices of `H` which preserves the adjacency relation.
 
 This is already captured by the notion of graph embeddings, defined as `G ↪g H`.
 
-### Containment
+# Containment
 
-#### Not necessarily induced containment
+## Not necessarily induced containment
 
-A graph `H` *contains* a graph `G` if there is some copy `f : Copy G H` of `G` inside `H`. This
+A graph `H` _contains_ a graph `G` if there is some copy `f : Copy G H` of `G` inside `H`. This
 amounts to `H` having a subgraph isomorphic to `G`.
 
 We denote "`G` is contained in `H`" by `G ⊑ H` (`\squb`).
@@ -233,9 +241,11 @@ We denote "`G` is contained in `H`" by `G ⊑ H` (`\squb`).
 
 section IsContained
 
-/-- The relation `IsContained H G`, `H ⊑ G` says that `G` contains a copy of `H`.
+/--
+The relation `IsContained H G`, `H ⊑ G` says that `G` contains a copy of `H`.
 
-This is equivalent to the existence of an isomorphism from `H` to a subgraph of `G`. -/
+This is equivalent to the existence of an isomorphism from `H` to a subgraph of `G`.
+-/
 abbrev IsContained (H : SimpleGraph W) (G : SimpleGraph V) := Nonempty (Copy H G)
 
 @[inherit_doc] scoped infixl:50 " ⊑ " => SimpleGraph.IsContained
@@ -404,9 +414,9 @@ theorem Free.anti (h : I.Free G) (hle : H ⊑ G) : I.Free H := by
 end Free
 
 /-!
-#### Induced containment
+# Induced containment
 
-A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪ H`. This amounts
+A graph `H` _inducingly contains_ a graph `G` if there is some graph embedding `G ↪ H`. This amounts
 to `H` having an induced subgraph isomorphic to `G`.
 
 We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
@@ -499,12 +509,12 @@ theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.co
   ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
 
 /-!
-### Counting the copies
+# Counting the copies
 
 If `G` and `H` are finite graphs, we can count the number of unlabelled and labelled copies of `G`
 in `H`.
 
-#### Not necessarily induced copies
+## Not necessarily induced copies
 -/
 
 section LabelledCopyCount
@@ -587,16 +597,16 @@ instance uniqueUnlabeledCopyBot (G : SimpleGraph V) :
 end CopyCount
 
 /-!
-#### Induced copies
+# Induced copies
 
 TODO
 
-### Killing a subgraph
+# Killing a subgraph
 
 An important aspect of graph containment is that we can remove not too many edges from a graph `H`
 to get a graph `H'` that doesn't contain `G`.
 
-#### Killing not necessarily induced copies
+## Killing not necessarily induced copies
 
 `SimpleGraph.killCopies G H` is a subgraph of `G` where an edge was removed from each copy of `H` in
 `G`. By construction, it doesn't contain `H` and has at most the number of copies of `H` edges less
@@ -612,10 +622,12 @@ private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
+/--
+`G.killCopies H` is a subgraph of `G` where an _arbitrary_ edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and
-`le_card_edgeFinset_killCopies` for these two properties. -/
+`le_card_edgeFinset_killCopies` for these two properties.
+-/
 @[no_expose]
 noncomputable def killCopies (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph V := by
   classical exact
@@ -705,7 +717,7 @@ lemma le_card_edgeFinset_killCopies_add_copyCount [Fintype V] :
   tsub_le_iff_right.1 le_card_edgeFinset_killCopies
 
 /-!
-#### Killing induced copies
+# Killing induced copies
 
 TODO
 -/

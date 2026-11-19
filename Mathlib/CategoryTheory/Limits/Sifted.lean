@@ -14,26 +14,31 @@ public import Mathlib.CategoryTheory.Products.Associator
 
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sifted categories
 
 A category `C` is sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
-Sifted categories can be characterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
+Sifted categories can be characterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type  `
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
-- `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
+
+* `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
   sifted.
-- `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
+* `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
   diagrams preserves finite products.
-- `IsSifted.of_colimit_preservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
+* `IsSifted.of_colimit_preservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
   preserves finite products, the category is sifted.
-- `IsSifted.of_final_functor_from_sifted`: A category admitting a final functor from a sifted
+* `IsSifted.of_final_functor_from_sifted`: A category admitting a final functor from a sifted
   category is itself sifted.
 
 ## References
-- [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
-- [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
+
+* [nLab, _Sifted category_](https://ncatlab.org/nlab/show/sifted+category)
+* ‍\[_Algebraic Theories_, Chapter 2.\]\[Adamek\_Rosicky\_Vitale\_2010\]
 -/
 
 public section
@@ -51,9 +56,12 @@ variable (C : Type u) [Category.{v} C]
 /-- A category `C` `IsSiftedOrEmpty` if the diagonal functor `C ⥤ C × C` is final. -/
 abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 
-/-- A category `C` `IsSifted` if
+/--
+A category `C` `IsSifted` if
+
 1. the diagonal functor `C ⥤ C × C` is final.
-2. there exists some object. -/
+2. there exists some object.
+-/
 class IsSifted : Prop extends IsSiftedOrEmpty C where
   [nonempty : Nonempty C]
 

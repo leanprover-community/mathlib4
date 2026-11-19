@@ -8,14 +8,15 @@ module
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Order.SemiconjSup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
 
 Let `f : ℝ → ℝ` be a monotone map such that `f (x + 1) = f x + 1` for all `x`. Then the limit
-$$
-  \tau(f)=\lim_{n\to\infty}{f^n(x)-x}{n}
-$$
-exists and does not depend on `x`. This number is called the *translation number* of `f`.
+$$`  \tau(f)=\lim_{n\to\infty}{f^n(x)-x}{n}  `
+exists and does not depend on `x`. This number is called the _translation number_ of `f`.
 Different authors use different notation for this number: `τ`, `ρ`, `rot`, etc
 
 In this file we define a structure `CircleDeg1Lift` for bundled maps with these properties, define
@@ -24,12 +25,12 @@ case of a continuous map `f` we also prove that `f` admits a point `x` such that
 only if `τ(f)=m/n`.
 
 Maps of this type naturally appear as lifts of orientation-preserving circle homeomorphisms. More
-precisely, let `f` be an orientation-preserving homeomorphism of the circle $S^1=ℝ/ℤ$, and
+precisely, let `f` be an orientation-preserving homeomorphism of the circle $`S^1=ℝ/ℤ`, and
 consider a real number `a` such that
 `⟦a⟧ = f 0`, where `⟦⟧` means the natural projection `ℝ → ℝ/ℤ`. Then there exists a unique
 continuous function `F : ℝ → ℝ` such that `F 0 = a` and `⟦F x⟧ = f ⟦x⟧` for all `x` (this fact is
 not formalized yet). This function is strictly monotone, continuous, and satisfies
-`F (x + 1) = F x + 1`. The number `⟦τ F⟧ : ℝ / ℤ` is called the *rotation number* of `f`.
+`F (x + 1) = F x + 1`. The number `⟦τ F⟧ : ℝ / ℤ` is called the _rotation number_ of `f`.
 It does not depend on the choice of `a`.
 
 ## Main definitions
@@ -46,30 +47,24 @@ We prove the following properties of `CircleDeg1Lift.translationNumber`.
 * `CircleDeg1Lift.translationNumber_eq_of_dist_bounded`: if the distance between `(f^n) 0`
   and `(g^n) 0` is bounded from above uniformly in `n : ℕ`, then `f` and `g` have equal
   translation numbers.
-
 * `CircleDeg1Lift.translationNumber_eq_of_semiconjBy`: if two `CircleDeg1Lift` maps `f`, `g`
   are semiconjugate by a `CircleDeg1Lift` map, then `τ f = τ g`.
-
 * `CircleDeg1Lift.translationNumber_units_inv`: if `f` is an invertible `CircleDeg1Lift` map
   (equivalently, `f` is a lift of an orientation-preserving circle homeomorphism), then
   the translation number of `f⁻¹` is the negative of the translation number of `f`.
-
 * `CircleDeg1Lift.translationNumber_mul_of_commute`: if `f` and `g` commute, then
   `τ (f * g) = τ f + τ g`.
-
 * `CircleDeg1Lift.translationNumber_eq_rat_iff`: the translation number of `f` is equal to
   a rational number `m / n` if and only if `(f^n) x = x + m` for some `x`.
-
 * `CircleDeg1Lift.semiconj_of_bijective_of_translationNumber_eq`: if `f` and `g` are two
   bijective `CircleDeg1Lift` maps and their translation numbers are equal, then these
   maps are semiconjugate to each other.
-
 * `CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq`: let `f₁` and `f₂` be
   two actions of a group `G` on the circle by degree 1 maps (formally, `f₁` and `f₂` are two
   homomorphisms from `G →* CircleDeg1Lift`). If the translation numbers of `f₁ g` and `f₂ g` are
   equal to each other for all `g : G`, then these two actions are semiconjugate by some
-  `F : CircleDeg1Lift`. This is a version of Proposition 5.4 from [Étienne Ghys, Groupes
-  d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes].
+  `F : CircleDeg1Lift`. This is a version of Proposition 5.4 from \[Étienne Ghys, Groupes
+  d'homéomorphismes du cercle et cohomologie bornée\]\[ghys87:groupes\].
 
 ## Notation
 
@@ -91,7 +86,7 @@ preserving circle homeomorphisms for two reasons:
 
 ## References
 
-* [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes]
+* ‍\[Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie bornée\]\[ghys87:groupes\]
 
 ## TODO
 
@@ -99,12 +94,9 @@ Here are some short-term goals.
 
 * Introduce a structure or a typeclass for lifts of circle homeomorphisms. We use
   `Units CircleDeg1Lift` for now, but it's better to have a dedicated type (or a typeclass?).
-
 * Prove that the `SemiconjBy` relation on circle homeomorphisms is an equivalence relation.
-
 * Introduce `ConditionallyCompleteLattice` structure, use it in the proof of
   `CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq`.
-
 * Prove that the orbits of the irrational rotation are dense in the circle. Deduce that a
   homeomorphism with an irrational rotation is semiconjugate to the corresponding irrational
   translation by a continuous `CircleDeg1Lift`.
@@ -122,7 +114,7 @@ open Function hiding Commute
 open scoped Topology
 
 /-!
-### Definition and monoid structure
+# Definition and monoid structure
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
@@ -247,7 +239,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
   CircleDeg1Lift.ext_iff
 
 /-!
-### Translate by a constant
+# Translate by a constant
 -/
 
 
@@ -283,7 +275,7 @@ theorem translate_iterate (x : ℝ) (n : ℕ) :
   rw [← coe_pow, ← Units.val_pow_eq_pow_val, translate_pow]
 
 /-!
-### Commutativity with integer translations
+# Commutativity with integer translations
 
 In this section we prove that `f` commutes with translations by an integer number.
 First we formulate these statements (for a natural or an integer number,
@@ -343,7 +335,7 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
   rw [Int.fract, f.map_sub_int, sub_sub_sub_cancel_right]
 
 /-!
-### Pointwise order on circle maps
+# Pointwise order on circle maps
 -/
 
 
@@ -389,7 +381,7 @@ theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ 
 theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_mono h n
 
 /-!
-### Estimates on `(f * g) 0`
+# Estimates on `(f * g) 0`
 
 We prove the estimates `f 0 + ⌊g 0⌋ ≤ f (g 0) ≤ f 0 + ⌈g 0⌉` and some corollaries with added/removed
 floors and ceils.
@@ -465,7 +457,7 @@ theorem dist_map_zero_lt_of_semiconjBy {f g₁ g₂ : CircleDeg1Lift} (h : Semic
   dist_map_zero_lt_of_semiconj <| semiconjBy_iff_semiconj.1 h
 
 /-!
-### Limits at infinities and continuity
+# Limits at infinities and continuity
 -/
 
 protected theorem tendsto_atBot : Tendsto f atBot atBot :=
@@ -482,7 +474,7 @@ theorem continuous_iff_surjective : Continuous f ↔ Function.Surjective f :=
   ⟨fun h => h.surjective f.tendsto_atTop f.tendsto_atBot, f.monotone.continuous_of_surjective⟩
 
 /-!
-### Estimates on `(f^n) x`
+# Estimates on `(f^n) x`
 
 If we know that `f x` is `≤`/`<`/`≥`/`>`/`=` to `x + m`, then we have a similar estimate on
 `f^[n] x` and `x + n * m`.
@@ -535,7 +527,7 @@ theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ �
   simp [floor_le]
 
 /-!
-### Definition of translation number
+# Definition of translation number
 -/
 
 noncomputable section
@@ -544,9 +536,11 @@ noncomputable section
 def transnumAuxSeq (n : ℕ) : ℝ :=
   (f ^ (2 ^ n : ℕ)) 0 / 2 ^ n
 
-/-- The translation number of a `CircleDeg1Lift`, $τ(f)=\lim_{n→∞}\frac{f^n(x)-x}{n}$. We use
+/--
+The translation number of a `CircleDeg1Lift`, $`τ(f)=\lim_{n→∞}\frac{f^n(x)-x}{n}`. We use
 an auxiliary sequence `\frac{f^{2^n}(0)}{2^n}` to define `τ(f)` because some proofs are simpler
-this way. -/
+this way.
+-/
 def translationNumber : ℝ :=
   limUnder atTop f.transnumAuxSeq
 
@@ -680,8 +674,10 @@ theorem tendsto_translation_number₀' :
 theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) atTop (𝓝 <| τ f) :=
   (tendsto_add_atTop_iff_nat 1).1 (mod_cast f.tendsto_translation_number₀')
 
-/-- For any `x : ℝ` the sequence $\frac{f^n(x)-x}{n}$ tends to the translation number of `f`.
-In particular, this limit does not depend on `x`. -/
+/--
+For any `x : ℝ` the sequence $`\frac{f^n(x)-x}{n}` tends to the translation number of `f`.
+In particular, this limit does not depend on `x`.
+-/
 theorem tendsto_translationNumber (x : ℝ) :
     Tendsto (fun n : ℕ => ((f ^ n) x - x) / n) atTop (𝓝 <| τ f) := by
   rw [← translationNumber_conj_eq' (translate <| Multiplicative.ofAdd x)]
@@ -822,13 +818,15 @@ theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn
   rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip; exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 
-/-- Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
+/--
+Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
 orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
 `f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
-This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
-cohomologie bornée][ghys87:groupes]. -/
+This is a version of Proposition 5.4 from \[Étienne Ghys, Groupes d'homéomorphismes du cercle et
+cohomologie bornée\]\[ghys87:groupes\].
+-/
 theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Group G]
     (f₁ f₂ : G →* CircleDeg1Lift) (h : ∀ g, τ (f₁ g) = τ (f₂ g)) :
     ∃ F : CircleDeg1Lift, ∀ g, Semiconj F (f₁ g) (f₂ g) := by

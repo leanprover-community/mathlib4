@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
 
@@ -27,7 +30,7 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-$$∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$$
+$$`∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt`
 
 Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
 `{ω | f(ω) ≥ t}` are also included.
@@ -41,12 +44,12 @@ Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` in
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$ and
-  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$, respectively.
+  function f we have $`∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt` and
+  $`∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt`, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$.
+  $`∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt`.
 
 ## See also
 
@@ -88,20 +91,24 @@ theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
 
 end
 
-/-! ### Layercake formula -/
+/-!
+# Layercake formula
+-/
 
 
 section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
-/-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
+/--
+An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
 
 See `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul` and
 `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
-cake formula. -/
+cake formula.
+-/
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     (μ : Measure α) [SFinite μ]
     (f_nn : 0 ≤ f) (f_mble : Measurable f)
@@ -181,7 +188,8 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
     mble₀.nullMeasurableSet
 
-/-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
+/--
+An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions.
 Compared to `lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite`, we remove
@@ -189,7 +197,8 @@ the sigma-finite assumption.
 
 See `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul` and
 `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
-cake formula. -/
+cake formula.
+-/
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     (f_nn : 0 ≤ f) (f_mble : Measurable f)
     (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
@@ -377,7 +386,8 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     ν f_nn f_mble g_intble g_mble g_nn
 
-/-- The layer cake formula / **Cavalieri's principle** / tail probability formula:
+/--
+The layer cake formula / *Cavalieri's principle* / tail probability formula:
 
 Let `f` be a non-negative measurable function on a measure space. Let `G` be an
 increasing absolutely continuous function on the positive real line, vanishing at the origin,
@@ -388,7 +398,8 @@ weighted by `g`.
 Roughly speaking, the statement is: `∫⁻ (G ∘ f) ∂μ = ∫⁻ t in 0..∞, g(t) * μ {ω | f(ω) ≥ t}`.
 
 See `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul` for a version with sets of the form
-`{ω | f(ω) > t}` instead. -/
+`{ω | f(ω) > t}` instead.
+-/
 theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
     (f_mble : AEMeasurable f μ) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
     (g_nn : ∀ᵐ t ∂volume.restrict (Ioi 0), 0 ≤ g t) :
@@ -433,13 +444,15 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
   exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable μ F_nn F_mble
           G_intble G_mble (fun t _ => G_nn t)
 
-/-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in 0..∞, μ {ω | f(ω) ≥ t}`.
 
 See `MeasureTheory.lintegral_eq_lintegral_meas_lt` for a version with sets of the form
-`{ω | f(ω) > t}` instead. -/
+`{ω | f(ω) > t}` instead.
+-/
 theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
     (f_mble : AEMeasurable f μ) :
     ∫⁻ ω, ENNReal.ofReal (f ω) ∂μ = ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} := by
@@ -479,7 +492,8 @@ section LayercakeLT
 variable {α : Type*} [MeasurableSpace α]
 variable {f : α → ℝ} {g : ℝ → ℝ}
 
-/-- The layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+The layer cake formula / Cavalieri's principle / tail probability formula:
 
 Let `f` be a non-negative measurable function on a measure space. Let `G` be an
 increasing absolutely continuous function on the positive real line, vanishing at the origin,
@@ -490,7 +504,8 @@ weighted by `g`.
 Roughly speaking, the statement is: `∫⁻ (G ∘ f) ∂μ = ∫⁻ t in 0..∞, g(t) * μ {ω | f(ω) > t}`.
 
 See `lintegral_comp_eq_lintegral_meas_le_mul` for a version with sets of the form `{ω | f(ω) ≥ t}`
-instead. -/
+instead.
+-/
 theorem lintegral_comp_eq_lintegral_meas_lt_mul (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
     (f_mble : AEMeasurable f μ) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
     (g_nn : ∀ᵐ t ∂volume.restrict (Ioi 0), 0 ≤ g t) :
@@ -502,13 +517,15 @@ theorem lintegral_comp_eq_lintegral_meas_lt_mul (μ : Measure α) (f_nn : 0 ≤�
     with t ht
   rw [ht]
 
-/-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `lintegral_eq_lintegral_meas_le` for a version with sets of the form `{ω | f(ω) ≥ t}`
-instead. -/
+instead.
+-/
 theorem lintegral_eq_lintegral_meas_lt (μ : Measure α)
     (f_nn : 0 ≤ᵐ[μ] f) (f_mble : AEMeasurable f μ) :
     ∫⁻ ω, ENNReal.ofReal (f ω) ∂μ = ∫⁻ t in Ioi 0, μ {a : α | t < f a} := by
@@ -524,13 +541,15 @@ section LayercakeIntegral
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ}
 
-/-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For an integrable a.e.-nonnegative real-valued function `f`, the Bochner integral of `f` can be
 written (roughly speaking) as: `∫ f ∂μ = ∫ t in 0..∞, μ {ω | f(ω) > t}`.
 
 See `MeasureTheory.lintegral_eq_lintegral_meas_lt` for a version with Lebesgue integral `∫⁻`
-instead. -/
+instead.
+-/
 theorem Integrable.integral_eq_integral_meas_lt
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, μ.real {a : α | t < f a} := by

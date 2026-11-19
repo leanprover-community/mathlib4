@@ -10,6 +10,9 @@ public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
 
@@ -42,6 +45,7 @@ but add these assumptions later as needed. (Quite a few results still do not req
   a shortcut for `HasGroupoid M (contDiffGroupoid n I)`.
 
 We define a few constructions of smooth manifolds:
+
 * every empty type is a smooth manifold
 * `IsManifold.of_discreteTopology`: a discrete space is a smooth manifold
   (over the trivial model with corners on the trivial space)
@@ -49,23 +53,20 @@ We define a few constructions of smooth manifolds:
 * the disjoint union of two manifolds (over the same charted space)
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersSelf n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for the model space used to
-  define `n`-dimensional real manifolds without boundary
-  (with notation `𝓡 n` in the scope `Manifold`)
-* `modelWithCornersEuclideanHalfSpace n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
-  used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
-  `Manifold`)
-* `modelWithCornersEuclideanQuadrant n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
-  to define `n`-dimensional real manifolds with corners
+
+* `modelWithCornersSelf n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for
+  the model space used to define `n`-dimensional real manifolds without boundary (with notation
+  `𝓡 n` in the scope `Manifold`)
+* `modelWithCornersEuclideanHalfSpace n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`
+  for the model space used to define `n`-dimensional real manifolds with boundary (with notation
+  `𝓡∂ n` in the locale `Manifold`)
+* `modelWithCornersEuclideanQuadrant n : ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)`
+  for the model space used to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional `C^∞` real manifold without boundary,
 one could use
 
-  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
-   [IsManifold (𝓡 n) ∞ M]`.
+`variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M] [IsManifold (𝓡 n) ∞ M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
@@ -76,9 +77,7 @@ In the same way, it would not apply to product manifolds, modelled on
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {I : ModelWithCorners ℝ E E} [I.Boundaryless]
-  {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [IsManifold I ∞ M]`
+`variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {I : ModelWithCorners ℝ E E} [I.Boundaryless] {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [IsManifold I ∞ M]`
 
 Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
@@ -149,10 +148,13 @@ open Set Filter Function PartialEquiv
 
 open scoped Manifold Topology ContDiff
 
-/-! ### Models with corners. -/
+/-!
+# Models with corners.
+-/
 
 open scoped Classical in
-/-- A structure containing information on the way a space `H` embeds in a
+/--
+A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all that is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
@@ -231,13 +233,17 @@ instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 protected def symm : PartialEquiv E H :=
   I.toPartialEquiv.symm
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
   I.symm
@@ -485,11 +491,13 @@ end
 
 section ModelWithCornersProd
 
-/-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
+/--
+Given two model\_with\_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
-`(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
-vs `H × H'`. -/
+`(E × E, H × E)`. See note \[Manifold type tags\] for explanation about `ModelProd H H'`
+vs `H × H'`.
+-/
 @[simps -isSimp]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
@@ -515,9 +523,11 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
-/-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
-corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
-`ModelPi H`. -/
+/--
+Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
+corners `pi I` on `(Π i, E i, ModelPi H)`. See note \[Manifold type tags\] for explanation about
+`ModelPi H`.
+-/
 def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
@@ -621,7 +631,9 @@ end Boundaryless
 
 section contDiffGroupoid
 
-/-! ### `C^n` functions on models with corners -/
+/-!
+# `C^n` functions on models with corners
+-/
 
 
 variable {m n : ℕ∞ω} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
@@ -767,7 +779,9 @@ end contDiffGroupoid
 
 section IsManifold
 
-/-! ### `C^n` manifolds (possibly with boundary or corners) -/
+/-!
+# `C^n` manifolds (possibly with boundary or corners)
+-/
 
 /-- Typeclass defining manifolds with respect to a model with corners, over a
 field `𝕜`. This definition includes the model with corners `I` (which might allow boundary, corners,
@@ -1023,7 +1037,8 @@ requires that `M` is a `C^n` manifold. The definition is put here to avoid impor
 all the smooth bundle structure when defining manifold derivatives. -/
 
 set_option linter.unusedVariables false in
-/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
+/--
+The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
 `(tangentBundleCore I M).toFiberBundleCore.fiber x`, but we use `E` to help the kernel.
 
 The definition of `TangentSpace` is not reducible so that type class inference
@@ -1046,11 +1061,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-/-- Definitional identification between the tangent space of a manifold at a point and the
-model space. *Do not use*, unless when setting up foundational properties of the tangent space:
+/--
+Definitional identification between the tangent space of a manifold at a point and the
+model space. _Do not use_, unless when setting up foundational properties of the tangent space:
 this definition is a technical detail related to our specific implementation of tangent spaces,
 but it has no mathematical meaning. The mathematically meaningful version of this definition
-is the derivative of the extended chart at `x`, in its `mvfderiv` version. -/
+is the derivative of the extended chart at `x`, in its `mvfderiv` version.
+-/
 def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E where
   toFun v := v
   invFun v := v

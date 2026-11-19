@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.FieldTheory.Minpoly.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Annihilating Ideal
 
@@ -29,6 +32,7 @@ as defined in `FieldTheory.Minpoly`.
 
 Given an `R`-module `M` (`[AddCommGroup M] [Module R M]`)
 there are some common specializations which may be more familiar.
+
 * Example 1: `A = M →ₗ[R] M`, the endomorphism algebra of an `R`-module M.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/
@@ -45,12 +49,14 @@ section Semiring
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable (R) in
-/-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
+/--
+`annIdeal R a` is the _annihilating ideal_ of all `p : R[X]` such that `p(a) = 0`.
 
 The informal notation `p(a)` stands for `Polynomial.aeval a p`.
 Again informally, the annihilating ideal of `a` is
 `{ p ∈ R[X] | p(a) = 0 }`. This is an ideal in `R[X]`.
-The formal definition uses the kernel of the aeval map. -/
+The formal definition uses the kernel of the aeval map.
+-/
 noncomputable def annIdeal (a : A) : Ideal R[X] :=
   RingHom.ker ((aeval a).toRingHom : R[X] →+* A)
 
@@ -68,12 +74,14 @@ variable (𝕜)
 
 open Submodule
 
-/-- `annIdealGenerator 𝕜 a` is the monic generator of `annIdeal 𝕜 a`
+/--
+`annIdealGenerator 𝕜 a` is the monic generator of `annIdeal 𝕜 a`
 if one exists, otherwise `0`.
 
 Since `𝕜[X]` is a principal ideal domain there is a polynomial `g` such that
 `span 𝕜 {g} = annIdeal a`. This picks some generator.
-We prefer the monic generator of the ideal. -/
+We prefer the monic generator of the ideal.
+-/
 noncomputable def annIdealGenerator (a : A) : 𝕜[X] :=
   let g := IsPrincipal.generator <| annIdeal 𝕜 a
   g * C g.leadingCoeff⁻¹
@@ -115,11 +123,13 @@ theorem monic_annIdealGenerator (a : A) (hg : annIdealGenerator 𝕜 a ≠ 0) :
     Monic (annIdealGenerator 𝕜 a) :=
   monic_mul_leadingCoeff_inv (mul_ne_zero_iff.mp hg).1
 
-/-! We are working toward showing the generator of the annihilating ideal
+/-!
+We are working toward showing the generator of the annihilating ideal
 in the field case is the minimal polynomial. We are going to use a uniqueness
 theorem of the minimal polynomial.
 
-This is the first condition: it must annihilate the original element `a : A`. -/
+This is the first condition: it must annihilate the original element `a : A`.
+-/
 
 
 theorem annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=

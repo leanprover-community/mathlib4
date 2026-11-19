@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Data.EReal.Inv
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences
 
@@ -23,9 +26,9 @@ Note that most of the machinery that is usually defined for the specific purpose
 analysis (infinitesimal and infinite elements, standard parts) has been generalized to other
 non-archimedean fields. In particular:
 
-- `ArchimedeanClass` can be used to measure whether an element is infinitesimal (`0 < mk x`) or
+* `ArchimedeanClass` can be used to measure whether an element is infinitesimal (`0 < mk x`) or
   infinite (`mk x < 0`).
-- `ArchimedeanClass.stdPart` generalizes the standard part function to a general ordered field.
+* `ArchimedeanClass.stdPart` generalizes the standard part function to a general ordered field.
 
 ## TODO
 
@@ -176,7 +179,9 @@ theorem archimedeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
 theorem stdPart_coe (x : ℝ) : stdPart (x : ℝ*) = x :=
   stdPart_map_real coeRingHom x
 
-/-! ### Basic constants -/
+/-!
+# Basic constants
+-/
 
 /-- Construct a hyperreal number from a sequence of real numbers. -/
 def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
@@ -189,7 +194,9 @@ theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in h
 theorem ofSeq_le_ofSeq {f g : ℕ → ℝ} : ofSeq f ≤ ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n ≤ g n :=
   Germ.coe_le
 
-/-! #### ω -/
+/-!
+# ω
+-/
 
 /-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
 def omega : ℝ* := ofSeq Nat.cast
@@ -223,7 +230,9 @@ theorem stdPart_omega : stdPart ω = 0 := by
   rw [stdPart_eq_zero]
   exact archimedeanClassMk_omega_neg.ne
 
-/-! #### ε -/
+/-!
+# ε
+-/
 
 /-- A sample infinitesimal hyperreal ε = ⟦(0, 1, 1/2, 1/3, ⋯)⟧. -/
 def epsilon : ℝ* :=
@@ -257,7 +266,7 @@ theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
   simp [← inv_omega]
 
 /-!
-### Some facts about `Tendsto`
+# Some facts about `Tendsto`
 -/
 
 @[simp]

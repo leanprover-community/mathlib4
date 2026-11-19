@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting monoid algebras
 
@@ -14,6 +17,7 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 `Mathlib/Algebra/MonoidAlgebra/Basic.lean`.
 
 ## Main results
+
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/
@@ -30,7 +34,9 @@ universe u₁ u₂ u₃ u₄
 
 variable (k : Type u₁) (G : Type u₂) {R : Type*}
 
-/-! ### Multiplicative monoids -/
+/-!
+# Multiplicative monoids
+-/
 
 namespace MonoidAlgebra
 
@@ -82,7 +88,9 @@ theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
 
 end One
 
-/-! #### Semiring structure -/
+/-!
+# Semiring structure
+-/
 section Semiring
 
 variable [Semiring k] [Monoid G] [Semiring R]
@@ -102,7 +110,9 @@ end Semiring
 
 end MonoidAlgebra
 
-/-! ### Additive monoids -/
+/-!
+# Additive monoids
+-/
 
 namespace AddMonoidAlgebra
 
@@ -156,7 +166,9 @@ theorem liftNC_one {g_hom : Type*}
 
 end One
 
-/-! #### Semiring structure -/
+/-!
+# Semiring structure
+-/
 section Semiring
 
 variable [Semiring k] [AddMonoid G] [Semiring R]

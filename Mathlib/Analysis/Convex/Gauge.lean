@@ -11,6 +11,9 @@ public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Analysis.Convex.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Minkowski functional
 
@@ -24,6 +27,7 @@ induces the equivalence of seminorms and locally convex topological vector space
 ## Main declarations
 
 For a real vector space,
+
 * `gauge`: Aka Minkowski functional. `gauge s x` is the least (actually, an infimum) `r` such
   that `x ∈ r • s`.
 * `gaugeSeminorm`: The Minkowski functional as a seminorm, when `s` is symmetric, convex and
@@ -31,7 +35,7 @@ For a real vector space,
 
 ## References
 
-* [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
+* ‍\[H. H. Schaefer, _Topological Vector Spaces_\]\[schaefer1966\]
 
 ## Tags
 

@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.List.OffDiag
 public import Mathlib.Data.Nat.Choose.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finsets in product types
 
@@ -35,7 +38,9 @@ variable {α β γ : Type*}
 
 namespace Finset
 
-/-! ### prod -/
+/-!
+# prod
+-/
 
 
 section Prod

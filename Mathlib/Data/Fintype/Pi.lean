@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fintype instances for pi types
 -/
@@ -127,7 +130,9 @@ lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i))
 
 end Fintype
 
-/-! ### pi -/
+/-!
+# pi
+-/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
 instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
@@ -141,7 +146,8 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
-/-- There are finitely many embeddings between finite types.
+/--
+There are finitely many embeddings between finite types.
 
 This instance used to be computable (using `DecidableEq` arguments), but
 it makes things a lot harder to work with here.
@@ -165,7 +171,9 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 
-/-! ### Diagonal -/
+/-!
+# Diagonal
+-/
 
 namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
@@ -180,7 +188,8 @@ end Finset
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).

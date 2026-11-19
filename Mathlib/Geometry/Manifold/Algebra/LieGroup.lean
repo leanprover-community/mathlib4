@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie groups
 
@@ -25,8 +28,8 @@ that Lie groups here are not necessarily finite dimensional.
 * `ContMDiffInv₀`: typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n`
   map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
 
-
 ## Main results
+
 * `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
   is `C^n`.
 * `ContMDiff.inv₀` and variants: if `ContMDiffInv₀ I n N`, point-wise inversion of `C^n`
@@ -77,11 +80,12 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
   contMDiff_inv : CMDiff n fun a : G ↦ a⁻¹
 
 /-!
-  ### Smoothness of inversion, negation, division and subtraction
+# Smoothness of inversion, negation, division and subtraction
 
-  Let `f : M → G` be a `C^n` function into a Lie group, then `f` is point-wise
-  invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
-  `f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also `C^n`. -/
+Let `f : M → G` be a `C^n` function into a Lie group, then `f` is point-wise
+invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
+`f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also `C^n`.
+-/
 section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
@@ -126,10 +130,14 @@ theorem contMDiff_inv : CMDiff n fun x : G ↦ x⁻¹ :=
   LieGroup.contMDiff_inv
 
 include I n in
-/-- A Lie group is a topological group. This is not an instance for technical reasons,
-see note [Design choices about smooth algebraic structures]. -/
-@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
-for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
+/--
+A Lie group is a topological group. This is not an instance for technical reasons,
+see note \[Design choices about smooth algebraic structures\].
+-/
+@[to_additive /--
+              An additive Lie group is an additive topological group. This is not an instance
+for technical reasons, see note \[Design choices about smooth algebraic structures\].
+              -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -191,17 +199,21 @@ instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : �
 
 end Product
 
-/-! ### Normed spaces are Lie groups -/
+/-!
+# Normed spaces are Lie groups
+-/
 
 instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) n E where
   contMDiff_neg := contDiff_neg.contMDiff
 
-/-! ## `C^n` manifolds with `C^n` inversion away from zero
+/-!
+# `C^n` manifolds with `C^n` inversion away from zero
 
 Typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n` at all non-zero
 points. (This includes multiplicative Lie groups, but also complete normed semifields.)
-Point-wise inversion is `C^n` when the function/denominator is non-zero. -/
+Point-wise inversion is `C^n` when the function/denominator is non-zero.
+-/
 section ContMDiffInv₀
 
 -- See note [Design choices about smooth algebraic structures]
@@ -258,9 +270,11 @@ theorem contMDiffAt_inv₀ {x : G} (hx : x ≠ 0) : ContMDiffAt I I n (fun y ↦
   ContMDiffInv₀.contMDiffAt_inv₀ hx
 
 include I n in
-/-- In a manifold with `C^n` inverse away from `0`, the inverse is continuous away from `0`.
+/--
+In a manifold with `C^n` inverse away from `0`, the inverse is continuous away from `0`.
 This is not an instance for technical reasons, see
-note [Design choices about smooth algebraic structures]. -/
+note \[Design choices about smooth algebraic structures\].
+-/
 theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
@@ -286,7 +300,8 @@ theorem ContMDiffOn.inv₀ (hf : CMDiff[s] n f) (h0 : ∀ x ∈ s, f x ≠ 0) :
 
 end ContMDiffInv₀
 
-/-! ### Point-wise division of `C^n` functions
+/-!
+# Point-wise division of `C^n` functions
 
 If `[ContMDiffMul I n N]` and `[ContMDiffInv₀ I n N]`, point-wise division of `C^n`
 functions `f : M → N` is `C^n` whenever the denominator is non-zero.

@@ -12,6 +12,9 @@ public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the integral of `mulExpNegMulSq`
 
@@ -21,10 +24,10 @@ contains results on the integral of `mulExpNegMulSq g ε` with respect to a fini
 
 ## Lemmas
 
-- `tendsto_integral_mulExpNegMulSq_comp`: By the dominated convergence theorem and
+* `tendsto_integral_mulExpNegMulSq_comp`: By the dominated convergence theorem and
   `mulExpNegMulSq_abs_le_norm`, the integral of `mulExpNegMulSq ε ∘ g` with respect to a
   finite measure `P` converges to the integral of `g`, as `ε → 0`;
-- `tendsto_integral_mul_one_add_inv_smul_sq_pow`: The integral of `mulExpNegMulSq ε ∘ g` with
+* `tendsto_integral_mul_one_add_inv_smul_sq_pow`: The integral of `mulExpNegMulSq ε ∘ g` with
   respect to a finite measure `P` can be approximated by the integral of the sequence approximating
   the exponential function, `fun x => (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x`. This allows to
   transfer properties of a subalgebra of functions containing `g` to the function

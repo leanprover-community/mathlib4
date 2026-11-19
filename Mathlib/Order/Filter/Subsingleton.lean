@@ -9,10 +9,13 @@ public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsingleton filters
 
-We say that a filter `l` is a *subsingleton* if there exists a subsingleton set `s ∈ l`.
+We say that a filter `l` is a _subsingleton_ if there exists a subsingleton set `s ∈ l`.
 Equivalently, `l` is either `⊥` or `pure a` for some `a`.
 -/
 
@@ -23,8 +26,10 @@ variable {α β : Type*} {l : Filter α}
 
 namespace Filter
 
-/-- We say that a filter is a *subsingleton* if there exists a subsingleton set
-that belongs to the filter. -/
+/--
+We say that a filter is a _subsingleton_ if there exists a subsingleton set
+that belongs to the filter.
+-/
 protected def Subsingleton (l : Filter α) : Prop := ∃ s ∈ l, Set.Subsingleton s
 
 theorem HasBasis.subsingleton_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α} (h : l.HasBasis p s) :

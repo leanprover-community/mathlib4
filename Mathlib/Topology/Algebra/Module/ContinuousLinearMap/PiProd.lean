@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps on products and Pi types
 
@@ -38,7 +41,7 @@ Binary products (viewed as categorical coproducts):
   `ContinuousLinearMap.inr R M₁ M₂ : M₂ →L[R] M₁ × M₂` are the two inclusions, given
   respectively by `inl x = (x, 0)` and `inr x = (0, x)`. These are the continuous versions
   of `LinearMap.inl` and `LinearMap.inr`.
-* `ContinuousLinearMap.coprod f₁ f₂` is the continuous linear map ` M₁ × M₂ →L[R] N` given by
+* `ContinuousLinearMap.coprod f₁ f₂` is the continuous linear map `  M₁ × M₂ →L[R] N` given by
   two continuous linear maps `f₁ : M₁ →L[R] N` and `f₂ : M₂ →L[R] N`. This is the continuous
   version of `LinearMap.coprod`.
 * `ContinuousLinearMap.coprodEquiv` shows that the above is a bijection: every continuous linear
@@ -70,7 +73,7 @@ namespace ContinuousLinearMap
 section Semiring
 
 /-!
-### Properties that hold for non-necessarily commutative semirings.
+# Properties that hold for non-necessarily commutative semirings.
 -/
 
 variable
@@ -259,12 +262,14 @@ section PiMap
 variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMonoid (ψ i)]
   [∀ i, Module R (ψ i)]
 
-/-- Construct a continuous linear map between two (dependent) function spaces
+/--
+Construct a continuous linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
 A bundled version of `Pi.map`.
 
 If the index type is finite, then this map can be seen as a “block diagonal” map
-between indexed products of modules. -/
+between indexed products of modules.
+-/
 def piMap (f : ∀ i, φ i →L[R] ψ i) : (∀ i, φ i) →L[R] (∀ i, ψ i) :=
   .pi fun i ↦ f i ∘L .proj i
 
@@ -352,9 +357,11 @@ variable (S : Type*) [Semiring S]
   [Module S M₂] [ContinuousAdd M₂] [SMulCommClass R S M₂] [ContinuousConstSMul S M₂]
   [Module S M₃] [ContinuousAdd M₃] [SMulCommClass R S M₃] [ContinuousConstSMul S M₃]
 
-/-- `ContinuousLinearMap.prod` as a `LinearEquiv`.
+/--
+`ContinuousLinearMap.prod` as a `LinearEquiv`.
 
-See `ContinuousLinearMap.prodL` for the `ContinuousLinearEquiv` version. -/
+See `ContinuousLinearMap.prodL` for the `ContinuousLinearEquiv` version.
+-/
 @[simps apply]
 def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] M →L[R] M₂ × M₃ :=
   { prodEquiv with
@@ -406,9 +413,10 @@ lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M�
     (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
   rw [← ContinuousLinearMap.comp_coprod, coprod_inl_inr, comp_id]
 
-/-- Taking the product of two maps with the same codomain is equivalent to taking the product of
+/--
+Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
 
 See `ContinuousLinearMap.coprodEquivL` for the `ContinuousLinearEquiv` version.
 -/

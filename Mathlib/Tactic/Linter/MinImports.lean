@@ -9,7 +9,11 @@ public meta import ImportGraph.Graph.TransitiveClosure
 public meta import ImportGraph.Imports.ImportGraph
 public import Mathlib.Tactic.MinImports
 
-/-! # The `minImports` linter
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `minImports` linter
 
 The `minImports` linter incrementally computes the minimal imports needed for each file to build.
 Whenever it detects that a new command requires an increase in the (transitive) imports that it
@@ -26,7 +30,7 @@ meta section
 open Lean Elab Command Linter
 
 /-!
-### The "minImports" linter
+# The "minImports" linter
 
 The "minImports" linter tracks information about minimal imports over several commands.
 -/
@@ -35,6 +39,7 @@ namespace Mathlib.Linter
 
 /--
 `ImportState` is the structure keeping track of the data that the `minImports` linter uses.
+
 * `transClosure` is the import graph of the current file.
 * `minImports` is the `NameSet` of minimal imports to build the file up to the current command.
 * `importSize` is the number of transitive imports to build the file up to the current command.
@@ -67,9 +72,9 @@ information.
 It also works incrementally, providing information that is better suited, for instance, to split
 files.
 
-Another important difference is that the `minImports` *linter* starts counting imports from
-where the option is set to `true` *downwards*, whereas the `#min_imports` *command* looks at the
-imports needed from the command *upwards*.
+Another important difference is that the `minImports` _linter_ starts counting imports from
+where the option is set to `true` _downwards_, whereas the `#min_imports` _command_ looks at the
+imports needed from the command _upwards_.
 -/
 public register_option linter.minImports : Bool := {
   defValue := false

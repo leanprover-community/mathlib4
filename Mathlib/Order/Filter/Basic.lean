@@ -10,17 +10,21 @@ public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.ToFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of filters on sets
 
-A *filter* on a type `α` is a collection of sets of `α` which contains the whole `α`,
+A _filter_ on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. They are mostly used to
 abstract two related kinds of ideas:
-* *limits*, including finite or infinite limits of sequences, finite or infinite limits of functions
+
+* _limits_, including finite or infinite limits of sequences, finite or infinite limits of functions
   at a point or at infinity, etc...
-* *things happening eventually*, including things happening for large enough `n : ℕ`, or near enough
+* _things happening eventually_, including things happening for large enough `n : ℕ`, or near enough
   a point `x`, or for close enough pairs of points, or things happening almost everywhere in the
-  sense of measure theory. Dually, filters can also express the idea of *things happening often*:
+  sense of measure theory. Dually, filters can also express the idea of _things happening often_:
   for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
 
 ## Main definitions
@@ -34,6 +38,7 @@ We also prove `Filter` is a monadic functor, with a push-forward operation
 order on filters.
 
 The examples of filters appearing in the description of the two motivating ideas are:
+
 * `(Filter.atTop : Filter ℕ)` : made of sets of `ℕ` containing `{n | n ≥ N}` for some `N`
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
@@ -55,10 +60,10 @@ rather late in this file in order to immediately relate them to the lattice stru
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`, which
-we do *not* require. This gives `Filter X` better formal properties, in particular a bottom element
+we do _not_ require. This gives `Filter X` better formal properties, in particular a bottom element
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
@@ -394,7 +399,9 @@ theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
 theorem generate_eq_biInf (S : Set (Set α)) : generate S = ⨅ s ∈ S, 𝓟 s :=
   eq_of_forall_le_iff fun f => by simp [le_generate_iff, le_principal_iff, subset_def]
 
-/-! ### Lattice equations -/
+/-!
+# Lattice equations
+-/
 
 theorem empty_mem_iff_bot {f : Filter α} : ∅ ∈ f ↔ f = ⊥ :=
   ⟨fun h => bot_unique fun s _ => mem_of_superset h (empty_subset s), fun h => h.symm ▸ mem_bot⟩
@@ -562,7 +569,9 @@ theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Di
     NeBot (iInf f) ↔ ∀ i, NeBot (f i) :=
   ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_directed hd⟩
 
-/-! #### `principal` equations -/
+/-!
+# `principal` equations
+-/
 
 @[simp]
 theorem inf_principal {s t : Set α} : 𝓟 s ⊓ 𝓟 t = 𝓟 (s ∩ t) :=
@@ -633,7 +642,9 @@ end Lattice
 @[mono, gcongr]
 theorem join_mono {f₁ f₂ : Filter (Filter α)} (h : f₁ ≤ f₂) : join f₁ ≤ join f₂ := fun _ hs => h hs
 
-/-! ### Eventually -/
+/-!
+# Eventually
+-/
 
 theorem eventually_iff {f : Filter α} {P : α → Prop} : (∀ᶠ x in f, P x) ↔ { x | P x } ∈ f :=
   Iff.rfl
@@ -770,7 +781,9 @@ theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
   mp h _ := by filter_upwards [h] with _ pa _ using pa
   mpr h := by filter_upwards [h univ] with _ pa using pa (by simp)
 
-/-! ### Frequently -/
+/-!
+# Frequently
+-/
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
     ∃ᶠ x in f, p x :=
@@ -933,7 +946,7 @@ lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
   exact dite_eq_left hi ▸ hi.choose_spec
 
 /-!
-### Relation “eventually equal”
+# Relation “eventually equal”
 -/
 
 section EventuallyEq

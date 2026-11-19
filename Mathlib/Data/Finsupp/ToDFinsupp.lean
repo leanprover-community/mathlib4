@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Data.DFinsupp.Module
 public import Mathlib.Data.Finsupp.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
 
@@ -18,13 +21,16 @@ It is in its own file since neither `Finsupp` nor `DFinsupp` depend on each othe
 ## Main definitions
 
 * "identity" maps between `Finsupp` and `DFinsupp`:
+
   * `Finsupp.toDFinsupp : (ι →₀ M) → (Π₀ i : ι, M)`
   * `DFinsupp.toFinsupp : (Π₀ i : ι, M) → (ι →₀ M)`
   * Bundled equiv versions of the above:
+
     * `finsuppEquivDFinsupp : (ι →₀ M) ≃ (Π₀ i : ι, M)`
     * `finsuppAddEquivDFinsupp : (ι →₀ M) ≃+ (Π₀ i : ι, M)`
     * `finsuppLequivDFinsupp R : (ι →₀ M) ≃ₗ[R] (Π₀ i : ι, M)`
 * stronger versions of `Finsupp.split`:
+
   * `sigmaFinsuppEquivDFinsupp : ((Σ i, η i) →₀ N) ≃ (Π₀ i, (η i →₀ N))`
   * `sigmaFinsuppAddEquivDFinsupp : ((Σ i, η i) →₀ N) ≃+ (Π₀ i, (η i →₀ N))`
   * `sigmaFinsuppLequivDFinsupp : ((Σ i, η i) →₀ N) ≃ₗ[R] (Π₀ i, (η i →₀ N))`
@@ -64,7 +70,9 @@ these arguments are also present on the `noncomputable` equivs.
 
 variable {ι : Type*} {R : Type*} {M : Type*}
 
-/-! ### Basic definitions and lemmas -/
+/-!
+# Basic definitions and lemmas
+-/
 
 
 section Defs
@@ -97,11 +105,13 @@ theorem toDFinsupp_support (f : ι →₀ M) : f.toDFinsupp.support = f.support 
   ext
   simp
 
-/-- Interpret a homogeneous `DFinsupp` as a `Finsupp`.
+/--
+Interpret a homogeneous `DFinsupp` as a `Finsupp`.
 
 Note that the elaborator has a lot of trouble with this definition - it is often necessary to
 write `(DFinsupp.toFinsupp f : ι →₀ M)` instead of `f.toFinsupp`, as for some unknown reason
-using dot notation or omitting the type ascription prevents the type being resolved correctly. -/
+using dot notation or omitting the type ascription prevents the type being resolved correctly.
+-/
 def DFinsupp.toFinsupp (f : Π₀ _ : ι, M) : ι →₀ M :=
   ⟨f.support, f, fun i => by simp only [DFinsupp.mem_support_iff]⟩
 
@@ -132,7 +142,9 @@ end
 
 end Defs
 
-/-! ### Lemmas about arithmetic operations -/
+/-!
+# Lemmas about arithmetic operations
+-/
 
 
 section Lemmas
@@ -196,7 +208,9 @@ end DFinsupp
 
 end Lemmas
 
-/-! ### Bundled `Equiv`s -/
+/-!
+# Bundled `Equiv`s
+-/
 
 
 section Equivs
@@ -245,7 +259,9 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
 
 noncomputable section Sigma
 
-/-! ### Stronger versions of `Finsupp.split` -/
+/-!
+# Stronger versions of `Finsupp.split`
+-/
 
 variable {η : ι → Type*} {N : Type*} [Semiring R]
 

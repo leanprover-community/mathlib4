@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular points and the group law in projective coordinates
 
@@ -54,7 +57,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -84,7 +87,9 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [C
 
 namespace Projective
 
-/-! ## Negation on projective point representatives -/
+/-!
+# Negation on projective point representatives
+-/
 
 variable (W') in
 /-- The negation of a projective point representative on a Weierstrass curve. -/
@@ -151,10 +156,12 @@ lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
   erw [addXYZ, addX_neg, addY_neg hP, addZ_neg, smul_fin3, mul_zero, mul_one]
 
 variable (W') in
-/-- The negation of a projective point class on a Weierstrass curve `W`.
+/--
+The negation of a projective point class on a Weierstrass curve `W`.
 
 If `P` is a projective point representative on `W`, then `W.negMap ⟦P⟧` is definitionally equivalent
-to `W.neg P`. -/
+to `W.neg P`.
+-/
 def negMap (P : PointClass R) : PointClass R :=
   P.map W'.neg fun _ _ => neg_equiv
 
@@ -174,7 +181,9 @@ lemma nonsingularLift_negMap {P : PointClass F} (hP : W.NonsingularLift P) :
   rcases P with ⟨_⟩
   exact nonsingular_neg hP
 
-/-! ## Addition on projective point representatives -/
+/-!
+# Addition on projective point representatives
+-/
 
 open scoped Classical in
 variable (W') in
@@ -290,10 +299,12 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
             nonsingular_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
 variable (W') in
-/-- The addition of two projective point classes on a Weierstrass curve `W`.
+/--
+The addition of two projective point classes on a Weierstrass curve `W`.
 
 If `P` and `Q` are two projective point representatives on `W`, then `W.addMap ⟦P⟧ ⟦Q⟧` is
-definitionally equivalent to `W.add P Q`. -/
+definitionally equivalent to `W.add P Q`.
+-/
 noncomputable def addMap (P Q : PointClass R) : PointClass R :=
   Quotient.map₂ W'.add (fun _ _ hP _ _ hQ => add_equiv hP hQ) P Q
 
@@ -348,7 +359,9 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
   rcases P; rcases Q
   exact nonsingular_add hP hQ
 
-/-! ## Nonsingular projective points -/
+/-!
+# Nonsingular projective points
+-/
 
 variable (W') in
 /-- A nonsingular projective point on a Weierstrass curve `W`. -/
@@ -393,9 +406,11 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
     fromAffine (.some _ _ h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
-/-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
+/--
+The negation of a nonsingular projective point on a Weierstrass curve `W`.
 
-Given a nonsingular projective point `P` on `W`, use `-P` instead of `neg P`. -/
+Given a nonsingular projective point `P` on `W`, use `-P` instead of `neg P`.
+-/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
@@ -408,9 +423,11 @@ lemma neg_def (P : W.Point) : -P = P.neg :=
 lemma neg_point (P : W.Point) : (-P).point = W.negMap P.point :=
   rfl
 
-/-- The addition of two nonsingular projective points on a Weierstrass curve `W`.
+/--
+The addition of two nonsingular projective points on a Weierstrass curve `W`.
 
-Given two nonsingular projective points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+Given two nonsingular projective points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`.
+-/
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
@@ -423,7 +440,9 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_point (P Q : W.Point) : (P + Q).point = W.addMap P.point Q.point :=
   rfl
 
-/-! ## Equivalence between projective and affine coordinates -/
+/-!
+# Equivalence between projective and affine coordinates
+-/
 
 open scoped Classical in
 variable (W) in
@@ -512,11 +531,13 @@ lemma toAffine_add [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Nonsingular P) (h
         · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx,
             toAffine_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
-/-- The natural map from a nonsingular projective point on a Weierstrass curve `W` to its
+/--
+The natural map from a nonsingular projective point on a Weierstrass curve `W` to its
 corresponding nonsingular point in affine coordinates.
 
 If `hP` is the nonsingular condition underlying a nonsingular projective point `P` on `W`, then
-`toAffineLift ⟨hP⟩` is definitionally equivalent to `toAffine W P`. -/
+`toAffineLift ⟨hP⟩` is definitionally equivalent to `toAffine W P`.
+-/
 noncomputable def toAffineLift (P : W.Point) : W.toAffine.Point :=
   P.point.lift _ fun _ _ => toAffine_of_equiv
 
@@ -595,7 +616,9 @@ noncomputable instance : AddCommGroup W.Point where
 
 end Point
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 @[simp]
 protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) : (W'.map f).neg (f ∘ P) = f ∘ W'.neg P := by

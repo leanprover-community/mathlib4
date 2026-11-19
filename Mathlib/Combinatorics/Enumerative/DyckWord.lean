@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dyck words
 
@@ -480,22 +483,26 @@ section BinaryTree
 
 open BinaryTree
 
-/-- Convert a Dyck word to a binary rooted tree.
+/--
+Convert a Dyck word to a binary rooted tree.
 
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
 which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
-subtrees to a new root node. -/
+subtrees to a new root node.
+-/
 def toTree (p : DyckWord) : BinaryTree Unit :=
   if p = 0 then nil else p.insidePart.toTree △ p.outsidePart.toTree
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_lt ‹_›]
 
-/-- Convert a binary rooted tree to a Dyck word.
+/--
+Convert a binary rooted tree to a Dyck word.
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
-is sent to `g(l).nest + g(r)`. -/
+is sent to `g(l).nest + g(r)`.
+-/
 def ofTree : BinaryTree Unit → DyckWord
   | BinaryTree.nil => 0
   | BinaryTree.node _ l r => (ofTree l).nest + ofTree r

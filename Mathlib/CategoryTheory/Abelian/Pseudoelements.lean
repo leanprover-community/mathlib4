@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.CategoryTheory.Abelian.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudoelements in abelian categories
 
-A *pseudoelement* of an object `X` in an abelian category `C` is an equivalence class of arrows
+A _pseudoelement_ of an object `X` in an abelian category `C` is an equivalence class of arrows
 ending in `X`, where two arrows are considered equivalent if we can find two epimorphisms with a
 common domain making a commutative square with the two arrows. While the construction shows that
 pseudoelements are actually subobjects of `X` rather than "elements", it is possible to chase these
@@ -43,6 +46,7 @@ We prove that every morphism maps the zero pseudoelement to the zero pseudoeleme
 and that a zero morphism maps every pseudoelement to the zero pseudoelement (`zero_apply`).
 
 Here are the metatheorems we provide:
+
 * A morphism `f` is zero if and only if it is the zero function on pseudoelements.
 * A morphism `f` is an epimorphism if and only if it is surjective on pseudoelements.
 * A morphism `f` is a monomorphism if and only if it is injective on pseudoelements
@@ -70,7 +74,7 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 2_\]\[borceux-vol2\]
 -/
 
 @[expose] public section
@@ -194,7 +198,7 @@ section Zero
 
 /-!
 In this section we prove that for every `P` there is an equivalence class that contains
-precisely all the zero morphisms ending in `P` and use this to define *the* zero
+precisely all the zero morphisms ending in `P` and use this to define _the_ zero
 pseudoelement.
 -/
 
@@ -412,11 +416,13 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such
+/--
+If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such
 that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
 Remark: Borceux claims that `s` is unique, but this is false. See
-`Counterexamples/Pseudoelement.lean` for details. -/
+`Counterexamples/Pseudoelement.lean` for details.
+-/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, pullback.fst f g s = p ∧ pullback.snd f g s = q :=

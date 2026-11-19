@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
 

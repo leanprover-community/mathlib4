@@ -14,10 +14,13 @@ import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartan's criteria
 
-The two **Cartan criteria** characterise solvability and semisimplicity of finite-dimensional
+The two *Cartan criteria* characterise solvability and semisimplicity of finite-dimensional
 Lie algebras over fields of characteristic zero in terms of the Killing form: solvability
 via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
@@ -26,11 +29,11 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 * `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`: over a field of characteristic zero,
   if a finite-dimensional representation `M` of `L` has trivial trace form, then `M` is nilpotent
   as a `⁅L, L⁆`-module.
-* `LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero`: **Cartan's criterion for solvability**:
+* `LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero`: *Cartan's criterion for solvability*:
   if the Killing form of a Lie algebra `L` vanishes on `L × ⁅L, L⁆`, then `L` is solvable.
 * `LieAlgebra.killingCompl_top_le_radical`: the Killing radical of a finite-dimensional Lie algebra
   is contained in the solvable radical.
-* `LieAlgebra.HasTrivialRadical.instIsKilling`: **Cartan's criterion for semisimplicity**: if a
+* `LieAlgebra.HasTrivialRadical.instIsKilling`: *Cartan's criterion for semisimplicity*: if a
   finite-dimensional Lie algebra has trivial solvable radical, then its Killing form is
   non-degenerate.
 
@@ -41,8 +44,8 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] Chapter I. §5.4
-* [J. Humphreys, *Introduction to Lie Algebras and ...*][humphreys1972] Chapter II 4.3
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 1--3_\]\[bourbaki1975\] Chapter I. §5.4
+* ‍\[J. Humphreys, _Introduction to Lie Algebras and ..._\]\[humphreys1972\] Chapter II 4.3
 -/
 
 variable {R L M : Type*} [CommRing R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]
@@ -197,12 +200,14 @@ end LieModule
 variable [IsNoetherian R L] [Module.Free R L]
 
 open LieAlgebra in
-/-- A convenience variation of `LieAlgebra.isSolvable_of_forall_derived_killingForm_eq_zero` for
+/--
+A convenience variation of `LieAlgebra.isSolvable_of_forall_derived_killingForm_eq_zero` for
 working with ideals.
 
 Over a principal ideal domain by `LieIdeal.killingForm_eq` this is just a specialisation of
 `LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero` but since it does not require the PID
-assumption, it is a slightly stronger result. -/
+assumption, it is a slightly stronger result.
+-/
 public theorem LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero (I : LieIdeal R L)
     (h : ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm R L x y = 0) :
     IsSolvable I := by
@@ -250,10 +255,12 @@ public lemma killingCompl_top_le_radical :
   rw [LieModule.traceForm_comm]
   exact (LieIdeal.mem_killingCompl R L ⊤).mp hx y (LieSubmodule.mem_top y)
 
-/-- **Cartan's criterion for semisimplicity**: if a finite-dimensional Lie algebra has trivial
+/--
+*Cartan's criterion for semisimplicity*: if a finite-dimensional Lie algebra has trivial
 solvable radical, then its Killing form is non-degenerate.
 
-See also `LieAlgebra.hasTrivialRadical_iff_isKilling`. -/
+See also `LieAlgebra.hasTrivialRadical_iff_isKilling`.
+-/
 public instance HasTrivialRadical.instIsKilling [HasTrivialRadical R L] : IsKilling R L where
   killingCompl_top_eq_bot := by simpa using killingCompl_top_le_radical R L
 

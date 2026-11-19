@@ -13,6 +13,9 @@ public import Mathlib.Tactic.OfNat
 
 import Mathlib.Data.Nat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic operations on the integers
 
@@ -52,7 +55,9 @@ lemma strongRec_of_ge :
 
 end strongRec
 
-/-! ### nat abs -/
+/-!
+# nat abs
+-/
 
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n⟩
 
@@ -61,7 +66,9 @@ lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injectiv
   convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
-/-! ### dvd -/
+/-!
+# dvd
+-/
 
 @[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℤ) ↔ OfNat.ofNat x ∣ y :=
   natCast_dvd_natCast

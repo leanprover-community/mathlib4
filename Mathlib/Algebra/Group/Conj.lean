@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Semiconj.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugacy of group elements
 
@@ -194,23 +197,34 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   exact ⟨ConjClasses.mk a, rfl⟩
 
 library_note «slow-failing instance priority» /--
-Certain instances trigger further searches when they are considered as candidate instances;
-these instances should be assigned a priority lower than the default of 1000 (for example, 900).
+                                              Certain instances trigger further searches when they
+are considered as candidate instances; these instances
+should be assigned a priority lower than the default
+of 1000 (for example, 900).
 
-The conditions for this rule are as follows:
-* a class `C` has instances `instT : C T` and `instT' : C T'`;
-* types `T` and `T'` are both reducible specializations of another type `S`;
-* the parameters supplied to `S` to produce `T` are not (fully) determined by `instT`,
-  instead they have to be found by instance search.
+                                              The conditions for this rule are as follows:
 
-If those conditions hold, the instance `instT` should be assigned lower priority.
+                                              * a class `C` has instances `instT : C T` and
+  `instT' : C T'`;
+* types `T` and `T'` are both reducible
+  specializations of another type `S`;
+* the parameters supplied to `S` to produce `T` are
+  not (fully) determined by `instT`, instead they have
+  to be found by instance search.
 
-Note that there is no issue unless `T` and `T'` are reducibly equal to `S`, Otherwise the instance
-discrimination tree can distinguish them, and the note does not apply.
+                                              If those conditions hold, the instance `instT` should
+be assigned lower priority.
 
-If the type involved is a free variable (rather than an instantiation of some type `S`),
-the instance priority should be even lower, see Note [lower instance priority].
--/
+                                              Note that there is no issue unless `T` and `T'` are
+reducibly equal to `S`, Otherwise the instance
+discrimination tree can distinguish them, and the note
+does not apply.
+
+                                              If the type involved is a free variable (rather than
+an instantiation of some type `S`), the instance
+priority should be even lower, see Note \[lower
+instance priority\].
+                                              -/
 
 @[to_additive]
 instance [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=

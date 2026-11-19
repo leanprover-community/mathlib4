@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.Algebra.Quaternion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual quaternions
 
@@ -21,7 +24,7 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Dual_quaternion>
+* [https://en.wikipedia.org/wiki/Dual\_quaternion](https://en.wikipedia.org/wiki/Dual_quaternion)
 -/
 
 @[expose] public section
@@ -31,10 +34,12 @@ variable {R : Type*} [CommRing R]
 
 namespace Quaternion
 
-/-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
+/--
+The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 
-See also `Matrix.dualNumberEquiv` for a similar result. -/
+See also `Matrix.dualNumberEquiv` for a similar result.
+-/
 def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion R) where
   toFun q :=
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the natural number square root function.
 -/
@@ -21,10 +24,10 @@ assert_not_exists Monoid
 variable {m n a : ℕ}
 
 /-!
-### `sqrt`
+# `sqrt`
 
-See [Wikipedia, *Methods of computing square roots*]
-(https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_(base_2)).
+See \[Wikipedia, _Methods of computing square roots_\]
+(https://en.wikipedia.org/wiki/Methods\_of\_computing\_square\_roots#Binary\_numeral\_system\_(base\_2)).
 -/
 
 lemma sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n := by simpa [Nat.pow_two] using sqrt_le n

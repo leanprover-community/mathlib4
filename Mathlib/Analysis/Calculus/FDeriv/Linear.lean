@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative of bounded linear maps
 
@@ -34,7 +37,7 @@ variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-!
-### Bundled continuous linear maps
+# Bundled continuous linear maps
 
 There are currently two variants of these in mathlib, the bundled version
 (named `ContinuousLinearMap`, and denoted `E →L[𝕜] F`, works for topological vector spaces),
@@ -93,7 +96,7 @@ end Basic
 end ContinuousLinearMap
 
 /-!
-### Chain rule for a composition with a continuous linear map
+# Chain rule for a composition with a continuous linear map
 
 The chain rule says that given two differentiable functions `g` and `f`,
 the function `g ∘ f` is differentiable too, with derivative `g' ∘L f'`.
@@ -223,7 +226,9 @@ theorem Differentiable.comp_continuousLinearMap (h : Differentiable 𝕜 g) :
 end CompRight
 
 
-/-! ### Unbundled continuous linear maps -/
+/-!
+# Unbundled continuous linear maps
+-/
 
 namespace IsBoundedLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

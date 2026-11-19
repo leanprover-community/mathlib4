@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Data.Ineq
 public import Mathlib.Tactic.Ineq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for the `linear_combination` tactic
 
@@ -26,7 +29,9 @@ namespace Mathlib.Tactic.LinearCombination
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 variable {K : Type*} {t s : K}
 
-/-! ### Addition -/
+/-!
+# Addition
+-/
 
 theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 
@@ -46,7 +51,9 @@ theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₁ ▸ add_lt_add_right p₂ b₁
 
-/-! ### Multiplication -/
+/-!
+# Multiplication
+-/
 
 theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 
@@ -82,7 +89,9 @@ theorem mul_const_lt_weak [Semiring α] [PartialOrder α] [IsOrderedRing α]
     a * b ≤ a * c :=
   mul_le_mul_of_nonneg_left p.le ha
 
-/-! ### Scalar multiplication -/
+/-!
+# Scalar multiplication
+-/
 
 theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p ▸ rfl
 
@@ -124,7 +133,9 @@ theorem smul_const_lt_weak [Semiring K] [PartialOrder K]
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p.le hs
 
-/-! ### Division -/
+/-!
+# Division
+-/
 
 theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 
@@ -141,7 +152,9 @@ theorem div_lt_const_weak [Semifield α] [LinearOrder α] [IsStrictOrderedRing �
     b / a ≤ c / a :=
   div_le_div_of_nonneg_right p.le ha
 
-/-! ### Lemmas constructing the reduction of a goal to a specified built-up hypothesis -/
+/-!
+# Lemmas constructing the reduction of a goal to a specified built-up hypothesis
+-/
 
 theorem eq_of_eq [Add α] [IsRightCancelAdd α] (p : (a : α) = b) (H : a' + b = b' + a) :
     a' = b' := by
@@ -195,7 +208,9 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
 
 end Tactic.LinearCombination
 
-/-! ### Lookup functions for lemmas by operation and relation(s) -/
+/-!
+# Lookup functions for lemmas by operation and relation(s)
+-/
 
 open Tactic.LinearCombination
 

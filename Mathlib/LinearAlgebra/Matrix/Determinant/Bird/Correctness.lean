@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Correctness of Bird's determinant algorithm
 
@@ -20,7 +23,7 @@ This file contains a proof that Bird's division-free algorithm computes
 `Matrix.det`, in both its matrix form `BirdDet.Spec.birdDet`
 (`birdDetSpec_eq_det`) and its flat-array form `BirdDet.birdDet`
 (`det_eq_birdDet`), formalizing the combinatorial argument of
-[Richard S. Bird, *A simple division-free algorithm for computing determinants*][bird2011].
+‍\[Richard S. Bird, _A simple division-free algorithm for computing determinants_\]\[bird2011\].
 
 ## Correspondence with the paper
 
@@ -38,8 +41,8 @@ The theorem names `paper_eq1`, ..., `paper_eq5` follow Bird's numbering.
 
 ## Main results
 
-- `BirdDet.birdDetSpec_eq_det`: `Matrix.det` computes the same determinant as `BirdDet.Spec.birdDet`
-- `BirdDet.det_eq_birdDet`: `Matrix.det` computes the same determinant as `BirdDet.birdDet`
+* `BirdDet.birdDetSpec_eq_det`: `Matrix.det` computes the same determinant as `BirdDet.Spec.birdDet`
+* `BirdDet.det_eq_birdDet`: `Matrix.det` computes the same determinant as `BirdDet.birdDet`
 -/
 
 namespace BirdDet
@@ -151,7 +154,9 @@ theorem S_zero (i : Fin n) : S 0 i = {![]} := by
 @[simp] lemma S_zero_eq_singleton {p : ℕ} : S p 0 = {Fin.succ} := by
   ext; simp [mem_S_iff]
 
-/-! ## Decomposition `S_{p+1}(βᵢ) = { kα | k ∈ βᵢ, α ∈ S_p(β_k) }` -/
+/-!
+# Decomposition `S_{p+1}(βᵢ) = { kα | k ∈ βᵢ, α ∈ S_p(β_k) }`
+-/
 
 /-- `S (p + 1) i` can be written as the image of a `biUnion` -/
 theorem S_succ_eq_biUnion {p : ℕ} (i : Fin n) :
@@ -190,7 +195,9 @@ variable (p) in
 abbrev Eq1 : Prop :=
   (Spec.stepEntry A)^[p] A = .of fun i j ↦ (-1) ^ p * ∑ α ∈ S p i, bminor A i j α
 
-/-! ## Equations (2) and (3): substituting the induction hypothesis -/
+/-!
+# Equations (2) and (3): substituting the induction hypothesis
+-/
 
 /-- Bird's equation (2), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
@@ -217,7 +224,9 @@ theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
     Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
   ring
 
-/-! ## Equation (5): first-column Laplace expansion -/
+/-!
+# Equation (5): first-column Laplace expansion
+-/
 
 /-- Bird's equation (5) -/
 theorem paper_eq5 (i j : Fin n) :
@@ -231,7 +240,9 @@ theorem paper_eq5 (i j : Fin n) :
         ∑ α ∈ S (p + 1) i, ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j := by
     rw [Finset.sum_sub_distrib]
 
-/-! ## Comparing equations (3) and (5): reindex by sorted insert/delete -/
+/-!
+# Comparing equations (3) and (5): reindex by sorted insert/delete
+-/
 
 /-- The off-diagonal sums in Bird's equations (3) and (5) agree. -/
 theorem paper_eq3_eq5_off_diag (i j : Fin n) :
@@ -277,7 +288,9 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       exact ⟨(t.insertNth k α, t), by simpa, by simp⟩
   · simp
 
-/-! ## Bird's Equation (1) -/
+/-!
+# Bird's Equation (1)
+-/
 theorem paper_eq1 : Eq1 A p := by
   induction p with
   | zero =>
@@ -287,7 +300,9 @@ theorem paper_eq1 : Eq1 A p := by
     ext i j
     rw [Matrix.of_apply, paper_eq3 A i j ih, paper_eq5 A, paper_eq3_eq5_off_diag A]
 
-/-! ## instantiating equation (1) to prove Theorem 1 -/
+/-!
+# instantiating equation (1) to prove Theorem 1
+-/
 
 /-- Bird's Theorem 1 -/
 theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :

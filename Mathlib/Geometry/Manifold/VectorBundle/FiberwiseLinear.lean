@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
-/-! # The groupoid of `C^n`, fiberwise-linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The groupoid of `C^n`, fiberwise-linear maps
 
 This file contains preliminaries for the definition of a `C^n` vector bundle: an associated
 `StructureGroupoid`, the groupoid of `contMDiffFiberwiseLinear` functions.
@@ -21,7 +25,9 @@ open Set TopologicalSpace
 
 open scoped Manifold Topology ContDiff
 
-/-! ### The groupoid of `C^n`, fiberwise-linear maps -/
+/-!
+# The groupoid of `C^n`, fiberwise-linear maps
+-/
 
 
 variable {𝕜 B F : Type*} [TopologicalSpace B]
@@ -145,7 +151,8 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
   · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 
-/-- Let `e` be an open partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set
+/--
+Let `e` be an open partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set
 `U` in `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is
 equal on `u ×ˢ univ` to some bi-`C^n` fiberwise linear open partial homeomorphism.  Then `e` itself
 is equal to some bi-`C^n` fiberwise linear open partial homeomorphism.
@@ -156,7 +163,8 @@ gluing together the various bi-`C^n` fiberwise linear open partial homeomorphism
 locally.
 
 The `U` in the conclusion is the same `U` as in the hypothesis. We state it like this, because this
-is exactly what we need for `contMDiffFiberwiseLinear`. -/
+is exactly what we need for `contMDiffFiberwiseLinear`.
+-/
 theorem ContMDiffFiberwiseLinear.locality_aux₂
     (n : ℕ∞ω) (e : OpenPartialHomeomorph (B × F) (B × F)) (U : Set B)
     (hU : e.source = U ×ˢ univ)

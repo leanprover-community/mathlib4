@@ -9,12 +9,15 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Removable singularity theorem
 
 In this file we prove Riemann's removable singularity theorem: if `f : ℂ → E` is complex
 differentiable in a punctured neighborhood of a point `c` and is bounded in a punctured neighborhood
-of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at `c` and the
+of `c` (or, more generally, $`f(z) - f(c)=o((z-c)^{-1})`), then it has a limit at `c` and the
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
 
@@ -64,9 +67,11 @@ theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s 
       ⟨Iff.mpr (differentiableOn_dslope_of_notMem fun h => h.2 rfl) (h.mono sdiff_subset),
         continuousAt_dslope_same.2 <| h.differentiableAt hc⟩⟩
 
-/-- **Removable singularity** theorem: if `s` is a neighborhood of `c : ℂ`, a function `f : ℂ → E`
-is complex differentiable on `s \ {c}`, and $f(z) - f(c)=o((z-c)^{-1})$, then `f` redefined to be
-equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `s`. -/
+/--
+*Removable singularity* theorem: if `s` is a neighborhood of `c : ℂ`, a function `f : ℂ → E`
+is complex differentiable on `s \ {c}`, and $`f(z) - f(c)=o((z-c)^{-1})`, then `f` redefined to be
+equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `s`.
+-/
 theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c)
     (hd : DifferentiableOn ℂ f (s \ {c}))
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
@@ -85,9 +90,11 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
     (continuousWithinAt_id.tendsto.sub tendsto_const_nhds).smul tendsto_const_nhds
   simpa [← smul_add, ContinuousWithinAt] using H.add H'
 
-/-- **Removable singularity** theorem: if `s` is a punctured neighborhood of `c : ℂ`, a function
-`f : ℂ → E` is complex differentiable on `s`, and $f(z) - f(c)=o((z-c)^{-1})$, then `f` redefined to
-be equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `{c} ∪ s`. -/
+/--
+*Removable singularity* theorem: if `s` is a punctured neighborhood of `c : ℂ`, a function
+`f : ℂ → E` is complex differentiable on `s`, and $`f(z) - f(c)=o((z-c)^{-1})`, then `f` redefined
+to be equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `{c} ∪ s`.
+-/
 theorem differentiableOn_update_limUnder_insert_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hc : s ∈ 𝓝[≠] c) (hd : DifferentiableOn ℂ f s)
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
@@ -106,8 +113,10 @@ theorem differentiableOn_update_limUnder_of_bddAbove {f : ℂ → E} {s : Set �
     ⟨C + ‖f c‖, eventually_map.2 <| mem_nhdsWithin_iff_exists_mem_nhds_inter.2
       ⟨s, hc, fun _ hz => norm_sub_le_of_le (hC <| mem_image_of_mem _ hz) le_rfl⟩⟩
 
-/-- **Removable singularity** theorem: if a function `f : ℂ → E` is complex differentiable on a
-punctured neighborhood of `c` and $f(z) - f(c)=o((z-c)^{-1})$, then `f` has a limit at `c`. -/
+/--
+*Removable singularity* theorem: if a function `f : ℂ → E` is complex differentiable on a
+punctured neighborhood of `c` and $`f(z) - f(c)=o((z-c)^{-1})`, then `f` has a limit at `c`.
+-/
 theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO {f : ℂ → E} {c : ℂ}
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z)
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :

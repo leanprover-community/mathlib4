@@ -7,11 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radicals
 
 In this file we define what it means for a preradical `Φ : Preradical C` on an
-abelian category `C` to be *radical*, and we define `Radical C` as the full
+abelian category `C` to be _radical_, and we define `Radical C` as the full
 subcategory of `Preradical C` consisting of radicals.
 
 Following Stenström, a preradical `Φ` is called radical if it coincides with its self colon.
@@ -19,12 +22,10 @@ We encode this as the property that the natural transformation `toColon Φ Φ : 
 is an isomorphism, and we prove a basic characterization of radicals in terms
 of the vanishing of `Φ.r` on `Φ.quotient`.
 
-
 ## Main definitions
 
 * `Preradical.IsRadical` :
   The property that a preradical `Φ` is radical, i.e. that `(Φ.colon Φ) ≅ Φ`.
-
 * `Radical C` :
   The type of radicals on `C`, as a full subcategory of `Preradical C`.
 
@@ -35,8 +36,8 @@ of the vanishing of `Φ.r` on `Φ.quotient`.
 
 ## References
 
-* [Bo Stenström, Rings and Modules of Quotients][stenstrom1971]
-* [Bo Stenström, *Rings of Quotients*][stenstrom1975]
+* ‍\[Bo Stenström, Rings and Modules of Quotients\]\[stenstrom1971\]
+* ‍\[Bo Stenström, _Rings of Quotients_\]\[stenstrom1975\]
 
 ## Tags
 
@@ -53,7 +54,9 @@ variable {C : Type*} [Category* C] [Abelian C]
 namespace Preradical
 
 variable (C)
-/-- A preradical `Φ` is *radical* if `Φ.colon Φ ≅ Φ`. -/
+/--
+A preradical `Φ` is _radical_ if `Φ.colon Φ ≅ Φ`.
+-/
 def isRadical : ObjectProperty (Preradical C) :=
   fun Φ ↦ IsIso (toColon Φ Φ)
 

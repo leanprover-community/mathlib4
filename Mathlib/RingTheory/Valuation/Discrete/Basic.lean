@@ -10,21 +10,25 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete Valuations
 
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
-*discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
+_discrete_, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
 implemented as `MonoidWithZeroHom.valueGroup v`. When `Γ := ℤₘ₀` (defined in
 `Multiplicative.termℤₘ₀`), `γ = ofAdd (-1)` and the condition of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
-`1 : ℤ` belongs to the image of the corresponding *additive* valuation.
+`1 : ℤ` belongs to the image of the corresponding _additive_ valuation.
 
 Note that this definition of discrete implies that the valuation is nontrivial and of rank one, as
 is commonly assumed in number theory. To avoid potential confusion with other definitions of
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
+
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
@@ -33,6 +37,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   uniformizer.
 
 ## Main Results
+
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
   uniformizer.
 * `Valuation.associated_of_isUniformizer`: If two elements are uniformizers, they are associated.
@@ -47,12 +52,12 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * `Valuation.valuationSubring_isDiscreteValuationRing` : If `v` is a valuation on a field `K`
   whose value group is cyclic and nontrivial, then `v.valuationSubring` is a discrete
   valuation ring. This instance is the formalization of Chapter I, Section 1, Proposition 1 in
-  [serre1968].
-
+  ‍\[serre1968\].
 
 ## TODO
-* Relate discrete valuations and discrete valuation rings (contained in the project
-  <https://github.com/mariainesdff/LocalClassFieldTheory>)
+
+* Relate discrete valuations and discrete valuation rings (contained in the project [
+  https://github.com/mariainesdff/LocalClassFieldTheory](https://github.com/mariainesdff/LocalClassFieldTheory))
 -/
 
 @[expose] public section
@@ -67,10 +72,12 @@ section Ring
 
 variable {A : Type*} [Ring A] (v : Valuation A Γ)
 
-/-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is
-nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
+/--
+Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is
+nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is _discrete_, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
-asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
+asking that `1 : ℤ` belongs to the image of the corresponding additive valuation.
+-/
 class IsRankOneDiscrete : Prop where
   exists_generator_lt_one' : ∃ (γ : Γˣ), zpowers γ = v.valueGroup ∧ γ < 1
 

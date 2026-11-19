@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Lattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded and set-indexed unions and intersections
 
@@ -24,7 +27,9 @@ variable {α β γ : Type*} {ι ι₂ : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
-/-! ### Bounded unions and intersections -/
+/-!
+# Bounded unions and intersections
+-/
 
 /-- A specialization of `mem_iUnion₂`. -/
 theorem mem_biUnion {s : Set α} {t : α → Set β} {x : α} {y : β} (xs : x ∈ s) (ytx : y ∈ t x) :

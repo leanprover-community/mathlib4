@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 import Mathlib.NumberTheory.LucasPrimality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fermat numbers
 
@@ -17,9 +20,9 @@ for all natural numbers `n`.
 
 ## Main theorems
 
-- `Nat.coprime_fermatNumber_fermatNumber`: two distinct Fermat numbers are coprime.
-- `Nat.pepin_primality`: For 0 < n, Fermat number Fₙ is prime if `3 ^ (2 ^ (2 ^ n - 1)) = -1 mod Fₙ`
-- `fermat_primeFactors_one_lt`: For 1 < n, Prime factors the Fermat number Fₙ are of
+* `Nat.coprime_fermatNumber_fermatNumber`: two distinct Fermat numbers are coprime.
+* `Nat.pepin_primality`: For 0 < n, Fermat number Fₙ is prime if `3 ^ (2 ^ (2 ^ n - 1)) = -1 mod Fₙ`
+* `fermat_primeFactors_one_lt`: For 1 < n, Prime factors the Fermat number Fₙ are of
   form `k * 2 ^ (n + 2) + 1`.
 -/
 
@@ -97,9 +100,9 @@ namespace Nat
 
 open Finset
 /--
-**Goldbach's theorem** : no two distinct Fermat numbers share a common factor greater than one.
+*Goldbach's theorem* : no two distinct Fermat numbers share a common factor greater than one.
 
-From a letter to Euler, see page 37 in [juskevic2022].
+From a letter to Euler, see page 37 in \[juskevic2022\].
 -/
 theorem coprime_fermatNumber_fermatNumber {m n : ℕ} (hmn : m ≠ n) :
     Coprime (fermatNumber m) (fermatNumber n) := by
@@ -193,7 +196,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 
 -- TODO: move to NumberTheory.Mersenne, once we have that.
 /-!
-### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
+# Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/

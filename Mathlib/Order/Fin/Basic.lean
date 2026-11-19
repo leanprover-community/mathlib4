@@ -11,6 +11,9 @@ public import Mathlib.Data.Fin.Rev
 public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Fin n` forms a bounded linear order
 
@@ -46,7 +49,9 @@ open Function Nat Set
 namespace Fin
 variable {m n : ℕ}
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 attribute [norm_cast] Fin.val_max Fin.val_min
 
@@ -78,7 +83,7 @@ require a change to std4, defining `NeZero n` and thus re-defining `last n`
 lemmas, this would be equivalent to the existing definition. -/
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
@@ -88,7 +93,9 @@ instance instLattice : Lattice (Fin n) := inferInstance
 instance instHeytingAlgebra [NeZero n] : HeytingAlgebra (Fin n) := inferInstance
 instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInstance
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 instance [NeZero n] : IsBotZeroClass (Fin n) where
   isBot_zero := isBot_bot
@@ -174,7 +181,9 @@ lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (
 
 end FromFin
 
-/-! #### Monotonicity -/
+/-!
+# Monotonicity
+-/
 
 lemma val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ ↦ id
 lemma cast_strictMono {k l : ℕ} (h : k = l) : StrictMono (Fin.cast h) := fun {_ _} h ↦ h
@@ -286,16 +295,20 @@ lemma predAbove_left_injective : Injective (@predAbove n) := by
 @[simp] lemma predAbove_left_inj {x y : Fin n} : x.predAbove = y.predAbove ↔ x = y :=
   predAbove_left_injective.eq_iff
 
-/-! #### Order isomorphisms -/
+/-!
+# Order isomorphisms
+-/
 
 /-- The equivalence `Fin n ≃ {i // i < n}` is an order isomorphism. -/
 @[simps! apply symm_apply]
 def orderIsoSubtype : Fin n ≃o {i // i < n} :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 
-/-- `Fin.cast` as an `OrderIso`.
+/--
+`Fin.cast` as an `OrderIso`.
 
-`castOrderIso eq i` embeds `i` into an equal `Fin` type. -/
+`castOrderIso eq i` embeds `i` into an equal `Fin` type.
+-/
 @[simps]
 def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
@@ -323,7 +336,9 @@ lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
 
 lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 
-/-! #### Order embeddings -/
+/-!
+# Order embeddings
+-/
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
@@ -347,9 +362,11 @@ def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strict
 
 @[simp] lemma succOrderEmb_toEmbedding : (succOrderEmb n).toEmbedding = succEmb n := rfl
 
-/-- `Fin.castLE` as an `OrderEmbedding`.
+/--
+`Fin.castLE` as an `OrderEmbedding`.
 
-`castLEEmb h i` embeds `i` into a larger `Fin` type. -/
+`castLEEmb h i` embeds `i` into a larger `Fin` type.
+-/
 @[simps! apply]
 def castLEOrderEmb (h : n ≤ m) : Fin n ↪o Fin m := .ofStrictMono (castLE h) (strictMono_castLE h)
 
@@ -361,9 +378,11 @@ theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
 theorem castLEOrderEmb_toEmbedding (h : n ≤ m) : (castLEOrderEmb h).toEmbedding = castLEEmb h :=
   rfl
 
-/-- `Fin.castAdd` as an `OrderEmbedding`.
+/--
+`Fin.castAdd` as an `OrderEmbedding`.
 
-`castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
+`castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`.
+-/
 @[simps! apply]
 def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (strictMono_castAdd m)
 
@@ -376,9 +395,11 @@ theorem castAddOrderEmb_toEmbedding (m : ℕ) :
     (castAddOrderEmb m (n := n)).toEmbedding = castAddEmb m :=
   rfl
 
-/-- `Fin.castSucc` as an `OrderEmbedding`.
+/--
+`Fin.castSucc` as an `OrderEmbedding`.
 
-`castSuccOrderEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
+`castSuccOrderEmb i` embeds `i : Fin n` in `Fin (n+1)`.
+-/
 @[simps! apply]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 
@@ -390,9 +411,11 @@ theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
 theorem castSuccOrderEmb_toEmbedding : (castSuccOrderEmb (n := n)).toEmbedding = castSuccEmb :=
   rfl
 
-/-- `Fin.addNat` as an `OrderEmbedding`.
+/--
+`Fin.addNat` as an `OrderEmbedding`.
 
-`addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
+`addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`.
+-/
 @[simps! apply]
 def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (strictMono_addNat m)
 
@@ -405,9 +428,11 @@ theorem addNatOrderEmb_toEmbedding (m : ℕ) :
     (addNatOrderEmb m (n := n)).toEmbedding = addNatEmb m :=
   rfl
 
-/-- `Fin.natAdd` as an `OrderEmbedding`.
+/--
+`Fin.natAdd` as an `OrderEmbedding`.
 
-`natAddOrderEmb n i` adds `n` to `i` "on the left". -/
+`natAddOrderEmb n i` adds `n` to `i` "on the left".
+-/
 @[simps! apply]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
@@ -438,7 +463,9 @@ lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
     Set.range (Fin.succAboveOrderEmb i) = {i}ᶜ := by
   simp
 
-/-! ### Uniqueness of order isomorphisms -/
+/-!
+# Uniqueness of order isomorphisms
+-/
 
 /-- If `e` is an `orderIso` between `Fin n` and `Fin m`, then `n = m` and `e` is the identity
 map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i : ℕ)`. -/

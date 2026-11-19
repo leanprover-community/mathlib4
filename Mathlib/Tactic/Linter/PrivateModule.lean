@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 meta import Lean.Environment
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Private module linter
 
@@ -31,8 +34,8 @@ Note that private declarations from the current module are exactly those which s
 Since initializers have downstream effects regardless of whether they're `private` or `public`, any
 module which registers an initializer is considered non-private.
 
-We also do not count declarations which satisfy `isReservedName` as public declarations *from the
-current module*. While they might indeed be public, the declarations associated with reserved names
+We also do not count declarations which satisfy `isReservedName` as public declarations _from the
+current module_. While they might indeed be public, the declarations associated with reserved names
 are generated automatically and lazily, sometimes in downstream modules from the one in which the
 name was reserved.
 

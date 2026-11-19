@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations for a t-structure
 

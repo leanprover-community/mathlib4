@@ -11,6 +11,9 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.Compactness.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small inductive dimension
 
@@ -36,7 +39,7 @@ Formalize the large inductive dimension as well.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Inductive_dimension
+* https://en.wikipedia.org/wiki/Inductive\_dimension
 -/
 
 public section
@@ -93,15 +96,19 @@ theorem HasSmallInductiveDimensionLT.hasSmallInductiveDimensionLE {n : ℕ}
 instance (n : ℕ) [IsEmpty X] : HasSmallInductiveDimensionLT X n :=
   .mono n.zero_le <| hasSmallInductiveDimensionLT_zero_iff.2 ‹_›
 
-/-! ### Zero-dimensional spaces -/
+/-!
+# Zero-dimensional spaces
+-/
 
 variable (X) in
-/-- A zero-dimensional topological space is defined as one with small inductive dimension ≤ 0. In
+/--
+A zero-dimensional topological space is defined as one with small inductive dimension ≤ 0. In
 particular, our definition of `ZeroDimensionalSpace` allows the empty space even though, strictly
 speaking, it is (-1)-dimensional.
 
 An equivalent characterization is that a zero-dimensional space is one with a basis of clopen
-sets. -/
+sets.
+-/
 abbrev ZeroDimensionalSpace :=
   HasSmallInductiveDimensionLT X 1
 

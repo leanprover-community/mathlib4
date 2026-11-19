@@ -13,6 +13,9 @@ import Mathlib.Data.Fintype.Order
 
 import all Mathlib.NumberTheory.Height.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Height bounds for linear and polynomial maps
 
@@ -65,7 +68,7 @@ end IsNonarchimedean
 end aux
 
 /-!
-### Upper bound for the height of the image under a linear map
+# Upper bound for the height of the image under a linear map
 -/
 
 variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι] [Finite ι']
@@ -114,11 +117,13 @@ variable [AdmissibleAbsValues K]
 open AdmissibleAbsValues
 
 open Multiset in
-/-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
+/--
+Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
 Let `x : ι → K` be a tuple. Then the multiplicative height of `A x` is bounded by
 `#ι ^ totalWeight K * mulHeight A * mulHeight x` (if `ι` is nonempty).
 
-Note: We use the uncurried form of `A` so that we can write `mulHeight A`. -/
+Note: We use the uncurried form of `A` so that we can write `mulHeight A`.
+-/
 theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι → K) :
     mulHeight (fun j ↦ ∑ i, A (j, i) * x i) ≤
       Nat.card ι ^ totalWeight K * mulHeight A * mulHeight x := by
@@ -154,12 +159,14 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
 open Real in
-/-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
+/--
+Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
 Let `x : ι → K` be a tuple. Then the logarithmic height of `A x` is bounded by
 `totalWeight K * log #ι + logHeight A + logHeight x`.
 
 (Note that here we do not need to assume that `ι` is nonempty, due to the convenient
-junk value `log 0 = 0`.) -/
+junk value `log 0 = 0`.)
+-/
 theorem logHeight_linearMap_apply_le (A : ι' × ι → K) (x : ι → K) :
     logHeight (fun j ↦ ∑ i, A (j, i) * x i) ≤
       totalWeight K * log (Nat.card ι) + logHeight A + logHeight x := by
@@ -174,7 +181,7 @@ theorem logHeight_linearMap_apply_le (A : ι' × ι → K) (x : ι → K) :
 end Height
 
 /-!
-### Upper bound for the height of the image under a polynomial map
+# Upper bound for the height of the image under a polynomial map
 
 If `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`
 and `x : ι → K`, then the multiplicative height of `fun j ↦ (p j).eval x` is bounded above by
@@ -347,14 +354,16 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
       · grw [← HH₂, ← le_max_left]
     · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
 
-/-- Let `K` be a field with an admissible family of absolute values (giving rise
+/--
+Let `K` be a field with an admissible family of absolute values (giving rise
 to a multiplicative height).
 Let `p` be a family (indexed by `ι'`) of homogeneous polynomials in variables indexed by
 the finite type `ι` and of the same degree `N`. Then for any `x : ι →  K`,
 the multiplicative height of `fun j : ι' ↦ eval x (p j)` is bounded by a positive constant
 times `mulHeight x ^ N`.
 
-The difference to `mulHeight_eval_le` is that the constant is not made explicit. -/
+The difference to `mulHeight_eval_le` is that the constant is not made explicit.
+-/
 theorem mulHeight_eval_le' {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i, (p i).IsHomogeneous N) :
     ∃ C > 0, ∀ (x : ι → K), mulHeight (fun j ↦ (p j).eval x) ≤ C * mulHeight x ^ N :=
   ⟨_, by positivity, mulHeight_eval_le hp⟩
@@ -373,14 +382,16 @@ theorem logHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   pull (disch := positivity) log
   exact (log_le_log <| by positivity) <| mulHeight_eval_le hp x
 
-/-- Let `K` be a field with an admissible family of absolute values (giving rise
+/--
+Let `K` be a field with an admissible family of absolute values (giving rise
 to a logarithmic height).
 Let `p` be a family (indexed by `ι'`) of homogeneous polynomials in variables indexed by
 the finite type `ι` and of the same degree `N`. Then for any `x : ι →  K`,
 the logarithmic height of `fun j : ι' ↦ eval x (p j)` is bounded by a constant
 plus `N * logHeight x`.
 
-The difference to `logHeight_eval_le` is that the constant is not made explicit. -/
+The difference to `logHeight_eval_le` is that the constant is not made explicit.
+-/
 theorem logHeight_eval_le' {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i, (p i).IsHomogeneous N) :
     ∃ C, ∀ (x : ι → K), logHeight (fun j ↦ (p j).eval x) ≤ C + N * logHeight x :=
   ⟨_, logHeight_eval_le hp⟩
@@ -388,9 +399,10 @@ theorem logHeight_eval_le' {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i
 end Height
 
 /-!
-### Lower bound for the height of the image under a polynomial map
+# Lower bound for the height of the image under a polynomial map
 
 If
+
 * `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`,
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
@@ -427,7 +439,9 @@ variable [AdmissibleAbsValues K] [Finite ι]
 
 open AdmissibleAbsValues
 
-/-- If
+/--
+If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -435,7 +449,8 @@ open AdmissibleAbsValues
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
 
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the multiplicative height of `x`. -/
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
+-/
 theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
@@ -458,7 +473,9 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   grw [H, mulHeight_eval_le hq x]
   exact Eq.le (by ring)
 
-/-- If
+/--
+If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -468,7 +485,8 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by a positive
 constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 
-The difference to `mulHeight_eval_ge` is that the constant is not made explicit. -/
+The difference to `mulHeight_eval_ge` is that the constant is not made explicit.
+-/
 theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) :
     ∃ C > 0, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
@@ -480,7 +498,9 @@ theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   exact ⟨_, by positivity, mulHeight_eval_ge hq⟩
 
 open Real in
-/-- If
+/--
+If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -488,7 +508,8 @@ open Real in
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
 
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by an (explicit)
-constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
+constant depending only on `q` plus `N` times the logarithmic height of `x`.
+-/
 theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
@@ -502,7 +523,9 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   pull (disch := first | assumption | positivity) log
   exact (log_le_log <| by positivity) <| mulHeight_eval_ge hq p h
 
-/-- If
+/--
+If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -512,7 +535,8 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by a
 constant plus `N` times the logarithmic height of `x`.
 
-The difference to `logHeight_eval_ge` is that the constant is not made explicit. -/
+The difference to `logHeight_eval_ge` is that the constant is not made explicit.
+-/
 theorem logHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) :
     ∃ C, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
@@ -523,7 +547,7 @@ theorem logHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 end Height
 
 /-!
-### Bounds for the height of ![x*y, x+y, 1]
+# Bounds for the height of !\[x\*y, x+y, 1\]
 
 We show that the multiplicative height of `![a*c, a*d + b*c, b*d]` is bounded from above and from
 below by a positive constant times the product of the multiplicative heights of `![a, b]` and

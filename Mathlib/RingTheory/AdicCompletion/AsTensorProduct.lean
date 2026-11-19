@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adic completion as tensor product
 
@@ -19,18 +22,18 @@ In this file we examine properties of the natural map
 
 We show (in the `AdicCompletion` namespace):
 
-- `ofTensorProduct_bijective_of_pi_of_fintype`: it is an isomorphism if `M = R^n`.
-- `ofTensorProduct_surjective_of_finite`: it is surjective, if `M` is a finite `R`-module.
-- `ofTensorProduct_bijective_of_finite_of_isNoetherian`: it is an isomorphism if `R` is Noetherian
+* `ofTensorProduct_bijective_of_pi_of_fintype`: it is an isomorphism if `M = R^n`.
+* `ofTensorProduct_surjective_of_finite`: it is surjective, if `M` is a finite `R`-module.
+* `ofTensorProduct_bijective_of_finite_of_isNoetherian`: it is an isomorphism if `R` is Noetherian
   and `M` is a finite `R`-module.
 
 As a corollary we obtain
 
-- `flat_of_isNoetherian`: the adic completion of a Noetherian ring `R` is `R`-flat.
+* `flat_of_isNoetherian`: the adic completion of a Noetherian ring `R` is `R`-flat.
 
 ## TODO
 
-- Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
+* Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
   ring. This is mostly composing with the isomorphism to `R^n` and checking that the diagram
   commutes.
 -/
@@ -216,7 +219,7 @@ variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
 
 /-!
-### Noetherian case
+# Noetherian case
 
 Suppose `R` is Noetherian. Then we show that the canonical map
 `AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M` is an isomorphism for every

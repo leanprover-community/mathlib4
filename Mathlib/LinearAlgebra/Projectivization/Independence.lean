@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence in Projective Space
 
@@ -20,13 +23,13 @@ ambient vector space. Similarly for the definition of dependence.
 
 ## Results
 
-- A family of elements is dependent if and only if it is not independent.
-- Two elements are dependent if and only if they are equal.
+* A family of elements is dependent if and only if it is not independent.
+* Two elements are dependent if and only if they are equal.
 
 ## Future Work
 
-- Prove the axioms of a projective geometry are satisfied by the dependence relation.
-- Define projective linear subspaces.
+* Prove the axioms of a projective geometry are satisfied by the dependence relation.
+* Define projective linear subspaces.
 -/
 
 public section

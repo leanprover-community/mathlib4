@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set integral
 
@@ -32,6 +35,7 @@ some set `s ∈ l`.
 ## Notation
 
 We provide the following notations for expressing the integral of a function on a set :
+
 * `∫ x in s, f x ∂μ` is `MeasureTheory.integral (μ.restrict s) f`
 * `∫ x in s, f x` is `∫ x in s, f x ∂volume`
 
@@ -191,10 +195,12 @@ theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ x in s, t.indicator f x ∂μ = ∫ x in s ∩ t, f x ∂μ := by
   rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
 
-/-- **Inclusion-exclusion principle** for the integral of a function over a union.
+/--
+*Inclusion-exclusion principle* for the integral of a function over a union.
 
 The integral of a function `f` over the union of the `s i` over `i ∈ t` is the alternating sum of
-the integrals of `f` over the intersections of the `s i`. -/
+the integrals of `f` over the intersections of the `s i`.
+-/
 theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u ∈ t.powerset with u.Nonempty,
@@ -237,10 +243,12 @@ theorem setIntegral_one_eq_measureReal {X : Type*} {m : MeasurableSpace X}
     {μ : Measure X} {s : Set X} :
     ∫ _ in s, (1 : ℝ) ∂μ = μ.real s := by simp
 
-/-- **Inclusion-exclusion principle** for the measure of a union of sets of finite measure.
+/--
+*Inclusion-exclusion principle* for the measure of a union of sets of finite measure.
 
 The measure of the union of the `s i` over `i ∈ t` is the alternating sum of the measures of the
-intersections of the `s i`. -/
+intersections of the `s i`.
+-/
 theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
     μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
@@ -656,7 +664,8 @@ theorem setIntegral_trim {X} {m m0 : MeasurableSpace X} {μ : Measure X} (hm : m
     ∫ x in s, f x ∂μ = ∫ x in s, f x ∂μ.trim hm := by
   rwa [integral_trim hm hf_meas, restrict_trim hm μ]
 
-/-! ### Lemmas about adding and removing interval boundaries
+/-!
+# Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the endpoint having zero measure, while the
 unprimed ones use `[NullSingletonClass μ]`.
@@ -939,10 +948,12 @@ theorem integrable_of_summable_norm_restrict {f : C(X, E)} {s : ι → Compacts 
 
 end IntegrableUnion
 
-/-! ### Continuity of the set integral
+/-!
+# Continuity of the set integral
 
 We prove that for any set `s`, the function
-`fun f : X →₁[μ] E => ∫ x in s, f x ∂μ` is continuous. -/
+`fun f : X →₁[μ] E => ∫ x in s, f x ∂μ` is continuous.
+-/
 
 section ContinuousSetIntegral
 

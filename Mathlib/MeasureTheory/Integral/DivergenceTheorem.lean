@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Integral.Prod
 
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divergence theorem for Bochner integral
 
@@ -77,7 +80,7 @@ local notation "e " i => Pi.single i 1
 section
 
 /-!
-### Divergence theorem for functions on `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`.
+# Divergence theorem for functions on `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`.
 
 In this section we use the divergence theorem for a Henstock-Kurzweil-like integral
 `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` to prove the divergence
@@ -92,12 +95,10 @@ in several aspects.
 * We use Bochner integral instead of a Henstock-Kurzweil integral. This modification is done in
   `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁`. As a side effect
   of this change, we need to assume that the divergence is integrable.
-
 * We don't assume differentiability on the boundary of the box. This modification is done in
   `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable_aux₂`. To prove it, we
   choose an increasing sequence of smaller boxes that cover the interior of the original box, then
   apply the previous lemma to these smaller boxes and take the limit of both sides of the equation.
-
 * We assume `a ≤ b` instead of `∀ i, a i < b i`. This is the last step of the proof, and it is done
   in the main theorem `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`.
 -/
@@ -249,7 +250,8 @@ local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove
 local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
 local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
-/-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
+/--
+*Divergence theorem* for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
 `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `fun x ↦ ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
 where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
@@ -263,7 +265,8 @@ We represent both faces `x i = a i` and `x i = b i` as the box
 `Fin.succAbove : Fin n ↪o Fin (n + 1)` is the order embedding with range `{i}ᶜ`. The restrictions
 of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i` and `f ∘ frontFace i`, where
 `backFace i = Fin.insertNth i (a i)` and `frontFace i = Fin.insertNth i (b i)` are embeddings
-`ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate. -/
+`ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate.
+-/
 theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹) (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
@@ -362,7 +365,8 @@ open ContinuousLinearMap (smulRight)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)
 
-/-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
+/--
+*Fundamental theorem of calculus, part 2*. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
 
 See also
@@ -370,7 +374,8 @@ See also
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` for a version that only assumes right
   differentiability of `f`;
 * `MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable` for a version that works both
-  for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
+  for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`.
+-/
 theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : ℝ → E)
     {a b : ℝ} (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
@@ -398,7 +403,8 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
       simp [e, Subsingleton.elim (const (Fin 0) _) isEmptyElim, volume_pi,
         Measure.pi_of_empty fun _ : Fin 0 ↦ _]
 
-/-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
+/--
+*Fundamental theorem of calculus, part 2*. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
 
 See also `intervalIntegral.integral_eq_sub_of_hasDeriv_right` for a version that
@@ -415,7 +421,8 @@ theorem integral_eq_of_hasDerivAt_off_countable [CompleteSpace E] (f f' : ℝ �
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
 
-/-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
+/--
+*Divergence theorem* for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
 `a b : ℝ × ℝ`, `a ≤ b`. When thinking of `f` and `g` as the two coordinates of a single function
 `F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
@@ -424,7 +431,8 @@ boundary.
 
 See also `MeasureTheory.integral2_divergence_prod_of_hasFDerivAt_off_countable` for a
 version that does not assume `a ≤ b` and uses iterated interval integral instead of the integral
-over `Icc a b`. -/
+over `Icc a b`.
+-/
 theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a b : ℝ × ℝ) (hle : a ≤ b) (s : Set (ℝ × ℝ)) (hs : s.Countable)
     (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
@@ -467,7 +475,8 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
         setIntegral_congr_set (Ioc_ae_eq_Icc (α := ℝ) (μ := volume))]
       abel
 
-/-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
+/--
+*Divergence theorem* for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
 `a b : ℝ × ℝ`, `a ≤ b`. When thinking of `f` and `g` as the two coordinates of a single function
 `F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
@@ -479,7 +488,8 @@ version that does not assume `a ≤ b` and uses iterated interval integral inste
 over `Icc a b`.
 
 See also `integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le`
-for a version that assumes differentiability out of a countable set. -/
+for a version that assumes differentiability out of a countable set.
+-/
 theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a b : ℝ × ℝ) (hle : a ≤ b)
     (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
@@ -492,7 +502,8 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → 
   integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g' a b hle ∅
     (by simp) Hcf Hcg (by simpa only [sdiff_empty]) (by simpa only [sdiff_empty]) Hi
 
-/-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
+/--
+*Divergence theorem* for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function
 `F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
@@ -500,7 +511,8 @@ divergence of `F` inside the rectangle with vertices `(aᵢ, bⱼ)`, `i, j =1,2`
 the normal derivative of `F` along the boundary.
 
 See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le`
-for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`. -/
+for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`.
+-/
 theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a₁ a₂ b₁ b₂ : ℝ) (s : Set (ℝ × ℝ)) (hs : s.Countable)
     (Hcf : ContinuousOn f ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))
@@ -536,7 +548,8 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
       apply integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g'
         (a₁, a₂) (b₁, b₂) ⟨h₁, h₂⟩ s <;> assumption
 
-/-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
+/--
+*Divergence theorem* for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function
 `F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
@@ -547,7 +560,8 @@ See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivAt_of_le`
 for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`.
 
 See also `integral2_divergence_prod_of_hasFDerivAt_off_countable`
-for a version that assumes differentiability outside of a countable set. -/
+for a version that assumes differentiability outside of a countable set.
+-/
 theorem integral2_divergence_prod_of_hasFDerivAt (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a₁ a₂ b₁ b₂ : ℝ)
     (Hcf : ContinuousOn f ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))

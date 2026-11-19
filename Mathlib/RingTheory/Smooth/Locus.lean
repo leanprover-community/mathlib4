@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth locus of an algebra
 
@@ -15,12 +18,13 @@ Most results in this file are proved for algebras of finite presentations.
 Some of them are true for arbitrary algebras but the proof is substantially harder.
 
 ## Main results
-- `Algebra.smoothLocus` : The set of primes that are smooth over the base.
-- `Algebra.basicOpen_subset_smoothLocus_iff` :
+
+* `Algebra.smoothLocus` : The set of primes that are smooth over the base.
+* `Algebra.basicOpen_subset_smoothLocus_iff` :
   `D(f)` is contained in the smooth locus if and only if `A_f` is smooth over `R`.
-- `Algebra.smoothLocus_eq_univ_iff` :
+* `Algebra.smoothLocus_eq_univ_iff` :
   The smooth locus is the whole spectrum if and only if `A` is smooth over `R`.
-- `Algebra.isOpen_smoothLocus` : The smooth locus is open.
+* `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
 
 @[expose] public section

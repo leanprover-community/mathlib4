@@ -8,13 +8,16 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Topology.MetricSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unit-distance graph embeddings
 
 An embedding of a graph into some metric space is _unit-distance_ if the distance between any two
 adjacent vertices is 1. The space in question is usually the Euclidean plane, but can also be
-higher-dimensional Euclidean space or the sphere (cf. [Frankl_2020]). We do not require nonadjacent
-vertices to not be distance 1 apart as [hong2014] does.
+higher-dimensional Euclidean space or the sphere (cf. \[Frankl\_2020\]). We do not require
+nonadjacent vertices to not be distance 1 apart as \[hong2014\] does.
 
 ## Main definitions
 

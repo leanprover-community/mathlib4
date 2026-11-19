@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions
 
@@ -56,7 +59,9 @@ public section
 namespace Real
 variable {q : ℕ} {p : ℝ}
 
-/-! ### Binary entropy -/
+/-!
+# Binary entropy
+-/
 
 /-- The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_function)
 `binEntropy p := - p * log p - (1-p) * log (1 - p)`
@@ -201,16 +206,20 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     push +distrib Not at hp
     obtain rfl | rfl := hp <;> simp
 
-/-! ### `q`-ary entropy -/
+/-!
+# `q`-ary entropy
+-/
 
-/-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
+/--
+Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
 It's the Shannon entropy of a random variable with possible outcomes `{1, ..., q}`
 where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
 The usual domain of definition is `p ∈ [0,1]`, i.e., input is a probability.
 
-This is a generalization of the binary entropy function `binEntropy`. -/
+This is a generalization of the binary entropy function `binEntropy`.
+-/
 @[pp_nodot] noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ := p * log (q - 1 : ℤ) + binEntropy p
 
 @[simp] lemma qaryEntropy_zero (q : ℕ) : qaryEntropy q 0 = 0 := by simp [qaryEntropy]
@@ -366,9 +375,13 @@ lemma deriv2_qaryEntropy :
 lemma deriv2_binEntropy : deriv^[2] binEntropy p = -1 / (p * (1 - p)) :=
   qaryEntropy_two ▸ deriv2_qaryEntropy
 
-/-! ### Strict monotonicity of entropy -/
+/-!
+# Strict monotonicity of entropy
+-/
 
-/-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
+/--
+Qary entropy is strictly increasing in the interval \[0, 1 - q⁻¹\].
+-/
 lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1 / q)) := by
   intro p1 hp1 p2 hp2 p1le2
@@ -396,7 +409,9 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
 
-/-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
+/--
+Qary entropy is strictly decreasing in the interval \[1 - q⁻¹, 1\].
+-/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     StrictAntiOn (qaryEntropy q) (Icc (1 - 1 / q) 1) := by
   intro p1 hp1 p2 hp2 p1le2
@@ -424,18 +439,24 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         nlinarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 
-/-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
+/--
+Binary entropy is strictly increasing in interval \[0, 1/2\].
+-/
 lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by
   rw [show Icc (0 : ℝ) 2⁻¹ = Icc 0 (1 - 1 / 2) by norm_num, ← qaryEntropy_two]
   exact qaryEntropy_strictMonoOn (by rfl)
 
-/-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
+/--
+Binary entropy is strictly decreasing in interval \[1/2, 1\].
+-/
 lemma binEntropy_strictAntiOn : StrictAntiOn binEntropy (Icc 2⁻¹ 1) := by
   rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by simp, ← qaryEntropy_two]
   convert qaryEntropy_strictAntiOn (by rfl) using 1
   norm_num
 
-/-! ### Strict concavity of entropy -/
+/-!
+# Strict concavity of entropy
+-/
 
 lemma strictConcaveOn_qaryEntropy : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q) := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) qaryEntropy_continuous.continuousOn

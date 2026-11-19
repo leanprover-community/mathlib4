@@ -14,6 +14,9 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
 import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trace of a linear map
 
@@ -331,13 +334,15 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 
 open LinearMap in
-/-- An idempotent endomorphism of a module over a characteristic-zero commutative ring
+/--
+An idempotent endomorphism of a module over a characteristic-zero commutative ring
 with vanishing trace is the zero map, provided its range and kernel are finite and free.
 
 The `Module.Free` and `Module.Finite` instance arguments on `range e` and `ker e` are
 automatic over a field, and more generally over any principal ideal domain `R` for which
 `M` itself is finite and free (submodules of finite free modules over a PID are finite
-and free). -/
+and free).
+-/
 theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [CommRing R] [CharZero R]
     {M : Type*} [AddCommGroup M] [Module R M]
     {e : M →ₗ[R] M} (he : IsIdempotentElem e)

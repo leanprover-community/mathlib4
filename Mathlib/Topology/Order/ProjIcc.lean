@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projection onto a closed interval
 
@@ -41,7 +44,9 @@ theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) where
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
   isQuotientMap_projIcc.continuous_iff.symm
 
-/-- See Note [continuity lemma statement]. -/
+/--
+See Note \[continuity lemma statement\].
+-/
 @[fun_prop]
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=

@@ -10,10 +10,13 @@ public import Mathlib.Algebra.Category.Grp.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Ring.Shrink
 
-/-!
-# Category of $R$-modules has enough injectives
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-We lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint functors
+/-!
+# Category of $`R`-modules has enough injectives
+
+We lift enough injectives of abelian groups to arbitrary $`R`-modules by adjoint functors
 `restrictScalars ⊣ coextendScalars`
 -/
 

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.Topology.Order.LeftRightLim
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stieltjes measures on the real line
 
@@ -34,6 +37,7 @@ We define Stieltjes functions over any conditionally complete dense linear order
 to cover the cases of `ℝ≥0` and `[0, T]` in addition to the classical case of `ℝ`. This creates
 a few issues, mostly with the management of bottom and top elements. To handle these, we need
 two technical definitions:
+
 * `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 * `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot.
 
@@ -106,13 +110,17 @@ end Prerequisites
 
 variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
 
-/-! ### Basic properties of Stieltjes functions -/
+/-!
+# Basic properties of Stieltjes functions
+-/
 
 /-- Bundled monotone right-continuous real functions, used to construct Stieltjes measures. -/
 structure StieltjesFunction where
-  /-- The underlying function `R → ℝ`.
+  /--
+  The underlying function `R → ℝ`.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   toFun : R → ℝ
   mono' : Monotone toFun
   right_continuous' : ∀ x, ContinuousWithinAt toFun (Ici x) x
@@ -259,7 +267,9 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
   apply hx
   exact (Monotone.continuousWithinAt_Iio_iff_leftLim_eq f.mono).1 h'x.continuousWithinAt
 
-/-! ### The outer measure associated to a Stieltjes function -/
+/-!
+# The outer measure associated to a Stieltjes function
+-/
 
 
 open scoped Classical in
@@ -326,13 +336,15 @@ theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
 
 variable [OrderTopology R] [CompactIccSpace R]
 
-/-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
+/--
+If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use
 compactness to reduce it to a finite sum, and argue by induction on the size of the covering set.
 
 To be able to handle also the top element if there is one, we use `Iotop` instead of `Ioo` in the
-statement. As these intervals are all open, this does not change the proof. -/
+statement. As these intervals are all open, this does not change the proof.
+-/
 theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆ ⋃ i, Iotop (c i) (d i)) :
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
@@ -511,7 +523,9 @@ theorem borel_le_measurable [SecondCountableTopology R] :
   refine MeasurableSpace.generateFrom_le ?_
   simp +contextual [f.measurableSet_Ioi]
 
-/-! ### The measure associated to a Stieltjes function -/
+/-!
+# The measure associated to a Stieltjes function
+-/
 
 variable [MeasurableSpace R] [BorelSpace R] [SecondCountableTopology R] [DenselyOrdered R]
 

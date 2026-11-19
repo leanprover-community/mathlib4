@@ -7,15 +7,18 @@ module
 
 public import Mathlib.Analysis.MellinTransform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
 zeta and L-functions.
 
-### FE-pairs
+## FE-pairs
 
-We define a *weak FE-pair* to be a pair of functions `f, g` on the reals which are locally
+We define a _weak FE-pair_ to be a pair of functions `f, g` on the reals which are locally
 integrable on `(0, ∞)`, have the form "constant" + "rapidly decaying term" at `∞`, and satisfy a
 functional equation of the form
 
@@ -25,7 +28,7 @@ for some constants `k ∈ ℝ` and `ε ∈ ℂ`. (Modular forms give rise to nat
 with `k` being the weight and `ε` the global root number; hence the notation.) We could arrange
 `ε = 1` by scaling `g`; but this is inconvenient in applications so we set things up more generally.
 
-A *strong FE-pair* is a weak FE-pair where the constant terms of `f` and `g` at `∞` are both 0.
+A _strong FE-pair_ is a weak FE-pair where the constant terms of `f` and `g` at `∞` are both 0.
 
 The main property of these pairs is the following: if `f`, `g` are a weak FE-pair, with constant
 terms `f₀` and `g₀` at `∞`, then the Mellin transforms `Λ` and `Λ'` of `f - f₀` and `g - g₀`
@@ -36,24 +39,25 @@ respectively both have meromorphic continuation and satisfy a functional equatio
 The poles (and their residues) are explicitly given in terms of `f₀` and `g₀`; in particular, if
 `(f, g)` are a strong FE-pair, then the Mellin transforms of `f` and `g` are entire functions.
 
-### Main definitions and results
+## Main definitions and results
 
-See the sections *Main theorems on weak FE-pairs* and
-*Main theorems on strong FE-pairs* below.
+See the sections _Main theorems on weak FE-pairs_ and
+_Main theorems on strong FE-pairs_ below.
 
 * Weak FE pairs:
-  - `WeakFEPair.Λ₀`: and `WeakFEPair.Λ`: functions of `s : ℂ`
-  - `WeakFEPair.differentiable_Λ₀`: `Λ₀` is entire
-  - `WeakFEPair.differentiableAt_Λ`: `Λ` is differentiable away from `s = 0` and `s = k`
-  - `WeakFEPair.hasMellin`: for `k < re s`, `Λ s` equals the Mellin transform of `f - f₀`
-  - `WeakFEPair.functional_equation₀`: the functional equation for `Λ₀`
-  - `WeakFEPair.functional_equation`: the functional equation for `Λ`
-  - `WeakFEPair.Λ_residue_k`: computation of the residue at `k`
-  - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 
+  * `WeakFEPair.Λ₀`: and `WeakFEPair.Λ`: functions of `s : ℂ`
+  * `WeakFEPair.differentiable_Λ₀`: `Λ₀` is entire
+  * `WeakFEPair.differentiableAt_Λ`: `Λ` is differentiable away from `s = 0` and `s = k`
+  * `WeakFEPair.hasMellin`: for `k < re s`, `Λ s` equals the Mellin transform of `f - f₀`
+  * `WeakFEPair.functional_equation₀`: the functional equation for `Λ₀`
+  * `WeakFEPair.functional_equation`: the functional equation for `Λ`
+  * `WeakFEPair.Λ_residue_k`: computation of the residue at `k`
+  * `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 * Strong FE pairs:
-  - `IsStrongFEPair.differentiable_Λ`: `Λ` is entire
-  - `IsStrongFEPair.hasMellin`: `Λ` is everywhere equal to the Mellin transform of `f`
+
+  * `IsStrongFEPair.differentiable_Λ`: `Λ` is entire
+  * `IsStrongFEPair.hasMellin`: `Λ` is everywhere equal to the Mellin transform of `f`
 -/
 
 @[expose] public section
@@ -74,7 +78,7 @@ open scoped Topology
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
-## Definitions and symmetry
+# Definitions and symmetry
 -/
 
 /-- A structure designed to hold the hypotheses for the Mellin-functional-equation argument
@@ -98,7 +102,9 @@ structure WeakFEPair where
 
 variable {E}
 
-/-- A *strong FE-pair* is a weak FE-pair in which `f₀` and `g₀` are zero. -/
+/--
+A _strong FE-pair_ is a weak FE-pair in which `f₀` and `g₀` are zero.
+-/
 structure IsStrongFEPair (P : WeakFEPair E) : Prop where
   hf₀ : P.f₀ = 0
   hg₀ : P.g₀ = 0
@@ -145,7 +151,7 @@ namespace WeakFEPair
 variable (P : WeakFEPair E)
 
 /-!
-## Auxiliary results I: lemmas on asymptotics
+# Auxiliary results I: lemmas on asymptotics
 -/
 
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
@@ -240,7 +246,7 @@ namespace WeakFEPair
 variable (P : WeakFEPair E)
 
 /-!
-## Auxiliary results II: building a strong FE-pair from a weak FE-pair
+# Auxiliary results II: building a strong FE-pair from a weak FE-pair
 -/
 
 /-- Piecewise modified version of `f` with optimal asymptotics. We deliberately choose intervals
@@ -292,11 +298,13 @@ lemma hf_modif_top (r : ℝ) :
   filter_upwards [eventually_gt_atTop 1] with x hx
   simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
-/-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
+/--
+Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`.
 
 (See `WeakFEPair.isStrongFEPair_toStrongFEPair` for the proof that this is actually a strong
-FE-pair.) -/
+FE-pair.)
+-/
 def toStrongFEPair : WeakFEPair E where
   f := P.f_modif
   g := P.symm.f_modif
@@ -370,7 +378,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
       · simp [integral_cpow (.inl h_re2), zero_cpow (show s - P.k ≠ 0 by grind [P.hk, ofReal_re])]
         grind
 /-!
-## Main theorems on weak FE-pairs
+# Main theorems on weak FE-pairs
 -/
 
 /-- An entire function which differs from the Mellin transform of `f - f₀`, where defined, by a
@@ -462,7 +470,7 @@ end WeakFEPair
 
 namespace IsStrongFEPair
 /-!
-## Main theorems on strong FE-pairs
+# Main theorems on strong FE-pairs
 -/
 
 open WeakFEPair

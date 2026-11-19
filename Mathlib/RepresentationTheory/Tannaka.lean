@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.FDRep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tannaka duality for finite groups
 
@@ -20,7 +23,8 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 ## References
 
-<https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
+[
+https://math.leidenuniv.nl/scripties/1bachCommelin.pdf](https://math.leidenuniv.nl/scripties/1bachCommelin.pdf)
 -/
 
 @[expose] public section
@@ -222,10 +226,12 @@ lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := b
   exact ⟨s, toRightFDRepComp_injective (InducedCategory.hom_ext (hom_ext h.symm))⟩
 
 variable (k G) in
-/-- Tannaka duality for finite groups:
+/--
+Tannaka duality for finite groups:
 
 A finite group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
-and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`. -/
+and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`.
+-/
 def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
   MulEquiv.ofBijective (equivHom k G) ⟨equivHom_injective, equivHom_surjective⟩
 

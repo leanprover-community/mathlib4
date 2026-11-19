@@ -11,12 +11,15 @@ public import Mathlib.NumberTheory.LSeries.Dirichlet
 import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Normed.Module.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics of `ζ s` as `s → 1` or `s → 0`
 
 The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s → 1`.
 
-### Main results
+## Main results
 
 * `tendsto_riemannZeta_sub_one_div`: the limit of `ζ s - 1 / (s - 1)`, at the filter of punctured
   neighbourhoods of 1 in `ℂ`, exists and is equal to the Euler-Mascheroni constant `γ`.
@@ -30,7 +33,7 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 * `riemannZeta_conj`: the conjugation symmetry `ζ (conj s) = conj (ζ s)` (valid for all `s`,
   since the junk value `ζ 1` is real).
 
-### Outline of arguments
+## Outline of arguments
 
 We consider the sum `F s = ∑' n : ℕ, f (n + 1) s`, where `s` is a real variable and
 `f n s = ∫ x in n..(n + 1), (x - n) / x ^ (s + 1)`. We show that `F s` is continuous on `[1, ∞)`,
@@ -56,7 +59,7 @@ namespace ZetaAsymptotics
 open Real
 
 /-!
-## Definitions
+# Definitions
 -/
 
 /-- Auxiliary function used in studying zeta-function asymptotics. -/
@@ -88,7 +91,7 @@ lemma term_welldef {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 0 < s) :
 section s_eq_one
 
 /-!
-## Evaluation of the sum for `s = 1`
+# Evaluation of the sum for `s = 1`
 -/
 
 lemma term_one {n : ℕ} (hn : 0 < n) :
@@ -161,7 +164,7 @@ end s_eq_one
 section s_gt_one
 
 /-!
-## Evaluation of the sum for `1 < s`
+# Evaluation of the sum for `1 < s`
 -/
 
 lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
@@ -267,7 +270,7 @@ end s_gt_one
 section continuity
 
 /-!
-## Continuity of the sum
+# Continuity of the sum
 -/
 
 lemma continuousOn_term (n : ℕ) :
@@ -428,12 +431,14 @@ this particular value to it. -/
 lemma completedRiemannZeta_one : completedRiemannZeta 1 = (γ - log (4 * π)) / 2 :=
   (riemannZeta_one ▸ div_one (_ : ℂ) ▸ Gammaℝ_one ▸ riemannZeta_def_of_ne_zero one_ne_zero).symm
 
-/-- Formula for `Λ₀ 1`, where `Λ₀` is the entire function satisfying
+/--
+Formula for `Λ₀ 1`, where `Λ₀` is the entire function satisfying
 `Λ₀ s = π ^ (-s / 2) Γ(s / 2) ζ(s) + 1 / s + 1 / (1 - s)` away from `s = 0, 1`.
 
 Note that `s = 1` is _not_ a pole of `Λ₀`, so this statement (unlike `riemannZeta_one`) is
 a mathematically meaningful statement and is not dependent on Mathlib's particular conventions for
-division by zero. -/
+division by zero.
+-/
 lemma completedRiemannZeta₀_one : completedRiemannZeta₀ 1 = (γ - log (4 * ↑π)) / 2 + 1 := by
   have := completedRiemannZeta_eq 1
   rw [sub_self, div_zero, div_one, sub_zero, eq_sub_iff_add_eq] at this
@@ -451,11 +456,13 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left Real.two_le_pi (by simp)
 
-/-- **Conjugation symmetry of the Riemann zeta function**: `ζ (conj s) = conj (ζ s)`.
+/--
+*Conjugation symmetry of the Riemann zeta function*: `ζ (conj s) = conj (ζ s)`.
 
 Since `ζ` has real Dirichlet coefficients, `conj (ζ (conj z)) = ζ z` holds termwise for
 `1 < re z`, and the identity principle propagates this to all `s ≠ 1`; the junk value `ζ 1` is
-real, so the identity also holds at `s = 1`. -/
+real, so the identity also holds at `s = 1`.
+-/
 @[simp]
 theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s) := by
   rcases eq_or_ne s 1 with rfl | hs
@@ -497,10 +504,12 @@ private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
 -- TODO: prove the analogous conjugation symmetry for `completedHurwitzZetaEven`,
 -- `completedHurwitzZetaOdd` and `DirichletCharacter.completedLFunction`, and deduce this
 -- lemma as a special case.
-/-- **Conjugation symmetry of the completed zeta function**: `Λ (conj s) = conj (Λ s)`.
+/--
+*Conjugation symmetry of the completed zeta function*: `Λ (conj s) = conj (Λ s)`.
 
 For `0 < re s` this is `riemannZeta_conj` together with `Gammaℝ_conj`; the remaining
-half-plane follows from the functional equation `completedRiemannZeta_one_sub`. -/
+half-plane follows from the functional equation `completedRiemannZeta_one_sub`.
+-/
 @[simp]
 theorem completedRiemannZeta_conj (s : ℂ) :
     completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
@@ -549,7 +558,7 @@ theorem deriv_riemannZeta_zero :
 section near_one
 
 /-!
-## More asymptotics near `s = 1`
+# More asymptotics near `s = 1`
 
 To facilitate the analysis of `riemannZeta` near `s = 1`, we write `riemannZeta s` additively as
 `(s-1)⁻¹ + riemannZeta₀ s` and multiplicatively as `(s-1)⁻¹ * riemannZeta₁ s` for certain

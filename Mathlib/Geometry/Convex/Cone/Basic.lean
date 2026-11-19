@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.Hull
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex cones
 
@@ -33,9 +36,9 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 
 ## References
 
-* https://en.wikipedia.org/wiki/Convex_cone
-* [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
-* [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
+* https://en.wikipedia.org/wiki/Convex\_cone
+* ‍\[Stephen P. Boyd and Lieven Vandenberghe, _Convex Optimization_\]\[boydVandenberghe2004\]
+* ‍\[Emo Welzl and Bernd Gärtner, _Cone Programming_\]\[welzl\_garter\]
 -/
 
 @[expose] public section
@@ -46,7 +49,9 @@ open Set LinearMap Pointwise
 
 variable {𝕜 R G M N O : Type*}
 
-/-! ### Definition of `ConvexCone` and basic properties -/
+/-!
+# Definition of `ConvexCone` and basic properties
+-/
 
 section Definitions
 
@@ -262,7 +267,9 @@ theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C
 end MulAction
 end LinearOrderedField
 
-/-! ### Convex cones with extra properties -/
+/-!
+# Convex cones with extra properties
+-/
 
 
 section OrderedSemiring
@@ -505,7 +512,9 @@ end ConvexCone
 
 namespace Submodule
 
-/-! ### Submodules are cones -/
+/-!
+# Submodules are cones
+-/
 
 
 section OrderedSemiring
@@ -545,7 +554,9 @@ end OrderedSemiring
 
 end Submodule
 
-/-! ### Positive cone of an ordered module -/
+/-!
+# Positive cone of an ordered module
+-/
 
 namespace ConvexCone
 
@@ -585,10 +596,12 @@ variable [Semiring R] [PartialOrder R] [AddCommGroup M] [PartialOrder M] [IsOrde
   [Module R M] [PosSMulStrictMono R M] {x : M}
 
 variable (R M) in
-/-- The cone of strictly positive elements.
+/--
+The cone of strictly positive elements.
 
 Note that this naming diverges from the mathlib convention of `pos` and `nonneg` due to "positive
-cone" (`ConvexCone.positive`) being established terminology for the non-negative elements. -/
+cone" (`ConvexCone.positive`) being established terminology for the non-negative elements.
+-/
 def strictlyPositive : ConvexCone R M where
   carrier := Set.Ioi 0
   smul_mem' _ hc _ (hx : _ < _) := smul_pos hc hx

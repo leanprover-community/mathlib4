@@ -13,21 +13,24 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 
 import Mathlib.Algebra.Order.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps (semi)conjugating a shift to a shift
 
-Denote by $S^1$ the unit circle `UnitAddCircle`.
-A common way to study a self-map $f\colon S^1\to S^1$ of degree `1`
-is to lift it to a map $\tilde f\colon \mathbb R\to \mathbb R$
-such that $\tilde f(x + 1) = \tilde f(x)+1$ for all `x`.
+Denote by $`S^1` the unit circle `UnitAddCircle`.
+A common way to study a self-map $`f\colon S^1\to S^1` of degree `1`
+is to lift it to a map $`\tilde f\colon \mathbb R\to \mathbb R`
+such that $`\tilde f(x + 1) = \tilde f(x)+1` for all `x`.
 
 In this file we define a structure and a typeclass
 for bundled maps satisfying `f (x + a) = f x + b`.
 
 We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
-- maps between circles of different lengths;
-- self-maps $f\colon S^1\to S^1$ of degree other than one,
+* maps between circles of different lengths;
+* self-maps $`f\colon S^1\to S^1` of degree other than one,
   including orientation-reversing maps.
 -/
 
@@ -37,10 +40,12 @@ assert_not_exists Finset
 
 open Function Set
 
-/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
+/--
+A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
 denoted as `f : G →+c[a, b] H`.
 
-One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
+One can think about `f` as a lift to `G` of a map between two `AddCircle`s.
+-/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
@@ -51,11 +56,13 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
 @[inherit_doc]
 scoped[AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 
-/-- Typeclass for maps satisfying `f (x + a) = f x + b`.
+/--
+Typeclass for maps satisfying `f (x + a) = f x + b`.
 
 Note that `a` and `b` are `outParam`s,
 so one should not add instances like
-`[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
+`[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`.
+-/
 class AddConstMapClass (F : Type*) (G H : outParam Type*) [Add G] [Add H]
     (a : outParam G) (b : outParam H) [FunLike F G H] : Prop where
   /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
@@ -65,7 +72,7 @@ class AddConstMapClass (F : Type*) (G H : outParam Type*) [Add G] [Add H]
 namespace AddConstMapClass
 
 /-!
-### Properties of `AddConstMapClass` maps
+# Properties of `AddConstMapClass` maps
 
 In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
@@ -340,7 +347,7 @@ section Add
 variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 
 /-!
-### Coercion to function
+# Coercion to function
 -/
 
 @[macro_inline]
@@ -361,7 +368,7 @@ instance : AddConstMapClass (G →+c[a, b] H) G H a b where
 initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 
 /-!
-### Constructions about `G →+c[a, b] H`
+# Constructions about `G →+c[a, b] H`
 -/
 
 /-- The identity map as `G →+c[a, a] G`. -/
@@ -387,7 +394,7 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
   map_add_const' := ha ▸ hb ▸ f.map_add_const'
 
 /-!
-### Additive action on `G →+c[a, b] H`
+# Additive action on `G →+c[a, b] H`
 -/
 
 /-- If `f` is an `AddConstMap`, then so is `(c +ᵥ f ·)`. -/
@@ -405,7 +412,7 @@ instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
     AddAction K (G →+c[a, b] H) := fast_instance% FunLike.addAction
 
 /-!
-### Monoid structure on endomorphisms `G →+c[a, a] G`
+# Monoid structure on endomorphisms `G →+c[a, a] G`
 -/
 
 instance : Mul (G →+c[a, a] G) := ⟨comp⟩
@@ -453,7 +460,7 @@ section AddZeroClass
 variable {G H K : Type*} [Add G] [AddZeroClass H] {a : G} {b : H}
 
 /-!
-### Multiplicative action on `(b : H) × (G →+c[a, b] H)`
+# Multiplicative action on `(b : H) × (G →+c[a, b] H)`
 
 If `K` acts distributively on `H`, then for each `f : G →+c[a, b] H`
 we define `(AddConstMap.smul c f : G →+c[a, c • b] H)`.

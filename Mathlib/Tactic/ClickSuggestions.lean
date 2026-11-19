@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Point & click suggestions
 
@@ -28,11 +31,12 @@ so that it can be pasted into the editor when selected by the user.
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
 Within each section, the lemmas are sorted by
-- lemmas with fewer extra goals come first
-- left-to-right rewrites come before right-to-left rewrites
-- shorter lemma names come first
-- shorter replacement expressions come first (when taken as a string)
-- alphabetically ordered by lemma name
+
+* lemmas with fewer extra goals come first
+* left-to-right rewrites come before right-to-left rewrites
+* shorter lemma names come first
+* shorter replacement expressions come first (when taken as a string)
+* alphabetically ordered by lemma name
 
 The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
 is controlled by the filter button on the top right of the results.
@@ -41,16 +45,17 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 ## TODO
 
-- When selecting the whole goal, or a whole hypothesis, try running `symm` before library search.
-- Improve user extensibility:
-  - Modifying which tactics are suggested.
-  - Modifying which lemmas are suggested.
-- The `n` in `nth_rw` can be incorrect when the lemma has too many implicit arguments, such as
+* When selecting the whole goal, or a whole hypothesis, try running `symm` before library search.
+* Improve user extensibility:
+
+  * Modifying which tactics are suggested.
+  * Modifying which lemmas are suggested.
+* The `n` in `nth_rw` can be incorrect when the lemma has too many implicit arguments, such as
   `add_pos_of_left` or `and_comm`.
-- When selecting multiple expressions, consider doing a rewrite at all these expressions.
-- It may be possible to have integrated support for creating sequences of `calc` blocks,
+* When selecting multiple expressions, consider doing a rewrite at all these expressions.
+* It may be possible to have integrated support for creating sequences of `calc` blocks,
   using the suggested rewrites.
-- Detect whether we are in `conv` mode, by detecting the relevant mdata.
+* Detect whether we are in `conv` mode, by detecting the relevant mdata.
   Though the suggestions seem to work mostly fine in conv mode already.
 -/
 

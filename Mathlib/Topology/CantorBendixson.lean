@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 public import Mathlib.Topology.DerivedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cantor-Bendixson derivatives and perfect kernel
 

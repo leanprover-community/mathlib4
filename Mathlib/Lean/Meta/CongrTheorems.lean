@@ -10,6 +10,9 @@ public meta import Lean.Meta.Tactic.Refl
 public meta import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Basic.IsEmpty.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
 -/
@@ -20,7 +23,8 @@ namespace Lean.Meta
 
 initialize registerTraceClass `Meta.CongrTheorems
 
-/-- Generates a congruence lemma for a function `f` for `numArgs` of its arguments.
+/--
+Generates a congruence lemma for a function `f` for `numArgs` of its arguments.
 The only `Lean.Meta.CongrArgKind` kinds that appear in such a lemma
 are `.eq`, `.heq`, and `.subsingletonInst`.
 The resulting lemma proves either an `Eq` or a `HEq` depending on whether the types
@@ -31,7 +35,8 @@ It transforms the resulting congruence lemma by trying to automatically prove hy
 using subsingleton lemmas, and if they are so provable they are recorded with `.subsingletonInst`.
 Note that this is slightly abusing `.subsingletonInst` since
 (1) the argument might not be for a `Decidable` instance and
-(2) the argument might not even be an instance. -/
+(2) the argument might not even be an instance.
+-/
 def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
   let thm ← mkHCongrWithArity f numArgs
   process thm thm.type thm.argKinds.toList #[] #[] #[] #[]
@@ -39,14 +44,14 @@ where
   /--
   Process the congruence theorem by trying to pre-prove arguments using `prove`.
 
-  - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
-  - `type` is type of the congruence theorem, after all the parameters so far have been applied.
-  - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
-  - `argKinds'` is the accumulated array of `CongrArgKind`s, which is the original array but
-    with some kinds replaced by `.subsingletonInst`.
-  - `params` is the *new* list of parameters, as fvars that need to be abstracted at the end.
-  - `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
-  - `letArgs` records `(fvar, expr)` assignments for each `fvar` that was solved for by `prove`.
+  * `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
+* `type` is type of the congruence theorem, after all the parameters so far have been applied.
+* `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
+* `argKinds'` is the accumulated array of `CongrArgKind`s, which is the original array but
+  with some kinds replaced by `.subsingletonInst`.
+* `params` is the _new_ list of parameters, as fvars that need to be abstracted at the end.
+* `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
+* `letArgs` records `(fvar, expr)` assignments for each `fvar` that was solved for by `prove`.
   -/
   process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
       (argKinds' : Array CongrArgKind) (params args : Array Expr)
@@ -195,7 +200,6 @@ are meant to be fixed:
 
 * If `fixedFun` is `false` (the default) then the lemma starts with three arguments for `f`, `f'`,
   and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
-
 * If the `fixedParams` argument has `true` for a particular argument index, then this is a hint
   that the congruence lemma may use the same parameter for both sides of the equality. There is
   no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
@@ -205,6 +209,7 @@ If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.
 
 This is the interpretation of the `CongrArgKind`s in the generated congruence theorem:
+
 * `.eq` corresponds to having three arguments `(x : α) (x' : α) (h : x = x')`.
   Note that `h` might have additional hypotheses.
 * `.heq` corresponds to having three arguments `(x : α) (x' : α') (h : x ≍ x')`

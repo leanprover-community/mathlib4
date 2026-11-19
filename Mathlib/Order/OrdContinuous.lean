@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order continuity
 
-We say that a function is *left order continuous* if it sends all least upper bounds
-to least upper bounds. The order dual notion is called *right order continuity*.
+We say that a function is _left order continuous_ if it sends all least upper bounds
+to least upper bounds. The order dual notion is called _right order continuity_.
 
 For monotone functions `ℝ → ℝ` these notions correspond to the usual left and right continuity.
 
@@ -29,7 +32,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 open Function OrderDual Set
 
 /-!
-### Definitions
+# Definitions
 -/
 
 

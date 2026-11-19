@@ -9,6 +9,9 @@ public import Mathlib.Probability.Kernel.Basic
 
 import Mathlib.Tactic.Peel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of families of sets with respect to a kernel and a measure
 
@@ -408,7 +411,9 @@ theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
 
 end Indep
 
-/-! ### Deducing `Indep` from `iIndep` -/
+/-!
+# Deducing `Indep` from `iIndep`
+-/
 
 
 section FromiIndepToIndep
@@ -439,7 +444,7 @@ theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
 end FromiIndepToIndep
 
 /-!
-## π-system lemma
+# π-system lemma
 
 Independence of measurable spaces is equivalent to independence of generating π-systems.
 -/
@@ -447,7 +452,9 @@ Independence of measurable spaces is equivalent to independence of generating π
 
 section FromMeasurableSpacesToSetsOfSets
 
-/-! ### Independence of measurable space structures implies independence of generating π-systems -/
+/-!
+# Independence of measurable space structures implies independence of generating π-systems
+-/
 
 variable {_mα : MeasurableSpace α}
 
@@ -470,7 +477,9 @@ end FromMeasurableSpacesToSetsOfSets
 
 section FromPiSystemsToMeasurableSpaces
 
-/-! ### Independence of generating π-systems implies independence of measurable space structures -/
+/-!
+# Independence of generating π-systems implies independence of measurable space structures
+-/
 
 variable {_mα : MeasurableSpace α}
 
@@ -749,9 +758,11 @@ end FromPiSystemsToMeasurableSpaces
 
 section IndepSet
 
-/-! ### Independence of measurable sets
+/-!
+# Independence of measurable sets
 
 We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+
 * `IndepSet s t κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t`,
 * `IndepSet s t κ μ ↔ IndepSets {s} {t} κ μ`.
 -/

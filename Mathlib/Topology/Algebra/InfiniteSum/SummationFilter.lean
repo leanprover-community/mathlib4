@@ -11,6 +11,9 @@ public import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summation filters
 
@@ -118,10 +121,12 @@ end has_support
 
 section map_comap
 
-/-- Pushforward of a summation filter along an embedding.
+/--
+Pushforward of a summation filter along an embedding.
 
 (We define this only for embeddings, rather than arbitrary maps, since this is the only case needed
-for the intended applications, and this avoids requiring a `DecidableEq` instance on `γ`.) -/
+for the intended applications, and this avoids requiring a `DecidableEq` instance on `γ`.)
+-/
 @[simps] def map (L : SummationFilter β) (f : β ↪ γ) : SummationFilter γ where
   filter := L.filter.map (Finset.map f)
 
@@ -161,12 +166,14 @@ end map_comap
 
 section examples
 /-!
-## Examples of summation filters
+# Examples of summation filters
 -/
 variable (β)
 
-/-- **Unconditional summation**: a function on `β` is said to be *unconditionally summable* if its
-partial sums over finite subsets converge with respect to the `atTop` filter. -/
+/--
+*Unconditional summation*: a function on `β` is said to be _unconditionally summable_ if its
+partial sums over finite subsets converge with respect to the `atTop` filter.
+-/
 @[simps] def unconditional : SummationFilter β where
   filter := atTop
 

@@ -11,12 +11,15 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Data.Multiset.Dedup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multisets form an ordered monoid
 
 This file contains the ordered monoid instance on multisets, and lemmas related to it.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 @[expose] public section
@@ -27,7 +30,9 @@ variable {α β : Type*}
 
 namespace Multiset
 
-/-! ### Additive monoid -/
+/-!
+# Additive monoid
+-/
 
 instance instAddLeftMono : AddLeftMono (Multiset α) where elim _s _t _u := Multiset.add_le_add_left
 
@@ -73,7 +78,9 @@ lemma nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
     n • (a ::ₘ s) = n • ({a} : Multiset α) + n • s := by
   rw [← singleton_add, nsmul_add]
 
-/-! ### Cardinality -/
+/-!
+# Cardinality
+-/
 
 /-- `Multiset.card` bundled as a group hom. -/
 @[simps]
@@ -85,7 +92,9 @@ def cardHom : Multiset α →+ ℕ where
 @[simp]
 lemma card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := cardHom.map_nsmul ..
 
-/-! ### `Multiset.replicate` -/
+/-!
+# `Multiset.replicate`
+-/
 
 /-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
@@ -100,7 +109,9 @@ lemma nsmul_replicate {a : α} (n m : ℕ) : n • replicate m a = replicate (n 
 lemma nsmul_singleton (a : α) (n) : n • ({a} : Multiset α) = replicate n a := by
   rw [← replicate_one, nsmul_replicate, mul_one]
 
-/-! ### `Multiset.map` -/
+/-!
+# `Multiset.map`
+-/
 
 /-- `Multiset.map` as an `AddMonoidHom`. -/
 @[simps]
@@ -115,7 +126,9 @@ lemma coe_mapAddMonoidHom (f : α → β) : (mapAddMonoidHom f : Multiset α →
 lemma map_nsmul (f : α → β) (n : ℕ) (s) : map f (n • s) = n • map f s :=
   (mapAddMonoidHom f).map_nsmul _ _
 
-/-! ### Subtraction -/
+/-!
+# Subtraction
+-/
 
 section
 variable [DecidableEq α]
@@ -128,7 +141,9 @@ instance : ExistsAddOfLE (Multiset α) where
 
 end
 
-/-! ### `Multiset.filter` -/
+/-!
+# `Multiset.filter`
+-/
 
 section
 variable (p : α → Prop) [DecidablePred p]
@@ -144,7 +159,9 @@ lemma filter_nsmul (s : Multiset α) (n : ℕ) : filter p (n • s) = n • filt
         intro b hb
         rwa [mem_singleton.mp (mem_of_mem_nsmul hb)]
 
-/-! ### countP -/
+/-!
+# countP
+-/
 
 @[simp]
 lemma countP_nsmul (s) (n : ℕ) : countP p (n • s) = n * countP p s := by
@@ -168,7 +185,9 @@ lemma Nodup.le_nsmul_iff_le {s t : Multiset α} {n : ℕ} (h : s.Nodup) (hn : n 
     s ≤ n • t ↔ s ≤ t := by
   classical simp [← h.le_dedup_iff_le, hn]
 
-/-! ### Multiplicity of an element -/
+/-!
+# Multiplicity of an element
+-/
 
 section
 variable [DecidableEq α] {s : Multiset α}

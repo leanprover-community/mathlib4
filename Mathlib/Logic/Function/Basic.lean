@@ -14,6 +14,9 @@ public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous function constructions and lemmas
 -/
@@ -736,14 +739,16 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
     Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a :=
   update_comp_eq_of_injective' g hf i a
 
-/-- Recursors can be pushed inside `Function.update`.
+/--
+Recursors can be pushed inside `Function.update`.
 
 The `ctor` argument should be a one-argument constructor like `Sum.inl`,
 and `recursor` should be an inductive recursor partially applied in all but that constructor,
 such as `(Sum.rec · g)`.
 
 In future, we should build some automation to generate applications like `Option.rec_update` for all
-inductive types. -/
+inductive types.
+-/
 @[nolint unusedArguments]
 lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
     {ctor : ι → κ}
@@ -826,7 +831,8 @@ noncomputable section Extend
 
 variable {α β γ : Sort*} {f : α → β}
 
-/-- Extension of a function `g : α → γ` along a function `f : α → β`.
+/--
+Extension of a function `g : α → γ` along a function `f : α → β`.
 
 For every `a : α`, `f a` is sent to `g a`. `f` might not be surjective, so we use an auxiliary
 function `j : β → γ` by sending `b : β` not in the range of `f` to `j b`. If you do not care about
@@ -837,7 +843,8 @@ This definition is mathematically meaningful only when `f a₁ = f a₂ → g a�
 `g.FactorsThrough f`). In particular this holds if `f` is injective.
 
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
-`g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
+`g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`.
+-/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
   open scoped Classical in
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
@@ -1186,7 +1193,9 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
   fun i ↦ if i ∈ s then f i else g i
 
 
-/-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
+/-!
+# Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast`
+-/
 
 theorem eq_rec_on_bijective {C : α → Sort*} :
     ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.ndrec _ _ C · _ h)

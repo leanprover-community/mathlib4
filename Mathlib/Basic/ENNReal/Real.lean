@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.ENNReal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps between real and extended non-negative real numbers
 
@@ -19,11 +22,11 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
 
 ## Main statements
 
-  - `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
-  - `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
-  - `toNNReal_iInf` through `toReal_sSup`: these declarations allow for easy conversions between
-    indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
-    `ℝ≥0∞` is a complete lattice.
+* `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
+* `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
+* `toNNReal_iInf` through `toReal_sSup`: these declarations allow for easy conversions between
+  indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
+  `ℝ≥0∞` is a complete lattice.
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.AbstractCompletion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff completions of uniform spaces
 
@@ -22,23 +25,22 @@ properties only if `f` is uniformly continuous.
 Beware that `(↑)` is not injective if `α` is not Hausdorff. But its image is always
 dense. The adjoint functor acting on morphisms is then constructed by the usual abstract nonsense.
 For every uniform spaces `α` and `β`, it turns `f : α → β` into a morphism
-  `Completion.map f : Completion α → Completion β`
+`Completion.map f : Completion α → Completion β`
 such that
-  `(↑) ∘ f = (Completion.map f) ∘ (↑)`
+`(↑) ∘ f = (Completion.map f) ∘ (↑)`
 provided `f` is uniformly continuous. This construction is compatible with composition.
 
 In this file we introduce the following concepts:
 
 * `CauchyFilter α` the uniform completion of the uniform space `α` (using Cauchy filters).
   These are not minimal filters.
-
 * `Completion α := Quotient (separationSetoid (CauchyFilter α))` the Hausdorff completion.
 
 ## References
 
 This formalization is mostly based on
-  N. Bourbaki: General Topology
-  I. M. James: Topologies and Uniformities
+N. Bourbaki: General Topology
+I. M. James: Topologies and Uniformities
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
@@ -51,7 +53,8 @@ open scoped SetRel Uniformity Topology
 
 universe u v w
 
-/-- Space of Cauchy filters
+/--
+Space of Cauchy filters
 
 This is essentially the completion of a uniform space. The embeddings are the neighbourhood filters.
 This space is not minimal, the separated uniform space (i.e. quotiented on the intersection of all

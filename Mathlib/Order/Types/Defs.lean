@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order types
 
@@ -29,11 +32,11 @@ The following are notations in the `OrderType` namespace:
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Order_type>
-* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.][dauben_1990]
-* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
-  1977.][enderton_1977]
+* [https://en.wikipedia.org/wiki/Order\_type](https://en.wikipedia.org/wiki/Order_type)
+* ‍\[Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.\]\[dauben\_1990\]
+* ‍\[Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.\]\[enderton\_1977\]
 
 ## Tags
 
@@ -72,7 +75,9 @@ order type `o`. -/
 instance (o : OrderType) : LinearOrder o.ToType :=
   o.out.str
 
-/-! ### Basic properties of the order type -/
+/-!
+# Basic properties of the order type
+-/
 
 /-- The order type of the linear order on `α`. -/
 def type (α : Type u) [LinearOrder α] : OrderType :=
@@ -182,7 +187,9 @@ theorem liftOn₂_type {α : Type u} {β : Type v} {δ : Type*} [LinearOrder α]
        type α₁ = type α₂ → type β₁ = type β₂ → f α₁ β₁ = f α₂ β₂) :
     liftOn₂ (type α) (type β) f c = f α β := by rfl
 
-/-! ### The order on `OrderType` -/
+/-!
+# The order on `OrderType`
+-/
 
 /--
 The order is defined so that `type α ≤ type β` iff there exists an order embedding `α ↪o β`.

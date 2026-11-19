@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Adjunction
 public import Mathlib.CategoryTheory.ObjectProperty.Local
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bousfield localization
 
@@ -41,7 +44,9 @@ variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ObjectProperty
 
-/-! ### Left Bousfield localization -/
+/-!
+# Left Bousfield localization
+-/
 
 section
 
@@ -121,7 +126,9 @@ lemma galoisConnection_isLocal :
 
 end
 
-/-! ### Right Bousfield localization -/
+/-!
+# Right Bousfield localization
+-/
 
 section
 
@@ -204,7 +211,9 @@ lemma galoisConnection_isColocal :
 
 end
 
-/-! ### Bousfield localization and adjunctions -/
+/-!
+# Bousfield localization and adjunctions
+-/
 
 section
 

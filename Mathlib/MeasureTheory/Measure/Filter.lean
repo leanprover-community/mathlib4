@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filters related to measures
 
@@ -92,7 +95,9 @@ section Cofinite
 
 namespace Measure
 
-/-! ### The `cofinite` filter -/
+/-!
+# The `cofinite` filter
+-/
 
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
 @[expose]

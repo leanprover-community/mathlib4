@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weierstrass equations and the nonsingular condition in affine coordinates
 
-Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. An *affine point*
-on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(X, Y) = 0` in
-*affine coordinates*, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
-*nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
+Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. An _affine point_
+on `W` is a tuple `(x, y)` of elements in `R` satisfying the _Weierstrass equation_ `W(X, Y) = 0` in
+_affine coordinates_, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
+_nonsingular_ if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
 
 This file defines polynomials associated to Weierstrass equations and the nonsingular condition in
 affine coordinates. The group law on the actual type of nonsingular points in affine coordinates
@@ -39,7 +42,7 @@ abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurv
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -67,7 +70,9 @@ variable {R : Type r}
 
 namespace WeierstrassCurve
 
-/-! ## Affine coordinates -/
+/-!
+# Affine coordinates
+-/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in affine coordinates. -/
@@ -83,16 +88,20 @@ variable [CommRing R] {W : Affine R}
 
 namespace Affine
 
-/-! ## Weierstrass equations in affine coordinates -/
+/-!
+# Weierstrass equations in affine coordinates
+-/
 
 variable (W) in
-/-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
+/--
+The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
 curve `W` over a ring `R` in affine coordinates.
 
 For ease of polynomial manipulation, this is represented as a term of type `R[X][X]`, where the
 inner variable represents `X` and the outer variable represents `Y`. For clarity, the alternative
 notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate` scope to represent the outer
-variable and the bivariate polynomial ring `R[X][X]` respectively. -/
+variable and the bivariate polynomial ring `R[X][X]` respectively.
+-/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
 
@@ -143,9 +152,11 @@ lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
   simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W) in
-/-- The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
+/--
+The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
 
-In other words, it satisfies the Weierstrass equation `W(X, Y) = 0`. -/
+In other words, it satisfies the Weierstrass equation `W(X, Y) = 0`.
+-/
 def Equation (x y : R) : Prop :=
   W.polynomial.evalEval x y = 0
 
@@ -167,7 +178,9 @@ lemma equation_iff_variableChange (x y : R) :
   congr! 1
   ring1
 
-/-! ## The nonsingular condition in affine coordinates -/
+/-!
+# The nonsingular condition in affine coordinates
+-/
 
 variable (W) in
 /-- The partial derivative `W_X(X, Y)` with respect to `X` of the polynomial `W(X, Y)` associated to
@@ -202,11 +215,13 @@ lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
   simp only [evalEval_polynomialY, zero_add, mul_zero]
 
 variable (W) in
-/-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
+/--
+The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
 
 In other words, either `W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for fields.
+-/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
 def Nonsingular (x y : R) : Prop :=
   W.Equation x y ∧ (W.polynomialX.evalEval x y ≠ 0 ∨ W.polynomialY.evalEval x y ≠ 0)
@@ -250,7 +265,9 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
     W.Equation x y ↔ W.Nonsingular x y :=
   W.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
 
-/-! ### Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (W) (f : R →+* S)
 

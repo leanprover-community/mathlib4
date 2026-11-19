@@ -8,8 +8,11 @@ module
 public meta import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Theorems
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `funProp` attribute
+# `funProp` attribute
 -/
 
 public meta section

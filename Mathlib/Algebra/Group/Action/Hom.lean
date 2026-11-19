@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Pretransitive
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms and group actions
 -/
@@ -23,7 +26,8 @@ variable {M N α : Type*}
 section
 variable [Monoid M] [MulAction M α]
 
-/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
+/--
+Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
@@ -39,20 +43,24 @@ namespace MulAction
 
 variable (α)
 
-/-- A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
+/--
+A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
 a multiplicative action of `N` on `α`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[to_additive]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
   one_smul _ := by simpa [(· • ·)] using one_smul ..
   mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..
 
-/-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
+/--
+An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
 an additive action of `N` on `α`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 add_decl_doc AddAction.compHom
 
 @[to_additive]

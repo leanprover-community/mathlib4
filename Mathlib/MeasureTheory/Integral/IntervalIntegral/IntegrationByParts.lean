@@ -8,10 +8,14 @@ module
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration by parts and by substitution
 
 We derive additional integration techniques from FTC-2:
+
 * `intervalIntegral.integral_mul_deriv_eq_deriv_mul` - integration by parts
 * `intervalIntegral.integral_comp_mul_deriv''` - integration by substitution
 
@@ -221,20 +225,22 @@ end SMul
 end Parts
 
 /-!
-### Integration by substitution / Change of variables
+# Integration by substitution / Change of variables
 -/
 
 section SMul
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f f' : ℝ → ℝ} {g g' : ℝ → E}
 
-/-- Change of variables, general form. If `f` is continuous on `[a, b]` and has
+/--
+Change of variables, general form. If `f` is continuous on `[a, b]` and has
 right-derivative `f'` in `(a, b)`, `g` is continuous on `f '' (a, b)` and integrable on
 `f '' [a, b]`, and `f' x • (g ∘ f) x` is integrable on `[a, b]`,
 then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
 If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
-and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`.
+-/
 theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g (f '' Ioo (min a b) (max a b))) (hg1 : IntegrableOn g (f '' [[a, b]]))
@@ -277,12 +283,14 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
   rw [← intervalIntegrable_iff'] at hg2
   simp_rw [integral_eq_sub_of_hasDeriv_right h_cont h_der hg2, integral_same, sub_zero]
 
-/-- Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has
+/--
+Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has
 continuous right-derivative `f'` in `(a, b)`, and `g` is continuous on `f '' [a, b]` then we can
 substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
 If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
-and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`.
+-/
 theorem integral_deriv_smul_comp'' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g (f '' [[a, b]])) :
@@ -292,26 +300,30 @@ theorem integral_deriv_smul_comp'' (hf : ContinuousOn f [[a, b]])
   rw [hf.image_uIcc] at hg ⊢
   exact hg.integrableOn_Icc
 
-/-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
+/--
+Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 Compared to `intervalIntegral.integral_deriv_smul_comp` we only require that `g` is continuous on
 `f '' [a, b]`.
 
 If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
-and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`.
+-/
 theorem integral_deriv_smul_comp' (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ x in f a..f b, g x :=
   integral_deriv_smul_comp'' (fun x hx ↦ (h x hx).continuousAt.continuousWithinAt)
     (fun x hx ↦ (h x <| Ioo_subset_Icc_self hx).hasDerivWithinAt) h' hg
 
-/-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
+/--
+Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
 If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
-and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`.
+-/
 theorem integral_deriv_smul_comp (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ x in f a..f b, g x :=

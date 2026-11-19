@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Analysis.Normed.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of normed groups and other constructions
 
@@ -22,7 +25,9 @@ open NNReal
 
 variable {ι ι' E F : Type*} {G : ι → Type*}
 
-/-! ### `PUnit` -/
+/-!
+# `PUnit`
+-/
 
 namespace PUnit
 
@@ -34,7 +39,9 @@ instance normedAddCommGroup : NormedAddCommGroup PUnit where
 
 end PUnit
 
-/-! ### `ULift` -/
+/-!
+# `ULift`
+-/
 
 namespace ULift
 section Norm
@@ -101,7 +108,9 @@ instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
 
 end ULift
 
-/-! ### `Additive`, `Multiplicative` -/
+/-!
+# `Additive`, `Multiplicative`
+-/
 
 section AdditiveMultiplicative
 
@@ -187,7 +196,9 @@ instance Multiplicative.normedCommGroup [NormedAddCommGroup E] :
 
 end AdditiveMultiplicative
 
-/-! ### Order dual -/
+/-!
+# Order dual
+-/
 
 section OrderDual
 open OrderDual
@@ -245,7 +256,9 @@ instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup
 end OrderDual
 end OrderDual
 
-/-! ### Binary product of normed groups -/
+/-!
+# Binary product of normed groups
+-/
 
 section Norm
 variable [Norm E] [Norm F] {x : E × F} {r : ℝ}
@@ -314,7 +327,9 @@ instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] : NormedCommGro
 
 end Prod
 
-/-! ### Finite product of normed groups -/
+/-!
+# Finite product of normed groups
+-/
 
 section Pi
 variable [Fintype ι] [Fintype ι']
@@ -440,15 +455,23 @@ lemma Function.Surjective.pi_norm_comp' [Fintype F] {f : ι → F} (hf : Functio
   obtain ⟨y, rfl⟩ := hf x
   exact h ▸ norm_le_pi_norm' (g ∘ f) y
 
-/-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled
-by the cardinality. -/]
+/--
+The $`L^1` norm is less than the $`L^\infty` norm scaled by the cardinality.
+-/
+@[to_additive Pi.sum_norm_apply_le_norm /--
+                                        The $`L^1` norm is less than the $`L^\infty` norm scaled
+by the cardinality.
+                                        -/]
 lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 
-/-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_nnNorm_apply_le_nnNorm /-- The $L^1$ norm is less than the $L^\infty$ norm
-scaled by the cardinality. -/]
+/--
+The $`L^1` norm is less than the $`L^\infty` norm scaled by the cardinality.
+-/
+@[to_additive Pi.sum_nnNorm_apply_le_nnNorm /--
+                                            The $`L^1` norm is less than the $`L^\infty` norm
+scaled by the cardinality.
+                                            -/]
 lemma Pi.sum_nnNorm_apply_le_nnNorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
@@ -541,11 +564,14 @@ theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : �
 
 end Pi
 
-/-! ### Multiplicative opposite -/
+/-!
+# Multiplicative opposite
+-/
 
 namespace MulOpposite
 
-/-- The (additive) norm on the multiplicative opposite is the same as the norm on the original type.
+/--
+The (additive) norm on the multiplicative opposite is the same as the norm on the original type.
 
 Note that we do not provide this more generally as `Norm Eᵐᵒᵖ`, as this is not always a good
 choice of norm in the multiplicative `SeminormedGroup E` case.

@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.Congruence.Hom
 
 import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product of modules over commutative semirings
 
@@ -162,7 +165,8 @@ section
 
 variable (R R' M N)
 
-/-- A typeclass for `SMul` structures which can be moved across a tensor product.
+/--
+A typeclass for `SMul` structures which can be moved across a tensor product.
 
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.toIntModule`, allowing `z •` to be moved even if
@@ -208,18 +212,21 @@ theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
-/-- Given two modules over a commutative semiring `R`, if one of the factors carries a
+/--
+Given two modules over a commutative semiring `R`, if one of the factors carries a
 (distributive) action of a second type of scalars `R'`, which commutes with the action of `R`, then
 the tensor product (over `R`) carries an action of `R'`.
 
 This instance defines this `R'` action in the case that it is the left module which has the `R'`
 action. Two natural ways in which this situation arises are:
+
 * Extension of scalars
 * A tensor product of a group representation with a module not carrying an action
 
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
-performance reasons, we define it explicitly below. -/
+performance reasons, we define it explicitly below.
+-/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
   id ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|

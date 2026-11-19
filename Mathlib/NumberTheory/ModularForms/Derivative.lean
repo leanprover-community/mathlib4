@@ -10,18 +10,21 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentia
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of modular forms
 
-This file defines normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$
-and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
+This file defines normalized derivative $`D = \frac{1}{2\pi i} \frac{d}{dz}`
+and (Ramanujan-)Serre derivative $`\partial_k := D - \frac{k}{12} E_2` of modular forms.
 
 ## Main Definitions and Theorems
 
-- `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
-- `serreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
-- `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
-- `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
+* `normalizedDerivOfComplex`: $`D = \frac{1}{2\pi i} \frac{d}{dz}`
+* `serreDerivative`: $`\partial_k F := D F - \frac{k}{12} E_2 F`
+* `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
+* `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
   `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
 -/
 
@@ -34,7 +37,7 @@ namespace Derivative
 @[expose] public noncomputable section
 
 /--
-Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
+Normalized derivative $`D = \frac{1}{2\pi i} \frac{d}{dz}`.
 -/
 def normalizedDerivOfComplex (F : ℍ → ℂ) (z : ℍ) : ℂ := (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
@@ -122,7 +125,7 @@ theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) 
   ring
 
 /--
-Serre derivative of weight $k$.
+Serre derivative of weight $`k`.
 -/
 def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
   D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
@@ -221,7 +224,7 @@ lemma normalizedDerivOfComplex_SL_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff 
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
-$\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
+$`\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma` for all $`\gamma \in SL(2, \mathbb{Z})`.
 -/
 theorem serreDerivative_slash_equivariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)} :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by

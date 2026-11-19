@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.SimpleRing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subalgebras over Commutative Semiring
 
@@ -317,7 +320,8 @@ section
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
-/-- More general form of `Subalgebra.algebra`.
+/--
+More general form of `Subalgebra.algebra`.
 
 This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
@@ -576,9 +580,11 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
-/-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
+/--
+Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
@@ -590,9 +596,11 @@ theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.ra
     let ⟨x, hx⟩ := hy
     ⟨x, SetCoe.ext hx⟩
 
-/-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
+/--
+The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
+Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype.
+-/
 instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range :=
   Set.fintypeRange φ
 
@@ -603,9 +611,11 @@ namespace AlgEquiv
 variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
-/-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
+/--
+Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
 
-This is a computable alternative to `AlgEquiv.ofInjective`. -/
+This is a computable alternative to `AlgEquiv.ofInjective`.
+-/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
   { f.rangeRestrict with
     toFun := f.rangeRestrict
@@ -666,9 +676,11 @@ instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebr
 theorem range_val : S.val.range = S :=
   ext <| Set.ext_iff.1 <| S.val.coe_range.trans Subtype.range_val
 
-/-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
+/--
+The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`
+-/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   toFun := Set.inclusion h
   map_one' := rfl
@@ -731,9 +743,11 @@ end inclusion
 
 variable (S)
 
-/-- Two subalgebras that are equal are also equivalent as algebras.
+/--
+Two subalgebras that are equal are also equivalent as algebras.
 
-This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
+This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`.
+-/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   __ := LinearEquiv.ofEq S.toSubmodule T.toSubmodule congr(toSubmodule $h)
@@ -784,7 +798,8 @@ theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x
 
 end equivMapOfInjective
 
-/-! ## Actions by `Subalgebra`s
+/-!
+# Actions by `Subalgebra`s
 
 These are just copies of the definitions about `Subsemiring` starting from
 `Subring.mulAction`.

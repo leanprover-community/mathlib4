@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Extr
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local extrema of functions on topological spaces
 
@@ -83,7 +86,9 @@ theorem IsLocalExtr.elim {p : Prop} :
     IsLocalExtr f a → (IsLocalMin f a → p) → (IsLocalMax f a → p) → p :=
   Or.elim
 
-/-! ### Restriction to (sub)sets -/
+/-!
+# Restriction to (sub)sets
+-/
 
 theorem IsLocalMin.isLocalMinOn (h : IsLocalMin f a) (s) : IsLocalMinOn f s a :=
   h.filter_inf _
@@ -186,7 +191,9 @@ theorem IsLocalExtrOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalExtrOn 
     [NeBot (𝓝[<] f a)] [NeBot (𝓝[>] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) :=
   hf.elim (fun h => h.not_nhds_le_map) fun h => h.not_nhds_le_map
 
-/-! ### Constant -/
+/-!
+# Constant
+-/
 
 
 theorem isLocalMinOn_const {b : β} : IsLocalMinOn (fun _ => b) s a :=
@@ -207,7 +214,9 @@ theorem isLocalMax_const {b : β} : IsLocalMax (fun _ => b) a :=
 theorem isLocalExtr_const {b : β} : IsLocalExtr (fun _ => b) a :=
   isExtrFilter_const
 
-/-! ### Composition with (anti)monotone functions -/
+/-!
+# Composition with (anti)monotone functions
+-/
 
 nonrec theorem IsLocalMin.comp_mono (hf : IsLocalMin f a) {g : β → γ} (hg : Monotone g) :
     IsLocalMin (g ∘ f) a :=
@@ -279,7 +288,9 @@ nonrec theorem IsLocalMaxOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
     (hg : IsLocalMaxOn g s a) : IsLocalMaxOn (fun x => op (f x) (g x)) s a :=
   hf.bicomp_mono hop hg
 
-/-! ### Composition with `ContinuousAt` -/
+/-!
+# Composition with `ContinuousAt`
+-/
 
 
 theorem IsLocalMin.comp_continuous [TopologicalSpace δ] {g : δ → α} {b : δ}
@@ -329,7 +340,9 @@ theorem IsLocalExtrOn.comp_continuousOn [TopologicalSpace δ] {t : Set α} {s : 
 
 end Preorder
 
-/-! ### Pointwise addition -/
+/-!
+# Pointwise addition
+-/
 
 
 section OrderedAddCommMonoid
@@ -355,7 +368,9 @@ nonrec theorem IsLocalMaxOn.add (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s
 
 end OrderedAddCommMonoid
 
-/-! ### Pointwise negation and subtraction -/
+/-!
+# Pointwise negation and subtraction
+-/
 
 
 section OrderedAddCommGroup
@@ -399,7 +414,9 @@ nonrec theorem IsLocalMaxOn.sub (hf : IsLocalMaxOn f s a) (hg : IsLocalMinOn g s
 
 end OrderedAddCommGroup
 
-/-! ### Pointwise `sup`/`inf` -/
+/-!
+# Pointwise `sup`/`inf`
+-/
 
 
 section SemilatticeSup
@@ -446,7 +463,9 @@ nonrec theorem IsLocalMaxOn.inf (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s
 
 end SemilatticeInf
 
-/-! ### Pointwise `min`/`max` -/
+/-!
+# Pointwise `min`/`max`
+-/
 
 
 section LinearOrder
@@ -489,7 +508,9 @@ end LinearOrder
 
 section Eventually
 
-/-! ### Relation with `eventually` comparisons of two functions -/
+/-!
+# Relation with `eventually` comparisons of two functions
+-/
 
 
 variable [Preorder β] {s : Set α}

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.DerivNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Laplacian
 
@@ -30,12 +33,13 @@ open scoped Topology
 section secondDerivativeAPI
 
 /-!
-## Supporting API
+# Supporting API
 
 The definition of the Laplacian of a function `f : E → F` involves the notion of the second
-derivative, which can be seen as a continuous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
-Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜]
-F`. This section provides convenience API to convert between these notions.
+derivative, which can be seen as a continuous multilinear map
+`ContinuousMultilinearMap 𝕜 (fun (i : Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a
+linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜] F`. This section provides convenience API to convert between
+these notions.
 -/
 
 variable
@@ -110,7 +114,7 @@ lemma tensorIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) 
 end secondDerivativeAPI
 
 /-!
-## Definition of the Laplacian
+# Definition of the Laplacian
 -/
 
 variable
@@ -124,8 +128,8 @@ namespace InnerProductSpace
 
 variable (f s) in
 /--
-Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open
-InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
+Laplacian for functions on real inner product spaces, with respect to a set `s`. Use
+`open InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
 -/
 @[wikidata Q203484]
 noncomputable def laplacianWithin : E → F :=
@@ -151,7 +155,7 @@ theorem laplacianWithin_univ :
     laplacianWithin, tensorIteratedFDerivWithinTwo, bilinearIteratedFDerivWithinTwo]
 
 /-!
-## Computation of Δ in Terms of Orthonormal Bases
+# Computation of Δ in Terms of Orthonormal Bases
 -/
 
 variable (f) in
@@ -242,7 +246,7 @@ The Laplacian of a constant function is zero.
     Pi.zero_def]
 
 /-!
-## Congruence Lemmata for Δ
+# Congruence Lemmata for Δ
 -/
 
 /--
@@ -263,7 +267,7 @@ theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
 
 /-!
-## 𝕜-Linearity of Δ on Continuously Differentiable Functions
+# 𝕜-Linearity of Δ on Continuously Differentiable Functions
 -/
 
 /-- The Laplacian commutes with addition. -/
@@ -364,7 +368,7 @@ theorem laplacian_smul_nhds (v : 𝕜) (h : ContDiffAt ℝ 2 f x) :
   simp [laplacian_smul v ha]
 
 /-!
-## Commutativity of Δ with Linear Operators
+# Commutativity of Δ with Linear Operators
 
 This section establishes commutativity with linear operators, showing in particular that `Δ`
 commutes with taking real and imaginary parts of complex-valued functions.

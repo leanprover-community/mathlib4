@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete valuation rings
 
@@ -51,8 +54,10 @@ universe u
 
 open Ideal IsLocalRing
 
-/-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
-  is not a field. -/
+/--
+An integral domain is a _discrete valuation ring_ (DVR) if it's a local PID which
+is not a field.
+-/
 class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R] : Prop
     extends IsPrincipalIdealRing R, IsLocalRing R where
   not_a_field' : maximalIdeal R ≠ ⊥
@@ -395,7 +400,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   · apply (hirr.ne_zero (eq_zero_of_pow_eq_zero h)).elim
 
 /-!
-## The additive valuation on a DVR
+# The additive valuation on a DVR
 -/
 
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Sets.Closeds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Clopen upper sets
 
@@ -20,7 +23,9 @@ open Set TopologicalSpace
 
 variable {α : Type*} [TopologicalSpace α] [LE α]
 
-/-! ### Compact open sets -/
+/-!
+# Compact open sets
+-/
 
 
 /-- The type of clopen upper sets of a topological space. -/
@@ -38,7 +43,9 @@ instance : SetLike (ClopenUpperSet α) α where
 
 instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α)
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
 initialize_simps_projections ClopenUpperSet (carrier → coe, as_prefix coe)

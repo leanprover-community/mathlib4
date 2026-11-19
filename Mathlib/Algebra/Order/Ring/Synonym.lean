@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring structure on the order type synonyms
 
@@ -19,7 +22,9 @@ public section
 
 variable {R : Type*}
 
-/-! ### Order dual -/
+/-!
+# Order dual
+-/
 
 namespace OrderDual
 
@@ -102,7 +107,9 @@ theorem ofDual_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
 
 @[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
 
-/-! ### Lexicographical order -/
+/-!
+# Lexicographical order
+-/
 
 namespace Lex
 

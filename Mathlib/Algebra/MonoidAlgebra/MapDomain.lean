@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps of monoid algebras
 
@@ -117,13 +120,17 @@ lemma map_surjective (f : R →+ S) (he : Surjective f) : Surjective (map (M := 
     ext; simp [ofCoeff_mapRange]
   simpa [this] using mapRange_surjective _ (map_zero f) he
 
-/-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
+/--
+Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
-Coefficients not in the range of `f` are dropped. -/
+Coefficients not in the range of `f` are dropped.
+-/
 @[to_additive
-/-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
+/--
+Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
-Coefficients not in the range of `f` are dropped. -/]
+Coefficients not in the range of `f` are dropped.
+-/]
 def comapDomain (f : M → N) (hf : Injective f) (x : R[N]) : R[M] :=
   .ofCoeff <| x.coeff.comapDomain f hf.injOn
 
@@ -191,13 +198,17 @@ lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
   ext; simp [Finsupp.mapDomain_fun_comp]
 
 variable (R) in
-/-- Equivalent monoids have additively isomorphic monoid algebras.
+/--
+Equivalent monoids have additively isomorphic monoid algebras.
 
-`MonoidAlgebra.mapDomain` as an `AddEquiv`. -/
+`MonoidAlgebra.mapDomain` as an `AddEquiv`.
+-/
 @[to_additive (dont_translate := R)
-/-- Equivalent additive monoids have additively isomorphic additive monoid algebras.
+/--
+Equivalent additive monoids have additively isomorphic additive monoid algebras.
 
-`AddMonoidAlgebra.mapDomain` as an `AddEquiv`. -/]
+`AddMonoidAlgebra.mapDomain` as an `AddEquiv`.
+-/]
 def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   toFun x := x.mapDomain e
   invFun x := x.mapDomain e.symm
@@ -225,13 +236,17 @@ lemma mapDomainAddEquiv_trans (e₁ : M ≃ N) (e₂ : N ≃ O) :
       (mapDomainAddEquiv R e₁).trans (mapDomainAddEquiv R e₂) := by ext; simp
 
 variable (M) in
-/-- Additively isomorphic rings have additively isomorphic monoid algebras.
+/--
+Additively isomorphic rings have additively isomorphic monoid algebras.
 
-`MonoidAlgebra.map` as an `AddEquiv`. -/
+`MonoidAlgebra.map` as an `AddEquiv`.
+-/
 @[to_additive (dont_translate := R S)
-/-- Additively isomorphic rings have additively isomorphic additive monoid algebras.
+/--
+Additively isomorphic rings have additively isomorphic additive monoid algebras.
 
-`AddMonoidAlgebra.map` as an `AddEquiv`. -/]
+`AddMonoidAlgebra.map` as an `AddEquiv`.
+-/]
 def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
   toFun := .map e
   invFun := .map e.symm
@@ -433,7 +448,7 @@ end Ring
 end MonoidAlgebra
 
 /-!
-#### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
+# Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
 -/
 
 namespace AddMonoidAlgebra

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The set lattice and (pre)images of functions
 
@@ -19,6 +22,7 @@ In order to accommodate `Set.image2`, the file includes results on union/interse
 ## Naming convention
 
 In lemma names,
+
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
 * `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.
@@ -107,11 +111,15 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 
-/-! ### Bounded unions and intersections -/
+/-!
+# Bounded unions and intersections
+-/
 
 section Function
 
-/-! ### Lemmas about `Set.MapsTo` -/
+/-!
+# Lemmas about `Set.MapsTo`
+-/
 
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
@@ -176,7 +184,9 @@ theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β) (f : α → β
     image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
   aesop
 
-/-! ### `restrictPreimage` -/
+/-!
+# `restrictPreimage`
+-/
 
 
 section
@@ -209,7 +219,9 @@ theorem bijective_iff_bijective_of_iUnion_eq_univ :
 
 end
 
-/-! ### `InjOn` -/
+/-!
+# `InjOn`
+-/
 
 
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
@@ -251,7 +263,9 @@ theorem inj_on_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·)
   rcases hs i j with ⟨k, hi, hj⟩
   exact hf k (hi hx) (hj hy) hxy
 
-/-! ### `SurjOn` -/
+/-!
+# `SurjOn`
+-/
 
 
 theorem surjOn_sUnion {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
@@ -283,7 +297,9 @@ theorem surjOn_iInter_iInter [Nonempty ι] {s : ι → Set α} {t : ι → Set �
     (H : ∀ i, SurjOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : SurjOn f (⋂ i, s i) (⋂ i, t i) :=
   surjOn_iInter (fun i => (H i).mono (Subset.refl _) (iInter_subset _ _)) Hinj
 
-/-! ### `BijOn` -/
+/-!
+# `BijOn`
+-/
 
 
 theorem bijOn_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
@@ -306,7 +322,9 @@ theorem bijOn_iInter_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directe
 
 end Function
 
-/-! ### `image`, `preimage` -/
+/-!
+# `image`, `preimage`
+-/
 
 
 section Image

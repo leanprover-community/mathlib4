@@ -12,6 +12,9 @@ public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Util.DelabNonCanonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic definitions about topological spaces
 
@@ -21,39 +24,28 @@ other than `Mathlib/Data/Set/Lattice.lean`.
 ## Main definitions
 
 * `TopologicalSpace X`: a typeclass endowing `X` with a topology.
-  By definition, a topology is a collection of sets called *open sets* such that
+  By definition, a topology is a collection of sets called _open sets_ such that
 
-  - `isOpen_univ`: the whole space is open;
-  - `IsOpen.inter`: the intersection of two open sets is an open set;
-  - `isOpen_sUnion`: the union of a family of open sets is an open set.
-
+  * `isOpen_univ`: the whole space is open;
+  * `IsOpen.inter`: the intersection of two open sets is an open set;
+  * `isOpen_sUnion`: the union of a family of open sets is an open set.
 * `IsOpen s`: predicate saying that `s` is an open set, same as `TopologicalSpace.IsOpen`.
-
-* `IsClosed s`: a set is called *closed*, if its complement is an open set.
+* `IsClosed s`: a set is called _closed_, if its complement is an open set.
   For technical reasons, this is a typeclass.
-
-* `IsClopen s`: a set is *clopen* if it is both closed and open.
-
-* `interior s`: the *interior* of a set `s` is the maximal open set that is included in `s`.
-
-* `closure s`: the *closure* of a set `s` is the minimal closed set that includes `s`.
-
-* `frontier s`: the *frontier* of a set is the set difference `closure s \ interior s`.
+* `IsClopen s`: a set is _clopen_ if it is both closed and open.
+* `interior s`: the _interior_ of a set `s` is the maximal open set that is included in `s`.
+* `closure s`: the _closure_ of a set `s` is the minimal closed set that includes `s`.
+* `frontier s`: the _frontier_ of a set is the set difference `closure s \ interior s`.
   A point `x` belongs to `frontier s`, if any neighborhood of `x`
   contains points both from `s` and `sᶜ`.
-
-* `Dense s`: a set is *dense* if its closure is the whole space.
+* `Dense s`: a set is _dense_ if its closure is the whole space.
   We define it as `∀ x, x ∈ closure s` so that one can write `(h : Dense s) x`.
+* `DenseRange f`: a function has _dense range_, if `Set.range f` is a dense set.
+* `Continuous f`: a map is _continuous_, if the preimage of any open set is an open set.
+* `IsOpenMap f`: a map is an _open map_, if the image of any open set is an open set.
+* `IsClosedMap f`: a map is a _closed map_, if the image of any closed set is a closed set.
 
-* `DenseRange f`: a function has *dense range*, if `Set.range f` is a dense set.
-
-* `Continuous f`: a map is *continuous*, if the preimage of any open set is an open set.
-
-* `IsOpenMap f`: a map is an *open map*, if the image of any open set is an open set.
-
-* `IsClosedMap f`: a map is a *closed map*, if the image of any closed set is a closed set.
-
-** Notation
+‍\*\* Notation
 
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
@@ -82,7 +74,9 @@ class TopologicalSpace (X : Type u) where
 
 variable {X : Type u} {Y : Type v}
 
-/-! ### Predicates on sets -/
+/-!
+# Predicates on sets
+-/
 
 section Defs
 
@@ -160,25 +154,30 @@ structure Continuous (f : X → Y) : Prop where
   instead. -/
   isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 
-/-- A map `f : X → Y` is said to be an *open map*,
-if the image of any open `U : Set X` is open in `Y`. -/
+/--
+A map `f : X → Y` is said to be an _open map_,
+if the image of any open `U : Set X` is open in `Y`.
+-/
 @[wikidata Q56653513]
 def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U)
 
-/-- A map `f : X → Y` is said to be a *closed map*,
-if the image of any closed `U : Set X` is closed in `Y`. -/
+/--
+A map `f : X → Y` is said to be a _closed map_,
+if the image of any closed `U : Set X` is closed in `Y`.
+-/
 @[wikidata Q3754530]
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
 
-/-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
+/--
+An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
 Equivalently, it is a surjective continuous open map.
 We use the latter characterization as a definition.
 
 Many important quotient maps are open quotient maps, including
 
-- the quotient map from a topological space to its quotient by the action of a group;
-- the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological space to its separation quotient.
+* the quotient map from a topological space to its quotient by the action of a group;
+* the quotient map from a topological group to its quotient by a normal subgroup;
+* the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
@@ -194,7 +193,9 @@ structure IsOpenQuotientMap (f : X → Y) : Prop where
 
 end Defs
 
-/-! ### Notation for non-standard topologies -/
+/-!
+# Notation for non-standard topologies
+-/
 
 namespace Topology
 

@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Portmanteau
 
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
 
@@ -45,7 +48,9 @@ open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section Levy_Prokhorov
 
-/-! ### Lévy-Prokhorov metric -/
+/-!
+# Lévy-Prokhorov metric
+-/
 
 variable {Ω : Type*} [MeasurableSpace Ω] [PseudoEMetricSpace Ω]
 
@@ -253,7 +258,9 @@ lemma levyProkhorovDist_le_of_forall_le
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
 
-/-! ### Equipping measures with the Lévy-Prokhorov metric -/
+/-!
+# Equipping measures with the Lévy-Prokhorov metric
+-/
 
 /-- A type synonym, to be used for `Measure α`, `FiniteMeasure α`, or `ProbabilityMeasure α`,
 when they are to be equipped with the Lévy-Prokhorov distance. -/
@@ -303,12 +310,14 @@ noncomputable instance instPseudoMetricSpaceFiniteMeasure :
   dist_triangle _ _ _ := levyProkhorovDist_triangle ..
   edist_dist μ ν := by simp [levyProkhorovDist, levyProkhorovEDist_ne_top]
 
-/-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `ProbabilityMeasure Ω` a pseudometric
+/--
+The Lévy-Prokhorov distance `levyProkhorovDist` makes `ProbabilityMeasure Ω` a pseudometric
 space. The instance is recorded on the type synonym
 `LevyProkhorov (ProbabilityMeasure Ω) := ProbabilityMeasure Ω`.
 
 Note: For this pseudometric to give the topology of convergence in distribution, one must
-furthermore assume that `Ω` is separable. -/
+furthermore assume that `Ω` is separable.
+-/
 noncomputable instance instPseudoMetricSpaceProbabilityMeasure :
     PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) :=
   .induced (LevyProkhorov.ofMeasure ·.toMeasure.toFiniteMeasure) inferInstance
@@ -328,12 +337,14 @@ lemma edist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω
 lemma dist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
 
-/-- If `Ω` is a Borel space, then the Lévy-Prokhorov distance `levyProkhorovDist` makes
+/--
+If `Ω` is a Borel space, then the Lévy-Prokhorov distance `levyProkhorovDist` makes
 `ProbabilityMeasure Ω` into a metric space. The instance is recorded on the type synonym
 `LevyProkhorov (ProbabilityMeasure Ω) := ProbabilityMeasure Ω`.
 
 Note: For this metric to give the topology of convergence in distribution, one must
-furthermore assume that `Ω` is separable. -/
+furthermore assume that `Ω` is separable.
+-/
 noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSpace Ω] :
     MetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
   eq_of_dist_eq_zero {μ ν} h := by
@@ -351,7 +362,9 @@ end Levy_Prokhorov --section
 
 section Levy_Prokhorov_is_finer
 
-/-! ### The Lévy-Prokhorov topology is at least as fine as convergence in distribution -/
+/-!
+# The Lévy-Prokhorov topology is at least as fine as convergence in distribution
+-/
 
 open BoundedContinuousFunction
 
@@ -508,7 +521,9 @@ end Levy_Prokhorov_is_finer
 
 section Levy_Prokhorov_metrizes_convergence_in_distribution
 
-/-! ### On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution -/
+/-!
+# On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution
+-/
 
 open TopologicalSpace
 

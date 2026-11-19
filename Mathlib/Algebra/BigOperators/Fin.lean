@@ -11,6 +11,9 @@ public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Fin
 public import Mathlib.Logic.Equiv.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators and `Fin`
 
@@ -190,7 +193,7 @@ theorem mul_prod_removeNth i (f : Fin (n + 1) → M) : f i * ∏ j, removeNth i 
   rw [← prod_insertNth, insertNth_self_removeNth]
 
 /-!
-### Products over intervals: `Fin.cast`
+# Products over intervals: `Fin.cast`
 -/
 
 section cast
@@ -245,7 +248,7 @@ theorem prod_Iio_cast (h : n = m) (f : Fin m → M) (a : Fin n) :
 end cast
 
 /-!
-### Products over intervals: `Fin.castLE`
+# Products over intervals: `Fin.castLE`
 -/
 
 section castLE
@@ -290,7 +293,7 @@ theorem prod_Iio_castLE (h : n ≤ m) (f : Fin m → M) (a : Fin n) :
 end castLE
 
 /-!
-### Products over intervals: `Fin.castAdd`
+# Products over intervals: `Fin.castAdd`
 -/
 
 section castAdd
@@ -333,7 +336,7 @@ theorem prod_Iio_castAdd (m : ℕ) (f : Fin (n + m) → M) (a : Fin n) :
 end castAdd
 
 /-!
-### Products over intervals: `Fin.castSucc`
+# Products over intervals: `Fin.castSucc`
 -/
 
 section castSucc
@@ -376,7 +379,7 @@ theorem prod_Iio_castSucc (f : Fin (n + 1) → M) (a : Fin n) :
 end castSucc
 
 /-!
-### Products over intervals: `Fin.succ`
+# Products over intervals: `Fin.succ`
 -/
 
 section succ
@@ -423,7 +426,8 @@ theorem prod_Ioi_zero (f : Fin (n + 1) → M) :
 
 end succ
 
-/-- The product of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+/--
+The product of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
 is equal to the product of `g i j * g j i` over `i < j`.
 
 The additive version of this lemma is useful for some proofs about differential forms.
@@ -433,16 +437,17 @@ where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
 Similarly, the product of `g i j * g j i` over `i < j`
 is written as `f (Fin.castSucc i) j * f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
 -/
-@[to_additive /-- The sum of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+@[to_additive /--
+              The sum of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
 is equal to the sum of `g i j + g j i` over `i < j`.
 
-This lemma is useful for some proofs about differential forms.
+              This lemma is useful for some proofs about differential forms.
 In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
 where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
 
-Similarly, the sum of `g i j + g j i` over `i < j`
+              Similarly, the sum of `g i j + g j i` over `i < j`
 is written as `f (Fin.castSucc i) j + f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
--/]
+              -/]
 theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
     ∏ i, ∏ j, f i j = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := calc
   _ = (∏ i, ∏ j with i ≤ j.castSucc, f i j) * ∏ i, ∏ j with j.castSucc < i, f i j := by
@@ -769,11 +774,13 @@ theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
 
 end List
 
-/-- This is a classic "telescoping sum" lemma. It says:
+/--
+This is a classic "telescoping sum" lemma. It says:
 `r₀ - (r₀ + r₁) + (r₁ + r₂) - (r₂+ r₃) + ⋯ ± (rₙ₋₁ + rₙ) ∓ rₙ = 0`.
 
 The chosen spelling, which gives definitional power over `d`, is influenced by downstream
-applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
+applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`.
+-/
 lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
     {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
     (h_first : d 0 = r 0)

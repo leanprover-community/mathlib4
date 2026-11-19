@@ -10,6 +10,9 @@ public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces
 
@@ -24,6 +27,7 @@ In order to obtain a disintegration for any standard Borel space `Ω`, we use th
 measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`.
 
 For `κ : Kernel α (β × ℝ)`, the construction of the conditional kernel proceeds as follows:
+
 * Build a measurable function `f : (α × β) → ℚ → ℝ` such that for all measurable sets
   `s` and all `q : ℚ`, `∫ x in s, f (a, x) q ∂(Kernel.fst κ a) = (κ a).real (s ×ˢ Iic (q : ℝ))`.
   We restrict to `ℚ` here to be able to prove the measurability.
@@ -34,6 +38,7 @@ For `κ : Kernel α (β × ℝ)`, the construction of the conditional kernel pro
 
 The first step (building the measurable function on `ℚ`) is done differently depending on whether
 `α` is countable or not.
+
 * If `α` is countable, we can provide for each `a : α` a function `f : β → ℚ → ℝ` and proceed as
   above to obtain a `Kernel β ℝ`. Since `α` is countable, measurability is not an issue and we can
   put those together into a `Kernel (α × β) ℝ`. The construction of that `f` is done in
@@ -76,7 +81,9 @@ variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 
 section Real
 
-/-! ### Disintegration of kernels from `α` to `γ × ℝ` for countably generated `γ` -/
+/-!
+# Disintegration of kernels from `α` to `γ × ℝ` for countably generated `γ`
+-/
 
 lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKernel κ] :
     IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) where
@@ -167,10 +174,12 @@ end Real
 
 section BorelSnd
 
-/-! ### Disintegration of kernels on standard Borel spaces
+/-!
+# Disintegration of kernels on standard Borel spaces
 
 Since every standard Borel space embeds measurably into `ℝ`, we can generalize a disintegration
-property on `ℝ` to all these spaces. -/
+property on `ℝ` to all these spaces.
+-/
 
 open scoped Classical in
 /-- Auxiliary definition for `ProbabilityTheory.Kernel.condKernel`.

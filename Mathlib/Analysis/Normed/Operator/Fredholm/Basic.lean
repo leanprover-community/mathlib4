@@ -9,34 +9,37 @@ public import Mathlib.Algebra.Module.LinearMap.Index
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fredholm operators between topological vector spaces
 
 Fix `𝕜` a complete `NontriviallyNormedField`, and let `E`, `F` be two Hausdorff topological vector
 spaces over `𝕜`.
 
-We say that a continuous linear map `T : E →L[𝕜] F` is a **Fredholm operator** if it satisfies
+We say that a continuous linear map `T : E →L[𝕜] F` is a *Fredholm operator* if it satisfies
 the following four equivalent conditions:
 
 1. `T` is strict, its range is closed and has finite codimension, and its kernel is (topologically)
-  complemented and has finite dimension. This is chosen as the definition, see `IsFredholm`.
-2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
+   complemented and has finite dimension. This is chosen as the definition, see `IsFredholm`.
+2. `T` admits a continuous *quasi-inverse*, in the sense of `LinearMap.IsQuasiInverse`.
 3. There are closed finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T`
-  induces an isomorphism.
+   induces an isomorphism.
 4. `T` admits a `FredholmPackage`: there are topological decompositions `E = E₁ ⊕ E₀`,
-  `F = F₁ ⊕ F₀`, where `E₀` and `F₀` are finite dimensional, and an isomorphism `Φ : E₁ ≃L[𝕜] F₁`
-  such that `T` is zero on `E₀` and coincides with `Φ` on `E₁`; in other words, in these
-  decompositions, `T` is given by the matrix $\begin{pmatrix} Φ & 0 \cr 0 & 0 \end{pmatrix}$.
+   `F = F₁ ⊕ F₀`, where `E₀` and `F₀` are finite dimensional, and an isomorphism `Φ : E₁ ≃L[𝕜] F₁`
+   such that `T` is zero on `E₀` and coincides with `Φ` on `E₁`; in other words, in these
+   decompositions, `T` is given by the matrix $`\begin{pmatrix} Φ & 0 \cr 0 & 0 \end{pmatrix}`.
 
 ## Main definitions
 
 * `ContinuousLinearMap.IsFredholm`: a continuous linear map `u : E →L[𝕜] F` is a
-  **Fredholm operator** if it is strict, its range is closed and has finite codimension, and its
+  *Fredholm operator* if it is strict, its range is closed and has finite codimension, and its
   kernel is (topologically) complemented and has finite dimension.
-* `FredholmDecomposition`: a **Fredholm decomposition** of a topological vector space `E` is the
+* `FredholmDecomposition`: a *Fredholm decomposition* of a topological vector space `E` is the
   data of two subspaces `X₀` and `X₁` which are topological complements, and where `X₀` is finite
   dimensional.
-* `ContinuousLinearMap.FredholmPackage`: a **Fredholm package** for `u : E →L[𝕜] F` is the data of
+* `ContinuousLinearMap.FredholmPackage`: a *Fredholm package* for `u : E →L[𝕜] F` is the data of
   Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
   a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` between the "essential"
   (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
@@ -69,7 +72,7 @@ in order to conveniently use the full strength of Fredholmness.
 
 ## Implementation details
 
-We largely follow [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023],
+We largely follow \[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 2\]\[bourbaki2023\],
 in particular for the proof of equivalence of the four conditions above.
 Here are some notable changes:
 
@@ -87,7 +90,7 @@ Here are some notable changes:
 
 ## References
 
-* [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023]
+* ‍\[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 2\]\[bourbaki2023\]
 -/
 
 @[expose] public noncomputable section
@@ -105,21 +108,23 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
     [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-!
-## Definition and equivalent conditions
+# Definition and equivalent conditions
 -/
 
 section DefTFAE
 
 section IsFredholm
 
-/-- A continuous linear map `u : E →L[𝕜] F` is a **Fredholm operator** if it is strict,
+/--
+A continuous linear map `u : E →L[𝕜] F` is a *Fredholm operator* if it is strict,
 its range is closed and has finite codimension, and its kernel is (topologically) complemented and
 has finite dimension.
 
 See also `isFredholm_tfae` for other equivalent characterizations.
 We will also prove later (not in Mathlib yet) that for maps between Banach (or even Fréchet)
 spaces over `ℝ` or `ℂ`, all the conditions follow from the kernel and cokernel having finite
-dimension. -/
+dimension.
+-/
 structure IsFredholm (u : E →L[𝕜] F) : Prop where
   isStrictMap : IsStrictMap u
   isClosed_range : IsClosed (u.range : Set F)
@@ -139,11 +144,13 @@ end IsFredholm
 section FredholmPackage
 
 variable (𝕜 E) in
-/-- A **Fredholm decomposition** of a topological vector space `E` is the data of two subspaces
+/--
+A *Fredholm decomposition* of a topological vector space `E` is the data of two subspaces
 `X₀` and `X₁` which are topological complements, and where `X₀` is finite dimensional.
 
 Note that we purposefully use the index `₀` for the "inessential" (i.e. finite dimensional)
-part of the decomposition. -/
+part of the decomposition.
+-/
 structure _root_.FredholmDecomposition where
   /-- The inessential (i.e. finite dimensional) part of a Fredholm decomposition. -/
   X₀ : Submodule 𝕜 E
@@ -163,18 +170,20 @@ lemma _root_.FredholmDecomposition.cofg_X₁ (dec : FredholmDecomposition 𝕜 E
   have := dec.finite_X₀
   FG.cofg_of_isCompl dec.isTopCompl.isCompl.symm .of_finite
 
-/-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
+/--
+Let `u : E →L[𝕜] F` be a continuous linear map. A *Fredholm package* for `u` is the data of
 Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
 a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` between the "essential"
 (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
 `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
-$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$.
+$`\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}`.
 
 We will show in `isFredholm_tfae` that an operator is Fredholm if and only if it admits
 a Fredholm package. In practice, the condition that `u` is Fredholm (`IsFredholm`) is always easier
 to prove, so if you need a Fredholm package you should probably get it from
-`IsFredholm.nonempty_fredholmPackage` or `IsFredholm.fredholmPackage`. -/
+`IsFredholm.nonempty_fredholmPackage` or `IsFredholm.fredholmPackage`.
+-/
 structure FredholmPackage (u : E →L[𝕜] F) where
   /-- A `FredholmDecomposition` of the domain. -/
   decDom : FredholmDecomposition 𝕜 E
@@ -225,7 +234,8 @@ lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage
 end FredholmPackage
 
 variable [T2Space E] [T2Space F] in
-/-- Assume that `u : E →L[𝕜] F` has a continuous quasi-inverse. Then there are closed
+/--
+Assume that `u : E →L[𝕜] F` has a continuous quasi-inverse. Then there are closed
 subspaces of finite codimensions `E₁` and `F₁` between which `u` induces an isomorphism.
 
 This statement is private because it is superseded by later results: using `isFredholm_tfae`,
@@ -255,11 +265,13 @@ variable [CompleteSpace 𝕜]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
-/-- Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite codimension
+/--
+Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite codimension
 subspaces `E₁` and `F₁`. Then `u` is Fredholm.
 
 In fact it is enough to assume that the restriction `E₁ →L[𝕜] F₁` is Fredholm, see
-`IsFredholm.of_restrict`. -/
+`IsFredholm.of_restrict`.
+-/
 theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
     {E₁ : Submodule 𝕜 E} (E₁_closed : IsClosed (E₁ : Set E)) [E₁_coFG : E₁.CoFG]
     {F₁ : Submodule 𝕜 F} (F₁_closed : IsClosed (F₁ : Set F)) [F₁_coFG : F₁.CoFG]
@@ -282,13 +294,15 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
   · exact .of_disjoint_of_finiteDimensional_quotient E₁_closed disj.symm
 
 omit [ContinuousSMul 𝕜 E] in
-/-- Let `u : E →L[𝕜] F` be a Fredholm operator. Given `dom₁` (resp. `codom₀`) an arbitrary
+/--
+Let `u : E →L[𝕜] F` be a Fredholm operator. Given `dom₁` (resp. `codom₀`) an arbitrary
 topological complement of `u.ker` (resp. `u.range`), we get a `FredholmPackage` for `u`
 by considering the decompositions `E = dom₁ ⊕ u.ker`, `F = u.range ⊕ codom₀`, and the isomorphism
 `dom₁ ≃L[𝕜] u.range` induced by `u`.
 
 If you need control over the decompositions, this is the primary way to get a `FredholmPackage`.
-Otherwise, see `IsFredholm.nonempty_fredholmPackage`. -/
+Otherwise, see `IsFredholm.nonempty_fredholmPackage`.
+-/
 def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₀ : Submodule 𝕜 F}
     (h_dom : IsTopCompl u.ker dom₁) (h_codom : IsTopCompl u.range codom₀) :
@@ -315,10 +329,12 @@ def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
       simp [hx, projection_apply_of_mem_left, ContinuousLinearEquiv.quotKerEquivRange]
 
 omit [ContinuousSMul 𝕜 E] in
-/-- Every Fredholm operator admits a `FredholmPackage`.
+/--
+Every Fredholm operator admits a `FredholmPackage`.
 
 This is the primary way to get a `FredholmPackage` if you don't need control of the decompositions.
-If you do, see `IsFredholm.fredholmPackage`. -/
+If you do, see `IsFredholm.fredholmPackage`.
+-/
 theorem IsFredholm.nonempty_fredholmPackage {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) : Nonempty (FredholmPackage u) := by
   obtain ⟨codom₀, h_codom⟩ := u_fred.closedComplemented_range.exists_isTopCompl
@@ -331,13 +347,13 @@ variable [T2Space E] [T2Space F]
 Let `E`, `F` be two Hausdorff topological vector spaces over a complete `NontriviallyNormedField`
 denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The following conditions are equivalent:
 
-1. `u` is a **Fredholm operator**, in the sense of `ContinuousLinearMap.IsFredholm`.
-2. `u` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
+1. `u` is a *Fredholm operator*, in the sense of `ContinuousLinearMap.IsFredholm`.
+2. `u` admits a continuous *quasi-inverse*, in the sense of `LinearMap.IsQuasiInverse`.
 3. There are closed finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `u`
-  induces an isomorphism.
+   induces an isomorphism.
 4. `u` admits a `FredholmPackage`.
 
-In practice, condition `4` is the "strongest", so you should probably not use it to *prove* that an
+In practice, condition `4` is the "strongest", so you should probably not use it to _prove_ that an
 operator is Fredholm.
 -/
 theorem isFredholm_tfae (u : E →L[𝕜] F) :
@@ -380,7 +396,7 @@ end DefTFAE
 section Constructions
 
 /-!
-## Constructions of Fredholm operators
+# Constructions of Fredholm operators
 -/
 
 theorem _root_.Topology.IsClosedEmbedding.isFredholm {f : E →L[𝕜] F}
@@ -598,7 +614,7 @@ end Constructions
 section Index
 
 /-!
-## Specific index computations for Fredholm operators
+# Specific index computations for Fredholm operators
 
 In this section, we restate for Fredholm operators some general algebraic results about
 `LinearMap.index`. Ideally we wouldn't need such a section at all, but as of August 2026

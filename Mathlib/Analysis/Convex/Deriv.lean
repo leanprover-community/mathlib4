@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 import Mathlib.Analysis.Convex.Slope
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convexity of functions and derivatives
 
@@ -28,7 +31,7 @@ open Set Filter
 open scoped Topology NNReal
 
 /-!
-## Monotonicity of `f'` implies convexity of `f`
+# Monotonicity of `f'` implies convexity of `f`
 -/
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ`, is differentiable on its interior,
@@ -351,7 +354,7 @@ theorem strictConcaveOn_univ_of_deriv2_neg {f : ℝ → ℝ} (hf : Continuous f)
   strictConcaveOn_of_deriv2_neg' convex_univ hf.continuousOn fun x _ => hf'' x
 
 /-!
-## Convexity of `f` implies monotonicity of `f'`
+# Convexity of `f` implies monotonicity of `f'`
 
 In this section we prove inequalities relating derivatives of convex functions to slopes of secant
 lines, and deduce that if `f` is convex then its derivative is monotone (and similarly for strict
@@ -423,7 +426,7 @@ variable {S : Set ℝ} {f : ℝ → ℝ} {x y f' : ℝ}
 section Interior
 
 /-!
-### Left and right derivative of a convex function in the interior of the set
+# Left and right derivative of a convex function in the interior of the set
 -/
 
 lemma hasDerivWithinAt_sInf_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs : x ∈ interior S) :
@@ -548,7 +551,7 @@ end Interior
 
 section left
 /-!
-### Convex functions, derivative at left endpoint of secant
+# Convex functions, derivative at left endpoint of secant
 -/
 
 /-- If `f : ℝ → ℝ` is convex on `S` and right-differentiable at `x ∈ S`, then the slope of any
@@ -574,11 +577,13 @@ lemma rightDeriv_le_slope_of_mem_interior (hfc : ConvexOn ℝ S f)
   rightDeriv_le_slope hfc (interior_subset hxs) hys hxy
     (differentiableWithinAt_Ioi_of_mem_interior hfc hxs)
 
-/-- If `f : ℝ → ℝ` is convex on `S` and differentiable within `S` at `x`, then the slope of any
+/--
+If `f : ℝ → ℝ` is convex on `S` and differentiable within `S` at `x`, then the slope of any
 secant line with left endpoint at `x` is bounded below by the derivative of `f` within `S` at `x`.
 
 This is fractionally weaker than `ConvexOn.le_slope_of_hasDerivWithinAt_Ioi` but simpler to apply
-under a `DifferentiableOn S` hypothesis. -/
+under a `DifferentiableOn S` hypothesis.
+-/
 lemma le_slope_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S x) :
     f' ≤ slope f x y :=
@@ -608,7 +613,7 @@ end left
 
 section right
 /-!
-### Convex functions, derivative at right endpoint of secant
+# Convex functions, derivative at right endpoint of secant
 -/
 
 /-- If `f : ℝ → ℝ` is convex on `S` and left-differentiable at `y ∈ S`, then the slope of any secant
@@ -634,11 +639,13 @@ lemma slope_le_leftDeriv_of_mem_interior (hfc : ConvexOn ℝ S f)
   slope_le_leftDeriv hfc hys (interior_subset hxs) hxy
     (differentiableWithinAt_Iio_of_mem_interior hfc hxs)
 
-/-- If `f : ℝ → ℝ` is convex on `S` and differentiable within `S` at `y`, then the slope of any
+/--
+If `f : ℝ → ℝ` is convex on `S` and differentiable within `S` at `y`, then the slope of any
 secant line with right endpoint at `y` is bounded above by the derivative of `f` within `S` at `y`.
 
 This is fractionally weaker than `ConvexOn.slope_le_of_hasDerivWithinAt_Iio` but simpler to apply
-under a `DifferentiableOn S` hypothesis. -/
+under a `DifferentiableOn S` hypothesis.
+-/
 lemma slope_le_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
     slope f x y ≤ f' :=
@@ -666,7 +673,7 @@ lemma slope_le_deriv (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy
 
 end right
 /-!
-### Convex functions, monotonicity of derivative
+# Convex functions, monotonicity of derivative
 -/
 
 /-- If `f` is convex on `S` and differentiable on `S`, then its derivative within `S` is monotone
@@ -726,7 +733,7 @@ variable {S : Set ℝ} {f : ℝ → ℝ} {x y f' : ℝ}
 
 section left
 /-!
-### Strict convex functions, derivative at left endpoint of secant
+# Strict convex functions, derivative at left endpoint of secant
 -/
 
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and right-differentiable at `x ∈ S`, then the slope of
@@ -746,12 +753,14 @@ lemma rightDeriv_lt_slope (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y 
     derivWithin f (Ioi x) x < slope f x y :=
   hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-/-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `x ∈ S`, then the
+/--
+If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `x ∈ S`, then the
 slope of any secant line with left endpoint at `x` is strictly greater than the derivative of `f`
 within `S` at `x`.
 
 This is fractionally weaker than `StrictConvexOn.lt_slope_of_hasDerivWithinAt_Ioi` but simpler to
-apply under a `DifferentiableOn S` hypothesis. -/
+apply under a `DifferentiableOn S` hypothesis.
+-/
 lemma lt_slope_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S x) :
     f' < slope f x y :=
@@ -779,7 +788,7 @@ end left
 
 section right
 /-!
-### Strict convex functions, derivative at right endpoint of secant
+# Strict convex functions, derivative at right endpoint of secant
 -/
 
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable at `y ∈ S`, then the slope of any
@@ -798,12 +807,14 @@ lemma slope_lt_leftDeriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y �
     slope f x y < derivWithin f (Iio y) y :=
   hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
 
-/-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `y ∈ S`, then the
+/--
+If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `y ∈ S`, then the
 slope of any secant line with right endpoint at `y` is strictly less than the derivative of `f`
 within `S` at `y`.
 
 This is fractionally weaker than `StrictConvexOn.slope_lt_of_hasDerivWithinAt_Iio` but simpler to
-apply under a `DifferentiableOn S` hypothesis. -/
+apply under a `DifferentiableOn S` hypothesis.
+-/
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
     slope f x y < f' :=
@@ -830,7 +841,7 @@ lemma slope_lt_deriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
 end right
 
 /-!
-### Strict convex functions, strict monotonicity of derivative
+# Strict convex functions, strict monotonicity of derivative
 -/
 
 /-- If `f` is convex on `S` and differentiable on `S`, then its derivative within `S` is monotone
@@ -858,7 +869,7 @@ namespace ConcaveOn
 
 section left
 /-!
-### Concave functions, derivative at left endpoint of secant
+# Concave functions, derivative at left endpoint of secant
 -/
 
 lemma slope_le_of_hasDerivWithinAt_Ioi (hfc : ConcaveOn ℝ S f)
@@ -897,7 +908,7 @@ end left
 
 section right
 /-!
-### Concave functions, derivative at right endpoint of secant
+# Concave functions, derivative at right endpoint of secant
 -/
 
 lemma le_slope_of_hasDerivWithinAt_Iio (hfc : ConcaveOn ℝ S f)
@@ -934,7 +945,7 @@ lemma deriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hx
 
 end right
 /-!
-### Concave functions, anti-monotonicity of derivative
+# Concave functions, anti-monotonicity of derivative
 -/
 
 lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn ℝ f S) :
@@ -957,7 +968,7 @@ namespace StrictConcaveOn
 
 section left
 /-!
-### Strict concave functions, derivative at left endpoint of secant
+# Strict concave functions, derivative at left endpoint of secant
 -/
 
 lemma slope_lt_of_hasDerivWithinAt_Ioi (hfc : StrictConcaveOn ℝ S f)
@@ -997,7 +1008,7 @@ end left
 
 section right
 /-!
-### Strict concave functions, derivative at right endpoint of secant
+# Strict concave functions, derivative at right endpoint of secant
 -/
 
 lemma lt_slope_of_hasDerivWithinAt_Iio (hfc : StrictConcaveOn ℝ S f)
@@ -1034,7 +1045,7 @@ lemma deriv_lt_slope (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ 
 
 end right
 /-!
-### Strict concave functions, anti-monotonicity of derivative
+# Strict concave functions, anti-monotonicity of derivative
 -/
 
 lemma strictAntiOn_derivWithin (hfc : StrictConcaveOn ℝ S f) (hfd : DifferentiableOn ℝ f S) :

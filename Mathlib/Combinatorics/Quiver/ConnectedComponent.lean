@@ -8,14 +8,18 @@ module
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Weakly and strongly connected components
+# Weakly and strongly connected components
 
 For a quiver `V`, define the type `WeaklyConnectedComponent V` as the quotient of `V` by
 the relation which identifies `a` with `b` if there is a path from `a` to `b` in `Symmetrify V`.
 (These zigzags can be seen as a proof-relevant analogue of `EqvGen`.)
 
 We define:
+
 * `Quiver.IsStronglyConnected V`: every pair of vertices is connected by a (possibly empty) path.
 * `Quiver.IsSStronglyConnected V`: every pair of vertices is connected by a path of positive length.
 * `Quiver.StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both
@@ -74,7 +78,7 @@ def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V
   fun a b ↦ {e | .inl e ∈ H a b ∨ .inr e ∈ H b a}
 
 /-!
-## Strongly connected components (directed connectivity)
+# Strongly connected components (directed connectivity)
 
 We define strong connectivity (`IsStronglyConnected`), its positive-length refinement
 (`IsSStronglyConnected`), and strongly connected components.

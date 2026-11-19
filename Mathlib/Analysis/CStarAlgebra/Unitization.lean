@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Normed.Algebra.Unitization
 
-/-! # The minimal unitization of a C⋆-algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The minimal unitization of a C⋆-algebra
 
 This file shows that when `E` is a C⋆-algebra (over a densely normed field `𝕜`), that the minimal
 `Unitization` is as well. In order to ensure that the norm structure is available, we must first

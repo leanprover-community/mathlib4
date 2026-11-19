@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unbounded lattice homomorphisms
 
@@ -38,27 +41,35 @@ variable {F α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
 structure SupHom (α β : Type*) [Max α] [Max β] where
-  /-- The underlying function of a `SupHom`.
+  /--
+  The underlying function of a `SupHom`.
 
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
-  instance. -/
+instance.
+  -/
   toFun : α → β
-  /-- A `SupHom` preserves suprema.
+  /--
+  A `SupHom` preserves suprema.
 
-  Do not use this directly. Use `map_sup` instead. -/
+  Do not use this directly. Use `map_sup` instead.
+  -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
 @[to_dual existing]
 structure InfHom (α β : Type*) [Min α] [Min β] where
-  /-- The underlying function of an `InfHom`.
+  /--
+  The underlying function of an `InfHom`.
 
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
-  instance. -/
+instance.
+  -/
   toFun : α → β
-  /-- An `InfHom` preserves infima.
+  /--
+  An `InfHom` preserves infima.
 
-  Do not use this directly. Use `map_inf` instead. -/
+  Do not use this directly. Use `map_inf` instead.
+  -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
@@ -70,24 +81,30 @@ attribute [to_dual existing] LatticeHom.toInfHom
 
 section
 
-/-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
+/--
+`SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
-You should extend this class when you extend `SupHom`. -/
+You should extend this class when you extend `SupHom`.
+-/
 class SupHomClass (F α β : Type*) [Max α] [Max β] [FunLike F α β] : Prop where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 
-/-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
+/--
+`InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
-You should extend this class when you extend `InfHom`. -/
+You should extend this class when you extend `InfHom`.
+-/
 @[to_dual existing]
 class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 
-/-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
+/--
+`LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
-You should extend this class when you extend `LatticeHom`. -/
+You should extend this class when you extend `LatticeHom`.
+-/
 class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
   extends SupHomClass F α β, InfHomClass F α β where
 
@@ -156,7 +173,9 @@ instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeH
       map_sup' := map_sup f
       map_inf' := map_inf f }⟩
 
-/-! ### Supremum homomorphisms -/
+/-!
+# Supremum homomorphisms
+-/
 
 namespace SupHom
 
@@ -359,7 +378,9 @@ lemma subtypeVal_coe {P : β → Prop}
 
 end SupHom
 
-/-! ### Lattice homomorphisms -/
+/-!
+# Lattice homomorphisms
+-/
 
 
 namespace LatticeHom
@@ -516,7 +537,9 @@ theorem to_lattice_hom_apply (f : F) (a : α) : toLatticeHom α β f a = f a :=
 
 end OrderHomClass
 
-/-! ### Dual homs -/
+/-!
+# Dual homs
+-/
 
 namespace SupHom
 
@@ -579,7 +602,9 @@ theorem symm_dual_comp (g : LatticeHom βᵒᵈ γᵒᵈ) (f : LatticeHom αᵒ�
 
 end LatticeHom
 
-/-! ### Prod -/
+/-!
+# Prod
+-/
 
 namespace LatticeHom
 variable [Lattice α] [Lattice β]
@@ -603,7 +628,9 @@ lemma snd_apply (x : α × β) : snd x = x.snd := rfl
 
 end LatticeHom
 
-/-! ### Pi -/
+/-!
+# Pi
+-/
 
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)]

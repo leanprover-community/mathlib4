@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoid and group homomorphisms
 
@@ -68,14 +71,16 @@ variable {F α β γ δ : Type*}
 
 section AddMonoid
 
-/-- `α →+o β` is the type of monotone functions `α → β` that preserve the ordered additive monoid
+/--
+`α →+o β` is the type of monotone functions `α → β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`.
+-/
 structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
@@ -84,14 +89,16 @@ structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZero
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
-/-- `α ≃+o β` is the type of isomorphisms `α ≃ β` that preserve the ordered additive monoid
+/--
+`α ≃+o β` is the type of isomorphisms `α ≃ β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidIso` is also used for ordered group isomorphisms.
 
 When possible, instead of parametrizing results over `(f : α ≃+o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [AddEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [AddEquivClass F M N] [OrderIsoClass F M N] (f : F)`.
+-/
 structure OrderAddMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Add α] [Add β]
   extends α ≃+ β where
   /-- An `OrderAddMonoidIso` respects `≤`. -/
@@ -105,13 +112,15 @@ end AddMonoid
 
 section Monoid
 
-/-- `α →*o β` is the type of functions `α → β` that preserve the ordered monoid structure.
+/--
+`α →*o β` is the type of functions `α → β` that preserve the ordered monoid structure.
 
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`.
+-/
 @[to_additive]
 structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
@@ -140,13 +149,15 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
-/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
+/--
+`α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
 `OrderMonoidIso` is also used for ordered group isomorphisms.
 
 When possible, instead of parametrizing results over `(f : α ≃*o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MulEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MulEquivClass F M N] [OrderIsoClass F M N] (f : F)`.
+-/
 @[to_additive]
 structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [Mul β]
   extends α ≃* β where
@@ -637,13 +648,21 @@ theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
 def symm (f : α ≃*o β) : β ≃*o α :=
   ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
 
-/-- See Note [custom simps projection]. -/
-@[to_additive /-- See Note [custom simps projection]. -/]
+/--
+See Note \[custom simps projection\].
+-/
+@[to_additive /--
+              See Note \[custom simps projection\].
+              -/]
 def Simps.apply (h : α ≃*o β) : α → β :=
   h
 
-/-- See Note [custom simps projection] -/
-@[to_additive /-- See Note [custom simps projection]. -/]
+/--
+See Note \[custom simps projection\]
+-/
+@[to_additive /--
+              See Note \[custom simps projection\].
+              -/]
 def Simps.symm_apply (h : α ≃*o β) : β → α :=
   h.symm
 

@@ -11,11 +11,14 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures over continuous functions
 
 In this file we define instances of algebraic structures over the type `ContinuousMap α β`
-(denoted `C(α, β)`) of **bundled** continuous maps from `α` to `β`. For example, `C(α, β)`
+(denoted `C(α, β)`) of *bundled* continuous maps from `α` to `β`. For example, `C(α, β)`
 is a group when `β` is a group, a ring when `β` is a ring, etc.
 
 For each type of algebraic structure, we also define an appropriate subobject of `α → β`
@@ -48,7 +51,9 @@ namespace ContinuousMap
 variable {α : Type*} {β : Type*} {γ : Type*}
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
-/-! ### `mul` and `add` -/
+/-!
+# `mul` and `add`
+-/
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
@@ -67,7 +72,9 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
     (f₁ * f₂).comp g = f₁.comp g * f₂.comp g :=
   rfl
 
-/-! ### `one` -/
+/-!
+# `one`
+-/
 
 @[to_additive]
 instance [One β] : One C(α, β) :=
@@ -91,7 +98,9 @@ theorem comp_one [One β] (g : C(β, γ)) : g.comp (1 : C(α, β)) = const α (g
 @[to_additive (attr := simp)]
 theorem const_one [One β] : const α (1 : β) = 1 := rfl
 
-/-! ### `Nat.cast` -/
+/-!
+# `Nat.cast`
+-/
 
 instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
@@ -104,7 +113,9 @@ theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :
 theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 
-/-! ### `Int.cast` -/
+/-!
+# `Int.cast`
+-/
 
 instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
@@ -117,7 +128,9 @@ theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :
 theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 
-/-! ### `nsmul` and `pow` -/
+/-!
+# `nsmul` and `pow`
+-/
 
 @[to_additive]
 instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
@@ -144,7 +157,9 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
 -- Don't make `nsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] pow_comp
 
-/-! ### `inv` and `neg` -/
+/-!
+# `inv` and `neg`
+-/
 
 @[to_additive]
 instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
@@ -162,7 +177,9 @@ theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
 
-/-! ### `div` and `sub` -/
+/-!
+# `div` and `sub`
+-/
 
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β) where
@@ -181,7 +198,9 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
     (f / g).comp h = f.comp h / g.comp h :=
   rfl
 
-/-! ### `zpow` and `zsmul` -/
+/-!
+# `zpow` and `zsmul`
+-/
 
 @[to_additive]
 instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
@@ -213,7 +232,7 @@ end ContinuousMap
 section GroupStructure
 
 /-!
-### Group structure
+# Group structure
 
 In this section we show that continuous functions valued in a topological group inherit
 the structure of a group.
@@ -383,7 +402,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring structure
+# Ring structure
 
 In this section we show that continuous functions valued in a topological semiring `R` inherit
 the structure of a ring.
@@ -493,7 +512,7 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Module structure
+# Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -640,11 +659,12 @@ end ModuleStructure
 section AlgebraStructure
 
 /-!
-### Algebra structure
+# Algebra structure
 
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
-is obtained by requiring that `A` be both a `ContinuousSMul` and a `IsTopologicalSemiring`. -/
+is obtained by requiring that `A` be both a `ContinuousSMul` and a `IsTopologicalSemiring`.
+-/
 
 
 section Subtype
@@ -741,7 +761,8 @@ theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1
 variable {𝕜 : Type*} [TopologicalSpace 𝕜]
 variable (s : Set C(α, 𝕜)) (f : s) (x : α)
 
-/-- A set of continuous maps "separates points strongly"
+/--
+A set of continuous maps "separates points strongly"
 if for each pair of distinct points there is a function with specified values on them.
 
 We give a slightly unusual formulation, where the specified values are given by some
@@ -758,7 +779,8 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
-/-- Working in continuous functions into a topological field,
+/--
+Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 
 By the hypothesis, we can find a function `f` so `f x ≠ f y`.
@@ -803,10 +825,11 @@ end AlgebraStructure
 section ModuleOverContinuousFunctions
 
 /-!
-### Structure as module over scalar functions
+# Structure as module over scalar functions
 
 If `M` is a module over `R`, then we show that the space of continuous functions from `α` to `M`
-is naturally a module over the ring of continuous functions from `α` to `R`. -/
+is naturally a module over the ring of continuous functions from `α` to `R`.
+-/
 
 namespace ContinuousMap
 
@@ -844,7 +867,9 @@ end ContinuousMap
 
 end ModuleOverContinuousFunctions
 
-/-! ### Evaluation as a bundled map -/
+/-!
+# Evaluation as a bundled map
+-/
 
 variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
 variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]

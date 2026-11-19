@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 
 import Mathlib.Analysis.PSeriesComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of the Riemann zeta function
 
@@ -57,7 +60,7 @@ open scoped Topology Real
 noncomputable section
 
 /-!
-## Definition of the completed Riemann zeta
+# Definition of the completed Riemann zeta
 -/
 
 /-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s - 1 / (s - 1)`. -/
@@ -113,7 +116,7 @@ lemma completedRiemannZeta_residue_one :
   completedHurwitzZetaEven_residue_one 0
 
 /-!
-## The un-completed Riemann zeta function
+# The un-completed Riemann zeta function
 -/
 
 /-- The Riemann zeta function `ζ(s)`. -/
@@ -186,7 +189,7 @@ def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 
 /-!
-## Relating the Mellin transform to the Dirichlet series
+# Relating the Mellin transform to the Dirichlet series
 -/
 
 theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :

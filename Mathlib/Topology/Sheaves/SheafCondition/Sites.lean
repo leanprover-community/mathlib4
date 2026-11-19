@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.Topology.Sheaves.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 

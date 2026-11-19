@@ -11,6 +11,9 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Hahn series
 
@@ -27,7 +30,9 @@ namespace HahnSeries
 
 variable {Γ R S α : Type*}
 
-/-! ### Cardinality function -/
+/-!
+# Cardinality function
+-/
 
 section PartialOrder
 variable [PartialOrder Γ]
@@ -144,7 +149,9 @@ theorem cardSupp_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y
 
 end LinearOrder
 
-/-! ### Substructures -/
+/-!
+# Substructures
+-/
 
 variable (κ : Cardinal)
 

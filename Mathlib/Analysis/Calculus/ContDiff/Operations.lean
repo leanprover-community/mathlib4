@@ -11,6 +11,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher differentiability of usual operations
 
@@ -49,7 +52,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-!
-### Smoothness of functions `f : E → Π i, F' i`
+# Smoothness of functions `f : E → Π i, F' i`
 -/
 
 section Pi
@@ -165,7 +168,9 @@ theorem contDiff_apply_apply (i : ι) (j : ι') : ContDiff 𝕜 n fun f : ι →
 
 end Pi
 
-/-! ### Sum of two functions -/
+/-!
+# Sum of two functions
+-/
 
 section Add
 
@@ -238,7 +243,9 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
 
 end Add
 
-/-! ### Negative -/
+/-!
+# Negative
+-/
 
 section Neg
 
@@ -300,7 +307,9 @@ theorem iteratedFDeriv_neg {i : ℕ} {f : E → F} :
 
 end Neg
 
-/-! ### Subtraction -/
+/-!
+# Subtraction
+-/
 
 /-- The difference of two `C^n` functions within a set at a point is `C^n` within this set
 at this point. -/
@@ -358,7 +367,9 @@ derivatives.
     iteratedFDeriv 𝕜 i (f - g) = iteratedFDeriv 𝕜 i f - iteratedFDeriv 𝕜 i g :=
   funext fun _ ↦ iteratedFDeriv_sub_apply (ContDiff.contDiffAt hf) (ContDiff.contDiffAt hg)
 
-/-! ### Sum of finitely many functions -/
+/-!
+# Sum of finitely many functions
+-/
 
 @[fun_prop]
 theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {t : Set E} {x : E}
@@ -427,7 +438,9 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
     iteratedFDerivWithin_fun_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
 
-/-! ### Product of two functions -/
+/-!
+# Product of two functions
+-/
 
 section MulProd
 
@@ -544,7 +557,9 @@ theorem ContDiff.div_const {f : E → 𝕜'} {n} (hf : ContDiff 𝕜 n f) (c : �
 
 end MulProd
 
-/-! ### Scalar multiplication -/
+/-!
+# Scalar multiplication
+-/
 
 section SMul
 
@@ -583,7 +598,8 @@ theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜'} {g : E → F} (hf : ContDi
 
 end SMul
 
-/-! ### Constant scalar multiplication
+/-!
+# Constant scalar multiplication
 
 TODO: generalize results in this section -- if `c` is a unit (or `R` is a group), then one can
 drop `ContDiff*` assumptions in some lemmas about `iteratedFDeriv` and `iteratedFDerivWithin`.
@@ -700,7 +716,9 @@ theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
 
 end ConstSMul
 
-/-! ### Cartesian product of two functions -/
+/-!
+# Cartesian product of two functions
+-/
 
 section prodMap
 
@@ -763,7 +781,7 @@ theorem contDiff_prodMk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f
 end prodMap
 
 /-!
-### Inversion in a complete normed algebra (or more generally with summable geometric series)
+# Inversion in a complete normed algebra (or more generally with summable geometric series)
 -/
 
 section AlgebraInverse
@@ -839,7 +857,9 @@ theorem ContDiff.div {f g : E → 𝕜} {n} (hf : ContDiff 𝕜 n f) (hg : ContD
 
 end AlgebraInverse
 
-/-! ### Inversion of continuous linear maps between Banach spaces -/
+/-!
+# Inversion of continuous linear maps between Banach spaces
+-/
 
 section MapInverse
 
@@ -878,13 +898,15 @@ section FunctionInverse
 
 open ContinuousLinearMap
 
-/-- If `f` is a local homeomorphism and the point `a` is in its target,
+/--
+If `f` is a local homeomorphism and the point `a` is in its target,
 and if `f` is `n` times continuously differentiable at `f.symm a`,
 and if the derivative at `f.symm a` is a continuous linear equivalence,
 then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
+an inverse function.
+-/
 theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
@@ -938,36 +960,42 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
     | top Itop => exact contDiffAt_infty.mpr fun n ↦ Itop n (contDiffAt_infty.mp hf n)
 
-/-- If `f` is an `n` times continuously differentiable homeomorphism,
+/--
+If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
 then `f.symm` is `n` times continuously differentiable.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
+an inverse function.
+-/
 theorem Homeomorph.contDiff_symm [CompleteSpace E] (f : E ≃ₜ F) {f₀' : E → E ≃L[𝕜] F}
     (hf₀' : ∀ a, HasFDerivAt f (f₀' a : E →L[𝕜] F) a) (hf : ContDiff 𝕜 n (f : E → F)) :
     ContDiff 𝕜 n (f.symm : F → E) :=
   contDiff_iff_contDiffAt.2 fun x =>
     f.toOpenPartialHomeomorph.contDiffAt_symm (mem_univ x) (hf₀' _) hf.contDiffAt
 
-/-- Let `f` be a local homeomorphism of a nontrivially normed field, let `a` be a point in its
+/--
+Let `f` be a local homeomorphism of a nontrivially normed field, let `a` be a point in its
 target. if `f` is `n` times continuously differentiable at `f.symm a`, and if the derivative at
 `f.symm a` is nonzero, then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
+an inverse function.
+-/
 theorem OpenPartialHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜]
     (f : OpenPartialHomeomorph 𝕜 𝕜) {f₀' a : 𝕜} (h₀ : f₀' ≠ 0) (ha : a ∈ f.target)
     (hf₀' : HasDerivAt f f₀' (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a :=
   f.contDiffAt_symm ha (hf₀'.hasFDerivAt_equiv h₀) hf
 
-/-- Let `f` be an `n` times continuously differentiable homeomorphism of a nontrivially normed
+/--
+Let `f` be an `n` times continuously differentiable homeomorphism of a nontrivially normed
 field.  Suppose that the derivative of `f` is never equal to zero. Then `f.symm` is `n` times
 continuously differentiable.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
+an inverse function.
+-/
 theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ 𝕜) {f' : 𝕜 → 𝕜}
     (h₀ : ∀ x, f' x ≠ 0) (hf' : ∀ x, HasDerivAt f (f' x) x) (hf : ContDiff 𝕜 n (f : 𝕜 → 𝕜)) :
     ContDiff 𝕜 n (f.symm : 𝕜 → 𝕜) :=
@@ -978,12 +1006,14 @@ namespace OpenPartialHomeomorph
 
 variable (𝕜)
 
-/-- Restrict an open partial homeomorphism to the subsets of the source and target
+/--
+Restrict an open partial homeomorphism to the subsets of the source and target
 that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
 such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 
 Note that `n` is a natural number or `ω`, but not `∞`,
-because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
+because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open.
+-/
 @[simps! apply symm_apply source target]
 def restrContDiff (f : OpenPartialHomeomorph E F) (n : ℕ∞ω) (hn : n ≠ ∞) :
     OpenPartialHomeomorph E F :=
@@ -1009,7 +1039,7 @@ end FunctionInverse
 section RestrictScalars
 
 /-!
-### Restricting from `ℂ` to `ℝ`, or generally from `𝕜'` to `𝕜`
+# Restricting from `ℂ` to `ℝ`, or generally from `𝕜'` to `𝕜`
 
 If a function is `n` times continuously differentiable over `ℂ`, then it is `n` times continuously
 differentiable over `ℝ`. In this paragraph, we give variants of this statement, in the general

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-rank sets
 

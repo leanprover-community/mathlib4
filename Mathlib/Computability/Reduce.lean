@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.RE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strong reducibility and degrees.
 
@@ -20,7 +23,7 @@ This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint u
 
 ## References
 
-* [Robert Soare, *Recursively enumerable sets and degrees*][soare1987]
+* ‍\[Robert Soare, _Recursively enumerable sets and degrees_\]\[soare1987\]
 
 ## Tags
 

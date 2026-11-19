@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange interpolation
 
 ## Main definitions
+
 * In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
   indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
   though strictly unique nodes are only defined when `v` is injective on `s`.
@@ -527,7 +531,8 @@ variable {s : Finset ι} {v : ι → R}
 
 open Finset Polynomial
 
-/-- `nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
+/--
+`nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
 
 That is, the roots of `nodal s v` are exactly the image of `v` on `s`,
 with appropriate multiplicity.

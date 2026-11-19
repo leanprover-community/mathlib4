@@ -9,6 +9,9 @@ public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.Maps.Proper.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A map is proper iff it is continuous and universally closed
 -/
@@ -88,13 +91,15 @@ theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [Topol
       with ⟨⟨y, 𝒢⟩, ⟨⟨hy : y ∈ U, hy' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure y⟩⟩
     exact hy' hy
 
-/-- A map `f : X → Y` is proper if and only if it is continuous and **universally closed**, in the
+/--
+A map `f : X → Y` is proper if and only if it is continuous and *universally closed*, in the
 sense that for any topological space `Z`, the map `Prod.map f id : X × Z → Y × Z` is closed. Note
 that `Z` lives in the same universe as `X` here, but `IsProperMap.universally_closed` does not
 have this restriction.
 
 This is taken as the definition of properness in
-[N. Bourbaki, *General Topology*][bourbaki1966]. -/
+‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\].
+-/
 theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ ∀ (Z : Type u) [TopologicalSpace Z],

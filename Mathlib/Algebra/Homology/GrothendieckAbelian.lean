@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.HomologicalComplex
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes in a Grothendieck abelian category
 

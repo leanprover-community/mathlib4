@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Ineq` datatype
 
@@ -19,7 +22,9 @@ involving it. The type `Ineq` is one of the fundamental objects manipulated by t
 
 namespace Mathlib
 
-/-! ### Inequalities -/
+/-!
+# Inequalities
+-/
 
 /-- The three-element type `Ineq` is used to represent the strength of a comparison between
 terms. -/

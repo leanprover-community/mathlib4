@@ -8,12 +8,15 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.NNRat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The rational numbers form a field
 
 This file contains the field instance on the rational numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 
 ## Tags
 
@@ -36,7 +39,7 @@ instance instField : Field ℚ where
   ratCast_def _ := (num_div_den _).symm
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/

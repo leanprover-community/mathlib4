@@ -12,10 +12,14 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoids of endomorphisms, groups of automorphisms
 
 This file defines
+
 * the endomorphism monoid structure on `Function.End α := α → α`
 * the endomorphism monoid structure on `Monoid.End M := M →* M` and `AddMonoid.End M := M →+ M`
 * the automorphism group structure on `Equiv.Perm α := α ≃ α`
@@ -38,12 +42,16 @@ assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
 variable {A M G α β γ : Type*}
 
-/-! ### Type endomorphisms -/
+/-!
+# Type endomorphisms
+-/
 
 variable (α) in
-/-- The monoid of endomorphisms.
+/--
+The monoid of endomorphisms.
 
-Note that this is generalized by `CategoryTheory.End` to categories other than `Type u`. -/
+Note that this is generalized by `CategoryTheory.End` to categories other than `Type u`.
+-/
 protected def Function.End := α → α
 
 instance : Monoid (Function.End α) where
@@ -57,7 +65,9 @@ instance : Monoid (Function.End α) where
 
 instance : Inhabited (Function.End α) := ⟨1⟩
 
-/-! ### Monoid endomorphisms -/
+/-!
+# Monoid endomorphisms
+-/
 
 namespace Equiv.Perm
 
@@ -199,10 +209,12 @@ theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
 theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
   sumCongr_refl
 
-/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `Prod`.
+/--
+`Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `Prod`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
-permutations which do not exchange elements between `α` and `β`. -/
+permutations which do not exchange elements between `α` and `β`.
+-/
 @[simps]
 def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (α ⊕ β) where
   toFun a := sumCongr a.1 a.2
@@ -244,10 +256,12 @@ theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
   rfl
 
-/-- `Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
+/--
+`Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
-permutations which do not exchange elements between fibers. -/
+permutations which do not exchange elements between fibers.
+-/
 @[simps]
 def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σ a, β a) where
   toFun := sigmaCongrRight
@@ -538,17 +552,19 @@ theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
 
-/-- Left-multiplying a permutation with `swap i j` twice gives the original permutation.
+/--
+Left-multiplying a permutation with `swap i j` twice gives the original permutation.
 
-  This specialization of `swap_mul_self` is useful when using cosets of permutations.
+This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
 theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ := by
   simp [← mul_assoc]
 
-/-- Right-multiplying a permutation with `swap i j` twice gives the original permutation.
+/--
+Right-multiplying a permutation with `swap i j` twice gives the original permutation.
 
-  This specialization of `swap_mul_self` is useful when using cosets of permutations.
+This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
 theorem mul_swap_mul_self (i j : α) (σ : Perm α) : σ * Equiv.swap i j * Equiv.swap i j = σ := by
@@ -636,14 +652,17 @@ variable (M) [Mul M]
 
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
-@[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
+@[to_additive /--
+              If `M` is a type with addition, then additive automorphisms of `M` have the
 structure of a group.
 
-We give `AddAut M` the structure of an additive group rather than a multiplicative group to help
-with `to_additive` translation. Without this, any proof in group theory making use of the
-conjugation action `G →* MulAut G` would be impossible to `to_additive`-ize because a correct
-additivization would require inserting `Additive` around `AddAut G` and dealing with these extra
-`Additive`s in the proof, but `to_additive` is unable to do this automatically. -/]
+              We give `AddAut M` the structure of an additive group rather than a multiplicative
+group to help with `to_additive` translation. Without this, any proof in group theory
+making use of the conjugation action `G →* MulAut G` would be impossible to
+`to_additive`-ize because a correct additivization would require inserting `Additive`
+around `AddAut G` and dealing with these extra `Additive`s in the proof, but
+`to_additive` is unable to do this automatically.
+              -/]
 instance : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _

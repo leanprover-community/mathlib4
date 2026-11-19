@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Module.Torsion.Pi
 
-/-! # Module instances for `FunLike` types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Module instances for `FunLike` types
+
 In this file we define various instances related to modules for `FunLike` types.
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long

@@ -7,18 +7,21 @@ module
 
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally uniform convergence
 
-We define a sequence of functions `Fₙ` to *converge locally uniformly* to a limiting function `f`
+We define a sequence of functions `Fₙ` to _converge locally uniformly_ to a limiting function `f`
 with respect to a filter `p`, spelled `TendstoLocallyUniformly F f p`, if for any `x ∈ s` and any
 entourage of the diagonal `u`, there is a neighbourhood `v` of `x` such that `p`-eventually we have
 `(f y, Fₙ y) ∈ u` for all `y ∈ v`.
 
-It is important to note that this definition is somewhat non-standard; it is **not** in general
+It is important to note that this definition is somewhat non-standard; it is *not* in general
 equivalent to "every point has a neighborhood on which the convergence is uniform", which is the
 definition more commonly encountered in the literature. The reason is that in our definition the
-neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
+neighborhood `v` of `x` can depend on the entourage `u`; so our condition is _a priori_ weaker than
 the usual one, although the two conditions are equivalent if the domain is locally compact. See
 `tendstoLocallyUniformlyOn_of_forall_exists_nhds` for the one-way implication; the equivalence
 assuming local compactness is part of `tendstoLocallyUniformlyOn_tfae`.
@@ -150,7 +153,7 @@ theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsComp
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe] at h
 
 /-!
-### Composition
+# Composition
 -/
 
 section Comp
@@ -224,12 +227,14 @@ theorem TendstoLocallyUniformly.piProd [UniformSpace γ] {G : ι → α → γ} 
     TendstoLocallyUniformly (fun n ↦ Function.prod (F n) (G n)) (Function.prod f g) p :=
   hF.prodMk hG
 
-/-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then
+/--
+If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then
 `F i` tends locally uniformly on `s` to `f`.
 
-Note this is **not** a tautology, since our definition of `TendstoLocallyUniformlyOn` is slightly
+Note this is *not* a tautology, since our definition of `TendstoLocallyUniformlyOn` is slightly
 more general (although the conditions are equivalent if `β` is locally compact and `s` is open,
-see `tendstoLocallyUniformlyOn_tfae`). -/
+see `tendstoLocallyUniformlyOn_tfae`).
+-/
 lemma tendstoLocallyUniformlyOn_of_forall_exists_nhds
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, TendstoUniformlyOn F f p t) :
     TendstoLocallyUniformlyOn F f p s := by

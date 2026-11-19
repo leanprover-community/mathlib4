@@ -10,6 +10,9 @@ public import Mathlib.Topology.Order.LeftRightNhds
 
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of LUB and GLB in an order topology
 -/
@@ -286,7 +289,7 @@ protected lemma IsClosed.lowerClosure {s : Set α} (hs : IsClosed s) :
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Existence of sequences tending to `sInf` or `sSup` of a given set
+# Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
 
 theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}

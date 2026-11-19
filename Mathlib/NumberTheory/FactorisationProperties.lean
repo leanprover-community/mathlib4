@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.NormNum.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorisation properties of natural numbers
 
@@ -37,11 +40,13 @@ relations with prime and perfect numbers.
 * `Nat.Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
 ## Implementation Notes
+
 * Zero is not included in any of the definitions and these definitions only apply to natural
   numbers greater than zero.
 
 ## References
-* [R. W. Prielipp, *PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS*][Prielipp1970]
+
+* ‍\[R. W. Prielipp, _PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS_\]\[Prielipp1970\]
 
 ## Tags
 

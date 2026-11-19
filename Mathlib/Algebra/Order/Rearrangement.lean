@@ -14,6 +14,9 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Prod.Lex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rearrangement inequality
 
@@ -57,11 +60,15 @@ open Equiv Equiv.Perm Finset Function OrderDual
 variable {ι α β : Type*} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
   [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
-/-! ### Scalar multiplication versions -/
+/-!
+# Scalar multiplication versions
+-/
 
 section SMul
 
-/-! #### Weak rearrangement inequality -/
+/-!
+# Weak rearrangement inequality
+-/
 
 section weak_inequality
 variable [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
@@ -161,7 +168,9 @@ theorem Antivary.sum_smul_le_sum_comp_perm_smul (hfg : Antivary f g) :
 
 end weak_inequality
 
-/-! #### Equality case of the rearrangement inequality -/
+/-!
+# Equality case of the rearrangement inequality
+-/
 
 section equality_case
 variable [PosSMulStrictMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
@@ -261,7 +270,9 @@ theorem Antivary.sum_comp_perm_smul_eq_sum_smul_iff (hfg : Antivary f g) :
 
 end equality_case
 
-/-! #### Strict rearrangement inequality -/
+/-!
+# Strict rearrangement inequality
+-/
 
 section strict_inequality
 variable [PosSMulStrictMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
@@ -336,7 +347,7 @@ end strict_inequality
 end SMul
 
 /-!
-### Multiplication versions
+# Multiplication versions
 
 Special cases of the above when scalar multiplication is actually multiplication.
 -/

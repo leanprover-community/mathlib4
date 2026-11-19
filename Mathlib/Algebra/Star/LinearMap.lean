@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
-/-! # Intrinsic star operation on linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Intrinsic star operation on linear maps
 
 This file defines the star operation on linear maps: `(star f) x = star (f (star x))`.
 This corresponds to a map being star-preserving, i.e., a map is self-adjoint iff it
@@ -23,7 +27,8 @@ this instance on `WithConv (E →ₗ[R] F)`.
 
 The reason we chose `WithConv` is because together with the convolution product from
 `Mathlib/RingTheory/Coalgebra/Convolution.lean`, we get a ⋆-algebra when
-`star (WithConv.toConv comul) = WithConv.toConv (comm ∘ comul)`. -/
+`star (WithConv.toConv comul) = WithConv.toConv (comm ∘ comul)`.
+-/
 
 public section
 
@@ -168,13 +173,15 @@ theorem intrinsicStar_convMul [CoalgebraStruct R C]
     ← comp_assoc _ (TensorProduct.comm R A A).toLinearMap]
   ext; simp
 
-/-- The convolutive intrinsic star ring on linear maps from coalgebras
+/--
+The convolutive intrinsic star ring on linear maps from coalgebras
 to ⋆-algebras, given that `star (toConv comul) = toConv (comm ∘ₗ comul)`.
 
 In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
 coalgebra, we get this hypothesis.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev convIntrinsicStarRing [Coalgebra R C]
     (h : star (toConv comul) = toConv ((TensorProduct.comm R C C).toLinearMap ∘ₗ comul)) :
     StarRing (WithConv (C →ₗ[R] A)) where

@@ -10,10 +10,13 @@ public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.ContinuousMap.StarOrdered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The continuous functional calculus
 
-This file defines a generic API for the *continuous functional calculus* which is suitable in a wide
+This file defines a generic API for the _continuous functional calculus_ which is suitable in a wide
 range of settings.
 
 A continuous functional calculus for an element `a : A` in a topological `R`-algebra is a continuous
@@ -40,10 +43,10 @@ values when either `a` does not satisfy the property `p`, or else when the funct
 argument to `cfc` is not continuous on the spectrum of `a`.
 
 This completely unbundled approach may give up some conveniences, but it allows for tremendous
-freedom. In particular, `cfc f a` makes sense for *any* `a : A` and `f : R → R`. This is quite
+freedom. In particular, `cfc f a` makes sense for _any_ `a : A` and `f : R → R`. This is quite
 useful in a variety of settings, but perhaps the most important is the following.
 Besides being a star algebra homomorphism sending the identity to `a`, the key property enjoyed
-by the continuous functional calculus is the *composition property*, which guarantees that
+by the continuous functional calculus is the _composition property_, which guarantees that
 `cfc (g ∘ f) a = cfc g (cfc f a)` under suitable hypotheses on `a`, `f` and `g`. Note that this
 theorem is nearly impossible to state nicely in terms of `cfcHom` (see `cfcHom_comp`). An
 additional advantage of the unbundled approach is that expressions like `fun x : R ↦ x⁻¹` are valid
@@ -75,7 +78,7 @@ matrix `a : Matrix n n ℂ`, and, because this set is discrete, any function is 
 spectrum. The continuous functional calculus allows us to make sense of expressions like `log a`
 (`:= cfc log a`), and when `0 ∉ spectrum ℂ a`, we get the nice property `exp (log a) = a`, which
 arises from the composition property `cfc exp (cfc log a) = cfc (exp ∘ log) a = cfc id a = a`, since
-`exp ∘ log = id` *on the spectrum of `a`*. Of course, there are other ways to make sense of `exp`
+`exp ∘ log = id` _on the spectrum of `a`_. Of course, there are other ways to make sense of `exp`
 and `log` for matrices (power series), and these agree with the continuous functional calculus.
 In fact, given `f : C(spectrum ℂ a, ℂ)`, `cfc f a` amounts to diagonalizing `a` (possible since `a`
 is normal), and applying `f` to the resulting diagonal entries. That is, if `a = u * d * star u`
@@ -85,12 +88,15 @@ In addition, if `a : Matrix n n ℂ` is positive semidefinite, then the `ℂ`-sp
 contained in (the range of the coercion of) `ℝ≥0`. In this case, we get a continuous functional
 calculus with `R := ℝ≥0`. From this we can define `√a := cfc a NNReal.sqrt`, which is also
 positive semidefinite (because `cfc` preserves the predicate), and this is truly a square root since
+
 ```
 √a * √a = cfc NNReal.sqrt a * cfc NNReal.sqrt a =
   cfc (NNReal.sqrt ^ 2) a = cfc id a = a
 ```
-The composition property allows us to show that, in fact, this is the *unique* positive semidefinite
+
+The composition property allows us to show that, in fact, this is the _unique_ positive semidefinite
 square root of `a` because, if `b` is any positive semidefinite square root, then
+
 ```
 b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
   cfc NNReal.sqrt (cfc b (· ^ 2)) = cfc NNReal.sqrt a = √a
@@ -98,21 +104,21 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 
 ## Main declarations
 
-+ `ContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A` satisfying
+* `ContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A` satisfying
   `p a` has a star algebra homomorphism from the continuous `R`-valued functions on the
   `R`-spectrum of `a` into the algebra `A`. This map is a closed embedding, and satisfies the
-  **spectral mapping theorem**.
-+ `cfcHom : p a → C(spectrum R a, R) →⋆ₐ[R] A`: the underlying star algebra homomorphism for an
+  *spectral mapping theorem*.
+* `cfcHom : p a → C(spectrum R a, R) →⋆ₐ[R] A`: the underlying star algebra homomorphism for an
   element satisfying property `p`.
-+ `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
+* `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
   `cfcHom` is not defined.
-+ `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
+* `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
   spectrum of `a`.
 
 ## Main theorems
 
-+ `cfc_comp : cfc (x ↦ g (f x)) a = cfc g (cfc f a)`
-+ `cfc_polynomial`: the continuous functional calculus extends the polynomial functional calculus.
+* `cfc_comp : cfc (x ↦ g (f x)) a = cfc g (cfc f a)`
+* `cfc_polynomial`: the continuous functional calculus extends the polynomial functional calculus.
 
 ## Implementation details
 
@@ -145,24 +151,26 @@ open Topology ContinuousMap
 
 section Basic
 
-/-- A star `R`-algebra `A` has a *continuous functional calculus* for elements satisfying the
+/--
+A star `R`-algebra `A` has a _continuous functional calculus_ for elements satisfying the
 property `p : A → Prop` if
 
-+ for every such element `a : A` there is a star algebra homomorphism
+* for every such element `a : A` there is a star algebra homomorphism
   `cfcHom : C(spectrum R a, R) →⋆ₐ[R] A` sending the (restriction of) the identity map to `a`.
-+ `cfcHom` is continuous and injective and the spectrum of the image of function `f` is its range.
-+ `cfcHom` preserves the property `p`.
-+ `p 0` is true, which ensures among other things that `p ≠ fun _ ↦ False`.
+* `cfcHom` is continuous and injective and the spectrum of the image of function `f` is its range.
+* `cfcHom` preserves the property `p`.
+* `p 0` is true, which ensures among other things that `p ≠ fun _ ↦ False`.
 
 The property `p` is marked as an `outParam` so that the user need not specify it. In practice,
 
-+ for `R := ℂ`, we choose `p := IsStarNormal`,
-+ for `R := ℝ`, we choose `p := IsSelfAdjoint`,
-+ for `R := ℝ≥0`, we choose `p := (0 ≤ ·)`.
+* for `R := ℂ`, we choose `p := IsStarNormal`,
+* for `R := ℝ`, we choose `p := IsSelfAdjoint`,
+* for `R := ℝ≥0`, we choose `p := (0 ≤ ·)`.
 
 Instead of directly providing the data we opt instead for a `Prop` class. In all relevant cases,
 the continuous functional calculus is uniquely determined, and utilizing this approach
-prevents diamonds or problems arising from multiple instances. -/
+prevents diamonds or problems arising from multiple instances.
+-/
 class ContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
@@ -178,7 +186,8 @@ class ContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
 scoped[ContinuousFunctionalCalculus]
 attribute [instance] ContinuousFunctionalCalculus.compactSpace_spectrum
 
-/-- A class guaranteeing that the continuous functional calculus is uniquely determined by the
+/--
+A class guaranteeing that the continuous functional calculus is uniquely determined by the
 properties that it is a continuous star algebra homomorphism mapping the (restriction of) the
 identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and the more common
 variant `cfc_comp`.
@@ -191,7 +200,8 @@ This class is separate from `ContinuousFunctionalCalculus` primarily because we 
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
 from one on a larger ring (i.e., to go from a continuous functional calculus over `ℂ` for normal
 elements to one over `ℝ` for selfadjoint elements), and proving this additional property is
-preserved would be burdensome or impossible. -/
+preserved would be burdensome or impossible.
+-/
 class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] : Prop where
@@ -223,7 +233,8 @@ variable {a : A} (ha : p a)
 -- Note: since `spectrum R a` is closed, we may always extend `f : C(spectrum R a, R)` to a function
 -- of type `C(R, R)` by the Tietze extension theorem (assuming `R` is either `ℝ`, `ℂ` or `ℝ≥0`).
 
-/-- The star algebra homomorphism underlying an instance of the continuous functional calculus;
+/--
+The star algebra homomorphism underlying an instance of the continuous functional calculus;
 a version for continuous functions on the spectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`, for otherwise it
@@ -295,14 +306,16 @@ end cfcL
 section CFC
 
 open scoped Classical in
-/-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
+/--
+This is the _continuous functional calculus_ of an element `a : A` applied to bare functions.
 When either `a` does not satisfy the predicate `p` (i.e., `a` is not `IsStarNormal`,
 `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when `f : R → R` is
 not continuous on the spectrum of `a`, then `cfc f a` returns the junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
-for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
+for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`.
+-/
 @[no_expose]
 noncomputable def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
@@ -1088,7 +1101,9 @@ end Ring
 
 end Order
 
-/-! ### `cfcHom` on a superset of the spectrum -/
+/-!
+# `cfcHom` on a superset of the spectrum
+-/
 
 section Superset
 
@@ -1096,12 +1111,14 @@ variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 
-/-- The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`
+/--
+The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`
 whenever `spectrum R a ⊆ s`.
 
 This is sometimes necessary in order to consider the same continuous functions applied to multiple
 distinct elements, with the added constraint that `cfc` does not suffice. This can occur, for
-example, if it is necessary to use uniqueness of this continuous functional calculus. -/
+example, if it is necessary to use uniqueness of this continuous functional calculus.
+-/
 @[simps!]
 noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     C(s, R) →⋆ₐ[R] A :=
@@ -1119,12 +1136,14 @@ end Superset
 
 section IsClosedEmbedding
 
-/-- A class for the continuous functional calculus which requires the homomorphisms
+/--
+A class for the continuous functional calculus which requires the homomorphisms
 `C(spectrum R a, R) → A` to be closed embeddings, as opposed to only continuous and injective.
 
 The primary advantage of this is that one can conclude the range of this map is the closed
 star subalgebra generated by `a`. However, unless the topology on `A` is induced by a C⋆-norm,
-this is unlikely to occur. -/
+this is unlikely to occur.
+-/
 class ClosedEmbeddingContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] extends

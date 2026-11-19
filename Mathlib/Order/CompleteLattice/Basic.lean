@@ -10,6 +10,9 @@ public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of complete lattices
 
@@ -18,6 +21,7 @@ This file contains basic results on complete lattices.
 ## Naming conventions
 
 In lemma names,
+
 * `sSup` is called `sSup`
 * `sInf` is called `sInf`
 * `⨆ i, s i` is called `iSup`
@@ -508,7 +512,9 @@ lemma biInf_le_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b
   le_antisymm (iInf₂_le_of_le b le_rfl le_rfl)
     (le_iInf₂ fun _ hji ↦ hf hji)
 
-/-! ### `iSup` and `iInf` under `Prop` -/
+/-!
+# `iSup` and `iInf` under `Prop`
+-/
 
 @[to_dual]
 theorem iSup_false {s : False → α} : iSup s = ⊥ := by simp
@@ -660,7 +666,7 @@ theorem biSup_ge_eq_sup : (⨆ j ≥ i, f j) = f i ⊔ (⨆ j > i, f j) := by
 end le
 
 /-!
-### `iSup` and `iInf` under `Type`
+# `iSup` and `iInf` under `Type`
 -/
 
 @[to_dual]
@@ -753,7 +759,7 @@ lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ �
 end CompleteLinearOrder
 
 /-!
-### Instances
+# Instances
 -/
 
 
@@ -765,10 +771,12 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
   sInf s := ∀ a ∈ s, a
   isGLB_sInf _ := ⟨fun a h p ↦ p a h, fun _ h p _ hb ↦ h hb p⟩
 
-/-- The order on `Prop` is a `CompleteLinearOrder`.
+/--
+The order on `Prop` is a `CompleteLinearOrder`.
 
 This is not an instance since `CompleteLinearOrder` includes decidability instances, which we want
-to avoid for `Prop`. -/
+to avoid for `Prop`.
+-/
 @[expose, instance_reducible]
 noncomputable def Prop.completeLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice

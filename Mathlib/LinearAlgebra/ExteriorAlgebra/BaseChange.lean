@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change of exterior algebra
 

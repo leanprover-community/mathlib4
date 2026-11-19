@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.RepresentationTheory.Rep.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Rep k G` and `ModuleCat k[G]`
 
@@ -61,7 +64,7 @@ abbrev diagonalHomEquiv :
 end Group
 
 /-!
-### The categorical equivalence `Rep k G ≌ Module.{u} k[G]`.
+# The categorical equivalence `Rep k G ≌ Module.{u} k[G]`.
 -/
 
 

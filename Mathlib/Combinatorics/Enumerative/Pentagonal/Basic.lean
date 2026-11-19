@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Order.SuccPred.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pentagonal numbers
 
-This file introduces (generalized) pentagonal numbers $k(3k-1)/2$ for integer $k$.
+This file introduces (generalized) pentagonal numbers $`k(3k-1)/2` for integer $`k`.
 
 Some sources, such as A001318 in the OEIS, order generalized pentagonal numbers by indices
-$k = 0, 1, -1, 2, -2, \cdots$ to form a strictly monotone sequence. This file doesn't follow this
+$`k = 0, 1, -1, 2, -2, \cdots` to form a strictly monotone sequence. This file doesn't follow this
 convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_neg` and
 `pentagonal_neg_lt_pentagonal_add_one`.
 
@@ -23,12 +26,14 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 
 ## References
 
-* https://en.wikipedia.org/wiki/Pentagonal_number
+* https://en.wikipedia.org/wiki/Pentagonal\_number
 -/
 
 public section
 
-/-- Pentagonal numbers $k(3k-1)/2$ for integer $k$. -/
+/--
+Pentagonal numbers $`k(3k-1)/2` for integer $`k`.
+-/
 @[oeis A001318, oeis A000326]
 def pentagonal (k : ℤ) : ℕ := (k * (3 * k - 1) / 2).toNat
 

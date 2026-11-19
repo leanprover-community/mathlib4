@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal concept analysis
 
@@ -16,18 +19,18 @@ This file defines concept lattices. A concept of a relation `r : α → β → P
 of `t`, and `t` is the set of all `b : β` that are related to all elements of `s`.
 
 Ordering the concepts of a relation `r` by inclusion on the first component gives rise to a
-*concept lattice*. Every concept lattice is complete and in fact every complete lattice arises as
+_concept lattice_. Every concept lattice is complete and in fact every complete lattice arises as
 the concept lattice of its `≤`.
 
 ## Implementation notes
 
-Concept lattices are usually defined from a *context*, that is the triple `(α, β, r)`, but the type
+Concept lattices are usually defined from a _context_, that is the triple `(α, β, r)`, but the type
 of `r` determines `α` and `β` already, so we do not define contexts as a separate object.
 
 ## References
 
-* [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
-* [Birkhoff, Garrett *Lattice Theory*][birkhoff1940]
+* ‍\[Davey, Priestley _Introduction to Lattices and Order_\]\[davey\_priestley\]
+* ‍\[Birkhoff, Garrett _Lattice Theory_\]\[birkhoff1940\]
 
 ## Tags
 
@@ -41,7 +44,9 @@ open Function OrderDual Order Set
 
 variable {ι : Sort*} {α β : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}
 
-/-! ### Lower and upper polars -/
+/-!
+# Lower and upper polars
+-/
 
 /-- The upper polar of `s : Set α` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `s`. -/
@@ -167,7 +172,9 @@ def extentClosure (r : α → β → Prop) : ClosureOperator (Set α) :=
 def intentClosure (r : α → β → Prop) : ClosureOperator (Set β) :=
   (gc_lowerPolar_upperPolar r).closureOperator
 
-/-! ### Intent and extent -/
+/-!
+# Intent and extent
+-/
 
 namespace Order
 
@@ -176,8 +183,8 @@ variable {r}
 /--
 A set is an extent when either of the following equivalent definitions holds:
 
-- The `lowerPolar` of its `upperPolar` is itself.
-- The set is the `lowerPolar` of some other set.
+* The `lowerPolar` of its `upperPolar` is itself.
+* The set is the `lowerPolar` of some other set.
 
 The latter is used as a definition, but one can rewrite using the former via `IsExtent.eq`.
 -/
@@ -216,8 +223,8 @@ theorem IsExtent.lowerPolar_upperPolar_subset {s' : Set α} (h : IsExtent r s) (
 /--
 A set is an intent when either of the following equivalent definitions holds:
 
-- The `upperPolar` of its `lowerPolar` is itself.
-- The set is the `upperPolar` of some other set.
+* The `upperPolar` of its `lowerPolar` is itself.
+* The set is the `upperPolar` of some other set.
 
 The latter is used as a definition, but one can rewrite using the former via `IsIntent.eq`.
 -/
@@ -250,7 +257,9 @@ theorem IsIntent.upperPolar_lowerPolar_subset {t' : Set β} (h : IsIntent r t) (
 
 end Order
 
-/-! ### Concepts -/
+/-!
+# Concepts
+-/
 
 variable (α β)
 
@@ -544,10 +553,12 @@ instance : InfSet (Concept α β r) where
 instance : SupSet (Concept α β r) where
   sSup S := ofIsIntent _ _ (.iInter₂ _ fun c (_ : c ∈ S) ↦ c.isIntent_intent)
 
-/-- One half of the **fundamental theorem of concept lattices**: every concept lattice is a complete
+/--
+One half of the *fundamental theorem of concept lattices*: every concept lattice is a complete
 lattice.
 
-See `DedekindCut.principalIso` for the second half. -/
+See `DedekindCut.principalIso` for the second half.
+-/
 instance : CompleteLattice (Concept α β r) where
   isLUB_sSup s := by
     refine ⟨fun _ hc ↦ ?_, fun _ hc ↦ ?_⟩

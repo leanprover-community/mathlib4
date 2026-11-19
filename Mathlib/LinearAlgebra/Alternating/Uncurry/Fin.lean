@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Alternating.Curry
 
 import Mathlib.Data.Fin.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uncurrying alternating maps
 
@@ -18,6 +21,7 @@ and is alternating form in the other `n` arguments,
 this file defines an alternating form `AlternatingMap.alternatizeUncurryFin f` in `n + 1` arguments.
 
 This function is given by
+
 ```
 AlternatingMap.alternatizeUncurryFin f v =
   ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
@@ -33,10 +37,9 @@ not only a field of characteristic zero.
 
 ## Main results
 
-- `AlternatingMap.alternatizeUncurryFin_curryLeft`:
+* `AlternatingMap.alternatizeUncurryFin_curryLeft`:
   the round-trip formula for currying/uncurrying, see above.
-
-- `AlternatingMap.alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric`:
+* `AlternatingMap.alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric`:
   If `f` is a symmetric bilinear map taking values in the space of alternating maps,
   then the twice uncurried `f` is zero.
 
@@ -67,13 +70,15 @@ theorem neg_one_pow_smul_map_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p :
   rw [map_insertNth, smul_smul, ← pow_add, Even.neg_one_pow, one_smul]
   use p
 
-/-- Let `v` be an `(n + 1)`-tuple with two equal elements `v i = v j`, `i ≠ j`.
+/--
+Let `v` be an `(n + 1)`-tuple with two equal elements `v i = v j`, `i ≠ j`.
 Let `w i` (resp., `w j`) be the vector `v` with `i`th (resp., `j`th) element removed.
 Then `(-1) ^ i • f (w i) + (-1) ^ j • f (w j) = 0`.
 This follows from the fact that these two vectors differ by a permutation of sign `(-1) ^ (i + j)`.
 
 These are the only two nonzero terms in the proof of `map_eq_zero_of_eq`
-in the definition of `alternatizeUncurryFin` below. -/
+in the definition of `alternatizeUncurryFin` below.
+-/
 theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→ₗ[R] N)
     {v : Fin (n + 1) → M} {i j : Fin (n + 1)} (hvij : v i = v j) (hij : i ≠ j) :
     (-1) ^ (i : ℕ) • f (i.removeNth v) + (-1) ^ (j : ℕ) • f (j.removeNth v) = 0 := by
@@ -87,17 +92,20 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→�
     neg_add_cancel]
   exact hvij.symm
 
-/-- Given a function which is linear in the first argument
+/--
+Given a function which is linear in the first argument
 and is alternating in the other `n` arguments,
 build an alternating form in `n + 1` arguments.
 
 The function is given by
+
 ```
 alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
 ```
 
 Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
-since we want to avoid division in this definition. -/
+since we want to avoid division in this definition.
+-/
 def alternatizeUncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
   toMultilinearMap :=
@@ -145,17 +153,15 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
   map_add' := alternatizeUncurryFin_add
   map_smul' := alternatizeUncurryFin_smul
 
-/-- If `f` is a bilinear map taking values in the space of alternating maps,
+/--
+If `f` is a bilinear map taking values in the space of alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of
 
-$$
-f(v_i, v_j; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-) -
-f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
-$$
+$$`  f(v_i, v_j; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-) - f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)  `
 
 over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
-Here $\hat{v_i}$ and $\hat{v_j}$ mean that these vectors are removed from the tuple.
+Here $`\hat{v_i}` and $`\hat{v_j}` mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
 to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,
@@ -187,11 +193,13 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
   rw [removeNth_removeNth_eq_swap]
   simp [Fin.predAbove, hj, Fin.succAbove]
 
-/-- If `f` is a symmetric bilinear map taking values in the space of alternating maps,
+/--
+If `f` is a symmetric bilinear map taking values in the space of alternating maps,
 then the twice uncurried `f` is zero.
 
 See also `alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply`
-for a formula that does not assume `f` to be symmetric. -/
+for a formula that does not assume `f` to be symmetric.
+-/
 theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
     {f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N} (hf : ∀ x y, f x y = f y x) :
     alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) = 0 := by

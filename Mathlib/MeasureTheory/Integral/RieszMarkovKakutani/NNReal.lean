@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
@@ -22,7 +25,7 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][rudin1987]
+* ‍\[Walter Rudin, Real and Complex Analysis.\]\[rudin1987\]
 -/
 
 public section

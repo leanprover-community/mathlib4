@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The small affine Zariski site
 
@@ -239,7 +242,7 @@ noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirec
 section PreservesLocalization
 
 /-!
-## "Quasi-coherent `𝒪ₓ`-algebras"
+# "Quasi-coherent `𝒪ₓ`-algebras"
 
 A presheaf `F` of rings on `X.AffineZariskiSite` with a structural morphism `α : 𝒪ₓ ⟶ F`
 is said to be `Coequifibered` if `F(D(f)) = F(U)[1/f]`

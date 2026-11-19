@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Zero objects
 
@@ -16,7 +19,7 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 2_\]\[borceux-vol2\]
 -/
 
 @[expose] public section
@@ -39,10 +42,12 @@ namespace Limits
 
 to_dual_name_hint To From
 
-/-- An object `X` in a category is a *zero object* if for every object `Y`
+/--
+An object `X` in a category is a _zero object_ if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `HasZeroObject`. -/
+This is a characteristic predicate for `HasZeroObject`.
+-/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
@@ -55,12 +60,14 @@ namespace IsZero
 
 variable {X Y : C}
 
-/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`.
+/--
+If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`.
 
 `to` is a reserved word, it was replaced by `to_`
 -/
 @[no_expose, to_dual
-/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`.
+/--
+If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`.
 
 `from` is a reserved word, it was replaced by `from_`
 -/]
@@ -205,7 +212,9 @@ variable {C}
 theorem IsZero.hasZeroObject {X : C} (hX : IsZero X) : HasZeroObject C :=
   ⟨⟨X, hX⟩⟩
 
-/-- Every zero object is isomorphic to *the* zero object. -/
+/--
+Every zero object is isomorphic to _the_ zero object.
+-/
 def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
   hX.iso (isZero_zero C)
 

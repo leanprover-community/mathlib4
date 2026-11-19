@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice structure of subgroups
 
@@ -23,16 +26,13 @@ Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and 
 
 Notation used here:
 
-- `G` is a `Group`
-
-- `k` is a set of elements of type `G`
+* `G` is a `Group`
+* `k` is a set of elements of type `G`
 
 Definitions in the file:
 
 * `CompleteLattice (Subgroup G)` : the subgroups of `G` form a complete lattice
-
 * `Subgroup.closure k` : the minimal subgroup that includes the set `k`
-
 * `Subgroup.gi` : `closure` forms a Galois insertion with the coercion to set
 
 ## Implementation notes
@@ -41,6 +41,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -54,7 +55,7 @@ open scoped Int
 variable {G : Type*} [Group G]
 
 /-!
-### Conversion to/from `Additive`/`Multiplicative`
+# Conversion to/from `Additive`/`Multiplicative`
 -/
 
 section mul_add
@@ -116,13 +117,17 @@ variable (H K : Subgroup G)
 instance : Top (Subgroup G) :=
   ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
 
-/-- The top subgroup is isomorphic to the group.
+/--
+The top subgroup is isomorphic to the group.
 
-This is the group version of `Submonoid.topEquiv`. -/
+This is the group version of `Submonoid.topEquiv`.
+-/
 @[to_additive (attr := simps!)
-      /-- The top additive subgroup is isomorphic to the additive group.
+      /--
+      The top additive subgroup is isomorphic to the additive group.
 
-      This is the additive group version of `AddSubmonoid.topEquiv`. -/]
+      This is the additive group version of `AddSubmonoid.topEquiv`.
+      -/]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 
@@ -359,19 +364,23 @@ theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
 theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k = K :=
   le_antisymm ((closure_le K).2 h₁) h₂
 
-/-- An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
+/--
+An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
 is preserved under multiplication and inverse, then `p` holds for all elements of the closure
 of `k`.
 
 See also `Subgroup.closure_induction_left` and `Subgroup.closure_induction_right` for versions that
-only require showing `p` is preserved by multiplication by elements in `k`. -/
+only require showing `p` is preserved by multiplication by elements in `k`.
+-/
 @[to_additive (attr := elab_as_elim)
-      /-- An induction principle for additive closure membership. If `p`
-      holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
-      holds for all elements of the additive closure of `k`.
+      /--
+      An induction principle for additive closure membership. If `p`
+holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
+holds for all elements of the additive closure of `k`.
 
       See also `AddSubgroup.closure_induction_left` and `AddSubgroup.closure_induction_left` for
-      versions that only require showing `p` is preserved by addition by elements in `k`. -/]
+versions that only require showing `p` is preserved by addition by elements in `k`.
+      -/]
 theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
     (mem : ∀ x (hx : x ∈ k), p x (subset_closure hx)) (one : p 1 (one_mem _))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))

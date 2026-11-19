@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.Filter.Cofinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`
 
@@ -161,10 +164,12 @@ theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirectedOrder β] {f : �
   rw [← Nat.cofinite_eq_atTop] at hf
   exact hf.bddAbove_range_of_cofinite
 
-/-- To check that a filter is frequently bounded, it suffices to have a witness
+/--
+To check that a filter is frequently bounded, it suffices to have a witness
 which bounds `f` at some point for every admissible set.
 
-This is only an implication, as the other direction is wrong for the trivial filter. -/
+This is only an implication, as the other direction is wrong for the trivial filter.
+-/
 theorem IsCobounded.mk [IsTrans α r] (a : α) (h : ∀ s ∈ f, ∃ x ∈ s, r a x) : f.IsCobounded r :=
   ⟨a, fun _ s =>
     let ⟨_, h₁, h₂⟩ := h _ s

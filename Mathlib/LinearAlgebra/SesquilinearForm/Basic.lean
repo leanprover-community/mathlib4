@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 import Mathlib.Algebra.Module.Torsion.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sesquilinear maps
 
@@ -28,7 +31,8 @@ basic lemmas about construction and elementary calculations are found there.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Sesquilinear_form#Over_arbitrary_rings>
+* [
+  https://en.wikipedia.org/wiki/Sesquilinear\_form#Over\_arbitrary\_rings](https://en.wikipedia.org/wiki/Sesquilinear_form#Over_arbitrary_rings)
 
 ## Tags
 
@@ -43,7 +47,9 @@ variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K 
 
 namespace LinearMap
 
-/-! ### Orthogonal vectors -/
+/-!
+# Orthogonal vectors
+-/
 
 
 section CommRing
@@ -93,7 +99,9 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
 
 end Field
 
-/-! ### Reflexive bilinear maps -/
+/-!
+# Reflexive bilinear maps
+-/
 
 section Reflexive
 
@@ -139,7 +147,9 @@ end IsRefl
 
 end Reflexive
 
-/-! ### Symmetric bilinear forms -/
+/-!
+# Symmetric bilinear forms
+-/
 
 section Symmetric
 
@@ -183,7 +193,9 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
 
 end Symmetric
 
-/-! ### Positive semidefinite sesquilinear forms -/
+/-!
+# Positive semidefinite sesquilinear forms
+-/
 
 section PositiveSemidefinite
 
@@ -226,7 +238,9 @@ protected lemma IsPosSemidef.add [Preorder R] [AddLeftMono R] {B C : M →ₛₗ
 
 end PositiveSemidefinite
 
-/-! ### Alternating bilinear maps -/
+/-!
+# Alternating bilinear maps
+-/
 
 section Alternating
 
@@ -303,7 +317,9 @@ end LinearMap
 
 namespace LinearMap
 
-/-! ### Adjoint pairs -/
+/-!
+# Adjoint pairs
+-/
 
 section AdjointPair
 
@@ -411,7 +427,9 @@ end OrthogonalMap
 
 end AdjointPair
 
-/-! ### Self-adjoint pairs -/
+/-!
+# Self-adjoint pairs
+-/
 
 section SelfadjointPair
 
@@ -509,7 +527,9 @@ end AddCommGroup
 
 end SelfadjointPair
 
-/-! ### Nondegenerate bilinear maps -/
+/-!
+# Nondegenerate bilinear maps
+-/
 
 section Nondegenerate
 

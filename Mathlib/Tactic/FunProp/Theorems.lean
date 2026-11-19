@@ -15,8 +15,11 @@ public import Mathlib.Tactic.FunProp.Types
 
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `fun_prop` environment extensions storing theorems for `fun_prop`
+# `fun_prop` environment extensions storing theorems for `fun_prop`
 -/
 
 public meta section
@@ -36,10 +39,12 @@ inductive LambdaTheoremArgs
   | const
   /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
-  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)`
+  /--
+  Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)`
 
   The numbers `fArgId` and `gArgId` store the argument index for `f` and `g` in the composition
-  theorem. -/
+theorem.
+  -/
   | comp (fArgId gArgId : Nat)
   /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y ↦ f x y` -/
   | pi
@@ -136,14 +141,17 @@ def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
 
 --------------------------------------------------------------------------------
 
-/-- Function theorems are stated in uncurried or compositional form.
+/--
+Function theorems are stated in uncurried or compositional form.
 
 uncurried
+
 ```
 theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
 ```
 
 compositional
+
 ```
 theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) + (g x))
 ```
@@ -156,11 +164,13 @@ inductive TheoremForm where
 instance : ToString TheoremForm :=
   ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
-/-- Gives the theorem form using the result of `FunctionData.decomposition`.
+/--
+Gives the theorem form using the result of `FunctionData.decomposition`.
 
 Note that this returns `TheoremForm.comp` even when the decomposition failed (usually due to
 dependent types). This means that the theorem will be applied directly without trying to write the
-goal as a composition. -/
+goal as a composition.
+-/
 def DecompositionResult.toTheoremForm : DecompositionResult → TheoremForm
 | .uncurried => .uncurried
 | _ => .comp
@@ -184,7 +194,9 @@ structure FunctionTheorem where
   deriving Inhabited, BEq
 
 set_option linter.style.docString.empty false in
-/-- -/
+/--
+
+-/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
   theorems :
@@ -199,7 +211,9 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .fvar id => return .fvar id
 
 set_option linter.style.docString.empty false in
-/-- -/
+/--
+
+-/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
 /-- Extension storing all function theorems. -/
@@ -218,7 +232,9 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
   }
 
 set_option linter.style.docString.empty false in
-/-- -/
+/--
+
+-/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
   return (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
@@ -244,10 +260,12 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
-/-- Get transition theorems applicable to `e`.
+/--
+Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite-dimensional spaces or differentiability. -/
+from linearity over finite-dimensional spaces or differentiability.
+-/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
@@ -266,10 +284,12 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
   }
 
 
-/-- Get morphism theorems applicable to `e`.
+/--
+Get morphism theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
-inferring continuity from the bundled morphism. -/
+inferring continuity from the bundled morphism.
+-/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).morTheorems.theorems
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
@@ -281,32 +301,39 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 --------------------------------------------------------------------------------
 
 
-/-- There are four types of theorems:
-- lam - theorem about basic lambda calculus terms
-- function - theorem about a specific function(declared or free variable) in specific arguments
-- mor - special theorems talking about bundled morphisms/DFunLike.coe
-- transition - theorems inferring one function property from another
+/--
+There are four types of theorems:
+
+* lam - theorem about basic lambda calculus terms
+* function - theorem about a specific function(declared or free variable) in specific arguments
+* mor - special theorems talking about bundled morphisms/DFunLike.coe
+* transition - theorems inferring one function property from another
 
 Examples:
-- lam
+
+* lam
+
   ```
   theorem Continuous_id : Continuous fun x ↦ x
   theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f (g x)
   ```
-- function
+* function
+
   ```
   theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
       Continuous (fun x ↦ (f x) + (g x))
   ```
-- mor - the head of function body has to be `DFunLike.coe`
+* mor - the head of function body has to be `DFunLike.coe`
+
   ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
       ContDiff 𝕜 n fun x ↦ (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
   ```
-- transition - the conclusion has to be in the form `P f` where `f` is a free variable
+* transition - the conclusion has to be in the form `P f` where `f` is a free variable
+
   ```
   theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
       Continuous f

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Rat.Cast.CharZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on integer matrices
 
@@ -31,7 +34,7 @@ namespace Matrix
 variable {l m n : Type*} [Fintype m]
 
 /-!
-## Casts
+# Casts
 
 These results are useful shortcuts because the canonical casting maps out of `ℕ`, `ℤ`, and `ℚ` to
 suitable types are bare functions, not ring homs, so we cannot apply `Matrix.map_mul` directly to
@@ -52,7 +55,7 @@ lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α]
   Matrix.map_mul (f := Rat.castHom α)
 
 /-!
-## Denominator of a rational matrix
+# Denominator of a rational matrix
 -/
 
 variable [Fintype n]
@@ -103,7 +106,7 @@ lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
   ext; simp [Matrix.num]
 
 /-!
-### Compatibility with `map`
+# Compatibility with `map`
 -/
 
 @[simp]
@@ -123,7 +126,7 @@ lemma num_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).num = A.map (↑) := 
   simp [Matrix.num, Function.comp_def]
 
 /-!
-### Casts from scalar types
+# Casts from scalar types
 -/
 
 @[simp]

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Free.Basic
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A `coherence` tactic for monoidal categories
 
@@ -160,6 +163,8 @@ meta register_option warn.refl_coherence : Bool := {
   descr := "warn when the deprecated coherence tactic is used"
 }
 
+
+set_option doc.verso false
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
@@ -183,6 +188,8 @@ elab (name := pure_coherence) "pure_coherence" : tactic => do
   let g ← getMainGoal
   monoidalCoherence g <|> bicategoryCoherence g
 
+
+set_option doc.verso true
 /-- The same as `pure_coherence`, but used internally in `coherence` without the warning. -/
 elab (name := pure_coherence_internal) "pure_coherence_internal" : tactic => do
   let g ← getMainGoal

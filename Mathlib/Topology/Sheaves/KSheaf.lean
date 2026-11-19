@@ -11,29 +11,33 @@ public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.BaseChangeNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # K-sheaves
 
 We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
 
 This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
-- `F.obj (∅)` is terminal.
-- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is the pullback
+
+* `F.obj (∅)` is terminal.
+* For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is the pullback
   of `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
-- For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
+* For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
   subsets `L` of `X` such that `K` is in the interior of `L`.
 
 The category of K-sheaves is a topos, because it is equivalent to the category of sheaves over `X`
 (TODO Yannis Monbru Carcelero), but the condition that `K`-presheaves need to verify to
-be `K`-sheaves is *not* expressed as the sheaf condition for a Grothendieck topology on
+be `K`-sheaves is _not_ expressed as the sheaf condition for a Grothendieck topology on
 compact sets. Indeed, two of three conditions do involve limits, but the third
 `nonempty_isColimit_coconeOfCompact` involves colimits.
 
 ## References
 
-*[J. Pardon, *An algebraic approach to virtual fundamental cycles on moduli
-spaces of pseudo-holomorphic curves*, Section A.1][Pardon2016]
-*[Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
+‍\*\[J. Pardon, _An algebraic approach to virtual fundamental cycles on moduli
+spaces of pseudo-holomorphic curves_, Section A.1\]\[Pardon2016\]
+‍\*\[Jacob Lurie, _Higher Topos Theory_, Section 1.1.5\]\[LurieHTT\]
 -/
 
 @[expose] public section

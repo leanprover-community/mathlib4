@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.FinitelyPresentedGroup
 public import Mathlib.GroupTheory.Generators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group presentations as data
 
@@ -29,11 +32,11 @@ a group presentation as data.
 
 * Relators are a `Set` because (`Subgroup.normalClosure`, `PresentedGroup`) take a set as input.
 * The kernel condition `lift_ker_eq_normalClosure` uses `toGenerators.lift` as in with
-`Algebra.Presentation`.
+  `Algebra.Presentation`.
 
 ## References
 
-* [D. F. Holt, S. Rees, C. E. Röver, *Groups, Languages and Automata*][HoltReesRover2017], §1
+* ‍\[D. F. Holt, S. Rees, C. E. Röver, _Groups, Languages and Automata_\]\[HoltReesRover2017\], §1
 
 ## Tags
 

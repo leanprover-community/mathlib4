@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative operations on derivatives
 
@@ -38,7 +41,9 @@ variable {s : Set E}
 
 section CLMCompApply
 
-/-! ### Derivative of the pointwise composition/application of continuous linear maps -/
+/-!
+# Derivative of the pointwise composition/application of continuous linear maps
+-/
 
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
@@ -148,7 +153,9 @@ end CLMCompApply
 
 section ContinuousMultilinearApplyConst
 
-/-! ### Derivative of the application of continuous multilinear maps to a constant -/
+/-!
+# Derivative of the application of continuous multilinear maps to a constant
+-/
 
 variable {ι : Type*}
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
@@ -235,7 +242,7 @@ end ContinuousMultilinearApplyConst
 section ContinuousAlternatingMapApplyConst
 
 /-!
-### Derivative of the application of continuous alternating maps to a constant
+# Derivative of the application of continuous alternating maps to a constant
 
 Given a differentiable family of continuous alternating maps `c : E → F [⋀^ι]→L[𝕜] G`
 and a tuple of vectors `u : ι → F`,

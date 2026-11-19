@@ -12,6 +12,9 @@ public import Mathlib.Data.Finset.SMulAntidiagonal
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.HahnSeries.Addition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative properties of Hahn series
 
@@ -25,6 +28,7 @@ multiplication from `R⟦Γ⟧`. The scalar action of `R` on `R⟦Γ⟧` is comp
 with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 
 ## Main Definitions
+
 * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `R⟦Γ⟧` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
@@ -37,16 +41,20 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
   series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
+
 * If `R` is a (commutative) (semi-)ring, then so is `R⟦Γ⟧`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 
 ## TODO
+
 The following may be useful for composing vertex operators, but they seem to take time.
+
 * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
-- [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
+
+* ‍\[J. van der Hoeven, _Operators on Generalized Power Series_\]\[van\_der\_hoeven\]
 -/
 
 @[expose] public section

@@ -13,6 +13,9 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Catalan numbers
 

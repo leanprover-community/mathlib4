@@ -9,12 +9,14 @@ public meta import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extensions on natural numbers
 
 This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
-
 
 ## Implementation Notes
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SuccPred.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set intervals in a successor-predecessor order
 
@@ -15,6 +18,7 @@ This file proves relations between the various set intervals in a successor/pred
 ## Notes
 
 Please keep in sync with:
+
 * `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
 * `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib/Order/Interval/Finset/SuccPred.lean`
@@ -33,15 +37,17 @@ open Order
 namespace Set
 variable {α : Type*} [LinearOrder α]
 
-/-! ### Two-sided intervals -/
+/-!
+# Two-sided intervals
+-/
 
 section SuccOrder
 variable [SuccOrder α] {a b : α}
 
 /-!
-#### Orders possibly with maximal elements
+# Orders possibly with maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 @[to_dual (reorder := a b) Ioc_pred_right_eq_Ioo]
@@ -68,7 +74,9 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (succ a) (succ b) = Ioc a b := by
   rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 @[to_dual insert_Icc_pred_right_eq_Icc]
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
@@ -98,9 +106,9 @@ lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b)
   rw [insert_left_Ioc (succ_le_of_lt h), Icc_succ_left_of_not_isMax h.not_isMax]
 
 /-!
-#### Orders with no maximal elements
+# Orders with no maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 variable [NoMaxOrder α]
@@ -121,7 +129,9 @@ lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b :=
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
   Ico_succ_succ_eq_Ioc_of_not_isMax (not_isMax _) _
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 @[to_dual insert_Ioc_left_eq_Ioc_pred]
 lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
@@ -151,7 +161,9 @@ lemma Icc_succ_pred_eq_Ioo (a b : α) : Icc (succ a) (pred b) = Ioo a b := by
 
 end SuccPredOrder
 
-/-! ### One-sided intervals -/
+/-!
+# One-sided intervals
+-/
 
 section SuccOrder
 variable [SuccOrder α] {a : α}

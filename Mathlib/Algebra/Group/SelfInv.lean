@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Self-inverse elements
 
@@ -27,8 +30,12 @@ section Inv
 
 variable [Inv α] {a : α}
 
-/-- An element `a` is *self-inverse* if `a⁻¹ = a`. -/
-@[to_additive /-- An element `a` is *self-negative* if `-a = a`. -/]
+/--
+An element `a` is _self-inverse_ if `a⁻¹ = a`.
+-/
+@[to_additive /--
+              An element `a` is _self-negative_ if `-a = a`.
+              -/]
 def IsSelfInv (a : α) : Prop := a⁻¹ = a
 
 @[to_additive]

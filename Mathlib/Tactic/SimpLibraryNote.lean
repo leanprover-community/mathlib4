@@ -10,7 +10,11 @@ public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
 
-/-! # Simp Lemmas With Weak Keys Library Note
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Simp Lemmas With Weak Keys Library Note
 
 This file contains a library note explaining how to handle `simp` lemmas that have "weak keys".
 -/
@@ -18,12 +22,16 @@ This file contains a library note explaining how to handle `simp` lemmas that ha
 @[expose] public section
 
 library_note «Simp lemmas with weak keys» /--
-Certain theorems shouldn't be tagged with the `simp` attribute as they have "weak keys", i.e. they
-match on certain patterns that occur much more often than the lemmas are actually applicable.
-This is harmful as it affects the performance of the `simp` tactic.
-For example, `simp` might spend a lot of time on failing typeclass instance synthesis.
-As a replacement, one can use `scoped simp` with an appropriate namespace.
-See also the following PRs:
-- https://github.com/leanprover-community/mathlib4/pull/15620
-- https://github.com/leanprover-community/mathlib4/pull/15631
--/
+                                          Certain theorems shouldn't be tagged with the `simp`
+attribute as they have "weak keys", i.e. they match on
+certain patterns that occur much more often than the
+lemmas are actually applicable. This is harmful as it
+affects the performance of the `simp` tactic. For example,
+`simp` might spend a lot of time on failing typeclass
+instance synthesis. As a replacement, one can use
+`scoped simp` with an appropriate namespace. See also the
+following PRs:
+
+                                          * https://github.com/leanprover-community/mathlib4/pull/15620
+* https://github.com/leanprover-community/mathlib4/pull/15631
+                                          -/

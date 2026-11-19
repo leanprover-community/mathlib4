@@ -12,29 +12,34 @@ public import Mathlib.RingTheory.Radical.Basic
 
 import Mathlib.Data.Nat.Prime.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The radical in `ℕ` and `ℤ`
 
 ## Declarations for `ℕ`
 
-- `UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors`: The prime factors of a natural number
+* `UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors`: The prime factors of a natural number
   are the same as the prime factors defined in `Nat.primeFactors`.
-- `Nat.radical_eq_prod_primeFactors`: The radical is computable for natural numbers.
-- `Nat.radical_le_self_iff`: if `n ≠ 0`, `radical n ≤ n`.
-- `Nat.two_le_radical_iff`: `2 ≤ n.radical` iff `2 ≤ n`.
+* `Nat.radical_eq_prod_primeFactors`: The radical is computable for natural numbers.
+* `Nat.radical_le_self_iff`: if `n ≠ 0`, `radical n ≤ n`.
+* `Nat.two_le_radical_iff`: `2 ≤ n.radical` iff `2 ≤ n`.
 
 ## Declarations for `ℤ`
 
-- `UniqueFactorizationMonoid.primeFactors_eq_primeFactors_natAbs`: The prime factors of an integer
+* `UniqueFactorizationMonoid.primeFactors_eq_primeFactors_natAbs`: The prime factors of an integer
   are the same as the prime factors of its absolute value.
-- `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
+* `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
 -/
 
 @[expose] public section
 
 open UniqueFactorizationMonoid
 
-/-! ### Lemmas about natural numbers -/
+/-!
+# Lemmas about natural numbers
+-/
 
 lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
     primeFactors = Nat.primeFactors := by
@@ -104,7 +109,9 @@ end Mathlib.Meta.Positivity
 
 end Nat
 
-/-! ### Lemmas about integers -/
+/-!
+# Lemmas about integers
+-/
 
 variable {z : ℤ}
 

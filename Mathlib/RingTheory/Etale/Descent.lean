@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.RingHom.Etale
 
 import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Etale descends along faithfully flat ring maps
 
@@ -18,15 +21,15 @@ base change.
 
 ## Main results
 
-- `Algebra.Smooth.of_smooth_tensorProduct_of_faithfullyFlat`: Smooth descends.
-- `Algebra.Unramified.of_smooth_tensorProduct_of_faithfullyFlat`: Unramified descends.
-- `Algebra.Etale.of_etale_tensorProduct_of_faithfullyFlat`: Etale descends.
+* `Algebra.Smooth.of_smooth_tensorProduct_of_faithfullyFlat`: Smooth descends.
+* `Algebra.Unramified.of_smooth_tensorProduct_of_faithfullyFlat`: Unramified descends.
+* `Algebra.Etale.of_etale_tensorProduct_of_faithfullyFlat`: Etale descends.
 
 We also provide the corresponding `RingHom.CodescendsAlong` lemmas.
 
 ## TODOs
 
-- The lemma `Algebra.FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat` has an
+* The lemma `Algebra.FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat` has an
   additional `Algebra.FinitePresentation` assumption, because the proof uses that a flat module
   of finite presentation is projective and the former descends. This also holds without
   the finite presentation assumption, but requires showing that projectivity descends

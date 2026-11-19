@@ -7,14 +7,19 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A parser for superscripts and subscripts
 
 This is intended for use in local notations. Basic usage is:
+
 ```
 local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
+
 where `superscript(term)` indicates that it will parse a superscript, and the `$b:superscript`
 antiquotation binds the `term` argument of the superscript. Given a notation like this,
 the expression `2⁶⁴` parses and expands to `2 ^ 64`.
@@ -109,7 +114,8 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
       partitionPoint lo m
   else lo
 
-/-- The core function for super/subscript parsing. It consists of three stages:
+/--
+The core function for super/subscript parsing. It consists of three stages:
 
 1. Parse a run of superscripted characters, skipping whitespace and stopping when we hit a
    non-superscript character.
@@ -174,7 +180,8 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     s.pushSyntax (alignSyntax s'.stxStack.back)
   )
 
-/-- The super/subscript parser.
+/--
+The super/subscript parser.
 
 * `m`: the character mapping
 * `antiquotName`: the name to use for antiquotation bindings `$a:antiquotName`.
@@ -231,14 +238,17 @@ end Superscript
 
 /--
 The parser `superscript(term)` parses a superscript. Basic usage is:
+
 ```
 local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
+
 Given a notation like this, the expression `2⁶⁴` parses and expands to `2 ^ 64`.
 
 Note that because of Unicode limitations, not many characters can actually be typed inside the
 superscript, so this should not be used for complex expressions. Legal superscript characters:
+
 ```
 ⁰¹²³⁴⁵⁶⁷⁸⁹ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖ𐞥ʳˢᵗᵘᵛʷˣʸᶻᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾꟴᴿᵀᵁⱽᵂᵝᵞᵟᵋᶿᶥᶹᵠᵡ⁺⁻⁼⁽⁾
 ```
@@ -253,13 +263,16 @@ def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``supers
 def superscript.formatter :=
   Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
-/-- Shorthand for `superscript(term)`.
+/--
+Shorthand for `superscript(term)`.
 
 This is needed because the initializer below does not always run, and if it has not run then
 downstream parsers using the combinators will crash.
 
-See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
-for some context. -/
+See
+https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context.
+-/
 @[term_parser]
 def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
 
@@ -267,15 +280,18 @@ initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
+
 ```
 local syntax:arg term:max subscript(term) : term
 local macro_rules | `($a:term $i:subscript) => `($a $i)
 ```
+
 Given a notation like this, the expression `(a)ᵢ` parses and expands to `a i`. (Either parentheses
 or a whitespace as in `a ᵢ` is required, because `aᵢ` is considered as an identifier.)
 
 Note that because of Unicode limitations, not many characters can actually be typed inside the
 subscript, so this should not be used for complex expressions. Legal subscript characters:
+
 ```
 ₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡʏᴢᵦᵧᵨᵩᵪ₊₋₌₍₎
 ```
@@ -289,13 +305,16 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 @[combinator_formatter subscript]
 def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
-/-- Shorthand for `subscript(term)`.
+/--
+Shorthand for `subscript(term)`.
 
 This is needed because the initializer below does not always run, and if it has not run then
 downstream parsers using the combinators will crash.
 
-See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
-for some context. -/
+See
+https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context.
+-/
 @[term_parser]
 def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
 
@@ -314,16 +333,20 @@ where
   scripted : SyntaxNodeKind → Bool :=
     #[``subscript, ``superscript].contains
 
-/-- Successfully delaborates only if the resulting expression can be superscripted.
+/--
+Successfully delaborates only if the resulting expression can be superscripted.
 
-See `Mapping.superscript` in this file for legal superscript characters. -/
+See `Mapping.superscript` in this file for legal superscript characters.
+-/
 def delabSuperscript : Delab := do
   let stx ← delab
   if Superscript.isValid .superscript stx.raw then pure stx else failure
 
-/-- Successfully delaborates only if the resulting expression can be subscripted.
+/--
+Successfully delaborates only if the resulting expression can be subscripted.
 
-See `Mapping.subscript` in this file for legal subscript characters. -/
+See `Mapping.subscript` in this file for legal subscript characters.
+-/
 def delabSubscript : Delab := do
   let stx ← delab
   if Superscript.isValid .subscript stx.raw then pure stx else failure

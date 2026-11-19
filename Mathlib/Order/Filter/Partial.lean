@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.PFun
 public import Mathlib.Order.Filter.Tendsto
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Tendsto` for relations and partial functions
 
@@ -32,6 +35,7 @@ functions and relations.
 ## Notes
 
 `Set.preimage` can be generalized to relations in two ways:
+
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
 
@@ -53,7 +57,9 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Filter
 
-/-! ### Relations -/
+/-!
+# Relations
+-/
 
 
 /-- The forward map of a filter under a relation. Generalization of `Filter.map` to relations. Note
@@ -191,7 +197,9 @@ theorem tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → 
     Tendsto f l₁ l₂ ↔ RTendsto' (Function.graph f) l₁ l₂ := by
   simp [tendsto_def, Function.graph, rtendsto'_def, SetRel.preimage, Set.preimage]
 
-/-! ### Partial functions -/
+/-!
+# Partial functions
+-/
 
 
 /-- The forward map of a filter under a partial function. Generalization of `Filter.map` to partial

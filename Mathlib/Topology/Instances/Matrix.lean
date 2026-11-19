@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological properties of matrices
 
@@ -25,14 +28,17 @@ This file is a place to collect topological results about matrices.
 ## Main results
 
 * Sets of matrices:
+
   * `IsOpen.matrix`: the set of finite matrices with entries in an open set
     is itself an open set.
   * `IsCompact.matrix`: the set of matrices with entries in a compact set
     is itself a compact set.
 * Continuity:
+
   * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
   * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
 * Infinite sums
+
   * `Matrix.transpose_tsum`: transpose commutes with infinite sums
   * `Matrix.diagonal_tsum`: diagonal commutes with infinite sums
   * `Matrix.blockDiagonal_tsum`: block diagonal commutes with infinite sums
@@ -71,7 +77,9 @@ theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
 
 end Set
 
-/-! ### Lemmas about continuity of operations -/
+/-!
+# Lemmas about continuity of operations
+-/
 
 section Continuity
 
@@ -321,7 +329,9 @@ end BlockMatrices
 
 end Continuity
 
-/-! ### Lemmas about infinite sums -/
+/-!
+# Lemmas about infinite sums
+-/
 
 
 section tsum

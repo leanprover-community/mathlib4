@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions between functors
 
@@ -14,6 +17,7 @@ public import Mathlib.CategoryTheory.Yoneda
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
 We provide various useful constructors:
+
 * `mkOfHomEquiv`
 * `mk'`: construct an adjunction from the data of a hom set equivalence, unit and counit natural
   transformations together with proofs of the equalities `homEquiv_unit` and `homEquiv_counit`
@@ -48,6 +52,7 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   and counit.
 * The file `Limits` proves that left adjoints preserve colimits and right adjoints preserve limits.
 * The file `Mates` establishes the bijection between the 2-cells
+
   ```
           L₁                  R₁
         C --→ D             C ←-- D
@@ -55,6 +60,7 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
         E --→ F             E ←-- F
           L₂                  R₂
   ```
+
   where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. Specializing to a pair of adjoints `L₁ L₂ : C ⥤ D`,
   `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
 * The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
@@ -91,7 +97,8 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 set_option linter.translate.warnInvalid false in
-/-- `F ⊣ G` represents the data of an adjunction between two functors
+/--
+`F ⊣ G` represents the data of an adjunction between two functors
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
 We use the unit-counit definition of an adjunction. There is a constructor `Adjunction.mk'`
@@ -103,7 +110,8 @@ There is also a constructor `Adjunction.mkOfHomEquiv` which constructs an adjunc
 hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
-`adjunctionOfEquivLeft` (as well as their duals). -/
+`adjunctionOfEquivLeft` (as well as their duals).
+-/
 @[stacks 0037, to_dual self (reorder := C D, 2 4, F G)]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/

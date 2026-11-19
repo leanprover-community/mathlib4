@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
-/-! # `E →L[ℂ] E` as a C⋆-algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `E →L[ℂ] E` as a C⋆-algebra
 
 We place this here because, for reasons related to the import hierarchy, it should not be placed
 in earlier files.

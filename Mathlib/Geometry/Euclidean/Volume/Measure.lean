@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Volume measure for Euclidean geometry
 
@@ -121,7 +124,7 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_zero_or_top {d₁ d₂ :
     simp [addHaarScalarFactor_volume_hausdorffMeasure_ne_zero]
 
 /-!
-### `μHE[d]` is preserved through isometry
+# `μHE[d]` is preserved through isometry
 -/
 
 theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ Y) (d : ℕ) :
@@ -145,7 +148,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
     Measure.restrict_smul]
 
 /-!
-### Applying scalers to `μHE[d]`
+# Applying scalers to `μHE[d]`
 -/
 
 open scoped Pointwise in
@@ -181,7 +184,7 @@ variable [FiniteDimensional ℝ V]
 variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P]
 
 /-!
-### `μHE[d]` agree with the volume measure on inner product spaces
+# `μHE[d]` agree with the volume measure on inner product spaces
 -/
 
 theorem EuclideanSpace.euclideanHausdorffMeasure_eq_volume (d : ℕ) :
@@ -197,7 +200,7 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
   simp
 
 /-!
-### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
+# `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
 /-- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
 associated inner product space. If it is implemented, we can unify this lemma with the previous one.
@@ -217,7 +220,7 @@ theorem EuclideanGeometry.measurePreserving_vaddConst (p : P) :
 open EuclideanGeometry
 
 /-!
-### `μHE[d]` is preserved through subspace inclusion
+# `μHE[d]` is preserved through subspace inclusion
 -/
 
 namespace AffineSubspace
@@ -239,7 +242,7 @@ theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSu
 end AffineSubspace
 
 /-!
-### `μHE[d]` is translation invariant
+# `μHE[d]` is translation invariant
 -/
 
 instance {α : Type*} [AddGroup α] [AddAction α X] [IsIsometricVAdd α X] (d : ℕ) :
@@ -258,10 +261,11 @@ instance [AddGroup X] [IsIsometricVAdd Xᵃᵒᵖ X] (d : ℕ) :
   infer_instance
 
 /-!
-### Integration formula for `μHE[d]`
+# Integration formula for `μHE[d]`
 -/
 
-/-- A measurable equivalence between an affine space and its orthogonal decomposition by a base
+/--
+A measurable equivalence between an affine space and its orthogonal decomposition by a base
 point and a direction. We show that this is measure preserving between `μHE[finrank ℝ V]` and
 `volume` at `Submodule.measurePreserving_measurableEquivProd`.
 
@@ -290,9 +294,11 @@ theorem Submodule.measurePreserving_measurableEquivProd (s : Submodule ℝ V) (p
   refine s.orthogonalDecomposition.measurePreserving.trans ?_
   exact WithLp.volume_preserving_ofLp _ _
 
-/-- The $n$-dimensional volume of an object in an $n$-dimensional space is equal to the integral
-of the volume of $(n-d)$-dimensional cross-section along an orthogonal $d$-dimensional subspace.
-This is an analogue to `MeasureTheory.Measure.prod_apply`. -/
+/--
+The $`n`-dimensional volume of an object in an $`n`-dimensional space is equal to the integral
+of the volume of $`(n-d)`-dimensional cross-section along an orthogonal $`d`-dimensional subspace.
+This is an analogue to `MeasureTheory.Measure.prod_apply`.
+-/
 theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspace ℝ P)
     [hs : Nonempty s] {t : Set P} (ht : MeasurableSet t) :
     μHE[finrank ℝ V] t = ∫⁻ (x : s), μHE[finrank ℝ s.directionᗮ] (t ∩ mk' x.val s.directionᗮ)
@@ -325,10 +331,12 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   ext y
   simp [u, vadd_vadd, add_comm]
 
-/-- The $n$-dimensional volume of an object in an $n$-dimensional space is equal to the integral
-of the volume of $(n-1)$-dimensional orthogonal cross-section along a line defined by a direction
+/--
+The $`n`-dimensional volume of an object in an $`n`-dimensional space is equal to the integral
+of the volume of $`(n-1)`-dimensional orthogonal cross-section along a line defined by a direction
 vector. This is a special case of `AffineSubspace.euclideanHausdorffMeasure_eq_lintegral` with a
-one-dimensional subspace. -/
+one-dimensional subspace.
+-/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V} (hv : v ≠ 0)
     {t : Set P} (ht : MeasurableSet t) :
     μHE[finrank ℝ V] t =

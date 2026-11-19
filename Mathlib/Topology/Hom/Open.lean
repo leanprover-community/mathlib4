@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous open maps
 
@@ -40,9 +43,11 @@ structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSp
 
 section
 
-/-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
+/--
+`ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
-You should extend this class when you extend `ContinuousOpenMap`. -/
+You should extend this class when you extend `ContinuousOpenMap`.
+-/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
@@ -56,7 +61,9 @@ instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
     CoeTC F (α →CO β) :=
   ⟨fun f => ⟨f, map_open f⟩⟩
 
-/-! ### Continuous open maps -/
+/-!
+# Continuous open maps
+-/
 
 
 namespace ContinuousOpenMap

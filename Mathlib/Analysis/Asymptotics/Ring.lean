@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.Arith
 public import Mathlib.Analysis.Normed.Field.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring and field operations on asymptotic relations
 
@@ -30,7 +33,9 @@ variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' : ℝ} {f : α → E} {g : α → F} {l : Filter α}
 
-/-! ### Multiplication by a constant -/
+/-!
+# Multiplication by a constant
+-/
 
 theorem isBigOWith_const_mul_self (c : R) (f : α → R) (l : Filter α) :
     IsBigOWith ‖c‖ l (fun x => c * f x) f :=
@@ -137,7 +142,9 @@ theorem isLittleO_const_mul_right_iff {g : α → S} {c : S} (hc : c ≠ 0) :
     (f =o[l] fun x => c * g x) ↔ f =o[l] g :=
   ⟨fun h ↦ h.of_const_mul_right, fun h ↦ h.trans_isBigO (isBigO_self_const_mul hc g l)⟩
 
-/-! ### Multiplication -/
+/-!
+# Multiplication
+-/
 
 theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} {c₁ c₂ : ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
     (h₂ : IsBigOWith c₂ l f₂ g₂) :
@@ -214,7 +221,9 @@ theorem IsLittleO.of_pow [NormOneClass S] {f : α → S} {g : α → R} {n : ℕ
     (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) : f =o[l] g :=
   IsLittleO.of_isBigOWith fun _c hc => (h.def' <| pow_pos hc _).of_pow hn le_rfl hc.le
 
-/-! ### Inverse -/
+/-!
+# Inverse
+-/
 
 theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith c l f g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
@@ -235,7 +244,7 @@ theorem IsLittleO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =o[l] g)
   IsLittleO.of_isBigOWith fun _c hc => (h.def' hc).inv_rev h₀
 
 /-!
-### Eventually (u / v) * v = u
+# Eventually (u / v) \* v = u
 
 If `u` and `v` are linked by an `IsBigOWith` relation, then we
 eventually have `(u / v) * v = u`, even if `v` vanishes.

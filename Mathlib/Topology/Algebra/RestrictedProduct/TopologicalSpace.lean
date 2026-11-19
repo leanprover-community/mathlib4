@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 import Mathlib.Topology.Algebra.Group.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restricted products of topological spaces, topological groups and rings
 
@@ -30,6 +33,7 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 ## Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
    identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
    which is also the topology induced from the full product `Π i, R i`.
@@ -38,8 +42,9 @@ The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in
    inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
+
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all _cofinite_ sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
   `s` belongs to the indexing set of the inductive limit.
 
@@ -58,12 +63,12 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   inductive limit / final topology associated to the natural maps
   `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
-  *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
-  * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-    `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-    *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-    is continuous.
+  _if and only if_ its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
 
+  * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an *open* subset of
+    `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+    _if and only if_ its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+    is continuous.
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
 * `RestrictedProduct.isTopologicalRing`: if each `R i` is a topological ring and each `A i` is an
@@ -72,7 +77,6 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   `A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
   continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
   sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
-
 * `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
   compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
   restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
@@ -107,9 +111,10 @@ variable {𝓕 𝓖 : Filter ι}
 
 section Topology
 /-!
-## Topology on the restricted product
+# Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
    identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
    which is also the topology induced from the full product `Π i, R i`.
@@ -118,8 +123,9 @@ The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in
    inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
+
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all _cofinite_ sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
   `s` belongs to the indexing set of the inductive limit.
 
@@ -137,7 +143,7 @@ these instances to principal and cofinite filters if necessary.
 -/
 
 /-!
-### Definition of the topology
+# Definition of the topology
 -/
 
 variable {R A R' A'}
@@ -177,7 +183,7 @@ instance [∀ i, T2Space (R i)] : T2Space (Πʳ i, [R i, A i]_[𝓕]) :=
 
 section principal
 /-!
-### Topological facts in the principal case
+# Topological facts in the principal case
 -/
 
 variable {S : Set ι}
@@ -246,11 +252,13 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
   continuous_invFun := continuous_pi continuous_eval
 
-/-- Assume that `S` is a subset of `ι` with finite complement, that each `R i` is weakly locally
-compact, and that `A i` is *compact* for all `i ∈ S`. Then the restricted product
+/--
+Assume that `S` is a subset of `ι` with finite complement, that each `R i` is weakly locally
+compact, and that `A i` is _compact_ for all `i ∈ S`. Then the restricted product
 `Πʳ i, [R i, A i]_[𝓟 S]` is locally compact.
 
-Note: we spell "`S` has finite complement" as `cofinite ≤ 𝓟 S`. -/
+Note: we spell "`S` has finite complement" as `cofinite ≤ 𝓟 S`.
+-/
 theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace (R i)]
     (hS : cofinite ≤ 𝓟 S) (hAcompact : ∀ i ∈ S, IsCompact (A i)) :
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]_[𝓟 S]) where
@@ -287,7 +295,7 @@ end principal
 
 section general
 /-!
-### Topological facts in the general case
+# Topological facts in the general case
 -/
 
 variable (𝓕) in
@@ -296,11 +304,13 @@ theorem topologicalSpace_eq_iSup :
       .coinduced (inclusion R A hS) (topologicalSpace R A (𝓟 S)) := by
   simp_rw [topologicalSpace_eq_of_principal, topologicalSpace]
 
-/-- The **universal property** of the topology on the restricted product: a map from
-`Πʳ i, [R i, A i]_[𝓕]` is continuous *iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]`
+/--
+The *universal property* of the topology on the restricted product: a map from
+`Πʳ i, [R i, A i]_[𝓕]` is continuous _iff_ its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]`
 (with `𝓕 ≤ 𝓟 s`) is continuous.
 
-See also `RestrictedProduct.continuous_dom_prod_left`. -/
+See also `RestrictedProduct.continuous_dom_prod_left`.
+-/
 theorem continuous_dom {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i]_[𝓕] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), Continuous (f ∘ inclusion R A hS) := by
@@ -324,18 +334,18 @@ end general
 
 section cofinite
 /-!
-### Topological facts in the case where `𝓕 = cofinite` and all `A i`s are open
+# Topological facts in the case where `𝓕 = cofinite` and all `A i`s are open
 
 The classical restricted product, associated to the cofinite filter, satisfies more topological
 properties when each `A i` is an open subset of `R i`. The key fact is that each
-`Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) then embeds **as an open subset** in
+`Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) then embeds *as an open subset* in
 `Πʳ i, [R i, A i]`.
 
 This allows us to prove a "universal property with parameters", expressing that for any
 arbitrary topological space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
 is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
 
-This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
+This fact, which is *not true* for a general inductive limit, will allow us to prove continuity
 of functions of two variables (e.g algebraic operations), which would otherwise be inaccessible.
 -/
 
@@ -424,9 +434,11 @@ instance [hAopen : Fact (∀ i, IsOpen (A i))] [∀ i, WeaklyLocallyCompactSpace
     .of_forall fun _ ↦ isCompact_iff_compactSpace.mpr inferInstance
 
 include hAopen in
-/-- The **universal property with parameters** of the topology on the restricted product:
+/--
+The *universal property with parameters* of the topology on the restricted product:
 for any topological space `Y` of "parameters", a map from `(Πʳ i, [R i, A i]) × Y` is continuous
-*iff* its restriction to each `(Πʳ i, [R i, A i]_[𝓟 S]) × Y` (with `S` cofinite) is continuous. -/
+_iff_ its restriction to each `(Πʳ i, [R i, A i]_[𝓟 S]) × Y` (with `S` cofinite) is continuous.
+-/
 theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Πʳ i, [R i, A i] × Y → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -445,9 +457,11 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
 
 -- TODO: get from the previous one instead of copy-pasting
 include hAopen in
-/-- The **universal property with parameters** of the topology on the restricted product:
+/--
+The *universal property with parameters* of the topology on the restricted product:
 for any topological space `Y` of "parameters", a map from `Y × Πʳ i, [R i, A i]` is continuous
-*iff* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) is continuous. -/
+_iff_ its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) is continuous.
+-/
 theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Y × Πʳ i, [R i, A i] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -465,11 +479,13 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
   exact H S hS |>.tendsto ⟨y, x'⟩
 
 include hAopen in
-/-- A map from `Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i]` is continuous
-*iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 S] × Πʳ i, [R' i, A' i]_[𝓟 S]`
+/--
+A map from `Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i]` is continuous
+_iff_ its restriction to each `Πʳ i, [R i, A i]_[𝓟 S] × Πʳ i, [R' i, A' i]_[𝓟 S]`
 (with `S` cofinite) is continuous.
 
-This is the key result for continuity of multiplication and addition. -/
+This is the key result for continuity of multiplication and addition.
+-/
 theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
     [∀ i, TopologicalSpace (R' i)] (hAopen' : ∀ i, IsOpen (A' i))
     {X : Type*} [TopologicalSpace X]
@@ -513,7 +529,7 @@ end Topology
 
 section Compatibility
 /-!
-## Compatibility properties between algebra and topology
+# Compatibility properties between algebra and topology
 -/
 
 variable {S : ι → Type*} -- subobject type

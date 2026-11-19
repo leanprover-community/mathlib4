@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 import Mathlib.Tactic.Ring.NamePolyVars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
 
@@ -17,9 +20,9 @@ A point on the unweighted projective plane over a commutative ring `R` is an equ
 `(x, y, z) ∼ (x', y', z')` if there is some unit `u` in `Rˣ` with `(x, y, z) = (ux', uy', uz')`.
 
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. A
-*projective point* is a point on the unweighted projective plane over `R` satisfying the
-*homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *projective coordinates*, where
-`W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)`. It is *nonsingular* if its
+_projective point_ is a point on the unweighted projective plane over `R` satisfying the
+_homogeneous Weierstrass equation_ `W(X, Y, Z) = 0` in _projective coordinates_, where
+`W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)`. It is _nonsingular_ if its
 partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
 
 This file gives an explicit implementation of equivalence classes of triples up to scaling by units,
@@ -61,7 +64,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean`.
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -103,7 +106,9 @@ name_poly_vars X, Y, Z over R
 
 namespace WeierstrassCurve
 
-/-! ## Projective coordinates -/
+/-!
+# Projective coordinates
+-/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in projective coordinates. -/
@@ -220,14 +225,18 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
-/-! ## Weierstrass equations in projective coordinates -/
+/-!
+# Weierstrass equations in projective coordinates
+-/
 
 variable (W') in
-/-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
+/--
+The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
 Weierstrass curve `W` over a ring `R` in projective coordinates.
 
 This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X`, `Y`, and `Z`
-represent `X`, `Y`, and `Z` respectively. -/
+represent `X`, `Y`, and `Z` respectively.
+-/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   Y ^ 2 * Z + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 2
     - (X ^ 3 + C W'.a₂ * X ^ 2 * Z + C W'.a₄ * X * Z ^ 2 + C W'.a₆ * Z ^ 3)
@@ -246,10 +255,12 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
 
 variable (W') in
-/-- The proposition that a projective point representative `(x, y, z)` lies in a Weierstrass curve
+/--
+The proposition that a projective point representative `(x, y, z)` lies in a Weierstrass curve
 `W`.
 
-In other words, it satisfies the homogeneous Weierstrass equation `W(X, Y, Z) = 0`. -/
+In other words, it satisfies the homogeneous Weierstrass equation `W(X, Y, Z) = 0`.
+-/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -286,7 +297,9 @@ lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equat
     (hPz : P z = 0) : P x = 0 :=
   eq_zero_of_pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
 
-/-! ## The nonsingular condition in projective coordinates -/
+/-!
+# The nonsingular condition in projective coordinates
+-/
 
 variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
@@ -360,12 +373,14 @@ theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
   ring1
 
 variable (W') in
-/-- The proposition that a projective point representative `(x, y, z)` on a Weierstrass curve `W` is
+/--
+The proposition that a projective point representative `(x, y, z)` on a Weierstrass curve `W` is
 nonsingular.
 
 In other words, either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for fields.
+-/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W'.Equation P ∧
@@ -456,12 +471,14 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     exact ⟨Units.map f u, (comp_smul ..).symm⟩
 
 variable (W') in
-/-- The proposition that a projective point class on a Weierstrass curve `W` is nonsingular.
+/--
+The proposition that a projective point class on a Weierstrass curve `W` is nonsingular.
 
 If `P` is a projective point representative on `W`, then `W.NonsingularLift ⟦P⟧` is definitionally
 equivalent to `W.Nonsingular P`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for fields.
+-/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
@@ -475,7 +492,9 @@ lemma nonsingularLift_some (a b : R) :
     W'.NonsingularLift ⟦![a, b, 1]⟧ ↔ W'.toAffine.Nonsingular a b :=
   nonsingular_some a b
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (W') (f : R →+* S)
 

@@ -7,22 +7,27 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Negation and addition formulae for nonsingular points in affine coordinates
 
 Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. The nonsingular affine
 points on `W` can be given negation and addition operations defined by a secant-and-tangent process.
-* Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
+
+* Given a nonsingular affine point `P`, its _negation_ `-P` is defined to be the unique third
   nonsingular point of intersection between `W` and the vertical line through `P`.
   Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
-* Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
+* Given two nonsingular affine points `P` and `Q`, their _addition_ `P + Q` is defined to be the
   negation of the unique third nonsingular point of intersection between `W` and the line `L`
   through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
-    * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
-    * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
-      slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
-    * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
-      `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
+
+  * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
+  * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
+    slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+  * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
+    `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
 
   In the last two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
   equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
@@ -50,7 +55,7 @@ coordinates will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/P
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -88,7 +93,9 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [C
 
 namespace Affine
 
-/-! ## Negation formulae in affine coordinates -/
+/-!
+# Negation formulae in affine coordinates
+-/
 
 variable (W') in
 /-- The negation polynomial `-Y - a₁X - a₃` associated to the negation of a nonsingular affine point
@@ -112,10 +119,12 @@ side condition of `slope_of_Y_eq` -- except if `negY` is implicit-reducible.
 So this attribute improves the confluence of `simp`.
 -/
 variable (W') in
-/-- The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
+/--
+The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
 `W`.
 
-This depends on `W`, and has argument order: `x`, `y`. -/
+This depends on `W`, and has argument order: `x`, `y`.
+-/
 @[simp, implicit_reducible]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
@@ -148,13 +157,17 @@ lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingu
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
     not_congr <| and_congr_left fun h => by rw [← h]
 
-/-! ## Slope formulae in affine coordinates -/
+/-!
+# Slope formulae in affine coordinates
+-/
 
 variable (W') in
-/-- The line polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y` that passes through
+/--
+The line polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y` that passes through
 a nonsingular affine point `(x, y)` on a Weierstrass curve `W` with a slope of `ℓ`.
 
-This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`.
+-/
 noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
 
@@ -163,7 +176,8 @@ section slope
 variable [DecidableEq F]
 
 variable (W) in
-/-- The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
+/--
+The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
 Weierstrass curve `W`.
 
 If `x₁ ≠ x₂`, then this line is the secant of `W` through `(x₁, y₁)` and `(x₂, y₂)`, and has slope
@@ -171,7 +185,8 @@ If `x₁ ≠ x₂`, then this line is the secant of `W` through `(x₁, y₁)` a
 at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`. Otherwise,
 this line is vertical, in which case this returns the value `0`.
 
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`.
+-/
 def slope (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
@@ -207,15 +222,19 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
 
 end slope
 
-/-! ## Addition formulae in affine coordinates -/
+/-!
+# Addition formulae in affine coordinates
+-/
 
 variable (W') in
-/-- The addition polynomial obtained by substituting the line `Y = ℓ(X - x) + y` into the polynomial
+/--
+The addition polynomial obtained by substituting the line `Y = ℓ(X - x) + y` into the polynomial
 `W(X, Y)` associated to a Weierstrass curve `W`. If such a line intersects `W` at another
 nonsingular affine point `(x', y')` on `W`, then the roots of this polynomial are precisely `x`,
 `x'`, and the `X`-coordinate of the addition of `(x, y)` and `(x', y')`.
 
-This depends on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+This depends on `W`, and has argument order: `x`, `y`, `ℓ`.
+-/
 noncomputable def addPolynomial (x y ℓ : R) : R[X] :=
   W'.polynomial.eval <| linePolynomial x y ℓ
 
@@ -237,28 +256,34 @@ lemma addPolynomial_eq (x y ℓ : R) : W'.addPolynomial x y ℓ = -Cubic.toPoly
   ring1
 
 variable (W') in
-/-- The `X`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
+/--
+The `X`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: `x₁`, `x₂`, `ℓ`. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `ℓ`.
+-/
 @[simp]
 def addX (x₁ x₂ ℓ : R) : R :=
   ℓ ^ 2 + W'.a₁ * ℓ - W'.a₂ - x₁ - x₂
 
 variable (W') in
-/-- The `Y`-coordinate of `-((x₁, y₁) + (x₂, y₂))` for two nonsingular affine points `(x₁, y₁)` and
+/--
+The `Y`-coordinate of `-((x₁, y₁) + (x₂, y₂))` for two nonsingular affine points `(x₁, y₁)` and
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`.
+-/
 @[simp]
 def negAddY (x₁ x₂ y₁ ℓ : R) : R :=
   ℓ * (W'.addX x₁ x₂ ℓ - x₁) + y₁
 
 variable (W') in
-/-- The `Y`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
+/--
+The `Y`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`.
+-/
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
 
@@ -393,7 +418,7 @@ lemma addX_of_X_ne {x₁ y₁ x₂ y₂ : F} (hn : x₁ ≠ x₂) :
   grind only [addX, slope]
 
 /-!
-### Some statements about the numerator and denominator of the x-coordinate of 2*P
+# Some statements about the numerator and denominator of the x-coordinate of 2\*P
 
 We add the explicit formula for the duplication map on the `x`-coordinate here
 (see `WeierstrassCurve.Affine.addX_self_of_Y_ne` below)
@@ -460,7 +485,9 @@ lemma addX_self_of_Y_ne {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
 
 end slope
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (f : R →+* S) (x y x₁ y₁ x₂ y₂ ℓ : R)
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.FreeAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instance for algebras over a commutative ring
 

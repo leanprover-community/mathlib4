@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas for the Rational Numbers
 -/
@@ -327,7 +330,7 @@ protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ
   simpa using Rat.forall (p := (¬ p ·)).not
 
 /-!
-### Denominator as `ℕ+`
+# Denominator as `ℕ+`
 -/
 
 

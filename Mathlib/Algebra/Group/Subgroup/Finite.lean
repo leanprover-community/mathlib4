@@ -11,12 +11,16 @@ public import Mathlib.Algebra.Group.Submonoid.Finite
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups
 
 This file provides some result on multiplicative and additive subgroups in the finite context.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -39,7 +43,7 @@ instance (K : Subgroup G) [Finite G] : Finite K :=
 end Subgroup
 
 /-!
-### Conversion to/from `Additive`/`Multiplicative`
+# Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
@@ -243,24 +247,30 @@ instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : Decidabl
 /-- The range of a finite monoid under a monoid homomorphism is finite.
 Note: this instance can form a diamond with `Subtype.fintype` in the
 presence of `Fintype N`. -/
-@[to_additive /-- The range of a finite additive monoid under an additive monoid homomorphism is
+@[to_additive /--
+              The range of a finite additive monoid under an additive monoid homomorphism is
 finite.
 
-Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the presence
-of `Fintype N`. -/]
+              Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in
+the presence of `Fintype N`.
+              -/]
 instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
     (f : M →* N) : Fintype (mrange f) :=
   Set.fintypeRange f
 
-/-- The range of a finite group under a group homomorphism is finite.
+/--
+The range of a finite group under a group homomorphism is finite.
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
-presence of `Fintype N`. -/
+presence of `Fintype N`.
+-/
 @[to_additive
-/-- The range of a finite additive group under an additive group homomorphism is finite.
+/--
+The range of a finite additive group under an additive group homomorphism is finite.
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
-presence of `Fintype N`. -/]
+presence of `Fintype N`.
+-/]
 instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
   Set.fintypeRange f
 

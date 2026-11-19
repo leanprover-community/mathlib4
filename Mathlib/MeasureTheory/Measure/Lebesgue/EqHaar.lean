@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relationship between the Haar and Lebesgue measures
 
@@ -14,6 +17,7 @@ We prove that the Haar measure and Lebesgue measure are equal on `ℝ` and on `�
 `MeasureTheory.addHaarMeasure_eq_volume` and `MeasureTheory.addHaarMeasure_eq_volume_pi`.
 
 We deduce basic properties of any Haar measure on a finite-dimensional real vector space:
+
 * `map_linearMap_addHaar_eq_smul_addHaar`: a linear map rescales the Haar measure by the
   absolute value of its determinant.
 * `addHaar_preimage_linearMap` : when `f` is a linear map with nonzero determinant, the measure
@@ -106,7 +110,7 @@ namespace MeasureTheory
 open Measure TopologicalSpace.PositiveCompacts Module
 
 /-!
-### The Lebesgue measure is a Haar measure on `ℝ` and on `ℝ^ι`.
+# The Lebesgue measure is a Haar measure on `ℝ` and on `ℝ^ι`.
 -/
 
 /-- The Haar measure equals the Lebesgue measure on `ℝ`. -/
@@ -127,7 +131,7 @@ theorem isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
 namespace Measure
 
 /-!
-### Strict subspaces have zero measure
+# Strict subspaces have zero measure
 -/
 
 open scoped Function -- required for scoped `on` notation
@@ -207,7 +211,7 @@ theorem addHaar_affineSubspace {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     image_add_right, neg_neg, measure_preimage_add_right] using addHaar_submodule μ s.direction hs
 
 /-!
-### Applying a linear map rescales Haar measure by the determinant
+# Applying a linear map rescales Haar measure by the determinant
 
 We first prove this on `ι → ℝ`, using that this is already known for the product Lebesgue
 measure (thanks to matrices computations). Then, we extend this to any finite-dimensional real
@@ -329,7 +333,7 @@ theorem ContinuousLinearMap.quasiMeasurePreserving (f : E →L[ℝ] E) (hf : f.d
   LinearMap.quasiMeasurePreserving μ (f : E →ₗ[ℝ] E) hf
 
 /-!
-### Basic properties of Haar measures on real vector spaces
+# Basic properties of Haar measures on real vector spaces
 -/
 
 
@@ -413,7 +417,9 @@ theorem addHaar_image_homothety (x : E) (r : ℝ) (s : Set E) :
 general Haar measures on general commutative groups. -/
 
 
-/-! ### Measure of balls -/
+/-!
+# Measure of balls
+-/
 
 theorem addHaar_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) : μ (ball x r) = μ (ball (0 : E) r) := by
@@ -558,7 +564,7 @@ instance (priority := 100) isUnifLocDoublingMeasureOfIsAddHaarMeasure :
 section
 
 /-!
-### The Lebesgue measure associated to an alternating map
+# The Lebesgue measure associated to an alternating map
 -/
 
 variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [NormedSpace ℝ G]
@@ -598,7 +604,7 @@ instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure
 end
 
 /-!
-### Density points
+# Density points
 
 Besicovitch covering theorem ensures that, for any locally finite measure on a finite-dimensional
 real vector space, almost every point of a set `s` is a density point, i.e.,

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Matrix.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of matrices
 
@@ -30,10 +33,12 @@ namespace Matrix
 
 variable (I J K L R R' : Type*)
 
-/-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
+/--
+An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
 an `I × K` by `J × L` matrix.
 
 This is available in bundled forms as:
+
 * `Matrix.compAddEquiv`
 * `Matrix.compLinearEquiv`
 * `Matrix.compRingEquiv`

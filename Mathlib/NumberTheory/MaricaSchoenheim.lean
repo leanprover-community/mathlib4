@@ -9,16 +9,19 @@ public import Mathlib.Data.Nat.Squarefree
 
 import Mathlib.Combinatorics.SetFamily.FourFunctions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Marica-Schönheim special case of Graham's conjecture
 
-Graham's conjecture states that if $0 < a_1 < \dots a_n$ are integers, then
-$\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n$. This file proves the conjecture when the $a_i$ are
+Graham's conjecture states that if $`0 < a_1 < \dots a_n` are integers, then
+$`\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n`. This file proves the conjecture when the $`a_i` are
 squarefree as a corollary of the Marica-Schönheim inequality.
 
 ## References
 
-[*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
+‍\[_Applications of the FKG Inequality and Its Relatives_, Graham\]\[Graham1983\]
 -/
 
 @[expose] public section
@@ -28,10 +31,12 @@ open scoped FinsetFamily
 
 namespace Nat
 
-/-- Statement of Graham's conjecture (which is now a theorem in the literature).
+/--
+Statement of Graham's conjecture (which is now a theorem in the literature).
 
-Graham's conjecture states that if $0 < a_1 < \dots a_n$ are integers, then
-$\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n$. -/
+Graham's conjecture states that if $`0 < a_1 < \dots a_n` are integers, then
+$`\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n`.
+-/
 def GrahamConjecture (n : ℕ) (f : ℕ → ℕ) : Prop :=
   n ≠ 0 → StrictMonoOn f (Set.Iio n) → ∃ i < n, ∃ j < n, (f i).gcd (f j) * n ≤ f i
 

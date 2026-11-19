@@ -16,10 +16,14 @@ import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.RingTheory.FreeCommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions of (co)limits in `CommRingCat`
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
+
 * tensor product is the pushout
 * tensor product over `ℤ` is the binary coproduct
 * `ℤ` is the initial object

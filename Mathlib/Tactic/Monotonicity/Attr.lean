@@ -8,7 +8,12 @@ module
 public meta import Lean.LabelAttribute
 public import Mathlib.Init
 
-/-! # The @[mono] attribute -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The @\[mono\] attribute
+-/
 
 public meta section
 

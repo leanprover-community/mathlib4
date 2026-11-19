@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Partial
 public import Mathlib.Topology.Neighborhoods
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial functions and topological spaces
 
@@ -42,7 +45,9 @@ theorem ptendsto'_nhds {f : Y →. X} {l : Filter Y} {x : X} :
     PTendsto' f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
 
-/-! ### Continuity and partial functions -/
+/-!
+# Continuity and partial functions
+-/
 
 
 variable [TopologicalSpace Y]

@@ -9,6 +9,9 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian processes
 
@@ -39,7 +42,9 @@ variable {S T Ω E F : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X Y :
 
 section Basic
 
-/-! ### Basic facts -/
+/-!
+# Basic facts
+-/
 
 variable [MeasurableSpace E] [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
 
@@ -63,7 +68,9 @@ variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
 
 section Maps
 
-/-! ### Gaussian Marginals -/
+/-!
+# Gaussian Marginals
+-/
 
 variable [NormedSpace ℝ E]
 
@@ -114,7 +121,9 @@ end Maps
 
 section Transformations
 
-/-! ### Operations that preserve Gaussianity -/
+/-!
+# Operations that preserve Gaussianity
+-/
 
 variable [NormedSpace ℝ E] [SecondCountableTopology E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]

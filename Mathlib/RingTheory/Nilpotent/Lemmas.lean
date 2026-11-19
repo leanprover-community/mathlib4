@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Radical.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent elements
 

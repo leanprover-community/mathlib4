@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 
 import Mathlib.LinearAlgebra.Isomorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
 

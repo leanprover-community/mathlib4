@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Appending to the back of a vector
 
@@ -32,7 +35,9 @@ variable {α β σ φ : Type*} {n : ℕ} {x : α} {s : σ} (xs : Vector α n)
 def snoc : Vector α n → α → Vector α (n + 1) :=
   fun xs x => xs ++ x ::ᵥ Vector.nil
 
-/-! ## Simplification lemmas -/
+/-!
+# Simplification lemmas
+-/
 
 section Simp
 
@@ -70,18 +75,21 @@ theorem replicate_succ_to_snoc (val : α) :
 
 end Simp
 
-/-! ## Reverse induction principle -/
+/-!
+# Reverse induction principle
+-/
 
 section Induction
 
 /--
-Define `C v` by *reverse* induction on `v : Vector α n`.
+Define `C v` by _reverse_ induction on `v : Vector α n`.
 That is, break the vector down starting from the right-most element, using `snoc`
 
 This function has two arguments: `nil` handles the base case on `C nil`,
 and `snoc` defines the inductive step using `∀ x : α, C xs → C (xs.snoc x)`.
 
-This can be used as `induction v using Vector.revInductionOn`. -/
+This can be used as `induction v using Vector.revInductionOn`.
+-/
 @[elab_as_elim]
 def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
@@ -93,8 +101,10 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vec
     nil
     (@fun n x xs (r : C xs.reverse) => cast (by simp) <| snoc xs.reverse x r)
 
-/-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
-`w : Vector β n`. -/
+/--
+Define `C v w` by _reverse_ induction on a pair of vectors `v : Vector α n` and
+`w : Vector β n`.
+-/
 @[elab_as_elim]
 def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*} {n : ℕ}
     (v : Vector α n) (w : Vector β n)
@@ -110,8 +120,10 @@ def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*}
     (@fun n x y xs ys (r : C xs.reverse ys.reverse) =>
       cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
-/-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
-separately -/
+/--
+Define `C v` by _reverse_ case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
+separately
+-/
 @[elab_as_elim]
 def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
@@ -121,7 +133,9 @@ def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector 
 
 end Induction
 
-/-! ## More simplification lemmas -/
+/-!
+# More simplification lemmas
+-/
 
 section Simp
 

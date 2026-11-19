@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 public import Mathlib.Topology.VectorBundle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The vector bundle of continuous alternating multilinear maps
 
@@ -33,7 +36,7 @@ open Bundle Set Topology
 open scoped Bundle
 
 /-!
-### Continuous alternating map between fibers written in coordinates
+# Continuous alternating map between fibers written in coordinates
 -/
 
 namespace ContinuousAlternatingMap
@@ -50,7 +53,8 @@ variable {B₂ : Type*} (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace �
   [TopologicalSpace B₂] [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
-/-- When `ϕ` is a continuous alternating map
+/--
+When `ϕ` is a continuous alternating map
 between the fibers `E₁ x` and `E₂ y` of two vector bundles `E` and `E'`,
 `ContinuousAlternatingMap.inCoordinates F E F' E' x₀ x y₀ y ϕ`
 is a coordinate change of this continuous linear map
@@ -106,7 +110,7 @@ end ContinuousAlternatingMap
 open ContinuousAlternatingMap (inCoordinates)
 
 /-!
-### Pretrivialization of the bundle of continuous alternating maps
+# Pretrivialization of the bundle of continuous alternating maps
 -/
 
 namespace Bundle.Pretrivialization
@@ -233,7 +237,7 @@ theorem continuousAlternatingMapCoordChange_apply (b : B)
 end Bundle.Pretrivialization
 
 /-!
-### Vector (pre)bundle structure
+# Vector (pre)bundle structure
 -/
 
 namespace Bundle.ContinuousAlternatingMap
@@ -310,7 +314,7 @@ instance instVectorBundle : VectorBundle 𝕜 (F₁ [⋀^ι]→L[𝕜] F₂) (fu
 end Bundle.ContinuousAlternatingMap
 
 /-!
-### Trivialization of the bundle of continuous alternating maps
+# Trivialization of the bundle of continuous alternating maps
 -/
 
 namespace Bundle.Trivialization
@@ -361,7 +365,7 @@ theorem continuousAlternatingMap_apply
 end Bundle.Trivialization
 
 /-!
-### Lemmas about `trivializationAt` for the bundle of continuous alternating maps
+# Lemmas about `trivializationAt` for the bundle of continuous alternating maps
 -/
 
 namespace FiberBundle
@@ -412,7 +416,7 @@ theorem trivializationAt_continuousAlternatingMap_baseSet (x₀ : B) :
 end FiberBundle
 
 /-!
-### Continuity of maps to the total space of the bundle of continuous alternating maps
+# Continuity of maps to the total space of the bundle of continuous alternating maps
 -/
 
 section Continuity

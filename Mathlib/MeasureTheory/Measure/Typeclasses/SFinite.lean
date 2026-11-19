@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes for s-finite measures
 
@@ -582,9 +585,11 @@ instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace 
     [IsFiniteMeasure μ] : SigmaFinite μ :=
   ⟨⟨⟨fun _ => univ, fun _ => trivial, fun _ => measure_lt_top μ _, iUnion_const _⟩⟩⟩
 
-/-- A measure on a countable space is sigma-finite iff it gives finite mass to every singleton.
+/--
+A measure on a countable space is sigma-finite iff it gives finite mass to every singleton.
 
-See `measure_singleton_lt_top` for the forward direction without the countability assumption. -/
+See `measure_singleton_lt_top` for the forward direction without the countability assumption.
+-/
 lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
     SigmaFinite μ ↔ ∀ a, μ {a} < ∞ where
   mp _ a := measure_singleton_lt_top

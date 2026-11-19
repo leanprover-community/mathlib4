@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Gluing
 
 import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gromov-Hausdorff distance is realized
 
@@ -91,7 +94,9 @@ def candidates : Set (ProdSpaceFun X Y) :=
       ∀ x y, f (x, y) ≤ maxVar X Y }
 
 set_option backward.privateInPublic true in
-/-- Version of the set of candidates in bounded_continuous_functions, to apply Arzela-Ascoli. -/
+/--
+Version of the set of candidates in bounded\_continuous\_functions, to apply Arzela-Ascoli.
+-/
 private def candidatesB : Set (Cb X Y) :=
   { f : Cb X Y | (f : _ → ℝ) ∈ candidates X Y }
 

@@ -9,8 +9,11 @@ public meta import Mathlib.Util.Qq
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `norm_num` plugin for `^`.
+# `norm_num` plugin for `^`.
 -/
 
 public section
@@ -269,14 +272,18 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a ^ b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
+#adaptation_note /--
+                 https://github.com/leanprover/lean4/pull/4096
 the two
-```
+
+                 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
 h.check
 ```
-blocks below were not necessary: we just did it once outside the `match rb with` block.
--/
+
+                 blocks below were not necessary: we just did it once outside the `match rb with`
+block.
+                 -/
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
 @[norm_num _ ^ (_ : ℤ)]

@@ -10,6 +10,9 @@ public import Mathlib.Order.Interval.Finset.Nat
 
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic lemmas on prime factorizations
 -/
@@ -21,9 +24,13 @@ open Finset List Finsupp
 namespace Nat
 variable {a b m n p : ℕ}
 
-/-! ### Basic facts about factorization -/
+/-!
+# Basic facts about factorization
+-/
 
-/-! ## Lemmas characterising when `n.factorization p = 0` -/
+/-!
+# Lemmas characterising when `n.factorization p = 0`
+-/
 
 
 theorem factorization_eq_zero_of_lt {n p : ℕ} (h : n < p) : n.factorization p = 0 :=
@@ -47,7 +54,9 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
   rw [factorization_eq_primeFactorsList_multiset n]
   simp [Multiset.coe_eq_zero]
 
-/-! ## Lemmas about factorizations of products and powers -/
+/-!
+# Lemmas about factorizations of products and powers
+-/
 
 /-- Modified version of `factorization_prod` that accounts for inputs. -/
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
@@ -63,7 +72,9 @@ lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : 
 lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ → β) :
     ∏ p ∈ n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
 
-/-! ## Lemmas about factorizations of primes and prime powers -/
+/-!
+# Lemmas about factorizations of primes and prime powers
+-/
 
 /-- The multiplicity of prime `p` in `p` is `1` -/
 theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 1 := by simp [hp]
@@ -81,7 +92,9 @@ theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
 theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factorization q ≠ 0) :
     p = q := by simpa [hp.factorization, single_apply] using h
 
-/-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
+/-!
+# Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes.
+-/
 
 theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := by
   simp [hp]
@@ -120,7 +133,9 @@ theorem ordCompl_mul (a b p : ℕ) : ordCompl[p] (a * b) = ordCompl[p] a * ordCo
   simp only [ordProj_mul p ha hb]
   rw [div_mul_div_comm (ordProj_dvd a p) (ordProj_dvd b p)]
 
-/-! ### Factorization and divisibility -/
+/-!
+# Factorization and divisibility
+-/
 
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
@@ -435,7 +450,9 @@ theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n 
     n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
   rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by lia)]
 
-/-! ### Factorization and coprimes -/
+/-!
+# Factorization and coprimes
+-/
 
 
 /-- If `p` is a prime factor of `a` then the power of `p` in `a` is the same that in `a * b`,
@@ -524,7 +541,9 @@ theorem exists_dvd_pow_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
   rw [← Nat.primeFactors_pow k hm]
   exact Nat.primeFactors_mono h <| pow_ne_zero m hk
 
-/-! ### Lemmas about factorizations of particular functions -/
+/-!
+# Lemmas about factorizations of particular functions
+-/
 
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/

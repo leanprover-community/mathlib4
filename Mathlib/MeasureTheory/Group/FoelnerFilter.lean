@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Action
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Følner sequences and filters - definitions and properties
 
@@ -15,18 +18,17 @@ This file defines Følner sequences and filters for measurable spaces acted on b
 ## Definitions
 
 * `IsFoelner G μ l F` : Consider a group `G` acting on a measure space `X`.
-  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action, the measure `μ`,
+  A sequence of sets `F : ι → Set X` is *Følner* with respect to the `G`-action, the measure `μ`,
   and a filter `l` on the indexing type `ι`, if:
-  1. Eventually, as `i` tends to `l`, the set `F i` is measurable with finite non-zero measure,
-  2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
+
+1. Eventually, as `i` tends to `l`, the set `F i` is measurable with finite non-zero measure,
+2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
 
 * `IsFoelner.mean μ u F s` : The limit along an ultrafilter `u` of the density of a set `s`
   with respect to a Følner sequence `F` in the measure space `X`.
-
 * `maxFoelner G μ` : The maximal Følner filter with respect to some group `G` acting on a
   measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s` over measurable
   sets of finite non-zero measure.
-
 * `IsAddFoelner G μ l F`: the analog of `IsFoelner G μ l F` for an additive group action
 
 ## Main results
@@ -34,12 +36,10 @@ This file defines Følner sequences and filters for measurable spaces acted on b
 * `IsFoelner.amenable` : If there exists a non-trivial Følner filter with respect to some
   group `G` acting on a measure space `X`, then there exists a `G`-invariant finitely additive
   probability measure on `X`.
-
 * `isFoelner_iff_tendsto` : A sequence of sets is Følner if and only if it tends to the
   maximal Følner filter.
   The attribute "maximal" of the latter comes from the direct implication of this theorem :
   if `IsFoelner G μ l F` then the push-forward filter `map F l ≤ maxFoelner G μ`.
-
 * `amenable_of_maxFoelner_neBot` : If the maximal Følner filter is non-trivial,
   then there exists a `G`-invariant finitely additive probability measure on `X`.
 
@@ -69,11 +69,14 @@ variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 
 variable (G : Type*) {X : Type*} [MeasurableSpace X] (μ : Measure X) [AddGroup G] [AddAction G X]
          {ι : Type*} (l : Filter ι) (F : ι → Set X) in
-/-- Consider an additive group `G` acting on a measure space `X`.
-  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
-  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
-  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-  2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`. -/
+/--
+Consider an additive group `G` acting on a measure space `X`.
+A sequence of sets `F : ι → Set X` is *Følner* with respect to the `G`-action,
+the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+
+1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`.
+-/
 @[mk_iff]
 structure IsAddFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -82,11 +85,14 @@ structure IsAddFoelner : Prop where
   tendsto_meas_vadd_symmDiff (g : G) : Tendsto (fun i ↦ μ ((g +ᵥ F i) ∆ F i) / μ (F i)) l (𝓝 0)
 
 variable (G μ l F) in
-/-- Consider a group `G` acting on a measure space `X`.
-  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
-  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
-  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-  2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+/--
+Consider a group `G` acting on a measure space `X`.
+A sequence of sets `F : ι → Set X` is *Følner* with respect to the `G`-action,
+the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+
+1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
+-/
 @[mk_iff]
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)

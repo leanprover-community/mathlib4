@@ -12,10 +12,14 @@ public import Mathlib.Order.Notation
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Tactic.Convert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent elements of a ring
 
 This file proves result about idempotent elements of a ring, like:
+
 * `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `a` is an idempotent if and only if
   `1 - a` is an idempotent.
 -/

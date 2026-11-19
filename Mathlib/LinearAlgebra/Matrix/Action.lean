@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Matrix.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by matrices on vectors through `*ᵥ` and `ᵥ*`, cast as `Module`s
 
@@ -22,7 +25,9 @@ namespace Matrix
 
 variable [Fintype n] [DecidableEq n] [Semiring R]
 
-/-! ## `*ᵥ` as a left-module -/
+/-!
+# `*ᵥ` as a left-module
+-/
 
 section mulVec
 
@@ -51,7 +56,9 @@ lemma ext_iff_smul {A B : Matrix n n R} :
 
 end mulVec
 
-/-! ## `*ᵥ` as a right-module -/
+/-!
+# `*ᵥ` as a right-module
+-/
 
 section vecMul
 

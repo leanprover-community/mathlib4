@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Tactic.Zify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Field and action structures on the nonnegative rationals
 
@@ -52,7 +55,9 @@ lemma toNNRat_div' (hq : 0 ≤ q) : toNNRat (p / q) = toNNRat p / toNNRat q := b
 
 end Rat
 
-/-! ### Numerator and denominator -/
+/-!
+# Numerator and denominator
+-/
 
 namespace NNRat
 

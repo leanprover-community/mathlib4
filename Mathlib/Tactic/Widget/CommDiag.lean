@@ -10,6 +10,9 @@ public meta import ProofWidgets.Component.PenroseDiagram
 public meta import ProofWidgets.Presentation.Expr
 public import Mathlib.CategoryTheory.Category.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
 
@@ -38,7 +41,9 @@ open Lean Meta
 open ProofWidgets
 open CategoryTheory
 
-/-! ## Metaprogramming utilities for breaking down category theory expressions -/
+/-!
+# Metaprogramming utilities for breaking down category theory expressions
+-/
 
 /-- Given a Hom type `α ⟶ β`, return `(α, β)`. Otherwise `none`. -/
 def homType? (e : Expr) : Option (Expr × Expr) := do
@@ -53,7 +58,9 @@ def homComp? (f : Expr) : Option (Expr × Expr) := do
 /-- Expressions to display as labels in a diagram. -/
 abbrev ExprEmbeds := Array (String × Expr)
 
-/-! ## Widget for general commutative diagrams -/
+/-!
+# Widget for general commutative diagrams
+-/
 
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
@@ -67,10 +74,13 @@ def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM ProofWidgets.Html :=
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
       sub={sub} />}
 
-/-! ## Commutative triangles -/
+/-!
+# Commutative triangles
+-/
 
 /--
 Triangle with `homs = [f,g,h]` and `objs = [A,B,C]`
+
 ```
 A f B
   h g
@@ -107,10 +117,13 @@ def commutativeTrianglePresenter : ExprPresenter where
       return d
     throwError "Couldn't find a commutative triangle."
 
-/-! ## Commutative squares -/
+/-!
+# Commutative squares
+-/
 
 /--
 Square with `homs = [f,g,h,i]` and `objs = [A,B,C,D]`
+
 ```
 A f B
 i   g

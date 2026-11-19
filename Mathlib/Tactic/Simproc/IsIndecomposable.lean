@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simproc deciding `Matrix.IsIndecomposable`
 
@@ -21,12 +24,12 @@ connected.
 
 ## Main definitions
 
-- `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
-- `SpansFrom`: states that every vertex is visited following a list of edges starting from a root.
-- `isClosed`: tests whether a set of vertices has no edges leaving it.
-- `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number computed from a
+* `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
+* `SpansFrom`: states that every vertex is visited following a list of edges starting from a root.
+* `isClosed`: tests whether a set of vertices has no edges leaving it.
+* `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number computed from a
   matrix literal by `packRows`.
-- `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
+* `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
   trees or a closed set of vertices.
 
 ## Implementation notes
@@ -51,7 +54,9 @@ open Matrix Relation
 
 namespace Mathlib.Tactic.Matrix.IsIndecomposable
 
-/-! ### Reachability in a Boolean adjacency matrix -/
+/-!
+# Reachability in a Boolean adjacency matrix
+-/
 
 /-- The vertices reached from the set bits of `s` by following the edges `es` in order. An edge
 counts only when it leaves a vertex already reached and is an edge of `adj`. -/
@@ -79,7 +84,9 @@ theorem SpansFrom.reflTransGen {n : ℕ} {adj : Fin n → Fin n → Bool} {es : 
     ReflTransGen (fun i j ↦ adj i j) root v :=
   reflTransGen_of_testBit_reached (s := 1 <<< (root : ℕ)) (es := es) (by grind) (by simp [h])
 
-/-! ### Closed sets of vertices in a Boolean adjacency matrix, and the packed version -/
+/-!
+# Closed sets of vertices in a Boolean adjacency matrix, and the packed version
+-/
 
 /-- Whether no edge of `adj` leaves the set of vertices given by the set bits of `s`. -/
 def isClosed {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) : Bool :=
@@ -102,7 +109,9 @@ theorem isClosed_of_isClosedPacked {n bits s : ℕ} (h : isClosedPacked n bits s
   simp [isClosedPacked, Nat.eq_iff_testBit_eq] at h
   grind [isClosed, packedAdj]
 
-/-! ### Certificates for a matrix from its Boolean adjacency matrix -/
+/-!
+# Certificates for a matrix from its Boolean adjacency matrix
+-/
 
 variable {R : Type*} [Zero R]
 
@@ -126,7 +135,9 @@ theorem not_isIndecomposable_of_isClosed {n : ℕ} {M : Matrix (Fin n) (Fin n) R
     (by grind [isClosed, BlockTriangular, Bool.lt_iff])
   simp_all [funext_iff]
 
-/-! ### The Boolean adjacency matrix of a matrix literal -/
+/-!
+# The Boolean adjacency matrix of a matrix literal
+-/
 
 variable [DecidableEq R]
 
@@ -212,12 +223,14 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
 
-/-- The Boolean adjacency matrix of the matrix with rows `lit` evaluated by the kernel. Returns
+/--
+The Boolean adjacency matrix of the matrix with rows `lit` evaluated by the kernel. Returns
 `none` if the kernel cannot decide which entries are zero.
 
 The kernel evaluates the packed number `packRows n lit` and then unpacks the boolean adjacency
 matrix from the bits. This round trip evaluates every entry in one `Kernel.whnf` call instead
-of needing a call per cell (about 2.5x the cost). -/
+of needing a call per cell (about 2.5x the cost).
+-/
 def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) (n : Nat)
     (lit : Q(List (List $α))) : MetaM (Option (Array (Array Bool))) := do
   let .ok (.lit (.natVal bits)) := Kernel.whnf (← getEnv) {} q(packRows $n $lit) | return none

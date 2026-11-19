@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid representations
 
@@ -15,13 +18,13 @@ representations.
 
 ## Main definitions
 
-  * `Representation`
-  * `Representation.directSum`
-  * `Representation.prod`
-  * `Representation.tprod`
-  * `Representation.linHom`
-  * `Representation.dual`
-  * `Representation.free`
+* `Representation`
+* `Representation.directSum`
+* `Representation.prod`
+* `Representation.tprod`
+* `Representation.linHom`
+* `Representation.dual`
+* `Representation.free`
 
 ## Implementation notes
 
@@ -133,7 +136,8 @@ theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
 section
 
 variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
-/-- If `ρ : Representation k G V`, then `ρ.asModule` is a type synonym for `V`,
+/--
+If `ρ : Representation k G V`, then `ρ.asModule` is a type synonym for `V`,
 which we equip with an instance `Module k[G] ρ.asModule`.
 
 You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
@@ -145,7 +149,8 @@ deriving AddCommMonoid, Module k
 instance (ρ : Representation k G V) : Inhabited ρ.asModule where
   default := 0
 
-/-- The additive equivalence from the `Module k[G]` to the original vector space
+/--
+The additive equivalence from the `Module k[G]` to the original vector space
 of the representative.
 
 This is just the identity, but it is helpful for typechecking and keeping track of instances.
@@ -179,7 +184,8 @@ theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
   rw [LinearEquiv.symm_apply_eq]
   simp
 
-/-- Build a `Representation k G M` from a `[Module k[G] M]`.
+/--
+Build a `Representation k G M` from a `[Module k[G] M]`.
 
 This version is not always what we want, as it relies on an existing `[Module k M]` instance,
 along with a `[IsScalarTower k k[G] M]` instance.
@@ -196,7 +202,8 @@ section
 
 variable (M : Type*) [AddCommMonoid M] [Module k[G] M]
 
-/-- Build a `Representation` from a `[Module k[G] M]`.
+/--
+Build a `Representation` from a `[Module k[G] M]`.
 
 Note that the representation is built on `restrictScalars k k[G] M`,
 rather than on `M` itself.
@@ -205,7 +212,7 @@ noncomputable def ofModule : Representation k G (RestrictScalars k k[G] M) :=
   (MonoidAlgebra.lift k _ G).symm (RestrictScalars.lsmul k k[G] M)
 
 /-!
-## `ofModule` and `asModule` are inverses.
+# `ofModule` and `asModule` are inverses.
 
 This requires a little care in both directions:
 this is a categorical equivalence, not an isomorphism.
@@ -679,11 +686,11 @@ def dual : Representation k G (Module.Dual k V) where
 theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV g⁻¹) :=
   rfl
 
-/-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
-(implemented by `dualTensorHom` in `Mathlib/LinearAlgebra/Contraction.lean`).
-Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
-$Hom_k(V, W)$.
-This lemma says that $φ$ is $G$-linear.
+/--
+Given $`k`-modules $`V, W`, there is a homomorphism $`φ : V^* ⊗ W → Hom_k(V, W)` (implemented by
+`dualTensorHom` in `Mathlib/LinearAlgebra/Contraction.lean`). Given representations of $`G` on $`V`
+and $`W`,there are representations of $`G` on $`V^* ⊗ W` and on $`Hom_k(V, W)`. This lemma says that
+$`φ` is $`G`-linear.
 -/
 theorem dualTensorHom_comm (g : G) :
     dualTensorHom k V W ∘ₗ TensorProduct.map (ρV.dual g) (ρW g) =

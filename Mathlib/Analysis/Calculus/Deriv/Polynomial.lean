@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of polynomials
 
@@ -44,7 +47,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜
 
 namespace Polynomial
 
-/-! ### Derivative of a polynomial -/
+/-!
+# Derivative of a polynomial
+-/
 
 
 variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relating unital and non-unital substructures
 
@@ -47,7 +50,9 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 
 @[expose] public section
 
-/-! ## Subalgebras -/
+/-!
+# Subalgebras
+-/
 
 namespace Unitization
 
@@ -151,7 +156,9 @@ end Field
 
 end NonUnitalSubalgebra
 
-/-! ## Subsemirings -/
+/-!
+# Subsemirings
+-/
 
 namespace NonUnitalSubsemiring
 
@@ -173,7 +180,9 @@ theorem unitization_range :
 
 end NonUnitalSubsemiring
 
-/-! ## Subrings -/
+/-!
+# Subrings
+-/
 
 namespace NonUnitalSubring
 
@@ -195,7 +204,9 @@ theorem unitization_range :
 
 end NonUnitalSubring
 
-/-! ## Star subalgebras -/
+/-!
+# Star subalgebras
+-/
 
 namespace Unitization
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Topology.Semicontinuity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological structure on `EReal`
 
@@ -36,7 +39,9 @@ variable {α : Type*} [TopologicalSpace α]
 
 namespace EReal
 
-/-! ### Real coercion -/
+/-!
+# Real coercion
+-/
 
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
@@ -77,7 +82,9 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
   continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toReal
   continuous_invFun := continuous_coe_real_ereal.subtype_mk _
 
-/-! ### ENNReal coercion -/
+/-!
+# ENNReal coercion
+-/
 
 theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
@@ -98,7 +105,9 @@ theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
     (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe_ennreal.continuous_iff.symm
 
-/-! ### Neighborhoods of infinity -/
+/-!
+# Neighborhoods of infinity
+-/
 
 theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
@@ -191,7 +200,9 @@ lemma tendsto_toReal_atBot : Tendsto EReal.toReal (𝓝[≠] ⊥) atBot := by
   rw [nhdsWithin_bot, tendsto_map'_iff]
   exact tendsto_id
 
-/-! ### toENNReal -/
+/-!
+# toENNReal
+-/
 
 lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   refine continuous_iff_continuousAt.mpr fun x ↦ ?_
@@ -235,7 +246,9 @@ lemma _root_.ContinuousAt.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f 
     ContinuousAt (fun x => (f x).toENNReal) x :=
   continuous_toENNReal.continuousAt.comp hf
 
-/-! ### Infs and Sups -/
+/-!
+# Infs and Sups
+-/
 
 variable {α : Type*} {u v : α → EReal}
 
@@ -245,7 +258,9 @@ lemma add_iInf_le_iInf_add : (⨅ x, u x) + ⨅ x, v x ≤ ⨅ x, (u + v) x :=
 lemma iSup_add_le_add_iSup : ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
   iSup_le fun i ↦ add_le_add (le_iSup u i) (le_iSup v i)
 
-/-! ### Liminfs and Limsups -/
+/-!
+# Liminfs and Limsups
+-/
 
 section LimInfSup
 
@@ -383,7 +398,9 @@ lemma liminf_mul_le [NeBot f] (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v)
 
 end LimInfSup
 
-/-! ### Continuity of addition -/
+/-!
+# Continuity of addition
+-/
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
@@ -450,7 +467,9 @@ lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p
   · simp [hx₂]
   · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
 
-/-! ### Continuity of multiplication -/
+/-!
+# Continuity of multiplication
+-/
 
 /- Outside of indeterminacies `(0, ±∞)` and `(±∞, 0)`, the multiplication on `EReal` is continuous.
 There are many different cases to consider, so we first prove some special cases and leverage as

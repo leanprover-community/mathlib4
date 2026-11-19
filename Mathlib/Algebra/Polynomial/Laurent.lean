@@ -11,13 +11,15 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 
 import Mathlib.Algebra.Polynomial.Inductions
 
-/-! # Laurent polynomials
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Laurent polynomials
 
 We introduce Laurent polynomials over a semiring `R`.  Mathematically, they are expressions of the
 form
-$$
-\sum_{i \in \mathbb{Z}} a_i T ^ i
-$$
+$$`  \sum_{i \in \mathbb{Z}} a_i T ^ i  `
 where the sum extends over a finite subset of `ℤ`.  Thus, negative exponents are allowed.  The
 coefficients come from the semiring `R` and the variable `T` commutes with everything.
 
@@ -26,6 +28,7 @@ decided to maintain some distinction by using the symbol `T`, rather than `X`, a
 Laurent polynomials.
 
 ## Notation
+
 The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
 
 * `C : R →+* R[T;T⁻¹]` the inclusion of constant polynomials, analogous to the one for `R[X]`;
@@ -46,28 +49,20 @@ natural exponents would be allowed.  Moreover, in the end, it seems likely that 
 perform computations on exponents in `ℤ` anyway and separating this via the symbol `T` seems
 convenient.
 
-I made a *heavy* use of `simp` lemmas, aiming to bring Laurent polynomials to the form `C a * T n`.
+I made a _heavy_ use of `simp` lemmas, aiming to bring Laurent polynomials to the form `C a * T n`.
 Any comments or suggestions for improvements is greatly appreciated!
 
 ## Future work
-Lots is missing!
--- (Riccardo) add inclusion into Laurent series.
--- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
---  ```
---  def trunc : R[T;T⁻¹] →[R] R[X] :=
---    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
---    · exact ⟨(toFinsuppIso R).symm, by simp⟩
---    · refine ⟨fun r ↦ comapDomain _ r
---        (Set.injOn_of_injective (fun _ _ ↦ Int.ofNat.inj) _), ?_⟩
---      exact fun r f ↦ comapDomain_smul ..
---  ```
---  but it would make sense to bundle the maps better, for a smoother user experience.
---  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to
---  this stage of the Laurent process!
---  This would likely involve adding a `comapDomain` analogue of
---  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of
---  `Polynomial.toFinsuppIso`.
--- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
+
+Lots is missing! ‍\-- (Riccardo) add inclusion into Laurent series. ‍\-- A "better" definition of
+`trunc` would be as an `R`-linear map.  This works: ‍\-- 
+`--  def trunc : R[T;T⁻¹] →[R] R[X] := --    refine (?_ : R[ℕ] →[R] R[X]).comp ?_ --    · exact ⟨(toFinsuppIso R).symm, by simp⟩ --    · refine ⟨fun r ↦ comapDomain _ r --        (Set.injOn_of_injective (fun _ _ ↦ Int.ofNat.inj) _), ?_⟩ --      exact fun r f ↦ comapDomain_smul .. --  `
+‍\--  but it would make sense to bundle the maps better, for a smoother user experience. ‍\--  I
+(DT) did not have the strength to embark on this (possibly short!) journey, after getting to ‍\-- 
+this stage of the Laurent process! ‍\--  This would likely involve adding a `comapDomain` analogue
+of ‍\--  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of ‍\-- 
+`Polynomial.toFinsuppIso`. ‍\-- Add
+`degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
 
 @[expose] public section
@@ -125,7 +120,9 @@ variable [Semiring R]
 
 theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = 1 := rfl
 
-/-!  ### The functions `C` and `T`. -/
+/-!
+# The functions `C` and `T`.
+-/
 
 /-- The ring homomorphism `C`, including `R` into the ring of Laurent polynomials over `R` as
 the constant Laurent polynomials. -/
@@ -148,11 +145,13 @@ theorem single_eq_C (r : R) : .single 0 r = C r := rfl
 @[simp] lemma C_apply (t : R) (n : ℤ) : (C t).coeff n = if n = 0 then t else 0 := by
   simp [← single_eq_C]; aesop
 
-/-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
+/--
+The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
 is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
-For these reasons, the definition of `T` is as a sequence. -/
+For these reasons, the definition of `T` is as a sequence.
+-/
 def T (n : ℤ) : R[T;T⁻¹] := .single n 1
 
 @[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]).coeff m = if n = m then 1 else 0 :=
@@ -257,7 +256,9 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   · intro ha
     rw [single_eq_same, notMem_support_iff.mp ha]
 
-/-- To prove something about Laurent polynomials, it suffices to show that
+/--
+To prove something about Laurent polynomials, it suffices to show that
+
 * the condition is closed under taking sums, and
 * it holds for monomials.
 -/
@@ -356,11 +357,14 @@ theorem induction_on_mul_T {motive : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
     ← mul_assoc, ← hf]
   exact mul_T ..
 
-/-- Suppose that `Q` is a statement about Laurent polynomials such that
-* `Q` is true on *ordinary* polynomials;
+/--
+Suppose that `Q` is a statement about Laurent polynomials such that
+
+* `Q` is true on _ordinary_ polynomials;
 * `Q (f * T)` implies `Q f`;
 
-it follow that `Q` is true on all Laurent polynomials. -/
+it follow that `Q` is true on all Laurent polynomials.
+-/
 theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Prop}
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
   induction f using LaurentPolynomial.induction_on_mul_T with | _ f n

@@ -10,10 +10,13 @@ public import Mathlib.NumberTheory.GaussSum
 import Mathlib.NumberTheory.MulChar.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobi Sums
 
-This file defines the *Jacobi sum* of two multiplicative characters `χ` and `ψ` on a finite
+This file defines the _Jacobi sum_ of two multiplicative characters `χ` and `ψ` on a finite
 commutative ring `R` with values in another commutative ring `R'`:
 
 `jacobiSum χ ψ = ∑ x : R, χ x * ψ (1 - x)`
@@ -23,8 +26,9 @@ commutative ring `R` with values in another commutative ring `R'`:
 ## References
 
 We essentially follow
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-  (Section 8.3)][IrelandRosen1990]
+
+* ‍\[K. Ireland, M. Rosen, _A classical introduction to modern number theory_
+  (Section 8.3)\]\[IrelandRosen1990\]
 
 but generalize where appropriate.
 
@@ -36,7 +40,7 @@ This is based on Lean code written as part of the bachelor's thesis of Alexander
 open Finset
 
 /-!
-### Jacobi sums: definition and first properties
+# Jacobi sums: definition and first properties
 -/
 
 section Def
@@ -44,7 +48,9 @@ section Def
 -- need `Fintype` instead of `Finite` to make `jacobiSum` computable.
 variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
 
-/-- The *Jacobi sum* of two multiplicative characters on a finite commutative ring. -/
+/--
+The _Jacobi sum_ of two multiplicative characters on a finite commutative ring.
+-/
 def jacobiSum (χ ψ : MulChar R R') : R' :=
   ∑ x : R, χ x * ψ (1 - x)
 
@@ -62,7 +68,7 @@ lemma jacobiSum_ringHomComp {R'' : Type*} [CommRing R''] (χ ψ : MulChar R R') 
 end Def
 
 /-!
-### Jacobi sums over finite fields
+# Jacobi sums over finite fields
 -/
 
 section CommRing

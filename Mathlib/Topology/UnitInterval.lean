@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Algebra.Ring.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The unit interval, as a topological space
 
@@ -24,7 +27,9 @@ noncomputable section
 
 open Set Int Set.Icc
 
-/-! ### The unit interval -/
+/-!
+# The unit interval
+-/
 
 
 /-- The unit interval `[0,1]` in ℝ. -/

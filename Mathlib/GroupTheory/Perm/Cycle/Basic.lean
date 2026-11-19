@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Perm.Finite
 public import Mathlib.GroupTheory.Perm.List
 public import Mathlib.GroupTheory.Perm.Sign
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cycles of a permutation
 
@@ -29,6 +32,7 @@ In the following, `f : Equiv.Perm β`.
 ## Notes
 
 `Equiv.Perm.IsCycle` and `Equiv.Perm.IsCycleOn` are different in three ways:
+
 * `IsCycle` is about the entire type while `IsCycleOn` is restricted to a set.
 * `IsCycle` forbids the identity while `IsCycleOn` allows it (if `s` is a subsingleton).
 * `IsCycleOn` forbids fixed points on `s` (if `s` is nontrivial), while `IsCycle` allows them.
@@ -43,7 +47,9 @@ variable {ι α β : Type*}
 
 namespace Equiv.Perm
 
-/-! ### `SameCycle` -/
+/-!
+# `SameCycle`
+-/
 
 section SameCycle
 
@@ -217,7 +223,7 @@ instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm 
 end SameCycle
 
 /-!
-### `IsCycle`
+# `IsCycle`
 -/
 
 section IsCycle
@@ -648,7 +654,9 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
 
 end Conjugation
 
-/-! ### `IsCycleOn` -/
+/-!
+# `IsCycleOn`
+-/
 
 section IsCycleOn
 
@@ -913,7 +921,9 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     rw [mem_coe, mem_range] at hm hn
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)
 
-/-- We can partition the square `s ×ˢ s` into shifted diagonals as such:
+/--
+We can partition the square `s ×ˢ s` into shifted diagonals as such:
+
 ```
 01234
 40123

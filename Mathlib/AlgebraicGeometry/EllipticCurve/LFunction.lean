@@ -12,6 +12,9 @@ public import Mathlib.NumberTheory.LSeries.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The L-function of a Weierstrass curve
 
@@ -23,7 +26,7 @@ In this file, we define the L-function of a Weierstrass curve.
 
 ## References
 
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 -/
 
 @[expose] public section
@@ -65,16 +68,18 @@ open ArithmeticFunction IsDedekindDomain NumberField
 
 variable {K : Type*} [Field K] [NumberField K] (W : WeierstrassCurve K)
 
-/-- The L-function of a Weierstrass curve `W` over a number field `K` as a formal Dirichlet series.
+/--
+The L-function of a Weierstrass curve `W` over a number field `K` as a formal Dirichlet series.
 
 For each prime ideal `p` of the ring of integers of `K` with norm `‖p‖` residue field `κ_p`,
 we define the local polynomial `fₚ(T)` as:
+
 * `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |W(κ_p)|` if `W` has good reduction at `p`,
 * `fₚ = 1 - T` if `W` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `W` has nonsplit multiplicative reduction at `p`,
-* `fₚ = 1` if `W` has additive reduction at `p`.
-Then the L-function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
-as `p` ranges over all prime ideals of the ring of integers of `K`.
+* `fₚ = 1` if `W` has additive reduction at `p`. Then the L-function of `W` is the formal Dirichlet
+  series defined as the product of `1 / fₚ(‖p‖⁻ˢ)` as `p` ranges over all prime ideals of the ring
+  of integers of `K`.
 -/
 noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦

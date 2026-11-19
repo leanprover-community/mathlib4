@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Pin group and the Spin group
 
@@ -26,10 +29,10 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 ## Implementation Notes
 
 The definition of the Lipschitz group
-$\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
+$`\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}` is given by:
 
-* [fulton2004], Chapter 20
-* https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
+* ‍\[fulton2004\], Chapter 20
+* https://en.wikipedia.org/wiki/Clifford\_algebra#Lipschitz\_group
 
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
 closure of all the invertible elements in the form of `ι Q m`, and we show this definition is

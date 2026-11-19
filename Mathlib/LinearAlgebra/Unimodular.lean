@@ -8,12 +8,15 @@ module
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unimodular elements and completion to a basis
 
-An element `v` of a module is *unimodular* if some linear functional takes the value `1` at `v`.
+An element `v` of a module is _unimodular_ if some linear functional takes the value `1` at `v`.
 For a free module this is equivalent to the coordinates of `v` in any basis generating the unit
-ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a *primitive* vector).
+ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a _primitive_ vector).
 
 ## Main definitions
 
@@ -32,7 +35,7 @@ ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a *primi
 
 ## References
 
-* [T. Y. Lam, *Serre's Problem on Projective Modules*][lam_2006].
+* ‍\[T. Y. Lam, _Serre's Problem on Projective Modules_\]\[lam\_2006\].
 -/
 
 public section
@@ -41,8 +44,10 @@ namespace Module
 
 variable (R : Type*) [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
-/-- An element `v` of an `R`-module is *unimodular* if some linear functional takes the value
-`1` at `v`. -/
+/--
+An element `v` of an `R`-module is _unimodular_ if some linear functional takes the value
+`1` at `v`.
+-/
 def IsUnimodular (v : M) : Prop := ∃ f : M →ₗ[R] R, f v = 1
 
 variable {R} {v : M}
@@ -84,7 +89,9 @@ section Algebra
 
 variable {R : Type*} [CommRing R] {A : Type*} [Ring A] [Nontrivial A] [Algebra R A]
 
-/-- In a nonzero algebra that is free as a module, `1` is *unimodular*. -/
+/--
+In a nonzero algebra that is free as a module, `1` is _unimodular_.
+-/
 theorem _root_.Module.Free.isUnimodular_one [Module.Free R A] : IsUnimodular R (1 : A) :=
   isUnimodular_iff_span_repr_eq_top.mpr (Module.Free.chooseBasis R A).span_repr_one_eq_top
 

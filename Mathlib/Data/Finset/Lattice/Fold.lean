@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice operations on finsets
 
@@ -30,7 +33,9 @@ variable {F α β γ ι : Type*}
 
 namespace Finset
 
-/-! ### sup and inf -/
+/-!
+# sup and inf
+-/
 
 
 section Sup

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.Hom.BoundedLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete lattice homomorphisms
 
@@ -77,32 +80,40 @@ attribute [nolint docBlame] CompleteLatticeHom.tosSupHom
 
 section
 
-/-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
+/--
+`sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
-You should extend this class when you extend `sSupHom`. -/
+You should extend this class when you extend `sSupHom`.
+-/
 class sSupHomClass (F α β : Type*) [SupSet α] [SupSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
-/-- `sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
+/--
+`sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
 
-You should extend this class when you extend `sInfHom`. -/
+You should extend this class when you extend `sInfHom`.
+-/
 @[to_dual]
 class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 
-/-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
+/--
+`FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
-You should extend this class when you extend `FrameHom`. -/
+You should extend this class when you extend `FrameHom`.
+-/
 class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β] : Prop
   extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
-/-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
+/--
+`CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
-You should extend this class when you extend `CompleteLatticeHom`. -/
+You should extend this class when you extend `CompleteLatticeHom`.
+-/
 class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
     [FunLike F α β] : Prop
   extends sInfHomClass F α β, sSupHomClass F α β where
@@ -194,7 +205,9 @@ instance [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α
     CoeTC F (CompleteLatticeHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
-/-! ### Supremum and infimum homomorphisms -/
+/-!
+# Supremum and infimum homomorphisms
+-/
 
 
 namespace sSupHom
@@ -328,7 +341,9 @@ theorem bot_apply (a : α) : (⊥ : sSupHom α β) a = ⊥ :=
 
 end sSupHom
 
-/-! ### Frame homomorphisms -/
+/-!
+# Frame homomorphisms
+-/
 
 
 namespace FrameHom
@@ -434,7 +449,9 @@ instance : PartialOrder (FrameHom α β) :=
 
 end FrameHom
 
-/-! ### Complete lattice homomorphisms -/
+/-!
+# Complete lattice homomorphisms
+-/
 
 namespace CompleteLatticeHom
 
@@ -542,7 +559,9 @@ theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeH
 
 end CompleteLatticeHom
 
-/-! ### Dual homs -/
+/-!
+# Dual homs
+-/
 
 
 namespace sSupHom
@@ -610,14 +629,18 @@ theorem symm_dual_comp (g : CompleteLatticeHom βᵒᵈ γᵒᵈ) (f : CompleteL
 
 end CompleteLatticeHom
 
-/-! ### Concrete homs -/
+/-!
+# Concrete homs
+-/
 
 
 namespace CompleteLatticeHom
 
-/-- `Set.preimage` as a complete lattice homomorphism.
+/--
+`Set.preimage` as a complete lattice homomorphism.
 
-See also `sSupHom.setImage`. -/
+See also `sSupHom.setImage`.
+-/
 def setPreimage (f : α → β) : CompleteLatticeHom (Set β) (Set α) where
   toFun := preimage f
   map_sSup' s := preimage_sUnion.trans <| by simp only [Set.sSup_eq_sUnion, Set.sUnion_image]
@@ -645,10 +668,12 @@ end CompleteLatticeHom
 theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) :=
   Set.image_sUnion
 
-/-- Using `Set.image`, a function between types yields a `sSupHom` between their lattices of
+/--
+Using `Set.image`, a function between types yields a `sSupHom` between their lattices of
 subsets.
 
-See also `CompleteLatticeHom.setPreimage`. -/
+See also `CompleteLatticeHom.setPreimage`.
+-/
 @[simps]
 def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β) where
   toFun := image f

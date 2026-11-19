@@ -8,15 +8,19 @@ module
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Contractions
 
-Given modules $M, N$ over a commutative ring $R$, this file defines the natural linear maps:
-$M^* \otimes M \to R$, $M \otimes M^* \to R$, and $M^* \otimes N → Hom(M, N)$, as well as proving
+Given modules $`M, N` over a commutative ring $`R`, this file defines the natural linear maps:
+$`M^* \otimes M \to R`, $`M \otimes M^* \to R`, and $`M^* \otimes N → Hom(M, N)`, as well as proving
 some basic properties of these maps.
 
 It also constructs linear equivalences between tensor products of hom modules and hom modules of
 tensor products:
+
 * `lTensorHomEquivHomLTensor`: `P ⊗ Hom(M, Q) ≃ₗ Hom(M, P ⊗ Q)` for `M` finite projective
 * `rTensorHomEquivHomRTensor`: `Hom(M, P) ⊗ Q ≃ₗ Hom(M, P ⊗ Q)` for `M` finite projective
 * `TensorProduct.homTensorHomEquiv`: `Hom(M, P) ⊗ Hom(N, Q) ≃ₗ Hom(M ⊗ N, P ⊗ Q)` for `M`, `N`
@@ -167,8 +171,10 @@ section Fintype
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
-/-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
-provides this equivalence in return for a basis of `M`. -/
+/--
+If `M` is free, the natural linear map $`M^* ⊗ N → Hom(M, N)` is an equivalence. This function
+provides this equivalence in return for a basis of `M`.
+-/
 -- We manually create simp-lemmas because `@[simps]` generates a malformed lemma
 noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   LinearEquiv.ofLinearMap (dualTensorHom R M N)
@@ -279,7 +285,9 @@ lemma dualTensorHom_bijective : Function.Bijective (dualTensorHom R M N) := by
     congrm φ ($eq x)
 
 variable (R M N) in
-/-- If `M` is finite projective, the natural map $M^* ⊗ N → Hom(M, N)$ is an equivalence. -/
+/--
+If `M` is finite projective, the natural map $`M^* ⊗ N → Hom(M, N)` is an equivalence.
+-/
 noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   .ofBijective (dualTensorHom R M N) dualTensorHom_bijective
 
@@ -404,7 +412,8 @@ section
 variable [Module.Finite R M] [Module.Finite R N] [Projective R M] [Projective R N]
 
 variable (R M N) in
-/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite
+/--
+A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite
 projective modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 

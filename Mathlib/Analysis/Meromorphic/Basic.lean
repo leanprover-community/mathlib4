@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Meromorphic functions
 
@@ -430,7 +433,7 @@ end smul_iff
 
 section composition
 /-!
-### Composition with an analytic function
+# Composition with an analytic function
 -/
 
 variable

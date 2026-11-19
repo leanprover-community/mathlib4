@@ -8,22 +8,27 @@ module
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ring`-like tactics
 
 The core normalization procedure for ring-like tactics that solve equations in commutative
-(semi)rings where the exponents can also contain variables.
-Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
+(semi)rings where the exponents can also contain variables. Based on [
+http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf](http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf)
+.
 
 More precisely, expressions of the following form are supported:
-- constants (non-negative integers)
-- variables
-- coefficients (living in `BaseType`; for `ring` this is a rational embedded into the semiring)
-- addition of expressions
-- multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`r • a`)
-- exponentiation of expressions (the exponent must have type `ℕ`)
-- subtraction and negation of expressions (if the base is a full ring)
+
+* constants (non-negative integers)
+* variables
+* coefficients (living in `BaseType`; for `ring` this is a rational embedded into the semiring)
+* addition of expressions
+* multiplication of expressions (`a * b`)
+* scalar multiplication of expressions (`r • a`)
+* exponentiation of expressions (the exponent must have type `ℕ`)
+* subtraction and negation of expressions (if the base is a full ring)
 
 The extension to exponents means that something like `2 * 2^n * b = b * 2^(n+1)` can be proved,
 even though it is not strictly speaking an equation in the language of commutative rings.
@@ -36,21 +41,23 @@ together with a proof (at the base level) that the original value is equal to
 the normalised version.
 
 The outline of the file:
-- Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
+
+* Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
   which can represent expressions with `+`, `*`, `^` and some parametric `BaseType`.
   The mutual induction ensures that associativity and distributivity are applied,
   by restricting which kinds of subexpressions appear as arguments to the various operators.
-- Represent addition, multiplication and exponentiation in the `ExSum` type,
+* Represent addition, multiplication and exponentiation in the `ExSum` type,
   thus allowing us to map expressions to `ExSum` (the `eval` function drives this).
   We apply associativity and distributivity of the operators here (helped by `Ex*` types)
   and commutativity as well (by sorting the subterms; unfortunately not helped by anything).
   Any expression not of the above formats is treated as an atom (the same as a variable).
 
 There are some details we glossed over which make the plan more complicated:
-- The order on atoms is not initially obvious.
+
+* The order on atoms is not initially obvious.
   We construct a list containing them in order of initial appearance in the expression,
   then use the index into the list as a key to order on.
-- For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
+* For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
   We swap out operations for the base ring `α` with those for the exponent ring `ℕ`
   as soon as we deal with exponents. Unfortunately this has to be done with a separate inductive
   type due to universe issues outlined later in this file.
@@ -115,13 +122,14 @@ abbrev btℕ (e : Q(ℕ)) : Type := _root_.Mathlib.Tactic.Ring.RatCoeff q($e)
 universe u v
 
 /-!
-## The ExNat types
+# The ExNat types
 
 The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ`. `ExProdNat` is only
 used to represent exponents in `ExProd`s. We cannot use `ExProd btℕ sℕ` in the `mul` constructor
 of `ExProd` because `BaseType` is a parameter and not an index. Making `BaseType` an index
 (i.e. moving it to the right of the colon) would require including it as an argument to each
 constructor, raising the universe level of `ExProd` from `Type` to `Type 1`; that is:
+
 ```
 inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) (e : Q($α)), Type
@@ -131,6 +139,7 @@ inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → 
     ExBase BaseType sα x → ExProd btℕ sℕ e → ExProd BaseType sα b →
       ExProd BaseType sα q($x ^ $e * $b)
 ```
+
 would fail to compile because `ExProd` lives in `Type 1`.
 
 Lean does not support monadic computation in `Type 1` in its core monad types,
@@ -140,30 +149,33 @@ so we cannot tolerate this universe bump.
 mutual
 
 
-/-- `ExBaseNat e` stores the structure of a normalized expression `e : Q(ℕ)`, which appears
+/--
+`ExBaseNat e` stores the structure of a normalized expression `e : Q(ℕ)`, which appears
 as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
 `n` is not a constant.
 
 Used to represent normalized natural number expressions in exponents.
 
-`ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
+`ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two.
+-/
 meta inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
 
   Atomic expressions are those which `ring` cannot parse any further.
-  For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
-  The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
+For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
+The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
 
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
-  The field `index : ℕ` should be a unique number for each class,
-  while `e : Q($α)` contains a representative of this class.
+The field `index : ℕ` should be a unique number for each class,
+while `e : Q($α)` contains a representative of this class.
   -/
   | atom {e} (id : ℕ) : ExBaseNat e
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
-/-- `ExProdNat e` stores the structure of a normalized monomial expression `e : Q(ℕ)`.
+/--
+`ExProdNat e` stores the structure of a normalized monomial expression `e : Q(ℕ)`.
 A monomial here is a product of powers of `ExBaseNat` expressions, terminated by a (nonzero)
 constant coefficient.
 
@@ -181,12 +193,14 @@ meta inductive ExProdNat : (e : Q(ℕ)) → Type
   | mul {x : Q(ℕ)} {e : Q(ℕ)} {b : Q(ℕ)} :
     ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
-/-- `ExSumNat e` stores the structure of a normalized polynomial expression `e : Q(ℕ)`, which is
+/--
+`ExSumNat e` stores the structure of a normalized polynomial expression `e : Q(ℕ)`, which is
 a sum of monomials.
 
 Used to represent normalized natural number expressions in exponents.
 
-`ExSumNat q($e)` is equivalent to `ExSum btℕ sℕ q($e)`, and one can cast between the two. -/
+`ExSumNat q($e)` is equivalent to `ExSum btℕ sℕ q($e)`, and one can cast between the two.
+-/
 meta inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
@@ -211,12 +225,12 @@ meta inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   An atomic expression `e` with id `id`.
 
   Atomic expressions are those which a `ring`-like tactic cannot parse any further.
-  For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
-  The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
+For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
+The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
 
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
-  The field `index : ℕ` should be a unique number for each class,
-  while `e : Q($α)` contains a representative of this class.
+The field `index : ℕ` should be a unique number for each class,
+while `e : Q($α)` contains a representative of this class.
   -/
   | atom {e} (id : ℕ) : ExBase BaseType sα e
   /-- A sum of monomials. -/
@@ -278,15 +292,19 @@ structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Returns whether `x` is less than, equal to or greater than `y`. Can be any total order. -/
   compare : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
 
-/-- Stores all of the normalization procedures on the coefficient type.
+/--
+Stores all of the normalization procedures on the coefficient type.
 
 `ring` implements these using `norm_num`
-`algebra` will implement these using `ring` -/
+`algebra` will implement these using `ring`
+-/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) extends RingCompare BaseType where
-  /-- Evaluate the sum of two coefficients.
+  /--
+  Evaluate the sum of two coefficients.
 
-  If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
+  If the result is zero returns a proof of this fact, which is used to remove zero terms.
+  -/
   add {x y : Q($α)} : BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   /-- Evaluate the product of two coefficients. -/
@@ -299,10 +317,12 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
   /-- Evaluate the negation of a coefficient. -/
   neg {x : Q($α)} (rα : Q(CommRing $α)) : BaseType x → MetaM (Result BaseType q(-$x))
-  /-- Raise a coefficient to some natural power.
+  /--
+  Raise a coefficient to some natural power.
 
   The exponent is not necessarily a natural literal. If the tactic can only raise coefficients to
-  the power of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
+the power of a literal (e.g. `ring`), it should check for this and return `none` otherwise.
+  -/
   pow {x : Q($α)} {b : Q(ℕ)} : BaseType x → (vb : ExProdNat q($b)) →
     OptionT MetaM (Result BaseType q($x ^ $b))
   /-- Evaluate the inverse of a coefficient. -/
@@ -499,7 +519,9 @@ inductive Overlap (e : Q($α)) : Type where
 
 variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
 
-/-! ### Addition -/
+/-!
+# Addition
+-/
 
 theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
@@ -556,7 +578,8 @@ theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ +
 theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
   subst_vars; simp [add_left_comm]
 
-/-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
+/--
+Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
 * `0 + b = b`
 * `a + 0 = a`
@@ -587,7 +610,9 @@ partial def evalAdd {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
         let ⟨_c, vc, pc⟩ ← evalAdd va vb₂
         return ⟨_, .add vb₁ vc, q(add_pf_add_gt $b₁ $pc)⟩
 
-/-! ### Multiplication -/
+/-!
+# Multiplication
+-/
 
 theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
 
@@ -605,7 +630,8 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
     (x ^ ea * a₂ : R) * (x ^ eb * b₂) = x ^ e * c := by
   subst_vars; simp [pow_add, mul_mul_mul_comm]
 
-/-- Multiplies two monomials `va, vb` together to get a normalized result monomial.
+/--
+Multiplies two monomials `va, vb` together to get a normalized result monomial.
 
 * `x * y = (x * y)` (for `x`, `y` coefficients)
 * `x * (b₁ * b₂) = b₁ * (b₂ * x)` (for `x` coefficient)
@@ -655,7 +681,8 @@ theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c
     a * (b₁ + b₂) = d := by
   subst_vars; simp [_root_.mul_add]
 
-/-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
+/--
+Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
 * `a * 0 = 0`
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
@@ -675,7 +702,8 @@ theorem zero_mul (b : R) : 0 * b = 0 := by simp
 theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
     (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
 
-/-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
+/--
+Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
 
 * `0 * b = 0`
 * `(a₁ + a₂) * b = (a₁ * b) + (a₂ * b)`
@@ -690,7 +718,9 @@ def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
     let ⟨_, vd, pd⟩ ← evalAdd rc rcℕ vc₁ vc₂
     return ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
 
-/-! ### Negation -/
+/-!
+# Negation
+-/
 
 theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (-1 : R) * a = b) :
     -a = b := by subst_vars; simp
@@ -698,7 +728,8 @@ theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (-1 : R) * a = b) :
 theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
 
-/-- Negates a monomial `va` to get another monomial.
+/--
+Negates a monomial `va` to get another monomial.
 
 * `-c = (-c)` (for `c` coefficient)
 * `-(a₁ * a₂) = a₁ * -a₂`
@@ -721,7 +752,8 @@ theorem neg_add {R} [CommRing R] {a₁ a₂ b₁ b₂ : R}
     (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by
   subst_vars; simp [add_comm]
 
-/-- Negates a polynomial `va` to get another polynomial.
+/--
+Negates a polynomial `va` to get another polynomial.
 
 * `-0 = 0` (for `c` coefficient)
 * `-(a₁ + a₂) = -a₁ + -a₂`
@@ -738,12 +770,15 @@ def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum bt sα a) :
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rα va₂
     return ⟨_, .add vb₁ vb₂, q(neg_add $pb₁ $pb₂)⟩
 
-/-! ### Subtraction -/
+/-!
+# Subtraction
+-/
 
 theorem sub_pf {R} [CommRing R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
 
-/-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
+/--
+Subtracts two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a - b = a + -b`
 -/
@@ -755,7 +790,9 @@ def evalSub {a b : Q($α)}
   assumeInstancesCommute
   return ⟨d, vd, q(sub_pf $pc $pd)⟩
 
-/-! ### Exponentiation -/
+/-!
+# Exponentiation
+-/
 
 theorem pow_prod_atom (a : R) (b) {e : R} (h : (a + 0) ^ b * (nat_lit 1).rawCast = e) :
     a ^ b = e := by
@@ -801,7 +838,8 @@ theorem add_pos_right {a₂ : ℕ} (a₁) (h : 0 < a₂) : 0 < a₁ + a₂ :=
 
 mutual -- partial only to speed up compilation
 
-/-- Attempts to prove that a polynomial expression in `ℕ` is positive.
+/--
+Attempts to prove that a polynomial expression in `ℕ` is positive.
 
 * Atoms are not (necessarily) positive
 * Sums defer to `ExSum.evalPos`
@@ -811,7 +849,8 @@ partial def ExBaseNat.evalPos {a : Q(ℕ)} (va : ExBaseNat a) : Option Q(0 < $a)
   | .atom _ => none
   | .sum va => va.evalPos
 
-/-- Attempts to prove that a monomial expression in `ℕ` is positive.
+/--
+Attempts to prove that a monomial expression in `ℕ` is positive.
 
 * `0 < c` (where `c` is a numeral) is true by the normalization invariant (`c` is not zero)
 * `0 < x ^ e * b` if `0 < x` and `0 < b`
@@ -829,7 +868,8 @@ partial def ExProdNat.evalPos {a : Q(ℕ)} (va : ExProdNat a) : Option Q(0 < $a)
     let pa₂ ← va₂.evalPos
     some q(mul_exp_pos $ea₁ $pa₁ $pa₂)
 
-/-- Attempts to prove that a polynomial expression in `ℕ` is positive.
+/--
+Attempts to prove that a polynomial expression in `ℕ` is positive.
 
 * `0 < 0` fails
 * `0 < a + b` if `0 < a` or `0 < b`
@@ -900,7 +940,8 @@ theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c�
 private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
-/-- There are several special cases when exponentiating monomials:
+/--
+There are several special cases when exponentiating monomials:
 
 * `1 ^ n = 1`
 * `x ^ y = (x ^ y)` when `x` is a constant (Note this may fail if e.g. `y` is not a constant)
@@ -956,7 +997,8 @@ theorem coeff_mul {a₃ c₂ k : ℕ}
     (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
   subst_vars; rw [mul_assoc]
 
-/-- Given a monomial expression `va`, splits off the leading coefficient `k` and the remainder
+/--
+Given a monomial expression `va`, splits off the leading coefficient `k` and the remainder
 `e'`, stored in the `ExtractCoeff` structure.
 
 * `c = 1 * c` (if `c` is a constant)
@@ -989,7 +1031,8 @@ theorem pow_nat {b c k : ℕ} {d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^
     (a : R) ^ b = e := by
   subst_vars; simp [pow_mul]
 
-/-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
+/--
+Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
 
 * `a ^ 1 = a`
 * `0 ^ e = 0` if `0 < e`
@@ -1034,7 +1077,8 @@ theorem pow_add {b₁ b₂ : ℕ} {d : R}
     (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
   subst_vars; simp [_root_.pow_add]
 
-/-- Exponentiates two polynomials `va, vb`.
+/--
+Exponentiates two polynomials `va, vb`.
 
 * `a ^ 0 = 1`
 * `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
@@ -1122,7 +1166,8 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase bt sα) q($a⁻¹)) := do
   let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
   pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
-/-- Inverts a polynomial `va` to get a normalized result polynomial.
+/--
+Inverts a polynomial `va` to get a normalized result polynomial.
 
 * `c⁻¹ = (c⁻¹)` if `c` is a constant
 * `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
@@ -1147,7 +1192,8 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt 
     assumeInstancesCommute
     pure ⟨c, vc, q(inv_mul $pb₁ $pb₃ ($pb₁' ▸ $pc))⟩
 
-/-- Inverts a polynomial `va` to get a normalized result polynomial.
+/--
+Inverts a polynomial `va` to get a normalized result polynomial.
 
 * `0⁻¹ = 0`
 * `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
@@ -1172,7 +1218,8 @@ theorem div_pf {R} [Semifield R] {a b c d : R}
     (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by
   subst_vars; simp [div_eq_mul_inv]
 
-/-- Divides two polynomials `va, vb` to get a normalized result polynomial.
+/--
+Divides two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a / b = a * b⁻¹`
 -/
@@ -1223,12 +1270,14 @@ theorem smul_congr {R α : Type*} [CommSemiring α] [SMul R α]
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dsα := none, czα := some q(inferInstance) }
 
-/-- Checks whether `e` would be processed by `eval` as a ring expression,
+/--
+Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
 
 We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
 
 Returns:
+
 * `none` if `eval` would process `e` as an algebraic ring expression
 * `some none` if `eval` would treat `e` as an atom.
 * `some (some r)` if `eval` would not process `e` as an algebraic ring expression,

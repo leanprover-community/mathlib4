@@ -14,6 +14,9 @@ public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.Periodic
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler's totient function
 
@@ -277,9 +280,11 @@ theorem totient_coprime_totient_iff (m n : ℕ) :
     rintro (h | h) <;> rw [h]
     exacts [Nat.coprime_one_left _, Nat.coprime_one_right _]
 
-/-! ### Euler's product formula for the totient function
+/-!
+# Euler's product formula for the totient function
 
-We prove several different statements of this formula. -/
+We prove several different statements of this formula.
+-/
 
 
 /-- Euler's product formula for the totient function. -/

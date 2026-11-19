@@ -9,14 +9,17 @@ public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral over a torus in `ℂⁿ`
 
 In this file we define the integral of a function `f : ℂⁿ → E` over a torus
 `{z : ℂⁿ | ∀ i, z i ∈ Metric.sphere (c i) (R i)}`. In order to do this, we define
-`torusMap (c : ℂⁿ) (R θ : ℝⁿ)` to be the point in `ℂⁿ` given by $z_k=c_k+R_ke^{θ_ki}$,
-where $i$ is the imaginary unit, then define `torusIntegral f c R` as the integral over
-the cube $[0, (fun _ ↦ 2π)] = \{θ\|∀ k, 0 ≤ θ_k ≤ 2π\}$ of the Jacobian of the
+`torusMap (c : ℂⁿ) (R θ : ℝⁿ)` to be the point in `ℂⁿ` given by $`z_k=c_k+R_ke^{θ_ki}`,
+where $`i` is the imaginary unit, then define `torusIntegral f c R` as the integral over
+the cube $`[0, (fun _ ↦ 2π)] = \{θ\|∀ k, 0 ≤ θ_k ≤ 2π\}` of the Jacobian of the
 `torusMap` multiplied by `f (torusMap c R θ)`.
 
 We also define a predicate saying that `f ∘ torusMap c R` is integrable on the cube
@@ -25,15 +28,13 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 ## Main definitions
 
 * `torusMap c R`: the generalized multidimensional exponential map from `ℝⁿ` to `ℂⁿ` that sends
-  $θ=(θ_0,…,θ_{n-1})$ to $z=(z_0,…,z_{n-1})$, where $z_k= c_k + R_ke^{θ_k i}$;
-
+  $`θ=(θ_0,…,θ_{n-1})` to $`z=(z_0,…,z_{n-1})`, where $`z_k= c_k + R_ke^{θ_k i}`;
 * `TorusIntegrable f c R`: a function `f : ℂⁿ → E` is integrable over the generalized torus
   with center `c : ℂⁿ` and radius `R : ℝⁿ` if `f ∘ torusMap c R` is integrable on the
   closed cube `Icc (0 : ℝⁿ) (fun _ ↦ 2 * π)`;
-
 * `torusIntegral f c R`: the integral of a function `f : ℂⁿ → E` over a torus with
   center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ` defined as
-  $\iiint_{[0, 2 * π]} (∏_{k = 1}^{n} i R_k e^{θ_k * i}) • f (c + Re^{θ_k i})\,dθ_0…dθ_{k-1}$.
+  $`\iiint_{[0, 2 * π]} (∏_{k = 1}^{n} i R_k e^{θ_k * i}) • f (c + Re^{θ_k i})\,dθ_0…dθ_{k-1}`.
 
 ## Main statements
 
@@ -42,14 +43,14 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 
 ## Notation
 
-- `ℝ⁰`, `ℝ¹`, `ℝⁿ`, `ℝⁿ⁺¹`: local notation for `Fin 0 → ℝ`, `Fin 1 → ℝ`, `Fin n → ℝ`, and
+* `ℝ⁰`, `ℝ¹`, `ℝⁿ`, `ℝⁿ⁺¹`: local notation for `Fin 0 → ℝ`, `Fin 1 → ℝ`, `Fin n → ℝ`, and
   `Fin (n + 1) → ℝ`, respectively;
-- `ℂ⁰`, `ℂ¹`, `ℂⁿ`, `ℂⁿ⁺¹`: local notation for `Fin 0 → ℂ`, `Fin 1 → ℂ`, `Fin n → ℂ`, and
+* `ℂ⁰`, `ℂ¹`, `ℂⁿ`, `ℂⁿ⁺¹`: local notation for `Fin 0 → ℂ`, `Fin 1 → ℂ`, `Fin n → ℂ`, and
   `Fin (n + 1) → ℂ`, respectively;
-- `∯ z in T(c, R), f z`: notation for `torusIntegral f c R`;
-- `∮ z in C(c, R), f z`: notation for `circleIntegral f c R`, defined elsewhere;
-- `∏ k, f k`: notation for `Finset.prod`, defined elsewhere;
-- `π`: notation for `Real.pi`, defined elsewhere.
+* `∯ z in T(c, R), f z`: notation for `torusIntegral f c R`;
+* `∮ z in C(c, R), f z`: notation for `circleIntegral f c R`, defined elsewhere;
+* `∏ k, f k`: notation for `Finset.prod`, defined elsewhere;
+* `π`: notation for `Real.pi`, defined elsewhere.
 
 ## Tags
 
@@ -73,12 +74,14 @@ local syntax:arg term:max noWs superscriptTerm : term
 local macro_rules | `($t:term$n:superscript) => `(Fin $n → $t)
 
 /-!
-### `torusMap`, a parametrization of a torus
+# `torusMap`, a parametrization of a torus
 -/
 
-/-- The n-dimensional exponential map $θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ$ representing
+/--
+The n-dimensional exponential map $`θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ` representing
 a torus in `ℂⁿ` with center `c ∈ ℂⁿ` and generalized radius `R ∈ ℝⁿ`, so we can adjust
-it to every n axis. -/
+it to every n axis.
+-/
 def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + R i * exp (θ i * I)
 
 theorem torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
@@ -92,7 +95,7 @@ theorem torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
   funext fun _ ↦ torusMap_eq_center_iff.2 rfl
 
 /-!
-### Integrability of a function on a generalized torus
+# Integrability of a function on a generalized torus
 -/
 
 /-- A function `f : ℂⁿ → E` is integrable on the generalized torus if the function

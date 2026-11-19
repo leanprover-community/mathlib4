@@ -8,12 +8,15 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological Kőnig's lemma
 
 A topological version of Kőnig's lemma is that the inverse limit of nonempty compact Hausdorff
 spaces is nonempty.  (Note: this can be generalized further to inverse limits of nonempty compact
-T0 spaces, where all the maps are closed maps; see [Stone1979] --- however there is an erratum
+T0 spaces, where all the maps are closed maps; see \[Stone1979\] --- however there is an erratum
 for Theorem 4 that the element in the inverse limit can have cofinally many components that are
 not closed points.)
 
@@ -28,7 +31,8 @@ The theorem is specialized to nonempty finite types (which are compact Hausdorff
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 `nonempty_sections_of_finite_inverse_system` in `Mathlib/CategoryTheory/CofilteredSystem.lean`.
 
-(See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
+(See [https://stacks.math.columbia.edu/tag/086J](https://stacks.math.columbia.edu/tag/086J) for the
+Set version.)
 -/
 
 @[expose] public section

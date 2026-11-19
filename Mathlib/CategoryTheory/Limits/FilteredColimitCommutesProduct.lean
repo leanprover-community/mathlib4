@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The IPC property
 
@@ -24,23 +27,24 @@ satisfies the `w`-IPC property if the morphism is an isomorphism as long as `α`
 
 ## Main definitions
 
-- `CategoryTheory.Limits.IsIPCOfShape`: `C` satisfies `w`-IPC of shape `α` if `w`-sized filtered
+* `CategoryTheory.Limits.IsIPCOfShape`: `C` satisfies `w`-IPC of shape `α` if `w`-sized filtered
   colimits commute products of shape `α`, i.e. if the joint cocone from above is colimiting if the
   components are.
-- `CategoryTheory.Limits.IsIPC`: `C` satisfies the `w`-IPC property if it satisfies `w`-IPC for
+* `CategoryTheory.Limits.IsIPC`: `C` satisfies the `w`-IPC property if it satisfies `w`-IPC for
   every `α : Type w`.
 
 ## Main results
 
-- The category `Type u` satisfies the `u`-IPC property (available by `inferInstance`).
-- If `C` satisfies the `w`-IPC property, then `D ⥤ C` satisfies the `w`-IPC property
+* The category `Type u` satisfies the `u`-IPC property (available by `inferInstance`).
+* If `C` satisfies the `w`-IPC property, then `D ⥤ C` satisfies the `w`-IPC property
   (available by `inferInstance`).
 
 These results will be used to show that if a category `C` has products indexed by `α`, then so
 does the category of Ind-objects of `C`.
 
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], 3.1.10, 3.1.11, 3.1.12.
 -/
 
 @[expose] public section

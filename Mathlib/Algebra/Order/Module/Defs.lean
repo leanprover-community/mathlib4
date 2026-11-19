@@ -13,10 +13,14 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotonicity of scalar multiplication by positive elements
 
 This file defines typeclasses to reason about monotonicity of the operations
+
 * `b ↦ a • b`, "left scalar multiplication"
 * `a ↦ a • b`, "right scalar multiplication"
 
@@ -29,27 +33,29 @@ purposes, and the system is set up so that they imply the correct granular typec
 If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
-
 In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
 multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
 `•` should be considered here as a mostly arbitrary function `α → β → β`.
 
 We use the following four typeclasses to reason about left scalar multiplication (`b ↦ a • b`):
+
 * `PosSMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂` implies `a • b₁ ≤ a • b₂`.
 * `PosSMulStrictMono`: If `a > 0`, then `b₁ < b₂` implies `a • b₁ < a • b₂`.
 * `PosSMulReflectLT`: If `a ≥ 0`, then `a • b₁ < a • b₂` implies `b₁ < b₂`.
 * `PosSMulReflectLE`: If `a > 0`, then `a • b₁ ≤ a • b₂` implies `b₁ ≤ b₂`.
 
 We use the following four typeclasses to reason about right scalar multiplication (`a ↦ a • b`):
+
 * `SMulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂` implies `a₁ • b ≤ a₂ • b`.
 * `SMulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ • b < a₂ • b`.
 * `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
 * `SMulPosReflectLE`: If `b > 0`, then `a₁ • b ≤ a₂ • b` implies `a₁ ≤ a₂`.
 
-Furthermore, in a *module*, i.e. a group acted on by a ring, `PosSMulMono` and `SMulPosMono` are
+Furthermore, in a _module_, i.e. a group acted on by a ring, `PosSMulMono` and `SMulPosMono` are
 equivalent (they are both the same as `∀ r ≥ 0, ∀ m ≥ 0, 0 ≤ r • m`),
 and similarly for `PosSMulStrictMono` and `SMulPosStrictMono`.
 To avoid dangerous instances going both, we have the extra two typeclasses:
+
 * `IsOrderedModule`: Conjunction of `PosSMulMono` and `SMulPosMono`
 * `IsStrictOrderedModule`: Conjunction of `PosSMulStrictMono` and `SMulPosStrictMono`.
 
@@ -64,31 +70,40 @@ available: `PosSMulMono.of_pos`, `PosSMulReflectLT.of_pos`, `SMulPosMono.of_pos`
 
 As `α` and `β` get more and more structure, those typeclasses end up being equivalent. The commonly
 used implications are:
+
 * When `α`, `β` are partial orders:
+
   * `PosSMulStrictMono → PosSMulMono`
   * `SMulPosStrictMono → SMulPosMono`
   * `PosSMulReflectLE → PosSMulReflectLT`
   * `SMulPosReflectLE → SMulPosReflectLT`
 * When `β` is a linear order:
+
   * `PosSMulStrictMono → PosSMulReflectLE`
   * `PosSMulReflectLT → PosSMulMono` (not registered as instance)
   * `SMulPosReflectLT → SMulPosMono` (not registered as instance)
   * `PosSMulReflectLE → PosSMulStrictMono` (not registered as instance)
   * `SMulPosReflectLE → SMulPosStrictMono` (not registered as instance)
 * When `α` is a linear order:
+
   * `SMulPosStrictMono → SMulPosReflectLE`
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
+
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
 * When `α` is a linear ordered semifield, `β` is an `α`-module:
+
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
 * When `α` is a semiring, `β` is an `α`-module with `Module.IsTorsionFree`:
+
   * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
 * When `α` is a ring, `β` is an `α`-module with `Module.IsTorsionFree`:
+
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
+
 * `IsOrderedModule → PosSMulMono`
 * `IsOrderedModule → SMulPosMono`
 * `IsStrictOrderedModule → PosSMulStrictMono`
@@ -103,6 +118,7 @@ not covered by the current implications, please bring it up on Zulip!
 
 This file uses custom typeclasses instead of abbreviations of `CovariantClass`/`ContravariantClass`
 because:
+
 * They get displayed as classes in the docs. In particular, one can see their list of instances,
   instead of their instances being invariably dumped to the `CovariantClass`/`ContravariantClass`
   list.
@@ -136,41 +152,49 @@ variable [SMul α β] [Preorder α] [Preorder β]
 section Left
 variable [Zero α]
 
-/-- Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
+/--
+Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class PosSMulMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_left` instead. -/
   protected smul_le_smul_of_nonneg_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : b₁ ≤ b₂) :
     a • b₁ ≤ a • b₂
 
-/-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
+/--
+Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
 namely `b₁ < b₂ → a • b₁ < a • b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class PosSMulStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_left` instead. -/
   protected smul_lt_smul_of_pos_left ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : b₁ < b₂) :
     a • b₁ < a • b₂
 
-/-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
+/--
+Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
 the left, namely `a • b₁ < a • b₂ → b₁ < b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class PosSMulReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_left` instead. -/
   protected lt_of_smul_lt_smul_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ < a • b₂) :
     b₁ < b₂
 
-/-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
+/--
+Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
 namely `a • b₁ ≤ a • b₂ → b₁ ≤ b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class PosSMulReflectLE : Prop where
   /-- Do not use this. Use `le_of_smul_le_smul_left` instead. -/
   protected le_of_smul_le_smul_left ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ ≤ a • b₂) :
@@ -181,41 +205,49 @@ end Left
 section Right
 variable [Zero β]
 
-/-- Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
+/--
+Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
 namely `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class SMulPosMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_right` instead. -/
   protected smul_le_smul_of_nonneg_right ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (ha : a₁ ≤ a₂) :
     a₁ • b ≤ a₂ • b
 
-/-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
+/--
+Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
 namely `a₁ < a₂ → a₁ • b < a₂ • b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class SMulPosStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_right` instead. -/
   protected smul_lt_smul_of_pos_right ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (ha : a₁ < a₂) :
     a₁ • b < a₂ • b
 
-/-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
+/--
+Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
 the left, namely `a₁ • b < a₂ • b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class SMulPosReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_right` instead. -/
   protected lt_of_smul_lt_smul_right ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b < a₂ • b) :
     a₁ < a₂
 
-/-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
+/--
+Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
 namely `a₁ • b ≤ a₂ • b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedModule`. -/
+`IsOrderedModule`.
+-/
 class SMulPosReflectLE : Prop where
   /-- Do not use this. Use `le_of_smul_le_smul_right` instead. -/
   protected le_of_smul_le_smul_right ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b ≤ a₂ • b) :

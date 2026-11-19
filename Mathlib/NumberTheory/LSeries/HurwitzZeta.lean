@@ -8,19 +8,21 @@ module
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Hurwitz zeta function
 
 This file gives the definition and properties of the following two functions:
 
-* The **Hurwitz zeta function**, which is the meromorphic continuation to all `s ∈ ℂ` of the
+* The *Hurwitz zeta function*, which is the meromorphic continuation to all `s ∈ ℂ` of the
   function defined for `1 < re s` by the series
 
   `∑' n, 1 / (n + a) ^ s`
 
   for a parameter `a ∈ ℝ`, with the sum taken over all `n` such that `n + a > 0`;
-
-* the related sum, which we call the "**exponential zeta function**" (does it have a standard name?)
+* the related sum, which we call the "*exponential zeta function*" (does it have a standard name?)
 
   `∑' n : ℕ, exp (2 * π * I * n * a) / n ^ s`.
 
@@ -30,7 +32,7 @@ This file gives the definition and properties of the following two functions:
 * `expZeta`: the exponential zeta function
 * `hasSum_hurwitzZeta_of_one_lt_re` and `hasSum_expZeta_of_one_lt_re`:
   relation to Dirichlet series for `1 < re s`
-* ` hurwitzZeta_residue_one` shows that the residue at `s = 1` equals `1`
+* `  hurwitzZeta_residue_one` shows that the residue at `s = 1` equals `1`
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
 -/
@@ -44,7 +46,7 @@ open scoped Topology
 namespace HurwitzZeta
 
 /-!
-## The Hurwitz zeta function
+# The Hurwitz zeta function
 -/
 
 /-- The Hurwitz zeta function, which is the meromorphic continuation of
@@ -108,7 +110,7 @@ lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
   all_goals apply differentiable_hurwitzZetaOdd
 
 /-!
-## The exponential zeta function
+# The exponential zeta function
 -/
 
 /-- Meromorphic continuation of the series `∑' (n : ℕ), exp (2 * π * I * a * n) / n ^ s`.  See
@@ -151,7 +153,7 @@ lemma LSeriesHasSum_exp (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-!
-## The functional equation
+# The functional equation
 -/
 
 lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}

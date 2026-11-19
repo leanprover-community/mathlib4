@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prod instances for additive and multiplicative actions
 
@@ -91,7 +94,9 @@ instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (�
 
 end Prod
 
-/-! ### Scalar multiplication as a homomorphism -/
+/-!
+# Scalar multiplication as a homomorphism
+-/
 
 section BundledSMul
 

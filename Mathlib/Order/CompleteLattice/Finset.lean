@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice operations on finsets
 
@@ -117,7 +120,9 @@ alias minimal_iff_forall_diff_singleton := minimal_iff_forall_erase
 
 end minimal
 
-/-! ### Interaction with big lattice/set operations -/
+/-!
+# Interaction with big lattice/set operations
+-/
 
 section Lattice
 

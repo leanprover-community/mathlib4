@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smoothness of series
 
@@ -17,6 +20,7 @@ We show that series of functions are differentiable, or smooth, when each indivi
 function in the series is and additionally suitable uniform summable bounds are satisfied.
 
 More specifically,
+
 * `differentiable_tsum` ensures that a series of differentiable functions is differentiable.
 * `contDiff_tsum` ensures that a series of `C^n` functions is `C^n`.
 
@@ -33,7 +37,9 @@ open scoped Topology NNReal
 variable {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
-/-! ### Differentiability -/
+/-!
+# Differentiability
+-/
 
 variable [NormedSpace 𝕜 F]
 variable {f : α → E → F} {f' : α → E → E →L[𝕜] F} {g : α → 𝕜 → F} {g' : α → 𝕜 → F} {v : ℕ → α → ℝ}
@@ -182,7 +188,9 @@ theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
   ext1 x
   exact deriv_tsum_apply hu hg hg' hg0 x
 
-/-! ### Higher smoothness -/
+/-!
+# Higher smoothness
+-/
 
 /-- Consider a series of `C^n` functions, with summable uniform bounds on the successive
 derivatives. Then the iterated derivative of the sum is the sum of the iterated derivative. -/

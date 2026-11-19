@@ -8,16 +8,20 @@ module
 public import Mathlib.RingTheory.DividedPowers.DPMorphism
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
-/-! # Sub-divided power-ideals
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Sub-divided power-ideals
 
 Let `A` be a commutative (semi)ring and let `I` be an ideal of `A` with a divided power
-structure `hI`. A subideal `J` of `I` is a *sub-dp-ideal* of `(I, hI)` if, for all `n ∈ ℕ > 0` and
+structure `hI`. A subideal `J` of `I` is a _sub-dp-ideal_ of `(I, hI)` if, for all `n ∈ ℕ > 0` and
 all `x ∈ J`, `hI.dpow n x ∈ J`.
 
 ## Main definitions
 
 * `DividedPowers.IsSubDPIdeal` : A sub-ideal `J` of a divided power ideal `(I, hI)` is a
-  *sub-dp-ideal* if for all `n > 0` and all `x ∈ J`, `hI.dpow n j ∈ J`.
+  _sub-dp-ideal_ if for all `n > 0` and all `x ∈ J`, `hI.dpow n j ∈ J`.
 * `DividedPowers.SubDPIdeal` : A bundled version of `IsSubDPIdeal`.
 * `DividedPowers.IsSubDPIdeal.dividedPowers`: the divided power structure on a sub-dp-ideal.
 * `DividedPowers.IsSubDPIdeal.prod` : if `J` is an `A`-ideal, then `I ⬝ J` is a sub-dp-ideal of `I`.
@@ -61,13 +65,11 @@ lattice.
 
 ## References
 
-* [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$ > 0*][Berthelot-1974]
-
-* [P. Berthelot and A. Ogus, *Notes on crystalline cohomology*][BerthelotOgus-1978]
-
-* [N. Roby, *Lois polynomes et lois formelles en théorie des modules*][Roby-1963]
-
-* [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
+* ‍\[P. Berthelot, _Cohomologie cristalline des schémas de caractéristique $`p` >
+  0_\]\[Berthelot-1974\]
+* ‍\[P. Berthelot and A. Ogus, _Notes on crystalline cohomology_\]\[BerthelotOgus-1978\]
+* ‍\[N. Roby, _Lois polynomes et lois formelles en théorie des modules_\]\[Roby-1963\]
+* ‍\[N. Roby, _Les algèbres à puissances dividées_\]\[Roby-1965\]
 -/
 
 @[expose] public section
@@ -148,7 +150,9 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
 variable {A B : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I} [CommSemiring B]
   {J : Ideal B} {hJ : DividedPowers J}
 
-/-- [P. Berthelot and A. Ogus, *Notes on crystalline cohomology* (Lemma 3.6)][BerthelotOgus-1978] -/
+/--
+‍\[P. Berthelot and A. Ogus, _Notes on crystalline cohomology_ (Lemma 3.6)\]\[BerthelotOgus-1978\]
+-/
 theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
     IsSubDPIdeal hI (span S) ↔ ∀ {n : ℕ} (_ : n ≠ 0), ∀ s ∈ S, hI.dpow n s ∈ span S := by
   refine ⟨fun hhI n hn s hs ↦ hhI.dpow_mem n hn (subset_span hs), fun hhI ↦ ?_⟩
@@ -257,9 +261,11 @@ lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
 
 open Ideal
 
-/-- If `J` is an ideal of `A`, then `I⬝J` is a sub-dp-ideal of `I`.
-See [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$ > 0*,
-(Proposition 1.6.1 (i))][Berthelot-1974] -/
+/--
+If `J` is an ideal of `A`, then `I⬝J` is a sub-dp-ideal of `I`.
+See \[P. Berthelot, _Cohomologie cristalline des schémas de caractéristique $`p` > 0_,
+(Proposition 1.6.1 (i))\]\[Berthelot-1974\]
+-/
 def prod (J : Ideal A) : SubDPIdeal hI where
   carrier := I • J
   isSubideal := mul_le_left

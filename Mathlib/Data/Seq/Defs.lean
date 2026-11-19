@@ -11,6 +11,9 @@ public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Subtype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Possibly infinite lists
 
@@ -102,7 +105,7 @@ protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s 
   Subtype.ext <| funext h
 
 /-!
-### Constructors
+# Constructors
 -/
 
 /-- The empty sequence -/
@@ -168,7 +171,7 @@ theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     congr
 
 /-!
-### Destructors
+# Destructors
 -/
 
 /-- Get the first element of a sequence -/
@@ -256,7 +259,7 @@ theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
     simp [h]
 
 /-!
-### Recursion and corecursion principles
+# Recursion and corecursion principles
 -/
 
 /-- Recursion principle for sequences, compare with `List.recOn`. -/
@@ -335,7 +338,7 @@ theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
   simp [h]
 
 /-!
-### Bisimulation
+# Bisimulation
 -/
 
 section Bisim
@@ -440,7 +443,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
   rw [h1, h2]; apply H
 
 /-!
-### Termination
+# Termination
 -/
 
 /-- A sequence has terminated at position `n` if the value at position `n` equals `none`. -/
@@ -503,7 +506,7 @@ theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
     simp [TerminatedAt]
 
 /-!
-### Membership
+# Membership
 -/
 
 /-- member definition for `Seq` -/
@@ -559,7 +562,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       apply h1 _ _ (Or.inr (IH e))
 
 /-!
-### Converting from/to other types
+# Converting from/to other types
 -/
 
 /-- Embed a list as a sequence -/
@@ -657,7 +660,7 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
     ([], s)
 
 /-!
-### Operations on sequences
+# Operations on sequences
 -/
 
 /-- Append two sequences. If `s₁` is infinite, then `s₁ ++ s₂ = s₁`,
@@ -758,9 +761,11 @@ def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
 /--
 `Pairwise R s` means that all the elements with earlier indices are
 `R`-related to all the elements with later indices.
+
 ```
 Pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
 ```
+
 For example if `R = (· ≠ ·)` then it asserts `s` has no duplicates,
 and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
 -/

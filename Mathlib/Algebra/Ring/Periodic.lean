@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.NegOnePow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodicity
 
@@ -14,10 +17,9 @@ In this file we define and then prove facts about periodic and antiperiodic func
 
 ## Main definitions
 
-* `Function.Periodic`: A function `f` is *periodic* if `∀ x, f (x + c) = f x`.
+* `Function.Periodic`: A function `f` is _periodic_ if `∀ x, f (x + c) = f x`.
   `f` is referred to as periodic with period `c` or `c`-periodic.
-
-* `Function.Antiperiodic`: A function `f` is *antiperiodic* if `∀ x, f (x + c) = -f x`.
+* `Function.Antiperiodic`: A function `f` is _antiperiodic_ if `∀ x, f (x + c) = -f x`.
   `f` is referred to as antiperiodic with antiperiod `c` or `c`-antiperiodic.
 
 Note that any `c`-antiperiodic function will necessarily also be `2 • c`-periodic.
@@ -35,7 +37,9 @@ variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
 namespace Function
 
-/-! ### Periodicity -/
+/-!
+# Periodicity
+-/
 
 
 /-- A function `f` is said to be `Periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
@@ -230,7 +234,9 @@ of non-zero period is not injective. -/
 lemma Periodic.not_injective {R X : Type*} [AddZeroClass R] {f : R → X} {c : R}
     (hf : Periodic f c) (hc : c ≠ 0) : ¬ Injective f := fun h ↦ hc <| h hf.eq
 
-/-! ### Antiperiodicity -/
+/-!
+# Antiperiodicity
+-/
 
 /-- A function `f` is said to be `antiperiodic` with antiperiod `c` if for all `x`,
   `f (x + c) = -f x`. -/

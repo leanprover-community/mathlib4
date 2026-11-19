@@ -9,6 +9,9 @@ public import Mathlib.Order.Hom.Bounded
 public import Mathlib.Order.Hom.Lattice
 public import Mathlib.Order.SymmDiff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded lattice homomorphisms
 
@@ -63,26 +66,32 @@ attribute [to_dual existing] BoundedLatticeHom.toInfTopHom BoundedLatticeHom.map
 
 section
 
-/-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
+/--
+`SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
-You should extend this class when you extend `SupBotHom`. -/
+You should extend this class when you extend `SupBotHom`.
+-/
 class SupBotHomClass (F α β : Type*) [Max α] [Max β] [Bot α] [Bot β] [FunLike F α β] : Prop
   extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
-/-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
+/--
+`InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
-You should extend this class when you extend `SupBotHom`. -/
+You should extend this class when you extend `SupBotHom`.
+-/
 @[to_dual]
 class InfTopHomClass (F α β : Type*) [Min α] [Min β] [Top α] [Top β] [FunLike F α β] : Prop
   extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
-/-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
+/--
+`BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
-You should extend this class when you extend `BoundedLatticeHom`. -/
+You should extend this class when you extend `BoundedLatticeHom`.
+-/
 class BoundedLatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
     [BoundedOrder β] [FunLike F α β] : Prop
   extends LatticeHomClass F α β where
@@ -188,7 +197,9 @@ instance [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedL
       map_top' := map_top f
       map_bot' := map_bot f }⟩
 
-/-! ### Finitary supremum homomorphisms -/
+/-!
+# Finitary supremum homomorphisms
+-/
 
 namespace SupBotHom
 
@@ -351,7 +362,9 @@ lemma subtypeVal_coe {P : β → Prop}
 
 end SupBotHom
 
-/-! ### Bounded lattice homomorphisms -/
+/-!
+# Bounded lattice homomorphisms
+-/
 
 namespace BoundedLatticeHom
 
@@ -496,7 +509,9 @@ lemma subtypeVal_coe {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)
 
 end BoundedLatticeHom
 
-/-! ### Dual homs -/
+/-!
+# Dual homs
+-/
 
 namespace SupBotHom
 

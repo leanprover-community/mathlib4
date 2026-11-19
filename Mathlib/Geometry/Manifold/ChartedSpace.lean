@@ -10,6 +10,9 @@ public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Charted spaces
 
@@ -20,13 +23,14 @@ homeomorphisms (the charts) going to a model space `H`, and the changes of chart
 maps.
 
 In this file, we introduce a general framework describing these notions, where the model space is an
-arbitrary topological space. We avoid the word *manifold*, which should be reserved for the
+arbitrary topological space. We avoid the word _manifold_, which should be reserved for the
 situation where the model space is a (subset of a) vector space, and use the terminology
-*charted space* instead.
+_charted space_ instead.
 
 If the changes of charts satisfy some additional property (for instance if they are smooth), then
 `M` inherits additional structure (it makes sense to talk about smooth manifolds). There are
 therefore two different ingredients in a charted space:
+
 * the set of charts, which is data
 * the fact that changes of charts belong to some group (in fact groupoid), which is additional Prop.
 
@@ -79,11 +83,11 @@ Additional useful definitions:
 
 ## Implementation notes
 
-The atlas in a charted space is *not* a maximal atlas in general: the notion of maximality depends
+The atlas in a charted space is _not_ a maximal atlas in general: the notion of maximality depends
 on the groupoid one considers, and changing groupoids changes the maximal atlas. With the current
 formalization, it makes sense first to choose the atlas, and then to ask whether this precise atlas
 defines a smooth manifold, an orientable manifold, and so on. A consequence is that structomorphisms
-between `M` and `M'` do *not* induce a bijection between the atlases of `M` and `M'`: the
+between `M` and `M'` do _not_ induce a bijection between the atlases of `M` and `M'`: the
 definition is only that, read in charts, the structomorphism locally belongs to the groupoid under
 consideration. (This is equivalent to inducing a bijection between elements of the maximal atlas).
 A consequence is that the invariance under structomorphisms of properties defined in terms of the
@@ -126,7 +130,9 @@ open Set OpenPartialHomeomorph
 
 open scoped Manifold
 
-/-! ### Charted spaces -/
+/-!
+# Charted spaces
+-/
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
 homeomorphisms taking values in a model space `H`, called charts, such that the domains of the
@@ -303,8 +309,10 @@ theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalS
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
 
-/-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
-the real line with a double origin). -/
+/--
+A charted space over a T1 space is T1. Note that this is _not_ true for T2 (for instance for
+the real line with a double origin).
+-/
 theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
   apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
   by_cases hy : y ∈ (chartAt H x).source
@@ -386,30 +394,41 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note «Manifold type tags» /-- For technical reasons we introduce two type tags:
+library_note «Manifold type tags» /--
+                                  For technical reasons we introduce two type tags:
 
-* `ModelProd H H'` is the same as `H × H'`;
-* `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
+                                  * `ModelProd H H'` is the same as `H × H'`;
+* `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and
+  `ι` is a finite type.
 
-In both cases the reason is the same, so we explain it only in the case of the product. A charted
-space `M` with model `H` is a set of charts from `M` to `H` covering the space. Every space is
-registered as a charted space over itself, using the only chart `id`, in `chartedSpaceSelf`. You
-can also define a product of charted space `M` and `M'` (with model space `H × H'`) by taking the
-products of the charts. Now, on `H × H'`, there are two charted space structures with model space
-`H × H'` itself, the one coming from `chartedSpaceSelf`, and the one coming from the product of
-the two `chartedSpaceSelf` on each component. They are equal, but not defeq (because the product
-of `id` and `id` is not defeq to `id`), which is bad as we know. This expedient of renaming `H × H'`
-solves this problem. -/
+                                  In both cases the reason is the same, so we explain it only in the
+case of the product. A charted space `M` with model `H` is a set
+of charts from `M` to `H` covering the space. Every space is
+registered as a charted space over itself, using the only chart
+`id`, in `chartedSpaceSelf`. You can also define a product of
+charted space `M` and `M'` (with model space `H × H'`) by taking
+the products of the charts. Now, on `H × H'`, there are two
+charted space structures with model space `H × H'` itself, the one
+coming from `chartedSpaceSelf`, and the one coming from the
+product of the two `chartedSpaceSelf` on each component. They are
+equal, but not defeq (because the product of `id` and `id` is not
+defeq to `id`), which is bad as we know. This expedient of
+renaming `H × H'` solves this problem.
+                                  -/
 
 
-/-- Same thing as `H × H'`. We introduce it for technical reasons,
-see note [Manifold type tags]. -/
+/--
+Same thing as `H × H'`. We introduce it for technical reasons,
+see note \[Manifold type tags\].
+-/
 @[implicit_reducible]
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 
-/-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
-see note [Manifold type tags]. -/
+/--
+Same thing as `∀ i, H i`. We introduce it for technical reasons,
+see note \[Manifold type tags\].
+-/
 @[implicit_reducible]
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
@@ -617,7 +636,9 @@ end Constructions
 
 end ChartedSpace
 
-/-! ### Constructing a topology from an atlas -/
+/-!
+# Constructing a topology from an atlas
+-/
 
 /-- Sometimes, one may want to construct a charted space structure on a space which does not yet
 have a topological structure, where the topology would come from the charts. For this, one needs

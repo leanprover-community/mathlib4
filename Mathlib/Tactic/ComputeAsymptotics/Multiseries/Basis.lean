@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well-formed bases
 
@@ -24,12 +27,14 @@ namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter
 
-/-- `WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
+/--
+`WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
 `basis` is sorted such that if
 `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 We use two types `Basis` and `WellFormedBasis` instead of a single bundled one because
-it lets us to use the `List` API for `Basis`. -/
+it lets us to use the `List` API for `Basis`.
+-/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧
   ∀ f ∈ basis, Tendsto f atTop atTop
@@ -185,7 +190,9 @@ theorem tail_pow_majorized_head {hd f : ℝ → ℝ} {tl : Basis}
 
 end WellFormedBasis
 
-/-! ### Basis extensions -/
+/-!
+# Basis extensions
+-/
 
 /-- The type of extensions of a given basis, defined as an inductive type.
 Given a `basis : Basis` and `ex : BasisExtension basis` of it, one can use `getBasis` to produce a

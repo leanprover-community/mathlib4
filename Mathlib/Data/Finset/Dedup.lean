@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Data.Multiset.Dedup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deduplicating Multisets to make Finsets
 
@@ -39,7 +42,9 @@ theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.val = s.val :=
 
 end Finset
 
-/-! ### dedup on list and multiset -/
+/-!
+# dedup on list and multiset
+-/
 
 namespace Multiset
 

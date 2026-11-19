@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic lemmas about ordered rings
 -/
@@ -108,10 +111,11 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : �
 def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 
 /-!
-### Lemmas for canonically linear ordered semirings or linear ordered rings
+# Lemmas for canonically linear ordered semirings or linear ordered rings
 
 The slightly unusual typeclass assumptions `[IsStrictOrderedRing R] [ExistsAddOfLE R]` cover two
 more familiar settings:
+
 * linearly ordered rings, e.g. `ℤ`, `ℚ` or `ℝ`
 * canonically ordered semirings, e.g. `ℕ`, `ℚ≥0` or `ℝ≥0`
 -/

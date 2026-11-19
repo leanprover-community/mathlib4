@@ -13,6 +13,9 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ℤ-lattices
 
@@ -21,8 +24,10 @@ norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` i
 subgroup of `E` such that `L` spans `E` over `K`.
 
 A `ℤ`-lattice `L` can be defined in two ways:
+
 * For `b` a basis of `E`, then `L = Submodule.span ℤ (Set.range b)` is a ℤ-lattice of `E`
 * As a `ℤ-submodule` of `E` with the additional properties:
+
   * `DiscreteTopology L`, that is `L` is discrete
   * `Submodule.span ℝ (L : Set E) = ⊤`, that is `L` spans `E` over `K`.
 

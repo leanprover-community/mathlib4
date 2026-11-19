@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Tactic.Ring.NamePolyVars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The addition-and-subtraction map on x-coordinates
 
@@ -33,7 +36,7 @@ public section
 namespace WeierstrassCurve
 
 /-!
-### The addition-and-subtraction map on x-coordinates
+# The addition-and-subtraction map on x-coordinates
 -/
 
 variable {R : Type*} [CommRing R] (W : WeierstrassCurve R)
@@ -131,7 +134,7 @@ lemma addSubMap_ne_zero [IsReduced R] {x : Fin 3 → R} (hx : x ≠ 0) :
 end WeierstrassCurve
 
 /-!
-### The symmetric square of the x-coordinate map
+# The symmetric square of the x-coordinate map
 
 We define `Weierstrass.Affine.Point.sym2x`, which sends a pair `P`, `Q` of nonsingular points in
 affine coordinates on a Weierstrass curve to a triple projectively equal to
@@ -142,10 +145,12 @@ namespace WeierstrassCurve.Affine.Point
 
 variable {R : Type*} [CommRing R] {W' : Affine R}
 
-/-- This map sends a pair `P`, `Q` of nonsingular points in affine coordinates on `W`
+/--
+This map sends a pair `P`, `Q` of nonsingular points in affine coordinates on `W`
 to a triple projectively equivalent to `![x(P) * x(Q), x(P) + x(Q), 1]`.
 
-In more geometric terms, this is the map `Sym² W → Sym² ℙ¹ ≃ ℙ²` induced by `x : W → ℙ¹`. -/
+In more geometric terms, this is the map `Sym² W → Sym² ℙ¹ ≃ ℙ²` induced by `x : W → ℙ¹`.
+-/
 noncomputable def sym2x (P Q : W'.Point) : Fin 3 → R :=
   letI Px := P.xRep
   letI Qx := Q.xRep

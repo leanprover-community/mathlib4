@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of Lie-Rinehart algebras by strict Lie-Rinehart ideals
 
@@ -16,19 +19,17 @@ structure of a Lie-Rinehart algebra.
 ## Main statements:
 
 * The quotient of a Lie-Rinehart algebra by a strict Lie-Rinehart ideal is a Lie-Rinehart algebra.
-
 * The quotient map `mk'` is a Lie-Rinehart algebra homomorphism.
 
 ## Implementation notes
 
-Quotients by strict ideals appear in [huebschmann_1999] in the form of extensions; in our notation
-these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
+Quotients by strict ideals appear in \[huebschmann\_1999\] in the form of extensions; in our
+notation these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
 
 ## References
 
-* [J. Huebschmann,
-  *Extensions of Lie-Rinehart algebras and the Chern-Weil construction*][huebschmann_1999]
-
+* ‍\[J. Huebschmann,
+  _Extensions of Lie-Rinehart algebras and the Chern-Weil construction_\]\[huebschmann\_1999\]
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 import Mathlib.LinearAlgebra.Complex.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
 
@@ -41,7 +44,9 @@ theorem complex_ofReal_eval_C : ∀ (x : ℝ) n, (((C ℝ n).eval x : ℝ) : ℂ
 theorem complex_ofReal_eval_S : ∀ (x : ℝ) n, (((S ℝ n).eval x : ℝ) : ℂ) = (S ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_S ℝ ℂ _ _ _
 
-/-! ### Complex versions -/
+/-!
+# Complex versions
+-/
 
 section Complex
 
@@ -135,7 +140,9 @@ theorem S_two_mul_complex_cosh (n : ℤ) : (S ℂ n).eval (2 * cosh θ) * sinh �
 
 end Complex
 
-/-! ### Real versions -/
+/-!
+# Real versions
+-/
 
 section Real
 

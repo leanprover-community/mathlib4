@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinant of a matrix
 
@@ -18,14 +21,14 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 ## Main definitions
 
-- `Matrix.det`: the determinant of a square matrix, as a sum over permutations
-- `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
+* `Matrix.det`: the determinant of a square matrix, as a sum over permutations
+* `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
 
 ## Main results
 
-- `det_mul`: the determinant of `A * B` is the product of determinants
-- `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
-- `det_block_diagonal`: the determinant of a block diagonal matrix is a product
+* `det_mul`: the determinant of `A * B` is the product of determinants
+* `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
+* `det_block_diagonal`: the determinant of a block diagonal matrix is a product
   of the blocks' determinants
 
 ## Implementation notes
@@ -52,9 +55,11 @@ local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
-/-- The determinant of a matrix given by the Leibniz formula.
+/--
+The determinant of a matrix given by the Leibniz formula.
 
 This is available in bundled forms as:
+
 * `Matrix.detMonoidHom`
 * `Matrix.detRowAlternating`
 -/
@@ -246,7 +251,8 @@ theorem abs_det_submatrix_equiv_equiv {R : Type*}
   change |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
   rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
-/-- Reindexing both indices along the same equivalence preserves the determinant.
+/--
+Reindexing both indices along the same equivalence preserves the determinant.
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one is unsuitable because
 `Matrix.reindex_apply` unfolds `reindex` first.
@@ -261,7 +267,8 @@ lemma det_reindex (e e' : m ≃ n) (M : Matrix m m R) :
   · simp_rw [det_reindex_self, reindex_apply, Equiv.refl_symm, Equiv.coe_refl, det_permute]
     rfl
 
-/-- Reindexing both indices along equivalences preserves the absolute of the determinant.
+/--
+Reindexing both indices along equivalences preserves the absolute of the determinant.
 
 For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
 this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
@@ -378,7 +385,7 @@ end Prod
 section DetZero
 
 /-!
-### `det_zero` section
+# `det_zero` section
 
 Prove that a matrix with a repeated column has determinant equal to zero.
 -/
@@ -468,7 +475,8 @@ theorem det_updateCol_sum (A : Matrix n n R) (j : n) (c : n → R) :
 
 section DetEq
 
-/-! ### `det_eq` section
+/-!
+# `det_eq` section
 
 Lemmas showing the determinant is invariant under a variety of operations.
 -/

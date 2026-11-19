@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Data.WSeq.Relation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parallel computation
 
 Parallel computation of a computable sequence of computations by
 a diagonal enumeration.
 The important theorems of this operation are proven as
-terminates_parallel and exists_of_mem_parallel.
+terminates\_parallel and exists\_of\_mem\_parallel.
 (This operation is nondeterministic in the sense that it does not
 honor sequence equivalence (irrelevance of computation time).)
 -/

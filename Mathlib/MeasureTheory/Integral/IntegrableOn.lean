@@ -8,7 +8,11 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
-/-! # Functions integrable on a set and at a filter
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functions integrable on a set and at a filter
 
 We define `IntegrableOn f s μ := Integrable f (μ.restrict s)` and prove theorems like
 `integrableOn_union : IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ`.
@@ -522,8 +526,10 @@ theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
     IntegrableOn (L ∘ f) s μ :=
   L.integrable_comp hf
 
-/-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
-set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/
+/--
+We say that a function `f` is _integrable at filter_ `l` if it is integrable on some
+set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`.
+-/
 def IntegrableAtFilter (f : α → ε) (l : Filter α) (μ : Measure α := by volume_tac) :=
   ∃ s ∈ l, IntegrableOn f s μ
 
@@ -886,7 +892,8 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
     StronglyMeasurableAtFilter f (𝓝[s] x) μ :=
   ⟨s, self_mem_nhdsWithin, hf.aestronglyMeasurable hs⟩
 
-/-! ### Lemmas about adding and removing interval boundaries
+/-!
+# Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
 the unprimed ones use `[NullSingletonClass μ]`.

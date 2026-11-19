@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topological support of a function
 
@@ -200,18 +203,24 @@ lemma ContinuousOn.continuous_of_mulTSupport_subset [TopologicalSpace β] {f : �
 
 end
 
-/-! ## Functions with compact support -/
+/-!
+# Functions with compact support
+-/
 section CompactSupport
 
 variable [TopologicalSpace α] [TopologicalSpace α'] [One β] [One γ] [One δ]
   {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
 
-/-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
+/--
+A function `f` _has compact multiplicative support_ or is _compactly supported_ if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
-to `1` outside a compact set. -/
-@[to_additive /-- A function `f` *has compact support* or is *compactly supported* if the closure of
-the support of `f` is compact. In a T₂ space this is equivalent to `f` being equal to `0` outside a
-compact set. -/]
+to `1` outside a compact set.
+-/
+@[to_additive /--
+              A function `f` _has compact support_ or is _compactly supported_ if the closure of the
+support of `f` is compact. In a T₂ space this is equivalent to `f` being equal to `0`
+outside a compact set.
+              -/]
 def HasCompactMulSupport (f : α → β) : Prop :=
   IsCompact (mulTSupport f)
 
@@ -376,7 +385,9 @@ end Compact
 
 end CompactSupport
 
-/-! ## Functions with compact support: algebraic operations -/
+/-!
+# Functions with compact support: algebraic operations
+-/
 section CompactSupport2
 section Monoid
 

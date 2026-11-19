@@ -11,6 +11,9 @@ public import Mathlib.Basic.Nontrivial.Defs
 
 import Batteries.Tactic.SeqFocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for groups with an adjoined zero element
 
@@ -184,10 +187,12 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
 
 end CommMagma
 
-/-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
+/--
+Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 
 The obvious use case is groups with zero, but this condition is also satisfied by `ℕ`, `ℤ` and, more
-generally, any Euclidean domain. -/
+generally, any Euclidean domain.
+-/
 class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop where
   protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
 
@@ -207,12 +212,14 @@ variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
 end MulDivCancelClass
 
-/-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
+/--
+A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.
 
 Examples include division rings and the ordered monoids that are the
-target of valuations in general valuation theory. -/
+target of valuations in general valuation theory.
+-/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   protected inv_zero : (0 : G₀)⁻¹ = 0

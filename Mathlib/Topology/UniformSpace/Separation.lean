@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
 
@@ -24,7 +27,7 @@ A uniform space is a regular topological space,
 hence separation axioms `T0Space`, `T1Space`, `T2Space`, and `T3Space`
 are equivalent for uniform spaces,
 and Lean typeclass search can automatically convert from one assumption to another.
-We say that a uniform space is *separated*, if it satisfies these axioms.
+We say that a uniform space is _separated_, if it satisfies these axioms.
 If you need an `Iff` statement (e.g., to rewrite),
 then see `R1Space.t0Space_iff_t2Space` and `RegularSpace.t0Space_iff_t3Space`.
 
@@ -50,12 +53,10 @@ by defining `SeparationQuotient.lift'` and `SeparationQuotient.map` operations.
 
 * `SeparationQuotient.instUniformSpace`: uniform space structure on `SeparationQuotient α`,
   where `α` is a uniform space;
-
 * `SeparationQuotient.lift'`: given a map `f : α → β`
   from a uniform space to a separated uniform space,
   lift it to a map `SeparationQuotient α → β`;
   if the original map is not uniformly continuous, then returns a constant map.
-
 * `SeparationQuotient.map`: given a map `f : α → β` between uniform spaces,
   returns a map `SeparationQuotient α → SeparationQuotient β`.
   If the original map is not uniformly continuous, then returns a constant map.
@@ -84,12 +85,11 @@ to more general `Inseparable` and `SeparationQuotient`.
 
 ## TODO
 
-Definitions `SeparationQuotient.lift'` and `SeparationQuotient.map`
-rely on `UniformSpace` structures in the domain and in the codomain.
-We should generalize them to topological spaces.
-This generalization will drop `UniformContinuous` assumptions in some lemmas,
-and add these assumptions in other lemmas,
-so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644 to keep it reasonably sized.
+Definitions `SeparationQuotient.lift'` and `SeparationQuotient.map` rely on `UniformSpace`
+structures in the domain and in the codomain. We should generalize them to topological spaces. This
+generalization will drop `UniformContinuous` assumptions in some lemmas, and add these assumptions
+in other lemmas, so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644
+to keep it reasonably sized.
 
 ## Keywords
 
@@ -110,7 +110,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 /-!
-### Separated uniform spaces
+# Separated uniform spaces
 -/
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
@@ -240,7 +240,7 @@ theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (
     exact hf (ne_of_apply_ne f h)
 
 /-!
-### Separation quotient
+# Separation quotient
 -/
 
 namespace SeparationQuotient
@@ -295,9 +295,11 @@ theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk 
   comap_map_mk_uniformity
 
 open scoped Classical in
-/-- Factoring functions to a separated space through the separation quotient.
+/--
+Factoring functions to a separated space through the separation quotient.
 
-TODO: unify with `SeparationQuotient.lift`. -/
+TODO: unify with `SeparationQuotient.lift`.
+-/
 def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   if hc : UniformContinuous f then lift f fun _ _ h => (h.map hc.continuous).eq
   else fun x => f (Nonempty.some ⟨x.out⟩)

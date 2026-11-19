@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed unions and intersections of pointwise operations of sets
 
@@ -29,7 +32,9 @@ variable {α β : Type*}
 
 namespace Set
 
-/-! ### Set negation/inversion -/
+/-!
+# Set negation/inversion
+-/
 
 open scoped Pointwise
 
@@ -55,7 +60,9 @@ theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
 
 end Inv
 
-/-! ### Set addition/multiplication -/
+/-!
+# Set addition/multiplication
+-/
 section Mul
 
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s t : Set α} {a b : α}
@@ -122,7 +129,9 @@ theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
 
 end Mul
 
-/-! ### Set subtraction/division -/
+/-!
+# Set subtraction/division
+-/
 
 
 section Div
@@ -191,7 +200,9 @@ theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
 
 end Div
 
-/-! ### Translation/scaling of sets -/
+/-!
+# Translation/scaling of sets
+-/
 
 section SMul
 

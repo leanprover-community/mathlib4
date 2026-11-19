@@ -13,6 +13,9 @@ public import Mathlib.Order.SuccPred.Int
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reducing to an interval modulo its length
 
@@ -592,7 +595,9 @@ theorem toIocMod_eq_toIocMod : toIocMod hp a b = toIocMod hp a c ↔ ∃ n : ℤ
     rw [sub_eq_iff_eq_add] at hz
     rw [hz, toIocMod_zsmul_add]
 
-/-! ### Links between the `Ico` and `Ioc` variants applied to the same element -/
+/-!
+# Links between the `Ico` and `Ioc` variants applied to the same element
+-/
 
 
 section IcoIoc
@@ -817,7 +822,7 @@ theorem QuotientAddGroup.equivIocMod_zero (a : α) :
 end
 
 /-!
-### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
+# The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
 -/
 
 
@@ -954,7 +959,7 @@ end Circular
 end LinearOrderedAddCommGroup
 
 /-!
-### `simp` confluence lemmas for rings
+# `simp` confluence lemmas for rings
 
 In rings, we simplify `(m : ℤ) • x` to `↑m * x`, so we need to restate some lemmas
 using `↑m * x` instead of `m • x`. In some lemmas, `m` is a variable,
@@ -1353,7 +1358,7 @@ theorem toIocMod_sub_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
 end Ring
 
 /-!
-### Connections to `Int.floor` and `Int.fract`
+# Connections to `Int.floor` and `Int.fract`
 -/
 
 
@@ -1400,7 +1405,9 @@ theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract 
 
 end LinearOrderedField
 
-/-! ### Lemmas about unions of translates of intervals -/
+/-!
+# Lemmas about unions of translates of intervals
+-/
 
 
 section Union

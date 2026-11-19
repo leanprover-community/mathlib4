@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Util.WithWeakNamespace
 
-/-! # `scoped[NS]` syntax
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `scoped[NS]` syntax
 
 This is a replacement for the `localized` command in mathlib. It is similar to `scoped`,
 but it scopes the syntax in the specified namespace instead of the current namespace.
@@ -21,6 +25,7 @@ open Lean
 /--
 `scoped[NS]` is similar to the `scoped` modifier on attributes and notations,
 but it scopes the syntax in the specified namespace instead of the current namespace.
+
 ```
 scoped[Matrix] postfix:1024 "ᵀ" => Matrix.transpose
 -- declares `ᵀ` as a notation for matrix transposition

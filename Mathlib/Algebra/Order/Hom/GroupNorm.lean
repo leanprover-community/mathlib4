@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic order homomorphism classes
 
@@ -16,6 +19,7 @@ This file defines hom classes for common properties at the intersection of order
 ## Typeclasses
 
 Group norms
+
 * `AddGroupSeminormClass`: Homs are nonnegative, subadditive, even and preserve zero.
 * `GroupSeminormClass`: Homs are nonnegative, respect `f (a * b) ≤ f a + f b`, `f a⁻¹ = f a` and
   preserve zero.
@@ -39,12 +43,16 @@ assert_not_exists Ring
 
 variable {F α β : Type*} [FunLike F α β]
 
-/-! ### Group (semi)norms -/
+/-!
+# Group (semi)norms
+-/
 
-/-- `AddGroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the additive
+/--
+`AddGroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the additive
 group `α`.
 
-You should extend this class when you extend `AddGroupSeminorm`. -/
+You should extend this class when you extend `AddGroupSeminorm`.
+-/
 class AddGroupSeminormClass (F : Type*) (α β : outParam Type*)
     [AddGroup α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
   extends SubadditiveHomClass F α β where
@@ -53,9 +61,11 @@ class AddGroupSeminormClass (F : Type*) (α β : outParam Type*)
   /-- The map is invariant under negation of its argument. -/
   map_neg_eq_map (f : F) (a : α) : f (-a) = f a
 
-/-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
+/--
+`GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
 
-You should extend this class when you extend `GroupSeminorm`. -/
+You should extend this class when you extend `GroupSeminorm`.
+-/
 @[to_additive]
 class GroupSeminormClass (F : Type*) (α β : outParam Type*)
     [Group α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
@@ -65,19 +75,23 @@ class GroupSeminormClass (F : Type*) (α β : outParam Type*)
   /-- The map is invariant under inversion of its argument. -/
   map_inv_eq_map (f : F) (a : α) : f a⁻¹ = f a
 
-/-- `AddGroupNormClass F α` states that `F` is a type of `β`-valued norms on the additive group
+/--
+`AddGroupNormClass F α` states that `F` is a type of `β`-valued norms on the additive group
 `α`.
 
-You should extend this class when you extend `AddGroupNorm`. -/
+You should extend this class when you extend `AddGroupNorm`.
+-/
 class AddGroupNormClass (F : Type*) (α β : outParam Type*)
     [AddGroup α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
   extends AddGroupSeminormClass F α β where
   /-- The argument is zero if its image under the map is zero. -/
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 
-/-- `GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
+/--
+`GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
 
-You should extend this class when you extend `GroupNorm`. -/
+You should extend this class when you extend `GroupNorm`.
+-/
 @[to_additive]
 class GroupNormClass (F : Type*) (α β : outParam Type*)
     [Group α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop

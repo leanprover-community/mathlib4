@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Cast.Order.Field
 
 import Mathlib.Basic.ENNReal.Inv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
 
@@ -28,7 +31,9 @@ noncomputable section
 
 namespace EReal
 
-/-! ### Absolute value -/
+/-!
+# Absolute value
+-/
 
 -- TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
@@ -80,7 +85,9 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 
-/-! ### Sign -/
+/-!
+# Sign
+-/
 
 open SignType (sign)
 
@@ -187,7 +194,9 @@ lemma exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
     use m
     rwa [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, ← EReal.coe_mul, EReal.coe_le_coe_iff]
 
-/-! ### Min and Max -/
+/-!
+# Min and Max
+-/
 
 lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
   rcases le_total x y with (h | h) <;> simp_all
@@ -195,7 +204,9 @@ lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
 lemma max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
   rcases le_total x y with (h | h) <;> simp_all
 
-/-! ### Inverse -/
+/-!
+# Inverse
+-/
 
 /-- Multiplicative inverse of an `EReal`. We choose `0⁻¹ = 0` to guarantee several good properties,
 for instance `(a * b)⁻¹ = a⁻¹ * b⁻¹`. -/
@@ -244,7 +255,9 @@ lemma mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   | coe_coe x y => rw [← coe_mul, ← coe_inv, _root_.mul_inv, coe_mul, coe_inv, coe_inv]
   | neg_bot x x_neg => rw [mul_bot_of_neg (EReal.coe_neg'.2 x_neg), inv_top, inv_bot, mul_zero]
 
-/-! #### Inversion and Absolute Value -/
+/-!
+# Inversion and Absolute Value
+-/
 
 lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
   induction a with
@@ -275,7 +288,9 @@ lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : ER
       congr
       exact abs_of_pos a_pos
 
-/-! #### Inversion and Positivity -/
+/-!
+# Inversion and Positivity
+-/
 
 lemma bot_lt_inv (x : EReal) : ⊥ < x⁻¹ := by
   cases x with
@@ -319,7 +334,9 @@ lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
     exact _root_.inv_strictAntiOn (EReal.coe_pos.1 a_0) (EReal.coe_pos.1 b_0)
       (EReal.coe_lt_coe_iff.1 a_b)
 
-/-! ### Division -/
+/-!
+# Division
+-/
 
 protected lemma div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹
 
@@ -365,7 +382,9 @@ lemma bot_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a =
 lemma bot_div_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
   bot_mul_of_neg (inv_neg_of_neg_ne_bot h h')
 
-/-! #### Division and Multiplication -/
+/-!
+# Division and Multiplication
+-/
 
 lemma div_self {a : EReal} (h₁ : a ≠ ⊥) (h₂ : a ≠ ⊤) (h₃ : a ≠ 0) : a / a = 1 := by
   rw [← coe_toReal h₂ h₁] at h₃ ⊢
@@ -408,7 +427,9 @@ lemma div_eq_iff (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) : c / b
   · rw [← @mul_div_cancel c b hbot htop hzero, h, mul_comm a b]
   · rw [h, mul_comm a b, ← mul_div b a b, @mul_div_cancel a b hbot htop hzero]
 
-/-! #### Division and Order -/
+/-!
+# Division and Order
+-/
 
 lemma monotone_div_right_of_nonneg (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
@@ -547,7 +568,9 @@ lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
   obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1.le d0 dab
   exact dab.le.trans (h a' aa' b' bb')
 
-/-! #### Division Distributivity -/
+/-!
+# Division Distributivity
+-/
 
 lemma div_right_distrib_of_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) :
     (a + b) / c = a / c + b / c :=

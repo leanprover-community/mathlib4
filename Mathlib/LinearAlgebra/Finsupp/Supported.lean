@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Submodule.Range
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp`s supported on a given submodule
 

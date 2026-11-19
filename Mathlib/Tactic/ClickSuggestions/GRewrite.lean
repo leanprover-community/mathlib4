@@ -9,6 +9,9 @@ public meta import Lean.Meta.ExprLens
 public meta import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
 -/
@@ -70,13 +73,15 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
         result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
   return result
 
-/-- This function is passed to `MVarId.gcongr` as the main discharger.
+/--
+This function is passed to `MVarId.gcongr` as the main discharger.
 It doesn't try to prove the goal, but instead observes what the goal is,
 to help determine which lemmas could work with `grw`.
 
 If the selected grewrite position is valid, then `ref` is set, and a dummy error is thrown.
 Note that this function will be called at most once,
-so we don't lose information by throwing an error. -/
+so we don't lose information by throwing an error.
+-/
 private def dummyDischarger (ref : IO.Ref (Array GrwPos)) (hyp? : Bool) (fvar : Expr)
     (goal : MVarId) : MetaM Bool := do
   let e ← instantiateMVars (← goal.getType)

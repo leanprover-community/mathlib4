@@ -12,10 +12,14 @@ import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets with very small doubling
 
-For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file characterises sets with
+For a finset `A` in a group, its _doubling_ is `#(A * A) / #A`. This file characterises sets with
+
 * no doubling as the sets which are either empty or translates of a subgroup.
   For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅` (`Finset.empty_pow`),
   `(a • H) ^ 2 = a ^ 2 • H ^ 2 = a ^ 2 • H` (`smul_pow`, `coe_set_pow`).
@@ -32,8 +36,9 @@ For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file charac
 
 ## References
 
-* [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
-* [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
+* [_An elementary non-commutative Freiman theorem_, Terence
+  Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
+* ‍\[_Introduction to approximate groups_, Matthew Tointon\]\[tointon2020\]
 -/
 
 @[expose] public section
@@ -44,7 +49,9 @@ open scoped Pointwise RightActions
 namespace Finset
 variable {G : Type*} [Group G] [DecidableEq G] {K : ℝ} {A B S : Finset G} {a b c d x y : G}
 
-/-! ### Doubling exactly `1` -/
+/-!
+# Doubling exactly `1`
+-/
 
 @[to_additive]
 private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
@@ -81,7 +88,9 @@ lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
 lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
-/-! ### Doubling strictly less than `3 / 2` -/
+/-!
+# Doubling strictly less than `3 / 2`
+-/
 
 private lemma big_intersection (ha : a ∈ B) (hb : b ∈ B) :
     2 * #A ≤ #((a • A) ∩ (b • A)) + #(B * A) := by
@@ -149,9 +158,11 @@ private lemma nonempty_of_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : A.Nonem
   by_contra! rfl
   simp at h
 
-/-- If `A` has doubling strictly less than `3 / 2`, then `A⁻¹ * A` is a subgroup.
+/--
+If `A` has doubling strictly less than `3 / 2`, then `A⁻¹ * A` is a subgroup.
 
-Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and `A⁻¹ * A` isn't a subgroup. -/
+Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and `A⁻¹ * A` isn't a subgroup.
+-/
 def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup G where
   carrier := A⁻¹ * A
   one_mem' := by
@@ -313,14 +324,16 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
           ← invMulSubgroup_eq_inv_mul _ h, ← invMulSubgroup_eq_mul_inv _ h, coe_mul_coe]
 
 open scoped RightActions in
-/-- If `A` has doubling strictly less than `3 / 2`, then there exists a subgroup `H` of the
+/--
+If `A` has doubling strictly less than `3 / 2`, then there exists a subgroup `H` of the
 normaliser of `A` of size strictly less than `3 / 2 * #A` such that `A` is a subset of a coset of
 `H` (in fact a subset of `a • H` for every `a ∈ A`).
 
 Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and can't be covered by a subgroup
 of size at most `2`.
 
-This is Theorem 2.2.1 in [tointon2020]. -/
+This is Theorem 2.2.1 in \[tointon2020\].
+-/
 theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H), Fintype.card H < (3 / 2 : ℚ) * #A ∧ ∀ a ∈ A,
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
@@ -334,7 +347,9 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
   · simpa [H, invMulSubgroup_eq_inv_mul, ← coe_inv, ← coe_mul, ← coe_smul_finset]
       using smul_inv_mul_eq_inv_mul_opSMul h ha
 
-/-! ### Doubling strictly less than `φ` -/
+/-!
+# Doubling strictly less than `φ`
+-/
 
 omit [DecidableEq G] in
 private lemma op_smul_eq_iff_mem {H : Subgroup G} {c : Set G} {x : G}
@@ -499,7 +514,9 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     simpa [S, card_smul_inter_smul, Finset.Nonempty, mem_mul, mem_inv, -mem_inv', and_assoc]
       using! this
 
-/-! ### Doubling less than `2-ε` -/
+/-!
+# Doubling less than `2-ε`
+-/
 
 variable (ε : ℝ)
 

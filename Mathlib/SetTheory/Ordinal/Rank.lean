@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Family
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank in a well-founded relation
 
@@ -20,7 +23,9 @@ universe u
 
 variable {α : Type u} {a b : α}
 
-/-! ### Rank of an accessible value -/
+/-!
+# Rank of an accessible value
+-/
 
 namespace Acc
 
@@ -57,7 +62,9 @@ theorem mem_range_rank_of_le {o : Ordinal} (ha : Acc r a) (ho : o ≤ ha.rank) :
 
 end Acc
 
-/-! ### Rank in a well-founded relation -/
+/-!
+# Rank in a well-founded relation
+-/
 
 namespace WellFounded
 

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embedding of `Mon C`
 
@@ -147,7 +150,9 @@ lemma fst_hom (M N : Mon C) : (fst M N).hom = fst M.X N.X := rfl
 @[to_additive (attr := simp)]
 lemma snd_hom (M N : Mon C) : (snd M N).hom = snd M.X N.X := rfl
 
-/-! ### Comm monoid objects are internal monoid objects -/
+/-!
+# Comm monoid objects are internal monoid objects
+-/
 
 /-- A commutative monoid object is a monoid object in the category of monoid objects. -/
 @[to_additive

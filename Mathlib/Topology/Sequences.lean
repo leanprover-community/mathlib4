@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Metrizable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sequences in topological spaces
 
@@ -20,6 +23,7 @@ The following notions are defined in `Topology/Defs/Sequences`.
 We build theory about these definitions here, so we remind the definitions.
 
 ### Set operation
+
 * `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
 
 ### Predicates
@@ -33,9 +37,9 @@ We build theory about these definitions here, so we remind the definitions.
 
 ### Type classes
 
-* `FrechetUrysohnSpace X`: a typeclass saying that a topological space is a *Fréchet-Urysohn
-  space*, i.e., the sequential closure of any set is equal to its closure.
-* `SequentialSpace X`: a typeclass saying that a topological space is a *sequential space*, i.e.,
+* `FrechetUrysohnSpace X`: a typeclass saying that a topological space is a _Fréchet-Urysohn
+  space_, i.e., the sequential closure of any set is equal to its closure.
+* `SequentialSpace X`: a typeclass saying that a topological space is a _sequential space_, i.e.,
   any sequentially closed set in this space is closed. This condition is weaker than being a
   Fréchet-Urysohn space.
 * `SeqCompactSpace X`: a typeclass saying that a topological space is sequentially compact, i.e.,
@@ -70,7 +74,9 @@ open scoped Uniformity
 
 variable {X Y : Type*}
 
-/-! ### Sequential closures, sequential continuity, and sequential spaces. -/
+/-!
+# Sequential closures, sequential continuity, and sequential spaces.
+-/
 
 section TopologicalSpace
 
@@ -110,12 +116,14 @@ theorem mem_closure_iff_seq_limit [FrechetUrysohnSpace X] {s : Set X} {a : X} :
   rw [← seqClosure_eq_closure]
   rfl
 
-/-- If the domain of a function `f : α → β` is a Fréchet-Urysohn space, then convergence
+/--
+If the domain of a function `f : α → β` is a Fréchet-Urysohn space, then convergence
 is equivalent to sequential convergence. See also `Filter.tendsto_iff_seq_tendsto` for a version
 that works for any pair of filters assuming that the filter in the domain is countably generated.
 
 This property is equivalent to the definition of `FrechetUrysohnSpace`, see
-`FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`. -/
+`FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`.
+-/
 theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
   refine

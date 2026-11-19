@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Double counting
 
@@ -43,7 +46,9 @@ open Finset Function Relator
 
 variable {R α β : Type*}
 
-/-! ### Bipartite graph -/
+/-!
+# Bipartite graph
+-/
 
 
 namespace Finset
@@ -91,10 +96,12 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
 section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {m n : R}
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a lower bound on the number of edges while the RHS
-is an upper bound. -/
+is an upper bound.
+-/
 theorem card_nsmul_le_card_nsmul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, m ≤ #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) ≤ n) : #s • m ≤ #t • n :=
@@ -104,10 +111,12 @@ theorem card_nsmul_le_card_nsmul [∀ a b, Decidable (r a b)]
       norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a lower bound on the number of edges while the RHS
-is an upper bound. -/
+is an upper bound.
+-/
 theorem card_nsmul_le_card_nsmul' [∀ a b, Decidable (r a b)]
     (hn : ∀ b ∈ t, n ≤ #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) ≤ m) : #t • n ≤ #s • m :=
@@ -119,10 +128,12 @@ section StrictOrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] (r : α → β → Prop)
   {s : Finset α} {t : Finset β} (a b) {m n : R}
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a strict lower bound on the number of edges while
-the RHS is an upper bound. -/
+the RHS is an upper bound.
+-/
 theorem card_nsmul_lt_card_nsmul_of_lt_of_le [∀ a b, Decidable (r a b)] (hs : s.Nonempty)
     (hm : ∀ a ∈ s, m < #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) ≤ n) : #s • m < #t • n :=
@@ -133,10 +144,12 @@ theorem card_nsmul_lt_card_nsmul_of_lt_of_le [∀ a b, Decidable (r a b)] (hs : 
       norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a lower bound on the number of edges while the RHS
-is a strict upper bound. -/
+is a strict upper bound.
+-/
 theorem card_nsmul_lt_card_nsmul_of_le_of_lt [∀ a b, Decidable (r a b)] (ht : t.Nonempty)
     (hm : ∀ a ∈ s, m ≤ #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) < n) : #s • m < #t • n :=
@@ -147,19 +160,23 @@ theorem card_nsmul_lt_card_nsmul_of_le_of_lt [∀ a b, Decidable (r a b)] (ht : 
     _ < ∑ _b ∈ t, n := sum_lt_sum_of_nonempty ht hn
     _ = _ := sum_const _
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a strict lower bound on the number of edges while
-the RHS is an upper bound. -/
+the RHS is an upper bound.
+-/
 theorem card_nsmul_lt_card_nsmul_of_lt_of_le' [∀ a b, Decidable (r a b)] (ht : t.Nonempty)
     (hn : ∀ b ∈ t, n < #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) ≤ m) : #t • n < #s • m :=
   card_nsmul_lt_card_nsmul_of_lt_of_le (swap r) ht hn hm
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a lower bound on the number of edges while the RHS
-is a strict upper bound. -/
+is a strict upper bound.
+-/
 theorem card_nsmul_lt_card_nsmul_of_le_of_lt' [∀ a b, Decidable (r a b)] (hs : s.Nonempty)
     (hn : ∀ b ∈ t, n ≤ #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) < m) : #t • n < #s • m :=
@@ -167,10 +184,12 @@ theorem card_nsmul_lt_card_nsmul_of_le_of_lt' [∀ a b, Decidable (r a b)] (hs :
 
 end StrictOrderedSemiring
 
-/-- **Double counting** argument.
+/--
+*Double counting* argument.
 
 Considering `r` as a bipartite graph, the LHS is a lower bound on the number of edges while the RHS
-is an upper bound. -/
+is an upper bound.
+-/
 theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, m ≤ #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) ≤ n) : #s * m ≤ #t * n :=
@@ -203,9 +222,11 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
     (hs : ∀ a ∈ s, ({ b ∈ t | r a b } : Set β).Subsingleton) : #t ≤ #s :=
   card_le_card_of_forall_subsingleton (swap r) ht hs
 
-/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$
-and, for every $x \in \bigcup_i B_i$, let $C_x$ be the set of indices
-of the $B_i$'s that contain $x$.  Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
+/--
+Given a finite collection of finite subsets $`B_1, \ldots, B_k`
+and, for every $`x \in \bigcup_i B_i`, let $`C_x` be the set of indices
+of the $`B_i`'s that contain $`x`.  Then, $`\sum_i |B_i| = \sum_x |C_x|`.
+-/
 lemma sum_card_eq_sum_biUnion_card [Fintype α] [DecidableEq α] [DecidableEq β]
     (B : α → Finset β) (s : Finset α) :
     ∑ j ∈ s, #(B j) = ∑ x ∈ s.biUnion B, #{j | j ∈ s ∧ x ∈ B j} := by

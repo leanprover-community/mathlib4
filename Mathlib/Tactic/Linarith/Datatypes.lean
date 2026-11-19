@@ -9,6 +9,9 @@ public import Mathlib.Tactic.Linarith.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Util.SynthesizeUsing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Datatypes for `linarith`
 
@@ -39,7 +42,9 @@ def linarithTraceProofs {α} [ToMessageData α] (s : α) (l : List Expr) : MetaM
   if ← isTracingEnabledFor `linarith then
     addRawTrace <| .trace { cls := `linarith } (toMessageData s) #[← linarithGetProofsMessage l]
 
-/-! ### Linear expressions -/
+/-!
+# Linear expressions
+-/
 
 /--
 A linear expression is a list of pairs of variable indices and coefficients,
@@ -117,7 +122,9 @@ def cmp : Linexp → Linexp → Ordering
 
 end Linexp
 
-/-! ### Comparisons with 0 -/
+/-!
+# Comparisons with 0
+-/
 
 /--
 The main datatype for FM elimination.
@@ -173,10 +180,14 @@ def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 instance Comp.ToFormat : ToFormat Comp :=
   ⟨fun p => format p.coeffs ++ toString p.str ++ "0"⟩
 
-/-! ### Parsing into linear form -/
+/-!
+# Parsing into linear form
+-/
 
 
-/-! ### Control -/
+/-!
+# Control
+-/
 
 /-- Metadata about preprocessors, for trace output. -/
 structure PreprocessorBase : Type where
@@ -279,7 +290,7 @@ structure CertificateOracle : Type where
   produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 /-!
-### Auxiliary functions
+# Auxiliary functions
 
 These functions are used by multiple modules, so we put them here for accessibility.
 -/
@@ -296,7 +307,7 @@ def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.
 It produces a pair `(R', h')`, where `h'` is a proof of `c*t R' 0`.
 Typically `R` and `R'` will be the same, except when `c = 0`, in which case `R'` is `=`.
-If `c = 1`, `h'` is the same as `h` -- specifically, it does *not* change the type to `1*t R 0`.
+If `c = 1`, `h'` is the same as `h` -- specifically, it does _not_ change the type to `1*t R 0`.
 -/
 def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   let tp ← inferType h

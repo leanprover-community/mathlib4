@@ -11,6 +11,9 @@ public import Mathlib.Topology.CompactOpen
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A measurable space structure on the type of continuous maps
 
@@ -35,7 +38,8 @@ means that a function `g : Z → C(X, Y)` is measurable if and only if, for all 
 
 ## References
 
-* <https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr>
+* [
+  https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr](https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr)
 
 ## Tags
 
@@ -70,10 +74,13 @@ variable [SecondCountableTopology X] [SecondCountableTopology Y]
 
 namespace ContinuousMap
 
-/-- The sigma-algebra over `C(X, Y)` is the coarsest that makes the maps `f ↦ f x` measurable
+/--
+The sigma-algebra over `C(X, Y)` is the coarsest that makes the maps `f ↦ f x` measurable
 for all `x : X`.
 
-The proof follows the one presented on <https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr>. -/
+The proof follows the one presented on [
+https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr](https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr).
+-/
 theorem borel_eq_iSup_comap_eval :
     borel C(X, Y) = ⨆ x : X, (borel Y).comap fun f ↦ f x := by
   refine le_antisymm ?_ iSup_comap_le_borel

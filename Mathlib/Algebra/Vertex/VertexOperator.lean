@@ -8,24 +8,30 @@ module
 public import Mathlib.Algebra.Vertex.HVertexOperator
 public import Mathlib.Data.Int.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertex operators
 
 In this file we introduce vertex operators as linear maps to Laurent series.
 
 ## Definitions
+
 * `VertexOperator` is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * `VertexOperator.ncoeff` is the coefficient of a vertex operator under normalized indexing.
 
 ## TODO
+
 * `HasseDerivative` : A divided-power derivative.
 * `Locality` : A weak form of commutativity.
 * `Residue products` : A family of products on `VertexOperator R V` parametrized by integers.
 
 ## References
-* [G. Mason, *Vertex rings and Pierce bundles*][mason2017]
-* [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
-  fields*][matsuo1997]
+
+* ‍\[G. Mason, _Vertex rings and Pierce bundles_\]\[mason2017\]
+* ‍\[A. Matsuo, K. Nagatomo, _On axioms for a vertex algebra and locality of quantum
+  fields_\]\[matsuo1997\]
 -/
 
 @[expose] public section

@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
-/-! # Unbundled ordered monoid structures on the order dual. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Unbundled ordered monoid structures on the order dual.
+-/
 
 public section
 

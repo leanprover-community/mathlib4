@@ -9,15 +9,18 @@ public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Instances.Sign
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sign of a polynomial immediately to the right of a point
 
 A nonzero real polynomial has finitely many roots, so its sign is constant on a small interval
 `(x, x + ε)` to the right of any point `x`. This file defines that sign, `Polynomial.signRight x p`,
-as the sign of the trailing coefficient of the taylor polynomial of `p` around `x`, and develops
-its basic properties: it vanishes only for `p = 0`, it is multiplicative, and it is computed by the
-recursion `signRight x p = sign (p.eval x)` if `p.eval x ≠ 0` and `signRight x p = signRight x
-(derivative p)` otherwise.
+as the sign of the trailing coefficient of the taylor polynomial of `p` around `x`, and develops its
+basic properties: it vanishes only for `p = 0`, it is multiplicative, and it is computed by the
+recursion `signRight x p = sign (p.eval x)` if `p.eval x ≠ 0` and
+`signRight x p = signRight x (derivative p)` otherwise.
 
 This is the local invariant behind Sturm's theorem, where it determines the direction in which the
 sign of a Sturm sequence changes across a root.
@@ -37,7 +40,6 @@ sign of a Sturm sequence changes across a root.
   `p.eval x`.
 * `Polynomial.signRight_of_eval_eq_zero`: at a root of `p`, `signRight x p` is `signRight x` of the
   derivative of `p`.
-
 -/
 
 open Polynomial Set Filter SignType Topology

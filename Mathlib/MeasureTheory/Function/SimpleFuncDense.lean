@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Density of simple functions
 
@@ -18,9 +21,8 @@ by a sequence of simple functions.
 
 * `MeasureTheory.SimpleFunc.nearestPt (e : ℕ → α) (N : ℕ) : α →ₛ ℕ`: the `SimpleFunc` sending
   each `x : α` to the point `e k` which is the nearest to `x` among `e 0`, ..., `e N`.
-* `MeasureTheory.SimpleFunc.approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α)
-  (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) : β →ₛ α` : a simple function that takes values in `s`
-  and approximates `f`.
+* `MeasureTheory.SimpleFunc.approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α) (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) : β →ₛ α`
+  ‍\: a simple function that takes values in `s` and approximates `f`.
 
 ## Main results
 
@@ -48,7 +50,9 @@ local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
 
-/-! ### Pointwise approximation by simple functions -/
+/-!
+# Pointwise approximation by simple functions
+-/
 
 
 variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]

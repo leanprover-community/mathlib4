@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.ModEq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chinese Remainder Theorem
 
@@ -18,7 +21,7 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 
 ## Main result
 
-- `chineseRemainderOfList`: Definition of the Chinese remainder of a list
+* `chineseRemainderOfList`: Definition of the Chinese remainder of a list
 
 ## Tags
 

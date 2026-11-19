@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Hom.BoundedLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The categories of semilattices
 
@@ -16,7 +19,7 @@ element and inf-semilattices with a top element.
 
 ## References
 
-* [nLab, *semilattice*](https://ncatlab.org/nlab/show/semilattice)
+* [nLab, _semilattice_](https://ncatlab.org/nlab/show/semilattice)
 -/
 
 @[expose] public section
@@ -126,7 +129,9 @@ theorem coe_forget_to_partOrd (X : SemilatInfCat) :
 
 end SemilatInfCat
 
-/-! ### Order dual -/
+/-!
+# Order dual
+-/
 
 namespace SemilatSupCat
 

@@ -12,6 +12,9 @@ public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fibonacci numbers
 
@@ -20,15 +23,15 @@ proves results about the sequence and introduces methods to compute it quickly.
 
 ## Main definitions
 
-- `Nat.fib` returns the stream of Fibonacci numbers.
+* `Nat.fib` returns the stream of Fibonacci numbers.
 
 ## Main statements
 
-- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
-- `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
-- `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
-- `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
-- `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
+* `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
+* `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
+* `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
+* `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
+* `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
   compute `fib` (see `Nat.fastFib`).
 
 ## Implementation notes
@@ -46,10 +49,11 @@ namespace Nat
 
 
 
-/-- Implementation of the Fibonacci sequence satisfying
+/--
+Implementation of the Fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 
-*Note:* We use a stream iterator for better performance when compared to the naive recursive
+_Note:_ We use a stream iterator for better performance when compared to the naive recursive
 implementation.
 -/
 @[pp_nodot, oeis A000045]
@@ -127,14 +131,18 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
   | 4 => le_rfl
   | _n + 5 => (le_fib_self le_add_self).trans <| le_succ _
 
-/-- Subsequent Fibonacci numbers are coprime,
-  see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
+/--
+Subsequent Fibonacci numbers are coprime,
+see https://proofwiki.org/wiki/Consecutive\_Fibonacci\_Numbers\_are\_Coprime
+-/
 theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
   induction n with
   | zero => simp
   | succ n ih => simp only [fib_add_two, coprime_add_self_right, Coprime, ih.symm]
 
-/-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
+/--
+See https://proofwiki.org/wiki/Fibonacci\_Number\_in\_terms\_of\_Smaller\_Fibonacci\_Numbers
+-/
 theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
   induction n generalizing m with
   | zero => simp
@@ -223,8 +231,10 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
   | k + 1 => by
     rw [← gcd_fib_add_mul_self m n k, add_mul, ← add_assoc, one_mul, gcd_fib_add_self _ _]
 
-/-- `fib n` is a strong divisibility sequence,
-  see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
+/--
+`fib n` is a strong divisibility sequence,
+see https://proofwiki.org/wiki/GCD\_of\_Fibonacci\_Numbers
+-/
 theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
   induction m, n using Nat.gcd.induction with
   | H0 => simp

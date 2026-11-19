@@ -12,6 +12,9 @@ public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff measure and metric (outer) measures
 
@@ -22,6 +25,7 @@ the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. B
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, this is a Borel measure on `X`.
 
 The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
+
 ```
 μH[d] s = ⨆ (r : ℝ≥0∞) (hr : 0 < r), ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n)
     (ht : ∀ n, ediam (t n) ≤ r), ∑' n, ediam (t n) ^ d
@@ -48,7 +52,7 @@ measures.
 
 ## Main definitions
 
-* `MeasureTheory.OuterMeasure.IsMetric`: an outer measure `μ` is called *metric* if
+* `MeasureTheory.OuterMeasure.IsMetric`: an outer measure `μ` is called _metric_ if
   `μ (s ∪ t) = μ s + μ t` for any two metric separated sets `s` and `t`. A metric outer measure in a
   Borel extended metric space is guaranteed to satisfy the Carathéodory condition, see
   `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`.
@@ -60,8 +64,7 @@ measures.
 * `MeasureTheory.Measure.hausdorffMeasure` a.k.a. `μH[d]`: the `d`-dimensional Hausdorff measure.
   There are many definitions of the Hausdorff measure that differ from each other by a
   multiplicative constant. We put
-  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, ediam (t n) ≤ r),
-    ∑' n, ⨆ (ht : ¬Set.Subsingleton (t n)), (ediam (t n)) ^ d`,
+  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, ediam (t n) ≤ r), ∑' n, ⨆ (ht : ¬Set.Subsingleton (t n)), (ediam (t n)) ^ d`,
   see `MeasureTheory.Measure.hausdorffMeasure_apply`. In the most interesting case `0 < d` one
   can omit the `⨆ (ht : ¬Set.Subsingleton (t n))` part.
 
@@ -78,7 +81,7 @@ measures.
 * `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`: if `d₁ < d₂`, then for any `s`, either
   `μH[d₂] s = 0` or `μH[d₁] s = ∞`. Together with the previous lemma, this means that `μH[d] s` is
   equal to infinity on some ray `(-∞, D)` and is equal to zero on `(D, +∞)`, where `D` is a possibly
-  infinite number called the *Hausdorff dimension* of `s`; `μH[D] s` can be zero, infinity, or
+  infinite number called the _Hausdorff dimension_ of `s`; `μH[D] s` can be zero, infinity, or
   anything in between.
 * `MeasureTheory.Measure.nullSingletonClass_hausdorff`: Hausdorff measure has value zero on
   singletons.
@@ -92,7 +95,7 @@ measures.
 
 We use the following notation localized in `MeasureTheory`.
 
-- `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
+* `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
 
 ## Implementation notes
 
@@ -103,7 +106,7 @@ dimension.
 
 ## References
 
-* [Herbert Federer, Geometric Measure Theory, Chapter 2.10][Federer1996]
+* ‍\[Herbert Federer, Geometric Measure Theory, Chapter 2.10\]\[Federer1996\]
 
 ## Tags
 
@@ -126,15 +129,17 @@ namespace MeasureTheory
 namespace OuterMeasure
 
 /-!
-### Metric outer measures
+# Metric outer measures
 
 In this section we define metric outer measures and prove Carathéodory's theorem: a metric outer
 measure has the Carathéodory property.
 -/
 
 
-/-- We say that an outer measure `μ` in an (e)metric space is *metric* if `μ (s ∪ t) = μ s + μ t`
-for any two metric separated sets `s`, `t`. -/
+/--
+We say that an outer measure `μ` in an (e)metric space is _metric_ if `μ (s ∪ t) = μ s + μ t`
+for any two metric separated sets `s`, `t`.
+-/
 def IsMetric (μ : OuterMeasure X) : Prop :=
   ∀ s t : Set X, Metric.AreSeparated s t → μ (s ∪ t) = μ s + μ t
 
@@ -234,7 +239,7 @@ theorem le_caratheodory [MeasurableSpace X] [BorelSpace X] (hm : IsMetric μ) :
 end IsMetric
 
 /-!
-### Constructors of metric outer measures
+# Constructors of metric outer measures
 
 In this section we provide constructors `MeasureTheory.OuterMeasure.mkMetric'` and
 `MeasureTheory.OuterMeasure.mkMetric` and prove that these outer measures are metric outer
@@ -397,7 +402,7 @@ theorem le_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (μ : OuterMeasure X) (r : �
 end OuterMeasure
 
 /-!
-### Metric measures
+# Metric measures
 
 In this section we use `MeasureTheory.OuterMeasure.toMeasure` and theorems about
 `MeasureTheory.OuterMeasure.mkMetric'`/`MeasureTheory.OuterMeasure.mkMetric` to define
@@ -410,15 +415,19 @@ namespace Measure
 
 variable [MeasurableSpace X] [BorelSpace X]
 
-/-- Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `μ r`
+/--
+Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `μ r`
 over `r > 0`, where `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s`
-for all `s`. While each `μ r` is an *outer* measure, the supremum is a measure. -/
+for all `s`. While each `μ r` is an _outer_ measure, the supremum is a measure.
+-/
 def mkMetric' (m : Set X → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric' m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 
-/-- Given a function `m : ℝ≥0∞ → ℝ≥0∞`, `mkMetric m` is the supremum of `μ r` over `r > 0`, where
+/--
+Given a function `m : ℝ≥0∞ → ℝ≥0∞`, `mkMetric m` is the supremum of `μ r` over `r > 0`, where
 `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s` for all sets `s` that contain at least
-two points. While each `mkMetric'.pre` is an *outer* measure, the supremum is a measure. -/
+two points. While each `mkMetric'.pre` is an _outer_ measure, the supremum is a measure.
+-/
 def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 
@@ -527,7 +536,7 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
   simpa only [tsum_fintype] using mkMetric_le_liminf_tsum s r hr t ht hst m
 
 /-!
-### Hausdorff measure and Hausdorff dimension
+# Hausdorff measure and Hausdorff dimension
 -/
 
 
@@ -669,7 +678,7 @@ end Measure
 end MeasureTheory
 
 /-!
-### Hausdorff measure, Hausdorff dimension, and Hölder or Lipschitz continuous maps
+# Hausdorff measure, Hausdorff dimension, and Hölder or Lipschitz continuous maps
 -/
 
 
@@ -766,7 +775,7 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   · simp [pos_iff_ne_zero, hr]
 
 /-!
-### Antilipschitz maps do not decrease Hausdorff measures and dimension
+# Antilipschitz maps do not decrease Hausdorff measures and dimension
 -/
 
 namespace AntilipschitzWith
@@ -813,7 +822,7 @@ theorem le_hausdorffMeasure_image (hf : AntilipschitzWith K f) (hd : 0 ≤ d) (s
 end AntilipschitzWith
 
 /-!
-### Isometries preserve the Hausdorff measure and Hausdorff dimension
+# Isometries preserve the Hausdorff measure and Hausdorff dimension
 -/
 
 
@@ -879,7 +888,7 @@ instance {d : ℝ} [Group X] [IsIsometricSMul Xᵐᵒᵖ X] : IsMulRightInvarian
   map_mul_right_eq_self x := (IsometryEquiv.constSMul (MulOpposite.op x)).map_hausdorffMeasure _
 
 /-!
-### Hausdorff measure and Lebesgue measure
+# Hausdorff measure and Lebesgue measure
 -/
 
 
@@ -1025,7 +1034,9 @@ theorem hausdorffMeasure_prod_real : (μH[2] : Measure (ℝ × ℝ)) = volume :=
     ← (hausdorffMeasure_measurePreserving_piFinTwo (fun _ => ℝ) _).map_eq,
     ← hausdorffMeasure_pi_real, Fintype.card_fin, Nat.cast_two]
 
-/-! ### Geometric results in affine spaces -/
+/-!
+# Geometric results in affine spaces
+-/
 
 section Geometric
 
@@ -1087,9 +1098,11 @@ section RealAffine
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
-/-- Mapping a set of reals along a line segment scales the measure by the length of a segment.
+/--
+Mapping a set of reals along a line segment scales the measure by the length of a segment.
 
-This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
+This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`.
+-/
 theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
     μH[1] (AffineMap.lineMap x y '' s) = nndist x y • μH[1] s := by
   suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nndist x y • μH[1] s by

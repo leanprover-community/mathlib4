@@ -11,18 +11,22 @@ public import Mathlib.RingTheory.Support
 
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unramified locus of an algebra
 
 ## Main results
-- `Algebra.unramifiedLocus` : The set of primes that is unramified over the base.
-- `Algebra.basicOpen_subset_unramifiedLocus_iff` :
+
+* `Algebra.unramifiedLocus` : The set of primes that is unramified over the base.
+* `Algebra.basicOpen_subset_unramifiedLocus_iff` :
   `D(f)` is contained in the unramified locus if and only if `A_f` is unramified over `R`.
-- `Algebra.unramifiedLocus_eq_univ_iff` :
+* `Algebra.unramifiedLocus_eq_univ_iff` :
   The unramified locus is the whole spectrum if and only if `A` is unramified over `R`.
-- `Algebra.isOpen_unramifiedLocus` :
+* `Algebra.isOpen_unramifiedLocus` :
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
-- `Algebra.IsUnramifiedIn` :
+* `Algebra.IsUnramifiedIn` :
   A prime `𝔭` of `R` is unramified in `A` if every prime of `A` lying over `𝔭` is unramified.
 -/
 
@@ -38,12 +42,14 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [A
     [Algebra R B] [IsScalarTower R A B]
 
 variable (R) in
-/-- We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
+/--
+We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
 if `A_q` is formally unramified over `R`.
 
 If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
 `κ(q)/κ(p)` being separable and `pA_q = qA_q`.
-See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
+See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing`
+-/
 abbrev IsUnramifiedAt (q : Ideal A) [q.IsPrime] : Prop :=
   FormallyUnramified R (Localization.AtPrime q)
 

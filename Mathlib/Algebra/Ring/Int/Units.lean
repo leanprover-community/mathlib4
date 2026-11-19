@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic lemmas for `ℤˣ`.
 
@@ -18,7 +21,7 @@ This file contains lemmas on the units of `ℤ`.
 
 * `Int.units_eq_one_or`: the invertible integers are 1 and -1.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -27,7 +30,9 @@ assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 
-/-! #### Units -/
+/-!
+# Units
+-/
 
 lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff] using! isUnit_eq_one_or u.isUnit

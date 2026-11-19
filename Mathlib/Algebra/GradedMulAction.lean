@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.GradedMonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additively-graded multiplicative action structures
 
@@ -53,7 +56,9 @@ variable {ιA ιB ιM : Type*}
 
 namespace GradedMonoid
 
-/-! ### Typeclasses -/
+/-!
+# Typeclasses
+-/
 
 
 section Defs
@@ -98,7 +103,9 @@ end Defs
 
 end GradedMonoid
 
-/-! ### Shorthands for creating instance of the above typeclasses for collections of subobjects -/
+/-!
+# Shorthands for creating instance of the above typeclasses for collections of subobjects
+-/
 
 
 section Subobjects

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Subring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subfields
 
@@ -42,6 +45,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 
@@ -62,7 +66,8 @@ namespace SubfieldClass
 variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 -- See note [lower instance priority]
-/-- A subfield contains `1`, products and inverses.
+/--
+A subfield contains `1`, products and inverses.
 
 Be assured that we're not actually proving that subfields are subgroups:
 `SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
@@ -325,7 +330,9 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
     S.toSubring.subtype = S.subtype :=
   rfl
 
-/-! ### Partial order -/
+/-!
+# Partial order
+-/
 
 
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=

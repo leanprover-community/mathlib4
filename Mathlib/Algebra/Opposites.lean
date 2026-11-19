@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative opposite and algebraic operations on it
 
@@ -45,14 +48,17 @@ variable {α β : Type*}
 
 open Function
 
-/-- Auxiliary type to implement `MulOpposite` and `AddOpposite`.
+/--
+Auxiliary type to implement `MulOpposite` and `AddOpposite`.
 
 It turns out to be convenient to have `MulOpposite α = AddOpposite α` true by definition, in the
 same way that it is convenient to have `Additive α = α`; this means that we also get the defeq
 `AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
 
 This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
-having no defeqs within those three types (which we had as of https://github.com/leanprover-community/mathlib4/pull/1036). -/
+having no defeqs within those three types (which we had as of
+https://github.com/leanprover-community/mathlib4/pull/1036).
+-/
 structure PreOpposite (α : Type*) : Type _ where
   /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α

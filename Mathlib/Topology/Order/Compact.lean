@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.Order.LocalExtr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactness of a closed interval
 
@@ -34,7 +37,7 @@ open Filter OrderDual TopologicalSpace Function Set
 open scoped Filter Topology
 
 /-!
-### Compactness of a closed interval
+# Compactness of a closed interval
 
 In this section we define a typeclass `CompactIccSpace α` saying that all closed intervals in `α`
 are compact. Then we provide an instance for a `ConditionallyCompleteLinearOrder` and prove that
@@ -124,11 +127,13 @@ lemma isCompact_closure_uIoc [TopologicalSpace α] [LinearOrder α] [OrderClosed
     closure_minimal uIoc_subset_uIcc isClosed_Icc
 
 -- See note [lower instance priority]
-/-- A complete linear order is a compact space.
+/--
+A complete linear order is a compact space.
 
 We do not register an instance for a `[CompactIccSpace α]` because this would only add instances
 for products (indexed or not) of complete linear orders, and we have instances with higher priority
-that cover these cases. -/
+that cover these cases.
+-/
 instance (priority := 100) compactSpace_of_completeLinearOrder {α : Type*} [CompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] : CompactSpace α :=
   ⟨by simp only [← Icc_bot_top, isCompact_Icc]⟩
@@ -163,7 +168,7 @@ theorem isCompact_Ioo_iff {a b : α} : IsCompact (Set.Ioo a b) ↔ b ≤ a :=
 end openIntervals
 
 /-!
-### Extreme value theorem
+# Extreme value theorem
 -/
 
 section LinearOrder
@@ -396,7 +401,7 @@ theorem IsCompact.lt_sInf_iff_of_continuous [ClosedIicTopology α] {f : β → �
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Min and max elements of a compact set
+# Min and max elements of a compact set
 -/
 
 section InfSup
@@ -535,7 +540,7 @@ theorem IsCompact.continuous_sInf {f : γ → β → α} {K : Set β} (hK : IsCo
 namespace ContinuousOn
 
 /-!
-### Image of a closed interval
+# Image of a closed interval
 -/
 
 variable [DenselyOrdered α] [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β}

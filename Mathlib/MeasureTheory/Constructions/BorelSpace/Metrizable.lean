@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.Topology.IndicatorConstPointwise
 public import Mathlib.Topology.Metrizable.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/

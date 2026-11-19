@@ -8,6 +8,9 @@ module
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Logic.Encodable.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive recursive functions on Lists
 
@@ -17,7 +20,8 @@ relate to operation on lists.
 
 ## References
 
-* [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
+* ‍\[Mario Carneiro, _Formalizing computability theory via partial recursive
+  functions_\]\[carneiro2019\]
 -/
 
 @[expose] public section

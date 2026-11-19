@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One-dimensional derivatives of sums etc
 
@@ -38,7 +41,9 @@ variable {x : 𝕜} {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
 section Add
 
-/-! ### Derivative of the sum of two functions -/
+/-!
+# Derivative of the sum of two functions
+-/
 
 @[to_fun]
 theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' L)
@@ -186,7 +191,9 @@ end Add
 
 section Sum
 
-/-! ### Derivative of a finite sum of functions -/
+/-!
+# Derivative of a finite sum of functions
+-/
 
 variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
@@ -249,7 +256,9 @@ end Sum
 
 section Neg
 
-/-! ### Derivative of the negative of a function -/
+/-!
+# Derivative of the negative of a function
+-/
 
 @[to_fun]
 theorem HasDerivAtFilter.neg (h : HasDerivAtFilter f f' L) :
@@ -286,7 +295,9 @@ end Neg
 
 section Neg2
 
-/-! ### Derivative of the negation function (i.e `Neg.neg`) -/
+/-!
+# Derivative of the negation function (i.e `Neg.neg`)
+-/
 
 variable (s x L)
 
@@ -340,7 +351,9 @@ end Neg2
 
 section Sub
 
-/-! ### Derivative of the difference of two functions -/
+/-!
+# Derivative of the difference of two functions
+-/
 
 @[to_fun]
 theorem HasDerivAtFilter.sub (hf : HasDerivAtFilter f f' L) (hg : HasDerivAtFilter g g' L) :

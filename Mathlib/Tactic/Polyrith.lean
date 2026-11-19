@@ -9,6 +9,9 @@ public meta import Lean.Elab.Tactic.Basic
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # polyrith Tactic
 
@@ -30,8 +33,6 @@ namespace Mathlib.Tactic.Polyrith
 The `polyrith` tactic is no longer supported in Mathlib,
 because it relied on a defunct external service.
 
----
-
 Attempts to prove polynomial equality goals through polynomial arithmetic
 on the hypotheses (and additional proof terms if the user specifies them).
 It proves the goal by generating an appropriate call to the tactic
@@ -44,8 +45,9 @@ is suggested to the user.
   `h1`, `h2`, `h3`, and proofs `t1`, `t2`, `t3`. It will ignore the rest of the local context.
 
 Notes:
+
 * This tactic only works with a working internet connection, since it calls Sage
-  using the SageCell web API at <https://sagecell.sagemath.org/>.
+  using the SageCell web API at [https://sagecell.sagemath.org/](https://sagecell.sagemath.org/).
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `curl` available on path.
 -/

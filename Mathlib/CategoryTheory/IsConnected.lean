@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.PUnit
 
 import Mathlib.Data.List.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connected category
 
@@ -22,20 +25,21 @@ We instead are interested in categories with exactly one 'connected
 component'.
 
 We give some equivalent definitions:
-- A nonempty category for which every functor to a discrete category is
+
+* A nonempty category for which every functor to a discrete category is
   constant on objects.
   See `any_functor_const_on_obj` and `Connected.of_any_functor_const_on_obj`.
-- A nonempty category for which every function `F` for which the presence of a
+* A nonempty category for which every function `F` for which the presence of a
   morphism `f : j₁ ⟶ j₂` implies `F j₁ = F j₂` must be constant everywhere.
   See `constant_of_preserves_morphisms` and `Connected.of_constant_of_preserves_morphisms`.
-- A nonempty category for which any subset of its elements containing the
+* A nonempty category for which any subset of its elements containing the
   default and closed under morphisms is everything.
   See `induct_on_objects` and `Connected.of_induct`.
-- A nonempty category for which every object is related under the reflexive
+* A nonempty category for which every object is related under the reflexive
   transitive closure of the relation "there is a morphism in some direction
   from `j₁` to `j₂`".
   See `connected_zigzag` and `zigzag_connected`.
-- A nonempty category for which for any two objects there is a sequence of
+* A nonempty category for which for any two objects there is a sequence of
   morphisms (some reversed) from one to the other.
   See `exists_zigzag'` and `connected_of_zigzag`.
 
@@ -64,14 +68,16 @@ class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
 
 attribute [inherit_doc IsPreconnected] IsPreconnected.iso_constant
 
-/-- We define a connected category as a _nonempty_ category for which every
+/--
+We define a connected category as a _nonempty_ category for which every
 functor to a discrete category is constant.
 
 NB. Some authors include the empty category as connected, we do not.
 We instead are interested in categories with exactly one 'connected
 component'.
 
-This allows us to show that the functor X ⨯ - preserves connected limits. -/
+This allows us to show that the functor X ⨯ - preserves connected limits.
+-/
 @[stacks 002S]
 class IsConnected (J : Type u₁) [Category.{v₁} J] : Prop extends IsPreconnected J where
   [is_nonempty : Nonempty J]
@@ -139,7 +145,8 @@ theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
   { IsPreconnected.of_any_functor_const_on_obj h with }
 
-/-- If `J` is connected, then given any function `F` such that the presence of a
+/--
+If `J` is connected, then given any function `F` such that the presence of a
 morphism `j₁ ⟶ j₂` implies `F j₁ = F j₂`, we have that `F` is constant.
 This can be thought of as a local-to-global property.
 
@@ -153,7 +160,8 @@ theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F :
         map := fun f => eqToHom (by ext; exact h _ _ f) }
       j j'
 
-/-- If `J` is connected, then given any function `F` such that the presence of a
+/--
+If `J` is connected, then given any function `F` such that the presence of a
 morphism `j₁ ⟶ j₂` implies `F j₁ = F j₂`, there exists `a` such that `F j = a`
 holds for any `j`. See `constant_of_preserves_morphisms` for a different
 formulation of the fact that `F` is constant.
@@ -166,7 +174,8 @@ theorem constant_of_preserves_morphisms' [IsConnected J] {α : Type u₂} (F : J
     ∃ (a : α), ∀ (j : J), F j = a :=
   ⟨F (Classical.arbitrary _), fun _ ↦ constant_of_preserves_morphisms _ h _ _⟩
 
-/-- `J` is connected if: given any function `F : J → α` which is constant for any
+/--
+`J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
 
@@ -179,7 +188,8 @@ theorem IsPreconnected.of_constant_of_preserves_morphisms
   IsPreconnected.of_any_functor_const_on_obj fun F =>
     h F.obj fun f => by ext; exact Discrete.eq_of_hom (F.map f)
 
-/-- `J` is connected if: given any function `F : J → α` which is constant for any
+/--
+`J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
 
@@ -191,7 +201,8 @@ theorem IsConnected.of_constant_of_preserves_morphisms [Nonempty J]
     IsConnected J :=
   { IsPreconnected.of_constant_of_preserves_morphisms h with }
 
-/-- An inductive-like property for the objects of a connected category.
+/--
+An inductive-like property for the objects of a connected category.
 If the set `p` is nonempty, and `p` is closed under morphisms of `J`,
 then `p` contains all of `J`.
 
@@ -230,9 +241,10 @@ instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) :
       exact hj₀
     apply induct_on_objects p' hj₀' fun f => h ((ULiftHomULiftCategory.equiv J).functor.map f)
 
-/-- Another induction principle for `IsPreconnected J`:
+/--
+Another induction principle for `IsPreconnected J`:
 given a type family `Z : J → Sort*` and
-a rule for transporting in *both* directions along a morphism in `J`,
+a rule for transporting in _both_ directions along a morphism in `J`,
 we can transport an `x : Z j₀` to a point in `Z j` for any `j`.
 -/
 theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
@@ -440,7 +452,8 @@ theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
     ∃ l, List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
   List.exists_isChain_cons_of_relationReflTransGen (isPreconnected_zigzag _ _)
 
-/-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
+/--
+If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
 
 The converse of `exists_zigzag'`.
@@ -453,7 +466,8 @@ theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
   rcases h j₁ j₂ with ⟨l, hl₁, hl₂⟩
   apply List.relationReflTransGen_of_exists_isChain_cons l hl₁ hl₂
 
-/-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
+/--
+If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
 
 The converse of `exists_zigzag'`.

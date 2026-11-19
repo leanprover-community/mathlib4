@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
@@ -75,7 +78,9 @@ protected theorem tsub_right_inj (ha : AddLECancellable a) (hb : AddLECancellabl
 
 end AddLECancellable
 
-/-! #### Lemmas where addition is order-reflecting. -/
+/-!
+# Lemmas where addition is order-reflecting.
+-/
 
 
 section Contra
@@ -91,10 +96,12 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 
 variable (α)
 
-/-- A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
+/--
+A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
 cancellative. This is not an instance as it would form a typeclass loop.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
@@ -104,7 +111,9 @@ end Contra
 
 end CanonicallyOrderedAddCommMonoid
 
-/-! ### Lemmas in a linearly canonically ordered monoid. -/
+/-!
+# Lemmas in a linearly canonically ordered monoid.
+-/
 
 
 section CanonicallyLinearOrderedAddCommMonoid
@@ -174,7 +183,9 @@ lemma tsub_tsub_eq_min (a b : α) : a - (a - b) = min a b := by
 
 end Contra
 
-/-! ### Lemmas about `max` and `min`. -/
+/-!
+# Lemmas about `max` and `min`.
+-/
 
 
 theorem tsub_add_eq_max : a - b + b = max a b := by
@@ -202,7 +213,9 @@ lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
 
 end CanonicallyLinearOrderedAddCommMonoid
 
-/-! ### `Sub` structure in linearly canonically ordered monoid using choice. -/
+/-!
+# `Sub` structure in linearly canonically ordered monoid using choice.
+-/
 
 namespace CanonicallyOrderedAdd
 

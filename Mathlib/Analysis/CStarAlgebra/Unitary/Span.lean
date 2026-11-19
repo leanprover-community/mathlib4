@@ -10,13 +10,17 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.Normed.Module.Normalize
 
-/-! # Unitary elements span C⋆-algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Unitary elements span C⋆-algebras
 
 ## Main results
 
-+ `CStarAlgebra.exists_sum_four_unitary`: every element `x` in a unital C⋆-algebra is a linear
+* `CStarAlgebra.exists_sum_four_unitary`: every element `x` in a unital C⋆-algebra is a linear
   combination of four unitary elements, and the norm of each coefficient does not exceed `‖x‖ / 2`.
-+ `CStarAlgebra.span_unitary`: a unital C⋆-algebra is spanned by its unitary elements.
+* `CStarAlgebra.span_unitary`: a unital C⋆-algebra is spanned by its unitary elements.
 -/
 
 @[expose] public section
@@ -30,10 +34,12 @@ section Ordered
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-/-- If `a : A` is a selfadjoint element in a C⋆-algebra with `‖a‖ ≤ 1`,
+/--
+If `a : A` is a selfadjoint element in a C⋆-algebra with `‖a‖ ≤ 1`,
 then `a + I • CFC.sqrt (1 - a ^ 2)` is unitary.
 
-This is the key tool to show that a C⋆-algebra is spanned by its unitary elements. -/
+This is the key tool to show that a C⋆-algebra is spanned by its unitary elements.
+-/
 lemma IsSelfAdjoint.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary (a : A) (ha : IsSelfAdjoint a)
     (ha_norm : ‖a‖ ≤ 1) : a + I • CFC.sqrt (1 - a ^ 2) ∈ unitary A := by
   obtain (_ | _) := subsingleton_or_nontrivial A

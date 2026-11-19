@@ -12,7 +12,12 @@ import Lean.Elab.Term
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 
-/-! # Additional utilities in `Lean.MVarId` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Additional utilities in `Lean.MVarId`
+-/
 
 public section
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star-orthogonality in star-ordered rings
 
@@ -17,16 +20,16 @@ This file develops the API for `IsStarOrtho` in a `StarOrderedRing` with `IsProp
 
 ## Main declarations
 
-+ `isStarOrtho_iff_of_nonneg`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
+* `isStarOrtho_iff_of_nonneg`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
   `star b * a * b = 0` and `b * a * star b = 0`.
-+ `IsStarOrtho.anti_left`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
-+ `IsStarOrtho.sum_left_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if
+* `IsStarOrtho.anti_left`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
+* `IsStarOrtho.sum_left_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if
   and only if each summand is.
-+ `isStarProjection_sum_iff`: a finite sum of star projections is a star projection if and only if
+* `isStarProjection_sum_iff`: a finite sum of star projections is a star projection if and only if
   they are pairwise star-orthogonal.
-+ `IsStarProjection.isStarOrtho_of_add`: If the sum of a star projection and a nonnegative element
+* `IsStarProjection.isStarOrtho_of_add`: If the sum of a star projection and a nonnegative element
   is a star projection, then they are star-orthogonal.
-+ `isStarProjection_add_iff_of_nonneg`: if `p` is a star projection and `0 ≤ q`, then `p + q` is a
+* `isStarProjection_add_iff_of_nonneg`: if `p` is a star projection and `0 ≤ q`, then `p + q` is a
   star projection if and only if `q` is a star projection and `p ⋆⟂ q`.
 -/
 

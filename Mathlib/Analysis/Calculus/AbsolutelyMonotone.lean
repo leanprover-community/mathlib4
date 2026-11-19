@@ -9,10 +9,13 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolutely monotone functions
 
-A function `f : ℝ → ℝ` is *absolutely monotone* on a set `s` if its iterated derivatives are all
+A function `f : ℝ → ℝ` is _absolutely monotone_ on a set `s` if its iterated derivatives are all
 nonnegative on `s`.
 
 ## Main definitions
@@ -41,7 +44,7 @@ iterated derivative within `s` nonnegative.
 
 ## References
 
-* [D. V. Widder, *The Laplace Transform*][widder1941]
+* ‍\[D. V. Widder, _The Laplace Transform_\]\[widder1941\]
 -/
 
 public section
@@ -69,8 +72,10 @@ theorem contDiffOn (hf : AbsolutelyMonotoneOn f s) : ContDiffOn ℝ ∞ f s := b
   obtain ⟨_, hp, _⟩ := hf
   exact hp.contDiffOn
 
-/-- A globally `C^∞` function whose iterated derivatives are nonnegative on `s` is absolutely
-monotone on `s`. The set `s` need *not* satisfy `UniqueDiffOn`. -/
+/--
+A globally `C^∞` function whose iterated derivatives are nonnegative on `s` is absolutely
+monotone on `s`. The set `s` need _not_ satisfy `UniqueDiffOn`.
+-/
 theorem of_contDiff (hf : ContDiff ℝ ∞ f) (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDeriv n f x) :
     AbsolutelyMonotoneOn f s := by
   refine ⟨ftaylorSeries ℝ f, (hf.ftaylorSeries).hasFTaylorSeriesUpToOn s, fun n x hx => ?_⟩
@@ -96,7 +101,9 @@ theorem iff_iteratedDerivWithin_nonneg (hs : UniqueDiffOn ℝ s) :
   refine ⟨ftaylorSeriesWithin ℝ f s, hcont.ftaylorSeriesWithin hs, fun n x hx => ?_⟩
   exact iteratedDerivWithin_eq_iteratedFDerivWithin (𝕜 := ℝ) (f := f) (s := s) ▸ hnn n x hx
 
-/-! ### Closure properties -/
+/-!
+# Closure properties
+-/
 
 /-- The sum of two absolutely monotone functions is absolutely monotone. -/
 theorem add (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :

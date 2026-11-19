@@ -9,26 +9,25 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.MeasureTheory.Integral.Average
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jensen's inequality for integrals
 
 In this file we prove several forms of Jensen's inequality for integrals.
 
-- for convex sets: `Convex.average_mem`, `Convex.set_average_mem`, `Convex.integral_mem`;
-
-- for convex functions: `ConvexOn.average_mem_epigraph`, `ConvexOn.map_average_le`,
+* for convex sets: `Convex.average_mem`, `Convex.set_average_mem`, `Convex.integral_mem`;
+* for convex functions: `ConvexOn.average_mem_epigraph`, `ConvexOn.map_average_le`,
   `ConvexOn.set_average_mem_epigraph`, `ConvexOn.map_set_average_le`, `ConvexOn.map_integral_le`;
-
-- for strictly convex sets: `StrictConvex.ae_eq_const_or_average_mem_interior`;
-
-- for a closed ball in a strictly convex normed space:
+* for strictly convex sets: `StrictConvex.ae_eq_const_or_average_mem_interior`;
+* for a closed ball in a strictly convex normed space:
   `ae_eq_const_or_norm_integral_lt_of_norm_le_const`;
-
-- for strictly convex functions: `StrictConvexOn.ae_eq_const_or_map_average_lt`.
+* for strictly convex functions: `StrictConvexOn.ae_eq_const_or_map_average_lt`.
 
 ## TODO
 
-- Use a typeclass for strict convexity of a closed ball.
+* Use a typeclass for strict convexity of a closed ball.
 
 ## Tags
 
@@ -46,7 +45,7 @@ variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [Normed
   [CompleteSpace E] {μ : Measure α} {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
 
 /-!
-### Non-strict Jensen's inequality
+# Non-strict Jensen's inequality
 -/
 
 
@@ -208,7 +207,7 @@ theorem ConcaveOn.le_map_integral [IsProbabilityMeasure μ] (hg : ConcaveOn ℝ 
   simpa only [average_eq_integral] using hg.le_map_average hgc hsc hfs hfi hgi
 
 /-!
-### Strict Jensen's inequality
+# Strict Jensen's inequality
 -/
 
 

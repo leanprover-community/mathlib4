@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.PEmpty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Initial and terminal objects in a category.
 
@@ -19,6 +22,7 @@ The classes `HasTerminal` and `HasInitial` and the associated notations for term
 objects are defined in `Terminal.lean`.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 
@@ -204,7 +208,8 @@ def terminalUnopOfInitial {X : Cᵒᵖ} (t : IsInitial X) : IsTerminal X.unop wh
   lift s := (t.to (Opposite.op s.pt)).unop
   uniq _ _ _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 
-/-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
+/--
+A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
 monomorphism.  In practice, this is most useful when given an arbitrary morphism out of the chosen
 initial object, see `initial.mono_from`.
 Given a terminal object, this is equivalent to the assumption that the unique morphism from initial

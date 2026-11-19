@@ -10,6 +10,9 @@ public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 import Mathlib.Algebra.CharP.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First-order theory of fields
 
@@ -18,7 +21,7 @@ language of rings
 
 ## Main definitions
 
-- `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
+* `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
   as a theory over the language of rings
 -/
 

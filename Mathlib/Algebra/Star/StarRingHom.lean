@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of star rings
 
@@ -19,7 +22,7 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Main definitions
 
-  * `NonUnitalStarRingHom`
+* `NonUnitalStarRingHom`
 
 ## Implementation
 
@@ -34,11 +37,15 @@ non-unital, ring, morphism, star
 
 open EquivLike
 
-/-! ### Non-unital star ring homomorphisms -/
+/-!
+# Non-unital star ring homomorphisms
+-/
 
-/-- A *non-unital ⋆-ring homomorphism* is a non-unital ring homomorphism between non-unital
+/--
+A _non-unital ⋆-ring homomorphism_ is a non-unital ring homomorphism between non-unital
 non-associative semirings `A` and `B` equipped with a `star` operation, and this homomorphism is
-also `star`-preserving. -/
+also `star`-preserving.
+-/
 structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
     [Star A] [NonUnitalNonAssocSemiring B] [Star B] extends A →ₙ+* B where
   /-- By definition, a non-unital ⋆-ring homomorphism preserves the `star` operation. -/
@@ -47,11 +54,13 @@ structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
 /-- `α →⋆ₙ+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
 infixr:25 " →⋆ₙ+* " => NonUnitalStarRingHom
 
-/-- Reinterpret a non-unital star ring homomorphism as a non-unital ring homomorphism
+/--
+Reinterpret a non-unital star ring homomorphism as a non-unital ring homomorphism
 by forgetting the interaction with the star operation.
 
 Users should not make use of this, but instead utilize the coercion obtained through
-the `NonUnitalRingHomClass` instance. -/
+the `NonUnitalRingHomClass` instance.
+-/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
@@ -101,7 +110,9 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
 instance : StarHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
@@ -231,11 +242,15 @@ end Zero
 
 end NonUnitalStarRingHom
 
-/-! ### Star ring equivalences -/
+/-!
+# Star ring equivalences
+-/
 
-/-- A *⋆-ring* equivalence is an equivalence preserving addition, multiplication, and the star
+/--
+A _⋆-ring_ equivalence is an equivalence preserving addition, multiplication, and the star
 operation, which allows for considering both unital and non-unital equivalences with a single
-structure. -/
+structure.
+-/
 structure StarRingEquiv (A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B]
     extends A ≃+* B where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
@@ -357,10 +372,14 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
 theorem toRingEquiv_symm (e : A ≃⋆+* B) :
     e.symm.toRingEquiv = e.toRingEquiv.symm := rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (e : A ≃⋆+* B) : A → B := e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : A ≃⋆+* B) : B → A :=
   e.symm
 

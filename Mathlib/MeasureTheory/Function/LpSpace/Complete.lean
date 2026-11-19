@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Lp` is a complete space
 
@@ -106,7 +109,9 @@ theorem eLpNorm_le_of_ae_tendsto {ι : Type*} {u : Filter ι} [NeBot u] [IsCount
     obtain ⟨n, hn⟩ := (hb.and (hv.eventually bound)).exists
     exact hn.1.trans hn.2
 
-/-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
+/-!
+# `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp`
+-/
 
 variable {E : Type*} [NormedAddCommGroup E]
 
@@ -191,7 +196,9 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
 
-/-! ### Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp` -/
+/-!
+# Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp`
+-/
 
 private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}

@@ -7,14 +7,17 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Club sets and stationary sets
 
-A subset of a well-ordered type `α` is called a **club set** when it is closed in the order topology
+A subset of a well-ordered type `α` is called a *club set* when it is closed in the order topology
 and cofinal. If `α` has no maximum, then an equivalent condition is that `α` is closed and
 unbounded; hence the name.
 
-A **stationary set** is a set which intersects all club sets.
+A *stationary set* is a set which intersects all club sets.
 
 ## Implementation notes
 
@@ -35,7 +38,9 @@ open Cardinal Order Set
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
-/-! ### Club sets -/
+/-!
+# Club sets
+-/
 
 /-- A club set is a set that is closed under suprema and that is cofinal. -/
 @[mk_iff]
@@ -283,7 +288,9 @@ theorem exists_between [NoMaxOrder α] {s : Set α} (hs : IsClub s) {x : α} (hx
 end WellFoundedLT
 end IsClub
 
-/-! ### Stationary sets -/
+/-!
+# Stationary sets
+-/
 
 /-- A set is called stationary when it intersects all club sets. -/
 @[expose]

@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.MvPolynomial.Groebner
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The graded ring of level-1 modular forms
 
@@ -59,7 +62,7 @@ multiple of a single monomial. If `p` maps to zero, then `r (1, 1) = 0` because 
 
 ## References
 
-* [J.-P. Serre, *A Course in Arithmetic*][serre1973], VII.3.2.
+* ‍\[J.-P. Serre, _A Course in Arithmetic_\]\[serre1973\], VII.3.2.
 -/
 
 public noncomputable section
@@ -130,7 +133,9 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
   change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z ^ 3 - E₆ z ^ 2)
   grind [discriminant_eq_E₄_cube_sub_E₆_sq z]
 
-/-! ### `E₄` and `E₆` generate the graded ring -/
+/-!
+# `E₄` and `E₆` generate the graded ring
+-/
 
 /-- The evaluation homomorphism from `ℂ[X₀, X₁]` to the graded ring `⨁ k, ModularForm 𝒮ℒ k` of
 level-1 modular forms, sending `X₀ = MvPolynomial.X 0` to `E₄` (in weight `4`) and
@@ -218,7 +223,9 @@ instance : Algebra.FiniteType ℂ (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
 instance : IsNoetherianRing (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
   Algebra.FiniteType.isNoetherianRing ℂ _
 
-/-! ### `E₄` and `E₆` are algebraically independent -/
+/-!
+# `E₄` and `E₆` are algebraically independent
+-/
 
 private lemma weight_four_six_apply (d : Fin 2 →₀ ℕ) :
     Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = d 0 * 4 + d 1 * 6 := by

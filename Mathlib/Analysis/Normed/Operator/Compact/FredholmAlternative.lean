@@ -13,6 +13,9 @@ import Mathlib.Analysis.Normed.Module.RieszLemma
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral theory of compact operators
 
@@ -47,11 +50,13 @@ variable {T : X →L[𝕜] X} {μ : 𝕜}
 open Module End
 
 open Filter Topology in
-/-- If `T : X →L[𝕜] X` is a compact operator on a Banach space `X`, and `μ ≠ 0` is not an
+/--
+If `T : X →L[𝕜] X` is a compact operator on a Banach space `X`, and `μ ≠ 0` is not an
 eigenvalue of `T`, then `T - μ • 1` is antilipschitz with positive constant.
 That is, `T - μ • 1` is bounded below as an operator.
 
-This is a useful step in the proof of the Fredholm alternative for compact operators. -/
+This is a useful step in the proof of the Fredholm alternative for compact operators.
+-/
 theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ ≠ 0)
     (h : ¬ HasEigenvalue (T : End 𝕜 X) μ) :
     ∃ K, AntilipschitzWith K (T - μ • 1 : X →L[𝕜] X) := by

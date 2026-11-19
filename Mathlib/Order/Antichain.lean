@@ -9,6 +9,9 @@ public import Mathlib.Order.Preorder.Chain
 
 import Mathlib.Order.Bounds.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antichains
 
@@ -264,8 +267,10 @@ theorem IsAntichain.minimal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Minimal (
 theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (· ∈ s) a ↔ a ∈ s :=
   hs.to_dual.minimal_mem_iff
 
-/-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
-then `t` *is* the set of maximal elements of `s`. -/
+/--
+If `t` is an antichain shadowing and including the set of maximal elements of `s`,
+then `t` _is_ the set of maximal elements of `s`.
+-/
 theorem IsAntichain.eq_setOfPred_maximal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
     {x | Maximal (· ∈ s) x} = t := by
@@ -276,8 +281,10 @@ theorem IsAntichain.eq_setOfPred_maximal (ht : IsAntichain (· ≤ ·) t)
 @[deprecated (since := "2026-07-09")]
 alias IsAntichain.eq_setOf_maximal := IsAntichain.eq_setOfPred_maximal
 
-/-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
-then `t` *is* the set of minimal elements of `s`. -/
+/--
+If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
+then `t` _is_ the set of minimal elements of `s`.
+-/
 theorem IsAntichain.eq_setOfPred_minimal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
     {x | Minimal (· ∈ s) x} = t :=
@@ -317,7 +324,9 @@ theorem setOfPred_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) 
 
 end PartialOrder
 
-/-! ### Strong antichains -/
+/-!
+# Strong antichains
+-/
 
 
 /-- A strong (upward) antichain is a set such that no two distinct elements are related to a common
@@ -378,7 +387,9 @@ theorem Set.Subsingleton.isStrongAntichain (hs : s.Subsingleton) (r : α → α 
     IsStrongAntichain r s :=
   hs.pairwise _
 
-/-! ### Maximal antichains -/
+/-!
+# Maximal antichains
+-/
 
 /-- An antichain `s` is a maximal antichain if there does not exists an antichain strictly including
 `s`. -/
@@ -421,7 +432,9 @@ alias ⟨_, IsMaxAntichain.maximal_isAntichain⟩ := maximal_isAntichain_iff
 
 end General
 
-/-! ### Weak antichains -/
+/-!
+# Weak antichains
+-/
 
 
 section Pi

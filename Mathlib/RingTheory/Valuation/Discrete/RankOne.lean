@@ -9,15 +9,20 @@ public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
+
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
   between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
+
 valuation, discrete, rank one
 -/
 

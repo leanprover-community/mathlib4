@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.MulChar.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dirichlet Characters
 
@@ -18,10 +21,10 @@ of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ �
 
 Main definitions:
 
-- `DirichletCharacter`: The type representing a Dirichlet character.
-- `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
-- `conductor`: The conductor of a Dirichlet character.
-- `IsPrimitive`: If the level is equal to the conductor.
+* `DirichletCharacter`: The type representing a Dirichlet character.
+* `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+* `conductor`: The conductor of a Dirichlet character.
+* `IsPrimitive`: If the level is equal to the conductor.
 
 ## Tags
 
@@ -31,7 +34,7 @@ dirichlet character, multiplicative character
 @[expose] public section
 
 /-!
-### Definitions
+# Definitions
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
@@ -57,7 +60,7 @@ lemma apply_eq_zero_iff [Nontrivial R] (a : ℤ) : χ a = 0 ↔ ¬ IsCoprime a n
   rw [← (apply_ne_zero_iff χ a).not, ne_eq, not_not]
 
 /-!
-### Changing levels
+# Changing levels
 -/
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
@@ -195,7 +198,7 @@ theorem factorsThrough_gcd {m : ℕ} [NeZero n] (ψ : DirichletCharacter R m)
   rw [this, hz₂, map_one]
 
 /-!
-### Edge cases
+# Edge cases
 -/
 
 lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
@@ -226,7 +229,7 @@ lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
   rwa [level_one χ₀, changeLevel_one] at hχ₀
 
 /-!
-### The conductor
+# The conductor
 -/
 
 /-- The set of natural numbers `d` such that `χ` factors through a character of level `d`. -/
@@ -445,7 +448,7 @@ theorem conductor_mul_dvd_lcm_conductor (χ ψ : DirichletCharacter R n) :
     changeLevel_primitiveCharacter, changeLevel_primitiveCharacter]
 
 /-!
-### Specific subgroups
+# Specific subgroups
 -/
 
 /-- The subgroup of Dirichlet characters of level `n` whose conductor is coprime to `d`. -/
@@ -489,12 +492,14 @@ theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
   simp [map_mul, ha, hb]
 
 variable (R n) in
-/-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
+/--
+The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
 to `1`. See `mem_subgroupOfPrimitiveMapToOne_iff` for this characterization.
 
 TODO: Generalize to an arbitrary nonzero integer `d`, replacing the hypothesis `p.Prime` with
 a coprimality condition and `n / p ^ n.factorization p` with the largest factor of `n` coprime
-to `d`. This would require additional Mathlib API for that construction. -/
+to `d`. This would require additional Mathlib API for that construction.
+-/
 noncomputable def subgroupOfPrimitiveMapToOne [NeZero n] (p : ℕ) [hp : Fact p.Prime] :
     Subgroup (DirichletCharacter R n) :=
   (annihilator R (n := n / p ^ n.factorization p)

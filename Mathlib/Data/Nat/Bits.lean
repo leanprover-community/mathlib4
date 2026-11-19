@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.Nat.BinaryRec
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional properties of binary recursion on `Nat`
 
@@ -166,7 +169,9 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 
-/-! ### `boddDiv2_eq` and `bodd` -/
+/-!
+# `boddDiv2_eq` and `bodd`
+-/
 
 @[simp]
 theorem div2_bit0 (n) : div2 (2 * n) = n :=
@@ -176,7 +181,9 @@ theorem div2_bit0 (n) : div2 (2 * n) = n :=
 theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
   div2_bit true n
 
-/-! ### `bit0` and `bit1` -/
+/-!
+# `bit0` and `bit1`
+-/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
   | true, _, _ => by dsimp [bit]; lia

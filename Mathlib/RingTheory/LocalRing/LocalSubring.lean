@@ -9,12 +9,16 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local subrings of fields
 
 ## Main results
-- `LocalSubring` : The class of local subrings of a commutative ring.
-- `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
+
+* `LocalSubring` : The class of local subrings of a commutative ring.
+* `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/
 
 @[expose] public section

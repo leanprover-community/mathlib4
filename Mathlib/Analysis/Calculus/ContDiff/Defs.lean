@@ -9,6 +9,9 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher differentiability
 
@@ -32,6 +35,7 @@ existence of a nice sequence of derivatives, expressed with a predicate
 We prove basic properties of these notions.
 
 ## Main definitions and results
+
 Let `f : E → F` be a map between normed vector spaces over a nontrivially normed field `𝕜`.
 
 * `ContDiff 𝕜 n f`: expresses that `f` is `C^n`, i.e., it admits a Taylor series up to
@@ -110,10 +114,13 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
   {s s₁ t u : Set E} {f f₁ : E → F} {x : E} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
-/-! ### Smooth functions within a set around a point -/
+/-!
+# Smooth functions within a set around a point
+-/
 
 variable (𝕜) in
-/-- A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
+/--
+A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`.
@@ -453,10 +460,13 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
     exact ⟨u, hu, f_an, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
 
 
-/-! ### Smooth functions within a set -/
+/-!
+# Smooth functions within a set
+-/
 
 variable (𝕜) in
-/-- A function is continuously differentiable up to `n` on `s` if, for any point `x` in `s`, it
+/--
+A function is continuously differentiable up to `n` on `s` if, for any point `x` in `s`, it
 admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`.
@@ -612,7 +622,9 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
     exact ⟨u, u_nhbd, f_an, f', hu, hf' x this⟩
 
 
-/-! ### Iterated derivative within a set -/
+/-!
+# Iterated derivative within a set
+-/
 
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
@@ -918,10 +930,13 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1
     (h.of_le (show 0 + (1 : ℕ∞ω) ≤ n from hn))).2.2.continuousOn
 
-/-! ### Smooth functions at a point -/
+/-!
+# Smooth functions at a point
+-/
 
 variable (𝕜) in
-/-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
+/--
+A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`.
@@ -1050,10 +1065,13 @@ theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
   · simpa using hu
   · exact ⟨hx, xu⟩
 
-/-! ### Smooth functions -/
+/-!
+# Smooth functions
+-/
 
 variable (𝕜) in
-/-- A function is continuously differentiable up to `n` if it admits derivatives up to
+/--
+A function is continuously differentiable up to `n` if it admits derivatives up to
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
@@ -1196,7 +1214,9 @@ theorem contDiff_omega_iff_analyticOnNhd :
     ContDiff 𝕜 ω f ↔ AnalyticOnNhd 𝕜 f univ :=
   ⟨fun h ↦ h.analyticOnNhd, fun h ↦ h.contDiff⟩
 
-/-! ### Iterated derivative -/
+/-!
+# Iterated derivative
+-/
 
 /-- When a function is `C^n`, it admits `ftaylorSeries 𝕜 f` as a Taylor series up
 to order `n` in `s`. -/

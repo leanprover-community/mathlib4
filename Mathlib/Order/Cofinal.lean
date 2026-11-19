@@ -14,6 +14,9 @@ public import Mathlib.Order.SetNotation
 
 import Mathlib.Data.Set.Lattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofinal sets
 
@@ -24,7 +27,7 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 
 ## TODO
 
-- Deprecate `Order.Cofinal` in favor of this predicate.
+* Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
 public section

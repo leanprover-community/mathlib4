@@ -9,6 +9,9 @@ public import Mathlib.Logic.Function.Basic
 
 import Mathlib.Tactic.MkIffOfInductiveProp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional lemmas about sum types
 
@@ -279,7 +282,7 @@ theorem map_bijective {f : α → γ} {g : β → δ} :
 end Sum
 
 /-!
-### Ternary sum
+# Ternary sum
 
 Abbreviations for the maps from the summands to `α ⊕ β ⊕ γ`. This is useful for pattern-matching.
 -/
@@ -304,7 +307,7 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
 end Sum3
 
 /-!
-### PSum
+# PSum
 -/
 
 namespace PSum

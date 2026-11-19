@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 
 import Mathlib.Algebra.Ring.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # e-transforms
 
@@ -42,7 +45,9 @@ variable {α : Type*} [DecidableEq α]
 
 namespace Finset
 
-/-! ### Dyson e-transform -/
+/-!
+# Dyson e-transform
+-/
 
 
 section CommGroup
@@ -93,7 +98,7 @@ theorem mulDysonETransform.smul_finset_snd_subset_fst :
 end CommGroup
 
 /-!
-### Two unnamed e-transforms
+# Two unnamed e-transforms
 
 The following two transforms both reduce the product/sum of the two sets. Further, one of them must
 decrease the sum of the size of the sets (and then the other increases it).

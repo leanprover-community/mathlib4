@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous functions vanishing at infinity
 
@@ -35,13 +38,15 @@ open scoped Topology
 
 open Filter Metric
 
-/-- `C₀(α, β)` is the type of continuous functions `α → β` which vanish at infinity from a
+/--
+`C₀(α, β)` is the type of continuous functions `α → β` which vanish at infinity from a
 topological space to a metric space with a zero element.
 
 When possible, instead of parametrizing results over `(f : C₀(α, β))`,
 you should parametrize over `(F : Type*) [ZeroAtInftyContinuousMapClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`. -/
+When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`.
+-/
 structure ZeroAtInftyContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]
     [TopologicalSpace β] : Type max u v extends ContinuousMap α β where
   /-- The function tends to zero along the `cocompact` filter. -/
@@ -57,10 +62,12 @@ open scoped ZeroAtInfty
 
 section
 
-/-- `ZeroAtInftyContinuousMapClass F α β` states that `F` is a type of continuous maps which
+/--
+`ZeroAtInftyContinuousMapClass F α β` states that `F` is a type of continuous maps which
 vanish at infinity.
 
-You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
+You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`.
+-/
 class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
     [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
@@ -148,7 +155,8 @@ lemma zeroAtInftyContinuousMapClass.ofCompact {G : Type*} [FunLike G α β]
 
 end Basics
 
-/-! ### Algebraic structure
+/-!
+# Algebraic structure
 
 Whenever `β` has suitable algebraic structure and a compatible topological structure, then
 `C₀(α, β)` inherits a corresponding algebraic structure. The primary exception to this is that
@@ -338,7 +346,8 @@ theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
 
 end Uniform
 
-/-! ### Metric structure
+/-!
+# Metric structure
 
 When `β` is a metric space, then every element of `C₀(α, β)` is bounded, and so there is a natural
 inclusion map `ZeroAtInftyContinuousMap.toBCF : C₀(α, β) → (α →ᵇ β)`. Via this map `C₀(α, β)`
@@ -444,7 +453,8 @@ end Metric
 
 section Norm
 
-/-! ### Normed space
+/-!
+# Normed space
 
 The norm structure on `C₀(α, β)` is the one induced by the inclusion `toBCF : C₀(α, β) → (α →ᵇ b)`,
 viewed as an additive monoid homomorphism. Then `C₀(α, β)` is naturally a normed space over a normed
@@ -499,7 +509,8 @@ end Norm
 
 section Star
 
-/-! ### Star structure
+/-!
+# Star structure
 
 It is possible to equip `C₀(α, β)` with a pointwise `star` operation whenever there is a continuous
 `star : β → β` for which `star (0 : β) = 0`. We don't have quite this weak a typeclass, but
@@ -569,7 +580,8 @@ instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : C
 
 end CStarRing
 
-/-! ### C₀ as a functor
+/-!
+# C₀ as a functor
 
 For each `β` with sufficient structure, there is a contravariant functor `C₀(-, β)` from the
 category of topological spaces with morphisms given by `CocompactMap`s.

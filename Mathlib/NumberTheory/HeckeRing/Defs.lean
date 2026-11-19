@@ -9,19 +9,21 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.GroupTheory.DoubleCoset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hecke rings: definitions
 
-This file introduces the abstract Hecke ring of a *Hecke pair* `(H, Δ)` and, more generally, the
-Hecke coset modules attached to a triple `(H₁, Δ, H₂)`, following [Shimura][shimura1971],
-Chapter 3, and [Krieg][krieg1990], Chapter I. It sets up the underlying types: the compatibility
-conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` of a group `G` and a pair of subgroups
-of `G`, the double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke
-coset module `HeckeCosetModule Δ H₁ H₂ Z` of formal finitely-supported linear combinations of
-double cosets.
-The convolution product `HeckeCosetModule Δ H₁ H₂ Z × HeckeCosetModule Δ H₂ H₃ Z →
-HeckeCosetModule Δ H₁ H₃ Z` and the ring structure on the diagonal Hecke ring `𝕋 Δ H Z` are
-developed in later files.
+This file introduces the abstract Hecke ring of a _Hecke pair_ `(H, Δ)` and, more generally, the
+Hecke coset modules attached to a triple `(H₁, Δ, H₂)`, following \[Shimura\]\[shimura1971\],
+Chapter 3, and \[Krieg\]\[krieg1990\], Chapter I. It sets up the underlying types: the compatibility
+conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` of a group `G` and a pair of subgroups of `G`,
+the double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke coset module
+`HeckeCosetModule Δ H₁ H₂ Z` of formal finitely-supported linear combinations of double cosets. The
+convolution product
+`HeckeCosetModule Δ H₁ H₂ Z × HeckeCosetModule Δ H₂ H₃ Z → HeckeCosetModule Δ H₁ H₃ Z` and the ring
+structure on the diagonal Hecke ring `𝕋 Δ H Z` are developed in later files.
 
 The relevance of the submonoid `Δ` may not be immediately obvious; a natural example is
 `H = GL₂(ℤ)` inside `G = GL₂(ℚ)` with `Δ` the submonoid of integral matrices with nonzero
@@ -48,7 +50,7 @@ The data `(Δ, H₁, H₂)` enters unbundled, with the compatibility conditions 
 Prop-valued class `IsHeckeTriple`: the types `HeckeCoset Δ H₁ H₂` and `HeckeCosetModule Δ H₁ H₂ Z`
 are built from the data alone and depend on no proofs, and a single ambient `Δ` shared by all
 levels
-(as in [Shimura][shimura1971]) means products of double cosets over different subgroups,
+(as in \[Shimura\]\[shimura1971\]) means products of double cosets over different subgroups,
 `H₁g₁H₂ * H₂g₂H₃ ⊆ Δ`, need no compatibility hypotheses. The conditions are only needed for the
 finiteness of the coset decompositions, which enters through the `Fintype` instance on
 `DoubleCoset.DecompQuotient` in later files. Requiring `Δ` to be a submonoid rather than a
@@ -56,8 +58,8 @@ subsemigroup loses no generality, since `H₁ ≤ Δ` already forces `1 ∈ Δ`.
 
 ## References
 
-* [G. Shimura, *Introduction to the arithmetic theory of automorphic functions*][shimura1971]
-* [A. Krieg, *Hecke algebras*][krieg1990]
+* ‍\[G. Shimura, _Introduction to the arithmetic theory of automorphic functions_\]\[shimura1971\]
+* ‍\[A. Krieg, _Hecke algebras_\]\[krieg1990\]
 -/
 
 @[expose] public section
@@ -67,11 +69,13 @@ open scoped Pointwise
 
 variable {G : Type*} [Group G]
 
-/-- A *Hecke triple* `(H₁, Δ, H₂)`: the compatibility conditions on a submonoid `Δ` and a pair
+/--
+A _Hecke triple_ `(H₁, Δ, H₂)`: the compatibility conditions on a submonoid `Δ` and a pair
 of subgroups `H₁, H₂` of `G` making the double cosets `H₁\Δ/H₂` finite unions of left cosets:
 both subgroups are contained in `Δ`, they are commensurable, and `Δ` commensurates them. The
-classical Hecke pair `(H, Δ)` of [Shimura][shimura1971], Chapter 3, is the diagonal case
-`IsHeckeTriple Δ H H`. -/
+classical Hecke pair `(H, Δ)` of \[Shimura\]\[shimura1971\], Chapter 3, is the diagonal case
+`IsHeckeTriple Δ H H`.
+-/
 class IsHeckeTriple (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Prop where
   /-- The left subgroup is contained in `Δ`. -/
   left_le : H₁.toSubmonoid ≤ Δ
@@ -142,13 +146,15 @@ theorem diag_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
 
 end IsHeckeTriple
 
-/-- The setoid on `Δ` identifying elements with the same double coset `H₁gH₂ = H₁hH₂`, pulled
+/--
+The setoid on `Δ` identifying elements with the same double coset `H₁gH₂ = H₁hH₂`, pulled
 back from `DoubleCoset.setoid` along the inclusion `Δ ↪ G`.
 
 This is an `abbrev` rather than a global instance: the subgroups `H₁, H₂` cannot be inferred
 from the submonoid `Δ`, so this cannot participate in instance search (and a global instance
 would also create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
-`HeckeCoset.mk`. -/
+`HeckeCoset.mk`.
+-/
 abbrev HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ :=
   (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
 

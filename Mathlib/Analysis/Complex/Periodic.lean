@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodic holomorphic functions
 
@@ -19,7 +22,7 @@ at some `z`, then `F` is holomorphic at `exp (2 * π * I * z / h)`.
 
 We also show (using Riemann's removable singularity theorem) that if `f` is holomorphic and bounded
 for all sufficiently large `im z`, then `F` extends to a holomorphic function on a neighbourhood of
-`0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
+`0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays _exponentially_
 to zero. These results are important in the theory of modular forms.
 -/
 

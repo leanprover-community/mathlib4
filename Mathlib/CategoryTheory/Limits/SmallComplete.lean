@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Any small complete category is a preorder
 
@@ -20,7 +23,7 @@ we instead show that the homsets are subsingleton.
 
 ## References
 
-* https://ncatlab.org/nlab/show/complete+small+category#in_classical_logic
+* https://ncatlab.org/nlab/show/complete+small+category#in\_classical\_logic
 
 ## Tags
 
@@ -40,7 +43,8 @@ universe u
 
 variable {C : Type u} [SmallCategory C] [HasProducts.{u} C]
 
-/-- A small category with products is a thin category.
+/--
+A small category with products is a thin category.
 
 in Lean, a preorder category is one where the morphisms are in Prop, which is weaker than the usual
 notion of a preorder/thin category which says that each homset is subsingleton; we show the latter

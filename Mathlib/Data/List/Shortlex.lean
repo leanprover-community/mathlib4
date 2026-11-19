@@ -9,10 +9,14 @@ public import Mathlib.Tactic.NormNum
 
 import Mathlib.Data.List.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shortlex ordering of lists.
 
 Given a relation `r` on `α`, the shortlex order on `List α` is defined by `L < M` iff
+
 * `L.length < M.length`
 * `L.length = M.length` and `L < M` under the lexicographic ordering over `r` on lists
 
@@ -23,6 +27,7 @@ We show that if `r` is well-founded, so too is the shortlex order over `r`
 ## See also
 
 Related files are:
+
 * `Mathlib/Data/List/Lex.lean`: Lexicographic order on `List α`.
 * `Mathlib/Data/DFinsupp/WellFounded.lean`: Well-foundedness of lexicographic orders on `DFinsupp`
   and `Pi`.
@@ -30,7 +35,9 @@ Related files are:
 
 @[expose] public section
 
-/-! ### shortlex ordering -/
+/-!
+# shortlex ordering
+-/
 
 namespace List
 

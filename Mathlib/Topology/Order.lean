@@ -8,12 +8,15 @@ module
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordering on topologies and (co)induced topologies
 
 Topologies on a fixed type `α` are ordered, by reverse inclusion.  That is, for topologies `t₁` and
 `t₂` on `α`, we write `t₁ ≤ t₂` if every set open in `t₂` is also open in `t₁`.  (One also calls
-`t₁` *finer* than `t₂`, and `t₂` *coarser* than `t₁`.)
+`t₁` _finer_ than `t₂`, and `t₂` _coarser_ than `t₁`.)
 
 Any function `f : α → β` induces
 
@@ -24,6 +27,7 @@ Continuity, the ordering on topologies and (co)induced topologies are related as
 
 * The identity map `(α, t₁) → (α, t₂)` is continuous iff `t₁ ≤ t₂`.
 * A map `f : (α, t) → (β, u)` is continuous
+
   * iff `t ≤ TopologicalSpace.induced f u` (`continuous_iff_le_induced`)
   * iff `TopologicalSpace.coinduced f t ≤ u` (`continuous_iff_coinduced_le`).
 
@@ -239,10 +243,12 @@ theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) �
 
 section nontriviality
 
-/-- A topological space is indiscrete if the only open sets are the empty set and the whole space,
+/--
+A topological space is indiscrete if the only open sets are the empty set and the whole space,
 that is that its topology equals the indiscrete topology `⊤`.
 
-This can also go by the name "trivial topology" or "codiscrete topology". -/
+This can also go by the name "trivial topology" or "codiscrete topology".
+-/
 @[mk_iff]
 class IndiscreteTopology (α) [TopologicalSpace α] where
   eq_top (α) : ‹TopologicalSpace α› = ⊤
@@ -393,10 +399,12 @@ theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝[≠] x = ⊥ := by
   simp only [discreteTopology_iff_singleton_mem_nhds, nhdsWithin, inf_principal_eq_bot, compl_compl]
 
-/-- If the codomain of a continuous injective function has discrete topology,
+/--
+If the codomain of a continuous injective function has discrete topology,
 then so does the domain.
 
-See also `Embedding.discreteTopology` for an important special case. -/
+See also `Embedding.discreteTopology` for an important special case.
+-/
 theorem DiscreteTopology.of_continuous_injective
     {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
     (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
@@ -733,9 +741,11 @@ theorem clusterPt_of_indiscreteTopology [TopologicalSpace α] [IndiscreteTopolog
     {x : α} {f : Filter α} [f.NeBot] : ClusterPt x f := by
   simpa [ClusterPt, IndiscreteTopology.nhds_eq]
 
-/-- In the indiscrete topology no points are separable.
+/--
+In the indiscrete topology no points are separable.
 
-The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
+The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`.
+-/
 @[simp]
 theorem Inseparable.all [TopologicalSpace α] [IndiscreteTopology α] (x y : α) :
     Inseparable x y :=

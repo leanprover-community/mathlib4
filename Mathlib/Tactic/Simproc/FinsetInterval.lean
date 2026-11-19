@@ -12,6 +12,9 @@ public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simproc for intervals of natural numbers
 -/
@@ -70,11 +73,13 @@ private lemma Iio_zero : Iio 0 = ∅ := by simp
 
 end Int
 
-/-- Given natural numbers `m` and `n` and corresponding natural literals `em` and `en`,
+/--
+Given natural numbers `m` and `n` and corresponding natural literals `em` and `en`,
 returns `(s, ⊢ Finset.Icc m n = s)`.
 
 This cannot be easily merged with `evalFinsetIccInt` since they require different
-handling of numerals for `ℕ` and `ℤ`. -/
+handling of numerals for `ℕ` and `ℤ`.
+-/
 def evalFinsetIccNat (m n : ℕ) (em en : Q(ℕ)) :
     MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
@@ -94,11 +99,13 @@ def evalFinsetIccNat (m n : ℕ) (em en : Q(ℕ)) :
     let hnm : Q(Nat.blt $en $em = true) := (q(Eq.refl true) :)
     return ⟨q(∅), q(Nat.Icc_eq_empty_of_lt $hnm)⟩
 
-/-- Given integers `m` and `n` and corresponding integer literals `em` and `en`,
+/--
+Given integers `m` and `n` and corresponding integer literals `em` and `en`,
 returns `(s, ⊢ Finset.Icc m n = s)`.
 
 This cannot be easily merged with `evalFinsetIccNat` since they require different
-handling of numerals for `ℕ` and `ℤ`. -/
+handling of numerals for `ℕ` and `ℤ`.
+-/
 partial def evalFinsetIccInt (m n : ℤ) (em en : Q(ℤ)) :
     MetaM ((s : Q(Finset ℤ)) × Q(.Icc $em $en = $s)) := do
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
@@ -128,12 +135,15 @@ the form `Iic (2 ^ 1024)`.
 -/
 namespace Finset
 
-/-- Simproc to compute `Finset.Icc a b` where `a` and `b` are numerals.
+/--
+Simproc to compute `Finset.Icc a b` where `a` and `b` are numerals.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Icc_ofNat_ofNat (Icc _ _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Icc $em $en) =>
@@ -148,12 +158,15 @@ simproc_decl Icc_ofNat_ofNat (Icc _ _) := .ofQ fun u α e ↦ do
     return .done <| .mk es <| .some p
   | _, _, _ => return .continue
 
-/-- Simproc to compute `Finset.Ico a b` where `a` and `b` are numerals.
+/--
+Simproc to compute `Finset.Ico a b` where `a` and `b` are numerals.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Ico_ofNat_ofNat (Ico _ _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Ico $em $en) =>
@@ -177,12 +190,15 @@ simproc_decl Ico_ofNat_ofNat (Ico _ _) := .ofQ fun u α e ↦ do
     return .done { expr := es, proof? := q(Int.Ico_eq_of_Icc_pred_eq $p) }
   | _, _, _ => return .continue
 
-/-- Simproc to compute `Finset.Ioc a b` where `a` and `b` are numerals.
+/--
+Simproc to compute `Finset.Ioc a b` where `a` and `b` are numerals.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Ioc_ofNat_ofNat (Ioc _ _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Ioc $em $en) =>
@@ -201,12 +217,15 @@ simproc_decl Ioc_ofNat_ofNat (Ioc _ _) := .ofQ fun u α e ↦ do
     return .done { expr := es, proof? := q(Int.Ioc_eq_of_Icc_succ_eq $p) }
   | _, _, _ => return .continue
 
-/-- Simproc to compute `Finset.Ioo a b` where `a` and `b` are numerals.
+/--
+Simproc to compute `Finset.Ioo a b` where `a` and `b` are numerals.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Ioo_ofNat_ofNat (Ioo _ _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Ioo $em $en) =>
@@ -225,12 +244,15 @@ simproc_decl Ioo_ofNat_ofNat (Ioo _ _) := .ofQ fun u α e ↦ do
     return .done { expr := es, proof? := q(Int.Ioo_eq_of_Icc_succ_pred_eq $p) }
   | _, _, _ => return .continue
 
-/-- Simproc to compute `Finset.Iic b` where `b` is a numeral.
+/--
+Simproc to compute `Finset.Iic b` where `b` is a numeral.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Iic_ofNat (Iic _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Iic $en) =>
@@ -239,12 +261,15 @@ simproc_decl Iic_ofNat (Iic _) := .ofQ fun u α e ↦ do
     return .done <| .mk es <| .some q(Nat.Iic_eq_of_Icc_zero_eq $p)
   | _, _, _ => return .continue
 
-/-- Simproc to compute `Finset.Iio b` where `b` is a numeral.
+/--
+Simproc to compute `Finset.Iio b` where `b` is a numeral.
 
-**Warnings**:
+*Warnings*:
+
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
-  avoids a quadratic time performance hit. -/
+  avoids a quadratic time performance hit.
+-/
 simproc_decl Iio_ofNat (Iio _) := .ofQ fun u α e ↦ do
   match u, α, e with
   | 1, ~q(Finset ℕ), ~q(Iio $en) =>
@@ -263,7 +288,9 @@ simproc_decl Iio_ofNat (Iio _) := .ofQ fun u α e ↦ do
 attribute [nolint unusedHavesSuffices]
   Iio_ofNat Ico_ofNat_ofNat Ioc_ofNat_ofNat Ioo_ofNat_ofNat
 
-/-! ### `ℕ` -/
+/-!
+# `ℕ`
+-/
 
 example : Icc 1 0 = ∅ := by simp only [Icc_ofNat_ofNat]
 example : Icc 1 1 = {1} := by simp only [Icc_ofNat_ofNat]
@@ -289,7 +316,9 @@ example : Iio 0 = ∅ := by simp only [Iio_ofNat]
 example : Iio 1 = {0} := by simp only [Iio_ofNat]
 example : Iio 2 = {0, 1} := by simp only [Iio_ofNat]
 
-/-! ### `ℤ` -/
+/-!
+# `ℤ`
+-/
 
 example : Icc (1 : ℤ) 0 = ∅ := by simp only [Icc_ofNat_ofNat]
 example : Icc (1 : ℤ) 1 = {1} := by simp only [Icc_ofNat_ofNat]

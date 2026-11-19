@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jensen's inequality and maximum principle for convex functions
 
@@ -17,6 +20,7 @@ functions. The integral versions are to be found in `Analysis.Convex.Integral`.
 ## Main declarations
 
 Jensen's inequalities:
+
 * `ConvexOn.map_centerMass_le`, `ConvexOn.map_sum_le`: Convex Jensen's inequality. The image of a
   convex combination of points under a convex function is less than the convex combination of the
   images.
@@ -25,6 +29,7 @@ Jensen's inequalities:
 * `StrictConcaveOn.lt_map_sum`: Concave strict Jensen inequality.
 
 As corollaries, we get:
+
 * `StrictConvexOn.map_sum_eq_iff`: Equality case of the convex Jensen inequality.
 * `StrictConcaveOn.map_sum_eq_iff`: Equality case of the concave Jensen inequality.
 * `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.
@@ -38,7 +43,9 @@ open Finset Set Convex
 
 variable {𝕜 E β ι : Type*}
 
-/-! ### Jensen's inequality -/
+/-!
+# Jensen's inequality
+-/
 
 
 section Jensen
@@ -91,14 +98,18 @@ lemma ConcaveOn.map_add_sum_le (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 
     v • f q + ∑ i ∈ t, w i • f (p i) ≤ f (v • q + ∑ i ∈ t, w i • p i) :=
   hf.dual.map_add_sum_le h₀ h₁ hmem hv hq
 
-/-! ### Strict Jensen inequality -/
+/-!
+# Strict Jensen inequality
+-/
 
-/-- Convex **strict Jensen inequality**.
+/--
+Convex *strict Jensen inequality*.
 
 If the function is strictly convex, the weights are strictly positive and the indexed family of
 points is non-constant, then Jensen's inequality is strict.
 
-See also `StrictConvexOn.map_sum_eq_iff`. -/
+See also `StrictConvexOn.map_sum_eq_iff`.
+-/
 lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) (hp : ∃ j ∈ t, ∃ k ∈ t, p j ≠ p k) :
     f (∑ i ∈ t, w i • p i) < ∑ i ∈ t, w i • f (p i) := by
@@ -137,36 +148,44 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
       match_scalars <;> simp [field, c]
     _ = w j • f (p j) + (w k • f (p k) + ∑ x ∈ u, w x • f (p x)) := by abel_nf
 
-/-- Concave **strict Jensen inequality**.
+/--
+Concave *strict Jensen inequality*.
 
 If the function is strictly concave, the weights are strictly positive and the indexed family of
 points is non-constant, then Jensen's inequality is strict.
 
-See also `StrictConcaveOn.map_sum_eq_iff`. -/
+See also `StrictConcaveOn.map_sum_eq_iff`.
+-/
 lemma StrictConcaveOn.lt_map_sum (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) (hp : ∃ j ∈ t, ∃ k ∈ t, p j ≠ p k) :
     ∑ i ∈ t, w i • f (p i) < f (∑ i ∈ t, w i • p i) := hf.dual.map_sum_lt h₀ h₁ hmem hp
 
-/-! ### Equality case of Jensen's inequality -/
+/-!
+# Equality case of Jensen's inequality
+-/
 
-/-- A form of the **equality case of Jensen's equality**.
+/--
+A form of the *equality case of Jensen's equality*.
 
 For a strictly convex function `f` and positive weights `w`, if
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)`, then the points `p` are all equal.
 
-See also `StrictConvexOn.map_sum_eq_iff`. -/
+See also `StrictConvexOn.map_sum_eq_iff`.
+-/
 lemma StrictConvexOn.eq_of_le_map_sum (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : ∑ i ∈ t, w i • f (p i) ≤ f (∑ i ∈ t, w i • p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
   by_contra!; exact h_eq.not_gt <| hf.map_sum_lt h₀ h₁ hmem this
 
-/-- A form of the **equality case of Jensen's equality**.
+/--
+A form of the *equality case of Jensen's equality*.
 
 For a strictly concave function `f` and positive weights `w`, if
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)`, then the points `p` are all equal.
 
-See also `StrictConcaveOn.map_sum_eq_iff`. -/
+See also `StrictConcaveOn.map_sum_eq_iff`.
+-/
 lemma StrictConcaveOn.eq_of_map_sum_eq (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i)) :
@@ -236,11 +255,13 @@ theorem StrictConcaveOn.lt_map_sum_iff_of_nonneg (hf : StrictConcaveOn 𝕜 s f)
       ∃ j ∈ t, ∃ k ∈ t, w j ≠ 0 ∧ w k ≠ 0 ∧ p j ≠ p k :=
   hf.dual.map_sum_lt_iff_of_nonneg h₀ h₁ hmem
 
-/-- Canonical form of the **equality case of Jensen's equality**.
+/--
+Canonical form of the *equality case of Jensen's equality*.
 
 For a strictly convex function `f` and positive weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` are all equal
-(and in fact all equal to their center of mass w.r.t. `w`). -/
+(and in fact all equal to their center of mass w.r.t. `w`).
+-/
 lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : StrictConvexOn 𝕜 s f)
     (h₀ : ∀ i ∈ t, 0 < w i) (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔ ∀ j ∈ t, p j = ∑ i ∈ t, w i • p i := by
@@ -256,21 +277,25 @@ lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : Stric
       _ = ∑ j ∈ t, (w j • p j) := by congr! 2 with j hj; rw [← H _ hj]
   · grind [hf.map_sum_eq_iff_of_pos h₀ h₁ hmem]
 
-/-- Canonical form of the **equality case of Jensen's equality**.
+/--
+Canonical form of the *equality case of Jensen's equality*.
 
 For a strictly concave function `f` and positive weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` are all equal
-(and in fact all equal to their center of mass w.r.t. `w`). -/
+(and in fact all equal to their center of mass w.r.t. `w`).
+-/
 lemma StrictConcaveOn.map_sum_eq_iff (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔ ∀ j ∈ t, p j = ∑ i ∈ t, w i • p i :=
   hf.dual.map_sum_eq_iff h₀ h₁ hmem
 
-/-- Canonical form of the **equality case of Jensen's equality**.
+/--
+Canonical form of the *equality case of Jensen's equality*.
 
 For a strictly convex function `f` and nonnegative weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` with nonzero
-weight are all equal (and in fact all equal to their center of mass w.r.t. `w`). -/
+weight are all equal (and in fact all equal to their center of mass w.r.t. `w`).
+-/
 lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
@@ -283,11 +308,13 @@ lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ 
   · rwa [sum_filter_ne_zero]
   · simp +contextual [hmem _ _]
 
-/-- Canonical form of the **equality case of Jensen's equality**.
+/--
+Canonical form of the *equality case of Jensen's equality*.
 
 For a strictly concave function `f` and nonnegative weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` with nonzero
-weight are all equal (and in fact all equal to their center of mass w.r.t. `w`). -/
+weight are all equal (and in fact all equal to their center of mass w.r.t. `w`).
+-/
 lemma StrictConcaveOn.map_sum_eq_iff' (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
@@ -327,7 +354,9 @@ theorem StrictConcaveOn.lt_map_sum_iff_of_nonneg' (hf : StrictConcaveOn 𝕜 s f
 
 end Jensen
 
-/-! ### Maximum principle -/
+/-!
+# Maximum principle
+-/
 
 
 section MaximumPrinciple

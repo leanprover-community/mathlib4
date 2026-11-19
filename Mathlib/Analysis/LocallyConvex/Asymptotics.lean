@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics for locally convex topological vector spaces
 

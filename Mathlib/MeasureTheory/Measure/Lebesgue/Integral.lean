@@ -7,7 +7,12 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
-/-! # Properties of integration with respect to the Lebesgue measure -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of integration with respect to the Lebesgue measure
+-/
 
 public section
 
@@ -68,7 +73,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
 end SummableNormIcc
 
 /-!
-### Substituting `-x` for `x`
+# Substituting `-x` for `x`
 
 These lemmas are stated in terms of either `Iic` or `Ioi` (neglecting `Iio` and `Ici`) to match
 mathlib's conventions for integrals over finite intervals (see `intervalIntegral`). For the case

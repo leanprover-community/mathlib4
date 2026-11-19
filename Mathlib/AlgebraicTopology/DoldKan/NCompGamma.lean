@@ -8,7 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 public import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
-/-! # The unit isomorphism of the Dold-Kan equivalence
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The unit isomorphism of the Dold-Kan equivalence
 
 In order to construct the unit isomorphism of the Dold-Kan equivalence,
 we first construct natural transformations

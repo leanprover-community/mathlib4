@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Ring involutions
 

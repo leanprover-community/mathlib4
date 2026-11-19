@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Type tags for right action on the domain of a function
 
@@ -23,15 +26,15 @@ the Mean Ergodic Theorem in terms of an operator on `L²`.
 
 ## Main definitions
 
-- `DomMulAct M` (notation: `Mᵈᵐᵃ`): type synonym for `Mᵐᵒᵖ`; if `M` multiplicatively acts on `α`,
+* `DomMulAct M` (notation: `Mᵈᵐᵃ`): type synonym for `Mᵐᵒᵖ`; if `M` multiplicatively acts on `α`,
   then `Mᵈᵐᵃ` acts on `α → β` for any type `β`;
-- `DomAddAct M` (notation: `Mᵈᵃᵃ`): the additive version.
+* `DomAddAct M` (notation: `Mᵈᵃᵃ`): the additive version.
 
 We also define actions of `Mᵈᵐᵃ` on:
 
-- `α → β` provided that `M` acts on `α`;
-- `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
-- `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
+* `α → β` provided that `M` acts on `α`;
+* `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
+* `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
 
 ## Implementation details
 
@@ -57,16 +60,16 @@ If the action of `M` on `A` preserves some structure, then `Mᵈᵐᵃ` acts on 
 `A` to any type `B` that preserve the same structure. Examples (some of them are not yet in the
 library) include:
 
-- a `MulDistribMulAction` generates an action on `A →* B`;
-- a `DistribMulAction` generates an action on `A →+ B`;
-- an action on `α` that commutes with action of some other monoid `N` generates an action on
+* a `MulDistribMulAction` generates an action on `A →* B`;
+* a `DistribMulAction` generates an action on `A →+ B`;
+* an action on `α` that commutes with action of some other monoid `N` generates an action on
   `α →[N] β`;
-- a `DistribMulAction` on an `R`-module that commutes with scalar multiplications by `c : R`
+* a `DistribMulAction` on an `R`-module that commutes with scalar multiplications by `c : R`
   generates an action on `R`-linear maps from this module;
-- a continuous action on `X` generates an action on `C(X, Y)`;
-- a measurable action on `X` generates an action on `{ f : X → Y // Measurable f }`;
-- a quasi-measure-preserving action on `X` generates an action on `X →ₘ[μ] Y`;
-- a measure-preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
+* a continuous action on `X` generates an action on `C(X, Y)`;
+* a measurable action on `X` generates an action on `{ f : X → Y // Measurable f }`;
+* a quasi-measure-preserving action on `X` generates an action on `X →ₘ[μ] Y`;
+* a measure-preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
 
 ### Left action vs right action
 
@@ -107,7 +110,7 @@ variable {M : Type*}
 def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 
 /-!
-### Copy instances from `Mᵐᵒᵖ`
+# Copy instances from `Mᵐᵒᵖ`
 -/
 
 set_option hygiene false in

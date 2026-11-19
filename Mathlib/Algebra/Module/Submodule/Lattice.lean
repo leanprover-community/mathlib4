@@ -13,13 +13,15 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The lattice structure on `Submodule`s
 
 This file defines the lattice structure on submodules, `Submodule.CompleteLattice`, with `⊥`
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
-
 
 ## Implementation notes
 
@@ -42,7 +44,7 @@ variable {p q : Submodule R M}
 namespace Submodule
 
 /-!
-## Bottom element of a submodule
+# Bottom element of a submodule
 -/
 
 /-- The set `{0}` is the bottom element of the lattice of submodules. -/
@@ -120,7 +122,7 @@ theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
   rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
 
 /-!
-## Top element of a submodule
+# Top element of a submodule
 -/
 
 /-- The universal set is the top element of the lattice of submodules. -/
@@ -160,9 +162,11 @@ instance : OrderTop (Submodule R M) where
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
   eq_top_iff.trans ⟨fun h _ ↦ h trivial, fun h x _ ↦ h x⟩
 
-/-- The top submodule is linearly equivalent to the module.
+/--
+The top submodule is linearly equivalent to the module.
 
-This is the module version of `AddSubmonoid.topEquiv`. -/
+This is the module version of `AddSubmonoid.topEquiv`.
+-/
 @[simps]
 def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
   toFun x := x
@@ -171,7 +175,7 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
   map_smul' _ _ := rfl
 
 /-!
-## Infima & suprema in a submodule
+# Infima & suprema in a submodule
 -/
 
 instance : InfSet (Submodule R M) :=
@@ -333,7 +337,7 @@ instance [Nontrivial M] : Nontrivial (Submodule R M) :=
   (nontrivial_iff R).mpr ‹_›
 
 /-!
-## Disjointness of submodules
+# Disjointness of submodules
 -/
 
 theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x ∈ p' → x = (0 : M) :=
@@ -367,7 +371,7 @@ end Submodule
 section NatSubmodule
 
 /-!
-## ℕ-submodules
+# ℕ-submodules
 -/
 
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
@@ -403,7 +407,7 @@ end AddCommMonoid
 section IntSubmodule
 
 /-!
-## ℤ-submodules
+# ℤ-submodules
 -/
 
 variable [AddCommGroup M]

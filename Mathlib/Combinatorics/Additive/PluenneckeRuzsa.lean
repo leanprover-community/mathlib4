@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Plünnecke-Ruzsa inequality
 
@@ -28,8 +31,8 @@ inequality.
 
 ## References
 
-* [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
+* ‍\[Giorgis Petridis, _The Plünnecke-Ruzsa inequality: an overview_\]\[petridis2014\]
+* ‍\[Terence Tao, Van Vu, _Additive Combinatorics_\]\[tao-vu\]
 
 ## See also
 
@@ -47,7 +50,9 @@ variable {G : Type*} [DecidableEq G]
 section Group
 variable [Group G] {A B C : Finset G}
 
-/-! ### Noncommutative Ruzsa triangle inequality -/
+/-!
+# Noncommutative Ruzsa triangle inequality
+-/
 
 /-- **Ruzsa's triangle inequality**. Division version. -/
 @[to_additive /-- **Ruzsa's triangle inequality**. Subtraction version. -/]
@@ -116,7 +121,9 @@ theorem ruzsa_triangle_inequality_mul_mul_invMul (A B C : Finset G) :
     #(A * C) * #B ≤ #(A * B) * #(C⁻¹ * B) := by
   simpa using ruzsa_triangle_inequality_mulInv_mul_mul A B C⁻¹
 
-/-! ### Plünnecke-Petridis inequality -/
+/-!
+# Plünnecke-Petridis inequality
+-/
 
 @[to_additive]
 theorem pluennecke_petridis_inequality_mul (C : Finset G)
@@ -157,7 +164,9 @@ end Group
 section CommGroup
 variable [CommGroup G] {A B C : Finset G}
 
-/-! ### Commutative Ruzsa triangle inequality -/
+/-!
+# Commutative Ruzsa triangle inequality
+-/
 
 -- Auxiliary lemma for Ruzsa's triangle sum inequality, and the Plünnecke-Ruzsa inequality.
 @[to_additive]

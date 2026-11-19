@@ -8,8 +8,11 @@ module
 public meta import Lean.Meta.CoeAttr
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
+# `funProp` Meta programming functions like in Lean.Expr.\* but for working with bundled morphisms.
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
 morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib `coe` is usually
@@ -17,9 +20,11 @@ morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib `coe` is 
 
 The main difference when working with expression involving morphisms is that the notion the head of
 expression changes. For example in:
+
 ```
   coe (f a) b
 ```
+
 the head of expression is considered to be `f` and not `coe`.
 -/
 
@@ -65,11 +70,13 @@ def isMorApp? (e : Expr) : MetaM (Option App) := do
   else
     return none
 
-/-- Previously, `fun_prop` incorrectly switched to default transparency when reducing an
+/--
+Previously, `fun_prop` incorrectly switched to default transparency when reducing an
 expression if a projection was applied to it. Setting this option to true restores this
 behavior.
 
-Note that this option is only for backward compatibility and will be removed in the future. -/
+Note that this option is only for backward compatibility and will be removed in the future.
+-/
 register_option fun_prop.projDefaultTransparency : Bool := {
   descr := "Previously, `fun_prop` incorrectly switched to default transparency when reducing an \
     expression if a projection was applied to it. Setting this option to true restores this \
@@ -111,13 +118,17 @@ def app (f : Expr) (arg : Arg) : Expr :=
   | some coe => (coe.app f).app arg.expr
 
 
-/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
+/--
+Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
 
-`∀ x, p x` is represented as `Forall p`. -/
+`∀ x, p x` is represented as `Forall p`.
+-/
 partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
   go e #[]
 where
-  /-- -/
+  /--
+  
+  -/
   go : Expr → Array Arg →  MetaM α
     | .mdata _ b, as => go b as
     | .app (.app c f) x, as => do

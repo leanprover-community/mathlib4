@@ -10,6 +10,9 @@ public import Mathlib.Init
 import Lean.Meta.AppBuilder
 import Lean.Meta.Coe
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additions to `Lean.Meta.Basic`
 
@@ -35,9 +38,10 @@ and instantiate `A` with these, while also reducing `A` if needed.
 It uses `forallMetaTelescopeReducing`.
 
 This function returns a triple `(mvs, bis, out)` where
-- `mvs` is an array containing the new metavariables.
-- `bis` is an array containing the binder infos for the `mvs`.
-- `out` is `e` but instantiated with the `mvs`.
+
+* `mvs` is an array containing the new metavariables.
+* `bis` is an array containing the binder infos for the `mvs`.
+* `out` is `e` but instantiated with the `mvs`.
 -/
 def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
     (e t : Expr) (kind : MetavarKind := MetavarKind.natural) :

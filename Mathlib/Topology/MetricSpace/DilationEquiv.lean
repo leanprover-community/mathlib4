@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Dilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dilation equivalence
 
@@ -17,8 +20,8 @@ We also develop basic API about these equivalences.
 
 ## TODO
 
-- Add missing lemmas (compare to other `*Equiv` structures).
-- [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
+* Add missing lemmas (compare to other `*Equiv` structures).
+* ‍\[after-port\] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
 
 @[expose] public section
@@ -94,7 +97,9 @@ theorem symm_apply_eq (e : X ≃ᵈ Y) {x : X} {y : Y} : e.symm y = x ↔ y = e 
 theorem eq_symm_apply (e : X ≃ᵈ Y) {x : X} {y : Y} : x = e.symm y ↔ e x = y :=
   Equiv.eq_symm_apply _
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
 
 initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_apply)

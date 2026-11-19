@@ -11,15 +11,16 @@ public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centroid homomorphisms
 
 Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
-$$
-T(ab) = (Ta)b, T(ab) = a(Tb).
-$$
+$$`  T(ab) = (Ta)b, T(ab) = a(Tb).  `
 In mathlib we call elements of the centroid "centroid homomorphisms" (`CentroidHom`) in keeping
 with `AddMonoidHom` etc.
 
@@ -36,8 +37,8 @@ be satisfied by itself and all stricter types.
 
 ## References
 
-* [Jacobson, Structure of Rings][Jacobson1956]
-* [McCrimmon, A taste of Jordan algebras][mccrimmon2004]
+* ‍\[Jacobson, Structure of Rings\]\[Jacobson1956\]
+* ‍\[McCrimmon, A taste of Jordan algebras\]\[mccrimmon2004\]
 
 ## Tags
 
@@ -61,9 +62,11 @@ structure CentroidHom (α : Type*) [NonUnitalNonAssocSemiring α] extends α →
 
 attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
-/-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
+/--
+`CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
-You should extend this class when you extend `CentroidHom`. -/
+You should extend this class when you extend `CentroidHom`.
+-/
 class CentroidHomClass (F : Type*) (α : outParam Type*)
     [NonUnitalNonAssocSemiring α] [FunLike F α α] : Prop extends AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphisms with left multiplication. -/
@@ -82,7 +85,9 @@ instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α
       map_mul_left' := map_mul_left f
       map_mul_right' := map_mul_right f }⟩
 
-/-! ### Centroid homomorphisms -/
+/-!
+# Centroid homomorphisms
+-/
 
 namespace CentroidHom
 
@@ -389,9 +394,11 @@ The following instances show that `α` is a non-unital and non-associative algeb
 `CentroidHom α`.
 -/
 
-/-- The tautological action by `CentroidHom α` on `α`.
+/--
+The tautological action by `CentroidHom α` on `α`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyModule : Module (CentroidHom α) α where
   smul T a := T a
   add_smul _ _ _ := rfl
@@ -421,9 +428,11 @@ variable {R : Type*}
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
-/-- The natural ring homomorphism from `R` into `CentroidHom α`.
+/--
+The natural ring homomorphism from `R` into `CentroidHom α`.
 
-This is a stronger version of `Module.toAddMonoidEnd`. -/
+This is a stronger version of `Module.toAddMonoidEnd`.
+-/
 @[simps! apply_toFun]
 def _root_.Module.toCentroidHom : R →+* CentroidHom α := RingHom.smulOneHom
 

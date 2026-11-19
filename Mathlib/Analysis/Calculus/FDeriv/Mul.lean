@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative operations on derivatives
 
@@ -41,7 +44,8 @@ variable {s : Set E}
 
 section SMul
 
-/-! ### Derivative of the product of a scalar-valued function and a vector-valued function
+/-!
+# Derivative of the product of a scalar-valued function and a vector-valued function
 
 If `c` is a differentiable scalar-valued function and `f` is a differentiable vector-valued
 function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section work for
@@ -159,7 +163,9 @@ end SMul
 
 section Mul
 
-/-! ### Derivative of the product of two functions -/
+/-!
+# Derivative of the product of two functions
+-/
 
 open scoped RightActions
 
@@ -386,7 +392,9 @@ end Mul
 section Prod
 open scoped RightActions
 
-/-! ### Derivative of a finite product of functions -/
+/-!
+# Derivative of a finite product of functions
+-/
 
 variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
@@ -636,11 +644,13 @@ variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra �
 
 open NormedRing ContinuousLinearMap Ring
 
-/-- At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
+/--
+At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
 operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 
 TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
-of units. -/
+of units.
+-/
 @[fun_prop]
 theorem hasFDerivAt_ringInverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
@@ -692,7 +702,8 @@ theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit 
 
 end AlgebraInverse
 
-/-! ### Derivative of the inverse in a division ring
+/-!
+# Derivative of the inverse in a division ring
 
 Note that some lemmas are primed as they are expressed without commutativity, whereas their
 counterparts in commutative fields involve simpler expressions, and are given in

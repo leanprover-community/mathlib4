@@ -8,10 +8,13 @@ module
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Ideal.Colon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Denominators of elements of an algebra
 
-For an element `x` of an `R`-algebra `S`, with `R` a principal ideal ring, the **denominator**
+For an element `x` of an `R`-algebra `S`, with `R` a principal ideal ring, the *denominator*
 `Algebra.denominator R x` is a generator of the colon ideal `(integralClosure R S).colon {x}`,
 that is, of the ideal of scalars `r : R` clearing the denominators of `x`, in the sense that
 `r • x` is integral over `R`. When `R = ℤ`, its absolute value is the natural-number denominator

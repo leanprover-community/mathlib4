@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.ContinuedFractions.Basic
 public import Mathlib.Data.Seq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions
 
@@ -25,7 +28,7 @@ namespace GenContFract
 section General
 
 /-!
-### Translations Between General Access Functions
+# Translations Between General Access Functions
 
 Here we give some basic translations that hold by definition between the various methods that allow
 us to access the numerators and denominators of a continued fraction.
@@ -70,7 +73,7 @@ end General
 section WithDivisionRing
 
 /-!
-### Translations Between Computational Functions
+# Translations Between Computational Functions
 
 Here we give some basic translations that hold by definition for the computational methods of a
 continued fraction.

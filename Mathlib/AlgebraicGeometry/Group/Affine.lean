@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommHopfAlgCat
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommGrp_
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equivalence between Hopf algebras and affine group schemes
 
@@ -36,6 +39,7 @@ follow the following simpler diagram:
       ↑ ↓                        ↓
 R-Hopf algebras → Affine group schemes over Spec R
 ```
+
 where the top `⥤` comes from the essentially surjective functor `Cogrp Mod_R ⥤ Grp Sch_{Spec R}`,
 so that in particular we do not easily know that its inverse is given by `Γ`.
 -/
@@ -52,12 +56,12 @@ universe w v u
 variable {R : CommRingCat.{u}}
 
 /-!
-### Left edge: `R`-Hopf algebras correspond to cogroup objects under `R`
+# Left edge: `R`-Hopf algebras correspond to cogroup objects under `R`
 
 Ways to turn an unbundled `R`-Hopf algebra into a bundled cogroup object under `R`, and vice versa,
 are already provided in `Mathlib.Algebra.Category.CommHopfAlgCat`.
 
-### Top edge: `Spec` as a functor on Hopf algebras
+# Top edge: `Spec` as a functor on Hopf algebras
 
 In this section we bundle `Spec` as a functor from `R`-Hopf algebras to affine group schemes over
 `Spec R`.
@@ -114,10 +118,12 @@ lemma prodComparisonIso_algSpec_inv_left (X Y : (CommAlgCat R)ᵒᵖ) :
 
 attribute [local simp] ε_of_cartesianMonoidalCategory μ_of_cartesianMonoidalCategory in
 set_option backward.isDefEq.respectTransparency false in
-/-- `Spec` as a functor from `R`-algebras to schemes over `Spec R` is braided.
+/--
+`Spec` as a functor from `R`-algebras to schemes over `Spec R` is braided.
 
 The monoidal data is copied from `Functor.Braided.ofChosenFiniteProducts` so that `ε`, `η` are
-definitionally `𝟙 (Spec R)` and `μ`, `δ` are definitionally `pullbackSpecIso`. -/
+definitionally `𝟙 (Spec R)` and `μ`, `δ` are definitionally `pullbackSpecIso`.
+-/
 instance braidedAlgSpec : (algSpec R).Braided :=
   .copy (.ofChosenFiniteProducts _)
     (Over.homMk <| 𝟙 <| Spec R)
@@ -345,11 +351,13 @@ variable {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 variable (R S T) in
-/-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
+/--
+The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.
 
 This is a version of `pullbackSpecIso` stated in terms of `specOverSpec`.
-TODO: Unify with `pullbackSpecIso` once `OverClass` is refactored to not bundle the morphism. -/
+TODO: Unify with `pullbackSpecIso` once `OverClass` is refactored to not bundle the morphism.
+-/
 def pullbackSpecIso' [Algebra R T] :
     pullback (Spec ↧S ↘ Spec ↧R) (Spec ↧T ↘ Spec ↧R) ≅
       Spec ↧(S ⊗[R] T) := pullbackSpecIso ..
@@ -455,7 +463,7 @@ end universe_monomorphic
 end topEdge
 
 /-!
-### Right edge: The essential image of `Spec` on Hopf algebras
+# Right edge: The essential image of `Spec` on Hopf algebras
 
 In this section we show that the essential image of `R`-Hopf algebras under `Spec` is precisely
 affine group schemes over `Spec R`.

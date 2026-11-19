@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faithful group actions
 
@@ -14,8 +17,8 @@ This file provides typeclasses for faithful actions.
 
 ## Notation
 
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+* `a • b` is used as notation for `SMul.smul a b`.
+* `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
 ## Implementation details
 
@@ -35,7 +38,9 @@ open Function (Injective Surjective)
 
 variable {M G α : Type*}
 
-/-! ### Faithful actions -/
+/-!
+# Faithful actions
+-/
 
 /-- Typeclass for faithful actions. -/
 class FaithfulVAdd (G : Type*) (P : Type*) [VAdd G P] : Prop where

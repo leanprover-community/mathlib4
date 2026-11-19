@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Self-inverse sets
 

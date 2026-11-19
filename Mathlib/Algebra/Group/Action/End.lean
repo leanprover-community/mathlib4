@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.End
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interaction between actions and endomorphisms/automorphisms
 
 This file provides two things:
+
 * The tautological actions by endomorphisms/automorphisms on their base type.
 * An action by a monoid/group on a type is the same as a hom from the monoid/group to
   endomorphisms/automorphisms of the type.
@@ -30,15 +34,21 @@ open Function (Injective Surjective)
 
 variable {G M A α : Type*}
 
-/-! ### Tautological actions -/
+/-!
+# Tautological actions
+-/
 
-/-! #### Tautological action by `Function.End` -/
+/-!
+# Tautological action by `Function.End`
+-/
 
 namespace Function.End
 
-/-- The tautological action by `Function.End α` on `α`.
+/--
+The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
+
 * `Equiv.Perm.applyMulAction`
 * `AddMonoid.End.applyDistribMulAction`
 * `AddMonoid.End.applyModule`
@@ -74,13 +84,17 @@ instance apply_FaithfulSMul : FaithfulSMul (Function.End α) α where eq_of_smul
 
 end Function.End
 
-/-! #### Tautological action by `Equiv.Perm` -/
+/-!
+# Tautological action by `Equiv.Perm`
+-/
 
 namespace Equiv.Perm
 
-/-- The tautological action by `Equiv.Perm α` on `α`.
+/--
+The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyMulAction (α : Type*) : MulAction (Perm α) α where
   smul f a := f a
   one_smul _ := rfl
@@ -102,7 +116,9 @@ instance : MulAction.IsPretransitive (Perm α) α := by
 
 end Equiv.Perm
 
-/-! #### Tautological action by `MulAut` -/
+/-!
+# Tautological action by `MulAut`
+-/
 
 namespace MulAut
 variable [Monoid M]
@@ -114,9 +130,11 @@ instance applyMulAction : MulAction (MulAut M) M where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
-/-- The tautological action by `MulAut M` on `M`.
+/--
+The tautological action by `MulAut M` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 @[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
 instance applyMulDistribMulAction : MulDistribMulAction (MulAut M) M where
   smul_one := map_one
@@ -130,7 +148,9 @@ instance apply_faithfulSMul : FaithfulSMul (MulAut M) M where eq_of_smul_eq_smul
 
 end MulAut
 
-/-! #### Tautological action by `AddAut` -/
+/-!
+# Tautological action by `AddAut`
+-/
 
 namespace AddAut
 variable [AddMonoid M]
@@ -140,22 +160,28 @@ variable [AddMonoid M]
 
 end AddAut
 
-/-! ### Converting actions to and from homs to the monoid/group of endomorphisms/automorphisms -/
+/-!
+# Converting actions to and from homs to the monoid/group of endomorphisms/automorphisms
+-/
 
 section Monoid
 variable [Monoid M]
 
-/-- The monoid hom representing a monoid action.
+/--
+The monoid hom representing a monoid action.
 
-When `M` is a group, see `MulAction.toPermHom`. -/
+When `M` is a group, see `MulAction.toPermHom`.
+-/
 def MulAction.toEndHom [MulAction M α] : M →* Function.End α where
   toFun := (· • ·)
   map_one' := funext (one_smul M)
   map_mul' x y := funext (mul_smul x y)
 
-/-- The monoid action induced by a monoid hom to `Function.End α`
+/--
+The monoid action induced by a monoid hom to `Function.End α`
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev MulAction.ofEndHom (f : M →* Function.End α) : MulAction M α := .compHom α f
 
 end Monoid
@@ -163,15 +189,19 @@ end Monoid
 section AddMonoid
 variable [AddMonoid M]
 
-/-- The additive monoid hom representing an additive monoid action.
+/--
+The additive monoid hom representing an additive monoid action.
 
-When `M` is a group, see `AddAction.toPermHom`. -/
+When `M` is a group, see `AddAction.toPermHom`.
+-/
 def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
   MulAction.toEndHom.toAdditiveRight
 
-/-- The additive action induced by a hom to `Additive (Function.End α)`
+/--
+The additive action induced by a hom to `Additive (Function.End α)`
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev AddAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddAction M α := .compHom α f
 
 end AddMonoid
@@ -214,17 +244,21 @@ end AddGroup
 section MulDistribMulAction
 variable (M) [Group G] [Monoid M] [MulDistribMulAction G M]
 
-/-- Each element of the group defines a multiplicative monoid isomorphism.
+/--
+Each element of the group defines a multiplicative monoid isomorphism.
 
-This is a stronger version of `MulAction.toPerm`. -/
+This is a stronger version of `MulAction.toPerm`.
+-/
 @[simps +simpRhs]
 def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
   { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
 
 variable (G) in
-/-- Each element of the group defines a multiplicative monoid isomorphism.
+/--
+Each element of the group defines a multiplicative monoid isomorphism.
 
-This is a stronger version of `MulAction.toPermHom`. -/
+This is a stronger version of `MulAction.toPermHom`.
+-/
 @[simps]
 def MulDistribMulAction.toMulAut : G →* MulAut M where
   toFun := MulDistribMulAction.toMulEquiv M

@@ -13,6 +13,9 @@ public import Mathlib.NumberTheory.Padics.PadicNorm
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ostrowski’s Theorem
 
@@ -21,7 +24,7 @@ Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equiva
 
 ## Main results
 
-- `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
+* `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
   to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
   absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
 
@@ -31,9 +34,9 @@ Extend to arbitrary number fields.
 
 ## References
 
-* [K. Conrad, *Ostrowski's Theorem for Q*][conradQ]
-* [K. Conrad, *Ostrowski for number fields*][conradnumbfield]
-* [J. W. S. Cassels, *Local fields*][cassels1986local]
+* ‍\[K. Conrad, _Ostrowski's Theorem for Q_\]\[conradQ\]
+* ‍\[K. Conrad, _Ostrowski for number fields_\]\[conradnumbfield\]
+* ‍\[J. W. S. Cassels, _Local fields_\]\[cassels1986local\]
 
 ## Tags
 
@@ -79,7 +82,7 @@ open AbsoluteValue -- does not work as intended after `namespace Rat.AbsoluteVal
 namespace Rat.AbsoluteValue
 
 /-!
-### Preliminary lemmas
+# Preliminary lemmas
 -/
 
 open Int
@@ -105,7 +108,7 @@ lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c
 section Non_archimedean
 
 /-!
-### The non-archimedean case
+# The non-archimedean case
 
 Every bounded absolute value on `ℚ` is equivalent to a `p`-adic absolute value.
 -/
@@ -246,7 +249,7 @@ end Non_archimedean
 section Archimedean
 
 /-!
-### Archimedean case
+# Archimedean case
 
 Every unbounded absolute value on `ℚ` is equivalent to the standard absolute value.
 -/
@@ -429,7 +432,7 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
 end Archimedean
 
 /-!
-### The main result
+# The main result
 -/
 
 /-- **Ostrowski's Theorem**: every absolute value (with values in `ℝ`) on `ℚ` is equivalent

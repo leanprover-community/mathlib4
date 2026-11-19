@@ -8,11 +8,14 @@ module
 public import Mathlib.Analysis.BoxIntegral.Partition.Split
 public import Mathlib.Analysis.Normed.Operator.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Box additive functions
 
 We say that a function `f : Box ι → M` from boxes in `ℝⁿ` to a commutative additive monoid `M` is
-*box additive* on subboxes of `I₀ : WithTop (Box ι)` if for any box `J`, `↑J ≤ I₀`, and a partition
+_box additive_ on subboxes of `I₀ : WithTop (Box ι)` if for any box `J`, `↑J ≤ I₀`, and a partition
 `π` of `J`, `f J = ∑ J' ∈ π.boxes, f J'`. We use `I₀ : WithTop (Box ι)` instead of `I₀ : Box ι` to
 use the same definition for functions box additive on subboxes of a box and for functions box
 additive on all boxes.
@@ -63,7 +66,9 @@ open Box Prepartition Finset
 variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I : Box ι}
   {i : ι}
 
-/-! ### Coercion, extensionality, and the defining property -/
+/-!
+# Coercion, extensionality, and the defining property
+-/
 
 @[macro_inline]
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
@@ -88,7 +93,9 @@ theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π 
     (h : π.IsPartition) : ∑ J ∈ π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
 
-/-! ### Additive monoid structure -/
+/-!
+# Additive monoid structure
+-/
 
 @[simps -fullyApplied]
 instance : Zero (ι →ᵇᵃ[I₀] M) :=
@@ -116,7 +123,9 @@ instance : IsAddApply (ι →ᵇᵃ[I₀] M) where
 
 instance {R} [DistribSMul R M] : IsSMulApply R (ι →ᵇᵃ[I₀] M) where
 
-/-! ### Constructions and combinators -/
+/-!
+# Constructions and combinators
+-/
 
 @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
@@ -182,7 +191,9 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
 
 section AddCommGroup
 
-/-! ### Additive group structure -/
+/-!
+# Additive group structure
+-/
 
 variable {M : Type*} [AddCommGroup M]
 
@@ -204,7 +215,9 @@ end AddCommGroup
 
 section ToSMul
 
-/-! ### Scalar multiplication on a normed space -/
+/-!
+# Scalar multiplication on a normed space
+-/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -218,7 +231,9 @@ theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMu
 
 end ToSMul
 
-/-! ### Difference along an axis: `upper − lower` over faces -/
+/-!
+# Difference along an axis: `upper − lower` over faces
+-/
 
 /-- Given a box `I₀` in `ℝⁿ⁺¹`, `f x : Box (Fin n) → G` is a family of functions indexed by a real
 `x` and for `x ∈ [I₀.lower i, I₀.upper i]`, `f x` is box-additive on subboxes of the `i`-th face of

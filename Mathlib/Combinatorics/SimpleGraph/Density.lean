@@ -11,6 +11,9 @@ public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Edge density
 
@@ -19,6 +22,7 @@ This file defines the number and density of edges of a relation/graph.
 ## Main declarations
 
 Between two finsets of vertices,
+
 * `Rel.interedges`: Finset of edges of a relation.
 * `Rel.edgeDensity`: Edge density of a relation.
 * `SimpleGraph.interedges`: Finset of edges of a graph.
@@ -31,7 +35,9 @@ open Finset
 
 variable {𝕜 ι κ α β : Type*}
 
-/-! ### Density of a relation -/
+/-!
+# Density of a relation
+-/
 
 
 namespace Rel
@@ -266,7 +272,9 @@ end Rel
 
 open Rel
 
-/-! ### Density of a graph -/
+/-!
+# Density of a graph
+-/
 
 
 namespace SimpleGraph

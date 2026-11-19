@@ -9,16 +9,19 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 In this file we prove lemmas of the following form: if `β` has a group structure and `α ≃ β`
 then `α` has a group structure, and similarly for monoids, semigroups and so on.
 
-### Implementation details
+## Implementation details
 
 When adding new definitions that transfer type-classes across an equivalence, please use
-`abbrev`. See note [reducible non-instances].
+`abbrev`. See note \[reducible non-instances\].
 -/
 
 @[expose] public section
@@ -26,16 +29,22 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 assert_not_exists MonoidWithZero MulAction
 
 library_note «instance transfer via equivalence» /--
-For many type classes, we have a definition that lets us transfer instances from one type to another
-using an equivalence, such as `Equiv.mul` for `Mul`.
-Constructing data instances in this way is discouraged because the resulting data is inefficient
-to unfold. To somewhat mitigate this problem, in these definitions we don't write the
-projections on `Equiv` in the usual way using `Equiv.symm` and `DFunLike.coe`, and instead use
-`Equiv.toFun` and `Equiv.invFun` directly. As a result, unification has to do less unfolding.
+                                                 For many type classes, we have a definition that
+lets us transfer instances from one type to another
+using an equivalence, such as `Equiv.mul` for
+`Mul`. Constructing data instances in this way is
+discouraged because the resulting data is
+inefficient to unfold. To somewhat mitigate this
+problem, in these definitions we don't write the
+projections on `Equiv` in the usual way using
+`Equiv.symm` and `DFunLike.coe`, and instead use
+`Equiv.toFun` and `Equiv.invFun` directly. As a
+result, unification has to do less unfolding.
 
-Note also that when constructing data instances in this way, it usually helps to use
-`fast_instance%` to get a faster instance.
--/
+                                                 Note also that when constructing data instances in
+this way, it usually helps to use `fast_instance%`
+to get a faster instance.
+                                                 -/
 
 namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Seminorms and norms on rings
 
@@ -17,6 +20,7 @@ consider multiple (semi)norms on a given ring.
 ## Main declarations
 
 For a ring `R`:
+
 * `RingSeminorm`: A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes
   nonnegative values, is subadditive and submultiplicative and such that `f (-x) = f x` for all
   `x ∈ R`.
@@ -34,10 +38,11 @@ absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bu
 
 ## References
 
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
-ring_seminorm, ring_norm
+
+ring\_seminorm, ring\_norm
 -/
 
 @[expose] public section
@@ -61,11 +66,13 @@ multiplication, takes nonnegative values, is subadditive and such that `f (-x) =
 structure MulRingSeminorm (R : Type*) [NonAssocRing R] extends AddGroupSeminorm R,
   MonoidWithZeroHom R ℝ
 
-/-- A multiplicative norm on a ring `R` is a multiplicative ring seminorm such that `f x = 0`
+/--
+A multiplicative norm on a ring `R` is a multiplicative ring seminorm such that `f x = 0`
 implies `x = 0`.
 
 It is recommended to use `AbsoluteValue R ℝ` instead (which works for `Semiring R`
-and is equivalent to `MulRingNorm R` for a nontrivial `Ring R`). -/
+and is equivalent to `MulRingNorm R` for a nontrivial `Ring R`).
+-/
 structure MulRingNorm (R : Type*) [NonAssocRing R] extends MulRingSeminorm R, AddGroupNorm R
 
 attribute [nolint docBlame]

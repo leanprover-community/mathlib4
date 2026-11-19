@@ -16,6 +16,9 @@ public import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Tactic.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further properties of cyclic groups
 
@@ -767,7 +770,7 @@ end powMonoidHom
 section generator
 
 /-!
-### Groups with a given generator
+# Groups with a given generator
 
 We state some results in terms of an explicitly given generator.
 The generating property is given as in `IsCyclic.exists_generator`.

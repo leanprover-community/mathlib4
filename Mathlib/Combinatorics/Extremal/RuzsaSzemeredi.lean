@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Ruzsa-Szemerédi problem
 
@@ -36,17 +39,21 @@ open scoped Pointwise
 
 variable {α β : Type*}
 
-/-! ### The Ruzsa-Szemerédi number -/
+/-!
+# The Ruzsa-Szemerédi number
+-/
 
 section ruzsaSzemerediNumber
 variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G : SimpleGraph α}
 
 variable (α) in
-/-- The **Ruzsa-Szemerédi number** of a fintype is the maximum number of edges a locally linear
+/--
+The *Ruzsa-Szemerédi number* of a fintype is the maximum number of edges a locally linear
 graph on that type can have.
 
 In other words, `ruzsaSzemerediNumber α` is the maximum number of edges a graph on `α` can have such
-that each edge belongs to exactly one triangle. -/
+that each edge belongs to exactly one triangle.
+-/
 noncomputable def ruzsaSzemerediNumber : ℕ := by
   classical
   exact Nat.findGreatest (fun m ↦ ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
@@ -83,11 +90,13 @@ lemma ruzsaSzemerediNumber_mono (f : α ↪ β) : ruzsaSzemerediNumber α ≤ ru
 lemma ruzsaSzemerediNumber_congr (e : α ≃ β) : ruzsaSzemerediNumber α = ruzsaSzemerediNumber β :=
   (ruzsaSzemerediNumber_mono (e : α ↪ β)).antisymm <| ruzsaSzemerediNumber_mono e.symm
 
-/-- The `n`-th **Ruzsa-Szemerédi number** is the maximum number of edges a locally linear graph on
+/--
+The `n`-th *Ruzsa-Szemerédi number* is the maximum number of edges a locally linear graph on
 `n` vertices can have.
 
 In other words, `ruzsaSzemerediNumberNat n` is the maximum number of edges a graph on `n` vertices
-can have such that each edge belongs to exactly one triangle. -/
+can have such that each edge belongs to exactly one triangle.
+-/
 noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumber (Fin n)
 
 @[simp]
@@ -112,7 +121,9 @@ lemma ruzsaSzemerediNumberNat_le : ruzsaSzemerediNumberNat n ≤ n.choose 3 :=
 
 end ruzsaSzemerediNumber
 
-/-! ### The Ruzsa-Szemerédi construction -/
+/-!
+# The Ruzsa-Szemerédi construction
+-/
 
 section RuzsaSzemeredi
 variable [Fintype α] [CommRing α] {s : Finset α} {x : α × α × α}
@@ -199,7 +210,8 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
       simp_rw [← ruzsaSzemerediNumberNat_card, Fintype.card_sum, α, Fintype.card_fin]
       ring_nf
 
-/-- Lower bound on the **Ruzsa-Szemerédi problem** in terms of 3AP-free sets.
+/--
+Lower bound on the *Ruzsa-Szemerédi problem* in terms of 3AP-free sets.
 
 If there exists a 3AP-free subset of `[1, ..., (n - 3) / 6]` of size `m`, then there exists a graph
 with `n` vertices and `(n / 3 - 2) * m` edges such that each edge belongs to exactly one triangle.
@@ -224,11 +236,13 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
     · norm_cast
       exact rothNumberNat_le_ruzsaSzemerediNumberNat _
 
-/-- Explicit lower bound on the **Ruzsa-Szemerédi problem**.
+/--
+Explicit lower bound on the *Ruzsa-Szemerédi problem*.
 
 There exists a graph with `n` vertices and
 `(n / 3 - 2) * (n - 3) / 6 * exp (-4 * √(log ((n - 3) / 6)))` edges such that each edge belongs
-to exactly one triangle. -/
+to exactly one triangle.
+-/
 theorem ruzsaSzemerediNumberNat_lower_bound (n : ℕ) :
     (n / 3 - 2 : ℝ) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6))) ≤
       ruzsaSzemerediNumberNat n := by
@@ -241,10 +255,12 @@ theorem ruzsaSzemerediNumberNat_lower_bound (n : ℕ) :
 
 open Asymptotics Filter
 
-/-- Asymptotic lower bound on the **Ruzsa-Szemerédi problem**.
+/--
+Asymptotic lower bound on the *Ruzsa-Szemerédi problem*.
 
 There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that
-each edge belongs to exactly one triangle. -/
+each edge belongs to exactly one triangle.
+-/
 theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
      fun n ↦ (ruzsaSzemerediNumberNat n : ℝ) := by

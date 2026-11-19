@@ -11,16 +11,21 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Segments in vector spaces
 
 In a 𝕜-vector space, we define the following objects and properties.
+
 * `segment 𝕜 x y`: Closed segment joining `x` and `y`.
 * `openSegment 𝕜 x y`: Open segment joining `x` and `y`.
 
 ## Notation
 
 We provide the following notation:
+
 * `[x -[𝕜] y] = segment 𝕜 x y` in scope `Convex`
 
 ## TODO
@@ -443,7 +448,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
 end LinearOrderedField
 
 /-!
-#### Segments in an ordered space
+# Segments in an ordered space
 
 Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Defs
 public import Mathlib.Tactic.ExtendDoc
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orders
 
@@ -18,7 +21,9 @@ and proves some basic lemmas about them.
 
 @[expose] public section
 
-/-! ### Unbundled classes -/
+/-!
+# Unbundled classes
+-/
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
@@ -229,7 +234,9 @@ end
 
 end
 
-/-! ### Minimal and maximal -/
+/-!
+# Minimal and maximal
+-/
 
 section LE
 
@@ -265,7 +272,9 @@ lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) 
 
 end LE
 
-/-! ### Upper and lower sets -/
+/-!
+# Upper and lower sets
+-/
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
@@ -303,9 +312,11 @@ def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
 structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelUpperSet`. -/
   carrier : Set α
-  /-- The carrier of a `RelUpperSet` is an upper set relative to `P`.
+  /--
+  The carrier of a `RelUpperSet` is an upper set relative to `P`.
 
-  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
+  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead.
+  -/
   isRelUpperSet' : IsRelUpperSet carrier P
 
 extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
@@ -314,9 +325,11 @@ extend_docs RelUpperSet before "The type of upper sets of an order relative to `
 structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelLowerSet`. -/
   carrier : Set α
-  /-- The carrier of a `RelLowerSet` is a lower set relative to `P`.
+  /--
+  The carrier of a `RelLowerSet` is a lower set relative to `P`.
 
-  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
+  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead.
+  -/
   isRelLowerSet' : IsRelLowerSet carrier P
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
@@ -336,23 +349,29 @@ theorem antisymm_iff [Std.Refl r] [Std.Antisymm r] {a b : α} : r a b ∧ r b a 
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
 
-/-- A version of `antisymm` with `r` explicit.
+/--
+A version of `antisymm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.
+-/
 @[elab_without_expected_type]
 theorem antisymm_of (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 
-/-- A version of `antisymm'` with `r` explicit.
+/--
+A version of `antisymm'` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.
+-/
 @[elab_without_expected_type]
 theorem antisymm_of' (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 
-/-- A version of `comm` with `r` explicit.
+/--
+A version of `comm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.
+-/
 theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b a :=
   comm
 

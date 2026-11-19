@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `A`-module structure on `M ⊗[R] N`
 
@@ -75,10 +78,12 @@ variable [AddCommMonoid Q'] [Module R Q']
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
   rfl
 
-/-- Heterobasic version of `TensorProduct.curry`:
+/--
+Heterobasic version of `TensorProduct.curry`:
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
-bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
+bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`.
+-/
 @[simps]
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
@@ -89,10 +94,12 @@ theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
   rfl
 
-/-- Just as `TensorProduct.ext` is marked `ext` instead of `TensorProduct.ext'`, this is
+/--
+Just as `TensorProduct.ext` is marked `ext` instead of `TensorProduct.ext'`, this is
 a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
@@ -101,11 +108,13 @@ nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
 
-/-- Heterobasic version of `TensorProduct.lift`:
+/--
+Heterobasic version of `TensorProduct.lift`:
 
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
-the given bilinear map `M →[A] N →[R] P`. -/
+the given bilinear map `M →[A] N →[R] P`.
+-/
 nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
     map_smul' := fun c =>
@@ -131,40 +140,48 @@ variable (R A B M N P Q)
 section
 variable [Module B P] [IsScalarTower R B P] [SMulCommClass A B P]
 
-/-- Heterobasic version of `TensorProduct.uncurry`:
+/--
+Heterobasic version of `TensorProduct.uncurry`:
 
 Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P`
 with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
-the given bilinear map `M →[A] N →[R] P`. -/
+the given bilinear map `M →[A] N →[R] P`.
+-/
 @[simps]
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp
   map_smul' _ _ := ext fun x y => by simp
 
-/-- Heterobasic version of `TensorProduct.lcurry`:
+/--
+Heterobasic version of `TensorProduct.lcurry`:
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
-bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
+bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`.
+-/
 @[simps]
 def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Heterobasic version of `TensorProduct.lift.equiv`:
+/--
+Heterobasic version of `TensorProduct.lift.equiv`:
 
 A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
 bilinear map `M →[A] N →[R] P` with the property that its composition with the
-canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
+canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`.
+-/
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinearMap (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
 
-/-- Heterobasic version of `TensorProduct.mk`:
+/--
+Heterobasic version of `TensorProduct.mk`:
 
-The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
+The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`.
+-/
 @[simps! apply]
 nonrec def mk (A M N : Type*) [Semiring A]
     [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
@@ -390,12 +407,14 @@ section assoc
 variable [Module R P] [IsScalarTower R A P]
 variable [Algebra A B] [IsScalarTower A B M]
 
-/-- Heterobasic version of `TensorProduct.assoc`:
+/--
+Heterobasic version of `TensorProduct.assoc`:
 
 `B`-linear equivalence between `(M ⊗[A] P) ⊗[R] Q` and `M ⊗[A] (P ⊗[R] Q)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
-`TensorProduct.assoc`), or with `B = A`. -/
+`TensorProduct.assoc`), or with `B = A`.
+-/
 def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinearMap
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
@@ -515,10 +534,12 @@ variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
 variable (S) in
-/-- A tensor product analogue of `mul_right_comm`.
+/--
+A tensor product analogue of `mul_right_comm`.
 
 Suppose we have a diagram of algebras `R → B ← S`,
 and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
+
 ```
 (M ⊗ˢ P)      ⎛ M ⎞ ⊗ˢ P
  ⊗ᴿ       ≅ᴮ  ⎜ ⊗ᴿ⎟
@@ -564,10 +585,12 @@ variable [IsScalarTower R S M] [SMulCommClass A S M] [SMulCommClass S A M]
 
 variable (S)
 
-/-- Heterobasic version of `tensorTensorTensorComm`.
+/--
+Heterobasic version of `tensorTensorTensorComm`.
 
 Suppose we have towers of algebras `R → S → B` and `R → A → B`, and
 a `B`-module `M`, `S`-module `N`, `A`-module `P`, `R`-module `Q`, then
+
 ```
 (M ⊗ˢ N)      ⎛ M ⎞ ⊗ˢ ⎛ N ⎞
  ⊗ᴬ       ≅ᴮ  ⎜ ⊗ᴬ⎟    ⎜ ⊗ᴿ⎟
@@ -636,7 +659,7 @@ namespace LinearMap
 open TensorProduct
 
 /-!
-### The base-change of a linear map of `R`-modules to a linear map of `A`-modules
+# The base-change of a linear map of `R`-modules to a linear map of `A`-modules
 -/
 
 
@@ -649,9 +672,11 @@ variable [Module R M] [Module R N] [Module R P]
 variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A) in
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
+/--
+`baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
 
-This "base change" operation is also known as "extension of scalars". -/
+This "base change" operation is also known as "extension of scalars".
+-/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 
@@ -706,9 +731,11 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
-/-- `baseChange` as a linear map.
+/--
+`baseChange` as a linear map.
 
-When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
+When `M = N`, this is true more strongly as `Module.End.baseChangeHom`.
+-/
 @[simps]
 def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
@@ -820,10 +847,12 @@ open TensorProduct
 variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
   [AddCommMonoid M] [Module R M] (p q : Submodule R M)
 
-/-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
+/--
+If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
 
-This "base change" operation is also known as "extension of scalars". -/
+This "base change" operation is also known as "extension of scalars".
+-/
 def baseChange : Submodule A (A ⊗[R] M) :=
   LinearMap.range (p.subtype.baseChange A)
 

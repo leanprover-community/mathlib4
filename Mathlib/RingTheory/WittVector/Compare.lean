@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.WittVector.Truncated
 
 import Mathlib.RingTheory.WittVector.Identities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison isomorphism between `WittVector p (ZMod p)` and `ℤ_[p]`
 
@@ -24,9 +27,8 @@ of the inverse limit of `ZMod (p^n)`.
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -66,7 +68,8 @@ theorem charP_zmod : CharP (TruncatedWittVector p n (ZMod p)) (p ^ n) :=
 
 attribute [local instance] charP_zmod
 
-/-- The unique isomorphism between `ZMod p^n` and `TruncatedWittVector p n (ZMod p)`.
+/--
+The unique isomorphism between `ZMod p^n` and `TruncatedWittVector p n (ZMod p)`.
 
 This isomorphism exists, because `TruncatedWittVector p n (ZMod p)` is a finite ring
 with characteristic and cardinality `p^n`.
@@ -79,6 +82,8 @@ theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
       ZMod.castHom (m := p ^ n) (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
   rfl
 
+
+set_option doc.verso false
 /-- The following diagram commutes:
 ```text
           ZMod (p^n) ----------------------------> ZMod (p^m)
@@ -96,6 +101,8 @@ theorem commutes {m : ℕ} (hm : n ≤ m) :
       (zmodEquivTrunc p n).toRingHom.comp (ZMod.castHom (pow_dvd_pow p hm) _) :=
   RingHom.ext_zmod _ _
 
+
+set_option doc.verso true
 theorem commutes' {m : ℕ} (hm : n ≤ m) (x : ZMod (p ^ m)) :
     truncate hm (zmodEquivTrunc p m x) = zmodEquivTrunc p n (ZMod.castHom (pow_dvd_pow p hm) _ x) :=
   show (truncate hm).comp (zmodEquivTrunc p m).toRingHom x = _ by rw [commutes _ _ hm]; rfl
@@ -107,6 +114,8 @@ theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZM
   rw [← commutes' _ _ hm]
   simp
 
+
+set_option doc.verso false
 /-- The following diagram commutes:
 ```text
 TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
@@ -124,6 +133,8 @@ theorem commutes_symm {m : ℕ} (hm : n ≤ m) :
       (ZMod.castHom (pow_dvd_pow p hm) _).comp (zmodEquivTrunc p m).symm.toRingHom := by
   ext; apply commutes_symm'
 
+
+set_option doc.verso true
 end Iso
 
 end TruncatedWittVector

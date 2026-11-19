@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.ContMDiffMap
 
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` monoid
 
@@ -25,30 +28,55 @@ semigroups.
 open scoped Manifold ContDiff
 
 library_note «Design choices about smooth algebraic structures» /--
-1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
-   `IsManifold I n G`. This way we save users from adding both
-   `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
-   lemmas hold true without the `IsManifold I n G` assumption, we're not aware of a
-   mathematically interesting monoid on a topological manifold such that (a) the space is not a
-   `IsManifold`; (b) the multiplication is `C^n` at `(a, b)` in the charts
-   `extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
-
-2. Because of `ModelProd` we can't assume, e.g., that a `LieGroup` is modelled on `𝓘(𝕜, E)`. So,
-   we formulate the definitions and lemmas for any model.
-
-3. While smoothness of an operation implies its continuity, lemmas like
-   `continuousMul_of_contMDiffMul` can't be instances because otherwise Lean would have to search
-   for `ContMDiffMul I n G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users
-   need `[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
-   `[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better).
--/
+                                                                1. All `C^n` algebraic structures on
+   `G` are `Prop`-valued classes
+   that extend `IsManifold I n G`.
+   This way we save users from
+   adding both `[IsManifold I n G]`
+   and `[ContMDiffMul I n G]` to the
+   assumptions. While many API
+   lemmas hold true without the
+   `IsManifold I n G` assumption,
+   we're not aware of a
+   mathematically interesting monoid
+   on a topological manifold such
+   that (a) the space is not a
+   `IsManifold`; (b) the
+   multiplication is `C^n` at
+   `(a, b)` in the charts
+   `extChartAt I a`,
+   `extChartAt I b`,
+   `extChartAt I (a * b)`.
+2. Because of `ModelProd` we can't
+   assume, e.g., that a `LieGroup`
+   is modelled on `𝓘(𝕜, E)`. So, we
+   formulate the definitions and
+   lemmas for any model.
+3. While smoothness of an operation
+   implies its continuity, lemmas
+   like
+   `continuousMul_of_contMDiffMul`
+   can't be instances because
+   otherwise Lean would have to
+   search for `ContMDiffMul I n G`
+   with unknown `𝕜`, `E`, `H`, and
+   `I : ModelWithCorners 𝕜 E H`. If
+   users need `[ContinuousMul G]` in
+   a proof about a `C^n` monoid,
+   then they need to either add
+   `[ContinuousMul G]` as an
+   assumption (worse) or use `haveI`
+   in the proof (better).
+                                                                -/
 
 -- See note [Design choices about smooth algebraic structures]
-/-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
+/--
+Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
 instances `AddMonoid G` and `ContMDiffAdd I n G`.
 
-See also `ContMDiffVAdd I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
+See also `ContMDiffVAdd I I' n G M` for `C^n` actions of `G` on a manifold `M`.
+-/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
@@ -57,11 +85,13 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
   contMDiff_add : CMDiff n fun p : G × G ↦ p.1 + p.2
 
 -- See note [Design choices about smooth algebraic structures]
-/-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
+/--
+Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
 and `ContMDiffMul I n G`.
 
-See also `ContMDiffSMul I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
+See also `ContMDiffSMul I I' n G M` for `C^n` actions of `G` on a manifold `M`.
+-/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -111,10 +141,14 @@ theorem contMDiff_mul [ContMDiffMul I n G] : CMDiff n fun p : G × G ↦ p.1 * p
   ContMDiffMul.contMDiff_mul
 
 include I n in
-/-- If the multiplication is `C^n`, then it is continuous. This is not an instance for technical
-reasons, see note [Design choices about smooth algebraic structures]. -/
-@[to_additive /-- If the addition is `C^n`, then it is continuous. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]. -/]
+/--
+If the multiplication is `C^n`, then it is continuous. This is not an instance for technical
+reasons, see note \[Design choices about smooth algebraic structures\].
+-/
+@[to_additive /--
+              If the addition is `C^n`, then it is continuous. This is not an instance for
+technical reasons, see note \[Design choices about smooth algebraic structures\].
+              -/]
 theorem continuousMul_of_contMDiffMul [ContMDiffMul I n G] : ContinuousMul G :=
   ⟨(contMDiff_mul I n).continuous⟩
 
@@ -308,10 +342,12 @@ instance : ContinuousMapClass (ContMDiffMonoidMorphism I I' n G G') G G' where
 
 end Monoid
 
-/-! ### Differentiability of finite point-wise sums and products, and powers
+/-!
+# Differentiability of finite point-wise sums and products, and powers
 
-  Finite point-wise products (resp. sums), and powers, of `C^n` functions `M → G` (at `x`/on `s`)
-  into a commutative monoid `G` are `C^n` at `x`/on `s`. -/
+Finite point-wise products (resp. sums), and powers, of `C^n` functions `M → G` (at `x`/on `s`)
+into a commutative monoid `G` are `C^n` at `x`/on `s`.
+-/
 section CommMonoid
 
 open Function

@@ -12,6 +12,9 @@ import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Correctness of Terminating Continued Fraction Computations (`GenContFract.of`)
 
@@ -31,15 +34,15 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
 
 ## Main definitions
 
-- `GenContFract.compExactValue` can be used to compute the exact value approximated by the
+* `GenContFract.compExactValue` can be used to compute the exact value approximated by the
   continued fraction `GenContFract.of v` by adding a residual term as described in the summary.
 
 ## Main Theorems
 
-- `GenContFract.compExactValue_correctness_of_stream_eq_some` shows that
+* `GenContFract.compExactValue_correctness_of_stream_eq_some` shows that
   `GenContFract.compExactValue` indeed returns the value `v` when given the convergent and
   fractional part as described in the summary.
-- `GenContFract.of_correctness_of_terminatedAt` shows the equality
+* `GenContFract.of_correctness_of_terminatedAt` shows the equality
   `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
 
@@ -54,9 +57,11 @@ open GenContFract (of)
 -- `compExactValue_correctness_of_stream_eq_some` does not trivially generalize to `DivisionRing`
 variable {K : Type*} [Field K] [LinearOrder K] {v : K} {n : ℕ}
 
-/-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns
-- `conts.a / conts.b` if `fr = 0`
-- `exactConts.a / exactConts.b` where `exactConts = nextConts 1 fr⁻¹ pconts conts`
+/--
+Given two continuants `pconts` and `conts` and a value `fr`, this function returns
+
+* `conts.a / conts.b` if `fr = 0`
+* `exactConts.a / exactConts.b` where `exactConts = nextConts 1 fr⁻¹ pconts conts`
   otherwise.
 
 This function can be used to compute the exact value approximated by a continued fraction
@@ -83,7 +88,8 @@ protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} 
 open GenContFract
   (compExactValue compExactValue_correctness_of_stream_eq_some_aux_comp)
 
-/-- Shows the correctness of `compExactValue` in case the continued fraction
+/--
+Shows the correctness of `compExactValue` in case the continued fraction
 `GenContFract.of v` did not terminate at position `n`. That is, we obtain the
 value `v` if we pass the two successive (auxiliary) continuants at positions `n` and `n + 1` as well
 as the fractional part at `IntFractPair.stream n` to `compExactValue`.
@@ -92,8 +98,9 @@ The correctness might be seen more readily if one uses `convs'` to evaluate the 
 fraction. Here is an example to illustrate the idea:
 
 Let `(v : ℚ) := 3.4`. We have
-- `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
-- `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+
+* `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
+* `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
 
 Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
 We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.

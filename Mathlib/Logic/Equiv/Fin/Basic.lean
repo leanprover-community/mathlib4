@@ -9,6 +9,9 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences for `Fin n`
 -/
@@ -22,7 +25,7 @@ universe u
 variable {m n : ℕ}
 
 /-!
-### Miscellaneous
+# Miscellaneous
 
 This is currently not very sorted. PRs welcome!
 -/
@@ -385,10 +388,12 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
       ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self_right, emod_eq_of_lt h1 h2, toNat_natCast]
     exact ⟨q.zero_add, Fin.val_cast_of_lt hrn⟩
 
-/-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
+/--
+Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained.
 
-This is the `Equiv` version of `Fin.castLE`. -/
+This is the `Equiv` version of `Fin.castLE`.
+-/
 @[simps apply symm_apply]
 def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ) < n } where
   toFun i := ⟨Fin.castLE h i, by simp⟩

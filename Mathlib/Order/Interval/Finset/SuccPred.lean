@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Interval.Set.SuccPred
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finset intervals in a successor-predecessor order
 
@@ -16,6 +19,7 @@ This file proves relations between the various finset intervals in a successor/p
 ## Notes
 
 Please keep in sync with:
+
 * `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
 * `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib/Order/Interval/Set/SuccPred.lean`
@@ -34,7 +38,9 @@ open Order
 namespace Finset
 variable {α : Type*} [LinearOrder α]
 
-/-! ### Two-sided intervals -/
+/-!
+# Two-sided intervals
+-/
 
 section LocallyFiniteOrder
 variable [LocallyFiniteOrder α]
@@ -43,9 +49,9 @@ section SuccOrder
 variable [SuccOrder α] {a b : α}
 
 /-!
-#### Orders possibly with maximal elements
+# Orders possibly with maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b :=
@@ -64,7 +70,9 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (succ a) (succ b) = Ioc a b :=
   coe_injective <| by simpa using Set.Ico_succ_succ_eq_Ioc_of_not_isMax hb _
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_succ_left_eq_Icc h
@@ -87,9 +95,9 @@ lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b)
   coe_injective <| by simpa using Set.insert_Ioc_succ_left_eq_Ioc h
 
 /-!
-#### Orders with no maximal elements
+# Orders with no maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 variable [NoMaxOrder α]
@@ -99,7 +107,9 @@ lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b := coe_injecti
 lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b := coe_injective <| by simp
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b := coe_injective <| by simp
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
   coe_injective <| by simpa using Set.insert_Ico_right_eq_Ico_succ h
@@ -113,9 +123,9 @@ section PredOrder
 variable [PredOrder α] {a b : α}
 
 /-!
-#### Orders possibly with minimal elements
+# Orders possibly with minimal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b :=
@@ -137,7 +147,9 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (pred a) (pred b) = Ico a b :=
   coe_injective <| by simpa using Set.Ioc_pred_pred_eq_Ico_of_not_isMin ha _
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_pred_right_eq_Icc h
@@ -160,9 +172,9 @@ lemma insert_Ico_pred_right_eq_Ico (h : a < b) : insert (pred b) (Ico a (pred b)
   coe_injective <| by simpa using Set.insert_Ico_pred_right_eq_Ico h
 
 /-!
-#### Orders with no minimal elements
+# Orders with no minimal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 variable [NoMinOrder α]
@@ -174,7 +186,9 @@ lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b := coe_i
 
 @[deprecated (since := "2026-09-03")] alias Ioo_pred_left_eq_Ioc := Ioo_pred_left_eq_Ico
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Ioc_left_eq_Ioc_pred (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
   coe_injective <| by simpa using Set.insert_Ioc_left_eq_Ioc_pred h
@@ -193,7 +207,9 @@ lemma Icc_succ_pred_eq_Ioo (a b : α) : Icc (succ a) (pred b) = Ioo a b :=
 end SuccPredOrder
 end LocallyFiniteOrder
 
-/-! ### One-sided interval towards `⊥` -/
+/-!
+# One-sided interval towards `⊥`
+-/
 
 section LocallyFiniteOrderBot
 variable [LocallyFiniteOrderBot α]
@@ -223,7 +239,9 @@ lemma Iic_pred_eq_Iio (b : α) : Iic (pred b) = Iio b := coe_injective <| by sim
 end PredOrder
 end LocallyFiniteOrderBot
 
-/-! ### One-sided interval towards `⊤` -/
+/-!
+# One-sided interval towards `⊤`
+-/
 
 section LocallyFiniteOrderTop
 variable [LocallyFiniteOrderTop α]

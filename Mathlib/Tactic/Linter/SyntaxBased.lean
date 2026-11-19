@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 import Batteries.Util.ExtendedBinder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Syntax based linters
 
@@ -25,7 +28,9 @@ namespace Mathlib.Linter
 
 open Lean Linter Elab.Command
 
-/-! ### The `cdot` linter -/
+/-!
+# The `cdot` linter
+-/
 
 /--
 The `cdot` linter flags uses of a dot (`.`) that could instead be a "cdot" (`·`).
@@ -52,7 +57,9 @@ def cdotLinter (stx : Syntax) : CommandElabM Unit := do
           m!"This central dot `·` is isolated; please merge it with the next line."
 
 
-/-! ### The `dollarSyntax` linter -/
+/-!
+# The `dollarSyntax` linter
+-/
 
 /--
 The `dollarSyntax` linter flags uses of `$` that could instead be `<|`.
@@ -69,7 +76,9 @@ def dollarLinter (stx : Syntax) : CommandElabM Unit := do
     m!"Please use `<|` instead of `$` for the pipe operator."
 
 
-/-! ### The `lambdaSyntax` linter -/
+/-!
+# The `lambdaSyntax` linter
+-/
 
 /--
 The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
@@ -88,7 +97,9 @@ def lambdaLinter (stx : Syntax) : CommandElabM Unit := do
       The `λ` syntax is deprecated in mathlib4."
 
 
-/-! ### The auxiliary declaration linter -/
+/-!
+# The auxiliary declaration linter
+-/
 
 /--
 The `auxLemma` linter flags explicit references to auto-generated "auxiliary" declarations
@@ -131,14 +142,15 @@ def auxLemmaLinter (stx : Syntax) : CommandElabM Unit := do
 
 
 /-!
-### The `oldObtain` linter, against stream-of-consciousness `obtain`
+# The `oldObtain` linter, against stream-of-consciousness `obtain`
 
 The `oldObtain` linter flags any occurrences of "stream-of-consciousness" `obtain`,
 i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
-#### Example
+## Example
 
 There are six different kinds of `obtain` uses. In one example, they look like this.
+
 ```
 theorem foo : True := by
   -- These cases are fine.
@@ -152,18 +164,20 @@ theorem foo : True := by
   obtain h : True
   · trivial
 ```
+
 We allow the first four (since an explicit proof is provided), but lint against the last two.
 
-#### Why is this bad?
+## Why is this bad?
 
 This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
 from mathlib: in summary,
-- this version is a Lean3-ism, which can be unlearned now
-- the syntax `obtain foo : type := proof` is slightly shorter;
+
+* this version is a Lean3-ism, which can be unlearned now
+* the syntax `obtain foo : type := proof` is slightly shorter;
   particularly so when the first tactic of the proof is `exact`
-- when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
+* when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
   multiple goals right before the focusing dot. This can be confusing.
-- the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
+* the old syntax _could_ be slightly nicer when deferring goals: however, this is rare.
   In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
   could also be used, as was in fact clearer.
 -/
@@ -183,7 +197,7 @@ def obtainLinter (stx : Syntax) : CommandElabM Unit := do
     Linter.logLint linter.oldObtain stx m!"Please remove stream-of-consciousness `obtain` syntax"
 
 /-!
-### The extended binder linter
+# The extended binder linter
 
 In mathlib we prefer writing the basic `∀`/`∃` binders over `∀ᵉ`/`∃ᵉ`. This is because the latter
 was used quite infrequently, so the cost of needing to learn this notation was greater
@@ -219,7 +233,9 @@ partial def extendedBinderLinter (stx : Syntax) (symbol : String) : CommandElabM
       logWarningAt ref m!"Try this:{sugg}\n\n\
         The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
 
-/-! ### The combined syntax linter -/
+/-!
+# The combined syntax linter
+-/
 
 partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
   match stx with

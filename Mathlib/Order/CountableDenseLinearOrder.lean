@@ -9,6 +9,9 @@ public import Mathlib.Order.Ideal
 
 import Mathlib.Data.Finset.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The back and forth method and countable dense linear orders
 
@@ -24,7 +27,7 @@ can extend `f` to include `a` in its domain.
 
 ## References
 
-https://en.wikipedia.org/wiki/Back-and-forth_method
+https://en.wikipedia.org/wiki/Back-and-forth\_method
 
 ## Tags
 
@@ -117,7 +120,8 @@ instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.no
 
 variable {α β}
 
-/-- For each `a`, we can find a `b` in the codomain, such that `a`'s relation to
+/--
+For each `a`, we can find a `b` in the codomain, such that `a`'s relation to
 the domain of `f` is `b`'s relation to the image of `f`.
 
 Thus, if `a` is not already in `f`, then we can extend `f` by sending `a` to `b`.

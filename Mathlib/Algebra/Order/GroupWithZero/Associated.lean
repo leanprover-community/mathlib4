@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order on associates of a monoid with zero
 

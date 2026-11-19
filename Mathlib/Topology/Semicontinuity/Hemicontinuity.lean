@@ -13,7 +13,11 @@ public import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.UniformSpace.Compact
 
-/-! # Hemicontinuity
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Hemicontinuity
 
 This files provides basic facts about upper and lower hemicontinuity of correspondences
 `f : α → Set β`.
@@ -30,7 +34,9 @@ section facts
 
 variable [TopologicalSpace β]
 
-/-! ### Basic facts -/
+/-!
+# Basic facts
+-/
 
 lemma upperHemicontinuousWithinAt_iff_forall_isOpen :
     UpperHemicontinuousWithinAt f s x ↔ ∀ u, IsOpen u → f x ⊆ u → ∀ᶠ x' in 𝓝[s] x, f x' ⊆ u := by
@@ -65,7 +71,9 @@ lemma upperHemicontinuous_iff_forall_isOpen :
 alias ⟨UpperHemicontinuous.forall_isOpen, UpperHemicontinuous.of_forall_isOpen⟩ :=
   upperHemicontinuous_iff_forall_isOpen
 
-/-! ### Characterization in terms of preimages of intervals of sets -/
+/-!
+# Characterization in terms of preimages of intervals of sets
+-/
 
 lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
     UpperHemicontinuousWithinAt f s x ↔ ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝[s] x := by
@@ -93,9 +101,11 @@ lemma upperHemicontinuous_iff_preimage_Iic :
     UpperHemicontinuous f ↔ ∀ x, ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝 x := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff_preimage_Iic]
 
-/-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *upper inverse*
+/--
+A correspondence `f : α → Set β` is upper hemicontinuous if and only if its _upper inverse_
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends open sets
-to open sets. -/
+to open sets.
+-/
 lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
     UpperHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' Iic u) := by
   simp_rw [upperHemicontinuous_iff_preimage_Iic, isOpen_iff_mem_nhds (s := f ⁻¹' Iic _)]
@@ -104,9 +114,11 @@ lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
     rw [hasBasis_nhdsSet (f x) |>.forall_iff fun s t hst ↦ by gcongr]
   simp [forall_comm (α := α)]
 
-/-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *lower inverse*
+/--
+A correspondence `f : α → Set β` is upper hemicontinuous if and only if its _lower inverse_
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
-sends closed sets to closed sets. -/
+sends closed sets to closed sets.
+-/
 lemma upperHemicontinuous_iff_isClosed_compl_preimage_Iic_compl :
     UpperHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' Iic uᶜ)ᶜ := by
   conv_rhs =>
@@ -124,18 +136,22 @@ lemma lowerHemicontinuous_iff_isOpen_inter_nonempty :
   simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, isOpen_iff_mem_nhds,
     forall_comm (α := α), mem_ofPred, Filter.Eventually]
 
-/-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *lower inverse*
+/--
+A correspondence `f : α → Set β` is lower hemicontinuous if and only if its _lower inverse_
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
-sends open sets to open sets. -/
+sends open sets to open sets.
+-/
 lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
     LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' Iic uᶜ)ᶜ := by
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
   simpa [this] using lowerHemicontinuous_iff_isOpen_inter_nonempty
 
-/-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *upper inverse*
+/--
+A correspondence `f : α → Set β` is lower hemicontinuous if and only if its _upper inverse_
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets
-to closed sets. -/
+to closed sets.
+-/
 lemma lowerHemicontinuous_iff_isClosed_preimage_Iic :
     LowerHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' Iic u) := by
   conv_rhs =>
@@ -150,7 +166,8 @@ lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
 
 section singleton_maps
 
-/-! ### Singleton maps
+/-!
+# Singleton maps
 
 Functions `f : α → β` are continuous if and only if they are lower hemicontinuous if and only if
 they are upper hemicontinuous. This is in the sense that the map `g : α → Set β` given by
@@ -238,7 +255,9 @@ alias ⟨_, Continuous.lowerHemicontinuous⟩ := lowerHemicontinuous_singleton_i
 
 end singleton_maps
 
-/-! ### Union and intersection, and post-composition with the preimage map -/
+/-!
+# Union and intersection, and post-composition with the preimage map
+-/
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {f g : α → Set β} {s : Set α} {x : α}
@@ -341,10 +360,12 @@ lemma UpperHemicontinuous.isInducing_comp (hf : UpperHemicontinuous f)
 
 end Inducing
 
-/-- Upper hemicontinuous functions always have closed domain.
+/--
+Upper hemicontinuous functions always have closed domain.
 
 The more general fact is that if `f` is upper hemicontinuous at `x₀` within `s`, and if
-`x₀` is a cluster point of `s ∩ {x | (f x).Nonempty}`, then `(f x₀).Nonempty`. -/
+`x₀` is a cluster point of `s ∩ {x | (f x).Nonempty}`, then `(f x₀).Nonempty`.
+-/
 lemma UpperHemicontinuous.isClosed_domain (hf : UpperHemicontinuous f) :
     IsClosed {x | (f x).Nonempty} := by
   simp only [← isOpen_compl_iff, compl_ofPred, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
@@ -352,15 +373,19 @@ lemma UpperHemicontinuous.isClosed_domain (hf : UpperHemicontinuous f) :
   simp_rw [upperHemicontinuous_iff, upperHemicontinuousAt_iff] at hf
   simpa [hx, empty_mem_iff_bot, nhdsSet_eq_bot_iff] using! hf x ∅
 
-/-! ### Sequential characterizations -/
+/-!
+# Sequential characterizations
+-/
 
-/-- **Sequential characterization of upper hemicontinuity**:
+/--
+*Sequential characterization of upper hemicontinuity*:
 A set-valued function `f : α → Set β` is upper hemicontinuous at `x₀ : α` if for every pair
 of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀` and `y n ∈ f (x n)` and
 `y` tends to `y₀ : β`, then `y₀ ∈ f x₀`. This requires that there is some (sequentially) compact
 set containing all `f x'` for `x'` sufficiently close to `x`.
 
-This is a partial converse of `UpperHemicontinuousAt.mem_of_tendsto`. -/
+This is a partial converse of `UpperHemicontinuousAt.mem_of_tendsto`.
+-/
 lemma UpperHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
     {K : Set β} (hK : IsSeqCompact K) (hf : ∀ᶠ x in 𝓝 x₀, f x ⊆ K)
     (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
@@ -376,12 +401,14 @@ lemma UpperHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGen
   specialize h (x ∘ φ) (hx.comp hφ.tendsto_atTop) (y ∘ φ) (fun n ↦ (hy _).1) _ hyφ
   exact ⟨y₀, h, ht.closure_eq ▸ mem_closure_of_tendsto hyφ <| .of_forall fun n ↦ (hy _).2⟩
 
-/-- **Sequential characterization of upper hemicontinuity**:
+/--
+*Sequential characterization of upper hemicontinuity*:
 If `β` is a regular space and `f : α → Set β` is upper hemicontinuous at `x₀` and `f x₀` is
 closed, then for any sequences `x` and `y` (in `α` and `β`, respectively) tending to `x₀` and `y₀`,
 respectively, if `y n ∈ f (x n)` frequently, then `y₀ ∈ f x₀`.
 
-This is a partial converse of `UpperHemicontinuousAt.of_sequences`. -/
+This is a partial converse of `UpperHemicontinuousAt.of_sequences`.
+-/
 lemma UpperHemicontinuousAt.mem_of_tendsto {ι : Type*} [RegularSpace β] {x₀ : α}
     {l : Filter ι} (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
     {x : ι → α} (hx : Tendsto x l (𝓝 x₀))
@@ -415,12 +442,14 @@ lemma LowerHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGen
   obtain ⟨n, hn⟩ := (hy_lim.eventually (hU.mem_nhds hy₀U)).exists
   exact hxU n ⟨y n, hy_mem n, hn⟩
 
-/-- **Sequential characterization of lower hemicontinuity**:
+/--
+*Sequential characterization of lower hemicontinuity*:
 If `f : α → Set β` is lower hemicontinuous at `x₀`, `y₀ ∈ f x₀`, `𝓝 y₀` is countably generated, and
 `x : ℕ → α` tends to `x₀`, then there is a companion sequence `y : ℕ → β` that tends to `y₀` with
 `y n ∈ f (x n)` for all sufficiently large `n`.
 
-This is a partial converse of `LowerHemicontinuousAt.of_sequences`. -/
+This is a partial converse of `LowerHemicontinuousAt.of_sequences`.
+-/
 lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontinuousAt f x₀)
     {x : ℕ → α} (hx : Tendsto x atTop (𝓝 x₀)) {y₀ : β} (hy₀ : y₀ ∈ f x₀)
     [(𝓝 y₀).IsCountablyGenerated] :
@@ -444,7 +473,8 @@ lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontin
   filter_upwards [hev k, eventually_ge_atTop k] with n hk hkn
   exact hUbasis.antitone (Nat.le_findGreatest hkn hk) (hy n (key n k hkn hk)).2
 
-/-- **Lower hemicontinuity along a countably generated filter** (subsequence form):
+/--
+*Lower hemicontinuity along a countably generated filter* (subsequence form):
 if `f : α → Set β` is lower hemicontinuous at `x₀`, `y₀ ∈ f x₀`, `𝓝 y₀` is countably generated and
 `x : ι → α` tends to `x₀` along a nontrivial countably generated filter `l`, then some sequence
 `u : ℕ → ι` converging to `l` admits a companion `y : ℕ → β` tending to `y₀` with
@@ -452,7 +482,8 @@ if `f : α → Set β` is lower hemicontinuous at `x₀`, `y₀ ∈ f x₀`, `�
 
 For a general filter one must pass to the subsequence `u`: the "same-index" conclusion already
 fails for `l = pure i₀` (which is `NeBot` and countably generated). When `l = atTop` one may take
-`u = id`, recovering `LowerHemicontinuousAt.exists_seq_tendsto`. -/
+`u = id`, recovering `LowerHemicontinuousAt.exists_seq_tendsto`.
+-/
 lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [l.NeBot]
     [l.IsCountablyGenerated] {x₀ : α} (hf : LowerHemicontinuousAt f x₀) {x : ι → α}
     (hx : Tendsto x l (𝓝 x₀)) {y₀ : β} (hy₀ : y₀ ∈ f x₀) [(𝓝 y₀).IsCountablyGenerated] :
@@ -464,24 +495,32 @@ lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [
 
 end facts
 
-/-! ### Open lower sections -/
+/-!
+# Open lower sections
+-/
 
-/-- A correspondence `f : α → Set β` has open lower sections if and only if its *lower inverse*
-(i.e., `b : β ↦ (f ⁻¹' Iic {b}ᶜ)ᶜ = {x | b ∈ f x}`) sends every point to an open set. -/
+/--
+A correspondence `f : α → Set β` has open lower sections if and only if its _lower inverse_
+(i.e., `b : β ↦ (f ⁻¹' Iic {b}ᶜ)ᶜ = {x | b ∈ f x}`) sends every point to an open set.
+-/
 lemma hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl :
     HasOpenLowerSections f ↔ ∀ b, IsOpen (f ⁻¹' Iic {b}ᶜ)ᶜ := by
   have h (b : β) : (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff]
   simp_rw [h, hasOpenLowerSections_iff_isOpen]
 
-/-- A correspondence `f : α → Set β` has open lower sections if and only if its *upper inverse*
-(i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set. -/
+/--
+A correspondence `f : α → Set β` has open lower sections if and only if its _upper inverse_
+(i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set.
+-/
 lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
     HasOpenLowerSections f ↔ ∀ b, IsClosed (f ⁻¹' Iic {b}ᶜ) := by
   simp_rw [← isOpen_compl_iff]
   exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
 
-/-! ### Open Graphs -/
+/-!
+# Open Graphs
+-/
 
 /-- A lower hemicontinuous function intersected with a function with an open graph is lower
 hemicontinuous. -/
@@ -498,7 +537,8 @@ lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β] {f g : α �
   intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
   exact ⟨z, ⟨hzf, hUV (Set.mk_mem_prod hx'U hzV)⟩, hzt⟩
 
-/-! ### Uniform Limits
+/-!
+# Uniform Limits
 
 Like continuity, hemicontinuity is preserved under certain uniform limits, where the uniformity on
 the target `Set β` is the Hausdorff uniformity. In this section, we prove this result for both

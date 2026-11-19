@@ -10,15 +10,18 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Continuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional Jensen's Inequality
 
 This file contains the conditional Jensen's inequality. We follow the proof in
-[Hytonen_VanNeerven_Veraar_Wies_2016].
+‍\[Hytonen\_VanNeerven\_Veraar\_Wies\_2016\].
 
 ## Main Statement
 
-* `Convex.condExp_mem `: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
+* `Convex.condExp_mem  `: in a Banach space `E` with a finite measure `μ`, if `f` lies in a
   closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e.
 * `ConvexOn.map_condExp_le_univ`: in a Banach space `E` with a sigma finite measure `μ`, if
   `φ : E → ℝ` is a convex lower-semicontinuous function, then for any `f : α → E` such that `f` and

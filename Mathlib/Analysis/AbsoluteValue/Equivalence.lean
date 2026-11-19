@@ -8,10 +8,13 @@ module
 public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of real-valued absolute values
 
-Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
+Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are _equivalent_ if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
 
@@ -24,12 +27,14 @@ section OrderedSemiring
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
 
-/-- Two absolute values `v` and `w` are *equivalent* if `v x ≤ v y` precisely when
+/--
+Two absolute values `v` and `w` are _equivalent_ if `v x ≤ v y` precisely when
 `w x ≤ w y`.
 
 Note that for real absolute values this condition is equivalent to the existence of a positive
 real number `c` such that `v x ^ c = w x` for all `x`. See
-`AbsoluteValue.isEquiv_iff_exists_rpow_eq`. -/
+`AbsoluteValue.isEquiv_iff_exists_rpow_eq`.
+-/
 def IsEquiv : Prop := ∀ x y, v x ≤ v y ↔ w x ≤ w y
 
 theorem IsEquiv.refl : v.IsEquiv v := fun _ _ ↦ .rfl
@@ -162,10 +167,11 @@ variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue 
 
 /--
 Suppose that
-- `v i` and `w` are absolute values on a field `R`.
-- `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
-- `v i` is inequivalent to `w` via the divergent point `b : R`.
-- `w a = 1`.
+
+* `v i` and `w` are absolute values on a field `R`.
+* `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
+* `v i` is inequivalent to `w` via the divergent point `b : R`.
+* `w a = 1`.
 
 Then there is a common divergent point `k` causing both `v i` and `w` to be inequivalent to
 each `v j` for `j ≠ i`.
@@ -191,10 +197,11 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
 
 /--
 Suppose that
-- `v i` and `w` are absolute values on a field `R`.
-- `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
-- `v i` is inequivalent to `w` via the divergent point `b : R`.
-- `1 < w a`.
+
+* `v i` and `w` are absolute values on a field `R`.
+* `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
+* `v i` is inequivalent to `w` via the divergent point `b : R`.
+* `1 < w a`.
 
 Then there is a common divergent point `k : R` causing both `v i` and `w` to be inequivalent to
 each `v j` for `j ≠ i`.
@@ -300,9 +307,9 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
   · exact div_pos (log_pos hwa) (log_pos (h.one_lt_iff.2 hwa))
 
 /--
-If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
-$v(x) \leq v(y)$ if and only if $w(x) \leq w(y)$, then $\frac{\log (v(a))}{\log (w(a))}$ is
-constant for all $0 \neq a\in F$ with $v(a) \neq 1$.
+If $`v` and $`w` are two real absolute values on a field $`F`, equivalent in the sense that
+$`v(x) \leq v(y)` if and only if $`w(x) \leq w(y)`, then $`\frac{\log (v(a))}{\log (w(a))}` is
+constant for all $`0 \neq a\in F` with $`v(a) \neq 1`.
 -/
 theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :

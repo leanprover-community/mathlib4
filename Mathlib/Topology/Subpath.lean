@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 import Batteries.Data.Fin.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subpaths and concatenation of paths
 
@@ -36,7 +39,7 @@ variable {X : Type*} [TopologicalSpace X] {a b : X}
 namespace Path
 
 /-!
-## Subpaths
+# Subpaths
 -/
 
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
@@ -125,7 +128,7 @@ def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
 end Homotopy
 
 /-!
-## Concatenation of paths
+# Concatenation of paths
 -/
 
 variable {n : ℕ}

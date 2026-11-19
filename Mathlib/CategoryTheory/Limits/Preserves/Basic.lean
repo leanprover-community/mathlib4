@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation and reflection of (co)limits.
 
@@ -17,11 +20,10 @@ preserves all the limits which exist in C.
 
 Note that:
 
-* Of course, we do not want to require F to *strictly* take chosen
+* Of course, we do not want to require F to _strictly_ take chosen
   limit cones of C to chosen limit cones of D. Indeed, the above
   definition makes no reference to a choice of limit cones so it makes
   sense without any conditions on C or D.
-
 * Some diagrams in C may have no limit. In this case, there is no
   condition on the behavior of F on such diagrams. There are other
   notions (such as "flat functor") which impose conditions also on

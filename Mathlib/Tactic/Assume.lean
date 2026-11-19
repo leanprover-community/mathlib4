@@ -7,10 +7,15 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `assume` tactic
 -/
 
+
+set_option doc.verso false
 /-- `assume e` introduces a new (unnamed) hypothesis of type `e`.
 It is equivalent to `intro (_ : e)`.
 
@@ -30,6 +35,8 @@ example {α} (f : α → α) (h : Function.Injective f) : ∀ x y, f x = f y →
 -/
 syntax (name := assume) &"assume " (ppSpace colGt term)? : tactic
 
+
+set_option doc.verso true
 open Lean Meta Elab Tactic
 elab_rules : tactic
   | `(tactic| assume $[$t?:term]?) => do

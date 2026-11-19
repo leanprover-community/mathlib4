@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Trailing Coefficient of a Meromorphic Function
 
@@ -56,7 +59,7 @@ If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero
     meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
 /-!
-## Characterization of the Trailing Coefficient
+# Characterization of the Trailing Coefficient
 -/
 
 /--
@@ -136,7 +139,7 @@ lemma MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt (h : MeromorphicAt f
     apply h₁g.continuousAt.continuousWithinAt
 
 /-!
-## Elementary Properties
+# Elementary Properties
 -/
 
 /--
@@ -177,7 +180,7 @@ theorem meromorphicTrailingCoeffAt_id_sub_const [DecidableEq 𝕜] {x y : 𝕜} 
     simp_all [sub_ne_zero]
 
 /-!
-## Congruence Lemma
+# Congruence Lemma
 -/
 
 /--
@@ -195,7 +198,7 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
     h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g (h.symm.trans h₃g)]
 
 /-!
-## Behavior under Arithmetic Operations
+# Behavior under Arithmetic Operations
 -/
 
 /--
@@ -508,7 +511,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_pow {n : ℕ} {f : 𝕜 → �
   MeromorphicAt.meromorphicTrailingCoeffAt_pow h₁
 
 /-!
-## Behavior under Composition
+# Behavior under Composition
 -/
 
 /--

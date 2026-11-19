@@ -9,6 +9,9 @@ public import Mathlib.Data.Fin.Tuple.Basic
 
 import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrix and vector notation
 
@@ -53,7 +56,8 @@ section MatrixNotation
 def vecEmpty : Fin 0 → α :=
   Fin.elim0
 
-/-- `vecCons h t` prepends an entry `h` to a vector `t`.
+/--
+`vecCons h t` prepends an entry `h` to a vector `t`.
 
 The inverse functions are `vecHead` and `vecTail`.
 The notation `![a, b, ...]` expands to `vecCons a (vecCons b ...)`.
@@ -61,7 +65,8 @@ The notation `![a, b, ...]` expands to `vecCons a (vecCons b ...)`.
 def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 
-/-- `![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and
+/--
+`![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and
 `Matrix.vecCons`.
 
 For instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.
@@ -100,7 +105,8 @@ def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
 
 variable {n : ℕ}
 
-/-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
+/--
+Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 
 ```
 #eval ![1, 2] + ![3, 4] -- ![4, 6]
@@ -171,10 +177,12 @@ lemma Fin.snoc_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
 section simprocs
 open Lean Qq
 
-/-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail.
+/--
+Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail.
 
 `let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
-`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
+`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`.
+-/
 meta partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) :
     MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
@@ -185,9 +193,11 @@ meta partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) :
     return ([], n, e)
 
 open Qq in
-/-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
+/--
+A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
 
-In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
+In practice, this is most effective at handling `![a, b, c] i`-style terms.
+-/
 dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
   let_expr Matrix.vecCons α en x xs' ei := ← Meta.whnfR e | return .continue
   let some i := ei.int? | return .continue
@@ -262,10 +272,11 @@ theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   funext <| Unique.forall_iff.2 rfl
 
-/-- `![a, b, ...] 1` is equal to `b`.
+/--
+`![a, b, ...] 1` is equal to `b`.
 
-  The simplifier needs a special lemma for length `≥ 2`, in addition to
-  `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
+The simplifier needs a special lemma for length `≥ 2`, in addition to
+`cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
 @[simp]
 theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 :=
@@ -316,7 +327,9 @@ protected meta instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) 
   let toTypeExpr := q(Fin $n → $eα)
   { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i => show Q($eα) from toExpr (v i) }
 
-/-! ### `bit0` and `bit1` indices
+/-!
+# `bit0` and `bit1` indices
+
 The following definitions and `simp` lemmas are used to allow
 numeral-indexed element of a vector given with matrix notation to
 be extracted by `simp` in Lean 3 (even when the numeral is larger than the
@@ -326,13 +339,15 @@ addition on `Fin n`).
 -/
 
 
-/-- `vecAppend ho u v` appends two vectors of lengths `m` and `n` to produce
+/--
+`vecAppend ho u v` appends two vectors of lengths `m` and `n` to produce
 one of length `o = m + n`. This is a variant of `Fin.append` with an additional `ho` argument,
 which provides control of definitional equality for the vector length.
 
 This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`, and also means
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
-no `Zero (Fin (m + n))` instance. -/
+no `Zero (Fin (m + n))` instance.
+-/
 def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
   Fin.append u v ∘ Fin.cast ho
 
@@ -467,7 +482,7 @@ lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
   (cons_fin_one x _).symm
 
 /-!
-### Interaction between cons and Equiv.swap
+# Interaction between cons and Equiv.swap
 -/
 
 section swap

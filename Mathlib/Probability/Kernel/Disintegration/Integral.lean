@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue and Bochner integrals of conditional kernels
 
@@ -210,9 +213,11 @@ end MeasureTheory.Measure
 
 namespace MeasureTheory
 
-/-! ### Integrability
+/-!
+# Integrability
 
-We place these lemmas in the `MeasureTheory` namespace to enable dot notation. -/
+We place these lemmas in the `MeasureTheory` namespace to enable dot notation.
+-/
 
 open ProbabilityTheory
 

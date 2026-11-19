@@ -19,6 +19,9 @@ public import Mathlib.Algebra.Order.Monoid.TypeTags
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
 
@@ -71,8 +74,10 @@ instance (priority := 100) : IsCancelMulZero α where
   mul_left_cancel_of_ne_zero ha := (strictMono_mul_left_of_pos ha.pos).injective
   mul_right_cancel_of_ne_zero ha := (strictMono_mul_right_of_pos ha.pos).injective
 
-/-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
-See note [reducible non-instances]. -/
+/--
+Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
+See note \[reducible non-instances\].
+-/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
     [Mul β] [Pow β ℕ] [LE β] [LT β] [Max β] [Min β] [Ord β]
     [DecidableEq β] [DecidableLE β] [DecidableLT β]
@@ -512,7 +517,9 @@ instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsO
 -- Add a shortcut instance for the common case, to speed up unification.
 instance : LinearOrderedCommGroupWithZero ℤᵐ⁰ := inferInstance
 
-/-! ### Exponential and logarithm -/
+/-!
+# Exponential and logarithm
+-/
 
 variable {G : Type*} [Preorder G] {a b : G}
 

@@ -11,6 +11,9 @@ import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution of functions
 
@@ -66,6 +69,7 @@ This generality has several advantages
 ## Notation
 
 The following notations are localized in the scope `Convolution`:
+
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -77,7 +81,7 @@ The following notations are localized in the scope `Convolution`:
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
   This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
   to a continuous bilinear map.
-  (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
+  (see e.g. \[Fremlin, _Measure Theory_ (volume 2)\]\[fremlin\_vol2\], 255K)
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
@@ -341,13 +345,15 @@ section MeasurableGroup
 
 variable [MeasurableNeg G] [IsAddLeftInvariant μ]
 
-/-- A sufficient condition to prove that `f ⋆[L, μ] g` exists.
+/--
+A sufficient condition to prove that `f ⋆[L, μ] g` exists.
 We assume that the integrand has compact support and `g` is bounded on this support (note that
 both properties hold if `g` is continuous with compact support). We also require that `f` is
 integrable on the support of the integrand, and that both functions are strongly measurable.
 
 This is a variant of `BddAbove.convolutionExistsAt'` in an abelian group with a left-invariant
-measure. This allows us to state the boundedness and measurability of `g` in a more natural way. -/
+measure. This allows us to state the boundedness and measurability of `g` in a more natural way.
+-/
 theorem _root_.BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SFinite μ] {x₀ : G} {s : Set G}
     (hbg : BddAbove ((fun i => ‖g i‖) '' ((fun t => x₀ - t) ⁻¹' s))) (hs : MeasurableSet s)
     (h2s : (support fun t => L (f t) (g (x₀ - t))) ⊆ s) (hf : IntegrableOn f s μ)
@@ -743,11 +749,13 @@ section NormedAddCommGroup
 
 variable [SeminormedAddCommGroup G]
 
-/-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
+/--
+Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
 on `Metric.ball x₀ R`.
 
 We can simplify the RHS further if we assume `f` is integrable, but also if `L = (•)` or more
-generally if `L` has an `AntilipschitzWith`-condition. -/
+generally if `L` has an `AntilipschitzWith`-condition.
+-/
 theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 : G) R)
     (hg : ∀ x ∈ ball x₀ R, g x = g x₀) : (f ⋆[L, μ] g) x₀ = ∫ t, L (f t) (g x₀) ∂μ := by
   have h2 : ∀ t, L (f t) (g (x₀ - t)) = L (f t) (g x₀) := fun t ↦ by
@@ -764,11 +772,13 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
 variable [BorelSpace G] [SecondCountableTopology G]
 variable [IsAddLeftInvariant μ] [SFinite μ]
 
-/-- Approximate `(f ⋆ g) x₀` if the support of the `f` is bounded within a ball, and `g` is near
+/--
+Approximate `(f ⋆ g) x₀` if the support of the `f` is bounded within a ball, and `g` is near
 `g x₀` on a ball with the same radius around `x₀`. See `dist_convolution_le` for a special case.
 
 We can simplify the second argument of `dist` further if we add some extra type-classes on `E`
-and `𝕜` or if `L` is scalar multiplication. -/
+and `𝕜` or if `L` is scalar multiplication.
+-/
 theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε) (hif : Integrable f μ)
     (hf : support f ⊆ ball (0 : G) R) (hmg : AEStronglyMeasurable g μ)
     (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
@@ -809,11 +819,13 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [CompleteSpace E']
 
-/-- Approximate `f ⋆ g` if the support of the `f` is bounded within a ball, and `g` is near `g x₀`
+/--
+Approximate `f ⋆ g` if the support of the `f` is bounded within a ball, and `g` is near `g x₀`
 on a ball with the same radius around `x₀`.
 
 This is a special case of `dist_convolution_le'` where `L` is `(•)`, `f` has integral 1 and `f` is
-nonnegative. -/
+nonnegative.
+-/
 theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε)
     (hf : support f ⊆ ball (0 : G) R) (hnf : ∀ x, 0 ≤ f x) (hintf : ∫ x, f x ∂μ = 1)
     (hmg : AEStronglyMeasurable g μ) (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
@@ -824,7 +836,9 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
     exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
 
-/-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
+/--
+`(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
+
 * `φ` is a sequence of nonnegative functions with integral `1` as `i` tends to `l`;
 * The support of `φ` tends to small neighborhoods around `(0 : G)` as `i` tends to `l`;
 * `g i` is `mu`-a.e. strongly measurable as `i` tends to `l`;
@@ -920,11 +934,14 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
       exact (L₃ (f t)).integral_comp_comm ht
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl
 
-/-- Convolution is associative. This requires that
+/--
+Convolution is associative. This requires that
+
 * all maps are a.e. strongly measurable w.r.t. one of the measures
 * `f ⋆[L, ν] g` exists almost everywhere
 * `‖g‖ ⋆[μ] ‖k‖` exists almost everywhere
-* `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀` -/
+* `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀`
+-/
 theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z)) {x₀ : G}
     (hf : AEStronglyMeasurable f ν) (hg : AEStronglyMeasurable g μ) (hk : AEStronglyMeasurable k μ)
     (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)

@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tagging of unfold boundaries for translation attributes
 
@@ -22,7 +25,9 @@ namespace Mathlib.Tactic.Translate
 
 open Lean Meta Elab Command Term UnfoldBoundary
 
-/-- There are 3 kinds of casting functions for a definition `foo := body`:
+/--
+There are 3 kinds of casting functions for a definition `foo := body`:
+
 1. Equality: `foo = body`
 2. Unfolding: `foo → body`
 3. Refolding: `body → foo`
@@ -85,7 +90,8 @@ where
   | .refoldFun, .forallE n body lhs bi => return .forallE n body (← .mk <| unfoldDefinition? lhs) bi
   | _, _ => .fail
 
-/-- The `insert_cast foo := ...` command should be used when the translation of some
+/--
+The `insert_cast foo := ...` command should be used when the translation of some
 definition `foo` is not definitionally equal to the translation of its value.
 It requires a proof that these two are equal. For example,
 
@@ -99,7 +105,8 @@ The command internally generates an unfolding theorem for `foo`, and a translati
 When type checking a term requires the definition `foo` to be unfolded, then in order to translate
 that term, a `cast` is first inserted into the term using this unfolding theorem.
 As a result, type checking the term won't anymore require unfolding `foo`, so the term
-can be safely translated. -/
+can be safely translated.
+-/
 public def elabInsertCast (declName : Ident) (valStx : Term) (t : TranslateData) :
     CommandElabM Unit := do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
@@ -107,7 +114,8 @@ public def elabInsertCast (declName : Ident) (valStx : Term) (t : TranslateData)
   let some ext := t.unfoldBoundaries? | throwError "{t.attrName} doesn't support unfold boundaries"
   modifyEnv (ext.addEntry · (.unfold declName name))
 
-/-- The `insert_cast_fun foo := ..., ...` command should be used when the translation of some
+/--
+The `insert_cast_fun foo := ..., ...` command should be used when the translation of some
 type `foo` is not definitionally equal to the translation of its value.
 It requires a function from the translation of `foo` to the translation of the value of `foo`,
 and a function in the opposite direction. For example,
@@ -120,7 +128,8 @@ The command internally generates these unfold/refold functions for `foo`, and th
 If type checking a term requires the definition `foo` to be unfolded, then before translating
 that term, the unfold/refold function is inserted into the term.
 As a result, type checking the term won't anymore require unfolding `foo`, so the term
-can be safely translated. After translating, the unfold/refold functions are again unfolded. -/
+can be safely translated. After translating, the unfold/refold functions are again unfolded.
+-/
 public def elabInsertCastFun (declName : Ident) (valStx₁ valStx₂ : Term) (t : TranslateData) :
     CommandElabM Unit := do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName

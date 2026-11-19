@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on vector measures
 

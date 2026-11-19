@@ -12,6 +12,9 @@ import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
 import Mathlib.Probability.Independence.Process.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of Gaussian processes
 
@@ -21,13 +24,12 @@ then they are independent if their marginals are uncorrelated.
 
 ## Main statements
 
-* `iIndepFun_of_covariance_eq_zero`: Assume that the processes $((X^t_s)_{s \in S_t})_{t \in T}$
-  are jointly Gaussian. Then they are independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$
-  and $s_1 \in S_{t_1}$, $s_2 \in S_{t_2}$, $\mathrm{Cov}(X^{t_1}_{s_1}, X^{t_2}_{s_2} = 0$.
-
-* `indepFun_of_covariance_eq_zero`: Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$
-  that are jointly Gaussian are independent if for all $s \in S$ and $t \in T$,
-  $\mathrm{Cov}(X_s, Y_t) = 0$.
+* `iIndepFun_of_covariance_eq_zero`: Assume that the processes $`((X^t_s)_{s \in S_t})_{t \in T}`
+  are jointly Gaussian. Then they are independent if for all $`t_1, t_2 \in T` with $`t_1 \ne t_2`
+  and $`s_1 \in S_{t_1}`, $`s_2 \in S_{t_2}`, $`\mathrm{Cov}(X^{t_1}_{s_1}, X^{t_2}_{s_2} = 0`.
+* `indepFun_of_covariance_eq_zero`: Two Gaussian processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}`
+  that are jointly Gaussian are independent if for all $`s \in S` and $`t \in T`,
+  $`\mathrm{Cov}(X_s, Y_t) = 0`.
 
 ## Implementation note
 
@@ -59,9 +61,11 @@ section iIndepFun
 
 variable {S : T → Type*} {X : (t : T) → (s : S t) → Ω → E}
 
-/-- Assume that the processes $((X^t_s)_{s \in S_t})_{t \in T}$ are jointly Gaussian. Then they are
-independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$ and
-$s_1 \in S_{t_1}$, $s_2 \in S_{t_2}$, $X^{t_1}_{s_1}$ and $X^{t_2}_{s_2}$ are uncorrelated. -/
+/--
+Assume that the processes $`((X^t_s)_{s \in S_t})_{t \in T}` are jointly Gaussian. Then they are
+independent if for all $`t_1, t_2 \in T` with $`t_1 \ne t_2` and
+$`s_1 \in S_{t_1}`, $`s_2 \in S_{t_2}`, $`X^{t_1}_{s_1}` and $`X^{t_2}_{s_2}` are uncorrelated.
+-/
 lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
     (hX : IsGaussianProcess (fun (p : (t : T) × S t) ω ↦ X p.1 p.2 ω) P)
     (mX : ∀ t s, AEMeasurable (X t s) P)
@@ -86,9 +90,11 @@ lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
   · exact fun k ↦ ((hX.hasGaussianLaw_eval ⟨i, k⟩).map _).memLp_two
   · exact fun k ↦ ((hX.hasGaussianLaw_eval ⟨j, k⟩).map _).memLp_two
 
-/-- Assume that the processes $((X^t_s)_{s \in S_t})_{t \in T}$ are jointly Gaussian. Then they are
-independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$ and
-$s_1 \in S_{t_1}$, $s_2 \in S_{t_2}$, $X^{t_1}_{s_1}$ and $X^{t_2}_{s_2}$ are uncorrelated. -/
+/--
+Assume that the processes $`((X^t_s)_{s \in S_t})_{t \in T}` are jointly Gaussian. Then they are
+independent if for all $`t_1, t_2 \in T` with $`t_1 \ne t_2` and
+$`s_1 \in S_{t_1}`, $`s_2 \in S_{t_2}`, $`X^{t_1}_{s_1}` and $`X^{t_2}_{s_2}` are uncorrelated.
+-/
 lemma iIndepFun_of_covariance_inner [InnerProductSpace ℝ E]
     (hX : IsGaussianProcess (fun (p : (t : T) × S t) ω ↦ X p.1 p.2 ω) P)
     (mX : ∀ t s, AEMeasurable (X t s) P)
@@ -98,9 +104,11 @@ lemma iIndepFun_of_covariance_inner [InnerProductSpace ℝ E]
   hX.iIndepFun_of_covariance_strongDual mX fun t₁ t₂ ht s₁ s₂ L₁ L₂ ↦ by
     simpa using! h t₁ t₂ ht s₁ s₂ ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
-/-- Assume that the processes $((X^t_s)_{s \in S_t})_{t \in T}$ are jointly Gaussian. Then they are
-independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$ and
-$s_1 \in S_{t_1}$, $s_2 \in S_{t_2}$, $X^{t_1}_{s_1}$ and $X^{t_2}_{s_2}$ are uncorrelated. -/
+/--
+Assume that the processes $`((X^t_s)_{s \in S_t})_{t \in T}` are jointly Gaussian. Then they are
+independent if for all $`t_1, t_2 \in T` with $`t_1 \ne t_2` and
+$`s_1 \in S_{t_1}`, $`s_2 \in S_{t_2}`, $`X^{t_1}_{s_1}` and $`X^{t_2}_{s_2}` are uncorrelated.
+-/
 lemma iIndepFun_of_covariance_eq_zero {X : (t : T) → (s : S t) → Ω → ℝ}
     (hX : IsGaussianProcess (fun (p : (t : T) × S t) ω ↦ X p.1 p.2 ω) P)
     (mX : ∀ t s, AEMeasurable (X t s) P)
@@ -115,8 +123,10 @@ section IndepFun
 
 variable {S : Type*} {X : S → Ω → E} {Y : T → Ω → E}
 
-/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
-are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
+/--
+Two Gaussian processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` that are jointly Gaussian
+are independent if for all $`s \in S` and $`t \in T`, $`X_s` and $`Y_t` are uncorrelated.
+-/
 lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
     (hXY : IsGaussianProcess (Sum.elim X Y) P)
     (mX : ∀ s, AEMeasurable (X s) P) (mY : ∀ t, AEMeasurable (Y t) P)
@@ -141,8 +151,10 @@ lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
   · exact fun s ↦ ((hXY.hasGaussianLaw_eval (.inl s)).map _).memLp_two
   · exact fun t ↦ ((hXY.hasGaussianLaw_eval (.inr t)).map _).memLp_two
 
-/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
-are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
+/--
+Two Gaussian processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` that are jointly Gaussian
+are independent if for all $`s \in S` and $`t \in T`, $`X_s` and $`Y_t` are uncorrelated.
+-/
 lemma indepFun_of_covariance_inner [InnerProductSpace ℝ E]
     (hXY : IsGaussianProcess (Sum.elim X Y) P)
     (mX : ∀ s, AEMeasurable (X s) P) (mY : ∀ t, AEMeasurable (Y t) P)
@@ -151,8 +163,10 @@ lemma indepFun_of_covariance_inner [InnerProductSpace ℝ E]
   hXY.indepFun_of_covariance_strongDual mX mY fun s t L₁ L₂ ↦ by
     simpa using! h s t ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
-/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
-are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
+/--
+Two Gaussian processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` that are jointly Gaussian
+are independent if for all $`s \in S` and $`t \in T`, $`X_s` and $`Y_t` are uncorrelated.
+-/
 lemma indepFun_of_covariance_eq_zero {X : S → Ω → ℝ} {Y : T → Ω → ℝ}
     (hXY : IsGaussianProcess (Sum.elim X Y) P) (mX : ∀ s, AEMeasurable (X s) P)
     (mY : ∀ t, AEMeasurable (Y t) P) (h : ∀ s t, cov[X s, Y t; P] = 0) :

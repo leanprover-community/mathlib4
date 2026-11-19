@@ -8,10 +8,13 @@ module
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Group.AEStabilizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ergodic group actions
 
-A group action of `G` on a space `α` with measure `μ` is called *ergodic*,
+A group action of `G` on a space `α` with measure `μ` is called _ergodic_,
 if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
@@ -23,7 +26,7 @@ open Set Filter MeasureTheory MulAction
 open scoped Pointwise
 
 /--
-An additive group action of `G` on a space `α` with measure `μ` is called *ergodic*,
+An additive group action of `G` on a space `α` with measure `μ` is called _ergodic_,
 if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar addition `(g +ᵥ ·)`, `g : G`,
 then it is either null or conull.
@@ -34,7 +37,7 @@ class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Meas
     (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐ[μ] s) → EventuallyEmptyOrUniv s (ae μ)
 
 /--
-A group action of `G` on a space `α` with measure `μ` is called *ergodic*,
+A group action of `G` on a space `α` with measure `μ` is called _ergodic_,
 if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.

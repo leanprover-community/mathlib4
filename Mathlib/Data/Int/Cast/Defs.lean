@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Nat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of integers
 
-This file defines the *canonical* homomorphism from the integers into an
+This file defines the _canonical_ homomorphism from the integers into an
 additive group with a one (typically a `Ring`).  In additive groups with a one
 element, there exists a unique such homomorphism and we store it in the
 `intCast : ℤ → R` field.
@@ -34,7 +37,9 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
   | (n : ℕ) => n
   | Int.negSucc n => -(n + 1 : ℕ)
 
-/-! ### Additive groups with one -/
+/-!
+# Additive groups with one
+-/
 
 /-- An `AddGroupWithOne` is an `AddGroup` with a 1. It also contains data for the unique
 homomorphisms `ℕ → R` and `ℤ → R`. -/

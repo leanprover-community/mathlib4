@@ -9,17 +9,21 @@ public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.SetNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions about filters
 
-A *filter* on a type `α` is a collection of sets of `α` which contains the whole `α`,
+A _filter_ on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. Filters are mostly used to
 abstract two related kinds of ideas:
-* *limits*, including finite or infinite limits of sequences, finite or infinite limits of functions
+
+* _limits_, including finite or infinite limits of sequences, finite or infinite limits of functions
   at a point or at infinity, etc...
-* *things happening eventually*, including things happening for large enough `n : ℕ`, or near enough
+* _things happening eventually_, including things happening for large enough `n : ℕ`, or near enough
   a point `x`, or for close enough pairs of points, or things happening almost everywhere in the
-  sense of measure theory. Dually, filters can also express the idea of *things happening often*:
+  sense of measure theory. Dually, filters can also express the idea of _things happening often_:
   for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
 
 ## Main definitions
@@ -51,14 +55,14 @@ abstract two related kinds of ideas:
 ## Implementation Notes
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`,
-which we do *not* require.
+which we do _not_ require.
 This gives `Filter X` better formal properties,
 in particular a bottom element `⊥` for its lattice structure,
 at the cost of including the assumption `[NeBot f]` in a number of lemmas and definitions.
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
 -/
 
 @[expose] public section
@@ -164,7 +168,9 @@ instance : Pure Filter where
 theorem mem_pure {a : α} {s : Set α} : s ∈ (pure a : Filter α) ↔ a ∈ s :=
   Iff.rfl
 
-/-- The *kernel* of a filter is the intersection of all its sets. -/
+/--
+The _kernel_ of a filter is the intersection of all its sets.
+-/
 def ker (f : Filter α) : Set α := ⋂₀ f.sets
 
 /-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
@@ -291,8 +297,10 @@ protected def Frequently (p : α → Prop) (f : Filter α) : Prop :=
 @[inherit_doc Filter.Frequently]
 notation3 "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
 
-/-- Two functions `f` and `g` are *eventually equal* along a filter `l` if the set of `x` such that
-`f x = g x` belongs to `l`. -/
+/--
+Two functions `f` and `g` are _eventually equal_ along a filter `l` if the set of `x` such that
+`f x = g x` belongs to `l`.
+-/
 def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x = g x
 
@@ -301,26 +309,34 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
-/-- Two sets `s` and `t` are *eventually equal* along a filter `l` if the set of `x` such that
-`x ∈ s ↔ x ∈ t` belongs to `l`. -/
+/--
+Two sets `s` and `t` are _eventually equal_ along a filter `l` if the set of `x` such that
+`x ∈ s ↔ x ∈ t` belongs to `l`.
+-/
 def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
   ∀ᶠ x in l, x ∈ s ↔ x ∈ t
 
-/-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such that
-`x ∈ s → x ∈ t` belongs to `l`. -/
+/--
+A set `s` is _eventually contained_ in a set `t` along a filter `l` if the set of `x` such that
+`x ∈ s → x ∈ t` belongs to `l`.
+-/
 def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
   ∀ᶠ x in l, x ∈ s → x ∈ t
 
-/-- `x =ᶠ[l] y` means that `x` and `y` are *eventually equal* along the filter `l`.
+/--
+`x =ᶠ[l] y` means that `x` and `y` are _eventually equal_ along the filter `l`.
 
 This is `Filter.EventuallyEq l x y` if `x` is a function or `Filter.EventuallyEqSet l x y` if `x`
-is a set. -/
+is a set.
+-/
 syntax:50 (name := eventuallyEqStx) term:51 " =ᶠ[" term "] " term:50 : term
 
-/-- `x ≤ᶠ[l] y` means that `x` is *eventually less than or equal to* `y` along the filter `l`.
+/--
+`x ≤ᶠ[l] y` means that `x` is _eventually less than or equal to_ `y` along the filter `l`.
 
 This is `Filter.EventuallyLE l x y` if `x` is a function and `Filter.EventuallySubset l x y` if `x`
-is a set. -/
+is a set.
+-/
 syntax:50 (name := eventuallyLEStx) term:51 " ≤ᶠ[" term "] " term:50 : term
 
 open Lean Elab Term Meta in
@@ -415,7 +431,8 @@ def map (m : α → β) (f : Filter α) : Filter β where
 def Tendsto (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.map f ≤ l₂
 
-/-- The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following
+/--
+The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following
 equivalent conditions hold.
 
 1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition.
@@ -446,10 +463,12 @@ theorem prod_eq_inf (f : Filter α) (g : Filter β) : f ×ˢ g = f.comap Prod.fs
 def pi {ι : Type*} {α : ι → Type*} (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
   ⨅ i, comap (Function.eval i) (f i)
 
-/-- The monadic bind operation on filter is defined the usual way in terms of `map` and `join`.
+/--
+The monadic bind operation on filter is defined the usual way in terms of `map` and `join`.
 
 Unfortunately, this `bind` does not result in the expected applicative. See `Filter.seq` for the
-applicative instance. -/
+applicative instance.
+-/
 def bind (f : Filter α) (m : α → Filter β) : Filter β :=
   join (map m f)
 
@@ -496,14 +515,15 @@ the relation `≺`, i.e. eventually, it is bounded by some uniform bound. -/
 def IsBoundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
   (map u f).IsBounded r
 
-/-- `IsCobounded (≺) f` states that the filter `f` does not tend to infinity w.r.t. `≺`. This is
+/--
+`IsCobounded (≺) f` states that the filter `f` does not tend to infinity w.r.t. `≺`. This is
 also called frequently bounded. Will be usually instantiated with `≤` or `≥`.
 
 There is a subtlety in this definition: we want `f.IsCobounded` to hold for any `f` in the case of
 complete lattices. This will be relevant to deduce theorems on complete lattices from their
 versions on conditionally complete lattices with additional assumptions. We have to be careful in
 the edge case of the trivial filter containing the empty set: the other natural definition
-  `¬ ∀ a, ∀ᶠ n in f, a ≤ n`
+`¬ ∀ a, ∀ᶠ n in f, a ≤ n`
 would not work as well in this case.
 -/
 def IsCobounded (r : α → α → Prop) (f : Filter α) :=

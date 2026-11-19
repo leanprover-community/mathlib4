@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Array
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The characteristic polynomial recurrence for upper Hessenberg matrices
 
@@ -17,7 +20,7 @@ This file contains a recurrence formula for the characteristic polynomial of an 
 matrix, in a noncomputable and a computable form, and a proof that the recurrence computes
 `Matrix.charpoly`.
 
-The recurrence comes from equation 5.1 of [Rehman-Ipsen][rehmanipsen2011]. For an `n × n` upper
+The recurrence comes from equation 5.1 of \[Rehman-Ipsen\]\[rehmanipsen2011\]. For an `n × n` upper
 Hessenberg matrix `H` it successively computes the characteristic polynomials
 `pᵢ(X) = det (X * I - Hᵢ)` of the leading principal submatrices `Hᵢ` of order `i`:
 
@@ -29,9 +32,9 @@ p_{k+1} = (X - C H[k][k]) p_k - ∑_{t<k} C (H[t][k] ∏_{j=t}^{k-1} H[j+1][j]) 
 
 ## Main definitions
 
-- `hessP n H k`: the polynomial `pₖ` of the recurrence, in `R[X]`.
-- `hessCharpoly n H`: the characteristic polynomial computed by the recurrence in `R[X]`.
-- `coeffHessCharpoly n H`: the characteristic polynomial computed by the recurrence on polynomials
+* `hessP n H k`: the polynomial `pₖ` of the recurrence, in `R[X]`.
+* `hessCharpoly n H`: the characteristic polynomial computed by the recurrence in `R[X]`.
+* `coeffHessCharpoly n H`: the characteristic polynomial computed by the recurrence on polynomials
   represented as lists of coefficients.
 
 We have both `hessCharpoly` and `coeffHessCharpoly` so that for a literal matrix `H` we can produce
@@ -41,8 +44,8 @@ The theorem `ofCoeffList_coeffHessCharpoly` interprets the result as `hessCharpo
 
 ## Main results
 
-- `ofCoeffList_coeffHessCharpoly`: the recurrence on coefficient lists computes `hessCharpoly n H`.
-- `charpoly_eq_hessCharpoly`: `hessCharpoly` computes the characteristic polynomial of an upper
+* `ofCoeffList_coeffHessCharpoly`: the recurrence on coefficient lists computes `hessCharpoly n H`.
+* `charpoly_eq_hessCharpoly`: `hessCharpoly` computes the characteristic polynomial of an upper
   Hessenberg matrix.
 
 ## Implementation details
@@ -96,18 +99,18 @@ The leading principal submatrices `Hᵢ` are also upper Hessenberg, so the same 
 
 In the formalization:
 
-- `Matrix.leadingBlock` defines the leading principal submatrix.
-- `IsUpperHessenberg.charmatrix` and `charmatrix_leadingBlock` show that `CH` is upper Hessenberg
+* `Matrix.leadingBlock` defines the leading principal submatrix.
+* `IsUpperHessenberg.charmatrix` and `charmatrix_leadingBlock` show that `CH` is upper Hessenberg
   with `Mₖ` the characteristic matrix of `Hₖ`.
-- `det_lastColMinor` is the formula for `det Hᵢ`.
-- `det_eq_sum_of_isUpperHessenberg` is the expansion of `det CH` along its last column.
-- `charpoly_isUpperHessenberg` specializes the determinant expansion to `CH`.
-- `hessP_eq_charpoly` is the proof of the recurrence formula.
+* `det_lastColMinor` is the formula for `det Hᵢ`.
+* `det_eq_sum_of_isUpperHessenberg` is the expansion of `det CH` along its last column.
+* `charpoly_isUpperHessenberg` specializes the determinant expansion to `CH`.
+* `hessP_eq_charpoly` is the proof of the recurrence formula.
 
 ## References
 
-* [Rizwana Rehman, Ilse C. F. Ipsen,
-  *La Budde's method for computing characteristic polynomials*][rehmanipsen2011]
+* ‍\[Rizwana Rehman, Ilse C. F. Ipsen,
+  _La Budde's method for computing characteristic polynomials_\]\[rehmanipsen2011\]
 -/
 
 public section
@@ -146,7 +149,8 @@ theorem hessP_succ (k : ℕ) :
 
 theorem hessCharpoly_eq : hessCharpoly n H = hessP n H n := rfl
 
-/-! ## The recurrence on coefficient lists
+/-!
+# The recurrence on coefficient lists
 
 This section defines the recurrence on a polynomial representation (lists of coefficients) that the
 kernel can compute.
@@ -243,7 +247,9 @@ end Mathlib.Tactic.Hessenberg
 
 end
 
-/-! ## Correctness of the recurrence -/
+/-!
+# Correctness of the recurrence
+-/
 
 open Polynomial Finset
 
@@ -314,7 +320,9 @@ open Matrix
 
 variable {R : Type*} [CommRing R]
 
-/-! ## The last-column expansion of the determinant of an upper Hessenberg matrix -/
+/-!
+# The last-column expansion of the determinant of an upper Hessenberg matrix
+-/
 
 section Expansion
 
@@ -363,7 +371,9 @@ end Expansion
 
 variable {n : ℕ}
 
-/-! ## The recurrence computes the characteristic polynomial -/
+/-!
+# The recurrence computes the characteristic polynomial
+-/
 
 /-- Computation of the characteristic polynomial of an upper Hessenberg matrix by Laplace expansion
 of the determinant of its characteristic matrix. -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite product of probability measures
 
@@ -98,7 +101,9 @@ section Nat
 
 open Kernel
 
-/-! ### Product of measures indexed by `ℕ` -/
+/-!
+# Product of measures indexed by `ℕ`
+-/
 
 variable {X : ℕ → Type*}
 
@@ -235,7 +240,9 @@ section InfinitePi
 
 open Measure
 
-/-! ### Product of infinitely many probability measures -/
+/-!
+# Product of infinitely many probability measures
+-/
 
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
@@ -255,11 +262,13 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
-/-- This is the key theorem to build the product of an arbitrary family of probability measures:
+/--
+This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 
 This implies the `σ`-additivity of `piContent` (see `addContent_iUnion_eq_sum_of_tendsto_zero`),
-which allows to extend it to the `σ`-algebra by Carathéodory's theorem. -/
+which allows to extend it to the `σ`-algebra by Carathéodory's theorem.
+-/
 theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n ∈ measurableCylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ piContent μ (A n)) atTop (𝓝 0) := by
@@ -345,12 +354,14 @@ theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
 namespace Measure
 
 open scoped Classical in
-/-- The product measure of an arbitrary family of probability measures. It is defined as the unique
+/--
+The product measure of an arbitrary family of probability measures. It is defined as the unique
 extension of the function which gives to cylinders the measure given by the associated product
 measure.
 
 It is defined via an `if ... then ... else` so that it can be manipulated without carrying
-a proof that the measures are probability measures. -/
+a proof that the measures are probability measures.
+-/
 noncomputable def infinitePi : Measure (Π i, X i) :=
   if h : ∀ i, IsProbabilityMeasure (μ i) then
     (piContent μ).measure isSetSemiring_measurableCylinders

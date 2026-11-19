@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Util.Delaborators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of magmas and semigroups
 
@@ -25,6 +28,7 @@ public import Mathlib.Util.Delaborators
 
 See `Mathlib/GroupTheory/Subsemigroup/Center.lean` for the definition of the center as a
 subsemigroup:
+
 * `Subsemigroup.center`: the center of a semigroup
 * `AddSubsemigroup.center`: the center of an additive semigroup
 
@@ -33,6 +37,7 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 
 See `Mathlib/GroupTheory/Subsemigroup/Centralizer.lean` for the definition of the centralizer
 as a subsemigroup:
+
 * `Subsemigroup.centralizer`: the centralizer of a subset of a semigroup
 * `AddSubsemigroup.centralizer`: the centralizer of a subset of an additive semigroup
 
@@ -108,7 +113,9 @@ end IsMulCentral
 
 namespace Set
 
-/-! ### Center -/
+/-!
+# Center
+-/
 
 section Mul
 variable [Mul M] [Mul N]

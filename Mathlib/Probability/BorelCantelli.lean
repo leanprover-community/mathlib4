@@ -10,19 +10,22 @@ public import Mathlib.Probability.Martingale.BorelCantelli
 
 import Mathlib.Probability.ConditionalExpectation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The second Borel-Cantelli lemma
 
-This file contains the *second Borel-Cantelli lemma* which states that, given a sequence of
+This file contains the _second Borel-Cantelli lemma_ which states that, given a sequence of
 independent sets `(sₙ)` in a probability space, if `∑ n, μ sₙ = ∞`, then the limsup of `sₙ` has
 measure 1. We employ a proof using Lévy's generalized Borel-Cantelli by choosing an appropriate
 filtration.
 
 ## Main result
 
-- `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
+* `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
-**Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
+*Note*: for the _first Borel-Cantelli lemma_, which holds in general measure spaces (not only
 in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
 

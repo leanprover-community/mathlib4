@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integers form a group
 
 This file contains the additive group and multiplicative monoid instances on the integers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -23,7 +26,9 @@ open Nat
 
 namespace Int
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 instance instCommMonoid : CommMonoid ℤ where
   mul_comm := Int.mul_comm
@@ -59,7 +64,7 @@ instance : HasUniqueDiv ℤ where
   nsmul_right_injective _n hn _x _y := Int.eq_of_mul_eq_mul_left (by lia)
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances like `Int.instNormedCommRing` being used to construct
 these instances non-computably.

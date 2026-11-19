@@ -11,10 +11,14 @@ public meta import Std.Sync.Mutex
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Std.Sync.Mutex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "header" linter
 
 The "header" style linter checks that a file starts with
+
 ```
 /-
 Copyright ...
@@ -28,7 +32,9 @@ module doc-string*
 
 remaining file
 ```
+
 It emits a warning if
+
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
 * any import in `Lake` is present;
@@ -58,11 +64,12 @@ def toSyntax (s pattern : String) (offset : String.Pos.Raw := 0) : Syntax :=
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).rawEndPos.offsetBy offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
-/-- Return if `line` looks like a correct authors line in a copyright header.
+/--
+Return if `line` looks like a correct authors line in a copyright header.
 
 The `offset` input is used to shift the position information of the `Syntax` that the command
 produces.
-`authorsLineChecks` computes a position for its warning *relative to `line`*.
+`authorsLineChecks` computes a position for its warning _relative to `line`_.
 The `offset` input passes on the starting position of `line` in the whole file.
 -/
 def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax × String) :=
@@ -92,19 +99,22 @@ def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax 
   else
     return #[]
 
-/-- The main function to validate the copyright string.
+/--
+The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
+
 * the `Syntax` factors are atoms whose ranges are "best guesses" for where the changes should
   take place; the embedded string is the current text that the linter flagged;
 * the `String` factor is the linter message.
 
 The linter checks that
+
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
 * the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
 * the second line equals `expectedLicense` (determined by the `linter.style.header.license` option,
   defaults to the Mathlib default);
-* the remainder of the string begins with `Authors: `, does not end with `.` and
-  contains no ` and ` nor a double space, except possibly after a line break.
+* the remainder of the string begins with `Authors:  `, does not end with `.` and
+  contains no `and` nor a double space, except possibly after a line break.
 -/
 public def copyrightHeaderChecks (copyright : String) (expectedLicense : String) :
     Array (Syntax × String) := Id.run do
@@ -208,18 +218,21 @@ def isInLibraryRoot (rootPath : System.FilePath) (modName : Name) : IO Bool := d
     return res.imports.any (·.module == modName)
   else return false
 
-/-- `inLibraryRootMutex` caches whether the current file is imported in the library root file
+/--
+`inLibraryRootMutex` caches whether the current file is imported in the library root file
 (e.g. `Mathlib.lean`), as computed by `isInLibraryRoot`. It is
+
 * `none` at initialization time;
 * `some true` if the `header` linter has already discovered that the current file
   is imported in the library root file;
 * `some false` if the `header` linter has already discovered that the current file
-  is *not* imported in the library root file.
+  is _not_ imported in the library root file.
 -/
 initialize inLibraryRootMutex : Std.Mutex (Option Bool) ← Std.Mutex.new none
 
 /--
 The "header" style linter checks that a file starts with
+
 ```
 /-
 Copyright ...
@@ -231,7 +244,9 @@ import statements*
 module doc-string*
 remaining file
 ```
+
 It emits a warning if
+
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
 * any import in `Lake` is present;
@@ -287,11 +302,13 @@ def headerTestFiles : NameSet := .ofList [
   `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
-/-- Check the `Syntax` `imports` for broad imports:
+/--
+Check the `Syntax` `imports` for broad imports:
 `Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`.
 
 This currently returns without logging if `mainModule` is not in `Mathlib` (nor the linter's test
-files). TODO: make this extensible for use in other libraries. -/
+files). TODO: make this extensible for use in other libraries.
+-/
 def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandElabM Unit := do
   unless mainModule.getRoot == `Mathlib || headerTestFiles.contains mainModule do
     return
@@ -365,13 +382,16 @@ section HeaderParser
 
 open Lean.ParseImports
 
-/-! We extend the import parser to also parse Verso `set_option` commands that need to go before
+/-!
+We extend the import parser to also parse Verso `set_option` commands that need to go before
 the module doc-string. We only use the parser for determining whether a given string matches
 and ignore the other bits of the state.
 
-This approach may be unneeded in the future when using stateful linters. -/
+This approach may be unneeded in the future when using stateful linters.
+-/
 
-/-- Allow zero or more repetitions of the parser before the parser errors.
+/--
+Allow zero or more repetitions of the parser before the parser errors.
 
 Backtracks to the start of parse at any failure.
 -/

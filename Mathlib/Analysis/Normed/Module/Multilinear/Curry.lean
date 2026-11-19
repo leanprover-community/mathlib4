@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying and uncurrying continuous multilinear maps
 
@@ -40,7 +43,7 @@ noncomputable section
 open Finset ContinuousMultilinearMap Fin Function
 
 /-!
-### Type variables
+# Type variables
 
 We use the following type variables in this file:
 
@@ -92,7 +95,9 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
     ‖f (snoc m x)‖ ≤ (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ := by
   simpa [prod_univ_castSucc, mul_assoc] using f.le_opNorm (snoc m x)
 
-/-! #### Left currying -/
+/-!
+# Left currying
+-/
 
 
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
@@ -138,14 +143,16 @@ theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap
 variable (𝕜 Ei G)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
+/--
+The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
 the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
 `Π(i : Fin n), E i.succ`, by separating the first variable. We register this isomorphism in
 `continuousMultilinearCurryLeftEquiv 𝕜 E E₂`. The algebraic version (without topology) is given
 in `multilinearCurryLeftEquiv 𝕜 E E₂`.
 
 The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
-unless you need the full framework of linear isometric equivs. -/
+unless you need the full framework of linear isometric equivs.
+-/
 def continuousMultilinearCurryLeftEquiv :
     ContinuousMultilinearMap 𝕜 Ei G ≃ₗᵢ[𝕜]
       Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
@@ -186,7 +193,9 @@ theorem ContinuousLinearMap.uncurryLeft_norm
     ‖f.uncurryLeft‖ = ‖f‖ :=
   (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).symm.norm_map f
 
-/-! #### Right currying -/
+/-!
+# Right currying
+-/
 
 
 /-- Given a continuous linear map `f` from continuous multilinear maps on `n` variables to
@@ -276,7 +285,8 @@ def continuousMultilinearCurryRightEquiv :
 
 variable (n G')
 
-/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), G` is canonically isomorphic to
+/--
+The space of continuous multilinear maps on `Π(i : Fin (n+1)), G` is canonically isomorphic to
 the space of continuous multilinear maps on `Π(i : Fin n), G` with values in the space
 of continuous linear maps on `G`, by separating the last variable. We register this
 isomorphism as a continuous linear equiv in `continuousMultilinearCurryRightEquiv' 𝕜 n G G'`.
@@ -284,7 +294,8 @@ For a version allowing dependent types, see `continuousMultilinearCurryRightEqui
 are no dependent types, use the primed version as it helps Lean a lot for unification.
 
 The direct and inverse maps are given by `f.curryRight` and `f.uncurryRight`. Use these
-unless you need the full framework of linear isometric equivs. -/
+unless you need the full framework of linear isometric equivs.
+-/
 def continuousMultilinearCurryRightEquiv' : (G [×n.succ]→L[𝕜] G') ≃ₗᵢ[𝕜] G [×n]→L[𝕜] G →L[𝕜] G' :=
   continuousMultilinearCurryRightEquiv 𝕜 (fun _ => G) G'
 
@@ -327,7 +338,7 @@ theorem ContinuousMultilinearMap.uncurryRight_norm
   (continuousMultilinearCurryRightEquiv 𝕜 Ei G).symm.norm_map f
 
 /-!
-### Currying a variable in the middle
+# Currying a variable in the middle
 -/
 
 /-- Given a continuous linear map from `M p` to the space of continuous multilinear maps
@@ -397,13 +408,14 @@ theorem ContinuousLinearMap.norm_uncurryMid (p : Fin (n + 1))
   (ContinuousMultilinearMap.curryMidEquiv 𝕜 Ei G p).symm.norm_map f
 
 /-!
-#### Currying with `0` variables
+# Currying with `0` variables
 
 The space of multilinear maps with `0` variables is trivial: such a multilinear map is just an
 arbitrary constant (note that multilinear maps in `0` variables need not map `0` to `0`!).
 Therefore, the space of continuous multilinear maps on `(Fin 0) → G` with values in `E₂` is
 isomorphic (and even isometric) to `E₂`. As this is the zeroth step in the construction of iterated
-derivatives, we register this isomorphism. -/
+derivatives, we register this isomorphism.
+-/
 
 section
 
@@ -435,11 +447,13 @@ theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.c
 
 variable (𝕜 G G')
 
-/-- The continuous linear isomorphism between elements of a normed space, and continuous multilinear
+/--
+The continuous linear isomorphism between elements of a normed space, and continuous multilinear
 maps in `0` variables with values in this normed space.
 
 The direct and inverse maps are `uncurry0` and `curry0`. Use these unless you need the full
-framework of linear isometric equivs. -/
+framework of linear isometric equivs.
+-/
 def continuousMultilinearCurryFin0 : (G [×0]→L[𝕜] G') ≃ₗᵢ[𝕜] G' where
   toFun f := ContinuousMultilinearMap.curry0 f
   invFun f := ContinuousMultilinearMap.uncurry0 𝕜 G f
@@ -467,7 +481,9 @@ theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → 
 
 end
 
-/-! #### With 1 variable -/
+/-!
+# With 1 variable
+-/
 
 variable (𝕜 G G')
 
@@ -546,13 +562,15 @@ theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
 
 variable (𝕜 ι ι' G G')
 
-/-- Linear isometric equivalence between the space of continuous multilinear maps with variables
+/--
+Linear isometric equivalence between the space of continuous multilinear maps with variables
 indexed by `ι ⊕ ι'` and the space of continuous multilinear maps with variables indexed by `ι`
 taking values in the space of continuous multilinear maps with variables indexed by `ι'`.
 
 The forward and inverse functions are `ContinuousMultilinearMap.currySum`
 and `ContinuousMultilinearMap.uncurrySum`. Use this definition only if you need
-some properties of `LinearIsometryEquiv`. -/
+some properties of `LinearIsometryEquiv`.
+-/
 def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' ≃ₗᵢ[𝕜]
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
   LinearIsometryEquiv.ofBounds

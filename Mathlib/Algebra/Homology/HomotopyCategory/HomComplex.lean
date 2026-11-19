@@ -12,7 +12,11 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 
-/-! # The cochain complex of homomorphisms between cochain complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The cochain complex of homomorphisms between cochain complexes
 
 If `F` and `G` are cochain complexes (indexed by `ℤ`) in a preadditive category,
 there is a cochain complex of abelian groups whose `0`-cocycles identify to
@@ -27,10 +31,11 @@ as the data of a morphism `F.X p ⟶ G.X q` for all triplets
 If `α : Cochain F G n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
 
 We follow the signs conventions appearing in the introduction of
-[Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
+‍\[Brian Conrad's book _Grothendieck duality and base change_\]\[conrad2000\].
 
 ## References
-* [Brian Conrad, Grothendieck duality and base change][conrad2000]
+
+* ‍\[Brian Conrad, Grothendieck duality and base change\]\[conrad2000\]
 -/
 
 @[expose] public section
@@ -225,7 +230,8 @@ def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by lia))
 
-/-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and we
+/-!
+If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and we
 have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
 The following lemma `comp_v` computes the value of this composition `z₁.comp z₂ h`
 on a triplet `⟨p₁, p₃, _⟩` (with `p₁ + n₁₂ = p₃`). In order to use this lemma,

@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Units
 
-/-! # Isomorphism of ordered monoids descends to units
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Isomorphism of ordered monoids descends to units
 -/
 
 @[expose] public section

@@ -13,19 +13,23 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite modules over local rings
 
 This file gathers various results about finite modules over a local ring `(R, 𝔪, k)`.
 
 ## Main results
-- `IsLocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
-- `Module.free_of_maximalIdeal_rTensor_injective`:
+
+* `IsLocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
+* `Module.free_of_maximalIdeal_rTensor_injective`:
   If `M` is a finitely presented module such that `m ⊗ M → M` is injective
   (for example when `M` is flat), then `M` is free.
-- `Module.free_of_lTensor_residueField_injective`: If `N → M → P → 0` is a presentation of `P` with
+* `Module.free_of_lTensor_residueField_injective`: If `N → M → P → 0` is a presentation of `P` with
   `N` finite and `M` finite free, then injectivity of `k ⊗ N → k ⊗ M` implies that `P` is free.
-- `IsLocalRing.split_injective_iff_lTensor_residueField_injective`:
+* `IsLocalRing.split_injective_iff_lTensor_residueField_injective`:
   Given an `R`-linear map `l : M → N` with `M` finite and `N` finite free,
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/

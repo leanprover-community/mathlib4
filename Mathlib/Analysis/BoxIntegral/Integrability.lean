@@ -8,12 +8,15 @@ module
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # McShane integrability vs Bochner integrability
 
 In this file we prove that any Bochner integrable function is McShane integrable (hence, it is
 Henstock and `GP` integrable) with the same integral. The proof is based on
-[Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
+‍\[Russel A. Gordon, _The integrals of Lebesgue, Denjoy, Perron, and Henstock_\]\[Gordon55\].
 
 We deduce that the same is true for the Riemann integral for continuous functions.
 

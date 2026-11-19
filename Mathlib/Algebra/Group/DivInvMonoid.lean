@@ -10,6 +10,9 @@ public import Mathlib.Data.Int.Notation
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.OfNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division monoids
 
@@ -55,7 +58,7 @@ theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
 end InvolutiveInv
 
 /-!
-### Design note on `DivInvMonoid`/`SubNegMonoid` and `DivisionMonoid`/`SubtractionMonoid`
+# Design note on `DivInvMonoid`/`SubNegMonoid` and `DivisionMonoid`/`SubtractionMonoid`
 
 Those two pairs of made-up classes fulfill slightly different roles.
 
@@ -67,6 +70,7 @@ pseudo-inverse (`Matrix`).
 
 `DivisionMonoid`/`SubtractionMonoid` is targeted at structures with stronger pseudo-inverses. It
 is an ad hoc collection of axioms that are mainly respected by three things:
+
 * Groups
 * Groups with zero
 * The pointwise monoids `Set α`, `Finset α`, `Filter α`
@@ -75,6 +79,7 @@ It acts as a middle ground for structures with an inversion operator that plays 
 multiplication, except for the fact that it might not be a true inverse (`a / a ≠ 1` in general).
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
+
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
 * Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
@@ -86,21 +91,25 @@ As a consequence, a few natural structures do not fit in this framework. For exa
 respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
 -/
 
-/-- In a class equipped with instances of both `Monoid` and `Inv`, this definition records what the
+/--
+In a class equipped with instances of both `Monoid` and `Inv`, this definition records what the
 default definition for `Div` would be: `a * b⁻¹`.  This is later provided as the default value for
 the `Div` instance in `DivInvMonoid`.
 
 We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
 field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
-`.instance` transparency. -/
+`.instance` transparency.
+-/
 @[to_additive SubNegMonoid.sub'
-/-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
+/--
+In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
 the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
 for the `Sub` instance in `SubNegMonoid`.
 
 We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
 field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
-`.instance` transparency. -/]
+`.instance` transparency.
+-/]
 def DivInvMonoid.div' {G : Type*} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
 /-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is needed because it is
@@ -124,7 +133,8 @@ instance ZPow.toPow {M : Type*} [ZPow M] : Pow M ℤ :=
 @[to_additive ofSMul]
 instance ZPow.ofPow {M : Type*} [Pow M ℤ] : ZPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
-/-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
+/--
+A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
 
 This deduplicates the name `div_eq_mul_inv`.
@@ -139,7 +149,7 @@ also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the
 the `(/)` coming from `Foo.Div`.
 
 In the same way, adding a `zpow` field makes it possible to avoid definitional failures
-in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
+in diamonds. See the definition of `Monoid` and Note \[forgetful inheritance\] for more
 explanations on this.
 -/
 class DivInvMonoid (G : Type*) extends Monoid G, Inv G, Div G, ZPow G where
@@ -155,7 +165,8 @@ class DivInvMonoid (G : Type*) extends Monoid G, Inv G, Div G, ZPow G where
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   protected zpow_neg' (n : ℕ) (a : G) : a ^ Int.negSucc n = (a ^ (n.succ : ℤ))⁻¹ := by intros; rfl
 
-/-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
+/--
+A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
 
 The default for `sub` is such that `a - b = a + -b` holds by definition.
@@ -169,7 +180,7 @@ Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no
 `Foo.Sub`.
 
 In the same way, adding a `zsmul` field makes it possible to avoid definitional failures
-in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
+in diamonds. See the definition of `AddMonoid` and Note \[forgetful inheritance\] for more
 explanations on this.
 -/
 class SubNegMonoid (G : Type*) extends AddMonoid G, Neg G, Sub G, ZSMul G where
@@ -184,11 +195,15 @@ class SubNegMonoid (G : Type*) extends AddMonoid G, Neg G, Sub G, ZSMul G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-/-- A group is called *cyclic* if it is generated by a single element. -/
+/--
+A group is called _cyclic_ if it is generated by a single element.
+-/
 class IsAddCyclic (G : Type*) [SMul ℤ G] : Prop where
   protected exists_zsmul_surjective : ∃ g : G, Function.Surjective (· • g : ℤ → G)
 
-/-- A group is called *cyclic* if it is generated by a single element. -/
+/--
+A group is called _cyclic_ if it is generated by a single element.
+-/
 @[to_additive (attr := wikidata Q245462)]
 class IsCyclic (G : Type*) [Pow G ℤ] : Prop where
   protected exists_zpow_surjective : ∃ g : G, Function.Surjective (g ^ · : ℤ → G)
@@ -233,7 +248,8 @@ theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻�
   rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
 
-/-- Dividing by an element is the same as multiplying by its inverse.
+/--
+Dividing by an element is the same as multiplying by its inverse.
 
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
@@ -308,10 +324,12 @@ class SubtractionMonoid (G : Type*) extends SubNegMonoid G, InvolutiveNeg G wher
   involutivity of negation. -/
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 
-/-- A `DivisionMonoid` is a `DivInvMonoid` with involutive inversion and such that
+/--
+A `DivisionMonoid` is a `DivInvMonoid` with involutive inversion and such that
 `(a * b)⁻¹ = b⁻¹ * a⁻¹` and `a * b = 1 → a⁻¹ = b`.
 
-This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
+This is the immediate common ancestor of `Group` and `GroupWithZero`.
+-/
 @[to_additive]
 class DivisionMonoid (G : Type*) extends DivInvMonoid G, InvolutiveInv G where
   protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
@@ -344,17 +362,21 @@ end DivisionMonoid
 /-- Commutative `SubtractionMonoid`. -/
 class SubtractionCommMonoid (G : Type*) extends SubtractionMonoid G, AddCommMonoid G
 
-/-- Commutative `DivisionMonoid`.
+/--
+Commutative `DivisionMonoid`.
 
-This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
+This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`.
+-/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type*) extends DivisionMonoid G, CommMonoid G
 
-/-! We initialize the projections for the group structures for `@[simps]` here.
+/-!
+We initialize the projections for the group structures for `@[simps]` here.
 
-The lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
+The lemmas generated for the `npow`/`zpow` projections will _not_ apply to `x ^ y`, since the
 argument order of these projections does not match the argument order of `^`. The `nsmul`/`zsmul`
-lemmas are correct. -/
+lemmas are correct.
+-/
 initialize_simps_projections DivInvMonoid
 initialize_simps_projections SubNegMonoid
 initialize_simps_projections DivInvOneMonoid

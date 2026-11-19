@@ -11,6 +11,9 @@ public import Mathlib.Order.Closure
 
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First-Order Substructures
 
@@ -19,27 +22,27 @@ substructures appearing in the algebra library.
 
 ## Main Definitions
 
-- A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
-    substructures of the `L`-structure `M`.
-- `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
-    the least substructure of `M` containing `s`.
-- `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
-    substructure `s` under the homomorphism `f`, as a substructure.
-- `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
-    substructure `s` under the homomorphism `f`, as a substructure.
-- `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
-    homomorphism `f`, as a substructure.
-- `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
-    the domain and codomain respectively of first-order homomorphisms to substructures.
-- `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
-    restrict the domain and codomain respectively of first-order embeddings to substructures.
-- `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
-- `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `PartialEquiv L M N` is
+* A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
+  substructures of the `L`-structure `M`.
+* `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
+  the least substructure of `M` containing `s`.
+* `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
+  substructure `s` under the homomorphism `f`, as a substructure.
+* `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
+  substructure `s` under the homomorphism `f`, as a substructure.
+* `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
+  homomorphism `f`, as a substructure.
+* `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
+  the domain and codomain respectively of first-order homomorphisms to substructures.
+* `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
+  restrict the domain and codomain respectively of first-order embeddings to substructures.
+* `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
+* `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `PartialEquiv L M N` is
   the type of equivalences between substructures of `M` and `N`.
 
 ## Main Results
 
-- `L.Substructure M` forms a `CompleteLattice`.
+* `L.Substructure M` forms a `CompleteLattice`.
 -/
 
 @[expose] public section
@@ -110,7 +113,9 @@ instance instSetLike : SetLike (L.Substructure M) M :=
 
 instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M)
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
@@ -422,7 +427,7 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
 variable {L} {M}
 
 /-!
-### `comap` and `map`
+# `comap` and `map`
 -/
 
 
@@ -792,8 +797,10 @@ theorem domRestrict_comp_codRestrict (g : N →[L] P) (f : M →[L] N) (p : L.Su
     (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
   rfl
 
-/-- The range of a first-order hom `f : M → N` is a submodule of `N`.
-See Note [range copy pattern]. -/
+/--
+The range of a first-order hom `f : M → N` is a submodule of `N`.
+See Note \[range copy pattern\].
+-/
 def range (f : M →[L] N) : L.Substructure N :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 

@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 import Mathlib.FieldTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Whitney embedding theorem
 
@@ -41,7 +44,7 @@ noncomputable section
 namespace SmoothBumpCovering
 
 /-!
-### Whitney embedding theorem
+# Whitney embedding theorem
 
 In this section we prove a version of the Whitney embedding theorem: for any compact real manifold
 `M`, for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.

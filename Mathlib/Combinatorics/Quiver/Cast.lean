@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rewriting arrows and paths along vertex equalities
 
@@ -25,7 +28,7 @@ variable {U : Type*} [Quiver.{u} U]
 namespace Quiver
 
 /-!
-### Rewriting arrows along equalities of vertices
+# Rewriting arrows along equalities of vertices
 -/
 
 
@@ -65,7 +68,7 @@ theorem Hom.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u �
   exact ⟨HEq.symm, HEq.symm⟩
 
 /-!
-### Rewriting paths along equalities of vertices
+# Rewriting paths along equalities of vertices
 -/
 
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.GroupTheory.Sylow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
@@ -19,9 +22,11 @@ assert_not_exists TwoSidedIdeal
 
 variable {n : ℕ} {M M₁ : Type*}
 
-/-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
+/--
+The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
@@ -39,8 +44,10 @@ abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n
     mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
   }
 
-/-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
-See note [reducible non-instances]. -/
+/--
+The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
+See note \[reducible non-instances\].
+-/
 abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
@@ -74,10 +81,12 @@ variable (n)
 
 namespace AddMonoidHom
 
-/-- Reinterpret an additive homomorphism as a `ℤ/nℤ`-linear map.
+/--
+Reinterpret an additive homomorphism as a `ℤ/nℤ`-linear map.
 
 See also:
-`AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
+`AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap`
+-/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
 theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
@@ -96,9 +105,11 @@ end AddMonoidHom
 
 namespace AddSubgroup
 
-/-- Reinterpret an additive subgroup of a `ℤ/nℤ`-module as a `ℤ/nℤ`-submodule.
+/--
+Reinterpret an additive subgroup of a `ℤ/nℤ`-module as a `ℤ/nℤ`-submodule.
 
-See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
+See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`.
+-/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofinality of an order
 
@@ -23,7 +26,9 @@ universe u v w
 
 variable {α γ : Type u} {β : Type v}
 
-/-! ### Cofinality of orders -/
+/-!
+# Cofinality of orders
+-/
 
 namespace Order
 section Preorder

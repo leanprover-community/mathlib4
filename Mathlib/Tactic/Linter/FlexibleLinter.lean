@@ -14,6 +14,9 @@ public meta import Lean.Parser.Term
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "flexible" linter
 
@@ -22,6 +25,7 @@ output of a "flexible" tactic (such as `simp`).
 
 For example, this ensures that, if you want to use `simp [...]` in the middle of a proof,
 then you should replace `simp [...]` by one of
+
 * a `suffices \"expr after simp\" by simpa` line;
 * the output of `simp? [...]`, so that the final code contains `simp only [...]`;
 * something else that does not involve `simp`!
@@ -30,30 +34,32 @@ Otherwise, the linter will complain.
 
 Simplifying and appealing to a geometric intuition, you can imagine a (tactic) proof like a
 directed graph, where
+
 * each node is a local hypothesis or a goal in some metavariable and
 * two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
   of the arrow into the target (this does not apply well to all tactics, but it does apply to
   a large number of them).
 
-With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
-*very predictable* output.
+With this in mind, a tactic like `rw [lemma]` takes a _very specific_ input and return a
+_very predictable_ output.
 Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
 Conversely, a tactic like `simp` acts on a wide variety of inputs and returns an output that
 is possibly unpredictable: if later modifications adds a `simp`-lemma or some internals of
 `simp` changes, the output of `simp` may change as well.
 Such a tactic is `flexible`. Other examples are `split`, `abel`, `norm_cast`,...
 Let's go back to the graph picture above.
-* ✅️ [`rigid` --> `flexible`]
+
+* ✅️ \[`rigid` --> `flexible`\]
   A sequence `rw [lemma]; simp` is unlikely to break, since `rw [lemma]` produces the same output
-  unless some *really major* change happens!
-* ❌️ [`flexible` --> `rigid`]
+  unless some _really major_ change happens!
+* ❌️ \[`flexible` --> `rigid`\]
   A sequence `simp; rw [lemma]` is instead more likely to break, since the goal after `simp` is
   subject to change by even a small, likely, modification of the `simp` set.
-* ✅️ [`flexible` --> `flexible`]
+* ✅️ \[`flexible` --> `flexible`\]
   A sequence `simp; linarith` is also quite stable, since if `linarith` was able to close the
   goal with a "weaker" `simp`, it will likely still be able to close the goal with a `simp`
   that takes one further step.
-* ✅️ [`flexible` --> `stopper`]
+* ✅️ \[`flexible` --> `stopper`\]
   Finally, a sequence `simp; ring_nf` is stable and, moreover, the output of `ring_nf` is a
   "normal form", which means that it is likely to produce an unchanged result, even if the initial
   input is different from the proof in its initial form.
@@ -71,12 +77,15 @@ Future modifications of the linter may increase the scope of the `flexible?` pre
 forbid a wider range of combinations.
 
 ## TODO
+
 The example
+
 ```lean
 example (h : 0 = 0) : True := by
   simp at h
   assumption
 ```
+
 should trigger the linter, since `assumption` uses `h` that has been "stained" by `simp at h`.
 However, `assumption` contains no syntax information for the location `h`, so the linter in its
 current form does not catch this.
@@ -86,6 +95,7 @@ current form does not catch this.
 A large part of the code is devoted to tracking `FVar`s and `MVar`s between tactics.
 
 For the `FVar`s, this follows the following heuristic:
+
 * if the unique name of the `FVar` is preserved, then we use that;
 * otherwise, if the `userName` of the `FVar` is preserved, then we use that;
 * if neither is preserved, we drop the ball and stop tracking the `FVarId`.
@@ -110,12 +120,14 @@ public register_option linter.flexible : Bool := {
   descr := "enable the flexible linter"
 }
 
-/-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of
+/--
+`flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of
 inputs and modifies them in possibly unpredictable ways.
 
 The prototypical flexible tactic is `simp`.
 The prototypical non-flexible tactic `rw`.
-`simp only` is also non-flexible. -/
+`simp only` is also non-flexible.
+-/
 --  TODO: adding more entries here, allows to consider more tactics to be flexible
 def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _]
@@ -136,7 +148,7 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-### Heuristics for determining goals that a tactic modifies and what they become
+# Heuristics for determining goals that a tactic modifies and what they become
 
 The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
 `MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the
@@ -193,7 +205,9 @@ def extractTacticData (tree : InfoTree) : Array TacticData :=
       else acc
     | _ => acc
 
-/-- `Stained` is the type of the stained locations: it can be
+/--
+`Stained` is the type of the stained locations: it can be
+
 * a `Name` (typically of associated to the `FVarId` of a local declaration);
 * the goal (`⊢`);
 * the "wildcard" -- all the declaration in context (`*`).
@@ -204,7 +218,9 @@ inductive Stained
   | wildcard : Stained
   deriving Repr, Inhabited, DecidableEq, Hashable
 
-/-- Converting a `Stained` to a `String`:
+/--
+Converting a `Stained` to a `String`:
+
 * a `Name` is represented by the corresponding string;
 * `goal` is represented by `⊢`;
 * `wildcard` is represented by `*`.
@@ -219,7 +235,8 @@ The function is used to extract "location" information about `stx`: either expli
 `rw [] at locations` or implicit ones as `rw [h]`.
 
 Whether or not what this function extracts really is a location will be determined by the linter
-using data embedded in the `InfoTree`s. -/
+using data embedded in the `InfoTree`s.
+-/
 partial def toStained : Syntax → Std.HashSet Stained
   -- A declaration's name introduces a local, rather than referring to an existing one.
   | .node _ ``Lean.Parser.Term.letIdDecl arg =>
@@ -233,11 +250,13 @@ partial def toStained : Syntax → Std.HashSet Stained
                   | _ => {}
   | _ => {}
 
-/-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
+/--
+`getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
 Typically, we apply `getStained` to the output of `getLocs`.
 
-See `getStained!` for a similar function. -/
+See `getStained!` for a similar function.
+-/
 partial
 def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.HashSet Stained :=
   match stx with
@@ -246,7 +265,8 @@ def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.
     | .node _ _ args => (args.map (getStained · all?)).foldl (·.union) {}
     | _ => default
 
-/-- `getStained! stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
+/--
+`getStained! stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
 Typically, we apply `getStained!` to the output of `getLocs`.
 
@@ -256,14 +276,17 @@ The only difference with `getStained stx`, is that `getStained!` never returns `
 if `getStained stx = {}`, then `getStained' stx = {.goal}`.
 
 This means that tactics that do not have an explicit "`at`" in their syntax will be treated as
-acting on the main goal. -/
+acting on the main goal.
+-/
 def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.HashSet Stained :=
   let out := getStained stx all?
   if out.size == 0 then {.goal} else out
 
-/-- `Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
+/--
+`Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
 a `Stained` `st` and returns the array of pairs `(FVarId, mv)`s that `lctx` assigns to `st`
 (the second component is always `mv`):
+
 * if `st` "is" a `Name`, returns the singleton of the `FVarId` with the name carried by `st`;
 * if `st` is `.goal`, returns the singleton `#[default]`;
 * if `st` is `.wildcard`, returns the array of all the `FVarId`s in `lctx` with also `default`
@@ -276,10 +299,11 @@ def Stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : Stained → Array (FV
   | goal     => #[(default, mv)]
   | wildcard => (lctx.getFVarIds.push default).map (·, mv)
 
-/-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
+/--
+`SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
 The nodes that they contain will be visited by the linter anyway.
-The nodes that *follow* them, though, will *not* be visited by the linter.
+The nodes that _follow_ them, though, will _not_ be visited by the linter.
 -/
 def stoppers : Std.HashSet Name :=
   { -- "properly stopper tactics": the effect of these tactics is to return a normal form
@@ -385,12 +409,14 @@ def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.induction => false
   | _ => true
 
-/-- `getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
+/--
+`getFVarIdCandidates fv name lctx` takes an input an `FVarId`, a `Name` and a `LocalContext`.
 It returns an array of guesses for a "best fit" `FVarId` in the given `LocalContext`.
 The first entry of the array is the input `FVarId` `fv`, if it is present.
 The next entry of the array is the `FVarId` with the given `Name`, if present.
 
-Usually, the first entry of the returned array is "the best approximation" to `(fv, name)`. -/
+Usually, the first entry of the returned array is "the best approximation" to `(fv, name)`.
+-/
 def getFVarIdCandidates (fv : FVarId) (name : Name) (lctx : LocalContext) : Array FVarId :=
   #[lctx.find? fv, lctx.findFromUserName? name].reduceOption.map (·.fvarId)
 
@@ -449,8 +475,10 @@ structure StainData where
   /-- Goals before the flexible tactic -/
   goals : List MVarId
 
-/-- Generate a "simp only [...]" suggestion for a simp/simpAll tactic.
-Returns `none` if the tactic is not simp/simpAll or if suggestion generation fails. -/
+/--
+Generate a "simp only \[...\]" suggestion for a simp/simpAll tactic.
+Returns `none` if the tactic is not simp/simpAll or if suggestion generation fails.
+-/
 def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
     CoreM (Option Syntax) := do
   match stainStx.getKind with

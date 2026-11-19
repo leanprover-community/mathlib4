@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
 
@@ -33,7 +36,7 @@ open scoped Topology
 namespace MeromorphicAt
 
 /-!
-## Principles of Isolated Zeros
+# Principles of Isolated Zeros
 -/
 
 /--
@@ -87,7 +90,7 @@ alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
   _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
 
 /-!
-## Identity Principles
+# Identity Principles
 -/
 
 /--

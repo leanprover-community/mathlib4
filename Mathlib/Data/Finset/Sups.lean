@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Set.Sups
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set family operations
 
@@ -26,6 +29,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 ## Notation
 
 We define the following notation in scope `FinsetFamily`:
+
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
@@ -34,7 +38,7 @@ We define the following notation in scope `FinsetFamily`:
 
 ## References
 
-[B. Bollobás, *Combinatorics*][bollobas1986]
+‍\[B. Bollobás, _Combinatorics_\]\[bollobas1986\]
 -/
 
 @[expose] public section

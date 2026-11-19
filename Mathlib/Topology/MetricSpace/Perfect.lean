@@ -11,6 +11,9 @@ public import Mathlib.Topology.Perfect
 
 import Mathlib.Topology.Metrizable.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perfect Sets
 
@@ -24,7 +27,7 @@ including a version of the Cantor-Bendixson Theorem.
 
 ## References
 
-* [kechris1995] (Chapters 6-7)
+* ‍\[kechris1995\] (Chapters 6-7)
 
 ## Tags
 

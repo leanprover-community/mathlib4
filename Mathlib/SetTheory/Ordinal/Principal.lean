@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principal ordinals
 
@@ -48,12 +51,16 @@ section Arbitrary
 
 variable {op : Ordinal → Ordinal → Ordinal}
 
-/-! ### Principal ordinals under an arbitrary operation -/
+/-!
+# Principal ordinals under an arbitrary operation
+-/
 
-/-- An ordinal `o` is said to be principal (or indecomposable) under an operation when `Iio o` is
+/--
+An ordinal `o` is said to be principal (or indecomposable) under an operation when `Iio o` is
 closed under that operation.
 
-For simplicity, we break usual convention and regard `0` as principal. -/
+For simplicity, we break usual convention and regard `0` as principal.
+-/
 def IsPrincipal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
   ∀ ⦃a b⦄, a < o → b < o → op a b < o
 
@@ -145,7 +152,9 @@ theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal
 @[deprecated (since := "2026-07-09")]
 alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
 
-/-! ### Additive principal ordinals -/
+/-!
+# Additive principal ordinals
+-/
 
 theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a, b + b < a :=
   isPrincipal_iff_of_monotone
@@ -273,7 +282,9 @@ theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u
       rw [mul_add]
       exact Left.add_lt_add hx' hy'
 
-/-! ### Multiplicative principal ordinals -/
+/-!
+# Multiplicative principal ordinals
+-/
 
 theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by simp
 
@@ -399,7 +410,9 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : IsPrincipal (· * ·) b) (hb�
     simpa [succ_eq_add_one] using lt_opow_succ_log_self hb₁ _
   · grw [succ_eq_add_one, opow_add_one, opow_log_le_self b ha]
 
-/-! ### Exponential principal ordinals -/
+/-!
+# Exponential principal ordinals
+-/
 
 theorem isPrincipal_opow_two : IsPrincipal (· ^ ·) 2 := by
   intro a b ha _

@@ -10,10 +10,14 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projection to a subspace
 
 In this file we define
+
 * `Submodule.projectionOnto (p q : Submodule R E) (h : IsCompl p q)`:
   the projection of a module `E` to a submodule `p` along its complement `q`;
   it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
@@ -113,27 +117,33 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
   LinearEquiv.ext fun _ => add_comm _ _
 
-/-- Projection to a submodule along a complement. It is the unique
+/--
+Projection to a submodule along a complement. It is the unique
 linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
 
 For the projection from `E` to `E`, see `Submodule.projection`. See also:
+
 * `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 * `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
   along the orthogonal subspace.
 
-See also `LinearMap.linearProjOfIsCompl`. -/
+See also `LinearMap.linearProjOfIsCompl`.
+-/
 def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
-/-- The linear projection onto a subspace along its complement
+/--
+The linear projection onto a subspace along its complement
 as a map from the full space to itself, as opposed to `Submodule.projectionOnto`,
 which maps into the subtype.
 This version is important as it satisfies `IsIdempotentElem`.
 
 See also:
+
 * `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 * `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
-  along the orthogonal subspace. -/
+  along the orthogonal subspace.
+-/
 noncomputable def projection (hpq : IsCompl p q) :=
   p.subtype ∘ₗ p.projectionOnto q hpq
 
@@ -339,10 +349,12 @@ open Submodule
 
 section
 
-/-- Projection to the image of an injection along a complement.
+/--
+Projection to the image of an injection along a complement.
 
 This has an advantage over `Submodule.projectionOnto` in that it allows the user better
-definitional control over the type. -/
+definitional control over the type.
+-/
 def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
     (i : F →ₗ[R] E) (hi : Function.Injective i)
     (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
@@ -787,7 +799,9 @@ theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
 
 end LinearMap.IsIdempotentElem
 
-/-! ## Deprecated -/
+/-!
+# Deprecated
+-/
 
 namespace Submodule
 

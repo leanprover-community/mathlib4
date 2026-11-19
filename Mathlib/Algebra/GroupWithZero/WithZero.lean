@@ -14,6 +14,9 @@ public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Util.CompileInductive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining a zero to a group
 
@@ -27,6 +30,7 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 ## Notation
 
 In scope `WithZero`:
+
 * `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions
@@ -366,13 +370,17 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
 
-/-! ### Exponential and logarithm -/
+/-!
+# Exponential and logarithm
+-/
 
 variable {M G : Type*}
 
-/-- `Mᵐ⁰` is notation for `WithZero (Multiplicative M)`.
+/--
+`Mᵐ⁰` is notation for `WithZero (Multiplicative M)`.
 
-This naturally shows up as the codomain of valuations in valuation theory. -/
+This naturally shows up as the codomain of valuations in valuation theory.
+-/
 scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
 
 section AddMonoid

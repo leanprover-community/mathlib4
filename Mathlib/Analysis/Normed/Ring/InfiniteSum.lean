@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 
-/-! # Multiplying two infinite sums in a normed ring
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Multiplying two infinite sums in a normed ring
 
 In this file, we prove various results about `(∑' x : ι, f x) * (∑' y : ι', g y)` in a normed
 ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum/Ring.lean` (e.g.
@@ -30,7 +34,9 @@ open scoped Topology
 
 open Finset Filter
 
-/-! ### Arbitrary index types -/
+/-!
+# Arbitrary index types
+-/
 
 theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
@@ -65,9 +71,11 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
     p
   simp [sum_product, ← mul_sum, ← sum_mul]
 
-/-- Product of two infinite sums indexed by arbitrary types.
-See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable, and
-`tsum_mul_tsum_of_summable_norm'` when the space is not complete. -/
+/--
+Product of two infinite sums indexed by arbitrary types.
+See also `tsum_mul_tsum` if `f` and `g` are _not_ absolutely summable, and
+`tsum_mul_tsum_of_summable_norm'` when the space is not complete.
+-/
 theorem tsum_mul_tsum_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
@@ -79,7 +87,8 @@ theorem tsum_mul_tsum_of_summable_norm' {f : ι → R} {g : ι' → R}
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
   h'f.tsum_mul_tsum h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
-/-! ### `ℕ`-indexed families (Cauchy product)
+/-!
+# `ℕ`-indexed families (Cauchy product)
 
 We prove two versions of the Cauchy product formula. The first one is
 `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm`, where the `n`-th term is a sum over
@@ -87,7 +96,8 @@ We prove two versions of the Cauchy product formula. The first one is
 In order to avoid `Nat` subtraction, we also provide
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
-`Finset` `Finset.antidiagonal n`. -/
+`Finset` `Finset.antidiagonal n`.
+-/
 
 section Nat
 
@@ -111,11 +121,13 @@ theorem summable_sum_mul_antidiagonal_of_summable_norm' {f g : ℕ → R}
     Summable fun n => ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
   summable_sum_mul_antidiagonal_of_summable_mul (summable_mul_of_summable_norm' hf h'f hg h'g)
 
-/-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
+/--
+The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
 expressed by summing on `Finset.antidiagonal`.
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
-*not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm'`
-when the space is not complete. -/
+_not_ absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm'`
+when the space is not complete.
+-/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=

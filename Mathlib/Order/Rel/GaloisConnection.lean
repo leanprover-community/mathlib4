@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.Rel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Galois Connection Induced by a Relation
 
@@ -20,14 +23,14 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 ## Main Results
 
 ⋆ `Rel.gc_leftDual_rightDual`: we prove that the maps `toDual ∘ R.leftDual` and
-  `R.rightDual ∘ ofDual` form a Galois connection.
+`R.rightDual ∘ ofDual` form a Galois connection.
 ⋆ `Rel.equivFixedPoints`: we prove that the maps `R.leftDual` and `R.rightDual` induce inverse
-  bijections between the sets of fixed points.
+bijections between the sets of fixed points.
 
 ## References
 
 ⋆ Engendrement de topologies, démontrabilité et opérations sur les sous-topos, Olivia Caramello and
-  Laurent Lafforgue (in preparation)
+Laurent Lafforgue (in preparation)
 
 ## Tags
 
@@ -40,7 +43,9 @@ variable {α β : Type*} (R : SetRel α β)
 
 namespace SetRel
 
-/-! ### Pairs of adjoint maps defined by relations -/
+/-!
+# Pairs of adjoint maps defined by relations
+-/
 
 open OrderDual
 
@@ -56,7 +61,9 @@ def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → a ~[R]
 theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) :=
   fun _ _ ↦ ⟨fun h _ ha _ hb ↦ h (by simpa) ha, fun h _ hb _ ha ↦ h (by simpa) hb⟩
 
-/-! ### Induced equivalences between fixed points -/
+/-!
+# Induced equivalences between fixed points
+-/
 
 /-- `leftFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
 def leftFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vitali families
 
@@ -22,6 +25,7 @@ differentiations of measure that apply in both contexts.
 
 This file gives the basic definition of Vitali families. More interesting developments of this
 notion are deferred to other files:
+
 * constructions of specific Vitali families are provided by the Besicovitch covering theorem, in
   `Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
 * The main theorem on differentiation of measures along a Vitali family is proved in
@@ -34,6 +38,7 @@ notion are deferred to other files:
   arbitrarily small diameters.
 
 Let `v` be such a Vitali family.
+
 * `v.FineSubfamilyOn` describes the subfamilies of `v` from which one can extract almost
   everywhere disjoint coverings. This property, called
   `v.FineSubfamilyOn.exists_disjoint_covering_ae`, is essentially a restatement of the definition
@@ -43,7 +48,7 @@ Let `v` be such a Vitali family.
 
 ## References
 
-* [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
+* ‍\[Herbert Federer, Geometric Measure Theory, Chapter 2.8\]\[Federer1996\]
   (Vitali families are called Vitali relations there)
 -/
 
@@ -55,7 +60,8 @@ open scoped Topology
 
 variable {X : Type*} [PseudoMetricSpace X]
 
-/-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
+/--
+On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
 following property: consider a (possibly non-measurable) set `s`, and for any `x` in `s` a
 subfamily `f x` of `setsAt x` containing sets of arbitrarily small diameter. Then one can extract

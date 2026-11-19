@@ -9,10 +9,13 @@ public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive Functors
 
-A functor between two preadditive categories is called *additive*
+A functor between two preadditive categories is called _additive_
 provided that the induced map on hom types is a morphism of abelian
 groups.
 

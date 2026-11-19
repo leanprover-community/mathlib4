@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher differentiability of composition
 
@@ -49,7 +52,7 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
 section comp
 
 /-!
-### Composition of `C^n` functions
+# Composition of `C^n` functions
 
 We show that the composition of `C^n` functions is `C^n`. One way to do this would be to
 use the following simple inductive proof. Assume it is done for `n`.
@@ -279,7 +282,7 @@ theorem iteratedFDeriv_comp (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt �
 end comp
 
 /-!
-### Smoothness of projections
+# Smoothness of projections
 -/
 
 /-- The first projection in a product is `C^∞`. -/
@@ -569,7 +572,9 @@ theorem iteratedFDeriv_clm_apply_const_apply
 
 end ClmApplyConst
 
-/-! ### Bundled derivatives are smooth -/
+/-!
+# Bundled derivatives are smooth
+-/
 section bundled
 
 /-- One direction of `contDiffWithinAt_succ_iff_hasFDerivWithinAt`, but where all derivatives are
@@ -612,13 +617,16 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
 
-/-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
+/--
+The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
 To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within `s`, we require that
+
 * `f` is `C^n` at `(x₀, g(x₀))` within `(s ∪ {x₀}) × t` for `n ≥ m+1`.
 * `g` is `C^m` at `x₀` within `s`;
 * Derivatives are unique at `g(x)` within `t` for `x` sufficiently close to `x₀` within `s ∪ {x₀}`;
-* `t` is a neighborhood of `g(x₀)` within `g '' s`; -/
+* `t` is a neighborhood of `g(x₀)` within `g '' s`;
+-/
 theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀)

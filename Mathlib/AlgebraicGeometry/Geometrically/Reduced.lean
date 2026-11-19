@@ -9,24 +9,29 @@ public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically Reduced Schemes
 
 ## Main results
-- `AlgebraicGeometry.GeometricallyReduced`:
+
+* `AlgebraicGeometry.GeometricallyReduced`:
   We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is reduced.
   We also provide the fact that this is stable under base change (by `infer_instance`)
-- `GeometricallyReduced.iff_geometricallyReduced_fiber`:
+* `GeometricallyReduced.iff_geometricallyReduced_fiber`:
   A scheme is geometrically reduced over `S` iff the fibers of all
   `s : S` are geometrically reduced.
-- `AlgebraicGeometry.GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian`:
+* `AlgebraicGeometry.GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian`:
   If `X` is geometrically reduced and flat over a reduced and locally noetherian scheme,
   then `X` is also reduced.
   In particular, the base change of a geometrically reduced and flat scheme to an
   reduced and locally noetherian scheme is reduced (by `infer_instance`).
 
 ## TODO
+
 Get rid of the noetherian assumption.
 -/
 
@@ -117,10 +122,12 @@ lemma GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian
     exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
   exact isReduced_of_flat_of_finite_irreducibleComponents (pullback.snd _ _)
 
-/-- If `X` is geometrically reduced over `S`, and `Y` is both reduced and locally noetherian,
+/--
+If `X` is geometrically reduced over `S`, and `Y` is both reduced and locally noetherian,
 then `X ×ₛ Y` is also reduced.
 
-TODO: get rid of the noetherian hypothesis. -/
+TODO: get rid of the noetherian hypothesis.
+-/
 instance [GeometricallyReduced f] [Flat f] [IsReduced Y] [IsLocallyNoetherian Y] :
     IsReduced (pullback f g) :=
   GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian (pullback.snd _ _)

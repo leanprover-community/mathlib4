@@ -13,13 +13,15 @@ import Mathlib.Tactic.Abel
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform structure on topological groups
 
 ## Main results
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
-
 * `QuotientGroup.completeSpace_left` and `QuotientAddGroup.completeSpace_left` guarantee that
   quotients of first countable topological groups by normal subgroups are themselves complete, for
   the left uniformity. We also give versions for the right uniformity. In particular,
@@ -585,20 +587,25 @@ universe u
 
 open TopologicalSpace
 
-/-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
-is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+/--
+The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
+is itself complete. \[N. Bourbaki, _General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
 Because a topological group is not equipped with a `UniformSpace` instance by default, we must
 explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace_right` for
-a version in which `G` is already equipped with a uniform structure. -/
-@[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
-`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+a version in which `G` is already equipped with a uniform structure.
+-/
+@[to_additive /--
+              The quotient `G ⧸ N` of a complete first countable topological additive group `G` by a
+normal additive subgroup is itself complete. Consequently, quotients of Banach spaces
+by subspaces are complete. \[N. Bourbaki, _General Topology_, IX.3.1 Proposition
+4\]\[bourbaki1966b\]
 
-Because an additive topological group is not equipped with a `UniformSpace` instance by default,
-we must explicitly provide it in order to consider completeness. See
-`QuotientAddGroup.completeSpace_right` for a version in which `G` is already equipped with a uniform
-structure. -/]
+              Because an additive topological group is not equipped with a `UniformSpace` instance
+by default, we must explicitly provide it in order to consider completeness. See
+`QuotientAddGroup.completeSpace_right` for a version in which `G` is already equipped
+with a uniform structure.
+              -/]
 instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (IsTopologicalGroup.rightUniformSpace G)] :
@@ -679,24 +686,28 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
-/-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
+/--
+The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In contrast to `QuotientGroup.completeSpace_right'`, in this version `G` is
 already equipped with a uniform structure.
-[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+‍\[N. Bourbaki, _General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `IsTopologicalGroup.rightUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
-quotient obtained via other means. -/
-@[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
-`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_right'`, in this version
-`G` is already equipped with a uniform structure.
-[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+quotient obtained via other means.
+-/
+@[to_additive /--
+              The quotient `G ⧸ N` of a complete first countable uniform additive group `G` by a
+normal additive subgroup is itself complete. Consequently, quotients of Banach spaces
+by subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_right'`, in
+this version `G` is already equipped with a uniform structure. ‍\[N. Bourbaki,
+_General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
-Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalAddGroup.rightUniformSpace`.
--/]
+              Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not
+inherit a uniform structure, so it is still provided manually via
+`IsTopologicalAddGroup.rightUniformSpace`.
+              -/]
 instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
@@ -708,20 +719,25 @@ instance QuotientGroup.completeSpace_right (G : Type*)
   rw [← this] at hG
   infer_instance
 
-/-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
-is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+/--
+The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
+is itself complete. \[N. Bourbaki, _General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
 Because a topological group is not equipped with a `UniformSpace` instance by default, we must
 explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace_left` for
-a version in which `G` is already equipped with a uniform structure. -/
-@[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
-`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+a version in which `G` is already equipped with a uniform structure.
+-/
+@[to_additive /--
+              The quotient `G ⧸ N` of a complete first countable topological additive group `G` by a
+normal additive subgroup is itself complete. Consequently, quotients of Banach spaces
+by subspaces are complete. \[N. Bourbaki, _General Topology_, IX.3.1 Proposition
+4\]\[bourbaki1966b\]
 
-Because an additive topological group is not equipped with a `UniformSpace` instance by default,
-we must explicitly provide it in order to consider completeness. See
-`QuotientAddGroup.completeSpace_left` for a version in which `G` is already equipped with a uniform
-structure. -/]
+              Because an additive topological group is not equipped with a `UniformSpace` instance
+by default, we must explicitly provide it in order to consider completeness. See
+`QuotientAddGroup.completeSpace_left` for a version in which `G` is already equipped
+with a uniform structure.
+              -/]
 instance QuotientGroup.completeSpace_left' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [hG : @CompleteSpace G (IsTopologicalGroup.leftUniformSpace G)] :
@@ -729,26 +745,31 @@ instance QuotientGroup.completeSpace_left' (G : Type u) [Group G] [TopologicalSp
   rw [← IsTopologicalGroup.completeSpace_rightUniformSpace_iff_leftUniformSpace] at hG ⊢
   infer_instance
 
-/-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
+/--
+The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In contrast to `QuotientGroup.completeSpace_left'`, in this version `G` is
 already equipped with a uniform structure.
-[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+‍\[N. Bourbaki, _General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `IsTopologicalGroup.leftUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
-quotient obtained via other means. -/
-@[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
-`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_left'`, in this version
-`G` is already equipped with a uniform structure.
-[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+quotient obtained via other means.
+-/
+@[to_additive /--
+              The quotient `G ⧸ N` of a complete first countable uniform additive group `G` by a
+normal additive subgroup is itself complete. Consequently, quotients of Banach spaces
+by subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_left'`, in
+this version `G` is already equipped with a uniform structure. ‍\[N. Bourbaki,
+_General Topology_, IX.3.1 Proposition 4\]\[bourbaki1966b\]
 
-Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalAddGroup.leftUniformSpace`.
-In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
-significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here. -/]
+              Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not
+inherit a uniform structure, so it is still provided manually via
+`IsTopologicalAddGroup.leftUniformSpace`. In the most common use case ─ quotients of
+normed additive commutative groups by subgroups ─ significant care was taken so that
+the uniform structure inherent in that setting coincides (definitionally) with the
+uniform structure provided here.
+              -/]
 instance QuotientGroup.completeSpace_left (G : Type*)
     [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
