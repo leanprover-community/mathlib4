@@ -41,14 +41,14 @@ def _root_.FixedDetMatrix.mk {m : R} (A : Matrix n n R) (h : det A = m) : FixedD
 
 @[simp]
 lemma coe_mk {m : R} (A : Matrix n n R) (h : det A = m) :
-    (FixedDetMatrix.mk A h).1 = A := rfl
+    (FixedDetMatrix.mk A h).val = A := rfl
 
 @[simp]
 theorem mk_inj {m : R} {A B : Matrix n n R} (hA : det A = m) (hB : det B = m) :
     FixedDetMatrix.mk A hA = .mk B hB ↔ A = B :=
   Subtype.mk_eq_mk
 
-lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : FixedDetMatrix.mk (A.1) (A.2) = A := rfl
+lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : FixedDetMatrix.mk (A.val) (A.property) = A := rfl
 
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entrywise. -/
@@ -63,10 +63,10 @@ lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.val i j = B.val i
   apply h
 
 instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul g A := FixedDetMatrix.mk (g * A.1) (by simp [A.2])
+  smul g A := FixedDetMatrix.mk (g * A.val) (by simp [A.property])
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) :
-    g • A = FixedDetMatrix.mk ((g : Matrix n n R) * A.1) (by simp [A.2]) :=
+    g • A = FixedDetMatrix.mk ((g : Matrix n n R) * A.val) (by simp [A.property]) :=
   rfl
 
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
@@ -74,7 +74,7 @@ instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) whe
   mul_smul x y b := by simp [smul_def, ← mul_assoc]
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
-    (g • A).1 = g * A.1 := by
+    (g • A).val = g * A.val := by
   simp [smul_def]
 
 section IntegralFixedDetMatrices
@@ -85,16 +85,17 @@ variable {m : ℤ}
 
 /-- Set of representatives for the orbits under `S` and `T` -/
 def reps (m : ℤ) : Set (Δ m) :=
-  {A : Δ m | (A.val 1 0) = 0 ∧ 0 < A.val 0 0 ∧ 0 ≤ A.val 0 1 ∧ |(A.val 0 1)| < |(A.val 1 1)|}
+  {A : Δ m |
+    (A.val 1 0) = 0 ∧ 0 < A.val 0 0 ∧ 0 ≤ A.val 0 1 ∧ |(A.val 0 1)| < |(A.val 1 1)|}
 
 /-- Reduction step for matrices in `Δ m` which moves the matrices towards `reps` -/
 def reduceStep (A : Δ m) : Δ m := S • (T ^ (-(A.val 0 0 / A.val 1 0))) • A
 
-private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
-    |((reduceStep A).1 1 0)| < |(A.1 1 0)| := by
-  suffices ((reduceStep A).1 1 0) = A.1 0 0 % A.1 1 0 by
-    rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) h)]
-    exact Int.emod_lt_abs (A.1 0 0) h
+private lemma reduce_aux {A : Δ m} (h : (A.val 1 0) ≠ 0) :
+    |((reduceStep A).val 1 0)| < |(A.val 1 0)| := by
+  suffices ((reduceStep A).val 1 0) = A.val 0 0 % A.val 1 0 by
+    rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.val 0 0) h)]
+    exact Int.emod_lt_abs (A.val 0 0) h
   simp [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow,
     vecMul, vecHead, vecTail, mul_comm]
 
@@ -126,12 +127,12 @@ def reduce : Δ m → Δ m := fun A ↦
     zify
     exact reduce_aux h
 
-lemma reduce_of_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
-    reduce A = (T ^ (-(A.1 0 1 / A.1 1 1))) • A := by
+lemma reduce_of_pos {A : Δ m} (hc : (A.val 1 0) = 0) (ha : 0 < A.val 0 0) :
+    reduce A = (T ^ (-(A.val 0 1 / A.val 1 1))) • A := by
   simp_all [reduce]
 
-lemma reduce_of_not_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
-    reduce A = (T ^ (-(-A.1 0 1 / -A.1 1 1))) • (S • (S • A)) := by
+lemma reduce_of_not_pos {A : Δ m} (hc : (A.val 1 0) = 0) (ha : ¬ 0 < A.val 0 0) :
+    reduce A = (T ^ (-(-A.val 0 1 / -A.val 1 1))) • (S • (S • A)) := by
   simp_all [reduce]
 
 @[simp]
