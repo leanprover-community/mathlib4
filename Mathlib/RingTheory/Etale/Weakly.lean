@@ -47,7 +47,6 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   congr!
   conv_rhs => rw [← RingHom.Flat.ulift_iff.{u₁, u₂}]
   rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe]
-  #adaptation_note
   /- `erw` is required because
   `ULift.algebra'` causes instance diamonds in circumstances like this one. -/
   erw [AlgHom.comp_toRingHom]
