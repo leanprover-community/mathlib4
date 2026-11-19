@@ -85,20 +85,14 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
       q * p * q = p,
       p * q * p = p] := by
   have := StarOrderedRing.hasUniqueDiv (R := R)
-  have := hp.sub_tfae hq
-  tfae_have 2 ↔ 3 := this.out 1 2
-  tfae_have 2 ↔ 4 := this.out 1 3
-  tfae_have 2 ↔ 5 := this.out 1 4
-  tfae_have 2 ↔ 6 := this.out 1 5
-  tfae_have 2 ↔ 7 := this.out 1 6
-  tfae_have 2 → 1 := fun h ↦ by simpa using h.nonneg
-  tfae_have 1 → 7 := fun h ↦ hq.conjugate_of_nonneg_of_le hp.nonneg h
-  tfae_have 6 → 8 := fun h ↦ by rw [h, hp.isIdempotentElem.eq]
-  tfae_have 8 → 6 := fun h ↦ by
-    rw [← sub_eq_zero, ← mul_star_self_eq_zero]
-    simp [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, mul_sub, sub_mul, ← mul_assoc,
-      hp.isIdempotentElem.eq, hq.isIdempotentElem.mul_mul_self, h]
-  tfae_finish
+  refine hp.sub_tfae hq
+    |>.cons (hq.conjugate_of_nonneg_of_le hp.nonneg)
+      (fun h : IsStarProjection (q - p) ↦ by simpa using h.nonneg)
+    |>.concat (b := p * q = p) (c := p * q = p) (fun h ↦ ?_)
+      (fun h ↦ by rw [h, hp.isIdempotentElem.eq])
+  rw [← sub_eq_zero, ← mul_star_self_eq_zero]
+  simp [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, mul_sub, sub_mul, ← mul_assoc,
+    hp.isIdempotentElem.eq, hq.isIdempotentElem.mul_mul_self, h]
 
 lemma le_iff_mul_eq_right (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ q * p = p :=
