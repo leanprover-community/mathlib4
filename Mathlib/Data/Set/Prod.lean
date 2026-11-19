@@ -486,7 +486,7 @@ def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := 
 
 open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
-    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.property
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
@@ -503,7 +503,7 @@ def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
     (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
   ⟨(mapX p.fst, mapZ p.snd),
-    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+    (congr_fun commX _).trans <| (congr_arg mapY p.property).trans <| congr_fun commZ.symm _⟩
 
 open Function.Pullback in
 /-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/

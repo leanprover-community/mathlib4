@@ -279,6 +279,10 @@ lemma sec_apply (x : M) :
     sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
   rfl
 
+@[simp]
+lemma sec_self_one : sec R S S 1 = elem R S := by
+  simp [sec_apply]
+
 variable {M N} in
 lemma sec_comp (f : M →ₗ[S] N) :
     (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
@@ -472,6 +476,15 @@ lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
     Ideal.Quotient.mk Q (inertiaIdempotent R S g) = if g ∈ Q.inertia G then 1 else 0 := by
   rw [← mk_inertiaIdempotent_eq_one_iff R]
   grind [((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
+
+@[simp]
+lemma extendScalars_eq_mulLeft_inertiaIdempotent (g : G) :
+    extendScalars S (MulSemiringAction.toAlgHom R S g).toLinearMap =
+      LinearMap.mulLeft S (inertiaIdempotent R S g) := by
+  rw [inertiaIdempotent, equalizerIdempotent_comm]
+  apply LinearMap.ext_ring
+  simpa [equalizerIdempotent, extendScalars_apply] using
+    congr($(toLinearMap_productMap_id (MulSemiringAction.toAlgHom R S g)) (elem R S)).symm
 
 variable (G) [Finite G]
 
