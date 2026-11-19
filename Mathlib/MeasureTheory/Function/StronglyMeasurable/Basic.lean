@@ -5,9 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Function.SimpleFuncDense
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+
+import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -715,7 +716,7 @@ theorem _root_.stronglyMeasurable_iff_measurable_separable {m : MeasurableSpace 
   refine ⟨fun H ↦ ⟨H.measurable, H.isSeparable_range⟩, fun ⟨Hm, Hsep⟩  ↦ ?_⟩
   have := Hsep.secondCountableTopology
   have Hm' : StronglyMeasurable (rangeFactorization f) := Hm.subtype_mk.stronglyMeasurable
-  exact continuous_subtype_val.comp_stronglyMeasurable Hm'
+  exact continuous_subtypeVal.comp_stronglyMeasurable Hm'
 
 /-- A continuous function is strongly measurable when either the source space or the target space
 is second-countable. -/
@@ -729,6 +730,18 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
     refine ⟨hf.measurable, ?_⟩
     exact isSeparable_range hf
   · exact hf.measurable.stronglyMeasurable
+
+/-- A right-continuous function on a second-countable linear order is strongly measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is strongly
+measurable. -/]
+theorem _root_.IsRightContinuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpace α]
+    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} (hf : IsRightContinuous f) :
+    StronglyMeasurable f := by
+  borelize β
+  have := hf.separableSpace_range
+  rw [stronglyMeasurable_iff_measurable_separable]
+  exact ⟨hf.measurable, .of_subtype _⟩
 
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
 @[to_additive /-- A continuous function whose support is contained in a compact set is strongly
@@ -886,8 +899,8 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   nontriviality β; inhabit β
   suffices Function.extend Subtype.val (fun x : s ↦ f x)
       (Function.extend (↑) (fun x : t ↦ f x) fun _ ↦ default) = f from
-    this ▸ (MeasurableEmbedding.subtype_coe hs).stronglyMeasurable_extend hc <|
-      (MeasurableEmbedding.subtype_coe ht).stronglyMeasurable_extend hd stronglyMeasurable_const
+    this ▸ (MeasurableEmbedding.subtypeVal hs).stronglyMeasurable_extend hc <|
+      (MeasurableEmbedding.subtypeVal ht).stronglyMeasurable_extend hd stronglyMeasurable_const
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs

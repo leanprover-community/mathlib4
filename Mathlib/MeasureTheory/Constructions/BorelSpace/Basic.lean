@@ -199,7 +199,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
     [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
-    exact comap_mono h.1⟩
+    exact comap_mono h.borel_le⟩
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
@@ -689,7 +689,7 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
-    (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
+    (MeasurableEmbedding.subtypeVal h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=

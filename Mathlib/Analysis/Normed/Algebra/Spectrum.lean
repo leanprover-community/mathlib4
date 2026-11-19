@@ -455,6 +455,7 @@ variable [CompleteSpace 𝕜] [CompleteSpace A]
 
 namespace quasispectrum
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (quasispectrum 𝕜 a) := by
   rw [quasispectrum_eq_spectrum_toLp_inr]
@@ -507,6 +508,7 @@ theorem spectralRadius_le_nnNorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ 
 @[deprecated (since := "2026-08-13")]
 alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnNorm
 
+omit [CompleteSpace 𝕜] in
 theorem exists_nnNorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact a).exists_isMaxOn (nonempty 𝕜 a) continuous_nnNorm.continuousOn
@@ -516,6 +518,7 @@ theorem exists_nnNorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A)
 @[deprecated (since := "2026-10-31")]
 alias exists_nnnorm_quasispectrum_eq_spectralRadius := exists_nnNorm_quasispectrum_eq_spectralRadius
 
+omit [CompleteSpace 𝕜] in
 theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact a).sSup_lt_iff_of_continuous
@@ -627,7 +630,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   have hla₂ : Tendsto Ring.inverse (map (val S) l) (𝓝 (↑ha.unit⁻¹ : A)) := by
     rw [← Ring.inverse_unit]
     exact (NormedRing.inverse_continuousAt _).tendsto.comp <|
-      continuousAt_subtype_val.tendsto.comp <| map_mono hla
+      continuousAt_subtypeVal.tendsto.comp <| map_mono hla
   suffices mem : (↑ha.unit⁻¹ : A) ∈ S by
     refine ⟨⟨a, ⟨(↑ha.unit⁻¹ : A), mem⟩, ?_, ?_⟩, rfl⟩
     all_goals ext; simp

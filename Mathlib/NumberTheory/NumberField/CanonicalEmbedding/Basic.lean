@@ -219,8 +219,8 @@ protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
-    Function.Injective (NumberField.mixedEmbedding K) := by
-  exact RingHom.injective _
+    Function.Injective (NumberField.mixedEmbedding K) :=
+  RingHom.injective _
 
 section Measure
 
@@ -739,7 +739,7 @@ the `ℤ`-basis of `I` is actually an `ℝ`-basis of the mixed space, see
 theorem det_basisOfFractionalIdeal_eq_norm
     (e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I)) :
     |Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e))| =
-      FractionalIdeal.absNorm I.1 := by
+      FractionalIdeal.absNorm I.val := by
   suffices Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e)) =
       (algebraMap ℚ ℝ) ((Basis.det (integralBasis K)) ((basisOfFractionalIdeal K I) ∘ e)) by
     rw [this, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,
