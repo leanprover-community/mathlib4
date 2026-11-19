@@ -69,11 +69,12 @@ structure Target where
   rev : String
   slug : String
 
-/-- Resolves the target in the Mathlib checkout of `CacheM`. `rev?` is a git ref, `HEAD` when
-absent. The toolchain slug comes from the checkout's `lean-toolchain`. -/
+/-- Resolves the target. `rev?` is a git ref of the Mathlib checkout of `CacheM`, `HEAD` when
+absent. The toolchain slug comes from the `lean-toolchain` of the workspace in the current
+directory, which names the toolchain that builds with the outputs. -/
 def resolveTarget (pfx : String) (rev? : Option String) : CacheM Target := do
   let rev ← resolveGitRef (rev?.getD "HEAD")
-  let toolchain ← IO.FS.readFile ((← read).mathlibDepPath / "lean-toolchain")
+  let toolchain ← IO.FS.readFile "lean-toolchain"
   return { pfx, rev, slug := toolchainSlug toolchain }
 
 /-- Runs a Lake logging action, and throws if it fails. -/
@@ -136,7 +137,8 @@ def packageNames : CacheM (Array String) := do
 
 /--
 Downloads the revision file and the artifacts of every package into Lake's cache for the
-workspace in the current directory: `LAKE_CACHE_DIR` when it is set, `.lake/cache` otherwise.
+workspace in the current directory: `LAKE_CACHE_DIR`, which `lake exe` and `lake env` set to that
+cache, and `.lake/cache` when it is empty or unset.
 The download root is `MATHLIB_LAKE_CACHE_GET_URL`.
 
 A missing revision file of mathlib is an error. A missing revision file of a dependency is a
