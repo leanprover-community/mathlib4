@@ -224,7 +224,7 @@ section Trichotomous
 
 variable [Std.Trichotomous r]
 
-theorem IsChain.orderedInsert' {l : List α} (hl' : IsChain r l) {a} (ha : a ∉ l) :
+theorem IsChain.orderedInsert_of_not_mem {l : List α} (hl' : IsChain r l) {a} (ha : a ∉ l) :
     IsChain r (l.orderedInsert r a) := by
   cases l with
   | nil => exact IsChain.singleton a
@@ -241,7 +241,7 @@ theorem IsChain.orderedInsert' {l : List α} (hl' : IsChain r l) {a} (ha : a ∉
           grind
 
 /-- The list `List.insertionSort r l` is `List.IsChain` with respect to trichotomous `r`. -/
-theorem isChain_insertionSort' : ∀ l, l.Nodup → IsChain r (insertionSort r l)
+theorem IsChain.insertionSort_of_nodup : ∀ l, l.Nodup → IsChain r (insertionSort r l)
   | [], h => IsChain.nil
   | a :: l, h => (isChain_insertionSort' l h.of_cons).orderedInsert' (by simp [nodup_cons.mp h])
 
