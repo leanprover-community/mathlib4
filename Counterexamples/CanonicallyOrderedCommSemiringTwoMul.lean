@@ -214,7 +214,7 @@ instance : NoZeroDivisors L where
 -/
 example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
   refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => ?_, rfl⟩
-  cases congr($h.val.2)
+  cases congr($(h).val.2)
 
 end ExL
 
