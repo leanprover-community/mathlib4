@@ -112,7 +112,7 @@ theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
 theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = ∅ ∨ s = univ :=
   ⟨fun hs =>
     by_contradiction fun h =>
-      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_iff_ne_empty] using h
+      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_compl] using h
       have ⟨_, h2, h3⟩ := nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) h1.1 h1.2
       h3 h2,
     by rintro (rfl | rfl); exacts [isClopen_empty, isClopen_univ]⟩
@@ -183,7 +183,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
+  simp [← ne_empty_iff_nonempty, frontier_eq_empty_iff]
 
 /-- In a preconnected space, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -227,7 +227,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
   apply PreconnectedSpace.induction₂'
   · rintro ⟨x, hx⟩
     have Z := h x hx
-    rwa [nhdsWithin_eq_map_subtype_coe] at Z
+    rwa [nhdsWithin_eq_map_subtypeVal] at Z
   · exact ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ ↦ h' a b c ha hb hc⟩
 
 /-- In a preconnected set, if a symmetric transitive relation `P x y` is true for `y` close
@@ -284,7 +284,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_
         exact ne_of_mem_of_not_mem hvU uU (hU.1 v hvU ⟨x, hxs, hxu, hxv⟩).symm
       · exact IH (fun u hu => (hU.2 u hu).2) hUo.2
-  · simpa [subset_empty_iff, nonempty_iff_ne_empty] using h ∅
+  · simpa [subset_empty_iff] using h ∅
   · rw [← not_nonempty_iff_eq_empty] at hsuv
     have := hsuv; rw [inter_comm u] at this
     simpa [*, or_imp, forall_and] using h {u, v}
@@ -345,8 +345,7 @@ lemma IsClopen.isPreconnected_iff {s : Set α} (hs : IsClopen s) :
     rintro ⟨a, b, ha, hb, ha', hb', hab, rfl⟩ H
     exact (H a b ha.isOpen hb.isOpen subset_rfl (by rwa [union_inter_cancel_left])
       (by rwa [union_inter_cancel_right])).ne_empty (by grind)
-  · rw [nonempty_iff_ne_empty]
-    intro h
+  · by_contra! h
     exact H (s ∩ a) (s ∩ b)
       (isClopen_inter_of_disjoint_cover_clopen' hs hsab ha hb (by grind))
       (isClopen_inter_of_disjoint_cover_clopen' hs (by grind) hb ha (by grind))
@@ -676,9 +675,9 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
-    · rw [preimage_subtype_coe_eq_compl hsuv H]
-      exact (v_op.preimage continuous_subtype_val).isClosed_compl
-    · exact u_op.preimage continuous_subtype_val
+    · rw [preimage_subtypeVal_eq_compl hsuv H]
+      exact (v_op.preimage continuous_subtypeVal).isClosed_compl
+    · exact u_op.preimage continuous_subtypeVal
   simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 

@@ -56,6 +56,19 @@ open Filter Finset
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
+@[fun_prop]
+theorem _root_.Continuous.nnRealMk {X : Type*} [TopologicalSpace X] {f : X → ℝ}
+    (h : Continuous f) (hf : ∀ x, 0 ≤ f x) : Continuous fun x ↦ NNReal.mk (f x) (hf x) :=
+  .subtype_mk h _
+
+theorem _root_.IsOpenMap.nnRealMk {X : Type*} [TopologicalSpace X] {f : X → ℝ}
+    (h : IsOpenMap f) (hf : ∀ x, 0 ≤ f x) : IsOpenMap fun x ↦ NNReal.mk (f x) (hf x) :=
+  .subtype_mk h _
+
+theorem _root_.IsClosedMap.nnRealMk {X : Type*} [TopologicalSpace X] {f : X → ℝ}
+    (h : IsClosedMap f) (hf : ∀ x, 0 ≤ f x) : IsClosedMap fun x ↦ NNReal.mk (f x) (hf x) :=
+  .subtype_mk h _
+
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
 @[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
@@ -72,7 +85,7 @@ theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
-  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+  continuous_subtypeVal.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
@@ -154,7 +167,7 @@ theorem summable_coe {f : α → ℝ≥0} :
   · simp [Summable, HasSum, hL]
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    Summable (fun n ↦ ⟨f n, hf n⟩ : α → ℝ≥0) L ↔ Summable f L :=
+    Summable (fun n ↦ NNReal.mk (f n) (hf n)) L ↔ Summable f L :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
 @[norm_cast]

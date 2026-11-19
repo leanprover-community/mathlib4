@@ -280,7 +280,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ) :
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
   apply nullMeasurableSet_le aemeasurable_const
-  exact measurable_subtype_coe.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
+  exact measurable_subtypeVal.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
 
 /-- This lemma is slightly weaker than `MeasureTheory.MemLp.eLpNorm_indicator_norm_ge_pos_le` as the
 latter provides `0 < M`. -/
@@ -855,7 +855,8 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
       TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
-  refine ⟨hUI.1.unifIntegrable_of_tendstoInMeasure u (fun i ↦ hUI.aestronglyMeasurable i), ?_⟩
+  refine ⟨hUI.unifIntegrable.unifIntegrable_of_tendstoInMeasure u
+    (fun i ↦ hUI.aestronglyMeasurable i), ?_⟩
   refine hUI.iSup_eLpNorm_lt.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
   refine eLpNorm_le_of_tendstoInMeasure (Eventually.of_forall fun i ↦ ?_) hs (fun i ↦ ?_)
   · exact le_iSup (fun j ↦ eLpNorm (fn j) p μ) (s i)
