@@ -23,6 +23,9 @@ computes a number, it is equal to the number of distinct real roots of the input
 
 - `card_rootSet_of_realRootCount?`: If `realRootCount? d = some n` and `d` is a `SturmCertificate`
   of a polynomial `f` then `f` has `n` distinct roots.
+- `card_rootsIoo_of_realRootCountIoo?`: If `realRootCountIoo? d an ad bn bd = some n` and `d` is a
+  `SturmCertificate` of a polynomial `f` then `f` has `n` distinct real roots in the open interval
+  from `an / ad` to `bn / bd`.
 -/
 
 open Polynomial SignType
@@ -332,11 +335,54 @@ theorem sign_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (p : List ℤ) :
       rw [cast_evalScaled n d p (mul_div_cancel₀ _ hd'.ne')]
     _ = sign ((toReal p).eval ((n : ℝ) / d)) := by simp [sign_mul, sign_pow, sign_pos hd']
 
+theorem eval_toReal_ne_zero {n : ℤ} {d : ℕ} (hd : 0 < d) (h : evalScaled n d p ≠ 0) :
+    (toReal p).eval ((n : ℝ) / d) ≠ 0 := by
+  rwa [← sign_ne_zero, ← sign_evalScaled n hd, sign_ne_zero]
+
 theorem signVariations_map_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (L : List (List ℤ)) :
     (L.map (evalScaled n d)).signVariations =
       ((L.map toReal).map (sign ∘ eval ((n : ℝ) / d))).signVariations := by
   rw [← List.signVariations_map_sign, List.map_map, List.map_map]
   congrm List.signVariations ?_
   exact List.map_congr_left fun e _ => sign_evalScaled n hd e
+
+theorem sturm_Ioo_of_isScaledSturmSeq {f : ℝ[X]} {L : List ℝ[X]} {a b : ℝ} (hab : a < b)
+    (ha : f.eval a ≠ 0) (hb : f.eval b ≠ 0) (h : IsScaledSturmSeq f (derivative f) L) :
+    ((f.rootsIoo ℝ a b).card : ℤ) =
+      (L.map (sign ∘ eval a)).signVariations - (L.map (sign ∘ eval b)).signVariations := by
+  have key := sturm_tarski f 1 hab ha hb
+  simp only [sturmSignVariations_def, mul_one, eval_one, zero_lt_one, Set.ofPred_true,
+    Set.inter_univ, rootsIn_Ioo, not_lt_of_gt zero_lt_one, Set.ofPred_false, Set.inter_empty,
+    rootsIn_empty, Finset.card_empty, Nat.cast_zero, sub_zero] at key
+  rw [← key]
+  congrm (List.signVariations ?_ - List.signVariations ?_ : ℤ) <;>
+  · rw [← List.forall₂_eq_eq_eq]
+    refine List.rel_map ?_ h
+    rintro s _ ⟨c, hc, rfl⟩
+    simp [sign_mul, sign_pos hc]
+
+public theorem card_rootsIoo_of_realRootCountIoo? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
+    {d : SturmCertificate} {an bn : ℤ} {ad bd k n : ℕ}
+    (hf : (k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
+    (h : realRootCountIoo? d an ad bn bd = some n) :
+    (f.rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card = n := by
+  simp only [realRootCountIoo?, Option.ite_none_right_eq_some, Option.map_eq_some_iff,
+    Bool.and_eq_true, decide_eq_true_eq, bne_iff_ne, ne_eq, and_assoc] at h
+  obtain ⟨had, hbd, hab, ha, hb, L, hL, rfl⟩ := h
+  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
+  have hab' : (an : ℝ) / ad < bn / bd := by
+    rw [div_lt_div_iff₀ (Nat.cast_pos.mpr had) (Nat.cast_pos.mpr hbd)]
+    exact_mod_cast hab
+  calc (f.rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card
+    _ = ((toReal d.s).rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card := by
+      rw [rootsIoo_def, rootsIoo_def, ← roots_toReal hf hlead]
+      simp [aroots_def]
+    _ = (((L.map toReal).map (sign ∘ eval ((an : ℝ) / ad))).signVariations -
+          ((L.map toReal).map (sign ∘ eval ((bn : ℝ) / bd))).signVariations : ℤ).toNat := by
+      rw [← sturm_Ioo_of_isScaledSturmSeq hab' (eval_toReal_ne_zero had ha)
+        (eval_toReal_ne_zero hbd hb) (isScaledSturmSeq_of_entries? hL), Int.toNat_natCast]
+    _ = (L.map (evalScaled an ad)).signVariations - (L.map (evalScaled bn bd)).signVariations := by
+      rw [signVariations_map_evalScaled an had, signVariations_map_evalScaled bn hbd,
+        Int.toNat_sub]
 
 end Mathlib.Tactic.RealRootCount
