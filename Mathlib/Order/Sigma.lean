@@ -261,21 +261,21 @@ instance wellFounded {ι : Type*} {α : ι → Type*} {r : ι → ι → Prop} {
     [WellFounded r] [∀ i, WellFounded (s i)] : WellFounded (Lex r s) := by
   constructor
   rw [Sigma.forall]
-  refine hr.fix fun i IH a ↦ (hs i).fix (C := fun a ↦ Acc (Lex r s) ⟨i, a⟩)
-    (fun a IHa ↦ .intro _ fun ⟨j, b⟩ h ↦ ?_) a
+  refine WellFounded.fix' r fun i IH a ↦ WellFounded.fix' (s i)
+    (motive := fun a ↦ Acc (Lex r s) ⟨i, a⟩) (fun a IHa ↦ .intro _ fun ⟨j, b⟩ h ↦ ?_) a
   cases h with
   | left _ _ hji => exact IH j hji b
   | right _ _ hba => exact IHa b hba
 
 instance wellFoundedLT [LT ι] [WellFoundedLT ι] [∀ i, LT (α i)] [∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Σₗ i, α i) :=
-  wellFounded wellFounded_lt fun _ ↦ wellFounded_lt
+  wellFounded
 
 instance wellFoundedGT [LT ι] [WellFoundedGT ι] [∀ i, LT (α i)] [∀ i, WellFoundedGT (α i)] :
     WellFoundedGT (Σₗ i, α i) := by
   change WellFounded (Function.swap <| Lex (· < ·) (fun _ ↦ (· < ·)))
   rw [swap_lex]
-  exact wellFounded wellFounded_gt fun _ ↦ wellFounded_gt
+  exact wellFounded
 
 end Lex
 
