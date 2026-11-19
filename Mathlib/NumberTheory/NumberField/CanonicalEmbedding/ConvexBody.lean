@@ -480,13 +480,10 @@ the computation of this volume), then there exists a nonzero algebraic number `a
 that `w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBodyLT K f)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
-  have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
-    infer_instance
+  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT_neg_mem K f) (convexBodyLT_convex K f) h
-  rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
+  rw [mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
@@ -497,13 +494,10 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
     (h : minkowskiBound K I < volume (convexBodyLT' K f w₀)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
       |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
-  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
-  have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
-    infer_instance
+  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT'_neg_mem K f w₀) (convexBodyLT'_convex K f w₀) h
-  rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
+  rw [mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT'_mem K f w₀).mp h_mem⟩
 
@@ -590,14 +584,11 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   -- Some inequalities that will be useful later on
   have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
   have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
-  have h_fund := ZSpan.isAddFundamentalDomain' (fractionalIdealLatticeBasis K I) volume
-  have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
-    infer_instance
+  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
       h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)
       (convexBodySum_compact K B) h
-  rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
+  rw [mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
