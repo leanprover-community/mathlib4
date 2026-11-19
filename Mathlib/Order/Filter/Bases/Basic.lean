@@ -246,7 +246,7 @@ noncomputable def HasBasis.index (h : l.HasBasis p s) (t : Set α) (ht : t ∈ l
   ⟨(h.mem_iff.1 ht).choose, (h.mem_iff.1 ht).choose_spec.1⟩
 
 theorem HasBasis.property_index (h : l.HasBasis p s) (ht : t ∈ l) : p (h.index t ht) :=
-  (h.index t ht).2
+  (h.index t ht).property
 
 theorem HasBasis.set_index_mem (h : l.HasBasis p s) (ht : t ∈ l) : s (h.index t ht) ∈ l :=
   h.mem_of_mem <| h.property_index _

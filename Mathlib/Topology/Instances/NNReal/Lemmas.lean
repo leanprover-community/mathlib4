@@ -85,7 +85,7 @@ theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
-  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+  continuous_subtypeVal.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
@@ -94,7 +94,8 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
 
 theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
     Tendsto (fun a => m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
-  ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
+  ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).property, tendsto_coe.1 h⟩,
+    fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
 
 @[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
 
@@ -162,8 +163,8 @@ theorem summable_coe {f : α → ℝ≥0} :
     (Summable (fun a => (f a : ℝ)) L) ↔ Summable f L := by
   rcases L.neBot_or_eq_bot with _ | hL
   · constructor
-    · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-    · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+    · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).property⟩, hasSum_coe.1 ha⟩
+    · exact fun ⟨a, ha⟩ => ⟨a.val, hasSum_coe.2 ha⟩
   · simp [Summable, HasSum, hL]
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :

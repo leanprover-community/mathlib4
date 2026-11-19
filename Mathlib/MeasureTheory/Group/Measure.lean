@@ -292,7 +292,8 @@ lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : Measurab
     _ = μ univ := by
       rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
       · simp [hs.mul_eq]
-      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+      · exact fun a b hab ↦
+          hs.pairwiseDisjoint_smul a.property b.property (Subtype.val_injective.ne hab)
 
 end Group
 

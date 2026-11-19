@@ -55,7 +55,7 @@ theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendiec
   apply le_antisymm
   · refine iSup_le ?_
     intro f
-    exact f.2.1.le
+    exact f.2.val.le
   intro x hxU
   rw [Opens.mem_iSup]
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
@@ -106,11 +106,11 @@ def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
 def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
-  f.2.2.choose
+  f.2.property.choose
 
 theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
-  f.2.2.choose_spec
+  f.2.property.choose_spec
 
 end presieveOfCovering
 
@@ -175,7 +175,7 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
 @[simps!]
 def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
     Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
-  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtype_val⟩)) :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtypeVal⟩)) :=
     U.isOpenEmbedding
   haveI := H.functor_isContinuous
   H.isOpenMap.functor.sheafPushforwardContinuous C _ _

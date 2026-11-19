@@ -278,7 +278,7 @@ theorem tendsto_measure_biInter_gt [LinearOrder ι] [TopologicalSpace ι]
     simp_rw [← map_coe_Ioi_atBot a ha, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
     apply tendsto_measure_iInter_atBot
     · rwa [Subtype.forall]
-    · exact fun i j h ↦ hm i j i.2 h
+    · exact fun i j h ↦ hm i j i.property h
     · simpa only [Subtype.exists, exists_prop]
   · rw [Order.not_isPredPrelimit_iff] at ha
     rcases ha with ⟨b, hab⟩

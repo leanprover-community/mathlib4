@@ -135,7 +135,7 @@ lemma commutator_le_focalSubgroupOf : _root_.commutator H ≤ focalSubgroupOf H 
   rw [focalSubgroupOf_eq_closure]
   apply closure_mono
   rintro - ⟨a, -, b, -, -, rfl⟩
-  exact ⟨a, a.2, b, rfl⟩
+  exact ⟨a, a.property, b, rfl⟩
 
 @[to_additive]
 lemma commutator_le_focalSubgroup : ⁅H, H⁆ ≤ focalSubgroup H := by

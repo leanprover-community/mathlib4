@@ -47,8 +47,8 @@ lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
 
 lemma auxMat_toSquareBlock_ne : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
-  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
-    Matrix.one_apply, Subtype.ext_iff]
+  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.property),
+    ite_eq_right (of_eq_true j.property), Matrix.one_apply, Subtype.ext_iff]
 
 lemma auxMat_toSquareBlock_eq : (auxMat M k).toSquareBlock (· ≠ k) False = 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩

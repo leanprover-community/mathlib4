@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 /-!
 # Matrices associated with non-degenerate bilinear forms
 
+Note that while the definitions in this file could be made for `NonUnitalNonAssocSemiring`,
+we require associativity to avoid having to distinguish `v ⬝ᵥ M *ᵥ w` and `v ᵥ* M ⬝ᵥ w`.
+
 ## Main definitions
 
 * `Matrix.Nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
@@ -47,10 +50,10 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 end Finite
 
 section NonUnitalSemiring
+variable {m n R : Type*} [NonUnitalSemiring R] {M : Matrix m n R}
 
 section Fintype
-variable {m n R : Type*} [Fintype m] [Fintype n] [NonUnitalSemiring R]
-variable {M : Matrix m n R}
+variable [Fintype m] [Fintype n]
 
 lemma separatingRight_def : M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
@@ -65,17 +68,17 @@ lemma nondegenerate_def :
       (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   rw [nondegenerate_iff, separatingLeft_def, separatingRight_def]
 
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
+/-- If `M` is nondegenerate and `v * M * w = 0` for all `w`, then `v = 0`. -/
 theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
     (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
   (nondegenerate_def.mp hM).1 v hv
 
-/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `w * M * v ≠ 0`. -/
+/-- If `M` is nondegenerate and `v ≠ 0`, then there is some `w` such that `v * M * w ≠ 0`. -/
 theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
     {v : m → R} (hv : v ≠ 0) : ∃ w, v ⬝ᵥ M *ᵥ w ≠ 0 :=
   not_forall.mp (mt hM.eq_zero_of_ortho hv)
 
-/-- If `M` is nondegenerate and `w * M * v = 0` for all `v`, then `w = 0`. -/
+/-- If `M` is nondegenerate and `v * M * w = 0` for all `v`, then `w = 0`. -/
 theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
     (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
   (nondegenerate_def.mp hM).2 w hw
@@ -86,6 +89,17 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
 
 end Fintype
+
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
+    {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
+  have := Fintype.ofFinite n
+  separatingLeft_def.mp hM _ fun _ ↦ by simp [dotProduct_mulVec, hv]
+
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
+    {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
+  have := Fintype.ofFinite m
+  separatingRight_def.mp hM _ fun _ ↦ by simp [hv]
+
 
 section Finite
 variable {k l m n R : Type*} [Finite k] [Finite l] [Finite m] [Finite n] [NonUnitalSemiring R]
@@ -207,11 +221,12 @@ theorem separatingLeft_submatrix_iff (hr : Function.Bijective r) (hc : Function.
 
 theorem Nondegenerate.of_submatrix (hr : Function.Surjective r) (hc : Function.Surjective c)
     (h : (M.submatrix r c).Nondegenerate) : M.Nondegenerate :=
-  ⟨h.1.of_submatrix hr, h.2.of_submatrix hc⟩
+  ⟨h.separatingLeft.of_submatrix hr, h.separatingRight.of_submatrix hc⟩
 
 theorem Nondegenerate.submatrix (hr : Function.Bijective r) (hc : Function.Bijective c)
     (h : M.Nondegenerate) : (M.submatrix r c).Nondegenerate :=
-  ⟨h.1.submatrix hr.injective hc.surjective, h.2.submatrix hr.surjective hc.injective⟩
+  ⟨h.separatingLeft.submatrix hr.injective hc.surjective,
+    h.separatingRight.submatrix hr.surjective hc.injective⟩
 
 theorem nondegenerate_submatrix_iff (hr : Function.Bijective r) (hc : Function.Bijective c) :
     (M.submatrix r c).Nondegenerate ↔ M.Nondegenerate :=
@@ -227,26 +242,16 @@ variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
   have := Fintype.ofFinite n
-  rw [separatingLeft_def]
-  refine ⟨fun h v hv ↦ h v fun w ↦ ?_, fun h w hw ↦ h w <| funext fun i ↦ ?_⟩
-  · simp [dotProduct_mulVec, hv]
-  · classical simpa using! hw <| Pi.single i 1
+  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun w hw ↦ h w ?_⟩
+  ext i
+  classical simpa using! hw <| Pi.single i 1
 
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   have := Fintype.ofFinite m
-  rw [separatingRight_def]
-  refine ⟨fun h v hv ↦ h v fun w ↦ ?_, fun h w hw ↦ h w <| funext fun i ↦ ?_⟩
-  · simp [hv]
-  · classical simpa using hw <| Pi.single i 1
-
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
-    {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
-  separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
-
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
-    {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
-  separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
+  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ h w ?_⟩
+  ext i
+  classical simpa using hw <| Pi.single i 1
 
 theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype n] :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
