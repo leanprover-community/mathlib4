@@ -54,7 +54,7 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 open IsDedekindDomain UniformSpace.Completion NumberField PadicInt HeightOneSpectrum
 
-local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
+local instance (p : Nat.Primes) : Fact p.val.Prime := ⟨p.property⟩
 
 variable (R : Type*) [CommRing R] [Algebra R ℚ]
 
@@ -109,8 +109,9 @@ variable [IsDedekindDomain R] [IsFractionRing R ℚ]
 noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   toFun v := ⟨natGenerator v, prime_natGenerator v⟩
   invFun p :=
-    have h : Prime ((Ideal.span {(p.1 : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
-      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
+    have h : Prime ((Ideal.span {(p.val : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
+      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.property])
+        (by simp [p.property.ne_zero])
     .ofPrime h
   left_inv v := by
     simp only [Ideal.map_symm]
@@ -202,7 +203,7 @@ theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum R) :
   · rw [← adicCompletionIntegers.coe_padicIntEquiv_apply v ⟨x, hx⟩]
     exact norm_le_one ((adicCompletionIntegers.padicIntEquiv v) ⟨x, hx⟩)
   · obtain ⟨x, hx⟩ := (adicCompletionIntegers.padicIntEquiv v).surjective ⟨y, hy⟩
-    refine ⟨x, x.2, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
+    refine ⟨x, x.property, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
 
 end Rat.HeightOneSpectrum
 

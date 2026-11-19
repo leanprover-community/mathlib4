@@ -47,7 +47,7 @@ lemma equalizer_le : Subfunctor.equalizer f g ≤ A :=
 lemma equalizer_self : Subfunctor.equalizer f f = A := by aesop
 
 lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
-    x.1 ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
+    x.val ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
 lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
