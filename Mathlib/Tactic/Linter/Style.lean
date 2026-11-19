@@ -416,7 +416,8 @@ Upon error, return a message describing more details (such as, all relevant cons
 that *do* occur in the lemma). -/
 public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   -- Does the final name component contain a part `coe` (or `coe'`)?
-  let parts := name.components.getLast!.toString.split "_" |>.toList
+  let .str _ s := name | return (false, "")
+  let parts := s.split "_" |>.toList
   unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
   -- Does the declaration reference a constant called `coe`? If so, we are fine.
   let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
