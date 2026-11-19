@@ -145,7 +145,6 @@ associated to the bilinear form `mercerForm`. -/
 def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ :=
   InnerProductSpace.continuousLinearMapOfBilin (mercerForm hK)
 
-
 @[simp]
 lemma integralOperator_apply (f : Lp V 2 μ) :
     integralOperator hK f = (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm hK f) := by
@@ -159,13 +158,13 @@ theorem inner_integralOperator (f g : Lp V 2 μ) :
     ⟪f, integralOperator hK g⟫_𝕜 = starRingEnd 𝕜 (mercerForm hK g f) := by
   rw [← inner_conj_symm, integralOperator_inner]
 
-theorem isSelfAdjoint_integralOperator [Fact K.PosSemidef] :
+theorem isSelfAdjoint_integralOperator (hK' : K.IsHermitian) :
     IsSelfAdjoint (integralOperator hK) := by
   ext f
   apply Lp.ext_iff.mp
   refine ext_inner_left 𝕜 fun g ↦ ?_
   rw [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.adjoint_inner_right,
     ← inner_conj_symm g ((integralOperator hK) f)]
-  simp [← mercerForm_conj_symm hK (Fact.out : K.PosSemidef).isHermitian f g]
+  simp [← mercerForm_conj_symm hK hK' f g]
 
 end RKHS
