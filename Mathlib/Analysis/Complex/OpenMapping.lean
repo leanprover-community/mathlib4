@@ -262,7 +262,7 @@ theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
   continuous := by fun_prop
   isOpenMap :=
     (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
-      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtype_val
+      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtypeVal
 
 theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
     IsOpenQuotientMap

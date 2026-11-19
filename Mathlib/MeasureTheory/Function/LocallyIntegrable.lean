@@ -246,8 +246,8 @@ def LocallyIntegrable (f : X → ε) (μ : Measure X := by volume_tac) : Prop :=
 
 theorem locallyIntegrable_comap (hs : MeasurableSet s) :
     LocallyIntegrable (fun x : s ↦ f x) (μ.comap Subtype.val) ↔ LocallyIntegrableOn f s μ := by
-  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtype_val]
-  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtype_coe hs).integrableAtFilter_iff_comap.symm
+  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtypeVal]
+  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtypeVal hs).integrableAtFilter_iff_comap.symm
 
 theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
   simp only [LocallyIntegrableOn, nhdsWithin_univ, mem_univ, true_imp_iff]; rfl
