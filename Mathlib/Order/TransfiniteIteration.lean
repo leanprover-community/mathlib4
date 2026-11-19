@@ -46,7 +46,8 @@ defined by taking *infima* at limit points. -/]
 noncomputable def supTransfiniteIterate (j : J) : I → I :=
   let := SuccOrder.ofLinearWellFoundedLT J
   SuccOrder.limitRecOn j
-    (fun _ _ ↦ id) (fun _ _ g ↦ φ ∘ g) (fun y _ h ↦ ⨆ x : Set.Iio y, h x.1 (Set.mem_Iio.1 x.2))
+    (fun _ _ ↦ id) (fun _ _ g ↦ φ ∘ g)
+    (fun y _ h ↦ ⨆ x : Set.Iio y, h x.val (Set.mem_Iio.1 x.property))
 
 @[deprecated (since := "2026-09-15")]
 alias transfiniteIterate := supTransfiniteIterate
@@ -83,7 +84,7 @@ theorem supTransfiniteIterate_succ [SuccOrder J] [NoMaxOrder J] (j : J) :
 
 @[to_dual (dont_translate := J) infTransfiniteIterate_limit]
 theorem supTransfiniteIterate_limit {j : J} (hj : Order.IsSuccLimit j) :
-    supTransfiniteIterate φ j i₀ = ⨆ x : Set.Iio j, supTransfiniteIterate φ x.1 i₀ := by
+    supTransfiniteIterate φ j i₀ = ⨆ x : Set.Iio j, supTransfiniteIterate φ x.val i₀ := by
   let := SuccOrder.ofLinearWellFoundedLT J
   unfold supTransfiniteIterate
   simp [SuccOrder.limitRecOn_of_isSuccLimit _ _ _ hj]
@@ -118,7 +119,7 @@ theorem supTransfiniteIterate_mono (hφ : ∀ i, i ≤ φ i) {j k : J} (h : j �
   | isSuccLimit k' hk' _ =>
     obtain h | rfl := h.lt_or_eq
     · rw [supTransfiniteIterate_limit _ _ hk']
-      exact le_iSup (fun l : Set.Iio k' ↦ supTransfiniteIterate φ l.1 i₀) ⟨j, Set.mem_Iio.1 h⟩
+      exact le_iSup (fun l : Set.Iio k' ↦ supTransfiniteIterate φ l.val i₀) ⟨j, Set.mem_Iio.1 h⟩
     · rfl
 
 theorem supTransfiniteIterate_monotone (hφ : ∀ i, i ≤ φ i) :

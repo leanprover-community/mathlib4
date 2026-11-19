@@ -272,7 +272,7 @@ lemma lipschitzWith_one_ofFun_toFun' [Finite 𝔗] (h : ⋃₀ 𝔖 ⊆ ⋃₀ �
 
 lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖) :
     LipschitzWith 1 (UniformFun.ofFun ∘ s.domRestrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
-  UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
+  UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.property⟩
 
 lemma isometry_restrict (s : Set α) :
     Isometry (UniformFun.ofFun ∘ s.domRestrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by

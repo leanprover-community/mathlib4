@@ -1177,10 +1177,10 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α]
       have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
       rw [prod_subtype _ this]
       congr with i
-      simp [i.2]
+      simp [i.property]
     · rw [prod_subtype _ (fun _ ↦ s.mem_toFinset), ← Equiv.prod_comp e.symm]
       gcongr with i
-      simpa only [i.2, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
+      simpa only [i.property, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
 @[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]

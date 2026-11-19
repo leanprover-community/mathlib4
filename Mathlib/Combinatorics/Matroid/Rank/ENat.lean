@@ -72,7 +72,7 @@ section Basic
 
 /-- The rank `Matroid.eRank M` of `M` is the `ℕ∞`-valued cardinality of each base of `M`.
 (See `Matroid.cRank` for a worse-behaved cardinal-valued version) -/
-noncomputable def eRank (M : Matroid α) : ℕ∞ := ⨆ B : {B // M.IsBase B}, B.1.encard
+noncomputable def eRank (M : Matroid α) : ℕ∞ := ⨆ B : {B // M.IsBase B}, B.val.encard
 
 /-- The rank `Matroid.eRk M X` of a set `X` is the `ℕ∞`-valued cardinality of each basis of `X`.
 (See `Matroid.cRk` for a worse-behaved cardinal-valued version) -/
@@ -89,8 +89,8 @@ lemma eRk_ground (M : Matroid α) : M.eRk M.E = M.eRank :=
 lemma eRank_restrict (M : Matroid α) (X : Set α) : (M ↾ X).eRank = M.eRk X := rfl
 
 lemma IsBase.encard_eq_eRank (hB : M.IsBase B) : B.encard = M.eRank := by
-  simp [eRank, show ∀ B' : {B // M.IsBase B}, B'.1.encard = B.encard from
-    fun B' ↦ B'.2.encard_eq_encard_of_isBase hB]
+  simp [eRank, show ∀ B' : {B // M.IsBase B}, B'.val.encard = B.encard from
+    fun B' ↦ B'.property.encard_eq_encard_of_isBase hB]
 
 lemma IsBasis'.encard_eq_eRk (hI : M.IsBasis' I X) : I.encard = M.eRk X :=
   hI.isBase_restrict.encard_eq_eRank

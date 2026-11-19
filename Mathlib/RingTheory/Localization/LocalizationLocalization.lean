@@ -242,7 +242,7 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
 
 theorem mk'_eq_algebraMap_mk'_of_submonoid_le {M N : Submonoid R} (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] (x : R) (y : {a : R // a ∈ M}) :
-    mk' T x ⟨y.1, h y.2⟩ = algebraMap S T (mk' S x y) :=
+    mk' T x ⟨y.val, h y.property⟩ = algebraMap S T (mk' S x y) :=
   mk'_eq_iff_eq_mul.mpr (by simp only [IsScalarTower.algebraMap_apply R S T, ← map_mul, mk'_spec])
 
 end LocalizationLocalization
