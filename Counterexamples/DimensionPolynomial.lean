@@ -41,9 +41,9 @@ noncomputable abbrev A : Subring (RatFunc k)⟦X⟧ :=
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   have h_unit : ∀ (x : (RatFunc k)⟦X⟧) (hx : x ∈ A k), IsUnit x → IsUnit (⟨x, hx⟩ : A k) := by
     intro x ⟨z, hz⟩ ⟨y, hxy⟩
-    refine ⟨⟨⟨y.val, hxy ▸ ⟨z, hz⟩⟩, ⟨y.inv, ⟨z⁻¹, ?_⟩⟩, Subtype.ext y.3, Subtype.ext y.4⟩,
-      Subtype.ext hxy⟩
-    have := hxy ▸ congr(PowerSeries.constantCoeff $(y.3))
+    refine ⟨⟨⟨y.val, hxy ▸ ⟨z, hz⟩⟩, ⟨y.inv, ⟨z⁻¹, ?_⟩⟩,
+      Subtype.ext y.val_inv, Subtype.ext y.inv_val⟩, Subtype.ext hxy⟩
+    have := hxy ▸ congr(PowerSeries.constantCoeff $(y.val_inv))
     simp only [map_mul, ← hz, constantCoeff_one] at this
     have hz : z ≠ 0 := by
       intro rfl

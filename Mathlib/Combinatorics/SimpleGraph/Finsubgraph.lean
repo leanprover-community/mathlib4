@@ -63,13 +63,13 @@ instance : OrderBot G.Finsubgraph where
   bot_le _ := bot_le (α := G.Subgraph)
 
 instance : Max G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.property.union G₂.property⟩⟩
 
 instance : Min G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.property.subset inter_subset_left⟩⟩
 
 instance instSDiff : SDiff G.Finsubgraph where
-  sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.2.subset (Subgraph.verts_mono sdiff_le)⟩
+  sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.property.subset (Subgraph.verts_mono sdiff_le)⟩
 
 @[simp, norm_cast] lemma coe_bot : (⊥ : G.Finsubgraph) = (⊥ : G.Subgraph) := rfl
 

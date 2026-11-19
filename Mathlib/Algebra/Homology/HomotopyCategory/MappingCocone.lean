@@ -86,14 +86,14 @@ lemma inl_v_snd_v (p q : ℤ) (hpq : p + -1 = q) :
 
 @[reassoc (attr := simp)]
 lemma inr_v_fst_f (p q : ℤ) (hpq : p + 1 = q) :
-    (inr φ).1.v p q hpq ≫ (fst φ).f q = 0 := by
-  simp [mappingCocone, inr, fst, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
+    (inr φ).val.v p q hpq ≫ (fst φ).f q = 0 := by
+  simp [inr, fst, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Cochain.leftShift_v _ _ _ _ _ _ _ _ hpq]
 
 @[reassoc (attr := simp)]
 lemma inr_v_snd_v (p q : ℤ) (hpq : p + 1 = q) :
-    (inr φ).1.v p q hpq ≫ (snd φ).v q p (by lia) = 𝟙 _ := by
-  simp [mappingCocone, inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
+    (inr φ).val.v p q hpq ≫ (snd φ).v q p (by lia) = 𝟙 _ := by
+  simp [inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Int.negOnePow_even 2 ⟨1, rfl⟩]
 
@@ -121,7 +121,7 @@ lemma ext_to_iff (i j : ℤ) (hij : i + -1 = j) {A : C} (f g : A ⟶ (mappingCoc
 open HomComplex in
 lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X j ⟶ A}
     (h₁ : (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g)
-    (h₂ : (inr φ).1.v i j hij ≫ f = (inr φ).1.v i j hij ≫ g) :
+    (h₂ : (inr φ).1.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g) :
     f = g := by
   dsimp [mappingCocone]
   refine mappingCone.ext_from _ j (j + -1) (by lia) ?_ ?_
@@ -132,7 +132,7 @@ lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X
 
 lemma ext_from_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : (mappingCocone φ).X j ⟶ A) :
     f = g ↔ (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g ∧
-      (inr φ).1.v i j hij ≫ f = (inr φ).1.v i j hij ≫ g := by
+      (inr φ).1.v i j hij ≫ f = (inr φ).val.v i j hij ≫ g := by
   constructor
   · rintro rfl
     tauto
@@ -142,7 +142,7 @@ lemma ext_from_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : (mappingCocone �
 @[reassoc]
 lemma inl_v_d (i j : ℤ) (hij : i + 1 = j) :
     (inl φ).v i i (add_zero i) ≫ (mappingCocone φ).d i j =
-      K.d i j ≫ (inl φ).v j j (add_zero j) - φ.f i ≫ (inr φ).1.v i j hij := by
+      K.d i j ≫ (inl φ).v j j (add_zero j) - φ.f i ≫ (inr φ).val.v i j hij := by
   obtain rfl : i = j + -1 := by lia
   simp [inl, inr, mappingCocone,
     Cochain.rightShift_v _ (-1) 0 (zero_add (-1)) (j + -1) (j + -1) (by lia)
@@ -153,8 +153,8 @@ lemma inl_v_d (i j : ℤ) (hij : i + 1 = j) :
 
 @[reassoc]
 lemma inr_v_d (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
-    (inr φ).1.v i j hij ≫ (mappingCocone φ).d j k =
-      -L.d i j ≫ (inr φ).1.v j k hjk := by
+    (inr φ).val.v i j hij ≫ (mappingCocone φ).d j k =
+      -L.d i j ≫ (inr φ).val.v j k hjk := by
   obtain rfl : j = k + -1 := by lia
   simp [inr, mappingCocone,
     Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) i (k + -1) (by lia) i (by lia),
@@ -174,7 +174,7 @@ lemma d_snd_v (i j k : ℤ) (hij : j + -1 = i) (hjk : i + -1 = k) :
 
 lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
     (fst φ).f p ≫ (inl φ).v p p (add_zero p) +
-      (snd φ).v p q hpq ≫ (inr φ).1.v q p (by lia) = 𝟙 _ := by
+      (snd φ).v p q hpq ≫ (inr φ).val.v q p (by lia) = 𝟙 _ := by
   obtain rfl : q = p + -1 := by lia
   simpa [fst, inl, snd, inr, mappingCocone,
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia),
@@ -202,7 +202,7 @@ lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
 
 @[reassoc (attr := simp)]
 lemma inr_v_descCochain_v (p q : ℤ) (hpq : p + 1 = q) (r : ℤ) (hr : q + m = r) :
-    (inr φ).1.v p q hpq ≫ (descCochain φ α β h).v q r hr = β.v p r (by lia) := by
+    (inr φ).val.v p q hpq ≫ (descCochain φ α β h).v q r hr = β.v p r (by lia) := by
   obtain rfl : p = q + -1 := by lia
   simp [inr, descCochain, mappingCocone, smul_smul,
     Cochain.rightShift_v _ _ _ _ _ _ hpq _ (add_zero (q + -1)),
@@ -215,7 +215,7 @@ lemma inl_comp_descCochain :
 
 @[simp]
 lemma inr_comp_descCochain :
-    (inr φ).1.comp (descCochain φ α β h) (by lia) = β := by
+    (inr φ).val.comp (descCochain φ α β h) (by lia) = β := by
   ext p q hpq
   simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
 
@@ -248,7 +248,7 @@ end
 @[simps]
 noncomputable def descCocycle {M : CochainComplex C ℤ} {n m : ℤ}
     (α : Cochain K M m) (β : Cocycle L M n) (h : m + 1 = n)
-    (hαβ : δ m n α + m.negOnePow • (Cochain.ofHom φ).comp β.1 (zero_add n) = 0) :
+    (hαβ : δ m n α + m.negOnePow • (Cochain.ofHom φ).comp β.val (zero_add n) = 0) :
     Cocycle (mappingCocone φ) M m :=
   ⟨descCochain φ α β h, by
     simp [Cocycle.mem_iff _ n h, δ_descCochain _ _ _ h (n + 1) (by lia), hαβ]⟩
@@ -256,7 +256,7 @@ noncomputable def descCocycle {M : CochainComplex C ℤ} {n m : ℤ}
 section
 
 variable {M : CochainComplex C ℤ} (α : Cochain K M 0) (β : Cocycle L M 1)
-  (hαβ : δ 0 1 α + (Cochain.ofHom φ).comp β.1 (zero_add 1) = 0)
+  (hαβ : δ 0 1 α + (Cochain.ofHom φ).comp β.val (zero_add 1) = 0)
 
 /-- Constructor for morphisms from `mappingCocone`. -/
 noncomputable def desc : mappingCocone φ ⟶ M :=
@@ -264,7 +264,7 @@ noncomputable def desc : mappingCocone φ ⟶ M :=
 
 @[simp]
 lemma ofHom_desc :
-    Cochain.ofHom (desc φ α β hαβ) = descCochain φ α β.1 (by lia) := by
+    Cochain.ofHom (desc φ α β hαβ) = descCochain φ α β.val (by lia) := by
   simp [desc]
 
 @[reassoc (attr := simp)]
@@ -274,7 +274,7 @@ lemma inl_v_desc_f (p : ℤ) :
 
 @[reassoc (attr := simp)]
 lemma inr_v_desc_f (p q : ℤ) (hpq : p + 1 = q) :
-    (inr φ).1.v p q hpq ≫ (desc φ α β hαβ).f q = β.1.v p q hpq := by
+    (inr φ).val.v p q hpq ≫ (desc φ α β hαβ).f q = β.val.v p q hpq := by
   simp [desc]
 
 end
@@ -320,7 +320,7 @@ lemma liftCochain_comp_snd :
 lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ n n' (liftCochain φ α β h) =
       (δ n n' α).comp (inl φ) (add_zero _) -
-        (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).1 hn' := by
+        (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).val hn' := by
   dsimp [liftCochain, inl, inr]
   ext p q hpq
   simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
@@ -342,7 +342,7 @@ end
 @[simps]
 noncomputable def liftCocycle {M : CochainComplex C ℤ} {n m : ℤ}
     (α : Cocycle M K n) (β : Cochain M L m) (h : m + 1 = n)
-    (hαβ : δ m n β + α.1.comp (Cochain.ofHom φ) (add_zero n) = 0) :
+    (hαβ : δ m n β + α.val.comp (Cochain.ofHom φ) (add_zero n) = 0) :
     Cocycle M (mappingCocone φ) n :=
   ⟨liftCochain φ α β h,
     by simp [Cocycle.mem_iff _ _ rfl, δ_liftCochain _ _ _ _ _ rfl, hαβ]⟩

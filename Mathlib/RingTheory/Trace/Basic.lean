@@ -62,7 +62,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.val + j.val)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots
@@ -497,8 +497,7 @@ then `traceForm` is nondegenerate. -/
 @[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
-  BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (Module.finBasis K L))
+  .of_det_ne_zero (traceForm K L) _ (det_traceForm_ne_zero (Module.finBasis K L))
 
 @[stacks 0BIL]
 theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :
