@@ -457,9 +457,8 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
 
 /-- If the class group is a torsion group, then every ideal has a nonzero power that is
 principal. -/
-theorem ClassGroup.exists_pow_eq_span_singleton [IsDedekindDomain R]
-    (hR : IsMulTorsion (ClassGroup R)) (I : Ideal R) :
-    ∃ n ≠ 0, ∃ α : R, I ^ n = Ideal.span {α} := by
+theorem ClassGroup.exists_pow_isPrincipal [IsDedekindDomain R] (hR : IsMulTorsion (ClassGroup R))
+    (I : Ideal R) : ∃ n ≠ 0, (I ^ n).IsPrincipal := by
   rcases eq_or_ne I 0 with rfl | hI
   · exact ⟨1, one_ne_zero, 0, by simp⟩
   have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hI
@@ -467,6 +466,14 @@ theorem ClassGroup.exists_pow_eq_span_singleton [IsDedekindDomain R]
   obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
     rwa [← ClassGroup.mk0_eq_one_iff (pow_mem hI' n), ← SubmonoidClass.mk_pow, map_pow]
   exact ⟨n, hn.ne', α, hα⟩
+
+theorem ClassGroup.isPrincipal_pow_card [IsDedekindDomain R] [Finite (ClassGroup R)]
+    (I : Ideal R) : (I ^ Nat.card (ClassGroup R)).IsPrincipal := by
+  by_cases hI : I = ⊥
+  · simp [hI, Ideal.bot_pow Nat.card_pos.ne', bot_isPrincipal]
+  have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hI
+  rw [← ClassGroup.mk0_eq_one_iff (pow_mem hI' _), ← SubmonoidClass.mk_pow I hI',
+    map_pow, pow_card_eq_one']
 
 section MulEquiv
 
