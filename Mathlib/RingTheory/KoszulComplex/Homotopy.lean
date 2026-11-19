@@ -38,10 +38,8 @@ lemma contraction_wedge_zero_degree
     apply Subtype.ext
     simp [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
       exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.ιMulti_succ_apply]
-  simp only [LinearMap.smul_compAlternatingMap, smul_apply,
-    LinearMap.compAlternatingMap_apply, LinearMap.id_apply, LinearMap.comp_apply, koszulComplex.d]
-  rw  [hwedge, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
-  simp [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
+  simp [koszulComplex.d, hwedge, koszulComplex.dAlternating,
+    AlternatingMap.alternatizeUncurryFin_apply]
 
 @[stacks 0626]
 lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
@@ -61,10 +59,9 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
       exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.ιMulti_succ_apply]
   rw [LinearMap.comp_apply, LinearMap.comp_apply,
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti, hwedge,
-    exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
-  rw [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply,
-      koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply, Fin.sum_univ_succ,
-      Fin.sum_univ_succ]
+    exteriorPower.alternatingMapLinearEquiv_apply_ιMulti, koszulComplex.dAlternating,
+    AlternatingMap.alternatizeUncurryFin_apply, koszulComplex.dAlternating,
+    AlternatingMap.alternatizeUncurryFin_apply, Fin.sum_univ_succ, Fin.sum_univ_succ]
   -- Rewrite the removed tuples so both Leibniz expansions are indexed the same way.
   have hremove (i : Fin (n + 1)) :
       i.succ.removeNth (Matrix.vecCons x v) = Matrix.vecCons x (i.removeNth v) := by
