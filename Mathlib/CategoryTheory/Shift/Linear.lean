@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Shift.CommShift
+
+import Mathlib.CategoryTheory.Localization.Linear
 
 /-!
 # Localization of the linearity of the shift functors

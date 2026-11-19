@@ -5,9 +5,11 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Order.Interval.Finset.Defs
 
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.Prod
 
 /-!

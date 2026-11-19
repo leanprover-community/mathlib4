@@ -5,7 +5,9 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 module
 
-public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Restrict
+
+import Mathlib.Data.Set.Function
 
 /-!
 # Monotone functions over sets

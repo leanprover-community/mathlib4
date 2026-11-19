@@ -6,7 +6,10 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+
+import Mathlib.LinearAlgebra.Basis.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Image
 public import Mathlib.Order.Bounds.Defs
+
+import Mathlib.Data.Set.Function
 
 /-!
 # Well-founded relations

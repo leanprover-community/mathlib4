@@ -5,10 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
-public import Mathlib.Algebra.Polynomial.Eval.Algebra
 
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Polynomial.Eval.Algebra
 
 /-!
 # The Pochhammer polynomials

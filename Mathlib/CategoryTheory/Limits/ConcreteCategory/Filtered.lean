@@ -6,7 +6,10 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

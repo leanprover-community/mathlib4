@@ -6,7 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Discriminant
+
+import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant

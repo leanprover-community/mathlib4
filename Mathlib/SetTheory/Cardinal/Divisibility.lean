@@ -6,7 +6,9 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Basic
+
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinal Divisibility

@@ -5,9 +5,11 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Pretransitive
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-public import Mathlib.GroupTheory.GroupAction.Basic
+
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Galois objects in Galois categories

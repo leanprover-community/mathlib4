@@ -5,7 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.DedekindDomain.Basic
+
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Normal closure of an extension of domains

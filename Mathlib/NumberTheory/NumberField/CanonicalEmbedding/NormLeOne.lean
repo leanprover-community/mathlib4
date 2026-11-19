@@ -6,8 +6,10 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
-public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1

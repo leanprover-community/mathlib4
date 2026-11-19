@@ -5,12 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Batteries.Data.List.Basic
 public import Mathlib.Algebra.Group.Nat.Even
-public import Mathlib.Data.List.Chain
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.List.Chain
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

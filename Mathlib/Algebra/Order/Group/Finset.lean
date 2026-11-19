@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Prod
 
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Data.Finset.Lattice.Prod
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

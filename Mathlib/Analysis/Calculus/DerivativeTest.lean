@@ -6,8 +6,9 @@ Yongxi Lin, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!

@@ -6,9 +6,11 @@ Authors: Shing Tak Lam
 module
 
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 import Mathlib.Data.Matrix.Reflection
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Unitary Group

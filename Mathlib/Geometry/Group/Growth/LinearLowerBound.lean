@@ -5,9 +5,11 @@ Authors: Yaël Dillies, Patrick Luo, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Subgroup.Lattice
 
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Order.SuccPred.Nat
 
 /-!

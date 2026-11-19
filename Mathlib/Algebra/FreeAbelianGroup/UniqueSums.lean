@@ -5,8 +5,10 @@ Authors: Yaël Dillies, Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.Group.UniqueProds.Basic
+public import Mathlib.GroupTheory.FreeAbelianGroup
+
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

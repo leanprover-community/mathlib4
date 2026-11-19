@@ -5,11 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Descent
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
+public import Mathlib.CategoryTheory.MorphismProperty.Descent
 
+import Mathlib.AlgebraicGeometry.Morphisms.Descent
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 
 /-!

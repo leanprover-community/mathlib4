@@ -5,12 +5,14 @@ Authors: Aaron Anderson, Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.SMulAntidiagonal
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.HahnSeries.Addition
+
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Multiplicative properties of Hahn series

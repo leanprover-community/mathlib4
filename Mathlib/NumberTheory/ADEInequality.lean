@@ -5,11 +5,13 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.PNat.Interval
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Data.List.Sort
 public import Mathlib.Tactic.NormNum
 
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Basic
+import Mathlib.Data.PNat.Interval
 import Mathlib.Tactic.FinCases
 
 /-!

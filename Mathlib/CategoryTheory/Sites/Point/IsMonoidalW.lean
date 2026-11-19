@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.CategoryTheory.Sites.Point.Monoidal
+
+import Mathlib.CategoryTheory.Sites.Point.Monoidal
 
 /-!
 # Monoidal structure on sheaves using enough points

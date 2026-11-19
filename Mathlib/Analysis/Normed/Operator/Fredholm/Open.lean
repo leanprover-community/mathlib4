@@ -5,8 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # The set of Fredholm operators is open, and the index is locally constant

@@ -5,9 +5,11 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.Int.Bitwise
-public import Mathlib.Data.Int.Order.Lemmas
 public import Mathlib.Order.Interval.Set.Defs
+
+import Mathlib.Data.Int.Order.Lemmas
 
 /-!
 # Miscellaneous lemmas about the integers

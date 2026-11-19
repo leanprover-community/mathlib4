@@ -6,9 +6,11 @@ Authors: Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.Peel
+
+import Mathlib.Data.Nat.Factorization.LCM
 
 /-!
 # Exponent of a group

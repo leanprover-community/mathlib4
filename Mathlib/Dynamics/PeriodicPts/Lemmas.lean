@@ -6,10 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Order.Lattice.Nat
 
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 
 set_option doc.verso true

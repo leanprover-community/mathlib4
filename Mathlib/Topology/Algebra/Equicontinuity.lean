@@ -5,8 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.UniformConvergence
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.UniformSpace.Equicontinuity
+
+import Mathlib.Topology.Algebra.UniformConvergence
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,7 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.BoxIntegral.Basic
+
+import Mathlib.Analysis.BoxIntegral.Integrability
 
 /-!
 # Unit Partition

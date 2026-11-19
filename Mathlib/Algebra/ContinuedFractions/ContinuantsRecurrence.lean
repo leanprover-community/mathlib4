@@ -5,7 +5,9 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Translations
+public import Mathlib.Algebra.ContinuedFractions.Basic
+
+import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Recurrence Lemmas for the Continuants (`conts`) Function of Continued Fractions

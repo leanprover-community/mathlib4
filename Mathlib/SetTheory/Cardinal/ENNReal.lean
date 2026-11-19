@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Basic.Real.ENatENNReal
-public import Mathlib.SetTheory.Cardinal.NatCard
+public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Lemmas about `Nat.card` and `ENNReal`

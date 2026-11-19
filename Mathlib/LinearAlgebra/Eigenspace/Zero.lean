@@ -6,9 +6,11 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.LinearAlgebra.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Artinian.Module
 
 /-!

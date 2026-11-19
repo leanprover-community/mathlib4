@@ -6,13 +6,14 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.BigOperators
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!

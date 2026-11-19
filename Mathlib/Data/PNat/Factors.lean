@@ -5,11 +5,13 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.PNat.Prime
+
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
 /-!
 # Prime factors of nonzero naturals

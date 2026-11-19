@@ -5,8 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Combinatorics.Additive.ETransform
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.GroupTheory.Order.Min
+
+import Mathlib.Combinatorics.Additive.ETransform
 
 /-!
 # The Cauchy-Davenport theorem

@@ -5,7 +5,10 @@ Authors: Bhavik Mehta, Olivia Röhrig
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Data.Finset.Sym
+
+import Mathlib.Combinatorics.SimpleGraph.Finite
 
 /-!
 # Edge labelings

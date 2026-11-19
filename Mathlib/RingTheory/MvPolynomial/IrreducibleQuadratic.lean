@@ -5,9 +5,10 @@ Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 import Mathlib.Algebra.MvPolynomial.Nilpotent
+import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 
 /-!
 # Irreducibility of linear and quadratic polynomials

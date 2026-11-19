@@ -5,9 +5,11 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Injective objects in the category of $R$-modules

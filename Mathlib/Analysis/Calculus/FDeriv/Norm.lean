@@ -5,8 +5,10 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Abs
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
+import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!

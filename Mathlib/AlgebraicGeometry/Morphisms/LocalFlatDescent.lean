@@ -6,8 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
-public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+public import Mathlib.CategoryTheory.MorphismProperty.Descent
 
+import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 import Mathlib.RingTheory.Etale.Descent
 
 /-!

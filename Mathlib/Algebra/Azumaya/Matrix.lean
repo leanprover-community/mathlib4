@@ -6,8 +6,9 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
 
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!

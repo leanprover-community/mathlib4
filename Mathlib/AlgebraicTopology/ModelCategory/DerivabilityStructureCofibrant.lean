@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # The left derivability structure attached to a model category

@@ -6,9 +6,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!

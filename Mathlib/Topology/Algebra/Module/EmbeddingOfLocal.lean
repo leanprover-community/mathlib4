@@ -5,9 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Analysis.Normed.Field.Basic
 
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # A linear map which is locally an embedding is an embedding

@@ -5,7 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

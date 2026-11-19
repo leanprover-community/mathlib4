@@ -5,9 +5,11 @@ Authors: Michael Stoll, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

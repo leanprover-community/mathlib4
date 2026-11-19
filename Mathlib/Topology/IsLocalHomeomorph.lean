@@ -5,8 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 public import Mathlib.Topology.SeparatedMap
+
+import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Local homeomorphisms

@@ -5,8 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Fintype.Card
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiset coercion to type

@@ -5,8 +5,10 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Hom
-public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields

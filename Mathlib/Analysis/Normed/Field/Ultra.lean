@@ -6,8 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Ultra
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!

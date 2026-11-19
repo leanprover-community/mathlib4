@@ -6,7 +6,9 @@ Authors: Anatole Dedecker, Bhavik Mehta, Thomas Browning
 module
 
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

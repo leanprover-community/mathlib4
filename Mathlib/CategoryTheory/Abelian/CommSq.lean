@@ -6,8 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.CommSq
-public import Mathlib.CategoryTheory.Abelian.Refinements
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The exact sequence attached to a pushout square

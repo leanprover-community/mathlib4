@@ -5,8 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.LieTheorem
-public import Mathlib.Algebra.Lie.Semisimple.Basic
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.Algebra.Lie.Weights.Basic
+
+import Mathlib.Algebra.Lie.LieTheorem
+import Mathlib.Algebra.Lie.Semisimple.Basic
 
 /-!
 # Lemmas about semisimple Lie algebras

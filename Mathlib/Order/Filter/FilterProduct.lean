@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Order.Filter.Ring
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Order.Filter.Ultrafilter.Defs
+
+import Mathlib.Order.Filter.Ring
 
 /-!
 # Ultraproducts

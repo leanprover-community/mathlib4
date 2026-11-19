@@ -5,9 +5,11 @@ Authors: Robert Hawkins
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Hom
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Coalgebra structure on the quotient by a coideal

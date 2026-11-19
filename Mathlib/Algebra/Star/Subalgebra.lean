@@ -5,10 +5,12 @@ Authors: Kim Morrison, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Directed
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+
+import Mathlib.Algebra.Algebra.Subalgebra.Directed
 
 /-!
 # Star subalgebras

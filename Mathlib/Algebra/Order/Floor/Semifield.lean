@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Tactic.Linarith
 
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Semiring
 
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields

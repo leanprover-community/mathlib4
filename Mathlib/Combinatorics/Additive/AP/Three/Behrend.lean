@@ -5,11 +5,12 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Combinatorics.Additive.AP.Three.Defs
 
 import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Combinatorics.Pigeonhole
 
 /-!

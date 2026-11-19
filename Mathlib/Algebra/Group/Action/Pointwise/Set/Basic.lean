@@ -11,8 +11,10 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Regular.SMul
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Data.Set.Pairwise.Basic
+
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Pointwise actions on sets

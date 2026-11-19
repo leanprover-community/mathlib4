@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Data.Fintype.Card
+
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Admissible absolute values

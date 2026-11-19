@@ -5,9 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+import Mathlib.CategoryTheory.Center.Preadditive
 
 /-!
 # Localization of the center of a category

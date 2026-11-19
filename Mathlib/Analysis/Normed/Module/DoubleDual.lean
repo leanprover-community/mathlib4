@@ -6,7 +6,9 @@ Authors: Heather Macbeth, Michał Świętek
 module
 
 public import Mathlib.Analysis.Normed.Module.HahnBanach
-public import Mathlib.Analysis.Normed.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+
+import Mathlib.Analysis.Normed.Module.WeakDual
 
 /-!
 # The double dual of a normed space

@@ -6,8 +6,9 @@ Authors: Yaël Dillies, Moisés Herradón Cueto
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.WithTerminal.Cone
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
+import Mathlib.CategoryTheory.WithTerminal.Cone
 import Mathlib.CategoryTheory.WithTerminal.FinCategory
 
 /-!

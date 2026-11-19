@@ -6,9 +6,11 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.GroupTheory.Coset.Defs
+
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 
 /-!
 # Tiles for tilings

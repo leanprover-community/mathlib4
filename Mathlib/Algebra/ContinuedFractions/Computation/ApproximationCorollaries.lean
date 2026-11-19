@@ -6,10 +6,11 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-public import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)

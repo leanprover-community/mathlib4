@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.GuitartExact.Basic
 public import Mathlib.CategoryTheory.Localization.Resolution
+
+import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Derivability structures

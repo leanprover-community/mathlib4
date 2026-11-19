@@ -6,10 +6,12 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.RingTheory.AdicCompletion.Exactness
-public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Algebra.FiveLemma
+import Mathlib.RingTheory.AdicCompletion.Exactness
+import Mathlib.RingTheory.Flat.Tensor
 
 /-!
 # Adic completion as tensor product

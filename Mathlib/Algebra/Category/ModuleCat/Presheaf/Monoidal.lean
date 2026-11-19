@@ -5,8 +5,10 @@ Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.OfCommRing
+
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 
 /-!
 # The monoidal category structure on presheaves of modules

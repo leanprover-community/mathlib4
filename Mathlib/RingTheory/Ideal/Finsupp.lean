@@ -5,8 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Defs
+
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas for action of ideals on submodules of `Finsupp`

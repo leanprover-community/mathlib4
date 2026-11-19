@@ -5,10 +5,11 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Logic.Function.Iterate
 
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Tactic.Spread
 
 /-!

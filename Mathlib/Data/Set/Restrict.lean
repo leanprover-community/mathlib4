@@ -5,7 +5,9 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 module
 
-public import Mathlib.Data.Set.Image
+public import Mathlib.Order.BooleanAlgebra.Set
+
+import Mathlib.Data.Set.Image
 
 /-!
 # Restrict the domain of a function to a set

@@ -5,10 +5,11 @@ Authors: Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.PicardGroup
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.LocallyFree
 import Mathlib.RingTheory.LocalProperties.FinitePresentation
 
 /-!

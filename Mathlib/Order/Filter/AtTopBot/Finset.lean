@@ -5,11 +5,13 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.Finite
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Order.Interval.Finset.Defs
 
 import Mathlib.Data.Finset.Order
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Finite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

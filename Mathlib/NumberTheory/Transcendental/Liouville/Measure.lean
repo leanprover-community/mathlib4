@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 
 import Mathlib.Analysis.PSeries
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 
 set_option doc.verso true

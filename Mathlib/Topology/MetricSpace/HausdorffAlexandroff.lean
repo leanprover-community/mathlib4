@@ -6,7 +6,9 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Topology.Instances.CantorSet
-public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.UnitInterval
+
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Hausdorff–Alexandroff Theorem

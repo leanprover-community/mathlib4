@@ -5,11 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Finset.Card
 
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Tactic.Positivity.Basic
 
 set_option doc.verso true

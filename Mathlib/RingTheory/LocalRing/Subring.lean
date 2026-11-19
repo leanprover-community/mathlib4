@@ -6,8 +6,10 @@ Authors: Michal Staromiejski
 module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.LocalRing.Defs
+
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Subrings of local rings

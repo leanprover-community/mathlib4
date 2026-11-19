@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.List.Defs
 
 import Batteries.Data.List.Pairwise
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
 
 /-!

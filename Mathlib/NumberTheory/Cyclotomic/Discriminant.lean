@@ -6,7 +6,9 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.RingTheory.Discriminant
+
+import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields

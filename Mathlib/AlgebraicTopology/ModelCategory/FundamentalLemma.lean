@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+
+import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
 
 /-!
 # The fundamental lemma of homotopical algebra

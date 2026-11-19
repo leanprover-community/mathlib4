@@ -5,10 +5,11 @@ Authors: Jeremy Parker, Lua Viana Reis
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
+public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Support
 
+import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.DiracProba

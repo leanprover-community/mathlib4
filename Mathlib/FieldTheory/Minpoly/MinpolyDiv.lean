@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-public import Mathlib.FieldTheory.PrimitiveElement
 
 import Mathlib.FieldTheory.Minpoly.Finite
+import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Results about `minpoly R x / (X - C x)`

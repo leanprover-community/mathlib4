@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Prod
 
 set_option doc.verso true

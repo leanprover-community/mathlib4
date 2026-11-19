@@ -5,11 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Nodup
+public import Batteries.Data.List.Basic
+public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Nat.Choose.Basic
 
 import Mathlib.Data.List.Induction
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Finiteness.Attr

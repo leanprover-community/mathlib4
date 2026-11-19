@@ -6,10 +6,12 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Analysis.Convex.Continuous
-public import Mathlib.Analysis.Convex.Integral
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 import Mathlib.Analysis.Convex.Approximation
+import Mathlib.Analysis.Convex.Integral
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.RadonNikodym
 

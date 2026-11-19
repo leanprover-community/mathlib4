@@ -6,7 +6,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Data.Multiset.AddSub
+
+import Mathlib.Data.Multiset.Filter
 
 /-!
 # Erasing an element from a finite set

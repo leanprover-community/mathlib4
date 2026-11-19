@@ -6,7 +6,9 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Valuation.ValuationRing
+public import Mathlib.RingTheory.Valuation.Integers
+
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

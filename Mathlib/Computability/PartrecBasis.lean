@@ -5,7 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.PartrecCode
+public import Mathlib.Computability.Partrec
+
+import Mathlib.Computability.PartrecCode
 
 /-!
 # A simplified basis for partial recursive functions

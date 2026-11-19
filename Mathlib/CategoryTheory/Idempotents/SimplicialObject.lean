@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Idempotents.Basic
+
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
 /-!
 # Idempotent completeness of categories of simplicial objects

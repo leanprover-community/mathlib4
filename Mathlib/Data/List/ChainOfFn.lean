@@ -5,9 +5,10 @@ Authors: Joseph Myers
 -/
 module
 
-public import Batteries.Data.List.Lemmas
+public import Batteries.Data.List.Basic
 public import Mathlib.Tactic.Common
 
+import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.Finiteness.Attr
 
 set_option doc.verso true

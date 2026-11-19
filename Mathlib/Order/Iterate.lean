@@ -6,7 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public meta import Aesop
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates

@@ -6,9 +6,11 @@ Authors: Andrew Yang, Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
-public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 import Mathlib.AlgebraicGeometry.AlgClosed.Basic
+import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!

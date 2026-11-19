@@ -5,9 +5,11 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Subterminal
+
+import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Exponential ideals

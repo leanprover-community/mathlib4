@@ -5,9 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Star.Pi
+
+import Mathlib.Algebra.BigOperators.Pi
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

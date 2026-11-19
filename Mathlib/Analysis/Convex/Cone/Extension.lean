@@ -5,9 +5,11 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.LinearAlgebra.LinearPMap
+
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Extension theorems

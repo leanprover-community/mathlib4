@@ -5,9 +5,11 @@ Authors: Luke Mantle, Jake Levinson
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 /-!
 # Hermite polynomials and Gaussians

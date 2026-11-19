@@ -6,9 +6,10 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.OreLocalization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.GroupTheory.MonoidLocalization.Cardinality
+import Mathlib.RingTheory.OreLocalization.Cardinality
 
 /-!
 # Cardinality of localizations

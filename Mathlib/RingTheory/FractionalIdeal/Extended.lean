@@ -5,7 +5,10 @@ Authors: James Sundstrom, Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Operations
+
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Extension of fractional ideals

@@ -6,7 +6,9 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Generator.Basic
-public import Mathlib.CategoryTheory.Preadditive.Indization
+public import Mathlib.CategoryTheory.Limits.Indization.Category
+
+import Mathlib.CategoryTheory.Preadditive.Indization
 
 /-!
 # Separating set in the category of ind-objects

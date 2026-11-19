@@ -5,10 +5,12 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Monotonicity.Attr
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`

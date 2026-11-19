@@ -5,8 +5,10 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.GroupTheory.OreLocalization.Basic
+
+import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 
 /-!
 # Localization over left Ore sets.

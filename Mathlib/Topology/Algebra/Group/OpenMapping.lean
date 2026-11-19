@@ -5,7 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.MulAction
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 

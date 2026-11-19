@@ -5,8 +5,11 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.SimpleRing.Defs
+
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,9 +5,10 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
+import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.RingTheory.MvPolynomial.Tower

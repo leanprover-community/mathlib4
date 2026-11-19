@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Presentable.Comma
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+
+import Mathlib.CategoryTheory.Presentable.Comma
 
 /-!
 # Pure subobjects

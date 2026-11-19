@@ -5,11 +5,13 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Data.Set.BooleanAlgebra
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Set.Lattice.Disjoint
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Interaction of big operators with indicator functions

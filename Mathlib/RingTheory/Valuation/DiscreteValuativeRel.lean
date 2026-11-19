@@ -5,9 +5,10 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.RankOne
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 # Discrete Valuative Relations

@@ -5,8 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.UniformSpace.Equicontinuity
+
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Ascoli Theorem

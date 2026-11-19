@@ -5,9 +5,10 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.RatFunc.IntermediateField
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.FieldTheory.RatFunc.IntermediateField
 import Mathlib.FieldTheory.Relrank
 
 /-!

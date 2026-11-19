@@ -5,8 +5,10 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.Localization.Submodule
+
+import Mathlib.RingTheory.Localization.Submodule
 
 /-!
 # More lemmas on localization away

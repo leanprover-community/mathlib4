@@ -5,9 +5,12 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.RingTheory.Norm.Defs
+
+import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Norms on free modules over principal ideal domains

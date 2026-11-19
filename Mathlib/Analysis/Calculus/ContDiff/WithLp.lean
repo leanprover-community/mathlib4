@@ -5,8 +5,10 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Normed.Lp.PiLp
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

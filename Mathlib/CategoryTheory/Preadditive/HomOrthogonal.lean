@@ -6,9 +6,11 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # Hom orthogonal families.

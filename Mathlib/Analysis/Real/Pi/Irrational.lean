@@ -5,9 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!

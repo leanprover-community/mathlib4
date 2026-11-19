@@ -5,8 +5,10 @@ Authors: Jovan Gerbscheid, Chu Zheng
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Topology.MetricSpace.Congruence
+
+import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Triangle congruence

@@ -5,10 +5,12 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Data.Stream.Init
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Stream.Defs
 public import Mathlib.Topology.Compactification.StoneCech
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
 
 /-!

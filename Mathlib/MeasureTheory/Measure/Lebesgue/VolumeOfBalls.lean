@@ -5,11 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.Gamma
 public import Mathlib.MeasureTheory.Integral.Pi
 
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 
 /-!

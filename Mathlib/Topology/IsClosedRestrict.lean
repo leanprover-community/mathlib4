@@ -5,7 +5,9 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Constructions
+
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 

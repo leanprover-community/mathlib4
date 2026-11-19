@@ -5,11 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.GroupTheory.GroupAction.Blocks
 
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.Order.Setoid.Partition.Card
 

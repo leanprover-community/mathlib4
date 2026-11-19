@@ -6,8 +6,10 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Basic.Sign.Defs
-public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

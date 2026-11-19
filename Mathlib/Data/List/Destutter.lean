@@ -5,8 +5,10 @@ Authors: Eric Rodriguez, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.List.Chain
+public import Mathlib.Data.List.Defs
+public import Mathlib.Order.Basic
 
+import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Dedup
 
 /-!

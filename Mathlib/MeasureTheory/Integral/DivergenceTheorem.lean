@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Divergence theorem for Bochner integral

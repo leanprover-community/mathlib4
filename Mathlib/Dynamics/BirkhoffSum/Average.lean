@@ -5,9 +5,12 @@ Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
 module
 
-public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Birkhoff average

@@ -5,8 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Semisimple
+
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 /-!
 # Eigenspaces of semisimple linear endomorphisms

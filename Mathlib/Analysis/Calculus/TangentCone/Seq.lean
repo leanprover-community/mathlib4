@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.TangentCone.Basic
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Analysis.Normed.Module.Basic
 
+import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!

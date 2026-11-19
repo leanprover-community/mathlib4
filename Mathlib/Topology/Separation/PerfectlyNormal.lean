@@ -5,8 +5,10 @@ Authors: Yongxi Lin
 -/
 module
 
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Separation.GDelta
-public import Mathlib.Topology.UrysohnsLemma
+
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Perfectly normal topological spaces.

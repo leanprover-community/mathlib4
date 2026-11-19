@@ -5,10 +5,11 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Int.Interval
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

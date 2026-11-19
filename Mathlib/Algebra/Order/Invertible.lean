@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+
+import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.

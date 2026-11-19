@@ -5,11 +5,11 @@ Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
 
-import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

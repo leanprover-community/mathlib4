@@ -6,7 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Composition.Comp
-public import Mathlib.Probability.Kernel.Composition.ParallelComp
+public import Mathlib.Probability.Kernel.Composition.MapComap
+
+import Mathlib.Probability.Kernel.Composition.ParallelComp
 
 /-!
 # Composition-product of kernels

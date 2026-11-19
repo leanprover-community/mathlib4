@@ -5,8 +5,11 @@ Authors: Bhavik Mehta, Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.Density
+public import Mathlib.Data.Finset.Union
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Results about big operators with values in a field

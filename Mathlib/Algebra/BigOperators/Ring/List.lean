@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 
 set_option doc.verso true

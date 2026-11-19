@@ -6,8 +6,10 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
+public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
 
 /-!
 # Constructing colimits from finite colimits and filtered colimits

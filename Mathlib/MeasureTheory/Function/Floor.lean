@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,8 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
+
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Conditional cumulative distribution function

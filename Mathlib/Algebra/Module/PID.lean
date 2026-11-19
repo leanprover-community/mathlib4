@@ -6,8 +6,11 @@ Authors: Pierre-Alexandre Bazin
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
-public import Mathlib.Algebra.Module.DedekindDomain
+public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+
+import Mathlib.Algebra.Module.DedekindDomain
 
 /-!
 # Structure of finitely generated modules over a PID

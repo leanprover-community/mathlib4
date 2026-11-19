@@ -5,11 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!

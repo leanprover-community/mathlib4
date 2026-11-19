@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Sets.Compacts
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Additional results on topological groups

@@ -5,8 +5,10 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Pointwise big operators on finsets

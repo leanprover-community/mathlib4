@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.MulAction
 
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Basic properties of tangent cones and sets with unique differentiability property

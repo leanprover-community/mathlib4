@@ -6,13 +6,15 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
+public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
-public import Mathlib.CategoryTheory.Presentable.Adjunction
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
+import Mathlib.CategoryTheory.Presentable.Adjunction
 
 /-!
 # The Orthogonal-reflection construction

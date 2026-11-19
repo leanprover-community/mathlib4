@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+public import Mathlib.Order.Lattice.Nat
 
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Rify
 

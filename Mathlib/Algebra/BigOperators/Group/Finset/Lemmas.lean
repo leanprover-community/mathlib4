@@ -5,10 +5,13 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Order.SetNotation
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Miscellaneous lemmas on big operators

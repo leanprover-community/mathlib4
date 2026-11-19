@@ -5,8 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Algebraic order homomorphism classes

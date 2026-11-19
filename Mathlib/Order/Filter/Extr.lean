@@ -5,10 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.Defs
+
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set

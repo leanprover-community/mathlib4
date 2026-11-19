@@ -5,8 +5,10 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+
+import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

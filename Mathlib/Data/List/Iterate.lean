@@ -5,8 +5,10 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.List.Defs
+public import Mathlib.Logic.Function.Iterate
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # iterate

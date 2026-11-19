@@ -5,11 +5,13 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Combinatorics.Additive.CovBySMul
-public import Mathlib.Combinatorics.Additive.SmallTripling
 
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Combinatorics.Additive.RuzsaCovering
+import Mathlib.Combinatorics.Additive.SmallTripling
 
 /-!
 # Approximate subgroups

@@ -5,9 +5,11 @@ Authors: Bolton Bailey, Ralf Stephan
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Nth
+public import Mathlib.Data.Nat.Nth
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Order.Filter.AtTopBot.Basic
+
+import Mathlib.Data.Nat.Prime.Nth
 
 /-!
 # The Prime Counting Function

@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Comp
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Topology.MetricSpace.Holder
+
+import Mathlib.Analysis.Calculus.ContDiff.Comp
 
 /-!
 # Continuously `k` times differentiable functions with pointwise Hölder continuous derivatives

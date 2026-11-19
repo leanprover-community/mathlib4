@@ -5,7 +5,9 @@ Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-!
 # circleMap

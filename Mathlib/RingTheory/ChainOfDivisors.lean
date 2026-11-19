@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Order.Atoms
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Chains of divisors

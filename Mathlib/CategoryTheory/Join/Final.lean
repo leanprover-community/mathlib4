@@ -6,7 +6,9 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Join.Basic
-public import Mathlib.CategoryTheory.Limits.IsConnected
+public import Mathlib.CategoryTheory.Limits.Final
+
+import Mathlib.CategoryTheory.Limits.IsConnected
 
 /-!
 # (Co)Finality of the inclusions in joins of categories

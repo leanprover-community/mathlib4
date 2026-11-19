@@ -5,8 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.CurryingFour
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 public import Mathlib.CategoryTheory.Monoidal.Functor
+
+import Mathlib.CategoryTheory.Functor.CurryingFour
 
 /-!
 # Constructing monoidal categories and monoidal functors from multifunctors

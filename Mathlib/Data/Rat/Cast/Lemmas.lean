@@ -5,9 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Order.Nonneg.Field
-public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Tactic.Positivity.Basic
+
+import Mathlib.Data.Rat.Cast.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

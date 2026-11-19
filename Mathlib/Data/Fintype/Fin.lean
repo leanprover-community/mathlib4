@@ -5,8 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
+public import Mathlib.Data.Vector.Defs
 public import Mathlib.Order.Interval.Finset.Fin
+
+import Mathlib.Data.Vector.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

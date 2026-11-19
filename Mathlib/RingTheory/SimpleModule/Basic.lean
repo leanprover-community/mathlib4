@@ -10,13 +10,14 @@ public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.JordanHolder
-public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Noetherian.Defs
 
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.CompactlyGenerated.Intervals
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!

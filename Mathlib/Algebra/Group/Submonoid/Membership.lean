@@ -13,8 +13,9 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Card
 
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Int.Basic
 
 /-!

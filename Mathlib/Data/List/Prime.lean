@@ -6,7 +6,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Prime.Defs
+
+import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of lists of prime elements.

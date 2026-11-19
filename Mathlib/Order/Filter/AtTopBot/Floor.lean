@@ -5,10 +5,13 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Order.Filter.AtTopBot.Finite
 import Mathlib.Tactic.Positivity.Basic
 
 set_option doc.verso true

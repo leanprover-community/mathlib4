@@ -5,11 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lemmas for ideal in polynomial span by monic polynomial

@@ -7,9 +7,11 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 public import Mathlib.Topology.Instances.ENat
+public import Mathlib.Topology.UniformSpace.Pi
+
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Product topology on multivariate power series
 

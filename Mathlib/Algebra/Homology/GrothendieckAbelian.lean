@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HasNoLoop
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Generator.HomologicalComplex
 
+import Mathlib.CategoryTheory.Generator.HomologicalComplex
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!

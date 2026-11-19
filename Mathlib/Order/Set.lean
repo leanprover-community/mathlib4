@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.TypeTags
+
+import Mathlib.Data.Set.Image
 
 /-! # `Set.range` on `WithBot` and `WithTop` -/
 

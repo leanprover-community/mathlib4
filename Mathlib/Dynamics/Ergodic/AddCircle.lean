@@ -6,10 +6,11 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Dynamics.Ergodic.Ergodic
-public import Mathlib.MeasureTheory.Group.AddCircle
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.MeasureTheory.Covering.DensityTheorem
+import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!

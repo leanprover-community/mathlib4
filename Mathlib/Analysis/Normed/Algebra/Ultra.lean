@@ -5,8 +5,10 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Ultra
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+
+import Mathlib.Analysis.Normed.Field.Ultra
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

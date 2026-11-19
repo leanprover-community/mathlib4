@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Algebra.Field.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

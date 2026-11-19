@@ -6,9 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Int.Cast.Field
-public import Mathlib.Data.Int.Cast.Lemmas
 
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Cast.Pi
 
 /-!

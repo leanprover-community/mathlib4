@@ -6,10 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.ReesAlgebra
 
 import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # `I`-filtrations of modules

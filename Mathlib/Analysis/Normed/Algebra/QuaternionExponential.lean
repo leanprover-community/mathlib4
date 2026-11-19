@@ -5,8 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Quaternion
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
 # Lemmas about `NormedSpace.exp` on `Quaternion`s

@@ -5,9 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+public import Mathlib.NumberTheory.ModularForms.Discriminant
 
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 import Mathlib.RingTheory.MvPolynomial.Groebner
 
 /-!

@@ -5,9 +5,11 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
+
+import Mathlib.Analysis.Normed.Group.Continuity
 
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces

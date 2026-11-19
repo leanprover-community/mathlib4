@@ -5,9 +5,11 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Basic.Sign.Basic
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+
+import Mathlib.Basic.Sign.Basic
 
 /-!
 # Totally unimodular matrices

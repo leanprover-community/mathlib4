@@ -6,7 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Topology.DenseEmbedding
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

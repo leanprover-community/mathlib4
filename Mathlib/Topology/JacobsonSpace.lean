@@ -5,7 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.Sets.OpenCover
+
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Jacobson spaces

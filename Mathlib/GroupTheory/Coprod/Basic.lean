@@ -8,7 +8,9 @@ module
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+
+import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Coproduct (free product) of two monoids or groups

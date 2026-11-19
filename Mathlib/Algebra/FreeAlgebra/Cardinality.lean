@@ -6,7 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.SetTheory.Cardinal.Free
+public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.SetTheory.Cardinal.Free
 
 
 /-!

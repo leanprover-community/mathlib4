@@ -6,7 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.FieldTheory.SeparablyGenerated
-public import Mathlib.RingTheory.Etale.Field
+public import Mathlib.RingTheory.Smooth.Basic
+
+import Mathlib.RingTheory.Etale.Field
 
 /-!
 # Smooth algebras over fields

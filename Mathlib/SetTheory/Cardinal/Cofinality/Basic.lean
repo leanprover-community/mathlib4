@@ -5,8 +5,11 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Order.Cofinal
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Cofinality of an order

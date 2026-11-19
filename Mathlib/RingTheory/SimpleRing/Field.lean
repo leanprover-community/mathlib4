@@ -5,8 +5,11 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Field.Equiv
-public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.RingTheory.SimpleRing.Defs
+
+import Mathlib.Algebra.Field.Equiv
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Simple ring and fields

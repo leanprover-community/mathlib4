@@ -5,9 +5,11 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 set_option doc.verso true

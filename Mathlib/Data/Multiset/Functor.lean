@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 -/
 module
 
+public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Instances
-public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Data.Multiset.Bind
+
+import Mathlib.Control.Traversable.Lemmas
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

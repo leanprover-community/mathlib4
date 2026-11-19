@@ -6,8 +6,10 @@ Authors: Jireh Loreaux, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Algebra.Star
+
+import Mathlib.Topology.Algebra.Monoid
 
 /-! # Topological properties of the unitary (sub)group
 

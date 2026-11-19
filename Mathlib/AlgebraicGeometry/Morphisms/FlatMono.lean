@@ -5,7 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+
+import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

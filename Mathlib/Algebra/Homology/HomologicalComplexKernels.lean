@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.HomologicalComplex
+
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Kernels and cokernels in categories of homological complexes

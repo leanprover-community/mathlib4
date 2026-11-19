@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Basic
+
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Sides of affine subspaces

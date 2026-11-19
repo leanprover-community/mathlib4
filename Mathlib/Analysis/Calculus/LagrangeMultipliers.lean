@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 
 import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!
 # Lagrange multipliers

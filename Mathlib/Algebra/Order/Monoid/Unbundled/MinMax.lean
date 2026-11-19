@@ -5,7 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.Lattice
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,11 +5,12 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Positive linear maps in C⋆-algebras
 

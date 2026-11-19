@@ -5,7 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Basic.Finite.Prod
+public import Mathlib.Data.Fintype.Pi
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types

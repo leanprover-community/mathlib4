@@ -6,8 +6,10 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Weak Dual in Topological Vector Spaces

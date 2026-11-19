@@ -6,7 +6,9 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
+
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # Effective epimorphic sieves

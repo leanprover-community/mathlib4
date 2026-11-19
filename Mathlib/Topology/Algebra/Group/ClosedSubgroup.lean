@@ -6,7 +6,9 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.GroupTheory.Index
-public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Monoid.Defs
+
+import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Closed subgroups of a topological group

@@ -5,7 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

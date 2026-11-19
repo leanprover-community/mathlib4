@@ -5,7 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Ring.Subring.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

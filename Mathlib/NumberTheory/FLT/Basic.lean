@@ -5,10 +5,12 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
-public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.RingTheory.Coprime.Basic
 
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem

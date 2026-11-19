@@ -5,9 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Comp
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Convolution
 
+import Mathlib.Analysis.Calculus.ContDiff.Comp
 import Mathlib.Analysis.Calculus.ParametricIntegral
 
 /-!

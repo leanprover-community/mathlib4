@@ -5,13 +5,15 @@ Authors: Mantas Bakšys
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Module.Synonym
-public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Order.Monotone.Monovary
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
+import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Prod.Lex.Basic
 
 /-!

@@ -6,12 +6,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Card
 public import Mathlib.Order.InitialSeg
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 
+import Mathlib.Data.Fintype.Option
 import Mathlib.Order.Nat
 
 /-!

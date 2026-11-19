@@ -5,8 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Group.Monoid
+public import Mathlib.Basic.Finite.Defs
+
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Finite monoids are Dedekind-finite

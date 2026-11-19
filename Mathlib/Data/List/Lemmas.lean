@@ -6,7 +6,9 @@ Authors: Yakov Pechersky, Yury Kudryashov
 module
 
 public import Mathlib.Data.List.Basic
-public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Operations
+
+import Mathlib.Data.Set.Image
 
 /-! # Some lemmas about lists involving sets
 

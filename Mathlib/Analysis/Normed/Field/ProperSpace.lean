@@ -5,8 +5,10 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.SpecificLimits.Basic
+
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

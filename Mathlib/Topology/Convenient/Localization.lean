@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
+public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.Topology.Convenient.Category
+
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 
 /-!
 # The category of `X`-generated spaces, as a localization

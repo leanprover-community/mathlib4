@@ -6,8 +6,11 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Lemmas about divisibility in rings

@@ -6,8 +6,11 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.Finset.NatAntidiagonal
+
+import Mathlib.Algebra.CharP.Invertible
 
 /-!
 # Invertibility of factorials

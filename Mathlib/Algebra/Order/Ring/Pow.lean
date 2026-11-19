@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-! # Bernoulli's inequality
 

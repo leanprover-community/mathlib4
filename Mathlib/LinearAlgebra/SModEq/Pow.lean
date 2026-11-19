@@ -6,10 +6,11 @@ Authors: Kenny Lau
 
 module
 
+public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.SModEq.Basic
-public import Mathlib.RingTheory.Ideal.Operations
 
 import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.RingTheory.Ideal.Operations
 
 /-! # Lemmas about SModEq related to powers -/
 

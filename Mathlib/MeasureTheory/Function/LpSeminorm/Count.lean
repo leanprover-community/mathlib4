@@ -5,8 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
+import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 set_option doc.verso true

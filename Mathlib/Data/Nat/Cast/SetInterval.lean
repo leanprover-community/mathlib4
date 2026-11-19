@@ -6,11 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Nat
+import Mathlib.Order.UpperLower.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

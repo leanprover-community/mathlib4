@@ -6,9 +6,10 @@ Authors: Zikang Yu
 module
 
 public import Mathlib.Order.DirectedInverseSystem
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Data.Fintype.Order
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of direct limits

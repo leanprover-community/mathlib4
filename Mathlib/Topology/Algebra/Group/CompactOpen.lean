@@ -5,11 +5,13 @@ Authors: Thomas Browning, Nailin Guan
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.UniformSpace.Ascoli
 
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
+import Mathlib.Topology.ContinuousMap.Algebra
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

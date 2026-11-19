@@ -5,9 +5,11 @@ Authors: Kenny Lau, Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

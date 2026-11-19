@@ -5,8 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
+
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 
 /-!
 # Asymptotics on integral ideals of a number field

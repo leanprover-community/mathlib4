@@ -5,8 +5,9 @@ Authors: Haitian Wang, Malvin Gattinger
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Multiset
+public import Mathlib.Data.Multiset.AddSub
 
+import Mathlib.Algebra.Order.Monoid.Multiset
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!

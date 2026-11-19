@@ -5,11 +5,14 @@ Authors: Anatole Dedecker, Devon Tuma, Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Tactic.Field
-public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Order.Basic
 
+import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Order.Filter.IsBounded
+import Mathlib.Topology.Algebra.Order.Field
 
 /-!
 # Behaviour at infinity of polynomial and rational functions

@@ -6,13 +6,14 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 import Mathlib.Algebra.Polynomial.OfFn
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Data.Pi.Interval
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Mahler measure of integer polynomials

@@ -7,7 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
-public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
+public import Mathlib.CategoryTheory.RestrictedYoneda
+
+import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 
 /-!
 # The singular simplicial set of a topological space and geometric realization of a simplicial set

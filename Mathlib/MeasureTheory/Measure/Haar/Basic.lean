@@ -5,9 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Measure.Content
 
+import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.Topology.Algebra.Group.Compact
 
 /-!

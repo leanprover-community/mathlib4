@@ -5,10 +5,11 @@ Authors: Tomaz Mascarenhas, Pedro Saccomani, Sarah Pereira
 -/
 module
 
-public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Topology.Instances.Sign
 
 import Mathlib.Basic.Sign.Basic
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The sign of a polynomial immediately to the right of a point

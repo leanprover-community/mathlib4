@@ -6,7 +6,10 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Filter.EventuallyConst
-public import Mathlib.SetTheory.Cardinal.Aleph
+public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Ordinal.Basic
+
+import Mathlib.SetTheory.Cardinal.Aleph
 
 /-!
 # Eventually constant monotone functions

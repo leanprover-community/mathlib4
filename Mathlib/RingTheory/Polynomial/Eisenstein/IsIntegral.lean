@@ -5,11 +5,13 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Eisenstein polynomials

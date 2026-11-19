@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
-public import Mathlib.Topology.MetricSpace.PartitionOfUnity
+public import Mathlib.Topology.PartitionOfUnity
 
 import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.ShrinkingLemma
 
 /-!

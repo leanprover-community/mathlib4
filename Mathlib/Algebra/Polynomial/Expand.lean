@@ -5,10 +5,12 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.RingTheory.Polynomial.Basic
+
+import Mathlib.Algebra.CharP.Frobenius
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.

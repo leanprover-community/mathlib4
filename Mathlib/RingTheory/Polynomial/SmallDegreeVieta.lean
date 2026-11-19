@@ -5,8 +5,9 @@ Authors: Qinchuan Zhang
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Algebra.Polynomial.Roots
 
+import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Tactic.FieldSimp
 
 /-!

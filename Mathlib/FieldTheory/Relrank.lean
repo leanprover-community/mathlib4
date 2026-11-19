@@ -5,7 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Relative rank of subfields and intermediate fields

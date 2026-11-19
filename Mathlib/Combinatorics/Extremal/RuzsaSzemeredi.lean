@@ -5,9 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
+import Mathlib.Combinatorics.Additive.AP.Three.Behrend
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 import Mathlib.Tactic.Qify
 
 /-!

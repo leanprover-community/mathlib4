@@ -6,9 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.Multiset.Sort
 
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.List.Pairwise
 import Mathlib.Order.RelIso.Set
 

@@ -5,7 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Matrices associated with non-degenerate bilinear forms

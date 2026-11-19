@@ -5,10 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.CategoryTheory.Limits.Final
 
 import Mathlib.CategoryTheory.Comma.Final
 import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Presentable.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

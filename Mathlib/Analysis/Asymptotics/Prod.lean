@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Basic
+public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Normed.Group.Constructions
+
+import Mathlib.Analysis.Asymptotics.Basic
 
 /-!
 # Asymptotic relations and product types

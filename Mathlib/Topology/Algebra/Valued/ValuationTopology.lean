@@ -5,10 +5,12 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
+
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # The topology on a valued ring

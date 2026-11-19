@@ -5,8 +5,11 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
+public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+
+import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Equivalence of variation definitions for signed measures

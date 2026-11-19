@@ -5,8 +5,10 @@ Authors: Angus Joshi
 -/
 module
 
-public import Mathlib.Analysis.Polynomial.Order
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.FieldTheory.IsRealClosed.Basic
+
+import Mathlib.Analysis.Polynomial.Order
 
 /-!
 # The real numbers form a real closed field

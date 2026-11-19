@@ -5,8 +5,10 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Lie.AdjointAction.Basic
+public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.JordanChevalley
+
+import Mathlib.Algebra.Lie.AdjointAction.Basic
 
 /-!
 # Jordan–Chevalley decomposition and the adjoint action

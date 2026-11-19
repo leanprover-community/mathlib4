@@ -5,10 +5,12 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.List.ToFinsupp
 
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.LinearAlgebra.Pi
 
 /-!

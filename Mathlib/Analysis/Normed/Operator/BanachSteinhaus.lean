@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 import Mathlib.Analysis.LocallyConvex.Barrelled
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Topology.Baire.CompleteMetrizable
 
 set_option doc.verso true

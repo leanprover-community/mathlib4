@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+
+import Mathlib.RingTheory.Finiteness.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

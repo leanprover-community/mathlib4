@@ -6,10 +6,11 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Probability.Martingale.Centering
-public import Mathlib.Probability.Martingale.OptionalStopping
+public import Mathlib.Probability.Process.HittingTime
 
 import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 import Mathlib.Probability.Martingale.Convergence
+import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
 # Generalized Borel-Cantelli lemma

@@ -7,7 +7,10 @@ module
 
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 # Finitely generated module over Noetherian ring have finitely many associated primes.

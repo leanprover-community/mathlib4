@@ -5,7 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
+
+import Mathlib.Algebra.Polynomial.Coeff
 
 /-!
 # Vandermonde's identity

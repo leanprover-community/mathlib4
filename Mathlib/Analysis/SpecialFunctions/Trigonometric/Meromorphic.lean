@@ -5,10 +5,12 @@ Authors: Xuanji Li
 -/
 module
 
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Meromorphic.NormalForm
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

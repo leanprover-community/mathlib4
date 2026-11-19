@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Basic
+public import Mathlib.Probability.Kernel.Defs
 
+import Mathlib.Probability.Kernel.Basic
 import Mathlib.Tactic.Peel
 
 /-!

@@ -6,10 +6,12 @@ Authors: Yunzhou Xie, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Connect
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 
 
 /-!

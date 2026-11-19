@@ -6,7 +6,10 @@ Authors: Devon Tuma
 module
 
 public import Mathlib.Algebra.Polynomial.Eval.Defs
-public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Field.Basic
+
+import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Super-Polynomial Function Decay

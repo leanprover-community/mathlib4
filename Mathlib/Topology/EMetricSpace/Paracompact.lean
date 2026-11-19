@@ -7,7 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.EMetricSpace.Defs
+
+import Mathlib.Topology.EMetricSpace.Basic
 
 /-!
 # (Extended) metric spaces are paracompact

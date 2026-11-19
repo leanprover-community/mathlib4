@@ -6,8 +6,10 @@ Authors: Albert Smith
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
 
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.Algebraic.Integral
 
 /-!

@@ -5,11 +5,13 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Group action on rings applied to polynomials

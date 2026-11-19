@@ -5,10 +5,11 @@ Authors: Simon Hudon, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Algebra.Ring.CompTypeclasses
 
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Pi
 

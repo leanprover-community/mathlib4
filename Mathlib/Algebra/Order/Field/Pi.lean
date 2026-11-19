@@ -6,8 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Basic.Finite.Defs
 
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
 
 set_option doc.verso true

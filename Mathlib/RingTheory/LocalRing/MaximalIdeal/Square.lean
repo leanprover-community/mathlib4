@@ -5,9 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.Field
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 
+import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!

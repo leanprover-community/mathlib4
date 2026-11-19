@@ -5,9 +5,11 @@ Authors: Terence Tao
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
+
+import Mathlib.Algebra.Order.Floor.Semiring
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
