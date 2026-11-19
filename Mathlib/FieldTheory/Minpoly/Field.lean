@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Algebraic.Integral
 This file specializes the theory of minpoly to the setting of field extensions
 and derives some well-known properties, amongst which the fact that minimal polynomials
 are irreducible, and uniquely determined by their defining property.
-
 -/
 
 @[expose] public section
@@ -232,7 +231,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 /-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
-    { l : K // l ∈ (minpoly F x.1).aroots K } :=
+    { l : K // l ∈ (minpoly F x.val).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩

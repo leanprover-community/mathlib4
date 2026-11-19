@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.TensorProduct.Pi
 
 We show that `Under.pushout f` is left-exact, i.e. preserves finite limits, if `f : R ⟶ S` is
 flat.
-
 -/
 
 @[expose] public section

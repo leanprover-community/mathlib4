@@ -52,7 +52,8 @@ def Simps.coe (L : Sublattice α) : Set α := L
 initialize_simps_projections Sublattice (carrier → coe, as_prefix coe)
 
 /-- Turn a set closed under supremum and infimum into a sublattice. -/
-abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α :=
+  ⟨s, hs.supClosed, hs.infClosed⟩
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
@@ -87,11 +88,11 @@ lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
 /-- A sublattice of a lattice inherits a supremum. -/
 instance instSupCoe : Max L where
-  max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
+  max a b := ⟨a ⊔ b, L.supClosed a.property b.property⟩
 
 /-- A sublattice of a lattice inherits an infimum. -/
 instance instInfCoe : Min L where
-  min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
+  min a b := ⟨a ⊓ b, L.infClosed a.property b.property⟩
 
 @[simp, norm_cast] lemma coe_sup (a b : L) : a ⊔ b = (a : α) ⊔ b := rfl
 @[simp, norm_cast] lemma coe_inf (a b : L) : a ⊓ b = (a : α) ⊓ b := rfl

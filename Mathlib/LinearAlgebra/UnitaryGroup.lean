@@ -35,7 +35,6 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 ## Tags
 
 matrix group, group, unitary group, orthogonal group
-
 -/
 
 @[expose] public section
@@ -159,7 +158,7 @@ After the group structure on `Matrix.unitaryGroup n` is defined, we show in
 `Matrix.UnitaryGroup.toLinearEquiv` that this gives a linear equivalence.
 -/
 def toLin' (A : unitaryGroup n α) :=
-  Matrix.toLin' A.1
+  Matrix.toLin' A.val
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
   Subtype.ext_iff.trans ⟨fun h i j => congr($h i j), Matrix.ext⟩
@@ -168,8 +167,8 @@ theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
   (UnitaryGroup.ext_iff A B).mpr
 
-theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
-  A.2.1
+theorem star_mul_self (A : unitaryGroup n α) : star A.val * A.val = 1 :=
+  A.property.1
 
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
@@ -183,9 +182,9 @@ variable (A B : unitaryGroup n α)
 
 @[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem mul_val : ↑(A * B) = A.1 * B.1 := rfl
+@[simp] theorem mul_val : ↑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
+@[simp] theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
 
 @[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
@@ -193,7 +192,7 @@ variable (A B : unitaryGroup n α)
 
 @[simp]
 theorem toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=
-  Matrix.toLin'_mul A.1 B.1
+  Matrix.toLin'_mul A.val B.val
 
 @[simp]
 theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
@@ -209,7 +208,7 @@ example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
-  { Matrix.toLin' A.1 with
+  { Matrix.toLin' A.val with
     invFun := toLin' A⁻¹
     left_inv := fun x =>
       calc
@@ -224,7 +223,7 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
   GeneralLinearGroup.ofLinearEquiv (toLinearEquiv A)
 
-theorem coe_toGL (A : unitaryGroup n α) : (toGL A).1 = toLin' A := rfl
+theorem coe_toGL (A : unitaryGroup n α) : (toGL A).val = toLin' A := rfl
 
 @[simp]
 theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
@@ -288,11 +287,12 @@ theorem mem_specialUnitaryGroup_iff :
 
 instance : StarMul (specialUnitaryGroup n α) where
   star A := ⟨star A, by simpa using A.prop.1, by have := A.prop.2; simp_all [star_eq_conjTranspose]⟩
-  star_mul A B := Subtype.ext <| star_mul A.1 B.1
-  star_involutive A := Subtype.ext <| star_involutive A.1
+  star_mul A B := Subtype.ext <| star_mul A.val B.val
+  star_involutive A := Subtype.ext <| star_involutive A.val
 
 @[simp, norm_cast]
-theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) : (star A).1 = star A.1 := rfl
+theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) :
+    (star A).val = star A.val := rfl
 
 instance : Inv (specialUnitaryGroup n α) where inv := star
 
@@ -347,7 +347,6 @@ theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n R ↔ A ∈ orthogonalGroup n R ∧ A.det = 1 :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

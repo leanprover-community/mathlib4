@@ -24,7 +24,6 @@ defined in this file but is introduced in
 * `ae_eq_of_forall_setIntegral_eq_of_sigma_finite'`: two functions verifying the equality of
   integrals defining the conditional expectation are equal almost everywhere.
   Requires `[SigmaFinite (μ.trim hm)]`.
-
 -/
 
 public section

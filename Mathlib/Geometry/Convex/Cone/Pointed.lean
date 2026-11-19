@@ -18,7 +18,6 @@ A *pointed cone* is defined to be a submodule of a module where the scalars are 
 nonnegative. This is equivalent to saying that, as a set, a pointed cone is a convex cone which
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
-
 -/
 
 @[expose] public section
@@ -197,7 +196,8 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
   rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
-    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
+    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc,
+      fun y ↦ (c y).property, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
@@ -218,7 +218,7 @@ meta def hull.unexpander : Lean.PrettyPrinter.Unexpander
 lemma mem_hull_singleton {x y : E} :
     y ∈ R ∙₊ x ↔ ∃ r : R, 0 ≤ r ∧ r • x = y := by
   rw [mem_span_singleton]
-  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.1, r.2, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
+  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.val, r.property, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
 
 theorem le_hull_singleton_iff {C : PointedCone R E} {x : E} :
     C ≤ R ∙₊ x ↔ ∀ y ∈ C, ∃ r : R, 0 ≤ r ∧ r • x = y := by
@@ -241,7 +241,6 @@ are induced from linear maps between the ambient modules that are linear over no
 Such maps are unlikely to be of any use in practice. So, we construct some API to define maps
 between pointed cones induced from linear maps between the ambient modules that are linear over
 *all* scalars.
-
 -/
 
 /-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/

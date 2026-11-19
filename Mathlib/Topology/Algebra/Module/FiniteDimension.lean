@@ -51,7 +51,6 @@ then `ξ.equivFun : E →ₗ (ι → 𝕜)` is continuous. However, for technica
 prove this when `ι` and `E` live in the same universe. So we start by doing that as a private
 lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and then the general
 result follows as `continuous_equivFun_basis`.
-
 -/
 
 @[expose] public section
@@ -156,14 +155,14 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     (hl : IsClosed (LinearMap.ker l : Set E)) :
     Continuous l := by
   -- `l` is either constant or surjective. If it is constant, the result is trivial.
-  by_cases H : finrank 𝕜 (LinearMap.range l) = 0
+  by_cases! H : finrank 𝕜 (LinearMap.range l) = 0
   · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
     rw [H]
     exact continuous_zero
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
     -- `E ⧸ l.ker` is T2 since `l.ker` is closed.
     have : finrank 𝕜 (LinearMap.range l) = 1 :=
-      le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range l).finrank_le) (zero_lt_iff.mpr H)
+      le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range l).finrank_le) H.pos
     have hi : Function.Injective ((LinearMap.ker l).liftQ l (le_refl _)) := by
       rw [← LinearMap.ker_eq_bot]
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
@@ -250,7 +249,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     -- second step: any linear form is continuous, as its kernel is closed by the first step
     have H₂ : ∀ f : E →ₗ[𝕜] 𝕜, Continuous f := by
       intro f
-      by_cases H : finrank 𝕜 (LinearMap.range f) = 0
+      by_cases! H : finrank 𝕜 (LinearMap.range f) = 0
       · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
         rw [H]
         exact continuous_zero
@@ -258,7 +257,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
           have Z := f.finrank_range_add_finrank_ker
           rw [finrank_eq_card_basis ξ, hn] at Z
           have : finrank 𝕜 (LinearMap.range f) = 1 :=
-            le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range f).finrank_le) (zero_lt_iff.mpr H)
+            le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range f).finrank_le) H.pos
           rw [this, add_comm, Nat.add_one] at Z
           exact Nat.succ.inj Z
         have : IsClosed (LinearMap.ker f : Set E) := H₁ _ this
@@ -815,7 +814,7 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
   obtain ⟨p, hp⟩ := hA
   obtain ⟨C, hBC⟩ := B.exists_isCompl
   refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
-  simp [hp ⟨x, hB x.2⟩]
+  simp [hp ⟨x, hB x.property⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]

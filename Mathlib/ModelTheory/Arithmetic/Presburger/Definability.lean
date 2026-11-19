@@ -49,7 +49,7 @@ theorem IsLinearSet.definable [Finite α] (hs : IsLinearSet s) : A.Definable pre
     (Term.var (Sum.inl i)).equal
       (Term.varsToConstants
         ((v i : presburger.Term _) + presburger.sum Finset.univ fun x : t =>
-          x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
+          x.val i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
   simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
     nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_ofPred_eq, Formula.realize_iExs,
@@ -65,7 +65,7 @@ theorem IsSemilinearSet.definable [Finite α] (hs : IsSemilinearSet s) :
     A.Definable presburger s := by
   rw [isSemilinearSet_iff] at hs
   rcases hs with ⟨S, hS, rfl⟩
-  choose φ hφ using fun s : S => (hS s.1 s.2).definable
+  choose φ hφ using fun s : S => (hS s.val s.property).definable
   refine ⟨Formula.iSup φ, ?_⟩
   ext x
   have := fun s hs x => Set.ext_iff.1 (hφ ⟨s, hs⟩).symm x

@@ -96,7 +96,7 @@ theorem aevalMultiset_mem (B : Subalgebra R S)
     (h : ∀ i < Fintype.card σ, m.esymm (i + 1) ∈ B) :
     aevalMultiset σ R m p ∈ B := by
   rw [aevalMultiset_apply, MvPolynomial.aeval_def]
-  exact MvPolynomial.eval₂_mem (fun _ _ ↦ B.algebraMap_mem _) fun i ↦ h _ i.2
+  exact MvPolynomial.eval₂_mem (fun _ _ ↦ B.algebraMap_mem _) fun i ↦ h _ i.isLt
 
 end CommSemiring
 
