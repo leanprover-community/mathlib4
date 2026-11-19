@@ -421,6 +421,8 @@ jobs:
           export MATHLIB_LAKE_CACHE_PUT_URL="${PUT_ROOT%/artifacts}"
           export MATHLIB_CACHE_S3_ACCESS_KEY_ID="${LAKE_CACHE_KEY%%:*}"
           export MATHLIB_CACHE_S3_SECRET_ACCESS_KEY="${LAKE_CACHE_KEY#*:}"
+          echo "::add-mask::$MATHLIB_CACHE_S3_ACCESS_KEY_ID"
+          echo "::add-mask::$MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
           export MATHLIB_CACHE_S3_REGION=auto
           cd pr-branch
           lake env "$CACHE_TOOL" lake put ../lake-cache-staging --prefix="$SHADOW_SCOPE"
