@@ -271,9 +271,10 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       (Y.presheaf.map (homOfLE (by subst hUY hVU; gcongr; exact le_iSup _ _)).op).hom
   -- The map `Γ(X, U) ⟶ ∏ᵢ Γ(X, Vᵢ)`
   let ψ : Γ(X, UX) →ₐ[Γ(S, US)] Π i, Γ(X, VX i) := AlgHom.pi fun i ↦
-    ⟨(X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom, fun r ↦ by
-      dsimp [RingHom.algebraMap_toAlgebra]
-      simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map]⟩
+    { (X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom with
+      commutes' r := by
+        dsimp [RingHom.algebraMap_toAlgebra]
+        simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map] }
   -- ... is injective by the sheaf axiom,
   have hψ : Function.Injective ψ := by
     intro s t est

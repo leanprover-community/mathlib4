@@ -373,9 +373,10 @@ lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
     (hq : p = q.comap Algebra.TensorProduct.includeRight.toRingHom) :
     QuasiFiniteAt A q := by
   let f : A ⊗[R] Localization.AtPrime p →ₐ[A] Localization.AtPrime q :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨Localization.localRingHom _ _ _ hq, by
-      simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
-        IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)]⟩ fun _ _ ↦ .all _ _
+    Algebra.TensorProduct.lift (Algebra.ofId _ _) { Localization.localRingHom _ _ _ hq with
+      commutes' _ := by
+        simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
+          IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)] } fun _ _ ↦ .all _ _
   let g : A ⊗[R] S →ₐ[A] A ⊗[R] Localization.AtPrime p :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   have : f.comp g = IsScalarTower.toAlgHom _ _ _ := by ext; simp [f, g]
@@ -393,7 +394,8 @@ lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFinite
     (hq : p = q.comap f.toRingHom) :
     QuasiFiniteAt R q := by
   subst hq
-  refine .of_surjective_algHom ⟨Localization.localRingHom _ q f.toRingHom rfl, ?_⟩ (hf q ‹_›)
+  refine .of_surjective_algHom { Localization.localRingHom _ q f.toRingHom rfl with
+    commutes' := ?_ } (hf q ‹_›)
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]
 

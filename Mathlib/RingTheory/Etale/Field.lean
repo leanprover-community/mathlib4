@@ -137,7 +137,8 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have hx : x ∈ K⟮α⟯ := e ▸ IntermediateField.subset_adjoin K {x, y} (by simp)
     have hy : y ∈ K⟮α⟯ := e ▸ IntermediateField.subset_adjoin K {x, y} (by simp)
     exact ⟨α, hx, hy⟩
-  refine ⟨⟨⟨⟨⟨fun x ↦ g x (IntermediateField.AdjoinSimple.gen K x), ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩, ?_⟩
+  refine ⟨⟨⟨⟨⟨fun x ↦ g x (IntermediateField.AdjoinSimple.gen K x), ?_⟩, ?map_mul⟩, ?_, ?_⟩,
+      ?commutes, map_smul_of_commutes _ ?map_mul ?commutes⟩, ?_⟩
   · change g 1 1 = 1; rw [map_one]
   · intro x y
     obtain ⟨α, hx, hy⟩ := H x y
