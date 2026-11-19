@@ -228,6 +228,8 @@ def comap (f : α → β) : Language β →+ Language α where
   map_zero' := Language.ext preimage_empty
   map_add' _ _ := Language.ext (preimage_union ..)
 
+lemma mem_comap (f : α → β) (l : Language β) (x : List α) : x ∈ comap f l ↔ x.map f ∈ l := .rfl
+
 lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
