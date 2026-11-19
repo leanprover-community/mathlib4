@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.InvSubmonoid
 
 import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # The meta properties of finite-type ring homomorphisms.

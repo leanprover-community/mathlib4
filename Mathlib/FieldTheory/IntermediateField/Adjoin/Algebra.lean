@@ -8,8 +8,9 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
+
+import Mathlib.RingTheory.Adjoin.Singleton
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

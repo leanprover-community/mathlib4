@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
+
+import Mathlib.CategoryTheory.Limits.ColimitLimit
 
 /-!
 # Exact colimits and preservation of limits

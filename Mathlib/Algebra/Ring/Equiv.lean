@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Tactic.DSimpPercent
 
 /-!

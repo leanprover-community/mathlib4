@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.FieldTheory.Fixed
-public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Invariant.Defs
+
+import Mathlib.RingTheory.Ideal.GoingUp
 
 /-!
 # Invariant Extensions of Rings

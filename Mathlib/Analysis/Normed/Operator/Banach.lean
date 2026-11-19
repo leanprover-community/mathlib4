@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Topology.Baire.CompleteMetrizable
 
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!
 # Banach open mapping theorem

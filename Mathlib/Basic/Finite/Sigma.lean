@@ -6,9 +6,9 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.Sigma
-public import Mathlib.Logic.Equiv.Sigma
 
 import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Logic.Equiv.Sigma
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
