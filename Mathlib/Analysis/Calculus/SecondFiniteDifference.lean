@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 E. S. Markov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Released under Apache 2.0 license as described in the file LICENSE-APACHE.
 Authors: E. S. Markov
 -/
 module
