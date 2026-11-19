@@ -134,7 +134,7 @@ theorem nonempty_Iic : (I(, a]).Nonempty :=
   ⟨a, self_mem_Iic⟩
 
 @[simp, to_dual self]
-theorem nonempty_Icc : (I[a, b]).Nonempty ↔ a ≤ b :=
+theorem nonempty_Icc : I[a, b].Nonempty ↔ a ≤ b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans hx.2, fun h => ⟨a, left_mem_Icc.2 h⟩⟩
 
 @[to_dual (attr := simp)]
