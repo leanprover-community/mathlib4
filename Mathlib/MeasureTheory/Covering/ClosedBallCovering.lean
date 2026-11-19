@@ -31,7 +31,17 @@ for an outer measure `ν` that is not known to be absolutely continuous with res
   and any null set can be covered by closed balls of arbitrarily small total measure;
 * `MeasureTheory.Measure.ClosedBallCoveringMeasure.of_vitaliFamily`: a version of the previous
   constructor that takes the a.e. covering from a Vitali family `v`
-  such that closed balls centered at `x` converge to `x` along `v`.
+  such that closed balls centered at `x` converge to `x` along `v`;
+* `MeasureTheory.Measure.outerMeasure_le_mul`: if `μ` is σ-finite,
+  `ν` is an outer measure, and for all `x ∈ s` and `C' > C`, the inequality
+  `ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`,
+  then `ν s ≤ C * μ s`;
+* `MeasureTheory.Measure.outerMeasure_null_of_null_of_forall_exists_le_mul`:
+  if `μ s = 0` and for all `x ∈ s` we have `ν (s ∩ closedBall x r) ≤ C x * μ (closedBall x r)`
+  for arbitrarily small `r > 0`, then `ν s = 0`;
+* `MeasureTheory.Measure.measure_image_le_mul`,
+  `MeasureTheory.Measure.measure_image_null_of_null_of_forall_exists_le_mul`:
+  versions of the previous two results for `ν (f '' s)`.
 
 The instances are proved in other files:
 * for a measure in a space with the Besicovitch covering property,
@@ -43,7 +53,7 @@ The instances are proved in other files:
 public section
 
 open Set Filter Metric
-open scoped ENNReal Topology
+open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory.Measure
 
@@ -207,3 +217,199 @@ theorem of_vitaliFamily [OpensMeasurableSpace α] [SecondCountableTopology α] [
   of_ae_of_null (v.exists_disjoint_closedBall_covering_ae hv) hnull
 
 end MeasureTheory.Measure.ClosedBallCoveringMeasure
+
+/-!
+### Bounds on outer measures
+
+In this section we prove that `ν s ≤ C * μ s` for an outer measure `ν`,
+if for every point `x ∈ s` and every `C' > C`, the inequality
+`ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`,
+i.e., if "the lower density of `ν` restricted to `s` with respect to `μ`" is at most `C` on `s`.
+We also prove versions of this statement for the images of sets under maps
+and for the case `C = 0`.
+-/
+
+namespace MeasureTheory.Measure
+
+variable {α β : Type*} [PseudoMetricSpace α] [MeasurableSpace α] {μ : Measure α}
+  [ClosedBallCoveringMeasure μ] {ν : OuterMeasure α} {C : ℝ≥0∞} {s : Set α}
+
+/-- Let `μ` be a measure with the closed ball covering property, let `ν` be an outer measure.
+Let `s` be a set, let `C` be a constant such that `μ s ≠ 0 ∨ C ≠ ∞` and `C ≠ 0 ∨ μ s ≠ ∞`.
+Suppose that for each `x ∈ s` and each `C' > C`, the inequality
+`ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `ν s ≤ C * μ s`.
+
+See `MeasureTheory.Measure.outerMeasure_le_mul` for a version that assumes `μ` to be σ-finite
+instead of `C ≠ 0 ∨ μ s ≠ ∞`. -/
+theorem outerMeasure_le_mul' (hsC : μ s ≠ 0 ∨ C ≠ ∞) (hCs : C ≠ 0 ∨ μ s ≠ ∞)
+    (h : ∀ x ∈ s, ∀ C' > C, ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)) :
+    ν s ≤ C * μ s := by
+  rcases eq_or_ne C ∞ with rfl | hC
+  · rw [ENNReal.top_mul (hsC.resolve_right fun h ↦ h rfl)]
+    exact le_top
+  -- It suffices to prove `ν s ≤ (C + ε) * (μ s + ε)` for all `ε > 0`.
+  suffices ∀ ε > 0, ν s ≤ (C + ε) * (μ s + ε) by
+    have H : Tendsto (fun ε ↦ (C + ε) * (μ s + ε)) (𝓝 0) (𝓝 (C * μ s)) := by
+      apply ENNReal.Tendsto.mul <;>
+        first | assumption | simpa using tendsto_const_nhds.add (tendsto_id (x := 𝓝 (0 : ℝ≥0∞)))
+    exact ge_of_tendsto_of_frequently H <| (frequently_gt_nhds _).mono this
+  /- Cover `s` by countably many closed balls such that
+  `ν (s ∩ closedBall x (r x)) ≤ (C + ε) * μ (closedBall x (r x))` for each ball
+  and `∑' x : t, μ (closedBall x (r x)) ≤ μ s + ε`. -/
+  intro ε hε
+  obtain ⟨t, r, htc, -, hνμ, hsr, hμ⟩ := exists_closedBall_covering_tsum_measure_le μ hε.ne'
+    (fun x ↦ {r | ν (s ∩ closedBall x r) ≤ (C + ε) * μ (closedBall x r)}) s fun x hx δ hδ ↦ by
+      rcases (nhdsGT_basis 0).frequently_iff.1 (h x hx _ (ENNReal.lt_add_right hC hε.ne')) δ hδ
+        with ⟨r, hr, hle⟩
+      exact ⟨r, hle, hr⟩
+  have := htc.to_subtype
+  calc
+    ν s ≤ ν (⋃ x : t, s ∩ closedBall x (r x)) := by
+      rw [← inter_iUnion]
+      gcongr
+      simpa
+    _ ≤ ∑' x : t, ν (s ∩ closedBall x (r x)) := measure_iUnion_le _
+    _ ≤ ∑' x : t, (C + ε) * μ (closedBall x (r x)) := by gcongr with i; exact hνμ i i.2
+    _ ≤ (C + ε) * (μ s + ε) := by rw [ENNReal.tsum_mul_left]; gcongr
+
+/-- Let `μ` be a σ-finite measure with the closed ball covering property,
+let `ν` be an outer measure.
+Let `s` be a set, let `C` be a constant such that `μ s ≠ 0 ∨ C ≠ ∞`.
+Suppose that for each `x ∈ s` and each `C' > C`, the inequality
+`ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `ν s ≤ C * μ s`.
+
+Note that we do not assume measurability of `s`. -/
+theorem outerMeasure_le_mul [SigmaFinite μ] (hsC : μ s ≠ 0 ∨ C ≠ ∞)
+    (h : ∀ x ∈ s, ∀ C' > C, ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ C' * μ (closedBall x r)) :
+    ν s ≤ C * μ s := by
+  rcases eq_or_ne C 0 with rfl | hC
+  · calc
+      ν s = ν (⋃ n, s ∩ spanningSets μ n) := by simp [← inter_iUnion]
+      _ ≤ ∑' n, ν (s ∩ spanningSets μ n) := measure_iUnion_le _
+      _ ≤ ∑' n, 0 * μ (s ∩ spanningSets μ n) := by
+        gcongr with n
+        refine outerMeasure_le_mul' (by simp) (.inr ?_) fun x hx C' hC' ↦
+          (h x hx.1 C' hC').mono fun r ↦ le_trans ?_
+        · exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top ..) |>.ne
+        · gcongr
+          apply inter_subset_left
+      _ = 0 * μ s := by simp
+  · exact outerMeasure_le_mul' hsC (.inl hC) h
+
+/-- Let `μ` be a measure with the closed ball covering property, let `ν` be an outer measure.
+Let `s` be a `μ`-null set.
+Suppose that for each `x ∈ s` there exists a constant `C` such that the inequality
+`ν (s ∩ closedBall x r) ≤ C * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `s` is a `ν`-null set. -/
+theorem outerMeasure_null_of_null_of_forall_exists_le_mul (hs : μ s = 0)
+    (h : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ C * μ (closedBall x r)) :
+    ν s = 0 := by
+  set t : ℕ → Set α := fun n ↦
+    {x ∈ s | ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ n * μ (closedBall x r)}
+  have hst : s ⊆ ⋃ n, t n := fun x hx ↦ by
+    rcases h x hx with ⟨C, hC⟩
+    rcases exists_nat_ge C with ⟨n, hn⟩
+    refine mem_iUnion.2 ⟨n, hx, hC.mono fun r hr ↦ hr.trans ?_⟩
+    gcongr
+    exact_mod_cast hn
+  refine measure_mono_null hst <| measure_iUnion_null fun n ↦ ?_
+  have hμ : μ (t n) = 0 := measure_mono_null (sep_subset _ _) hs
+  refine nonpos_iff_eq_zero.1 <| calc
+    ν (t n) ≤ n * μ (t n) := by
+      refine outerMeasure_le_mul' (.inr (ENNReal.natCast_ne_top n)) (.inr (by simp [hμ]))
+        fun x hx C' hC' ↦ hx.2.mono fun r hr ↦ ?_
+      grw [← hC'.le, ← hr]
+      exact measure_mono (inter_subset_inter_left _ (sep_subset _ _))
+    _ = 0 := by simp [hμ]
+
+/-- Let `μ` be a σ-finite measure with the closed ball covering property,
+let `ν` be an outer measure, let `s` be a set.
+Suppose that for each `x ∈ s` there exists a constant `C` such that the inequality
+`ν (s ∩ closedBall x r) ≤ C * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Suppose also that for `μ`-a.e. `x ∈ s` and each `ε > 0`, the inequality
+`ν (s ∩ closedBall x r) ≤ ε * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `s` is a `ν`-null set.
+
+Informally, if `ν (s ∩ closedBall x r) = O(μ (closedBall x r))` at all points of `s`
+and `ν (s ∩ closedBall x r) = o(μ (closedBall x r))` at almost all points of `s`
+(along some sequences of radii tending to zero), then `ν s = 0`.
+
+Note that we do not assume measurability of `s`. -/
+theorem outerMeasure_null_of_forall_le_mul_ae_null [SigmaFinite μ]
+    (h : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ C * μ (closedBall x r))
+    (h₀ : ∀ᵐ x ∂μ, x ∈ s → ∀ ε > (0 : ℝ≥0∞),
+      ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ ε * μ (closedBall x r)) :
+    ν s = 0 := by
+  set s₀ := {x ∈ s | ∀ ε > (0 : ℝ≥0∞),
+    ∃ᶠ r in 𝓝[>] 0, ν (s ∩ closedBall x r) ≤ ε * μ (closedBall x r)}
+  have hs₀ : ν s₀ = 0 := by
+    refine nonpos_iff_eq_zero.1 <| le_trans ?_ (zero_mul (μ s₀)).le
+    refine outerMeasure_le_mul (.inr ENNReal.zero_ne_top) fun x hx ε hε ↦
+      (hx.2 ε hε).mono fun r hr ↦ ?_
+    exact (measure_mono (inter_subset_inter_left _ (sep_subset _ _))).trans hr
+  have hs₁ : ν (s \ s₀) = 0 := by
+    refine outerMeasure_null_of_null_of_forall_exists_le_mul (μ := μ) ?_ fun x hx ↦ ?_
+    · refine measure_mono_null (fun x hx ↦ ?_) (ae_iff.1 h₀)
+      exact fun hP ↦ hx.2 ⟨hx.1, hP hx.1⟩
+    · obtain ⟨C, hC⟩ := h x hx.1
+      exact ⟨C, hC.mono fun r hr ↦ by grw [sdiff_subset, hr]⟩
+  exact measure_mono_null (fun x hx ↦ (em (x ∈ s₀)).imp id fun h ↦ ⟨hx, h⟩)
+    (measure_union_null hs₀ hs₁)
+
+/-- Let `μ` be a σ-finite measure with the closed ball covering property,
+let `f : α → β` be a map, let `ν` be an outer measure on `β`.
+Let `s` be a set, let `C` be a constant such that `μ s ≠ 0 ∨ C ≠ ∞`.
+Suppose that for each `x ∈ s` and each `C' > C`, the inequality
+`ν (f '' (s ∩ closedBall x r)) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `ν (f '' s) ≤ C * μ s`. -/
+theorem outerMeasure_image_le_mul [SigmaFinite μ] {f : α → β} {ν : OuterMeasure β}
+    (hsC : μ s ≠ 0 ∨ C ≠ ∞)
+    (h : ∀ x ∈ s, ∀ C' > C,
+      ∃ᶠ r in 𝓝[>] 0, ν (f '' (s ∩ closedBall x r)) ≤ C' * μ (closedBall x r)) :
+    ν (f '' s) ≤ C * μ s := by
+  simp only [← OuterMeasure.comap_apply] at h ⊢
+  exact outerMeasure_le_mul hsC h
+
+/-- Let `μ` be a σ-finite measure with the closed ball covering property,
+let `f : α → β` be a map, let `ν` be a measure on `β`.
+Let `s` be a set, let `C` be a constant such that `μ s ≠ 0 ∨ C ≠ ∞`.
+Suppose that for each `x ∈ s` and each `C' > C`, the inequality
+`ν (f '' (s ∩ closedBall x r)) ≤ C' * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `ν (f '' s) ≤ C * μ s`. -/
+theorem measure_image_le_mul [SigmaFinite μ] {_ : MeasurableSpace β} {f : α → β} {ν : Measure β}
+    (hsC : μ s ≠ 0 ∨ C ≠ ∞)
+    (h : ∀ x ∈ s, ∀ C' > C,
+      ∃ᶠ r in 𝓝[>] 0, ν (f '' (s ∩ closedBall x r)) ≤ C' * μ (closedBall x r)) :
+    ν (f '' s) ≤ C * μ s :=
+  outerMeasure_image_le_mul (ν := ν.toOuterMeasure) hsC h
+
+/-- Let `μ` be a measure with the closed ball covering property,
+let `f : α → β` be a map, let `ν` be an outer measure on `β`. Let `s` be a `μ`-null set.
+Suppose that for each `x ∈ s` there exists a constant `C` such that the inequality
+`ν (f '' (s ∩ closedBall x r)) ≤ C * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `f '' s` is a `ν`-null set. -/
+theorem outerMeasure_image_null_of_null_of_forall_exists_le_mul {f : α → β}
+    {ν : OuterMeasure β} (hs : μ s = 0)
+    (h : ∀ x ∈ s, ∃ C : ℝ≥0,
+      ∃ᶠ r in 𝓝[>] 0, ν (f '' (s ∩ closedBall x r)) ≤ C * μ (closedBall x r)) :
+    ν (f '' s) = 0 := by
+  simp only [← OuterMeasure.comap_apply] at h ⊢
+  exact outerMeasure_null_of_null_of_forall_exists_le_mul hs h
+
+/-- Let `μ` be a measure with the closed ball covering property,
+let `f : α → β` be a map, let `ν` be a measure on `β`. Let `s` be a `μ`-null set.
+Suppose that for each `x ∈ s` there exists a constant `C` such that the inequality
+`ν (f '' (s ∩ closedBall x r)) ≤ C * μ (closedBall x r)` holds for arbitrarily small `r > 0`.
+Then `f '' s` is a `ν`-null set.
+
+This is useful to prove the Lusin N-property of a map `f`. -/
+theorem measure_image_null_of_null_of_forall_exists_le_mul {_ : MeasurableSpace β} {f : α → β}
+    {ν : Measure β} (hs : μ s = 0)
+    (h : ∀ x ∈ s, ∃ C : ℝ≥0,
+      ∃ᶠ r in 𝓝[>] 0, ν (f '' (s ∩ closedBall x r)) ≤ C * μ (closedBall x r)) :
+    ν (f '' s) = 0 :=
+  outerMeasure_image_null_of_null_of_forall_exists_le_mul (ν := ν.toOuterMeasure) hs h
+
+end MeasureTheory.Measure
