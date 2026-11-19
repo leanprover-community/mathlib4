@@ -356,6 +356,13 @@ variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 instance : IsScalarTower (𝓞 K) (𝓞 L) L :=
   IsScalarTower.of_algebraMap_eq' rfl
 
+instance {G : Type*} [Group G] [MulSemiringAction G L] [SMulCommClass G K L] :
+    SMulCommClass G (𝓞 K) (𝓞 L) :=
+  ⟨fun _ _ _ ↦ by
+    simp_rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap, Algebra.smul_def,
+      algebraMap.smul', map_mul, smul_mul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply (𝓞 K) K L, smul_algebraMap, algebraMap.smul']⟩
+
 instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
   IsIntegralClosure.tower_top (R := ℤ)
 
