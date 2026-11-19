@@ -192,10 +192,10 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
       (QuotientGroup.rightRel_apply.1 (Quotient.eq'.1 (hi (Quotient.mk' g))))⟩
-    have hmk (s : S) (g : G) : Quotient.mk' (s.1 * g) = Quotient.mk' g :=
+    have hmk (s : S) (g : G) : Quotient.mk' (s.val * g) = Quotient.mk' g :=
       Quotient.eq'.2 (QuotientGroup.rightRel_apply.2 (by simp))
-    have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
-    let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
+    have hγ (s : S) (g : G) : γ (s.val * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
+    let x (g : G) : X := X.ρ (γ g) (s (y.val (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
     · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
     · simp [x, hom_comm_apply, hs, ← y.2 (γ g), γ]
@@ -260,8 +260,8 @@ to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
 noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
-  toFun f := Rep.ofHom ⟨linearCombination _ f.1 ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
-    fun g ↦ by dsimp; ext; simp [f.2 g]⟩
+  toFun f := Rep.ofHom ⟨linearCombination _ f.val ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
+    fun g ↦ by dsimp; ext; simp [f.property g]⟩
   map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
   map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
   invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by

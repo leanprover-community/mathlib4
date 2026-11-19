@@ -362,7 +362,7 @@ lemma mapCycles₁_comp_i :
 
 @[simp]
 lemma coe_mapCycles₁ (x) :
-    (mapCycles₁ f φ x).1 = chainsMap₁ f φ x := rfl
+    (mapCycles₁ f φ x).val = chainsMap₁ f φ x := rfl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₁_hom :
@@ -383,7 +383,7 @@ lemma map₁_one (φ : A ⟶ res (1 : G →* H) B) :
   rw [ModuleCat.hom_comp]
   refine (H1π_eq_zero_iff _).2 ?_
   simpa [coe_mapCycles₁ _ φ x, mapDomain, map_finsuppSum] using
-    (boundaries₁ B).finsuppSum_mem k x.1 _ fun _ _ => single_one_mem_boundaries₁ (A := B) _
+    (boundaries₁ B).finsuppSum_mem k x.val _ fun _ _ => single_one_mem_boundaries₁ (A := B) _
 
 section CoresCoinf
 
@@ -551,7 +551,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
   let Y : S →₀ A := X.sum fun g f =>
     mapRange.linearMap (A.ρ g⁻¹) (lmapDomain _ k (fun s => MulAut.conjNormal g⁻¹ s) f) - f
   let Z : G × G →₀ A := X.sum fun g f =>
-    lmapDomain _ k (fun s => (g, g⁻¹ * s.1 * g)) f - lmapDomain _ k (fun s => (s.1, g)) f
+    lmapDomain _ k (fun s => (g, g⁻¹ * s.val * g)) f - lmapDomain _ k (fun s => (s.val, g)) f
   use Y
   apply (moduleCat_pOpcycles_eq_iff _ _ _).2 ⟨Z, ?_⟩
   change d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
@@ -577,7 +577,7 @@ instance : Epi (H1CoresCoinf A S).g := by
     (mapCycles₁_quotientGroupMk'_epi (A.toCoinvariants S) S) x with ⟨y, hy⟩
 /- We know `C₁(G, A) ⟶ C₁(G, A_S)` is surjective, so pick `Y` in the preimage of `y`. -/
   rcases mapRange_surjective _ (map_zero _)
-    (Coinvariants.mk_surjective (A.ρ.comp S.subtype)) y.1 with ⟨Y, hY⟩
+    (Coinvariants.mk_surjective (A.ρ.comp S.subtype)) y.val with ⟨Y, hY⟩
 /- Then `d(Y) ∈ I(S)A,` since `d(y) = 0`. -/
   have : d₁₀ _ Y ∈ Coinvariants.ker (A.ρ.comp S.subtype) := by
     have h' := congr($((mapShortComplexH1 (B := toCoinvariants A S)
@@ -633,11 +633,11 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
 /- Choose `Z : C₁(S, A)` mapping to `z : C₁(S, A_S)`, and `W : C₂(G, A)` mapping to
 `w : C₂(G, A_S)`. -/
   rcases mapRange_surjective (Coinvariants.mk _) (map_zero _)
-    (Coinvariants.mk_surjective _) z.1 with ⟨Z, hZ⟩
+    (Coinvariants.mk_surjective _) z.val with ⟨Z, hZ⟩
   rcases mapRange_surjective (Coinvariants.mk _) (map_zero _)
     (Coinvariants.mk_surjective _) w with ⟨W, hW⟩
 /- Let `b : C₁(G, A)` denote `x + d(W) - C₁(i, Id)(z)`. -/
-  let b : G →₀ A := (x.1 : G →₀ A) + d₂₁ A W - lmapDomain _ k S.subtype Z
+  let b : G →₀ A := (x.val : G →₀ A) + d₂₁ A W - lmapDomain _ k S.subtype Z
 /- Then `b` has coefficients in `I(S)A := ⟨{ρ(s)(a) - a | s ∈ S, a ∈ A}⟩`, since
 `C₁(G, I(S)(A)) ⟶ C₁(G, A) ⟶ C₁(G, A_S)` is exact, and `b` is in the kernel of the second map. -/
   have hb : ∀ g, b g ∈ Coinvariants.ker (A.ρ.comp S.subtype) :=
@@ -678,7 +678,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
     simp [hαZ, mapCycles₁_hom]
 /- And `α + Z` is a cycle, since `d(W + δ) + x` is. -/
   · rw [mem_cycles₁_iff]
-    have : x + d₂₁ A (W + δ) ∈ cycles₁ A := Submodule.add_mem _ x.2 (d₂₁_apply_mem_cycles₁ _)
+    have : x + d₂₁ A (W + δ) ∈ cycles₁ A := Submodule.add_mem _ x.property (d₂₁_apply_mem_cycles₁ _)
     rwa [eq_sub_iff_add_eq'.1 hαZ, mem_cycles₁_iff, sum_mapDomain_index_inj
       Subtype.val_injective, sum_mapDomain_index_inj Subtype.val_injective] at this
 
@@ -776,7 +776,7 @@ lemma mapCycles₂_comp_i :
 
 @[simp]
 lemma coe_mapCycles₂ (x) :
-    (mapCycles₂ f φ x).1 = chainsMap₂ f φ x := rfl
+    (mapCycles₂ f φ x).val = chainsMap₂ f φ x := rfl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₂_hom :

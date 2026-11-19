@@ -44,7 +44,7 @@ lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
 /-- For `l : ℕ` and `u : ℤ × ℤ`, this is the complex shape on `ℤ × Fin l`, which
 connects `a` to `b` when the equality `a + u = b` holds in `ℤ × ℤ`. -/
 def spectralSequenceFin (l : ℕ) (u : ℤ × ℤ) : ComplexShape (ℤ × Fin l) where
-  Rel a b := a.1 + u.1 = b.1 ∧ a.2.1 + u.2 = b.2.1
+  Rel a b := a.1 + u.1 = b.1 ∧ a.2.val + u.2 = b.2.val
   next_eq _ _ := by ext <;> lia
   prev_eq _ _ := by ext <;> lia
 

@@ -324,8 +324,8 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
   refine ⟨fun m hm => Submodule.coe_eq_zero.1 (b₁.1 m fun n ↦ ?_),
     fun m hm => Submodule.coe_eq_zero.1 (b₁.2 m fun n ↦ ?_)⟩ <;>
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.1 <| this n
-  · rw [add_right, b₂ y m <| m.2 y hy, show B m z = 0 from hm ⟨z, hz⟩, add_zero]
-  · rw [add_left, m.2 y hy, show B z m = 0 from hm ⟨z, hz⟩, add_zero]
+  · rw [add_right, b₂ y m <| m.property y hy, show B m z = 0 from hm ⟨z, hz⟩, add_zero]
+  · rw [add_left, m.property y hy, show B z m = 0 from hm ⟨z, hz⟩, add_zero]
 
 end BilinForm
 

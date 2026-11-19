@@ -64,14 +64,14 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
   simp
 
 instance toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
-  vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
+  vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.property b.property⟩
   zero_vadd := fun a => by
     ext
     exact zero_vadd _ _
   add_vadd a b c := by
     ext
     apply add_vadd
-  vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
+  vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.property _).mpr b.property⟩
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'
@@ -165,7 +165,7 @@ instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
 @[simp]
 theorem preimage_coe_affineSpan_singleton (x : P) :
     ((↑) : affineSpan k ({x} : Set P) → P) ⁻¹' {x} = univ :=
-  eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
+  eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.property
 
 variable (P)
 

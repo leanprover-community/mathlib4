@@ -92,7 +92,7 @@ instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y wh
 
 instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
   hom f := ⟨f.toFun, f.map_point⟩
-  ofHom f := ⟨f.1, f.2⟩
+  ofHom f := ⟨f.val, f.property⟩
 
 /-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
