@@ -62,7 +62,7 @@ lemma PrespectralSpace.of_isOpenCover
   refine .of_isTopologicalBasis (hU.isTopologicalBasis fun i ↦ isTopologicalBasis) ?_
   simp only [Set.mem_iUnion, Set.mem_image, Set.mem_ofPred_eq, forall_exists_index, and_imp,
     forall_comm (α := Set _), forall_apply_eq_imp_iff₂]
-  exact fun i V hV hV' ↦ hV'.image continuous_subtype_val
+  exact fun i V hV hV' ↦ hV'.image continuous_subtypeVal
 
 lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
     (f : X → Y) (hf : IsInducing f) (hf' : IsSpectralMap f) : PrespectralSpace X :=
@@ -143,21 +143,21 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
   obtain ⟨Us, hUs, heq⟩ := TopologicalSpace.Opens.isBasis_iff_cover.mp
     (PrespectralSpace.isBasis_opens X) ⟨f ⁻¹' U, hU.preimage hfc⟩
   obtain ⟨t, ht⟩ := by
-    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.is_open')
+    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.val) (fun s ↦ h _ s.val.is_open')
       (fun x hx ↦ ?_)
     obtain ⟨x, rfl⟩ := hs hx
     obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]
     exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, x, hx, rfl⟩
-  refine ⟨⨆ s ∈ t, s.1, ?_, ?_⟩
+  refine ⟨⨆ s ∈ t, s.val, ?_, ?_⟩
   · simp only [iSup_mk, carrier_eq_coe, coe_mk]
-    exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
+    exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.property
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
-    convert_to ⋃ i ∈ t, f '' i.1 = U
+    convert_to ⋃ i ∈ t, f '' i.val = U
     · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]
       rintro ⟨i, hi, x, hx, rfl⟩
-      have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
+      have := heq ▸ mem_sSup.mpr ⟨i.val, i.property, hx⟩
       exact this
 
 lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] {K U : Set X}

@@ -51,10 +51,10 @@ variable {K : Type*} [Field K] [NumberField K] (S : Set (HeightOneSpectrum (𝓞
 
 /-- The partial Dirichlet series $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$. -/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
-  ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
+  ∑' 𝔭 : S, (Ideal.absNorm 𝔭.val.asIdeal : ℝ) ^ (-s)
 
 theorem primeIdealZetaSum_def (s : ℝ) :
-    S.primeIdealZetaSum s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := by rfl
+    S.primeIdealZetaSum s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.val.asIdeal : ℝ) ^ (-s) := by rfl
 
 theorem primeIdealZetaSum_nonneg (s : ℝ) :
     0 ≤ S.primeIdealZetaSum s :=
