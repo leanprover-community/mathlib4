@@ -254,10 +254,12 @@ noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A
     (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeomorphSpectrum x)).toStarAlgHom
 
+@[simp]
 lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).fst = f ⟨x.fst, fst_mem_spectrum x⟩ := by
   simp [cfcAux]
 
+@[simp]
 lemma snd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).snd =
       cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero := by
@@ -271,8 +273,9 @@ lemma cfcAux_injective : Function.Injective (cfcAux x hx) :=
   starMap_injective (cfcₙHom_injective hx) |>.comp <|
     (unitizationStarAlgEquiv _ 𝕜).symm.injective.comp (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 _).injective
 
+@[simp]
 lemma cfcAux_id : cfcAux x hx ((ContinuousMap.id 𝕜).restrict (σ 𝕜 x)) = x := by
-  refine Unitization.ext (by simp [fst_cfcAux]) ?_
+  refine Unitization.ext (by simp) ?_
   rw [snd_cfcAux]
   convert cfcₙHom_id hx using 2
   ext
