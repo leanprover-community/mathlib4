@@ -18,6 +18,7 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Product
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # The Koszul complex

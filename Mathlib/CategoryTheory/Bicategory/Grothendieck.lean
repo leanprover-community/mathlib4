@@ -56,7 +56,6 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
-
 -/
 
 @[expose] public section
@@ -166,7 +165,6 @@ attribute [local simp]
 variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
@@ -326,7 +324,6 @@ attribute [local simp]
 variable {F} {G : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
   {H : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The CoGrothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/

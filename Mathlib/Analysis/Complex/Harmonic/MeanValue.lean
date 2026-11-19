@@ -110,9 +110,8 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   apply H.eq_of_eqOn_Ioo (by aesop)
   intro r hr
   apply HarmonicOnNhd.circleAverage_eq
-  apply (hf.comp_CLM g).1.mono
-  rw [abs_of_pos hr.1]
-  exact closedBall_subset_ball hr.2
+  grw [abs_of_pos hr.1, hr.2]
+  exact (hf.comp_CLM g).1
 
 end InnerProductSpace
 

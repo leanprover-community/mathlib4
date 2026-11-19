@@ -51,7 +51,7 @@ def uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix m n A
 @[simps!]
 def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
   __ := uniqueAddEquiv
-  map_mul' := by simp [mul_apply]
+  map_mul' := by simp [Matrix.mul_apply]
 
 /-- `M₁(A)` is equivalent to `A` as an `R`-algebra. -/
 @[simps!]

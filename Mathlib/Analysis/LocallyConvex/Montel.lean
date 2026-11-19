@@ -25,7 +25,6 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 ## References
 * [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
-
 -/
 
 @[expose] public section
