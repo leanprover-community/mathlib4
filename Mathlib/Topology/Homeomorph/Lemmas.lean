@@ -132,7 +132,7 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
       (h.symm '' ·) := fun x ↦ by
     rw [← h.symm_map_nhds_eq]
-    exact (i.1 _).map _
+    exact (i.open_connected_basis _).map _
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
@@ -346,7 +346,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   -- TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.mapsToRestrict (mapsTo_image _ _)
-  continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
+  continuous_invFun := (e.symm.continuous.comp continuous_subtypeVal).codRestrict _
   toEquiv := e.toEquiv.image s
 
 set_option backward.defeqAttrib.useBackward true in
@@ -360,9 +360,9 @@ def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
 def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
+    (continuous_subtypeVal.fst.subtype_mk _).prodMk (continuous_subtypeVal.snd.subtype_mk _)
   continuous_invFun :=
-    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
+    (continuous_subtypeVal.fst'.prodMk continuous_subtypeVal.snd').subtype_mk _
 
 section
 
@@ -546,10 +546,14 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   rw [eq_true hf.isClosedMap, true_and]
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
+    IsHomeomorph (Sum.map f g) :=
+  ⟨hf.continuous.sumMap hg.continuous, hf.isOpenMap.sumMap hg.isOpenMap,
+    hf.bijective.sumMap hg.bijective⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
+    IsHomeomorph (Prod.map f g) :=
+  ⟨hf.continuous.prodMap hg.continuous, hf.isOpenMap.prodMap hg.isOpenMap,
+    hf.bijective.prodMap hg.bijective⟩
 
 lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}

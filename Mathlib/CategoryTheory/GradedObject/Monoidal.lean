@@ -610,7 +610,7 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   intro _ _ h
-  exact Subtype.ext (congrArg (fun x => (x.1.1, x.2.1.1, x.2.2.1)) h)
+  exact Subtype.ext (congrArg (fun x => (x.1.val, x.2.1.val, x.2.2.val)) h)
 
 /-!
 The monoidal category structure on `GradedObject ℕ C` can be inferred

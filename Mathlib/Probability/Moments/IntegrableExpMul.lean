@@ -530,7 +530,7 @@ lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpS
     exact hX.aestronglyMeasurable
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
-  exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
+  exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.property
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`, then `X` is integrable. -/
 lemma integrable_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) :

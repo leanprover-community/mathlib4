@@ -52,7 +52,7 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 instance {M α : Type*} [Monoid M] [MulAction M α] :
     SMulCommClass ↥(Submonoid.center M) M α where
   smul_comm c r v := by
-    have := Semigroup.mem_center_iff.1 c.2
+    have := Semigroup.mem_center_iff.1 c.property
     simp_rw [Submonoid.smul_def, smul_smul, this]
 
 instance {M α : Type*} [Monoid M] [MulAction M α] :
@@ -157,7 +157,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
       fun u ↦ Submonoid.mem_center_iff.mpr <|
         fun r ↦ Units.ext <| by
         rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
-          Submonoid.coe_subtype, u.1.prop.comm r]
+          Submonoid.coe_subtype, u.val.prop.comm r]
 
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
@@ -171,8 +171,8 @@ variable {M} {N : Type*}
 /-- The center of isomorphic magmas are isomorphic. -/
 @[to_additive (attr := simps) /-- The center of isomorphic additive magmas are isomorphic. -/]
 def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
-  toFun r := ⟨e r, MulEquivClass.apply_mem_center e r.2⟩
-  invFun s := ⟨e.symm s, MulEquivClass.apply_mem_center e.symm s.2⟩
+  toFun r := ⟨e r, MulEquivClass.apply_mem_center e r.property⟩
+  invFun s := ⟨e.symm s, MulEquivClass.apply_mem_center e.symm s.property⟩
   left_inv _ := Subtype.ext (e.left_inv _)
   right_inv _ := Subtype.ext (e.right_inv _)
   map_mul' _ _ := Subtype.ext (map_mul ..)
@@ -194,9 +194,9 @@ def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : cente
 @[to_additive (attr := simps)
 /-- The center of an additive magma is isomorphic to the center of its opposite. -/]
 def Subsemigroup.centerToMulOpposite [Mul M] : center M ≃* center Mᵐᵒᵖ where
-  toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.2⟩
-  invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.2⟩
-  map_mul' r _ := Subtype.ext congr(MulOpposite.op $(r.2.1 _))
+  toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.property⟩
+  invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.property⟩
+  map_mul' r _ := Subtype.ext congr(MulOpposite.op $(r.property.comm _))
 
 /-- The center of a monoid is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)

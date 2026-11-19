@@ -473,13 +473,13 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := by fun_prop
       map_bounded' := isBounded_range_iff.1
-        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
+        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).property) }
   let t' : Set ℝ := (↑) ∘ h '' t
-  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
+  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).property
   have : OrdConnected t' := by
     constructor
     rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
-    lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).2.1 (h y).2.2 hz
+    lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).property.1 (h y).property.2 hz
     change z ∈ Icc (h x) (h y) at hz
     rw [← h.image_Icc] at hz
     rcases hz with ⟨z, hz, rfl⟩

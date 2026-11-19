@@ -118,7 +118,7 @@ theorem HomogeneousSubmodule.ext' {I J : HomogeneousSubmodule 𝒜 ℳ}
   ext
   rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
   apply forall_congr'
-  exact fun i ↦ h i _ (decompose ℳ _ i).2
+  exact fun i ↦ h i _ (decompose ℳ _ i).property
 
 @[simp]
 theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :
