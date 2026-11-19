@@ -202,7 +202,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     AEStronglyMeasurable (fun v ↦ fourierSMulRight L f v) μ := by
   apply AEStronglyMeasurable.fun_const_smul
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
-    (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
+    (StrongDual.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
@@ -513,7 +513,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
   by_cases h'f : Integrable f μ
   · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₁₂ f = 0 := by
-      ext w; simp [fourierIntegral, integral, h'f]
+      ext w; simp [fourierIntegral, integral_undef, h'f]
     simpa [this] using! contDiff_const
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier
@@ -795,7 +795,7 @@ theorem fourier_deriv
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
     simpa only [← toSpanSingleton_deriv] using!
-      (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+      (StrongDual.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]

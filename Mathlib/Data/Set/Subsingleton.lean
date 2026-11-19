@@ -15,7 +15,6 @@ Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one e
 
 Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct
 elements.
-
 -/
 
 @[expose] public section
@@ -322,7 +321,7 @@ theorem univ_set_of_isEmpty [IsEmpty α] : @univ (Set α) = {∅} :=
 @[simp]
 theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
-  suffices @univ α ∈ univ by aesop
+  suffices @univ α ∈ univ by simpa [h]
   simp
 
 end Nontrivial

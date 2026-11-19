@@ -119,7 +119,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
         ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel_left, zpow_natCast,
         zpow_natCast]
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
-      AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
+      AnalyticAt.unique_eventuallyEq_zpow_smul_ne_zero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
 /--
 The order of a meromorphic function `f` at `z₀` is finite iff `f` can locally be
@@ -723,7 +723,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
-    rcases (hf z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    rcases (hf z.val z.property).eventually_eq_zero_or_eventually_ne_zero with h | h
     · -- Case: f is locally zero in a punctured neighborhood of z
       rw [← meromorphicOrderAt_eq_top_iff] at h
       tauto
@@ -738,7 +738,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
         · rw [meromorphicOrderAt_eq_top_iff, not_eventually]
           apply Filter.Eventually.frequently
           rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
-          use t' \ {z.1}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
+          use t' \ {z.val}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
             mem_singleton_iff.not.2 (Subtype.coe_ne_coe.mpr h₁w)
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
@@ -759,7 +759,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
+    use t' \ {z.val}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
     · exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
@@ -899,12 +899,11 @@ alias codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top :=
 Variant of `codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
 function has zero or infinite order is codiscrete within its domain of meromorphicity.
 -/
-theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
-    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f U) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
   convert
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-      h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
+      hf.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop
 
 @[deprecated (since := "2026-07-09")]
@@ -1050,12 +1049,15 @@ variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
 At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
 meromorphic order equals `-1`.
 -/
-theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜]
     (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
     meromorphicOrderAt (logDeriv f) x = -1 := by
+  have hf : MeromorphicAt f x := by
+    by_contra h
+    exact h₁ (meromorphicOrderAt_of_not_meromorphicAt h)
   lift meromorphicOrderAt f x to ℤ using h₂ with n hn
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
-    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (by exact_mod_cast h₁)) hn.symm,
+    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,
     ← hn]
   norm_cast
   simp
@@ -1068,7 +1070,7 @@ theorem meromorphicOrderAt_logDeriv_nonneg (hf : MeromorphicAt f x)
     (h : meromorphicOrderAt f x = 0) :
     0 ≤ meromorphicOrderAt (logDeriv f) x := by
   obtain ⟨g, h₁g, h₂g, h₃g⟩ :=
-    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (by exact_mod_cast h)
+    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (mod_cast h)
   have h₄ : f =ᶠ[𝓝[≠] x] g := by
     filter_upwards [h₃g] with z hz using by simpa using hz
   rw [meromorphicOrderAt_congr (logDeriv_congr_nhdsNE h₄)]

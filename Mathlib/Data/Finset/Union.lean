@@ -46,7 +46,7 @@ def disjiUnion (s : Finset α) (t : α → Finset β) (hf : (s : Set α).Pairwis
 
 @[simp]
 lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjiUnion t h).1 = s.1.bind fun a ↦ (t a).1 := rfl
+    (s.disjiUnion t h).val = s.val.bind fun a ↦ (t a).val := rfl
 
 @[simp] lemma disjiUnion_empty (t : α → Finset β) : disjiUnion ∅ t (by simp) = ∅ := rfl
 
@@ -192,10 +192,10 @@ variable [DecidableEq β]
 
 (This was formerly `bind` due to the monad structure on types with `DecidableEq`.) -/
 protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
-  (s.1.bind fun a ↦ (t a).1).toFinset
+  (s.val.bind fun a ↦ (t a).val).toFinset
 
 @[simp] lemma biUnion_val (s : Finset α) (t : α → Finset β) :
-    (s.biUnion t).1 = (s.1.bind fun a ↦ (t a).1).dedup := rfl
+    (s.biUnion t).val = (s.val.bind fun a ↦ (t a).val).dedup := rfl
 
 @[simp] lemma biUnion_empty : Finset.biUnion ∅ t = ∅ := rfl
 

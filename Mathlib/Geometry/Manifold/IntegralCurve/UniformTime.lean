@@ -44,8 +44,10 @@ curves with the same starting point. -/
 lemma eqOn_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsMIntegralCurveOn (γ a) v (Ioo (-a) a))
-    {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
+    {a a' : ℝ} (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
+  rcases le_or_gt a' 0 with ha' | hpos
+  · simp [Ioo_eq_empty_of_le (by linarith : a' ≤ -a')]
   apply isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
     (hγ a' (by positivity)) ((hγ a (lt_of_lt_of_le hpos hle)).mono _)
     (by rw [hγx a, hγx a'])
@@ -63,9 +65,8 @@ lemma eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
   intro t ht
   by_cases! hlt : |t| + 1 < a
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
-  · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) hlt ht |>.symm
+      hlt.le (abs_lt.mp <| lt_add_one _)
+  · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ hlt ht |>.symm
 
 /-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
 each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is a global

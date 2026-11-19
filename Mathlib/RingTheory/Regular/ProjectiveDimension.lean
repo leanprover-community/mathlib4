@@ -14,7 +14,6 @@ import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 
 /-!
-
 # ProjectiveDimension of quotient by regular element
 
 For `M` a finitely generated module over Noetherian local ring `R` and an `M`-regular element `x`
@@ -26,7 +25,6 @@ The analogous version for quotient regular sequence is also provided.
 * `ModuleCat.projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular` : For `M` a finitely
   generated module over Noetherian local ring `R` and an `M`-regular element `x` contained in
   the unique maximal ideal of `R`, `projdim(M/xM) = projdim(M) + 1`
-
 -/
 
 public section
@@ -83,7 +81,6 @@ end
 
 variable [IsLocalRing R] [IsNoetherianRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
@@ -168,7 +165,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
   have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
     intro x hx
-    apply IsLocalRing.le_maximalIdeal reg.2.symm
+    apply IsLocalRing.le_maximalIdeal reg.top_ne_smul.symm
     simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
   let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
     (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
@@ -177,7 +174,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
       simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
     projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular ↧(Shrink.{v} R) rs
-    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
+    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.toIsWeaklyRegular) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
 
 end ModuleCat

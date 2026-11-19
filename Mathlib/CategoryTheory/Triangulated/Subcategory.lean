@@ -34,7 +34,6 @@ of an additive category is not closed under isomorphisms.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -420,11 +419,6 @@ lemma extensionProductIter_le_of_isTriangulatedClosed₂ {Q : ObjectProperty C}
     P.extensionProductIter n ≤ Q :=
   Q.isoClosure_eq_self ▸ P.extensionProductIter_le_of_isTriangulatedClosed₂' h n
 
-instance [P.IsStableUnderShift ℤ] (n : ℕ) : (P.extensionProductIter n).IsStableUnderShift ℤ := by
-  induction n with
-  | zero => rwa [extensionProductIter_zero]
-  | succ n H => rw [extensionProductIter_succ]; infer_instance
-
 lemma extensionProductIter_retractClosure_le {n : ℕ} :
     (P.retractClosure.extensionProductIter n) ≤ (P.extensionProductIter n).retractClosure := by
   induction n with
@@ -644,7 +638,7 @@ instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
       (binaryProductTriangle_distinguished _ _)
       (p.prop_diag_obj (.mk .left)) (p.prop_diag_obj (.mk .right)))
     exact IsLimit.conePointUniqueUpToIso (prodIsProd _ _)
-      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).2 p.isLimit)
+      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).invFun p.isLimit)
 
 instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
     P.IsClosedUnderFiniteProducts := .mk'
@@ -663,7 +657,6 @@ section
 
 variable [P.IsTriangulated]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
   isomorphic_distinguished T₁ hT₁ T₂ e :=
@@ -673,7 +666,7 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) P.ι.mapZeroObject)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (P.ι.map f)
-    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.2 Y.2
+    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.property Y.property
     exact ⟨⟨Z'', hZ''⟩, P.fullyFaithfulι.preimage (g' ≫ e.hom),
       P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso (1 : ℤ)).inv.app X),
       isomorphic_distinguished _ mem _ (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm)⟩

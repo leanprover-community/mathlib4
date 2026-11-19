@@ -20,7 +20,6 @@ the naturality condition only for morphisms `n ⟶ n + 1`.
 
 The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOpSequence` and
 `NatTrans.ofOpSequence`.
-
 -/
 
 @[expose] public section
@@ -100,7 +99,7 @@ end OfSequence
 
 /-- The functor `ℕ ⥤ C` constructed from a sequence of
 morphisms `f : X n ⟶ X (n + 1)` for all `n : ℕ`. -/
-@[simps obj]
+@[simps obj, implicit_reducible]
 def ofSequence : ℕ ⥤ C where
   obj := X
   map {i j} φ := OfSequence.map f i j (leOfHom φ)

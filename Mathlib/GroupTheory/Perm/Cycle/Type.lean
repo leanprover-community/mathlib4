@@ -48,16 +48,16 @@ variable [DecidableEq α]
 
 /-- The cycle type of a permutation -/
 def cycleType (σ : Perm α) : Multiset ℕ :=
-  σ.cycleFactorsFinset.1.map (Finset.card ∘ support)
+  σ.cycleFactorsFinset.val.map (Finset.card ∘ support)
 
 theorem cycleType_def (σ : Perm α) :
-    σ.cycleType = σ.cycleFactorsFinset.1.map (Finset.card ∘ support) :=
+    σ.cycleType = σ.cycleFactorsFinset.val.map (Finset.card ∘ support) :=
   rfl
 
 theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm α, f ∈ s → f.IsCycle)
     (h2 : (s : Set (Perm α)).Pairwise Disjoint)
     (h0 : s.noncommProd id (h2.imp fun _ _ => Disjoint.commute) = σ) :
-    σ.cycleType = s.1.map (Finset.card ∘ support) := by
+    σ.cycleType = s.val.map (Finset.card ∘ support) := by
   rw [cycleType_def]
   congr
   rw [cycleFactorsFinset_eq_finset]
@@ -363,23 +363,22 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Function in
 /-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
 and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
-theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ}
-    [hp : Fact p.Prime] (hf : f ^ p ^ n = 1) :
+theorem card_fixedPoints_modEq [DecidableEq α] {f : α → α} {p n : ℕ}
+    [hp : Fact p.Prime] (hf : f^[p ^ n] = id) :
     Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
-  let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
-    leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
-    leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
+  have red : (p ^ n - 1).succ = p ^ n := by simp [n.one_le_pow p hp.out.pos]
+  let σ : α ≃ α := ⟨f, f^[p ^ n - 1],
+    by rwa [leftInverse_iff_comp, ← iterate_succ, red],
+    by rwa [rightInverse_iff_comp, ← iterate_succ', red]⟩
   have hσ : σ ^ p ^ n = 1 := by
     rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices Fintype.card f.fixedPoints = (support σ)ᶜ.card from
     this ▸ (card_compl_support_modEq hσ).symm
-  suffices f.fixedPoints = (support σ)ᶜ by
-    simp only [this]; apply Fintype.card_coe
+  suffices f.fixedPoints = (support σ)ᶜ by simp [this, ← Fintype.card_coe]
   simp [σ, Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
@@ -445,15 +444,15 @@ by appending the inverse of the product of `v`. -/
 def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
     rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
-  invFun v := v.1.tail
+  invFun v := v.val.tail
   left_inv v := v.tail_cons v.toList.prod⁻¹
   right_inv v := Subtype.ext <|
     calc
-      v.1.tail.toList.prod⁻¹ ::ᵥ v.1.tail = v.1.head ::ᵥ v.1.tail :=
-        congr((· ::ᵥ v.1.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
-          rw [← List.prod_cons, ← Vector.toList_cons, v.1.cons_head_tail]
-          exact v.2))
-      _ = v.1 := v.1.cons_head_tail
+      v.val.tail.toList.prod⁻¹ ::ᵥ v.val.tail = v.val.head ::ᵥ v.val.tail :=
+        congr((· ::ᵥ v.val.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
+          rw [← List.prod_cons, ← Vector.toList_cons, v.val.cons_head_tail]
+          exact v.property))
+      _ = v.val := v.val.cons_head_tail
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
@@ -472,16 +471,17 @@ variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/
 def rotate : vectorsProdEqOne G n :=
-  ⟨⟨_, (v.1.1.length_rotate k).trans v.1.2⟩, List.prod_rotate_eq_one_of_prod_eq_one v.2 k⟩
+  ⟨⟨_, (v.val.val.length_rotate k).trans v.val.property⟩,
+    List.prod_rotate_eq_one_of_prod_eq_one v.property k⟩
 
 theorem rotate_zero : rotate v 0 = v :=
-  Subtype.ext (Subtype.ext v.1.1.rotate_zero)
+  Subtype.ext (Subtype.ext v.val.val.rotate_zero)
 
 theorem rotate_rotate : rotate (rotate v j) k = rotate v (j + k) :=
-  Subtype.ext (Subtype.ext (v.1.1.rotate_rotate j k))
+  Subtype.ext (Subtype.ext (v.val.val.rotate_rotate j k))
 
 theorem rotate_length : rotate v n = v :=
-  Subtype.ext (Subtype.ext ((congr_arg _ v.1.2.symm).trans v.1.1.rotate_length))
+  Subtype.ext (Subtype.ext ((congr_arg _ v.val.property.symm).trans v.val.val.rotate_length))
 
 end VectorsProdEqOne
 
@@ -516,9 +516,9 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   refine
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
-  · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
+  · rw [← List.prod_replicate, ← v.val.property, ← hg, show v.val.val.prod = 1 from v.property]
   · change (v : List.Vector G p).toList = _ at hg
-    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.1.2]
+    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.val.property]
     rfl
 
 -- TODO: Make the `Finite` version of this theorem the default

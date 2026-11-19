@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.MeasureTheory.Integral.SetToL1.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of set functions to L¹
 
@@ -213,7 +216,7 @@ theorem setToL1_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''}
   · intro g
     have : (coeSimpleFuncNonnegToLpNonneg 1 μ G' g : α →₁[μ] G') = (g : α →₁ₛ[μ] G') := rfl
     rw [this, setToL1_eq_setToL1SCLM]
-    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.2
+    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.property
 
 theorem setToL1_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
