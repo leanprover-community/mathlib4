@@ -116,7 +116,7 @@ theorem separatingLeft_conjTranspose_iff [StarRing R] :
   rw [star_involutive.surjective.forall]
   simp [star_eq_zero, ← star_vecMul, star_dotProduct_star, dotProduct_mulVec]
 
-alias ⟨_, SeparatingRight.separatingLeft_conTranspose⟩ := separatingLeft_conjTranspose_iff
+alias ⟨_, SeparatingRight.separatingLeft_conjTranspose⟩ := separatingLeft_conjTranspose_iff
 
 @[simp]
 theorem separatingRight_conjTranspose_iff [StarRing R] :
