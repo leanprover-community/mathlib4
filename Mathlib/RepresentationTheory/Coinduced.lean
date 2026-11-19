@@ -105,7 +105,7 @@ lemma coind.coe_lift_apply (f : IntertwiningMap (τ.comp φ) ρ) (a : A) (h : H)
 def coind.evalOne (f : τ.IntertwiningMap (coind φ ρ)) :
     IntertwiningMap (τ.comp φ) ρ :=
   ⟨LinearMap.proj 1 ∘ₗ (coindV φ ρ).subtype ∘ₗ f.toLinearMap, fun g => by
-    ext x; simpa [f.isIntertwining] using (f x).2 g 1⟩
+    ext x; simpa [f.isIntertwining] using (f x).property g 1⟩
 
 @[simp]
 lemma coind.evalOne_apply (f : τ.IntertwiningMap (coind φ ρ)) (a : A) :
