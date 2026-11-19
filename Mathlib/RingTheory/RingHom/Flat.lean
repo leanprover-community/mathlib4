@@ -76,7 +76,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h
   algebraize_only [f]
   refine Module.flat_of_isLocalized_span _ _ s hsp _
-    (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
+    (fun r ↦ Algebra.linearMap S <| Localization.Away r.val) ?_
   dsimp only [RingHom.Flat] at h
   convert! h; ext
   apply Algebra.smul_def

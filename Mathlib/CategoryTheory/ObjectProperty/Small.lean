@@ -34,7 +34,8 @@ protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtyp
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
-  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
+  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.val, x.property⟩)
+    (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
 
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
@@ -78,22 +79,22 @@ instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} P] :
 instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} P] [ObjectProperty.Small.{w} Q] :
     ObjectProperty.Small.{w} (P ⊔ Q) :=
   small_of_surjective (f := fun (x : Subtype P ⊕ Subtype Q) ↦ match x with
-      | .inl x => ⟨x.1, Or.inl x.2⟩
-      | .inr x => ⟨x.1, Or.inr x.2⟩)
+      | .inl x => ⟨x.val, Or.inl x.property⟩
+      | .inr x => ⟨x.val, Or.inr x.property⟩)
     (by rintro ⟨x, hx | hx⟩ <;> aesop)
 
 instance {α : Type*} (P : α → ObjectProperty C)
     [∀ a, ObjectProperty.Small.{w} (P a)] [Small.{w} α] :
     ObjectProperty.Small.{w} (⨆ a, P a) :=
-  small_of_surjective (f := fun (x : Σ a, Subtype (P a)) ↦ ⟨x.2.1, by aesop⟩)
+  small_of_surjective (f := fun (x : Σ a, Subtype (P a)) ↦ ⟨x.2.val, by aesop⟩)
     (fun ⟨x, hx⟩ ↦ by aesop)
 
 @[simp]
 lemma small_op_iff (P : ObjectProperty C) :
     ObjectProperty.Small.{w} P.op ↔ ObjectProperty.Small.{w} P :=
   small_congr
-    { toFun x := ⟨x.1.unop, x.2⟩
-      invFun x := ⟨op x.1, x.2⟩}
+    { toFun x := ⟨x.val.unop, x.property⟩
+      invFun x := ⟨op x.val, x.property⟩}
 
 @[simp]
 lemma small_unop_iff (P : ObjectProperty Cᵒᵖ) :
@@ -112,16 +113,17 @@ lemma EssentiallySmall.exists_small_le (P : ObjectProperty C)
     ∃ (Q : ObjectProperty C) (_ : ObjectProperty.Small.{w} Q), Q ≤ P ∧ P ≤ Q.isoClosure := by
   obtain ⟨Q, _, hQ⟩ := exists_small_le' P
   let P' := Q ⊓ P.isoClosure
-  have h (X' : Subtype P') : ∃ (X : Subtype P), Nonempty (X'.1 ≅ X.1) :=
-    ⟨⟨X'.2.2.choose, X'.2.2.choose_spec.choose⟩, X'.2.2.choose_spec.choose_spec⟩
+  have h (X' : Subtype P') : ∃ (X : Subtype P), Nonempty (X'.val ≅ X.val) :=
+    ⟨⟨X'.property.2.choose, X'.property.2.choose_spec.choose⟩,
+      X'.property.2.choose_spec.choose_spec⟩
   choose φ hφ using h
   refine ⟨fun X ↦ X ∈ Set.range (Subtype.val ∘ φ), ?_, ?_, ?_⟩
-  · exact small_of_surjective (f := fun X ↦ ⟨(φ X).1, by tauto⟩)
+  · exact small_of_surjective (f := fun X ↦ ⟨(φ X).val, by tauto⟩)
       (by rintro ⟨_, Z, rfl⟩; exact ⟨Z, rfl⟩)
   · intro X hX
     simp only [Set.mem_range, Function.comp_apply, Subtype.exists] at hX
     obtain ⟨Y, hY, rfl⟩ := hX
-    exact (φ ⟨Y, hY⟩).2
+    exact (φ ⟨Y, hY⟩).property
   · intro X hX
     obtain ⟨Y, hY, ⟨e⟩⟩ := hQ _ hX
     let Z : Subtype P' := ⟨Y, hY, ⟨X, hX, ⟨e.symm⟩⟩⟩
@@ -219,7 +221,7 @@ instance [EssentiallySmall.{w} C] :
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
     ObjectProperty.Small.{w} (P.strictMap F) :=
-  small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
+  small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.val, ⟨_, X.property⟩⟩) (by
     rintro ⟨_, ⟨X, hX⟩⟩
     exact ⟨⟨X, hX⟩, rfl⟩)
 
@@ -239,9 +241,9 @@ lemma EssentiallySmall.of_functor (P : ObjectProperty C) (F : C ⥤ D)
     ObjectProperty.EssentiallySmall.{w} P := by
   choose P₁ hP₁ x hP₁x hx using H₁.exists_small_le'
   choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).exists_small_le'
-  let f : Subtype P → Σ i : Subtype P₁, Subtype (P₂ i.1) := fun c ↦
-    ⟨⟨_, hP₁x _ _⟩, _, hP₂y _ c ⟨c.2, hx _ ⟨_, c.2, ⟨.refl _⟩⟩⟩⟩
-  let g : (Σ i : Subtype P₁, Subtype (P₂ i.1)) → C := fun i ↦ i.2.1
+  let f : Subtype P → Σ i : Subtype P₁, Subtype (P₂ i.val) := fun c ↦
+    ⟨⟨_, hP₁x _ _⟩, _, hP₂y _ c ⟨c.property, hx _ ⟨_, c.property, ⟨.refl _⟩⟩⟩⟩
+  let g : (Σ i : Subtype P₁, Subtype (P₂ i.val)) → C := fun i ↦ i.2.val
   exact ⟨.ofObj g, inferInstance, fun X hX ↦ ⟨_, ⟨f ⟨X, hX⟩⟩, hy _ _ _⟩⟩
 
 lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :

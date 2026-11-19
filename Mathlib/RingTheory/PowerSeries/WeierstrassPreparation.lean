@@ -278,14 +278,14 @@ noncomputable def divCoeff [IsPrecomplete I A] (i : ℕ) :=
 
 /-- The limit `q` of the
 inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
-noncomputable def div [IsPrecomplete I A] : A⟦X⟧ := PowerSeries.mk fun i ↦ (H.divCoeff f i).1
+noncomputable def div [IsPrecomplete I A] : A⟦X⟧ := PowerSeries.mk fun i ↦ (H.divCoeff f i).val
 
-theorem coeff_div [IsPrecomplete I A] (i : ℕ) : coeff i (H.div f) = (H.divCoeff f i).1 := by
+theorem coeff_div [IsPrecomplete I A] (i : ℕ) : coeff i (H.div f) = (H.divCoeff f i).val := by
   simp [div]
 
 theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k i : ℕ) :
     coeff i (H.div f - (H.seq f k)) ∈ I ^ k := by
-  simpa [coeff_div, SModEq.sub_mem] using ((H.divCoeff f i).2 k).symm
+  simpa [coeff_div, SModEq.sub_mem] using ((H.divCoeff f i).property k).symm
 
 /-- The remainder `r` in the proof of Weierstrass division. -/
 noncomputable def mod [IsPrecomplete I A] : A[X] :=

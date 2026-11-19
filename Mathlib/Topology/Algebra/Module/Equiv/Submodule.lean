@@ -51,7 +51,7 @@ def submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
   __ := LinearEquiv.submoduleMap e.toLinearEquiv p
   continuous_toFun := map_continuous ((e.toContinuousLinearMap.comp p.subtypeL).codRestrict _ _)
   continuous_invFun := (map_continuous e.symm).restrict fun x hx ↦
-    ((LinearEquiv.submoduleMap e.toLinearEquiv p).symm ⟨x, hx⟩).2
+    ((LinearEquiv.submoduleMap e.toLinearEquiv p).symm ⟨x, hx⟩).property
 
 @[simp]
 lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p) :

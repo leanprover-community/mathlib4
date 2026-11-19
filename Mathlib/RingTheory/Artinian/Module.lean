@@ -272,12 +272,13 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     IsSemisimpleModule R M ↔ Module.jacobson R M = ⊥ :=
   ⟨fun _ ↦ IsSemisimpleModule.jacobson_eq_bot R M, fun h ↦
     have ⟨s, hs⟩ := Finset.exists_inf_le (Subtype.val (p := fun m : Submodule R M ↦ IsCoatom m))
-    have _ (m : s) : IsSimpleModule R (M ⧸ m.1.1) := isSimpleModule_iff_isCoatom.mpr m.1.2
-    let f : M →ₗ[R] ∀ m : s, M ⧸ m.1.1 := LinearMap.pi fun m ↦ m.1.1.mkQ
+    have _ (m : s) : IsSimpleModule R (M ⧸ m.val.val) :=
+      isSimpleModule_iff_isCoatom.mpr m.val.property
+    let f : M →ₗ[R] ∀ m : s, M ⧸ m.val.val := LinearMap.pi fun m ↦ m.val.val.mkQ
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
       exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
-        (Submodule.Quotient.mk_eq_zero i.1).mp congr($hx ⟨i, hi⟩)⟩
+        (Submodule.Quotient.mk_eq_zero i.val).mp congr($hx ⟨i, hi⟩)⟩
 
 open Submodule Function
 
@@ -506,8 +507,8 @@ variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
 lemma setOfPred_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   have ⟨s, H⟩ := Finset.exists_inf_le (Subtype.val (p := fun I : Ideal R ↦ I.IsMaximal))
   refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
-  have ⟨q, hq1, hq2⟩ := p.2.isPrime.inf_le'.mp (H p)
-  rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
+  have ⟨q, hq1, hq2⟩ := p.property.isPrime.inf_le'.mp (H p)
+  rwa [← Subtype.ext <| q.property.eq_of_le p.property.ne_top hq2]
 
 @[deprecated (since := "2026-07-09")] alias setOf_isMaximal_finite := setOfPred_isMaximal_finite
 

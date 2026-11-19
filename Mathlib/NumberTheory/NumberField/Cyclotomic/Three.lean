@@ -57,13 +57,13 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     rfl
   obtain ⟨⟨x, e⟩, hxu, -⟩ := exist_unique_eq_mul_prod _ u
   replace hxu : u = x := by
-    rw [← mul_one x.1, hxu]
+    rw [← mul_one x.val, hxu]
     apply congr_arg
     rw [← Finset.prod_empty]
     congr
     rw [Finset.univ_eq_empty_iff, hrank]
     infer_instance
-  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
+  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.property
   replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
     rw [← map_pow]
     convert map_one (algebraMap (𝓞 K) K)

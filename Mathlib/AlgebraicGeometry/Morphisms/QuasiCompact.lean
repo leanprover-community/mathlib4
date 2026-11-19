@@ -77,7 +77,7 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
   · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
-  · exact fun i => i.2.isCompact
+  · exact fun i => i.property.isCompact
 
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
@@ -104,9 +104,9 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   refine isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ?_
   obtain ⟨s, hs, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hU
-  let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
-    rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
-    exact V.1.2.basicOpen _⟩
+  let g : s → X.affineOpens := fun V ↦ ⟨V.val ⊓ X.basicOpen f, by
+    rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.val V.property).trans_eq e.symm)).op]
+    exact V.val.property.basicOpen _⟩
   have : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   rw [iSup_range, ← iSup_inf_eq, iSup_subtype, ← e, inf_eq_right.mpr (X.basicOpen_le f)]
@@ -262,11 +262,11 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.is_open'⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
-  have h₁ (i : s) : i.1.1 ≤ U := by
+  have h₁ (i : s) : i.val.val ≤ U := by
     rw [e]
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
-    exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
+    exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.val.property
       (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) ?_
   swap
   · change (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0

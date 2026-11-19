@@ -25,8 +25,8 @@ This file is opt-in so that `dyadic_interval` doesn't import unnecessary theorie
 
 For larger exponents, we would eventually want to implement another optimisation that shifts the
 `exp` exponent by multiples of `log 2` (which only shifts the exponent of the dyadic result).
-This is deferred since it requires a certified computation of `log 2` to arbitrary precision, which
-is a separate from the main instance.
+This requires a certified computation of `log 2` to arbitrary precision, which is available as
+`Inclusion.IntervalDyadicReal.logTwo` (with bounds `Inclusion.IntervalDyadicReal.logTwo_spec`).
 -/
 
 public section

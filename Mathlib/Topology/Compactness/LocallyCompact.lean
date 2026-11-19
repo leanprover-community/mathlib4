@@ -175,8 +175,8 @@ theorem exists_mem_nhdsWithin_isCompact_mapsTo {K : Set X} [LocallyCompactPair K
     (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
     ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V := by
   obtain ⟨L, hL, hLc, hLV⟩ :=
-    exists_mem_nhds_isCompact_mapsTo (x := ⟨x, hx⟩) (hf.comp continuous_subtype_val) hV
-  exact ⟨(↑) '' L, mem_nhds_subtype_iff_nhdsWithin.1 hL, hLc.image continuous_subtype_val,
+    exists_mem_nhds_isCompact_mapsTo (x := ⟨x, hx⟩) (hf.comp continuous_subtypeVal) hV
+  exact ⟨(↑) '' L, mem_nhds_subtype_iff_nhdsWithin.1 hL, hLc.image continuous_subtypeVal,
     mapsTo_image_iff.2 hLV⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open

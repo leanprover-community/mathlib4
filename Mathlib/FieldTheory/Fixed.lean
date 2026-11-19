@@ -80,13 +80,13 @@ variable (S : Subfield F)
 
 instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
     MulSemiringAction M S where
-  smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
-  one_smul s := Subtype.ext <| one_smul M s.1
-  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ s.1
-  smul_add m s₁ s₂ := Subtype.ext <| smul_add m s₁.1 s₂.1
+  smul m x := ⟨m • x.val, IsInvariantSubfield.smul_mem m x.property⟩
+  one_smul s := Subtype.ext <| one_smul M s.val
+  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ s.val
+  smul_add m s₁ s₂ := Subtype.ext <| smul_add m s₁.val s₂.val
   smul_zero m := Subtype.ext <| smul_zero m
   smul_one m := Subtype.ext <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m s₁.1 s₂.1
+  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m s₁.val s₂.val
 
 instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
   smul_mem := IsInvariantSubfield.smul_mem
@@ -115,7 +115,7 @@ instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
 
 @[simp]
 theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
-  Subtype.ext <| x.2 m
+  Subtype.ext <| x.property m
 
 -- Why is this so slow?
 @[simp]

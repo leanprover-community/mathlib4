@@ -182,7 +182,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   module, the internal version can be translated into the external version `gmodule`. -/
 instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gdistribMulAction 𝓐 𝓜 with
-    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
+    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.property y.property⟩
     add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
     zero_smul := fun _b => Subtype.ext <| zero_smul _ _ }
 

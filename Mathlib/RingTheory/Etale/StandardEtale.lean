@@ -140,7 +140,7 @@ lemma inv_aeval_X_g :
 @[simps]
 def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   toFun f := ⟨f P.X, hasMap_X.map f⟩
-  invFun x := P.lift x.1 x.2
+  invFun x := P.lift x.val x.property
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
@@ -184,7 +184,7 @@ instance : Algebra.FormallyEtale R P.Ring := by
   intro x hx
   obtain ⟨ε, ⟨hεI, hε⟩, H⟩ := P.existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot I hI _ hx
   exact ⟨⟨x + ε, hε⟩, by simpa, fun y hy ↦
-    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.2⟩))⟩
+    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.property⟩))⟩
 
 instance : Algebra.Etale R P.Ring where
   finitePresentation := .quotient (Submodule.fg_span (by simp))
