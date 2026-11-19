@@ -587,7 +587,7 @@ theorem diagonal_monotone : Monotone (diagonal : Set α → Set (α × α)) := f
 
 @[simp]
 theorem diagonal_nonempty : s.diagonal.Nonempty ↔ s.Nonempty := by
-  simp [nonempty_iff_empty_ne, Set.ext_iff]
+  simp [← empty_ne_iff_nonempty, Set.ext_iff]
 
 @[simp]
 theorem diagonal_eq_empty : s.diagonal = ∅ ↔ s = ∅ := by
@@ -619,7 +619,7 @@ theorem diagonal_insert (a : α) (s : Set α) :
 
 @[simp] theorem diagonal_image (s : Set α) : Prod.diagonal '' s = s.diagonal := by grind
 
-@[deprecated diagonal_image (since := "2026-10-14")]
+@[deprecated diagonal_image +typeChanged (since := "2026-10-14")]
 theorem diag_image (s : Set α) : Prod.diagonal '' s = diagonalUniv α ∩ s ×ˢ s :=
   (diagonal_image s).trans diagonal_eq_diagonalUniv_inter
 
