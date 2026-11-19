@@ -43,17 +43,19 @@ attribute [coe] Subtype.val
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
 -- This is a leftover from Lean 3: it is identical to `Subtype.property`, and should be deprecated.
 theorem prop (x : Subtype p) : p x :=
-  x.2
+  x.property
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.forall` from right to left. -/
-protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.2 :=
-  (@Subtype.forall _ _ fun x ↦ q x.1 x.2).symm
+protected theorem forall' {q : ∀ x, p x → Prop} :
+    (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.property :=
+  (@Subtype.forall _ _ fun x ↦ q x.val x.property).symm
 
 /-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.exists` from right to left. -/
-protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
-  (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
+protected theorem exists' {q : ∀ x, p x → Prop} :
+    (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.property :=
+  (@Subtype.exists _ _ fun x ↦ q x.val x.property).symm
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     a1 ≍ a2 ↔ (a1 : α) = (a2 : α) :=
@@ -74,7 +76,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 /-- Restatement of `Subtype.mk.injEq` as an iff. -/
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' := by simp
 
-theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
+theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.property⟩ :=
   Subtype.ext h
 
 theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ := by grind
@@ -111,12 +113,12 @@ theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → 
 
 /-- Restrict a (dependent) function to a subtype -/
 @[implicit_reducible]
-def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
+def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.val :=
   f x
 
 @[simp, grind =]
 theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
-    restrict p f x = f x.1 := by
+    restrict p f x = f x.val := by
   rfl
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :

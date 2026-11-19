@@ -206,7 +206,7 @@ noncomputable def mulActionHom_singleton : α →[G] powersetCard α 1 where
 @[to_additive]
 theorem mulActionHom_singleton_bijective :
     Function.Bijective (mulActionHom_singleton G α) := by
-  refine ⟨fun a b h ↦ Finset.singleton_injective congr($h.1), fun ⟨s, hs⟩ ↦ ?_⟩
+  refine ⟨fun a b h ↦ Finset.singleton_injective congr($(h).val), fun ⟨s, hs⟩ ↦ ?_⟩
   obtain ⟨a, rfl⟩ := card_eq_one.mp hs
   exact ⟨a, rfl⟩
 
