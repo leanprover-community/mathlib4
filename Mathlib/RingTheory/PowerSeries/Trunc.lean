@@ -15,7 +15,6 @@ import Mathlib.Algebra.Polynomial.Degree.Lemmas
 `PowerSeries.trunc n φ` truncates a (univariate) formal power series
 to the polynomial that has the same coefficients as `φ`, for all `m < n`,
 and `0` otherwise.
-
 -/
 
 @[expose] public section

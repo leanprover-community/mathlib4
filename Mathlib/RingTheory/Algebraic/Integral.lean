@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Polynomial.Subring
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.RingTheory.Artinian.Algebra
 
 /-!
 # Algebraic elements and integral elements
@@ -90,6 +91,8 @@ theorem Algebra.IsAlgebraic.of_isIntegralClosure (R B C : Type*) [CommRing R] [N
 
 end Field
 
+open scoped nonZeroDivisors
+
 section
 
 variable (K L R : Type*) {A : Type*}
@@ -113,6 +116,18 @@ end Ring
 section Field
 
 variable {K L} [Field K] [Ring A] [Algebra K A]
+
+theorem Transcendental.of_mem_nonZeroDivisors_of_not_isUnit {a : A} (ha : a ∈ A⁰)
+    (hu : ¬ IsUnit a) : Transcendental K a :=
+  fun h ↦ hu (IsArtinianRing.isUnit_of_isIntegral_of_nonZeroDivisor h.isIntegral ha)
+
+theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0) (hu : ¬ IsUnit a) :
+    Transcendental K a :=
+  .of_mem_nonZeroDivisors_of_not_isUnit (mem_nonZeroDivisors_of_ne_zero h0) hu
+
+theorem Transcendental.of_mem_ne_top [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A} (h0 : a ≠ 0)
+    (ha : a ∈ I) : Transcendental K a :=
+  .of_not_isUnit h0 fun hu ↦ hI (I.eq_top_of_isUnit_mem ha hu)
 
 /-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
 transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
@@ -162,7 +177,7 @@ theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
     [alg : Algebra.IsAlgebraic R A] (s : Finset A) :
     ∃ y ≠ (0 : R), ∀ z ∈ s, IsIntegral R (y • z) := by
   have := Algebra.IsAlgebraic.nontrivial R A
-  choose r hr int using fun x ↦ (alg.1 x).exists_integral_multiple
+  choose r hr int using fun x ↦ (alg.isAlgebraic x).exists_integral_multiple
   refine ⟨∏ x ∈ s, r x, Finset.prod_ne_zero_iff.mpr fun _ _ ↦ hr _, fun _ h ↦ ?_⟩
   classical rw [← Finset.prod_erase_mul _ _ h, mul_smul]
   exact (int _).smul _
@@ -178,8 +193,7 @@ theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
   · exact hy ⟨_, h⟩
   · rw [natDegree_C_mul_X _ hy0]; rintro ⟨⟩
 
-theorem of_smul {y : R} (hy : y ∈ nonZeroDivisors R)
-    (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
+theorem of_smul {y : R} (hy : y ∈ R⁰) (h : IsAlgebraic R (y • z)) : IsAlgebraic R z :=
   have ⟨p, hp, eval0⟩ := h
   ⟨_, mt (comp_C_mul_X_eq_zero_iff hy).mp hp, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
 
@@ -232,13 +246,14 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
-    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
+    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).isAlgebraic _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
   have ⟨s, hs, int_s⟩ := h.exists_integral_multiple
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
-  have ⟨r, hr, _, e⟩ := (int.1 s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
+  have ⟨r, hr, _, e⟩ :=
+    (int.isIntegral s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
   refine .of_smul_isIntegral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R S,
     e, ← Algebra.smul_def, mul_comm, mul_smul]
@@ -250,7 +265,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   have ⟨p, hp, eval0⟩ := h
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
-    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
+    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).isAlgebraic _
   rw [← faithfulSMul_iff_algebraMap_injective] at hRS
   have := NoZeroDivisors.of_faithfulSMul R S
   have := Algebra.nontrivial_of_isAlgebraic R S
@@ -347,15 +362,15 @@ variable (R S A) [NoZeroDivisors S]
 /-- Transitivity of algebraicity for algebras over domains. -/
 @[stacks 09GJ] theorem IsAlgebraic.trans [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
+  ⟨fun _ ↦ (alg.isAlgebraic _).restrictScalars _⟩
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _⟩
+  ⟨fun _ ↦ (alg.isAlgebraic _).restrictScalars_of_isIntegral _⟩
 
 theorem IsAlgebraic.trans_isIntegral [Algebra.IsAlgebraic R S] [int : Algebra.IsIntegral S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _⟩
+  ⟨fun _ ↦ (int.isIntegral _).trans_isAlgebraic _⟩
 
 variable {A}
 
@@ -424,7 +439,7 @@ theorem Algebra.isAlgebraic_adjoin_singleton_iff [NoZeroDivisors R] {s : S} :
     (adjoin R {s}).IsAlgebraic ↔ IsAlgebraic R s :=
   (isAlgebraic_adjoin_of_nonempty <| Set.singleton_nonempty s).trans forall_eq
 
-theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivisors S)
+theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ S⁰)
     (alg_y : IsAlgebraic R y) (alg_yz : IsAlgebraic R (y * z)) : IsAlgebraic R z := by
   have ⟨t, ht, r, hr, eq⟩ := alg_y.exists_ne_zero_eq_adjoin_mul hy
   have := alg_yz.mul (Algebra.isAlgebraic_adjoin_singleton_iff.mpr alg_y _ ht)
@@ -499,8 +514,6 @@ protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
 
 end Algebra
 
-open scoped nonZeroDivisors
-
 namespace Algebra.IsAlgebraic
 
 section IsFractionRing
@@ -512,7 +525,7 @@ instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
   have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
   (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
     (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
-    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_ne_zero_dvd hs
+    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.isAlgebraic s).exists_ne_zero_dvd hs
     ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
 
 variable [Algebra R S'] [IsScalarTower R S S']
@@ -617,7 +630,7 @@ instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S
   isAlgebraic p :=
     have := IsAlgebraic.nontrivial R S
     have := (FaithfulSMul.algebraMap_injective R R').nontrivial
-    p.inductionOn (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
+    p.inductionOn (fun _ s ↦ .tmul _ <| alg.isAlgebraic s) (fun _ _ ↦ .add)
 
 variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S']

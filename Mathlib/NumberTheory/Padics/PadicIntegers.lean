@@ -288,8 +288,8 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     norm_cast
     apply le_of_lt
     convert Nat.lt_pow_self _ using 1
-    exact hp.1.one_lt
-  · exact mod_cast hp.1.pos
+    exact hp.out.one_lt
+  · exact mod_cast hp.out.pos
 
 theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (mod_cast hε)
@@ -455,7 +455,7 @@ theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : �
   have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
     simp only [← norm_int_lt_one_iff_dvd, ← norm_coe]
     exact ⟨key, norm_denom_lt⟩
-  apply hp_prime.1.not_dvd_one
+  apply hp_prime.out.not_dvd_one
   rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
 
 end Units

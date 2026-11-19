@@ -14,7 +14,6 @@ import Mathlib.Algebra.Module.SnakeLemma
 
 We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
-
 -/
 
 @[expose] public section

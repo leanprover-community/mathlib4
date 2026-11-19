@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
   essentially of finite type if it is the localization of an algebra of finite type.
 - `Algebra.EssFiniteType.algHom_ext`: The algebra homomorphisms out from an algebra essentially of
   finite type is determined by its values on a finite set.
-
 -/
 
 @[expose] public section
@@ -75,7 +74,7 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ
   · intro s
-    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.1.2 s
+    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.toIsLocalizationMap.surj s
     exact ⟨t, ht, ht', h ▸ hx⟩
   · constructor; constructor
     · exact fun y ↦ y.prop

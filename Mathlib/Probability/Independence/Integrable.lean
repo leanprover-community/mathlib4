@@ -13,7 +13,6 @@ public import Mathlib.Probability.Independence.Basic
 
 If a nonzero function belongs to `ℒ^p` (in particular if it is integrable) and is independent
 of another function, then the space is a probability space.
-
 -/
 
 public section

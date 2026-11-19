@@ -14,7 +14,6 @@ This file defines the Fibonacci sequence on the integers.
 
 Definition of the sequence: `F₀ = 0`, `F₁ = 1`, and `Fₙ₊₂ = Fₙ₊₁ + Fₙ`
 (same as the natural number version `Nat.fib`, but here `n` is an integer).
-
 -/
 
 @[expose] public section

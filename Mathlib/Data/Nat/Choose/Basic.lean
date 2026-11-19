@@ -373,7 +373,6 @@ i.e. ways to select `k` items (up to permutation) from `n` items with replacemen
 
 Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
-
 -/
 
 /--

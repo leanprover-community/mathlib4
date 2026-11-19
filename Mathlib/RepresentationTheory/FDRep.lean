@@ -42,7 +42,6 @@ and this is reflected in the documentation.
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
 * `FdRep k G ≌ FGModuleCat k[G]`.
-
 -/
 
 @[expose] public section
@@ -165,7 +164,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom f.hom.toLinearMap), fun g ↦ by
     ext1
     simp only [FGModuleCat.obj_carrier]
-    exact f.hom.2 g⟩
+    exact f.hom.isIntertwining' g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by

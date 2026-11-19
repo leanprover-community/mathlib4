@@ -73,6 +73,24 @@ lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
 
 end ULift
 
+section TypeTags
+variable [MeasurableSpace α]
+
+instance : MeasurableSpace (Additive α) := ‹MeasurableSpace α›.map Additive.ofMul
+instance : MeasurableSpace (Multiplicative α) := ‹MeasurableSpace α›.map Multiplicative.ofAdd
+
+lemma measurable_ofMul : Measurable (Additive.ofMul : α → Additive α) := fun _ ↦ id
+lemma measurable_toMul : Measurable (Additive.toMul : Additive α → α) := fun _ ↦ id
+lemma measurable_ofAdd : Measurable (Multiplicative.ofAdd : α → Multiplicative α) := fun _ ↦ id
+lemma measurable_toAdd : Measurable (Multiplicative.toAdd : Multiplicative α → α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_toMul {s : Set α} :
+    MeasurableSet (Additive.toMul ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_toAdd {s : Set α} :
+    MeasurableSet (Multiplicative.toAdd ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end TypeTags
+
 section Nat
 
 variable {mα : MeasurableSpace α}
@@ -471,7 +489,7 @@ theorem measurableSet_prod {s : Set α} {t : Set β} :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.mp h]
-  · simp [← not_nonempty_iff_eq_empty, prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
+  · simp [prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
 
 theorem measurableSet_swap_iff {s : Set (α × β)} :
     MeasurableSet (Prod.swap ⁻¹' s) ↔ MeasurableSet s :=
@@ -740,7 +758,7 @@ theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable) 
     MeasurableSet (pi s t) ↔ (∀ i ∈ s, MeasurableSet (t i)) ∨ pi s t = ∅ := by
   rcases (pi s t).eq_empty_or_nonempty with h | h
   · simp [h]
-  · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
+  · simp [measurableSet_pi_of_nonempty hs, h]
 
 instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (X a)] :
     MeasurableSingletonClass (∀ a, X a) :=

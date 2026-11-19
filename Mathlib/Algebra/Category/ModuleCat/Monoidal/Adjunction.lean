@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 `extendsScalars f : ModuleCat R ⥤ ModuleCat S` is monoidal, and deduce that
 `restrictScalars f : ModuleCat S ⥤ ModuleCat R` is lax monoidal.
-
 -/
 
 public section

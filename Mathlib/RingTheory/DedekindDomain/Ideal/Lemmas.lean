@@ -420,8 +420,11 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
   rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
   exact mod_cast hn
 
-theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
+theorem irreducible_pow_sup_of_ge (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
+  rcases eq_or_ne I ⊥ with rfl | hI
+  · rw [← Ideal.zero_eq_bot, emultiplicity_zero_right] at hn
+    exact absurd hn (by simp)
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
     rw [← Nat.cast_inj (R := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity,

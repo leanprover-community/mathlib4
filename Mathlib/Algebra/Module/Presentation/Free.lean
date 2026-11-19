@@ -16,7 +16,6 @@ import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 A module is free iff it admits a presentation with generators but no relation,
 see `Module.free_iff_exists_presentation`.
-
 -/
 
 @[expose] public section
