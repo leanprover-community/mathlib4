@@ -266,13 +266,13 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       exact Subsingleton.elim _ _
   refine Cofan.IsColimit.mk _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · refine (s.pt.property.isSheafFor _ H).extend ?_
-    refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
-      (Sieve.ofArrows.h g.2), ?_⟩
+    refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.property)).hom.app Y)
+      (Sieve.ofArrows.h g.property), ?_⟩
     intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
     ext u
     simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
-      ← heq s (g ≫ Sieve.ofArrows.h u.2)
-      (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
+      ← heq s (g ≫ Sieve.ofArrows.h u.property)
+      (Sieve.ofArrows.h <| Sieve.downward_closed _ u.property g) (by simp)]
     congrm $((s.inj _).hom.naturality g.op) _
   · ext : 1
     let u (j : ι) : CategoryTheory.yoneda.obj (X j) ⟶ (Sieve.ofArrows _ c.inj).functor :=

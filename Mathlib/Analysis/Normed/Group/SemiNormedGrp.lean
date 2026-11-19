@@ -242,18 +242,18 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
 @[macro_inline]
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
-  coe f := f.1.toFun
+  coe f := f.val.toFun
   coe_injective _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
     fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where
   hom f := ⟨f.hom', f.normNoninc⟩
-  ofHom f := ⟨f.1, f.2⟩
+  ofHom f := ⟨f.val, f.property⟩
 
 instance (X Y : SemiNormedGrp₁) :
     AddMonoidHomClass { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
-  map_add f := map_add f.1
-  map_zero f := map_zero f.1
+  map_add f := map_add f.val
+  map_zero f := map_zero f.val
 
 /-- Turn a morphism in `SemiNormedGrp₁` back into a norm-nonincreasing `NormedAddGroupHom`. -/
 abbrev Hom.hom {M N : SemiNormedGrp₁.{u}} (f : Hom M N) :=
@@ -272,7 +272,7 @@ def Hom.Simps.hom (M N : SemiNormedGrp₁.{u}) (f : Hom M N) : NormedAddGroupHom
 initialize_simps_projections Hom (hom' → hom)
 
 instance (X Y : SemiNormedGrp₁) : CoeFun (X ⟶ Y) (fun _ => X → Y) where
-  coe f := f.hom.1
+  coe f := f.hom.val
 
 theorem mkHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (i : f.NormNoninc) (x) :
@@ -295,7 +295,7 @@ lemma id_apply (M : SemiNormedGrp₁) (r : M) :
 
 @[simp]
 lemma hom_comp {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom.1 = g.hom.1.comp f.hom.1 := rfl
+    (f ≫ g).hom.val = g.hom.val.comp f.hom.val := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) :

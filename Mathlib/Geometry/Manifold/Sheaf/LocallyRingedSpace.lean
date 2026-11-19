@@ -71,7 +71,8 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
       convert hf
       exact (smoothSheafCommRing.eval_germ U x hxU f).symm
     -- In fact, by continuity, `f` is nonzero on a neighbourhood `V` of `x`
-    have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
+    have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 :=
+      f.property.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
     let V : Opens M := ⟨Subtype.val '' V₀, U.is_open'.isOpenMap_subtypeVal V₀ hV₀⟩
@@ -81,7 +82,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     subst hV
     have hxV : x ∈ (V : Set M) := by
       obtain ⟨x₀, hxx₀⟩ := hxV₀
-      convert x₀.2
+      convert x₀.property
       congrm $(hxx₀.symm).val
     have hVf : ∀ y : V, f (Set.inclusion hUV y) ≠ 0 :=
       fun y ↦ hV₀f (Set.inclusion hUV y) (Set.mem_range_self y)
@@ -199,7 +200,7 @@ instance (U : Opens M) :
     rw [ConcreteCategory.isIso_iff_bijective]
     refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
     · ext ⟨x, y, hy, rfl⟩
-      congrm $(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩
+      congrm $(hab).val ⟨y, ⟨y, hy, rfl⟩⟩
     · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtypeVal⟩
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
@@ -210,7 +211,7 @@ instance (U : Opens M) :
         rw [← ContMDiff.subtypeVal_comp_iff]
         convert contMDiff_subtypeVal
         ext x
-        congrm $(b.apply_symm_apply x).1
+        congrm $(b.apply_symm_apply x).val
       · change g _ = _
         congr
         apply b.symm_apply_apply

@@ -157,7 +157,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
     ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
   Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_ker_of_eq
-      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.1 s.2 g⟩ (ρ g x) _ <| by simp
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.val s.property g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
@@ -329,7 +329,7 @@ def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₃ := toCoinvariants A S
   f := ofHom ⟨Submodule.subtype _, fun g ↦ by ext; simp⟩
   g := toCoinvariantsMkQ A S
-  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
+  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.property
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex.{w} A S).ShortExact where
   exact := (forget₂ (Rep.{w} k G) (ModuleCat k)).reflects_exact_of_faithful _ <|

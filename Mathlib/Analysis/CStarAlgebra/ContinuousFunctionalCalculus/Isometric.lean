@@ -138,14 +138,14 @@ open NNReal
 
 lemma nnNorm_cfc_le {f : 𝕜 → 𝕜} {a : A} (c : ℝ≥0) (h : ∀ x ∈ σ 𝕜 a, ‖f x‖₊ ≤ c) :
     ‖cfc f a‖₊ ≤ c :=
-  norm_cfc_le c.2 h
+  norm_cfc_le c.property h
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfc_le := nnNorm_cfc_le
 
 lemma nnNorm_cfc_le_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σ 𝕜 a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : ‖cfc f a‖₊ ≤ c ↔ ∀ x ∈ σ 𝕜 a, ‖f x‖₊ ≤ c :=
-  norm_cfc_le_iff f a c.2
+  norm_cfc_le_iff f a c.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfc_le_iff := nnNorm_cfc_le_iff
 
@@ -364,7 +364,7 @@ lemma nnNorm_cfcₙ_le {f : 𝕜 → 𝕜} {a : A} {c : ℝ≥0} (h : ∀ x ∈ 
 lemma nnNorm_cfcₙ_le_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : ‖cfcₙ f a‖₊ ≤ c ↔ ∀ x ∈ σₙ 𝕜 a, ‖f x‖₊ ≤ c :=
-  norm_cfcₙ_le_iff f a c.1 hf hf₀ ha
+  norm_cfcₙ_le_iff f a c.val hf hf₀ ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcₙ_le_iff := nnNorm_cfcₙ_le_iff
 
@@ -377,7 +377,7 @@ lemma nnNorm_cfcₙ_lt {f : 𝕜 → 𝕜} {a : A} {c : ℝ≥0} (h : ∀ x ∈ 
 lemma nnNorm_cfcₙ_lt_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ 𝕜 a, ‖f x‖₊ < c :=
-  norm_cfcₙ_lt_iff f a c.1 hf hf₀ ha
+  norm_cfcₙ_lt_iff f a c.val hf hf₀ ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcₙ_lt_iff := nnNorm_cfcₙ_lt_iff
 

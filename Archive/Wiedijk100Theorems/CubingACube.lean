@@ -510,11 +510,11 @@ noncomputable def sequenceOfCubes : ℕ → { i : ι // Valley cs (cs i).shiftUp
     let v := valley_unitCube h
     ⟨mi h v, valley_mi⟩
   | k + 1 =>
-    let v := (sequenceOfCubes k).2
+    let v := (sequenceOfCubes k).property
     ⟨mi h v, valley_mi⟩
 
 def decreasingSequence (k : ℕ) : ℝ :=
-  (cs (sequenceOfCubes h k).1).w
+  (cs (sequenceOfCubes h k).val).w
 
 end
 
@@ -523,11 +523,11 @@ variable [Finite ι] [Nontrivial ι]
 include h in
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
-    let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
+    let v := (sequenceOfCubes h k).property; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 
 theorem injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
-  @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } => (cs x.1).w) _
+  @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } => (cs x.val).w) _
     (strictAnti_sequenceOfCubes h).injective
 
 /-- The infinite sequence of cubes contradicts the finiteness of the family. -/

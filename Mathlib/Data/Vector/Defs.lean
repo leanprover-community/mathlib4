@@ -90,11 +90,11 @@ theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
-  v.1
+  v.val
 
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get (l : Vector α n) (i : Fin n) : α :=
-  l.1.get <| i.cast l.2.symm
+  l.val.get <| i.cast l.property.symm
 
 instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
   hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
@@ -153,7 +153,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.val, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.isLt⟩
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
@@ -209,7 +209,7 @@ protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 
 
 /-- A vector of length `0` is a `nil` vector. -/
 protected theorem eq_nil (v : Vector α 0) : v = nil :=
-  v.eq nil (List.eq_nil_of_length_eq_zero v.2)
+  v.eq nil (List.eq_nil_of_length_eq_zero v.property)
 
 /-- Vector of length from a list `v`
 with witness that `v` has length `n` maps to `v` under `toList`. -/
@@ -225,7 +225,7 @@ theorem toList_nil : toList nil = @List.nil α :=
 /-- The length of the list to which a vector of length `n` maps is `n`. -/
 @[simp]
 theorem toList_length (v : Vector α n) : (toList v).length = n :=
-  v.2
+  v.property
 
 /-- `toList` of `cons` of a vector and an element is
 the `cons` of the list obtained by `toList` and the element -/

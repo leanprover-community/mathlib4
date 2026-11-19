@@ -54,14 +54,14 @@ variable {R L M}
 
 @[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
-  coe := fun a x ↦ a.1 x
+  coe := fun a x ↦ a.val x
   coe_injective _ _ h := by
     ext
     congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
-  map_add a := a.1.map_add
-  map_smulₛₗ a := a.1.map_smul
+  map_add a := a.val.map_add
+  map_smulₛₗ a := a.val.map_smul
 
 @[simp]
 lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
@@ -69,7 +69,7 @@ lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L 
 @[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
     a x x = 0 :=
-  a.2 x
+  a.property x
 
 lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
   rw [neg_eq_iff_add_eq_zero, add_comm]

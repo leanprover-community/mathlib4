@@ -196,7 +196,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr(hT.diagonalization $(this (hT.diagonalization v)) μ)
   intro w
-  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
+  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).property
   simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1

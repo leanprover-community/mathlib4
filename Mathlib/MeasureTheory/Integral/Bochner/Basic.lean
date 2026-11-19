@@ -767,7 +767,7 @@ theorem integral_coe_le_of_lintegral_coe_le {f : α → ℝ≥0} {b : ℝ≥0} (
     ∫ a, (f a : ℝ) ∂μ ≤ b := by
   by_cases hf : Integrable (fun a => (f a : ℝ)) μ
   · exact (lintegral_coe_le_coe_iff_integral_le hf).1 h
-  · rw [integral_undef hf]; exact b.2
+  · rw [integral_undef hf]; exact b.property
 
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by

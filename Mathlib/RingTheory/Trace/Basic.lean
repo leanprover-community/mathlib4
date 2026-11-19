@@ -62,7 +62,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.val + j.val)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots

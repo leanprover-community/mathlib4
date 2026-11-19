@@ -814,7 +814,7 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
   obtain ⟨p, hp⟩ := hA
   obtain ⟨C, hBC⟩ := B.exists_isCompl
   refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
-  simp [hp ⟨x, hB x.2⟩]
+  simp [hp ⟨x, hB x.property⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]

@@ -565,7 +565,7 @@ variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
 @[to_dual]
 instance : Max (Complementeds α) :=
-  ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
+  ⟨fun a b => ⟨a ⊔ b, a.property.sup b.property⟩⟩
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sup (a b : Complementeds α) : ↑(a ⊔ b) = (a : α) ⊔ b := rfl
