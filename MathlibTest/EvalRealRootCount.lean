@@ -68,6 +68,53 @@ example : Fintype.card ((X ^ 2 - 2 : ℚ[X]).rootSet ℝ) + 1 = 3 := by eval_rea
 
 example : Fintype.card ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootSet ℝ) ≤ 4 := by eval_real_root_count
 
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ 0 (3 / 2)).card = 2 := by eval_real_root_count
+
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ (-2) 0).card = 1 := by eval_real_root_count
+
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ (51 / 100) 1).card = 0 := by
+  eval_real_root_count
+
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ (-1.6) (-1.5)).card = 1 := by
+  eval_real_root_count
+
+example : ((X ^ 2 - 2 : ℝ[X]).rootsIoo ℝ (1 / 2 + 1 / 2) 2).card = 1 := by eval_real_root_count
+
+example : ((X ^ 2 - C (1 / 2) : ℝ[X]).rootsIoo ℝ (-1) 0).card = 1 := by eval_real_root_count
+
+example : (((X - 1) ^ 2 * (X + 2) ^ 3 * (X ^ 2 + 1) : ℚ[X]).rootsIoo ℝ 0 2).card = 1 := by
+  eval_real_root_count
+
+example : ((X ^ 10 + X ^ 9 - X ^ 7 - X ^ 6 - X ^ 5 - X ^ 4 - X ^ 3 + X + 1 : ℤ[X]).rootsIoo ℝ
+    1.17 1.18).card = 1 := by
+  eval_real_root_count
+
+example : ((X ^ 2 - 2 : ℤ[X]).rootsIoo ℝ 0 2).card = 1 := by eval_real_root_count
+
+example : ((X ^ 2 - 2 : ℚ[X]).rootsIoo ℝ 0 2).card = 1 := by eval_real_root_count
+
+example : ((X ^ 2 - 2 : ℝ[X]).rootsIoo ℝ 0 2).card = 1 := by eval_real_root_count
+
+example {R : Type*} [CommRing R] [Algebra R ℝ] :
+    ((X ^ 2 - 2 : R[X]).rootsIoo ℝ 0 2).card = 1 := by
+  eval_real_root_count
+
+example {K : Type*} [Field K] [CharZero K] [Algebra K ℝ] :
+    ((X ^ 2 - C (1 / 2) * X - C (3 / 4 + 1) : K[X]).rootsIoo ℝ 0 2).card = 1 := by
+  eval_real_root_count
+
+example : ((X ^ 2 - 2 : ℤ[X]).rootsIoo ℝ 0 2).card + 1 = 2 := by
+  simp only [norm_real_root_count_Ioo]
+
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ 0 (3 / 2)).card + 1 = 3 := by
+  simp only [norm_real_root_count_Ioo]
+
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ (-2) 0).card +
+    Fintype.card ((X ^ 2 - 2 : ℚ[X]).rootSet ℝ) = 3 := by
+  eval_real_root_count
+
+example : 0 < ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ (-2) 0).card := by eval_real_root_count
+
 /--
 error: `eval_real_root_count` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
@@ -114,3 +161,60 @@ trace: [Tactic.evalRealRootCount] could not parse
 #guard_msgs in
 set_option trace.Tactic.evalRealRootCount true in
 example (p : ℚ[X]) : Fintype.card (p.rootSet ℝ) = 1 := by simp only [norm_real_root_count]
+
+/--
+error: `eval_real_root_count` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
+---
+trace: [Tactic.evalRealRootCount] the endpoint -1 is a root of the polynomial
+-/
+#guard_msgs in
+set_option trace.Tactic.evalRealRootCount true in
+example : ((X ^ 2 - 1 : ℝ[X]).rootsIoo ℝ (-1) 1).card = 0 := by eval_real_root_count
+
+/--
+error: `eval_real_root_count` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
+---
+trace: [Tactic.evalRealRootCount] expected an interval from `a` to `b` with `a < b`
+-/
+#guard_msgs in
+set_option trace.Tactic.evalRealRootCount true in
+example : ((X ^ 2 - 2 : ℝ[X]).rootsIoo ℝ 2 1).card = 0 := by eval_real_root_count
+
+/--
+error: unsolved goals
+⊢ 1 = 2
+-/
+#guard_msgs in
+example : ((X ^ 2 - 2 : ℝ[X]).rootsIoo ℝ 0 2).card = 2 := by eval_real_root_count
+
+/--
+error: `eval_real_root_count` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
+---
+trace: [Tactic.evalRealRootCount] expected a rational endpoint, not
+      a
+-/
+#guard_msgs in
+set_option trace.Tactic.evalRealRootCount true in
+example (a : ℝ) : ((X ^ 2 - 2 : ℝ[X]).rootsIoo ℝ a 2).card = 1 := by eval_real_root_count
+
+/--
+error: `eval_real_root_count` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
+---
+trace: [Tactic.evalRealRootCount] could not parse
+      p
+    as an explicit polynomial with rational coefficients
+-/
+#guard_msgs in
+set_option trace.Tactic.evalRealRootCount true in
+example (p : ℝ[X]) : (p.rootsIoo ℝ 0 1).card = 1 := by eval_real_root_count
+
+/--
+error: `eval_real_root_count` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRealRootCount true`.
+-/
+#guard_msgs in
+example : ((X ^ 2 - 2 : ℚ[X]).rootsIoo ℚ 0 2).card = 0 := by eval_real_root_count

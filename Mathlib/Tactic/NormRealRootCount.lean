@@ -19,7 +19,11 @@ public import Mathlib.Tactic.RealRootCount.Reflection
 The `norm_real_root_count` simproc rewrites `Fintype.card (f.rootSet ℝ)` to the number of distinct
 real roots of `f`, for an explicit polynomial `f` over `ℤ`, `ℚ` or `ℝ` with rational coefficients.
 
-The `eval_real_root_count` tactic evaluates the root counts in the goal with this simproc.
+The `norm_real_root_count_Ioo` simproc rewrites `(f.rootsIoo ℝ a b).card` to the number of distinct
+real roots of `f` in the open interval from `a` to `b`, for an explicit polynomial `f` over `ℤ`, `ℚ`
+or `ℝ` with rational coefficients, when `a < b` are rational numerals that are not roots of `f`.
+
+The `eval_real_root_count` tactic evaluates the root counts in the goal with these simprocs.
 
 ## Implementation notes
 
@@ -111,6 +115,54 @@ def proveCardRootSet (e : Expr) : MetaM (Q(ℕ) × Expr) := do
   have h : Q(realRootCount? $dE = some $nE) := (q(Eq.refl (some $nE)) : Expr)
   return (nE, q(card_rootSet_of_realRootCount? $hf $h))
 
+/-- Prove the closed numerical proposition `p` with `norm_num`. -/
+def proveNum (p : Q(Prop)) : MetaM Q($p) := do
+  let r ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) (useSimp := false) (e := p)
+  unless r.expr.isConstOf ``True do throwError "could not prove{indentExpr p}"
+  mkOfEqTrue (← r.getProof)
+
+/-- For an input expression `e = (f.rootsIoo ℝ a b).card`, where the endpoints `a < b` are rational
+numerals that are not roots of `f`, compute the number `n` of distinct real roots of `f` in the
+interval and construct a proof of `e = n`. -/
+def proveCardRootsIoo (e : Expr) : MetaM (Q(ℕ) × Expr) := do
+  let err := m!"expected `(f.rootsIoo ℝ a b).card`"
+  let_expr Finset.card _ roots := e | throwError err
+  let_expr Polynomial.rootsIoo R iR f S _ _ iA _ a b := roots | throwError err
+  unless ← isDefEq S q(ℝ) do throwError err
+  let ⟨_, R⟩ ← getLevelQ' R
+  have iR : Q(CommRing $R) := iR
+  have : Q(Algebra $R ℝ) := iA
+  have f : Q(Polynomial $R) := f
+  have a : Q(ℝ) := a
+  have b : Q(ℝ) := b
+  let endpoint (x : Expr) : MetaM ℚ := do
+    try ratOf x
+    catch _ => throwError "expected a rational endpoint, not{indentExpr x}"
+  let qa ← endpoint a
+  let qb ← endpoint b
+  let ⟨d, _, dE, hf⟩ ← certificateOf iR f
+  let some n := realRootCountIoo? d qa.num qa.den qb.num qb.den
+    | do
+      unless qa < qb do
+        throwError "expected an interval from `a` to `b` with `a < b`"
+      for (x, q) in [(a, qa), (b, qb)] do
+        if evalScaled q.num q.den d.s == 0 then
+          throwError "the endpoint {x} is a root of the polynomial"
+      throwError "the computed Sturm sequence is invalid"
+  have nE : Q(ℕ) := toExpr n
+  have anE : Q(ℤ) := toExpr qa.num
+  have adE : Q(ℕ) := toExpr qa.den
+  have bnE : Q(ℤ) := toExpr qb.num
+  have bdE : Q(ℕ) := toExpr qb.den
+  -- the kernel checks `h` by evaluating `realRootCountIoo?`
+  have h : Q(realRootCountIoo? $dE $anE $adE $bnE $bdE = some $nE) :=
+    (q(Eq.refl (some $nE)) : Expr)
+  -- the endpoints, as the kernel takes them
+  have ha : Q($a = ($anE : ℝ) / ($adE : ℝ)) := ← proveNum q($a = ($anE : ℝ) / ($adE : ℝ))
+  have hb : Q($b = ($bnE : ℝ) / ($bdE : ℝ)) := ← proveNum q($b = ($bnE : ℝ) / ($bdE : ℝ))
+  return (nE, q((congrArg₂ (fun x y => (Polynomial.rootsIoo $f ℝ x y).card) $ha $hb).trans
+    (card_rootsIoo_of_realRootCountIoo? $hf $h)))
+
 end Mathlib.Tactic.RealRootCount
 
 end
@@ -132,9 +184,24 @@ simproc_decl norm_real_root_count (Fintype.card (Polynomial.rootSet _ ℝ)) := f
     trace[Tactic.evalRealRootCount] "{ex.toMessageData}"
     return .continue
 
+/-- The `norm_real_root_count_Ioo` simproc evaluates `(f.rootsIoo ℝ a b).card`, the number of
+distinct real roots in the open interval from `a` to `b` of an explicit polynomial `f` over `ℤ`, `ℚ`
+or `ℝ` with rational coefficients, when `a < b` are rational numerals that are not roots of `f`.
+Terms that it cannot evaluate are skipped. -/
+simproc_decl norm_real_root_count_Ioo (Finset.card (Polynomial.rootsIoo _ ℝ _ _)) := fun e => do
+  try
+    let (n, pf) ← proveCardRootsIoo e
+    return .done { expr := n, proof? := some pf }
+  catch ex =>
+    trace[Tactic.evalRealRootCount] "{ex.toMessageData}"
+    return .continue
+
 /--
 `eval_real_root_count` evaluates `Fintype.card (f.rootSet ℝ)`, the number of distinct real roots of
 an explicit polynomial `f` over `ℤ`, `ℚ` or `ℝ` with rational coefficients.
+
+It also evaluates `(f.rootsIoo ℝ a b).card`, the number of distinct real roots of `f` in the open
+interval from `a` to `b`, when `a < b` are rational numerals that are not roots of `f`.
 
 Examples:
 
@@ -145,13 +212,17 @@ example : Fintype.card ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootSet ℝ) = 3 := by
 -- a repeated root is counted once
 example : Fintype.card (((X - 1) ^ 2 * (X + 2) : ℤ[X]).rootSet ℝ) = 2 := by
   eval_real_root_count
+
+-- the roots between `0` and `3 / 2`
+example : ((X ^ 5 - 4 * X + 2 : ℚ[X]).rootsIoo ℝ 0 (3 / 2)).card = 2 := by
+  eval_real_root_count
 ```
 
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRealRootCount true`.
 -/
 elab (name := evalRealRootCount) "eval_real_root_count" : tactic => do
   try
-    Elab.Tactic.evalTactic (← `(tactic| simp only [norm_real_root_count]))
+    Elab.Tactic.evalTactic (← `(tactic| simp only [norm_real_root_count, norm_real_root_count_Ioo]))
   catch _ =>
     throwError "`eval_real_root_count` made no progress.\n\
       Additional information may be available using \
