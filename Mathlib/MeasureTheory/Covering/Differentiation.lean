@@ -134,18 +134,9 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   set s := {x | ¬∀ᶠ a in v.filterAt x, 0 < μ a} with hs
   simp -zeta only [not_lt, not_eventually, nonpos_iff_eq_zero] at hs
   change μ s = 0
-  let f : α → Set (Set α) := fun _ => {a | μ a = 0}
-  have h : v.FineSubfamilyOn f s := by
-    intro x hx ε εpos
-    rw [hs] at hx
-    simp only [frequently_filterAt_iff, gt_iff_lt, mem_ofPred_eq] at hx
-    rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
-    exact ⟨a, ⟨a_sets, μa⟩, ax⟩
-  refine le_antisymm ?_ bot_le
-  calc
-    μ s ≤ ∑' x : h.index, μ (h.covering x) := h.measure_le_tsum
-    _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.2
-    _ = 0 := by simp only [tsum_zero]
+  obtain ⟨t, htc, -, -, ht₀, hst⟩ := v.exists_covering s (fun _ a ↦ μ a = 0) fun x hx ↦ by
+    rwa [hs] at hx
+  exact measure_mono_null_ae hst <| (measure_biUnion_null_iff htc).2 ht₀
 
 /-- For every point `x`, sufficiently small sets in a Vitali family around `x` have finite measure.
 (This is a trivial result, following from the fact that the measure is locally finite). -/
@@ -178,23 +169,17 @@ private theorem outerMeasure_le_of_frequently_le_aux [SecondCountableTopology α
   apply ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_
   obtain ⟨U, sU, U_open, νU⟩ : ∃ (U : Set α), s ⊆ U ∧ IsOpen U ∧ ν U ≤ ν s + ε :=
     exists_isOpen_le_add s ν (by simpa using hε.ne')
-  let f : α → Set (Set α) := fun _ => {a | ρ a ≤ ν a ∧ a ⊆ U}
-  have h : v.FineSubfamilyOn f s := by
-    apply v.fineSubfamilyOn_of_frequently f s fun x hx => ?_
-    have :=
-      (hs x hx).and_eventually
-        ((v.eventually_filterAt_mem_setsAt x).and
-          (v.eventually_filterAt_subset_of_nhds (U_open.mem_nhds (sU hx))))
-    apply Frequently.mono this
-    rintro a ⟨ρa, _, aU⟩
-    exact ⟨ρa, aU⟩
-  have : Countable h.index := h.index_countable
-  set W := ⋃ p ∈ h.index, h.covering p
-  have hWm : MeasurableSet W := .biUnion h.index_countable fun p hp ↦ h.measurableSet_u hp
+  obtain ⟨c, hcc, -, hcd, hcP, hsc⟩ := v.exists_covering s
+    (fun _ a ↦ ρ a ≤ ν a ∧ MeasurableSet a ∧ a ⊆ U) fun x hx ↦
+      (hs x hx).and_eventually <| (v.eventually_measurableSet x).and <|
+        v.eventually_filterAt_subset_of_nhds (U_open.mem_nhds (sU hx))
+  have : Countable c := hcc.to_subtype
+  set W := ⋃ p ∈ c, p.2
+  have hWm : MeasurableSet W := .biUnion hcc fun p hp ↦ (hcP p hp).2.1
   -- `t` is included in `W` up to a `μ`-null set
   have htW : ρ t ≤ ρ W := by
     set N := toMeasurable μ (s \ W)
-    have hN : μ N = 0 := by rw [measure_toMeasurable, h.measure_sdiff_biUnion]
+    have hN : μ N = 0 := by rw [measure_toMeasurable, ← ae_subset]; exact hsc
     calc
       ρ t ≤ ρ (W ∪ N) := by
         refine measure_le_of_measure_sdiff_eq_zero hρ (ht _ (hWm.union ?_) fun x hx ↦ ?_)
@@ -206,11 +191,10 @@ private theorem outerMeasure_le_of_frequently_le_aux [SecondCountableTopology α
       _ = ρ W := by rw [hρ hN, add_zero]
   calc
     ρ t ≤ ρ W := htW
-    _ ≤ ∑' x : h.index, ρ (h.covering x) := measure_biUnion_le _ h.index_countable _
-    _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.2).1
-    _ = ν (⋃ x : h.index, h.covering x) := by
-      rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
-    _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
+    _ ≤ ∑' p : c, ρ p.1.2 := measure_biUnion_le _ hcc _
+    _ ≤ ∑' p : c, ν p.1.2 := tsum_le_tsum fun p ↦ (hcP p p.2).1
+    _ = ν W := (measure_biUnion hcc hcd fun p hp ↦ (hcP p hp).2.1).symm
+    _ ≤ ν U := measure_mono <| iUnion₂_subset fun p hp ↦ (hcP p hp).2.2
     _ ≤ ν s + ε := νU
 
 /-- Let `ρ` be an outer measure that vanishes on `μ`-null sets and let `ν` be an outer regular
@@ -1008,7 +992,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   filter_upwards [A, B] with x hx h'x
   rw [h'x] at hx
   apply hx.congr' _
-  filter_upwards [v.eventually_filterAt_measurableSet x] with _ ha
+  filter_upwards [v.eventually_measurableSet x] with _ ha
   congr 1
   exact measure_toMeasurable_inter_of_sfinite ha _
 
@@ -1021,7 +1005,7 @@ theorem ae_tendsto_lintegral_div' {f : α → ℝ≥0∞} (hf : Measurable f) (h
   filter_upwards [ae_tendsto_rnDeriv v ρ, rnDeriv_withDensity μ hf] with x hx h'x
   rw [← h'x]
   apply hx.congr' _
-  filter_upwards [v.eventually_filterAt_measurableSet x] with a ha
+  filter_upwards [v.eventually_measurableSet x] with a ha
   rw [← withDensity_apply f ha]
 
 theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h'f : (∫⁻ y, f y ∂μ) ≠ ∞) :
@@ -1079,7 +1063,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
     simp only [xn, indicator_of_mem] at hx
     apply hx.congr' _
     filter_upwards [v.eventually_filterAt_subset_of_nhds (IsOpen.mem_nhds (A.set_mem n) xn),
-      v.eventually_filterAt_measurableSet x] with a ha h'a
+      v.eventually_measurableSet x] with a ha h'a
     congr 1
     apply setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
     simp only [ha hy, indicator_of_mem]
@@ -1138,7 +1122,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div {f : α → E} (hf : LocallyIntegrabl
   obtain ⟨n, hn⟩ : ∃ n, x ∈ u n := by simpa only [← u_univ, mem_iUnion] using mem_univ x
   apply Tendsto.congr' _ (hx n)
   filter_upwards [v.eventually_filterAt_subset_of_nhds ((u_open n).mem_nhds hn),
-    v.eventually_filterAt_measurableSet x] with a ha h'a
+    v.eventually_measurableSet x] with a ha h'a
   congr 1
   refine setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]

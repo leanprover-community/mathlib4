@@ -65,10 +65,11 @@ def vitaliFamily (K : ℝ) : VitaliFamily μ := by
   exact (Vitali.vitaliFamily μ (scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
     (by linarith)
 
-/-- In the Vitali family `IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`
+/-- Auxiliary lemma for `tendsto_closedBall_filterAt`: in the Vitali family
+`IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`
 contain all balls `closedBall y r` when `dist x y ≤ K * r`. -/
-theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ} (h : dist x y ≤ K * r)
-    (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
+private theorem closedBall_mem_setsAt_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ}
+    (h : dist x y ≤ K * r) (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_ofPred_eq,
     isClosed_closedBall, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
@@ -104,12 +105,14 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     have B := mem_closedBall'.1 (H A)
     linarith
 
+/-- The closed balls `closedBall (w j) (δ j)` tend to `(vitaliFamily μ K).filterAt x`
+whenever `δ j → 0⁺` and eventually `x ∈ closedBall (w j) (K * δ j)`. -/
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
     Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
   refine (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨?_, fun ε hε => ?_⟩
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
-    exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
+    exact closedBall_mem_setsAt_of_dist_le_mul μ hj h'j
   · rcases l.eq_or_neBot with rfl | h
     · simp
     have hK : 0 ≤ K := by
@@ -125,6 +128,13 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
       simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff₀' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
+
+/-- In the Vitali family `IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`
+contain all balls `closedBall y r` when `dist x y ≤ K * r`. -/
+@[deprecated tendsto_closedBall_filterAt +typeChanged (since := "2026-11-18")]
+theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ}
+    (h : dist x y ≤ K * r) (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x :=
+  closedBall_mem_setsAt_of_dist_le_mul μ h rpos
 
 end
 
