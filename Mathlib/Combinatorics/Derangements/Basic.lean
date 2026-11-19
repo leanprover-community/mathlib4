@@ -174,8 +174,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Equiv.Perm.decomposeOption '' derangements (Option α) :=
       Equiv.image _ _
     _ ≃ Σ a : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
-    _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
-      sigmaOptionEquivOfSome _ <| by
+    _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) := sigmaOptionEquivOfSome _ <| by
         rw [Equiv.RemoveNone.fiber_none]
         infer_instance
     _ ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
