@@ -51,7 +51,7 @@ Let `v` be such a Vitali family.
 
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
-open scoped Topology
+open scoped Topology ENNReal
 
 variable {X : Type*} [PseudoMetricSpace X]
 
@@ -157,16 +157,23 @@ protected theorem measurableSet_u {p : X × Set X} (hp : p ∈ h.index) :
     MeasurableSet (h.covering p) :=
   v.measurableSet p.1 _ (h.covering_mem_family hp)
 
-theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
-    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+/-- Let `ρ` be an outer measure (or a measure) that vanishes on `μ`-null sets.
+Then the `ρ`-measure of `s` is at most the sum of the `ρ`-measures of the sets of the covering. -/
+theorem outerMeasure_le_tsum_of_null_imp_null [SecondCountableTopology X] {F : Type*}
+    [FunLike F (Set X) ℝ≥0∞] [OuterMeasureClass F X] {ρ : F}
+    (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
       measure_mono (by simp only [subset_union_left, sdiff_union_self])
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
-    _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_sdiff_biUnion, zero_add,
-        measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
+    _ ≤ ∑' p : h.index, ρ (h.covering p) := by
+      rw [hρ h.measure_sdiff_biUnion, zero_add]
+      exact measure_biUnion_le _ h.index_countable _
+
+theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
+    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+  h.outerMeasure_le_tsum_of_null_imp_null hρ
 
 theorem measure_le_tsum [SecondCountableTopology X] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=
   h.measure_le_tsum_of_absolutelyContinuous Measure.AbsolutelyContinuous.rfl

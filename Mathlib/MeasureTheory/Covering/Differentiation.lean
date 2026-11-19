@@ -35,6 +35,13 @@ derived:
 * `VitaliFamily.ae_tendsto_average_norm_sub` states that, for almost every point `x`, then the
   average of `y ↦ ‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family.
 
+Some upper estimates also hold for outer measures. Let `ρ` be an outer measure that vanishes on
+`μ`-null sets, and let `v.liminfRatio ρ x` be the lower limit of `ρ a / μ a` as `a` shrinks to `x`.
+* `VitaliFamily.outerMeasure_le_lintegral_liminfRatio` states that
+  `ρ s ≤ ∫⁻ x in s, v.liminfRatio ρ x ∂μ`.
+* `VitaliFamily.outerMeasure_le_mul_of_liminfRatio_le` states that `ρ s ≤ c * μ s`
+  if `v.liminfRatio ρ x ≤ c` for all `x ∈ s`.
+
 ## Sketch of proof
 
 Let `v` be a Vitali family for `μ`. Assume for simplicity that `ρ` is absolutely continuous with
@@ -45,17 +52,17 @@ a disjoint subcovering provided by the definition of Vitali families. Similarly 
 It follows that a set on which `ρ a / μ a` oscillates has measure `0`, and therefore that
 `ρ a / μ a` converges almost surely (`VitaliFamily.ae_tendsto_div`). Moreover, on a set where the
 limit is close to a constant `c`, one gets `ρ s ∼ c μ s`, using again a covering lemma as above.
-It follows that `ρ` is equal to `μ.withDensity (v.limRatio ρ x)`, where `v.limRatio ρ x` is the
-limit of `ρ a / μ a` at `x` (which is well defined almost everywhere). By uniqueness of the
-Radon-Nikodym derivative, one gets `v.limRatio ρ x = ρ.rnDeriv μ x` almost everywhere, completing
-the proof.
+It follows that `ρ` is equal to `μ.withDensity (v.liminfRatio ρ x)`, where `v.liminfRatio ρ x` is
+the lower limit of `ρ a / μ a` at `x` (which is a true limit almost everywhere). By uniqueness of
+the Radon-Nikodym derivative, one gets `v.liminfRatio ρ x = ρ.rnDeriv μ x` almost everywhere,
+completing the proof.
 
-There is a difficulty in this sketch: this argument works well when `v.limRatio ρ` is measurable,
+There is a difficulty in this sketch: this argument works well when `v.liminfRatio ρ` is measurable,
 but there is no guarantee that this is the case, especially if one doesn't make further assumptions
-on the Vitali family. We use an indirect argument to show that `v.limRatio ρ` is always
+on the Vitali family. We use an indirect argument to show that `v.liminfRatio ρ` is always
 almost everywhere measurable, again based on the disjoint subcovering argument
-(see `VitaliFamily.exists_measurable_supersets_limRatio`), and then proceed as sketched above
-but replacing `v.limRatio ρ` by a measurable version called `v.limRatioMeas ρ`.
+(see `VitaliFamily.exists_measurable_supersets_liminfRatio`), and then proceed as sketched above
+but replacing `v.liminfRatio ρ` by a measurable version called `v.limRatioMeas ρ`.
 
 ## Counterexample
 
@@ -87,11 +94,38 @@ variable {α : Type*} [PseudoMetricSpace α] {m0 : MeasurableSpace α} {μ : Mea
 
 namespace VitaliFamily
 
-/-- The limit along a Vitali family of `ρ a / μ a` where it makes sense, and garbage otherwise.
-Do *not* use this definition: it is only a temporary device to show that this ratio tends almost
-everywhere to the Radon-Nikodym derivative. -/
-noncomputable def limRatio (ρ : Measure α) (x : α) : ℝ≥0∞ :=
-  limUnder (v.filterAt x) fun a => ρ a / μ a
+/-- The lower limit of the ratio `ρ a / μ a` as `a` shrinks to `x` along a Vitali family.
+Here `ρ` can be a measure or an outer measure.
+
+If `ρ` is a locally finite measure, then this is almost everywhere equal
+to the Radon-Nikodym derivative of `ρ` with respect to `μ`,
+see `VitaliFamily.liminfRatio_ae_eq_rnDeriv`.
+
+If `ρ` is an outer measure that vanishes on `μ`-null sets, then
+`ρ s ≤ ∫⁻ x in s, v.liminfRatio ρ x ∂μ` for all sets `s`,
+see `VitaliFamily.outerMeasure_le_lintegral_liminfRatio`. -/
+noncomputable def liminfRatio {F : Type*} [FunLike F (Set α) ℝ≥0∞] (ρ : F) (x : α) : ℝ≥0∞ :=
+  liminf (fun a ↦ ρ a / μ a) (v.filterAt x)
+
+@[deprecated liminfRatio (since := "2026-11-18")] alias limRatio := liminfRatio
+
+theorem liminfRatio_eq_of_tendsto {F : Type*} [FunLike F (Set α) ℝ≥0∞] {ρ : F} {x : α}
+    {c : ℝ≥0∞} (h : Tendsto (fun a ↦ ρ a / μ a) (v.filterAt x) (𝓝 c)) :
+    v.liminfRatio ρ x = c :=
+  h.liminf_eq
+
+theorem tendsto_liminfRatio {F : Type*} [FunLike F (Set α) ℝ≥0∞] {ρ : F} {x : α}
+    (h : ∃ c, Tendsto (fun a ↦ ρ a / μ a) (v.filterAt x) (𝓝 c)) :
+    Tendsto (fun a ↦ ρ a / μ a) (v.filterAt x) (𝓝 (v.liminfRatio ρ x)) := by
+  obtain ⟨c, hc⟩ := h
+  rwa [v.liminfRatio_eq_of_tendsto hc]
+
+/-- If `v.liminfRatio ρ x < c`, then frequently `ρ a ≤ c * μ a` as `a` shrinks to `x`. -/
+theorem frequently_le_mul_of_liminfRatio_lt {F : Type*} [FunLike F (Set α) ℝ≥0∞] {ρ : F}
+    {x : α} {c : ℝ≥0∞} (hc : c ≠ ∞) (h : v.liminfRatio ρ x < c) :
+    ∃ᶠ a in v.filterAt x, ρ a ≤ c * μ a :=
+  (frequently_lt_of_liminf_lt (by isBoundedDefault) h).mono fun _a ha ↦
+    (ENNReal.div_le_iff_le_mul (.inr hc) (.inr ha.ne_bot)).1 ha.le
 
 /-- For almost every point `x`, sufficiently small sets in a Vitali family around `x` have positive
 measure. (This is a nontrivial result, following from the covering property of Vitali families). -/
@@ -119,15 +153,31 @@ theorem eventually_measure_lt_top [IsLocallyFiniteMeasure μ] (x : α) :
     ∀ᶠ a in v.filterAt x, μ a < ∞ :=
   (μ.finiteAt_nhds x).eventually.filter_mono inf_le_left
 
-/-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
-Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
-theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α] {ρ : Measure α}
-    (ν : Measure α) [IsLocallyFiniteMeasure ν] (hρ : ρ ≪ μ) (s : Set α)
-    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s := by
+section OuterMeasure
+
+variable {F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {ρ : F}
+
+omit [PseudoMetricSpace α] in
+/-- If an outer measure `ρ` vanishes on `μ`-null sets, then `ρ t ≤ ρ u` whenever `t ⊆ u` up to a
+`μ`-null set. -/
+private theorem measure_le_of_measure_sdiff_eq_zero (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {t u : Set α}
+    (h : μ (t \ u) = 0) : ρ t ≤ ρ u :=
+  calc
+    ρ t ≤ ρ (u ∪ t \ u) := measure_mono <| by simp
+    _ ≤ ρ u + ρ (t \ u) := measure_union_le _ _
+    _ = ρ u := by rw [hρ h, add_zero]
+
+/-- Auxiliary statement for `outerMeasure_le_of_frequently_le` and
+`outerMeasure_toMeasurable_le_of_frequently_le`. The assumption on `t` means that `t` is included,
+up to a `μ`-null set, in every measurable superset of `s`. -/
+private theorem outerMeasure_le_of_frequently_le_aux [SecondCountableTopology α]
+    (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {s t : Set α}
+    (ht : ∀ u, MeasurableSet u → s ⊆ u → μ (t \ u) = 0)
+    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ t ≤ ν s := by
   -- this follows from a covering argument using the sets satisfying `ρ a ≤ ν a`.
-  apply le_of_forall_pos_le_add fun ε hε ↦ ?_
+  apply ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_
   obtain ⟨U, sU, U_open, νU⟩ : ∃ (U : Set α), s ⊆ U ∧ IsOpen U ∧ ν U ≤ ν s + ε :=
-    exists_isOpen_le_add s ν hε.ne'
+    exists_isOpen_le_add s ν (by simpa using hε.ne')
   let f : α → Set (Set α) := fun _ => {a | ρ a ≤ ν a ∧ a ⊆ U}
   have h : v.FineSubfamilyOn f s := by
     apply v.fineSubfamilyOn_of_frequently f s fun x hx => ?_
@@ -139,19 +189,258 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     rintro a ⟨ρa, _, aU⟩
     exact ⟨ρa, aU⟩
   have : Countable h.index := h.index_countable
+  set W := ⋃ p ∈ h.index, h.covering p
+  have hWm : MeasurableSet W := .biUnion h.index_countable fun p hp ↦ h.measurableSet_u hp
+  -- `t` is included in `W` up to a `μ`-null set
+  have htW : ρ t ≤ ρ W := by
+    set N := toMeasurable μ (s \ W)
+    have hN : μ N = 0 := by rw [measure_toMeasurable, h.measure_sdiff_biUnion]
+    calc
+      ρ t ≤ ρ (W ∪ N) := by
+        refine measure_le_of_measure_sdiff_eq_zero hρ (ht _ (hWm.union ?_) fun x hx ↦ ?_)
+        · exact measurableSet_toMeasurable _ _
+        · by_cases hxW : x ∈ W
+          · exact .inl hxW
+          · exact .inr <| subset_toMeasurable _ _ ⟨hx, hxW⟩
+      _ ≤ ρ W + ρ N := measure_union_le _ _
+      _ = ρ W := by rw [hρ hN, add_zero]
   calc
-    ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
+    ρ t ≤ ρ W := htW
+    _ ≤ ∑' x : h.index, ρ (h.covering x) := measure_biUnion_le _ h.index_countable _
     _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.2).1
     _ = ν (⋃ x : h.index, h.covering x) := by
       rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
     _ ≤ ν s + ε := νU
 
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets and let `ν` be an outer regular
+measure. If, at every point of a set `s`, there are arbitrarily small sets `a` in a Vitali family
+satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s`. -/
+theorem outerMeasure_le_of_frequently_le [SecondCountableTopology α]
+    (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) (s : Set α)
+    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s :=
+  v.outerMeasure_le_of_frequently_le_aux ν hρ (fun _ _ hsu ↦ by simp [sdiff_eq_bot_iff.2 hsu]) hs
+
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets and let `ν` be an outer regular
+measure. If, at every point of a set `s`, there are arbitrarily small sets `a` in a Vitali family
+satisfying `ρ a ≤ ν a`, then `ρ (toMeasurable μ s) ≤ ν s`.
+
+Note that `ρ (toMeasurable μ s)` can be larger than `ρ s`, since `ρ` is not assumed to be a
+measure. -/
+theorem outerMeasure_toMeasurable_le_of_frequently_le [SecondCountableTopology α]
+    [SFinite μ] (ν : Measure α) [OuterRegular ν] (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) (s : Set α)
+    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ (toMeasurable μ s) ≤ ν s := by
+  refine v.outerMeasure_le_of_frequently_le_aux ν hρ (fun u hu hsu ↦ ?_) hs
+  rw [sdiff_eq, measure_toMeasurable_inter_of_sfinite hu.compl, ← sdiff_eq, sdiff_eq_empty.2 hsu,
+    measure_empty]
+
+end OuterMeasure
+
+/-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
+Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
+theorem measure_le_of_frequently_le [SecondCountableTopology α] {ρ : Measure α}
+    (ν : Measure α) [OuterRegular ν] (hρ : ρ ≪ μ) (s : Set α)
+    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s :=
+  v.outerMeasure_le_of_frequently_le ν hρ s hs
+
 theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
   rcases hf x with ⟨w, w_nhds, hw⟩
   filter_upwards [v.eventually_filterAt_subset_of_nhds w_nhds] with a ha
   exact hw.mono_set ha
+
+section OuterMeasure
+
+variable [SecondCountableTopology α] [SigmaFinite μ] [OuterRegular μ]
+  {F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {ρ : F}
+
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets. Then `ρ s` is bounded by the
+lower Lebesgue integral of `v.liminfRatio ρ` over `s`.
+
+Note that `v.liminfRatio ρ` need not be measurable, and `MeasureTheory.lintegral`
+is the *lower* Lebesgue integral. The proof constructs a measurable function `g ≤ v.liminfRatio ρ`
+whose sublevel sets are measurable hulls of the sublevel sets of `v.liminfRatio ρ`. Then it uses
+`outerMeasure_toMeasurable_le_of_frequently_le` on these hulls. -/
+theorem outerMeasure_le_lintegral_liminfRatio (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) (s : Set α) :
+    ρ s ≤ ∫⁻ x in s, v.liminfRatio ρ x ∂μ := by
+  classical
+  set f := v.liminfRatio ρ
+  set T := toMeasurable μ s
+  -- `L c` is the set of points of `T` where `f < c`, `U c` is a measurable hull of `L c`.
+  set L : ℝ≥0∞ → Set α := fun c ↦ T ∩ {x | f x < c}
+  set U : ℝ≥0∞ → Set α := fun c ↦ toMeasurable μ (L c)
+  obtain ⟨D, hDc, hDd⟩ := TopologicalSpace.exists_countable_dense ℝ≥0∞
+  have := hDc.to_subtype
+  -- `g` is a measurable function such that `g ≤ f` on `T` and `{g < c} ⊆ ⋃ q < c, U q`.
+  set g : α → ℝ≥0∞ := fun x ↦ ⨅ q : D, if x ∈ U q then (q : ℝ≥0∞) else ∞
+  have hgm : Measurable g := .iInf fun q ↦
+    Measurable.ite (measurableSet_toMeasurable _ _) measurable_const measurable_const
+  have hgf : ∀ x ∈ T, g x ≤ f x := by
+    intro x hx
+    refine le_of_forall_gt fun c hc ↦ ?_
+    obtain ⟨q, hqD, hfq, hqc⟩ := hDd.exists_between hc
+    refine (iInf_le _ (⟨q, hqD⟩ : D)).trans_lt ?_
+    have hxU : x ∈ U q := subset_toMeasurable _ _ (show x ∈ L q from ⟨hx, hfq⟩)
+    simpa [hxU] using hqc
+  have hfg : ∫⁻ x in s, g x ∂μ ≤ ∫⁻ x in s, f x ∂μ := by
+    refine lintegral_mono_ae <| (ae_iff).2 ?_
+    refine measure_mono_null (fun x hx ↦ ?_) (show μ.restrict s Tᶜ = 0 from ?_)
+    · exact fun hxT ↦ hx (hgf x hxT)
+    · rw [Measure.restrict_apply (measurableSet_toMeasurable _ _).compl]
+      exact measure_mono_null (fun x hx ↦ hx.1 (subset_toMeasurable _ _ hx.2)) measure_empty
+  -- The key estimate.
+  have key : ∀ c ≠ ∞, ∀ A, MeasurableSet A → ρ (s ∩ g ⁻¹' Iio c ∩ A) ≤ c * μ (s ∩ A) := by
+    intro c hc A hA
+    have : OuterRegular (c • μ) := .smul μ hc
+    set B := toMeasurable μ (L c ∩ A)
+    have hB : MeasurableSet (A \ B) := hA.diff (measurableSet_toMeasurable _ _)
+    calc
+      ρ (s ∩ g ⁻¹' Iio c ∩ A) ≤ ρ B := by
+        refine measure_le_of_measure_sdiff_eq_zero hρ <| measure_mono_null
+          (t := ⋃ (q : D) (_ : (q : ℝ≥0∞) < c), U q ∩ (A \ B)) ?_ ?_
+        · rintro x ⟨⟨⟨-, hxg⟩, hxA⟩, hxB⟩
+          obtain ⟨q, hq⟩ := iInf_lt_iff.1 (show g x < c from hxg)
+          split_ifs at hq with hxq
+          · exact mem_iUnion₂.2 ⟨q, hq, hxq, hxA, hxB⟩
+          · exact absurd hq not_top_lt
+        · refine measure_iUnion_null fun q ↦ measure_iUnion_null fun hq ↦ ?_
+          rw [measure_toMeasurable_inter_of_sfinite hB, ← nonpos_iff_eq_zero]
+          calc
+            μ (L q ∩ (A \ B)) ≤ μ ((L c ∩ A) \ B) := by
+              refine measure_mono fun x ⟨⟨hxT, hxq⟩, hxA, hxB⟩ ↦ ⟨⟨⟨hxT, ?_⟩, hxA⟩, hxB⟩
+              exact (show f x < q from hxq).trans hq
+            _ = 0 := by rw [sdiff_eq_empty.2 (subset_toMeasurable _ _), measure_empty]
+      _ ≤ (c • μ) (L c ∩ A) := by
+        refine v.outerMeasure_toMeasurable_le_of_frequently_le _ hρ _ fun x hx ↦ ?_
+        exact v.frequently_le_mul_of_liminfRatio_lt hc hx.1.2
+      _ ≤ c * μ (s ∩ A) := by
+        rw [smul_apply, smul_eq_mul]
+        grw [show L c ⊆ T from inter_subset_left, measure_toMeasurable_inter_of_sfinite hA]
+  refine le_trans ?_ hfg
+  -- If `g = ∞` on a subset of `s` of positive measure, then the integral is infinite.
+  by_cases hinf : μ (s ∩ g ⁻¹' {∞}) = 0
+  swap
+  · rw [lintegral_eq_top_of_measure_eq_top_ne_zero hgm.aemeasurable]
+    · exact le_top
+    · rwa [show {x | g x = ∞} = g ⁻¹' {∞} from rfl,
+        Measure.restrict_apply (hgm (measurableSet_singleton ∞)), inter_comm]
+  -- The part of `s` where `g = 0` is `ρ`-null.
+  have h₀ : ρ (s ∩ g ⁻¹' {0}) = 0 := by
+    refine measure_mono_null (t := ⋃ k, s ∩ (g ⁻¹' {0} ∩ spanningSets μ k)) ?_
+      (measure_iUnion_null fun k ↦ ?_)
+    · rintro x ⟨hxs, hx0⟩
+      obtain ⟨k, hk⟩ := mem_iUnion.1 ((iUnion_spanningSets μ).symm ▸ mem_univ x)
+      exact mem_iUnion.2 ⟨k, hxs, hx0, hk⟩
+    · set B := g ⁻¹' {0} ∩ spanningSets μ k
+      have hBm : MeasurableSet B :=
+        (hgm (measurableSet_singleton 0)).inter (measurableSet_spanningSets μ k)
+      have hBfin : μ (s ∩ B) ≠ ∞ :=
+        measure_ne_top_of_subset (inter_subset_right.trans inter_subset_right)
+          (measure_spanningSets_lt_top μ k).ne
+      have hlim : Tendsto (fun c ↦ c * μ (s ∩ B)) (𝓝[>] 0) (𝓝 (0 * μ (s ∩ B))) :=
+        (ENNReal.Tendsto.mul_const tendsto_id (.inr hBfin)).mono_left nhdsWithin_le_nhds
+      rw [zero_mul] at hlim
+      refine nonpos_iff_eq_zero.1 (ge_of_tendsto hlim ?_)
+      filter_upwards [Ioo_mem_nhdsGT zero_lt_one] with c hc
+      calc
+        ρ (s ∩ B) ≤ ρ (s ∩ g ⁻¹' Iio c ∩ B) := by
+          refine measure_mono fun x ⟨hxs, hx0, hk⟩ ↦ ⟨⟨hxs, ?_⟩, hx0, hk⟩
+          simpa [show g x = 0 from hx0] using hc.1
+        _ ≤ c * μ (s ∩ B) := key c (hc.2.trans ENNReal.one_lt_top).ne B hBm
+  -- It suffices to prove `ρ s ≤ t * ∫⁻ x in s, g x ∂μ` for `1 < t < ∞`.
+  have := left_nhdsWithin_Ioo_neBot ENNReal.one_lt_top
+  have hlim : Tendsto (fun t ↦ t * ∫⁻ x in s, g x ∂μ) (𝓝[Ioo 1 ∞] 1)
+      (𝓝 (∫⁻ x in s, g x ∂μ)) := by
+    simpa using (ENNReal.Tendsto.mul_const tendsto_id (.inl one_ne_zero)).mono_left
+      nhdsWithin_le_nhds
+  refine ge_of_tendsto hlim ?_
+  filter_upwards [self_mem_nhdsWithin] with t ⟨ht, ht'⟩
+  have ht₀ : t ≠ 0 := (zero_lt_one.trans ht).ne'
+  have ht_top : t ≠ ∞ := ht'.ne
+  -- We cut `s` into the pieces where `g = 0`, `g = ∞`, and `t ^ n ≤ g < t ^ (n + 1)`, `n : ℤ`.
+  set A : ℤ → Set α := fun n ↦ g ⁻¹' Ico (t ^ n) (t ^ (n + 1))
+  have hAm n : MeasurableSet (A n) := hgm measurableSet_Ico
+  have hAd : Pairwise (Function.onFun Disjoint A) := by
+    intro i j hij
+    wlog h : i < j generalizing i j
+    · exact (this hij.symm (hij.lt_or_gt.resolve_left h)).symm
+    refine disjoint_left.2 fun x hx h'x => lt_irrefl (g x) ?_
+    calc
+      g x < t ^ (i + 1) := hx.2
+      _ ≤ t ^ j := ENNReal.zpow_le_of_le ht.le h
+      _ ≤ g x := h'x.1
+  have hS : s ⊆ (s ∩ g ⁻¹' {0}) ∪ (s ∩ g ⁻¹' {∞}) ∪ ⋃ n, s ∩ A n := by
+    intro x hx
+    rcases eq_or_ne (g x) 0 with h0 | h0
+    · exact .inl (.inl ⟨hx, h0⟩)
+    rcases eq_or_ne (g x) ∞ with h1 | h1
+    · exact .inl (.inr ⟨hx, h1⟩)
+    have : g x ∈ Ioo 0 ∞ := ⟨pos_iff_ne_zero.2 h0, lt_top_iff_ne_top.2 h1⟩
+    rw [ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow ht ht_top, mem_iUnion] at this
+    obtain ⟨n, hn⟩ := this
+    exact .inr (mem_iUnion.2 ⟨n, hx, hn⟩)
+  have hAn n : ρ (s ∩ A n) ≤ t * ∫⁻ x in A n, g x ∂μ.restrict s :=
+    calc
+      ρ (s ∩ A n) ≤ ρ (s ∩ g ⁻¹' Iio (t ^ (n + 1)) ∩ A n) :=
+        measure_mono fun x hx ↦ ⟨⟨hx.1, hx.2.2⟩, hx.2⟩
+      _ ≤ t ^ (n + 1) * μ (s ∩ A n) := key _ (ENNReal.zpow_ne_top ht₀ ht_top _) _ (hAm n)
+      _ = t * (t ^ n * μ.restrict s (A n)) := by
+        rw [Measure.restrict_apply (hAm n), inter_comm (A n), ENNReal.zpow_add ht₀ ht_top,
+          zpow_one]
+        ring
+      _ ≤ t * ∫⁻ x in A n, g x ∂μ.restrict s := by
+        gcongr
+        rw [← setLIntegral_const]
+        exact setLIntegral_mono hgm fun x hx ↦ hx.1
+  calc
+    ρ s ≤ ρ ((s ∩ g ⁻¹' {0}) ∪ (s ∩ g ⁻¹' {∞}) ∪ ⋃ n, s ∩ A n) := measure_mono hS
+    _ ≤ ρ (s ∩ g ⁻¹' {0}) + ρ (s ∩ g ⁻¹' {∞}) + ρ (⋃ n, s ∩ A n) :=
+      (measure_union_le _ _).trans (by gcongr; exact measure_union_le _ _)
+    _ ≤ 0 + 0 + ∑' n, t * ∫⁻ x in A n, g x ∂μ.restrict s := by
+      rw [h₀, hρ hinf]
+      gcongr
+      exact (measure_iUnion_le _).trans (tsum_le_tsum hAn)
+    _ = t * ∫⁻ x in ⋃ n, A n, g x ∂μ.restrict s := by
+      rw [zero_add, zero_add, ENNReal.tsum_mul_left, lintegral_iUnion hAm hAd]
+    _ ≤ t * ∫⁻ x in s, g x ∂μ := by grw [setLIntegral_le_lintegral (⋃ n, A n)]
+
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
+If `g` is an a.e.-measurable function such that `v.liminfRatio ρ x ≤ g x` for all `x ∈ s`,
+then `ρ s ≤ ∫⁻ x in s, g x ∂μ`. -/
+theorem outerMeasure_le_lintegral_of_liminfRatio_le (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0)
+    {s : Set α} {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.restrict s))
+    (h : ∀ x ∈ s, v.liminfRatio ρ x ≤ g x) :
+    ρ s ≤ ∫⁻ x in s, g x ∂μ := by
+  /- We can't apply `lintegral_mono_ae` directly, because `h` is not an a.e. inequality
+  with respect to `μ.restrict s` unless `s` is measurable. Instead, we replace `v.liminfRatio ρ`
+  with a measurable function `φ ≤ v.liminfRatio ρ` that has the same integral over `s`,
+  and `g` with its measurable modification `hg.mk g`. -/
+  obtain ⟨φ, hφm, hφf, hφeq⟩ := exists_measurable_le_lintegral_eq (μ.restrict s) (v.liminfRatio ρ)
+  refine (v.outerMeasure_le_lintegral_liminfRatio hρ s).trans (hφeq.trans_le ?_)
+  rw [lintegral_congr_ae hg.ae_eq_mk]
+  refine lintegral_mono_ae <| (ae_iff).2 ?_
+  simp only [not_le]
+  rw [Measure.restrict_apply (measurableSet_lt hg.measurable_mk hφm)]
+  -- On `s`, `φ > hg.mk g` is only possible where `g ≠ hg.mk g`.
+  refine measure_mono_null (t := {x | ¬g x = hg.mk g x} ∩ s) ?_
+    (nonpos_iff_eq_zero.1 <| (le_restrict_apply _ _).trans_eq (ae_iff.1 hg.ae_eq_mk))
+  rintro x ⟨hx, hxs⟩
+  refine ⟨fun hgx ↦ ?_, hxs⟩
+  exact (lt_irrefl _ (hx.trans_le ((hφf x).trans ((h x hxs).trans_eq hgx))))
+
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
+If `v.liminfRatio ρ x ≤ c` for all `x ∈ s`, then `ρ s ≤ c * μ s`. -/
+theorem outerMeasure_le_mul_of_liminfRatio_le (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {s : Set α}
+    {c : ℝ≥0∞} (h : ∀ x ∈ s, v.liminfRatio ρ x ≤ c) : ρ s ≤ c * μ s := by
+  simpa using v.outerMeasure_le_lintegral_of_liminfRatio_le hρ aemeasurable_const h
+
+/-- Let `ρ` be an outer measure that vanishes on `μ`-null sets.
+If `v.liminfRatio ρ x = 0` for all `x ∈ s`, then `ρ s = 0`. -/
+theorem outerMeasure_eq_zero_of_liminfRatio_eq_zero (hρ : ∀ ⦃t⦄, μ t = 0 → ρ t = 0) {s : Set α}
+    (h : ∀ x ∈ s, v.liminfRatio ρ x = 0) : ρ s = 0 := by
+  simpa using v.outerMeasure_le_mul_of_liminfRatio_le hρ (c := 0) fun x hx ↦ (h x hx).le
+
+end OuterMeasure
 
 section
 
@@ -257,21 +546,23 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
   intro x hx
   exact tendsto_of_no_upcrossings w_dense hx
 
-theorem ae_tendsto_limRatio :
-    ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) := by
+theorem ae_tendsto_liminfRatio :
+    ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 (v.liminfRatio ρ x)) := by
   filter_upwards [v.ae_tendsto_div hρ]
   intro x hx
-  exact tendsto_nhds_limUnder hx
+  exact v.tendsto_liminfRatio hx
 
-/-- Given two thresholds `p < q`, the sets `{x | v.limRatio ρ x < p}`
-and `{x | q < v.limRatio ρ x}` are obviously disjoint. The key to proving that `v.limRatio ρ` is
+@[deprecated (since := "2026-11-18")] alias ae_tendsto_limRatio := ae_tendsto_liminfRatio
+
+/-- Given two thresholds `p < q`, the sets `{x | v.liminfRatio ρ x < p}` and
+`{x | q < v.liminfRatio ρ x}` are obviously disjoint. The key to proving that `v.liminfRatio ρ` is
 almost everywhere measurable is to show that these sets have measurable supersets which are also
 disjoint, up to zero measure. This is the content of this lemma. -/
-theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
+theorem exists_measurable_supersets_liminfRatio {p q : ℝ≥0∞} (hpq : p < q) :
     ∃ a b, MeasurableSet a ∧ MeasurableSet b ∧
-      {x | v.limRatio ρ x < p} ⊆ a ∧ {x | q < v.limRatio ρ x} ⊆ b ∧ μ (a ∩ b) = 0 := by
+      {x | v.liminfRatio ρ x < p} ⊆ a ∧ {x | q < v.liminfRatio ρ x} ⊆ b ∧ μ (a ∩ b) = 0 := by
   /- Here is a rough sketch, assuming that the measure is finite and the limit is well defined
-    everywhere. Let `u := {x | v.limRatio ρ x < p}` and `w := {x | q < v.limRatio ρ x}`. They
+    everywhere. Let `u := {x | v.liminfRatio ρ x < p}` and `w := {x | q < v.liminfRatio ρ x}`. They
     have measurable supersets `u'` and `w'` of the same measure. We will show that these satisfy
     the conclusion of the theorem, i.e., `μ (u' ∩ w') = 0`. For this, note that
     `ρ (u' ∩ w') = ρ (u ∩ w')` (as `w'` is measurable, see `measure_toMeasurable_add_inter_left`).
@@ -287,8 +578,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
     -/
   let s := {x | ∃ c, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 c)}
   let o : ℕ → Set α := spanningSets (ρ + μ)
-  let u n := s ∩ {x | v.limRatio ρ x < p} ∩ o n
-  let w n := s ∩ {x | q < v.limRatio ρ x} ∩ o n
+  let u n := s ∩ {x | v.liminfRatio ρ x < p} ∩ o n
+  let w n := s ∩ {x | q < v.liminfRatio ρ x} ∩ o n
   -- the supersets are obtained by restricting to the set `s` where the limit is well defined, to
   -- a finite measure part `o n`, taking a measurable superset here, and then taking the union over
   -- `n`.
@@ -354,8 +645,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         measure_toMeasurable_add_inter_left (measurableSet_toMeasurable _ _) I
       _ ≤ (p • μ) (u m ∩ toMeasurable (ρ + μ) (w n)) := by
         refine v.measure_le_of_frequently_le (p • μ) hρ _ fun x hx => ?_
-        have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
-          tendsto_nhds_limUnder hx.1.1.1
+        have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.liminfRatio ρ x)) :=
+          v.tendsto_liminfRatio hx.1.1.1
         have I : ∀ᶠ b : Set α in v.filterAt x, ρ b / μ b < p := (tendsto_order.1 L).2 _ hx.1.1.2
         apply I.frequently.mono fun a ha ↦ ?_
         exact (ENNReal.div_le_iff_le_mul (.inr hpq.lt_top.ne) (.inr ha.bot_lt.ne')).1 ha.le
@@ -373,8 +664,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         rw [← smul_eq_mul, ← smul_apply]
         refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
-        have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
-          tendsto_nhds_limUnder hx.2.1.1
+        have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.liminfRatio ρ x)) :=
+          v.tendsto_liminfRatio hx.2.1.1
         have I : ∀ᶠ b : Set α in v.filterAt x, q < ρ b / μ b := (tendsto_order.1 L).1 _ hx.2.1.2
         apply I.frequently.mono fun a ha ↦ ?_
         exact ENNReal.mul_le_of_le_div ha.le
@@ -399,21 +690,27 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
       exact inter_subset_right
     _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := B
 
-theorem aemeasurable_limRatio : AEMeasurable (v.limRatio ρ) μ := by
-  apply ENNReal.aemeasurable_of_exist_almost_disjoint_supersets _ _ fun p q hpq ↦ ?_
-  exact v.exists_measurable_supersets_limRatio hρ hpq
+@[deprecated (since := "2026-11-18")]
+alias exists_measurable_supersets_limRatio := exists_measurable_supersets_liminfRatio
 
-/-- A measurable version of `v.limRatio ρ`. Do *not* use this definition: it is only a temporary
-device to show that `v.limRatio` is almost everywhere equal to the Radon-Nikodym derivative. -/
+theorem aemeasurable_liminfRatio : AEMeasurable (v.liminfRatio ρ) μ := by
+  apply ENNReal.aemeasurable_of_exist_almost_disjoint_supersets _ _ fun p q hpq ↦ ?_
+  exact v.exists_measurable_supersets_liminfRatio hρ hpq
+
+@[deprecated (since := "2026-11-18")] alias aemeasurable_limRatio := aemeasurable_liminfRatio
+
+/-- A measurable version of `v.liminfRatio ρ`. Do *not* use this definition: it is only a temporary
+device to show that `v.liminfRatio` is almost everywhere equal to the Radon-Nikodym derivative. -/
 noncomputable def limRatioMeas : α → ℝ≥0∞ :=
-  (v.aemeasurable_limRatio hρ).mk _
+  (v.aemeasurable_liminfRatio hρ).mk _
 
 theorem limRatioMeas_measurable : Measurable (v.limRatioMeas hρ) :=
   AEMeasurable.measurable_mk _
 
 theorem ae_tendsto_limRatioMeas :
     ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatioMeas hρ x)) := by
-  filter_upwards [v.ae_tendsto_limRatio hρ, AEMeasurable.ae_eq_mk (v.aemeasurable_limRatio hρ)]
+  filter_upwards [v.ae_tendsto_liminfRatio hρ,
+    AEMeasurable.ae_eq_mk (v.aemeasurable_liminfRatio hρ)]
   intro x hx h'x
   rwa [h'x] at hx
 
@@ -671,6 +968,11 @@ theorem ae_tendsto_rnDeriv :
     conv_lhs => rw [eq_add]
     simp [ENNReal.add_div]
   · simp only [Bx, zero_add]
+
+/-- For a locally finite measure `ρ`, the lower limit `v.liminfRatio ρ` of `ρ a / μ a` is almost
+everywhere equal to the Radon-Nikodym derivative of `ρ` with respect to `μ`. -/
+theorem liminfRatio_ae_eq_rnDeriv : v.liminfRatio ρ =ᵐ[μ] ρ.rnDeriv μ := by
+  filter_upwards [v.ae_tendsto_rnDeriv ρ] with x hx using v.liminfRatio_eq_of_tendsto hx
 
 /-! ### Lebesgue density points -/
 
