@@ -25,7 +25,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
@@ -462,9 +461,11 @@ theorem nnNorm_inner_le_nnNorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * 
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_inner_le_nnnorm := nnNorm_inner_le_nnNorm
 
-lemma enorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+lemma eNorm_inner_le_eNorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp
+
+@[deprecated (since := "2026-11-06")] alias enorm_inner_le_enorm := eNorm_inner_le_eNorm
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
   le_trans (re_le_norm ⟪x, y⟫) (norm_inner_le_norm x y)
@@ -514,6 +515,13 @@ theorem parallelogram_law_with_nnNorm (x y : E) :
 
 @[deprecated (since := "2026-10-31")]
 alias parallelogram_law_with_nnnorm := parallelogram_law_with_nnNorm
+
+include 𝕜 in
+theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (x y z : E) :
+    ‖x‖ ^ 2 + ‖y‖ ^ 2 + ‖z‖ ^ 2 + ‖x + y + z‖ ^ 2 =
+      ‖x + y‖ ^ 2 + ‖y + z‖ ^ 2 + ‖x + z‖ ^ 2 := by
+  simp only [norm_add_sq (𝕜 := 𝕜), inner_add_left, map_add]
+  ring
 
 variable {𝕜}
 

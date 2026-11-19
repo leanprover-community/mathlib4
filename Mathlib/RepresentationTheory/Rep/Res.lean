@@ -14,7 +14,6 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 Given a group homomorphism `f : H →* G`, we have the restriction functor
 `resFunctor f : Rep k G ⥤ Rep k H` which sends a `G`-representation `ρ` to the
 `H`-representation `ρ.comp f`.
-
 -/
 
 public section
@@ -34,7 +33,7 @@ abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
 `G`-representations. -/
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
-    res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.2 _⟩
+    res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.isIntertwining' _⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 @[expose, implicit_reducible, simps obj map]
@@ -75,7 +74,9 @@ instance : (resFunctor (k := k) f).Faithful where
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
   when `f` is surjective. -/
 abbrev liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X ⟶ res f Y) :
-    X ⟶ Y := ofHom ⟨f'.hom.toLinearMap, fun g ↦ by obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.2 h⟩
+    X ⟶ Y :=
+  ofHom ⟨f'.hom.toLinearMap, fun g ↦ by
+    obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.isIntertwining' h⟩
 
 @[simp]
 lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)
@@ -125,9 +126,9 @@ lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h
-    have h₁ := h.1
-    have h₂ := h.2
-    have h₃ := h.3
+    have h₁ := h.exact
+    have h₂ := h.mono_f
+    have h₃ := h.epi_g
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
     simp only [ShortComplex.map_f, mono_iff_injective, ShortComplex.map_g,
       epi_iff_surjective] at h₂ h₃

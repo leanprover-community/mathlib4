@@ -29,7 +29,6 @@ appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section
@@ -175,7 +174,7 @@ lemma shift_add (a : ℤ) :
 variable (K L)
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain K L⟦a⟧ n'` when `n' + a = n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃+ Cochain K (L⟦a⟧) n' where
   toFun γ := γ.rightShift a n' hn'
@@ -185,7 +184,7 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
   map_add' γ γ' := by simp
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'`. -/
-@[simps]
+@[simps, implicit_reducible]
 def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
     Cochain K L n ≃+ Cochain (K⟦a⟧) L n' where
   toFun γ := γ.leftShift a n' hn'
@@ -195,7 +194,7 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
   map_add' γ γ' := by simp
 
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def shiftAddHom (n a : ℤ) : Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n :=
   AddMonoidHom.mk' (fun γ => γ.shift a) (by intros; simp only [shift_add])
 
@@ -488,42 +487,42 @@ end Cochain
 namespace Cocycle
 
 /-- The map `Cocycle K L n → Cocycle K (L⟦a⟧) n'` when `n' + a = n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def rightShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n' + a = n) :
     Cocycle K (L⟦a⟧) n' :=
-  Cocycle.mk (γ.1.rightShift a n' hn') _ rfl (by
+  Cocycle.mk (γ.val.rightShift a n' hn') _ rfl (by
     simp only [Cochain.δ_rightShift _ a n' (n' + 1) hn' (n + 1) (by lia),
       δ_eq_zero, Cochain.rightShift_zero, smul_zero])
 
 /-- The map `Cocycle K (L⟦a⟧) n' → Cocycle K L n` when `n' + a = n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def rightUnshift {n' a : ℤ} (γ : Cocycle K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     Cocycle K L n :=
-  Cocycle.mk (γ.1.rightUnshift n hn) _ rfl (by
+  Cocycle.mk (γ.val.rightUnshift n hn) _ rfl (by
     rw [Cochain.δ_rightUnshift _ n hn (n + 1) (n + 1 - a) (by lia),
       δ_eq_zero, Cochain.rightUnshift_zero, smul_zero])
 
 /-- The map `Cocycle K L n → Cocycle (K⟦a⟧) L n'` when `n + a = n'`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def leftShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n + a = n') :
     Cocycle (K⟦a⟧) L n' :=
-  Cocycle.mk (γ.1.leftShift a n' hn') _ rfl (by
+  Cocycle.mk (γ.val.leftShift a n' hn') _ rfl (by
     simp only [Cochain.δ_leftShift _ a n' (n' + 1) hn' (n + 1) (by lia),
       δ_eq_zero, Cochain.leftShift_zero, smul_zero])
 
 /-- The map `Cocycle (K⟦a⟧) L n' → Cocycle K L n` when `n + a = n'`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def leftUnshift {n' a : ℤ} (γ : Cocycle (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     Cocycle K L n :=
-  Cocycle.mk (γ.1.leftUnshift n hn) _ rfl (by
+  Cocycle.mk (γ.val.leftUnshift n hn) _ rfl (by
     rw [Cochain.δ_leftUnshift _ n hn (n + 1) (n + 1 + a) rfl,
       δ_eq_zero, Cochain.leftUnshift_zero, smul_zero])
 
 /-- The map `Cocycle K L n → Cocycle (K⟦a⟧) (L⟦a⟧) n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def shift (γ : Cocycle K L n) (a : ℤ) :
     Cocycle (K⟦a⟧) (L⟦a⟧) n :=
-  Cocycle.mk (γ.1.shift a) _ rfl
+  Cocycle.mk (γ.val.shift a) _ rfl
     (by simp only [Cochain.δ_shift, δ_eq_zero, Cochain.shift_zero, smul_zero])
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K L⟦a⟧ n'` when `n' + a = n`. -/

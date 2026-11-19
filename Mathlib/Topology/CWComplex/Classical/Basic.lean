@@ -550,7 +550,7 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
   apply hD.union
   apply isClosed_iUnion_of_finite
   intro ⟨m, mlt⟩
-  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.1)]
+  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.val)]
   exact isClosed_iUnion_of_finite (fun ⟨j, _⟩ ↦ hn m (Nat.le_of_lt_succ mlt) j)
 
 lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
@@ -718,7 +718,7 @@ lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set
   SetLike.coe_injective hF
 
 lemma union (E : Subcomplex C) :
-    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.1 = E := by
+    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.val = E := by
   rw [E.union']
   rfl
 
@@ -1015,9 +1015,6 @@ lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
 lemma CWComplex.mem_skeleton_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rw [RelCWComplex.mem_skeleton_iff, mem_empty_iff_false, false_or]
-
-@[deprecated (since := "2026-04-30")] alias CWComplex.exists_mem_openCell_of_mem_skeleton :=
-  CWComplex.mem_skeleton_iff
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]

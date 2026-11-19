@@ -12,7 +12,6 @@ public import Mathlib.RepresentationTheory.Intertwining
 # Irreducible representations
 
 This file defines irreducible monoid representations.
-
 -/
 
 public section
@@ -88,8 +87,8 @@ variable (ρ) in
 open scoped IsMulCommutative in
 include ρ in
 variable (ρ) in
-theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 := by
-  exact IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
+theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 :=
+  IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
 
 end IsIrreducible
 

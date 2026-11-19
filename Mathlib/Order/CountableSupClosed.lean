@@ -29,7 +29,6 @@ infimum.
 
 The list of properties in this file is copied and adapted from the file about `SupClosed`.
 We should keep these files in sync.
-
 -/
 
 public section
@@ -74,7 +73,7 @@ lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed 
   rw [sSup_eq_iSup']
   have : Countable A := hA_c
   have : Nonempty A := nonempty_coe_sort.mpr hA_ne
-  exact hs.iSup_mem fun a ↦ hA a a.2
+  exact hs.iSup_mem fun a ↦ hA a a.property
 
 @[to_dual]
 protected lemma CountableSupClosed.supClosed [SemilatticeSup α] (hs : CountableSupClosed s) :
@@ -186,14 +185,14 @@ def countableSupClosure : ClosureOperator (Set α) := .ofPred
     constructor
     intro A hA hA_ne hAc x hx
     choose B hB hB_ne hBc hB_lub using hA
-    refine ⟨⋃ a : A, B a.2, by simp; grind, ?_, ?_, ?_⟩
+    refine ⟨⋃ a : A, B a.property, by simp; grind, ?_, ?_, ?_⟩
     · obtain ⟨a, ha⟩ := hA_ne
       simp
       grind
     · have : Countable A := Set.countable_coe_iff.mpr hAc
-      exact Set.countable_iUnion fun a ↦ hBc a.2
+      exact Set.countable_iUnion fun a ↦ hBc a.property
     · have : Nonempty A := Set.nonempty_coe_sort.mpr hA_ne
-      rw [← isLUB_iUnion_iff_of_isLUB (u := fun a : A ↦ a.1) (fun a ↦ hB_lub a.2)]
+      rw [← isLUB_iUnion_iff_of_isLUB (u := fun a : A ↦ a.val) (fun a ↦ hB_lub a.property)]
       simpa)
   (fun s t (hst : s ⊆ t) ht a ⟨A, hAs, hA_ne, hA_c, hA_lub⟩ ↦
     ht.isLUB_mem A (hAs.trans hst) hA_ne hA_c _ hA_lub)

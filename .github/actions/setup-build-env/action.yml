@@ -170,19 +170,23 @@ runs:
         source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
         github_token: ${{ github.token }}
 
-    # Resolve the sysroot of the toolchain pinned by `tools-branch` (`master` for
-    # fork PRs). The `cache` steps put its `bin/` first on PATH, so the `lean` and
-    # `leantar` that `cache` invokes come from this toolchain rather than the one
-    # the PR's `lean-toolchain` selects. Fails if the sysroot can't be resolved.
+    # Record the sysroot of the toolchain that the `cache` steps use. They put its
+    # `bin/` first on PATH, so the `lean` and `leantar` that `cache` invokes come
+    # from it. This is the PR's toolchain, as `leantar` must match the olean format
+    # of the build. `TOOLCHAIN_DIR` has been validated in "set toolchain directory",
+    # so this is always a leanprover toolchain.
+    # Fails if the sysroot lacks `lean` or `leantar`.
     - name: resolve trusted toolchain
       shell: bash
       run: |
         set -euo pipefail
-        prefix="$(cd tools-branch && lean --print-prefix)"
-        if [ -z "${prefix}" ]; then
-          echo "::error::could not resolve the trusted toolchain sysroot from tools-branch"
-          exit 1
-        fi
+        prefix="${TOOLCHAIN_DIR:?toolchain directory not set}"
+        for tool in lean leantar; do
+          if [ ! -x "${prefix}/bin/${tool}" ]; then
+            echo "::error::${prefix}/bin/${tool} not found: the toolchain may predate nightly-2026-03-09, which first bundled leantar"
+            exit 1
+          fi
+        done
         echo "Trusted toolchain sysroot: ${prefix}"
         echo "TRUSTED_LEAN_PREFIX=${prefix}" >> "$GITHUB_ENV"
 

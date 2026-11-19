@@ -17,7 +17,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
-
 -/
 
 @[expose] public section

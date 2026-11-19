@@ -15,7 +15,6 @@ import Mathlib.Basic.Finite.Sigma
 
 A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
-
 -/
 
 public section
@@ -45,7 +44,7 @@ lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     (h : ∀ (i : ℕ) (_ : i < d), Finite (X.nonDegenerate i)) :
     X.Finite where
   finite := by
-    have (i : Fin d) : Finite (X.nonDegenerate i) := h i.1 i.2
+    have (i : Fin d) : Finite (X.nonDegenerate i) := h i.val i.isLt
     refine Finite.of_surjective (α := Σ (i : Fin d), X.nonDegenerate i)
       (f := fun ⟨i, x⟩ ↦ N.mk _ x.property) (fun x ↦ ?_)
     by_cases hj : x.dim < d
@@ -77,8 +76,8 @@ lemma hasDimensionLT_of_finite [X.Finite] :
 instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   obtain ⟨n⟩ := n
   induction n using SimplexCategory.rec with | _ n
-  let φ : (Σ (m : Fin (n + 1)) (f : ⦋n⦌ ⟶ ⦋m.1⦌),
-    X.nonDegenerate m.1) → X _⦋n⦌ := fun ⟨m, f, x⟩ ↦ X.map f.op x.1
+  let φ : (Σ (m : Fin (n + 1)) (f : ⦋n⦌ ⟶ ⦋m.val⦌),
+    X.nonDegenerate m.val) → X _⦋n⦌ := fun ⟨m, f, x⟩ ↦ X.map f.op x.val
   have hφ : Function.Surjective φ := fun x ↦ by
     obtain ⟨m, f, hf, y, rfl⟩ := X.exists_nonDegenerate x
     have := SimplexCategory.le_of_epi f
@@ -88,7 +87,7 @@ instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
 instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
   refine finite_of_hasDimensionLT _ d (fun i hi ↦ ?_)
-  apply Finite.of_injective (f := fun a ↦ a.1.1)
+  apply Finite.of_injective (f := fun a ↦ a.val.val)
   rintro ⟨⟨x, _⟩, _⟩ ⟨⟨y, _⟩, _⟩ rfl
   rfl
 

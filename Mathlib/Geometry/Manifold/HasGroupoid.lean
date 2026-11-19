@@ -80,7 +80,7 @@ theorem StructureGroupoid.trans_restricted {e e' : OpenPartialHomeomorph M H}
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
     (e.subtypeRestr hs).symm ≫ₕ e'.subtypeRestr hs ∈ G :=
   G.mem_of_eqOnSource (closedUnderRestriction' (G.compatible he he')
-    (e.isOpen_inter_preimage_symm s.2)) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
+    (e.isOpen_inter_preimage_symm s.is_open')) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
 
 section MaximalAtlas
 
@@ -282,14 +282,14 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 protected instance instChartedSpace : ChartedSpace H s where
-  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr ⟨x⟩}
-  chartAt x := (chartAt H x.1).subtypeRestr ⟨x⟩
-  mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
+  atlas := ⋃ x : s, {(chartAt H x.val).subtypeRestr ⟨x⟩}
+  chartAt x := (chartAt H x.val).subtypeRestr ⟨x⟩
+  mem_chart_source x := ⟨trivial, mem_chart_source H x.val⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 
-lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.val).subtypeRestr ⟨x⟩ := rfl
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/
@@ -317,15 +317,18 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
-    · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
+    · exact isOpen_inter_preimage_symm (chartAt _ _) s.is_open'
 
-theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
+theorem chartAt_subtypeVal_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
   set e := chartAt H x.val
   have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
     apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
+
+@[deprecated (since := "2026-11-10")]
+alias chartAt_subtype_val_symm_eventuallyEq := chartAt_subtypeVal_symm_eventuallyEq
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Opens.inclusion hUV x)).symm

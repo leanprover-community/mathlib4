@@ -51,26 +51,6 @@ variable {R : Type*} [Semiring R]
     g • v = ![g 0 0 * v 0 + g 0 1 * v 1, g 1 0 * v 0 + g 1 1 * v 1] := by
   simp [Units.smul_def]
 
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
-
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-instance {S} [DistribSMul S R] [SMulCommClass R S R] :
-    SMulCommClass (Matrix (Fin 2) (Fin 2) R) S (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
-
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
-
-@[deprecated Matrix.GeneralLinearGroup.fin_two_smul +typeChanged (since := "2026-04-19")]
-lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
-    (g : GL (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Units.smul_def, Matrix.fin_two_smul_prod]
-
 end MatrixProdAction
 
 namespace OnePoint
@@ -85,7 +65,7 @@ def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
   toFun p := p.elim (mk K ![1, 0] (by simp)) (fun t ↦ mk K ![t, 1] (by simp))
   invFun p := by
     refine Projectivization.lift
-      (fun u : {v : Fin 2 → K // v ≠ 0} ↦ if u.1 1 = 0 then ∞ else ((u.1 1)⁻¹ * u.1 0)) ?_ p
+      (fun u : {v : Fin 2 → K // v ≠ 0} ↦ if u.val 1 = 0 then ∞ else ((u.val 1)⁻¹ * u.val 0)) ?_ p
     rintro ⟨-, hv⟩ ⟨w, hw⟩ t rfl
     have ht : t ≠ 0 := by rintro rfl; simp at hv
     by_cases h₀ : w 1 = 0 <;> simp [h₀, ht, mul_assoc]
