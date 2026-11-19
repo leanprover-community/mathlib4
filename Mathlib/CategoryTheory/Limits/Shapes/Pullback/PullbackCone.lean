@@ -122,7 +122,7 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
 such that `fst ≫ f = snd ≫ g`. -/
 @[to_dual (attr := implicit_reducible, simps) (rename := Z → X, X → Y, Y → Z)
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
-that `f ≫ inl = g ↠ inr`. -/]
+that `f ≫ inl = g ≫ inr`. -/]
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by cat_disch) :
     PullbackCone f g where
   pt := W
