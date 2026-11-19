@@ -108,8 +108,7 @@ variable {M : Matrix m n R} {r : k → m} {c : l → n}
 @[simp]
 theorem separatingLeft_conjTranspose_iff [StarRing R] :
     Mᴴ.SeparatingLeft ↔ M.SeparatingRight := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   simp_rw [separatingLeft_def, separatingRight_def]
   rw [star_involutive.surjective.forall]
   congr! 1 with v
@@ -134,8 +133,7 @@ alias ⟨_, Nondegenerate.conjTranspose⟩ := nondegenerate_conjTranspose_iff
 
 theorem separatingLeft_map_op_iff :
     (M.map MulOpposite.op).SeparatingLeft ↔ Mᵀ.SeparatingRight := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingLeft_def, separatingRight_def]
   let em : (m → Rᵐᵒᵖ) ≃ (m → R) := Equiv.piCongrRight fun _ ↦ MulOpposite.opEquiv.symm
   let en : (n → Rᵐᵒᵖ) ≃ (n → R) := Equiv.piCongrRight fun _ ↦ MulOpposite.opEquiv.symm
@@ -147,8 +145,7 @@ theorem separatingLeft_map_op_iff :
 
 theorem separatingRight_map_op_iff :
     (M.map MulOpposite.op).SeparatingRight ↔ Mᵀ.SeparatingLeft := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingRight_def, separatingLeft_def]
   let em : (m → Rᵐᵒᵖ) ≃ (m → R) := Equiv.piCongrRight fun _ ↦ MulOpposite.opEquiv.symm
   let en : (n → Rᵐᵒᵖ) ≃ (n → R) := Equiv.piCongrRight fun _ ↦ MulOpposite.opEquiv.symm
@@ -162,32 +159,20 @@ theorem nondegenerate_map_op_iff :
     (M.map MulOpposite.op).Nondegenerate ↔ Mᵀ.Nondegenerate := by
   simp [nondegenerate_iff, separatingLeft_map_op_iff, separatingRight_map_op_iff, and_comm]
 
-/-- Auxiliary transfer lemma unifying `SeparatingRight.of_submatrix` and
-`SeparatingRight.submatrix`. -/
+/-- If, up to reindexing, `A` has a subset of `B`'s rows (allowing repeats) and a superset of
+`B`'s columns, then `B` is right-separating whenever `A` is. -/
 private lemma SeparatingRight.of_submatrix_eq {A : Matrix k l R} {B : Matrix m n R}
     (r : k → m) {s : n → l} (hs : Function.Injective s) (hAB : A.submatrix id s = B.submatrix r id)
     (hA : A.SeparatingRight) : B.SeparatingRight := by
   classical
-  have := Fintype.ofFinite k
-  have := Fintype.ofFinite l
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite k; have := Fintype.ofFinite l
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingRight_def] at hA ⊢
   intro w hw
-  suffices Function.extend s w 0 = 0 by
-    ext y
-    simpa [hs.extend_apply] using congr($this (s y))
-  refine hA _ fun v ↦ ?_
-  have hmul : A *ᵥ Function.extend s w 0 = (B *ᵥ w) ∘ r := by
-    rw [mulVec_extend_zero hs, hAB]
-    rfl
-  have hv : (fun x ↦ ∑ i with r i = x, v i) ⬝ᵥ (B *ᵥ w) = v ⬝ᵥ (A *ᵥ Function.extend s w 0) := by
-    rw [hmul]
-    simp only [dotProduct, Finset.sum_mul, Function.comp_apply]
-    refine (Finset.sum_congr rfl fun x _ ↦ Finset.sum_congr rfl fun i hi ↦ ?_).trans
-      (Finset.univ.sum_fiberwise r fun i ↦ v i * (B *ᵥ w) (r i))
-    rw [(Finset.mem_filter.mp hi).2]
-  exact hv.symm.trans (hw _)
+  rw [← Function.extend_comp hs w 0, hA (s.extend w 0) fun v ↦ ?_, Pi.zero_comp]
+  have : v ᵥ* B.submatrix r id = (∑ i, Pi.single (r i) (v i)) ᵥ* B := by
+    simp [sum_vecMul, funext_iff, vecMul_apply_eq_sum]
+  rw [mulVec_extend_zero hs, hAB, dotProduct_mulVec, this, ← dotProduct_mulVec, hw]
 
 theorem SeparatingRight.of_submatrix (hc : Function.Surjective c)
     (h : (M.submatrix r c).SeparatingRight) : M.SeparatingRight :=
@@ -264,8 +249,7 @@ variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
 @[simp]
 theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   simp_rw [separatingLeft_def, separatingRight_def, dotProduct_transpose_mulVec]
 
 alias ⟨_, SeparatingRight.separatingLeft_transpose⟩ := separatingLeft_transpose_iff
@@ -273,8 +257,7 @@ alias ⟨_, SeparatingRight.separatingLeft_transpose⟩ := separatingLeft_transp
 @[simp]
 theorem separatingRight_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
-  have := Fintype.ofFinite m
-  have := Fintype.ofFinite n
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
   simp_rw [separatingRight_def, separatingLeft_def, dotProduct_transpose_mulVec]
 
 alias ⟨_, SeparatingLeft.separatingRight_transpose⟩ := separatingRight_transpose_iff
