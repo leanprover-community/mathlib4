@@ -376,7 +376,7 @@ abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- Two structures `M` and `N` form an extension pair if the domain of any finitely-generated map
 from `M` to `N` can be extended to include any element of `M`. -/
-def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.dom ∧ f ≤ g
+def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.val.dom ∧ f ≤ g
 
 variable {M N L}
 
@@ -417,10 +417,11 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
-def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
+def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
+  ⟨f.val.symm, f.val.dom_fg_iff_cod_fg.1 f.property⟩
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
-    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
+    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m

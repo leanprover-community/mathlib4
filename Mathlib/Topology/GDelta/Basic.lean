@@ -114,7 +114,7 @@ theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
   have := hs.to_subtype
-  exact .iInter fun x => ht x x.2
+  exact .iInter fun x => ht x x.property
 
 
 /-- A countable intersection of Gδ sets is a Gδ set. -/

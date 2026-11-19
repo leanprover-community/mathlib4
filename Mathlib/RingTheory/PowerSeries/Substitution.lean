@@ -446,7 +446,7 @@ def substInvFun : ℕ → R
   | 0 => 0
   | 1 => ⅟(P.coeff 1)
   | n + 1 => - ⅟(P.coeff 1) *
-      (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.1) * X ^ i.1)))
+      (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.val) * X ^ i.val)))
 
 /-- Given a power series `P = u • X + O(X²)` with `u` invertible,
 this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv_right`.
@@ -457,7 +457,7 @@ def substInv : PowerSeries R := .mk (substInvFun P)
 
 include hP in
 lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
-    coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
+    coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.val) * X ^ i.val) - X) = 0 := by
   obtain (_ | _ | n) := n
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
@@ -469,7 +469,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     · simp [HasSubst, X, substInvFun]
   · rw [Fin.sum_univ_castSucc]
     simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
-    generalize hB : ∑ i : Fin (n + 2), C (substInvFun P i) * X ^ i.1 = B
+    generalize hB : ∑ i : Fin (n + 2), C (substInvFun P i) * X ^ i.val = B
     have hB' : B.constantCoeff = 0 := by simp [← hB, zero_pow_eq, substInvFun]
     simp only [neg_mul, map_neg, map_mul, coeff_X, Nat.add_eq_right, Nat.add_eq_zero_iff,
       one_ne_zero, and_false, ↓reduceIte, sub_zero]
@@ -514,7 +514,7 @@ lemma subst_substInv_right :
   rw [map_sub, sub_eq_zero] at this
   rw [← this, coeff_subst', coeff_subst']
   · congr! 3 with m
-    generalize hB : (∑ i : Fin (n + 1), C (substInvFun P ↑i) * X ^ i.1) = B
+    generalize hB : (∑ i : Fin (n + 1), C (substInvFun P ↑i) * X ^ i.val) = B
     have : X ^ (n + 1) ∣ mk (substInvFun P) - B := by
       rw [X_pow_dvd_iff]
       intro m hm

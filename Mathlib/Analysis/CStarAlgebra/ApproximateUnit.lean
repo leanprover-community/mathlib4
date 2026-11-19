@@ -45,6 +45,7 @@ variable {A : Type*} [NonUnitalCStarAlgebra A]
 local notation "σₙ" => quasispectrum
 local notation "σ" => spectrum
 
+open scoped ComplexOrder
 open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
@@ -53,9 +54,9 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
   simp only [Set.mem_Ici] at ha hb
-  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
-  rw [← inr_le_inr_iff] at hab
-  rw [← inr_nonneg_iff] at ha hb
+  rw [← inr_le_inr_iff ℂ, nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
+  rw [← inr_le_inr_iff ℂ] at hab
+  rw [← inr_nonneg_iff ℂ] at ha hb
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
     rw [cfc_tsub _ _ _ (fun x _ ↦ by simp) (hg := by fun_prop (disch := intro _ _; positivity)),
@@ -186,7 +187,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
   simp_rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
-  exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
+  exact tendsto_const_nhds.smul <| h (x i) (x i).property.1 <| by simpa using (x i).property.2
 
 omit [PartialOrder A] in
 /-- Multiplication on the left by `m` tends to `𝓝 m` if and only if multiplication on the right
@@ -281,9 +282,9 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
   rw [← coe_nnNorm, coe_le_coe]
   have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
-  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
+  rw [← inr_le_inr_iff ℂ, nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
   rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
-  rw [← inr_nonneg_iff] at hx₀ hm₁
+  rw [← inr_nonneg_iff ℂ] at hx₀ hm₁
   rw [← nnNorm_inr (𝕜 := ℂ), inr_sub, inr_mul]
   generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹

@@ -280,8 +280,8 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     fun x i ↦ if hi : i ∈ u then x ⟨i, hi⟩ else Classical.ofNonempty
   -- `aux` is the obvious equivalence between `sₙ` and `tₙ`
   let aux n : t n ≃ s n :=
-    { toFun := fun i ↦ ⟨i.1.1, mem_preimage.1 i.2⟩
-      invFun := fun i ↦ ⟨⟨i.1, Set.mem_iUnion.2 ⟨n, i.2⟩⟩, mem_preimage.2 i.2⟩
+    { toFun := fun i ↦ ⟨i.val.val, mem_preimage.1 i.property⟩
+      invFun := fun i ↦ ⟨⟨i.val, Set.mem_iUnion.2 ⟨n, i.property⟩⟩, mem_preimage.2 i.property⟩
       left_inv := fun i ↦ by simp
       right_inv := fun i ↦ by simp }
   -- Finally `gₙ` is the equivalence between the product indexed by `tₙ` and the one indexed by `sₙ`
@@ -292,7 +292,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     ext x i
     simp only [Function.comp_apply, Finset.restrict,
       Equiv.piCongrLeft_apply, Equiv.coe_fn_symm_mk, f, aux, g, t]
-    rw [dite_eq_left (Set.mem_iUnion.2 ⟨n, i.2⟩)]
+    rw [dite_eq_left (Set.mem_iUnion.2 ⟨n, i.property⟩)]
   -- `Bₙ` is the same as `Aₙ` but in the product indexed by `u`
   let B n := f ⁻¹' (A n)
   -- `Tₙ` is the same as `Sₙ` but in the product indexed by `u`
@@ -445,7 +445,7 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   rw [this, cylinder, ← map_apply, infinitePi_map_restrict, pi_pi]
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
-  · exact .univ_pi fun i ↦ mt i.1 i.2
+  · exact .univ_pi fun i ↦ mt i.val i.property
 
 lemma infinitePi_prod_infinitePi {ν : (i : ι) → Measure (X i)} [∀ i, IsProbabilityMeasure (ν i)] :
     ((infinitePi μ).prod (infinitePi ν)).map (fun p i ↦ (p.1 i, p.2 i)) =

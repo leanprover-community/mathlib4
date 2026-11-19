@@ -64,7 +64,7 @@ variable (s : Setoid α) [Zero β]
 finitely supported functions on `Quotient s`, provided the classes are finite. -/
 def liftFinsuppEquiv (hs : ∀ a, {b | s b a}.Finite) :
     {f : α →₀ β // ∀ a b, s a b → f a = f b} ≃ (Quotient s →₀ β) where
-  toFun f := Quotient.liftFinsupp f.1 f.2
+  toFun f := Quotient.liftFinsupp f.val f.property
   invFun f := ⟨Finsupp.ofSupportFinite (f ∘ Quotient.mk s) <| by
     rw [Function.support_comp_eq_preimage]
     refine f.hasFiniteSupport.preimage' fun q _ ↦ ?_
@@ -80,7 +80,7 @@ variable {s}
 @[simp]
 theorem liftFinsuppEquiv_apply_mk (hs : ∀ a, {b | s b a}.Finite)
     (f : {f : α →₀ β // ∀ a b, s a b → f a = f b}) (a : α) :
-    liftFinsuppEquiv s hs f ⟦a⟧ = f.1 a :=
+    liftFinsuppEquiv s hs f ⟦a⟧ = f.val a :=
   rfl
 
 @[simp]

@@ -115,7 +115,11 @@ variable
 /--
 If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
 integrable over that circle.
+
+This theorem is tagged `fun_prop`. Circle integrability of concrete functions such as
+`(log ‖· - a‖)` or `∑ᶠ u, (D u * log ‖· - u‖)` can therefore be established by `fun_prop`.
 -/
+@[fun_prop]
 theorem MeromorphicOn.circleIntegrable_log_norm (hf : MeromorphicOn f (sphere c |R|)) :
     CircleIntegrable (log ‖f ·‖) c R := by
   by_cases t₀ : ∀ u : (sphere c |R|), meromorphicOrderAt f u ≠ ⊤
@@ -160,19 +164,30 @@ theorem MeromorphicOn.circleIntegrable_log_norm_of_nonneg (hf : MeromorphicOn f 
   exact hf.circleIntegrable_log_norm
 
 /--
-Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.
+If `f` is complex meromorphic, then `log ‖f ·‖` is circle integrable over every circle in the
+complex plane.
 -/
 @[fun_prop]
+theorem Meromorphic.circleIntegrable_log_norm (hf : Meromorphic f) :
+    CircleIntegrable (log ‖f ·‖) c R :=
+  hf.meromorphicOn.circleIntegrable_log_norm
+
+/--
+Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.
+-/
+@[deprecated MeromorphicOn.circleIntegrable_log_norm "use `fun_prop`" +typeChanged
+  (since := "2026-11-17")]
 theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
-    CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
-  CircleIntegrable.finsum (fun _ ↦
-    analyticOnNhd_id.sub analyticOnNhd_const |>.meromorphicOn.circleIntegrable_log_norm
-      |>.const_smul (𝕜 := ℝ))
+    CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R := by
+  fun_prop
 
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
-lemma circleIntegrable_log_norm_sub_const {a : ℂ} (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)
+@[deprecated MeromorphicOn.circleIntegrable_log_norm "use `fun_prop`" +typeChanged
+  (since := "2026-11-17")]
+lemma circleIntegrable_log_norm_sub_const {a : ℂ} (r : ℝ) :
+    CircleIntegrable (log ‖· - a‖) c r := by
+  fun_prop
 
 end CircleIntegrable

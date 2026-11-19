@@ -306,7 +306,7 @@ open TopologicalSpace.Opens in
 def directedAffineCover : X.OpenCover where
   I₀ := X.affineOpens
   X U := U
-  f U := U.1.ι
+  f U := U.val.ι
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
