@@ -203,7 +203,7 @@ lemma coe_quasispectrumHomeomorphSpectrum_apply (y : σₙ R x.snd) :
   rfl
 
 @[simp]
-lemma coe_quasispectrumHomeomorphSpectrum_symm_apply (z : σ R x) :
+lemma coe_symm_quasispectrumHomeomorphSpectrum_apply (z : σ R x) :
     ((quasispectrumHomeomorphSpectrum x).symm z : R) = z - x.fst :=
   (sub_eq_add_neg _ _).symm
 
