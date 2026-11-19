@@ -25,7 +25,6 @@ and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : X ⟶
 such that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`.
 Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone is a colimit
 cocone.
-
 -/
 
 @[expose] public section
@@ -120,7 +119,7 @@ variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
 
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
 to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
-@[simps]
+@[simps, implicit_reducible]
 def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
     { pt := F.obj A.pt
@@ -331,11 +330,11 @@ def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.
     (eP : P ≅ P') (eQ : Q ≅ Q') :
     (b.ofIso eP eQ).IsBilimit where
   isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isLimit
+    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).toFun hb.isLimit
     exact BinaryFan.ext (Iso.refl _) (by simp [BinaryFan.fst])
       (by simp [BinaryFan.snd])
   isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isColimit
+    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).toFun hb.isColimit
     exact BinaryCofan.ext (Iso.refl _) (by simp [BinaryCofan.inl])
       (by simp [BinaryCofan.inr])
 

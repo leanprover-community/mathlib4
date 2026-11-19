@@ -24,7 +24,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Prod
 * `IsBaseChange.end`:
   If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
-
 -/
 
 @[expose] public section

@@ -53,7 +53,6 @@ About `toZ`:
   `OrderIso` between `ι` and `ℤ`.
 * `orderIsoRangeOfLinearSuccPredArch`: if the order has both a bot and a top, `toZ` gives an
   `OrderIso` between `ι` and `Finset.range ((toZ ⊥ ⊤).toNat + 1)`.
-
 -/
 
 public section

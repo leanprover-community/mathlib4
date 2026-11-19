@@ -35,7 +35,6 @@ Of course, although we can inductively generate solutions (cf `mkSol`), the
 interesting part would be to determine closed-forms for the solutions.
 This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
-
 -/
 
 @[expose] public section
@@ -135,7 +134,7 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
     ext
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
-  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
+  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.property; intro k; rfl
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 theorem mkSol_injective : E.mkSol.Injective :=

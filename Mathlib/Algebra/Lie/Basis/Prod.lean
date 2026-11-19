@@ -15,7 +15,6 @@ import Mathlib.Algebra.Lie.Prod
 
 Given two finite-dimensional simple Lie algebras, if they admit bases with matching Cartan matrices,
 they must be isomorphic. This file provides a proof of this as `LieAlgebra.Basis.equivOfReindex`.
-
 -/
 
 noncomputable section

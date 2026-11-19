@@ -124,8 +124,8 @@ theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
   rw [h]
 
 theorem multiplicity_le_of_emultiplicity_le {n : ℕ} (h : emultiplicity a b ≤ n) :
-    multiplicity a b ≤ n := by
-  exact mod_cast multiplicity_le_emultiplicity.trans h
+    multiplicity a b ≤ n :=
+  mod_cast multiplicity_le_emultiplicity.trans h
 
 theorem FiniteMultiplicity.emultiplicity_le_of_multiplicity_le (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : multiplicity a b ≤ n) : emultiplicity a b ≤ n := by
@@ -133,8 +133,8 @@ theorem FiniteMultiplicity.emultiplicity_le_of_multiplicity_le (hfin : FiniteMul
   assumption_mod_cast
 
 theorem le_emultiplicity_of_le_multiplicity {n : ℕ} (h : n ≤ multiplicity a b) :
-    n ≤ emultiplicity a b := by
-  exact mod_cast (WithTop.coe_mono h).trans multiplicity_le_emultiplicity
+    n ≤ emultiplicity a b :=
+  mod_cast (WithTop.coe_mono h).trans multiplicity_le_emultiplicity
 
 theorem FiniteMultiplicity.le_multiplicity_of_le_emultiplicity (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : n ≤ emultiplicity a b) : n ≤ multiplicity a b := by
@@ -142,8 +142,8 @@ theorem FiniteMultiplicity.le_multiplicity_of_le_emultiplicity (hfin : FiniteMul
   assumption_mod_cast
 
 theorem multiplicity_lt_of_emultiplicity_lt {n : ℕ} (h : emultiplicity a b < n) :
-    multiplicity a b < n := by
-  exact mod_cast multiplicity_le_emultiplicity.trans_lt h
+    multiplicity a b < n :=
+  mod_cast multiplicity_le_emultiplicity.trans_lt h
 
 theorem FiniteMultiplicity.emultiplicity_lt_of_multiplicity_lt (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : multiplicity a b < n) : emultiplicity a b < n := by
@@ -151,8 +151,8 @@ theorem FiniteMultiplicity.emultiplicity_lt_of_multiplicity_lt (hfin : FiniteMul
   assumption_mod_cast
 
 theorem lt_emultiplicity_of_lt_multiplicity {n : ℕ} (h : n < multiplicity a b) :
-    n < emultiplicity a b := by
-  exact mod_cast (WithTop.coe_strictMono h).trans_le multiplicity_le_emultiplicity
+    n < emultiplicity a b :=
+  mod_cast (WithTop.coe_strictMono h).trans_le multiplicity_le_emultiplicity
 
 theorem FiniteMultiplicity.lt_multiplicity_of_lt_emultiplicity (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : n < emultiplicity a b) : n < multiplicity a b := by
@@ -817,8 +817,10 @@ end CancelCommMonoidWithZero
 
 section Nat
 
-theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
+theorem multiplicity_eq_zero_of_coprime {p a b : ℕ}
     (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
+  rcases eq_or_ne p 1 with rfl | hp
+  · simp
   apply Nat.eq_zero_of_not_pos
   intro nh
   have ha : FiniteMultiplicity p a := by grind [multiplicity_eq_zero_of_not_finiteMultiplicity]

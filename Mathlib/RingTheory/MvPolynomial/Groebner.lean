@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -38,7 +39,6 @@ The proof is done by induction, using two standard constructions
 
 
 ## Reference : [Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section
@@ -99,7 +99,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       apply hf
       simp [hf0]
   have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
-    simp only [reduce, coeff_sub, sub_eq_zero]
+    simp only [reduce, AddMonoidAlgebra.coeff_sub, Finsupp.sub_apply, sub_eq_zero]
     nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]
@@ -251,5 +251,21 @@ theorem div_single {b : MvPolynomial σ R}
     id_eq, smul_eq_mul, add_left_inj]
   rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
   simp +contextual
+
+theorem div_single_of_isWeightedHomogeneous {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [CanonicallyOrderedAdd M] [Sub M] [OrderedSub M] [AddLeftReflectLE M] {w : σ → M} {i n : M}
+    {b f : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b)) (hbi : b.IsWeightedHomogeneous w i)
+    (hf : f.IsWeightedHomogeneous w n) (hin : i ≤ n) :
+    ∃ g r : MvPolynomial σ R, g.IsWeightedHomogeneous w (n - i) ∧ r.IsWeightedHomogeneous w n ∧
+      f = g * b + r ∧ ∀ c ∈ r.support, ¬m.degree b ≤ c := by
+  classical
+  obtain ⟨g, r, hgr, -, hr⟩ := m.div_single hb f
+  apply_fun weightedHomogeneousComponent w n at hgr
+  rw [hf.weightedHomogeneousComponent_same, map_add,
+    weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right hbi hin] at hgr
+  refine ⟨_, _, weightedHomogeneousComponent_isWeightedHomogeneous (n - i) g,
+    weightedHomogeneousComponent_isWeightedHomogeneous n r, hgr, fun c hc ↦ ?_⟩
+  rw [support_weightedHomogeneousComponent, Finset.mem_filter] at hc
+  exact hr c hc.1
 
 end MonomialOrder

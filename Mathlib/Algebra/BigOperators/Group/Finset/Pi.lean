@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Products over `univ.pi`
-
 -/
 
 public section
