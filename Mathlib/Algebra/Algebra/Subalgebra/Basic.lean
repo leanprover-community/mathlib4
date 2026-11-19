@@ -982,7 +982,7 @@ def _root_.Center.toMulOppositeAlgEquiv : Center A ≃ₐ[R] Center Aᵐᵒᵖ w
 @[simps! apply_coe]
 def centerCongr (e : A ≃ₐ[R] B) :
     center R A ≃ₐ[R] center R B where
-  toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
+  toRingEquiv := e.toCenter
   commutes' r := Subtype.ext <| e.commutes r
 
 @[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
