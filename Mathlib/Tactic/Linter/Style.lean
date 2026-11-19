@@ -441,11 +441,18 @@ these are coercion lemmas violating mathlib's naming convention. -/
       return none
     match ← isMisnamedCoercion declName with
     | some usedCoercions =>
+      let sugg := if usedCoercions.size == 1 then
+        -- Future: can we convert the coercion name to `upperCamelCase` and suggest a specific
+        -- name? But beware this may be wrong.
+        m!"Probably, the linter should reference `{usedCoercions[0]!}` instead of saying `coe`"
+      else ""
       return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
         but does not involve any constant named `coe`: \
         This declaration statement references the coercions(s) {usedCoercions}.\n\
         Most likely, this lemma is a misnamed coercion lemma: \
-        note that it should be named according to the coercion used."
+        note that it should be named according to the coercion used.\n
+        If this is a false positive, use `@[nolint misnamedCoercionLemmas]` to disable the linter.\
+        \n{sugg}"
     | none => return none
 
 end Style.misnamedCoercions
