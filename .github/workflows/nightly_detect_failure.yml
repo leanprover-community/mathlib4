@@ -9,14 +9,20 @@ on:
 # Serialize reporting runs per branch so the "read last message, then post" dedup in
 # `report_success` can't interleave between two concurrent runs (which would double-post ✅).
 # Never cancel in-flight runs: `housekeeping` may be mid-push of a tag or branch.
+# Keyed on the head repository too, so that runs triggered from forks don't share the group.
 concurrency:
-  group: nightly-detect-failure-${{ github.event.workflow_run.head_branch }}
+  group: nightly-detect-failure-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
 
+# `workflow_run` matches the triggering workflow by name only, and `head_branch` is just a
+# branch name, which together don't identify the run. So every job below also requires a
+# run for a push to this repository.
 jobs:
   handle_failure:
 
     if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
             github.event.workflow_run.conclusion == 'failure' &&
             github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
@@ -41,6 +47,8 @@ jobs:
   # whether any housekeeping step fails. It needs nothing but the Zulip API.
   report_success:
     if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
             github.event.workflow_run.conclusion == 'success' &&
             github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
@@ -102,6 +110,8 @@ jobs:
   # it must not silence the ✅.
   housekeeping:
     if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
             github.event.workflow_run.conclusion == 'success' &&
             github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest

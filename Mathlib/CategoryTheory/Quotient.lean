@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Groupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotient category
 

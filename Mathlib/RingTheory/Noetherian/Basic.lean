@@ -50,7 +50,6 @@ is proved in `RingTheory.Polynomial`.
 ## Tags
 
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
-
 -/
 
 public section

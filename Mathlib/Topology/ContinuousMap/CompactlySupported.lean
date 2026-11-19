@@ -24,7 +24,6 @@ When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCom
 
 When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv`
 gives the identification `C(α, β) ≃ C_c(α, β)`.
-
 -/
 
 @[expose] public section
@@ -174,7 +173,7 @@ variable [TopologicalSpace β] (x : α)
 
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
-            continuous_toFun := (0 : C(α, β)).2
+            continuous_toFun := by fun_prop
             hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
@@ -564,7 +563,7 @@ def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
-    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
+    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage (by fun_prop) ho) hgxo
     exact ⟨g y, hy⟩
 
 @[simp]

@@ -298,17 +298,17 @@ lemma rpow_lt_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y
 lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
   Real.rpow_le_rpow_iff_of_neg hx hy hz
 
-lemma le_rpow_inv_iff_of_pos (hy : 0 ≤ y) (hz : 0 < z) (x : ℝ≥0) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y :=
-  Real.le_rpow_inv_iff_of_pos x.2 hy hz
+@[deprecated le_rpow_inv_iff (since := "2026-11-04")]
+alias le_rpow_inv_iff_of_pos := le_rpow_inv_iff
 
-lemma rpow_inv_le_iff_of_pos (hy : 0 ≤ y) (hz : 0 < z) (x : ℝ≥0) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z :=
-  Real.rpow_inv_le_iff_of_pos x.2 hy hz
+@[deprecated rpow_inv_le_iff (since := "2026-11-04")]
+alias rpow_inv_le_iff_of_pos := rpow_inv_le_iff
 
-lemma lt_rpow_inv_iff_of_pos (hy : 0 ≤ y) (hz : 0 < z) (x : ℝ≥0) : x < y ^ z⁻¹ ↔ x ^ z < y :=
-  Real.lt_rpow_inv_iff_of_pos x.2 hy hz
+@[deprecated lt_rpow_inv_iff (since := "2026-11-04")]
+alias lt_rpow_inv_iff_of_pos := lt_rpow_inv_iff
 
-lemma rpow_inv_lt_iff_of_pos (hy : 0 ≤ y) (hz : 0 < z) (x : ℝ≥0) : x ^ z⁻¹ < y ↔ x < y ^ z :=
-  Real.rpow_inv_lt_iff_of_pos x.2 hy hz
+@[deprecated rpow_inv_lt_iff (since := "2026-11-04")]
+alias rpow_inv_lt_iff_of_pos := rpow_inv_lt_iff
 
 lemma le_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z :=
   Real.le_rpow_inv_iff_of_neg hx hy hz
@@ -468,8 +468,11 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
     (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
   simp only [orderIsoRpow, one_div_one_div]; rfl
 
-theorem _root_.Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
+theorem _root_.Real.nnNorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
   ext; exact Real.norm_rpow_of_nonneg hx
+
+@[deprecated (since := "2026-10-31")]
+alias _root_.Real.nnnorm_rpow_of_nonneg := _root_.Real.nnNorm_rpow_of_nonneg
 
 end NNReal
 
@@ -930,18 +933,30 @@ theorem one_le_rpow {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (hz : 0 < z) : 1 �
   · simp only [one_le_coe_iff] at hx
     simp [← coe_rpow_of_nonneg _ (le_of_lt hz), NNReal.one_le_rpow hx (le_of_lt hz)]
 
-theorem one_lt_rpow_of_pos_of_lt_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x < 1)
+theorem one_lt_rpow_of_lt_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx2 : x < 1)
     (hz : z < 0) : 1 < x ^ z := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp [hz]
+  have hx1 : 0 < x := pos_iff_ne_zero.2 hx0
   lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx2 le_top)
   simp only [coe_lt_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [← coe_rpow_of_ne_zero (ne_of_gt hx1), NNReal.one_lt_rpow_of_pos_of_lt_one_of_neg hx1 hx2 hz]
 
-theorem one_le_rpow_of_pos_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x ≤ 1)
+@[deprecated (since := "2026-11-04")]
+alias one_lt_rpow_of_pos_of_lt_one_of_neg := one_lt_rpow_of_lt_one_of_neg
+
+theorem one_le_rpow_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx2 : x ≤ 1)
     (hz : z < 0) : 1 ≤ x ^ z := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp [hz]
+  have hx1 : 0 < x := pos_iff_ne_zero.2 hx0
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx2 coe_lt_top)
   simp only [coe_le_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [← coe_rpow_of_ne_zero (ne_of_gt hx1),
     NNReal.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 (le_of_lt hz)]
+
+@[deprecated (since := "2026-11-04")]
+alias one_le_rpow_of_pos_of_le_one_of_neg := one_le_rpow_of_le_one_of_neg
 
 @[simp] lemma toNNReal_rpow (x : ℝ≥0∞) (z : ℝ) : (x ^ z).toNNReal = x.toNNReal ^ z := by
   rcases lt_trichotomy z 0 with (H | H | H)
@@ -1017,8 +1032,11 @@ theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
-lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+lemma _root_.Real.eNorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [eNorm, nnNorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.Real.enorm_rpow_of_nonneg := _root_.Real.eNorm_rpow_of_nonneg
 
 lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
     (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc

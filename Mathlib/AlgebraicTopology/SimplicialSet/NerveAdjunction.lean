@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
@@ -34,7 +34,6 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
-
 -/
 
 @[expose] public section
@@ -217,14 +216,12 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
   Category.id_comp _
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
 to a functor `X.HomotopyCategory ⥤ C`. -/
@@ -278,7 +275,6 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     congr(F.mapArrow.obj $(congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`
@@ -453,7 +449,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     rw [NatTrans.isIso_iff_isIso_app]
     exact fun x ↦ H (x.left).len
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
-    (Presheaf.isColimitTautologicalCocone' X)
+    (denseAtUliftYoneda X)
 
 instance isIso_prodComparison (X Y : SSet.{u}) :
     IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by

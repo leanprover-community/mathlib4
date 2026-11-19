@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Basic
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of measures
 
@@ -53,7 +56,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] (hd : Directed (· ⊆ ·)
   calc
     μ (⋃ n, t n) = μ (⋃ n, Td n) := by rw [iUnion_disjointed, measure_iUnion_toMeasurable]
     _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
-    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
+    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
@@ -151,7 +154,6 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
   have hst (i : ι) : s i =ᵐ[μ] t i := by
     filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,

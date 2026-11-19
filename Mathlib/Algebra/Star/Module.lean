@@ -130,14 +130,36 @@ theorem starLinearEquiv_symm_apply (x : A) :
 
 end starLinearEquiv
 
-section SelfSkewAdjoint
+section selfAdjoint
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommMonoid A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
 def selfAdjoint.submodule : Submodule R A :=
-  { selfAdjoint A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
+  { selfAdjoint.addSubmonoid A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
+
+@[simp]
+theorem selfAdjoint.toAddSubmonoid_submodule :
+    (selfAdjoint.submodule R A).toAddSubmonoid = selfAdjoint.addSubmonoid A := rfl
+
+end selfAdjoint
+
+section selfAdjoint_ring
+
+variable (R : Type*) (A : Type*) [Ring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+  [Module R A] [StarAddMonoid A] [StarModule R A]
+
+@[simp]
+theorem selfAdjoint.toAddSubgroup_submodule :
+    (selfAdjoint.submodule R A).toAddSubgroup = selfAdjoint A := rfl
+
+end selfAdjoint_ring
+
+section SelfSkewAdjoint
+
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+  [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The skew-adjoint elements of a star module, as a submodule. -/
 def skewAdjoint.submodule : Submodule R A :=

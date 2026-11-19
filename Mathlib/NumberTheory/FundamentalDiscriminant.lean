@@ -70,7 +70,6 @@ theorem isFundamentalDiscr_iff_squarefree :
     exact (IsCoprime.pow hp.isCoprime_two).dvd_mul_left_iff
   by_cases h : 4 ∣ D
   · obtain ⟨d, rfl⟩ := h
-    simp +contextual only [Int.mul_ediv_cancel_left d four_ne_zero]
     grind [isFundamentalDiscr_def]
   · grind [isFundamentalDiscr_def]
 
@@ -87,6 +86,17 @@ theorem isFundamentalDiscr_iff_forall_prime :
   refine forall_congr' fun x ↦ imp_congr_right fun hD ↦ (iff_false_left not_false).mpr ?_
   rw [hD, Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp.natCast, one_mul, Int.emod_emod] at h₁
   rwa [not_and_or, not_not, not_not]
+
+/-- If a fundamental discriminant is `m ^ 2` times an integer congruent to `0` or `1` modulo `4`,
+then `m = 1`. -/
+theorem IsFundamentalDiscr.eq_one_of_eq_sq_mul (h : IsFundamentalDiscr D) {m : ℕ} {e : ℤ}
+    (he : D = m ^ 2 * e) (he' : e % 4 = 0 ∨ e % 4 = 1) : m = 1 := by
+  obtain ⟨k, hk⟩ := m.minFac_dvd
+  by_contra! hm
+  refine (isFundamentalDiscr_iff_forall_prime.mp h).2 _ (Nat.minFac_prime hm) ⟨k ^ 2 * e, ?_, ?_⟩
+  · rw [← mul_assoc, ← mul_pow, ← Nat.cast_mul, ← hk, he]
+  · rw [Int.mul_emod, Int.sq_emod_four]
+    grind
 
 theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
     IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by

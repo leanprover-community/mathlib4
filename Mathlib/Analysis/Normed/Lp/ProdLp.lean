@@ -45,7 +45,6 @@ This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.l
 TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
 `Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
-
 -/
 
 @[expose] public section
@@ -562,11 +561,13 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.fst` as a continuous linear map. -/
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
   __ := fstₗ ..
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.snd` as a continuous linear map. -/
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where
@@ -691,21 +692,29 @@ lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 section
 variable {β p}
 
-theorem enorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem eNorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_fst_le x 0
 
-theorem enorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+@[deprecated (since := "2026-11-06")] alias enorm_fst_le := eNorm_fst_le
+
+theorem eNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_snd_le x 0
 
-theorem nnnorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+@[deprecated (since := "2026-11-06")] alias enorm_snd_le := eNorm_snd_le
+
+theorem nnNorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_fst_le x 0
 
-theorem nnnorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+@[deprecated (since := "2026-10-31")] alias nnnorm_fst_le := nnNorm_fst_le
+
+theorem nnNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_snd_le x 0
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_snd_le := nnNorm_snd_le
 
 theorem norm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ ≤ ‖x‖ := by
@@ -748,23 +757,31 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
-theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
+theorem prod_nnNorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
 
-theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_add := prod_nnNorm_eq_add
+
+theorem prod_nnNorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
   ext
   norm_cast
 
-@[simp] lemma prod_nnnorm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def, ofLp_fst, ofLp_snd]
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_sup := prod_nnNorm_eq_sup
 
-@[simp] lemma prod_nnnorm_toLp (f : α × β) : ‖toLp ⊤ f‖₊ = ‖f‖₊ :=
-  (prod_nnnorm_ofLp _).symm
+@[simp] lemma prod_nnNorm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖₊ = ‖f‖₊ := by
+  rw [prod_nnNorm_eq_sup, Prod.nnNorm_def, ofLp_fst, ofLp_snd]
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_ofLp := prod_nnNorm_ofLp
+
+@[simp] lemma prod_nnNorm_toLp (f : α × β) : ‖toLp ⊤ f‖₊ = ‖f‖₊ :=
+  (prod_nnNorm_ofLp _).symm
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_toLp := prod_nnNorm_toLp
 
 @[simp] lemma prod_norm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖ = ‖f‖ :=
-  congr($(prod_nnnorm_ofLp f).toReal)
+  congr($(prod_nnNorm_ofLp f).toReal)
 
 @[simp] lemma prod_norm_toLp (f : α × β) : ‖toLp ⊤ f‖ = ‖f‖ :=
   (prod_norm_ofLp _).symm
@@ -776,11 +793,13 @@ theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
   simp [prod_norm_eq_add]
 
-theorem prod_nnnorm_eq_of_L1 (x : WithLp 1 (α × β)) :
+theorem prod_nnNorm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖₊ = ‖x.fst‖₊ + ‖x.snd‖₊ :=
   NNReal.eq <| by
     push_cast
     exact prod_norm_eq_of_L1 x
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L1 := prod_nnNorm_eq_of_L1
 
 theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     dist x y = dist x.fst y.fst + dist x.snd y.snd := by
@@ -806,16 +825,18 @@ theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
   norm_cast
 
-theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
+theorem prod_nnNorm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
   NNReal.eq <| by
     push_cast
     exact prod_norm_eq_of_L2 x
 
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L2 := prod_nnNorm_eq_of_L2
+
 theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using! congr(($this : ℝ))
-  rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
+  rw [prod_nnNorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = √(dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2) := by
@@ -839,41 +860,45 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 section Single
 
-@[simp] lemma nnnorm_toLp_inl (x : α) : ‖toLp p (x, (0 : β))‖₊ = ‖x‖₊ := by
+@[simp] lemma nnNorm_toLp_inl (x : α) : ‖toLp p (x, (0 : β))‖₊ = ‖x‖₊ := by
   induction p generalizing hp with
   | top =>
-    simp [prod_nnnorm_eq_sup]
+    simp [prod_nnNorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
+    simp [prod_nnNorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
-@[simp] lemma nnnorm_toLp_inr (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_inl := nnNorm_toLp_inl
+
+@[simp] lemma nnNorm_toLp_inr (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
   induction p generalizing hp with
   | top =>
-    simp [prod_nnnorm_eq_sup]
+    simp [prod_nnNorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
+    simp [prod_nnNorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_inr := nnNorm_toLp_inr
 
 @[simp]
 lemma norm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖ = ‖x‖ :=
-  congr($(nnnorm_toLp_inl p α β x))
+  congr($(nnNorm_toLp_inl p α β x))
 
 @[simp]
 lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
-  congr($(nnnorm_toLp_inr p α β y))
+  congr($(nnNorm_toLp_inr p α β y))
 
 @[simp]
 lemma nndist_toLp_fst (x₁ x₂ : α) :
     nndist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nndist x₁ x₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_inl]
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
+    nnNorm_toLp_inl]
 
 @[simp]
 lemma nndist_toLp_snd (y₁ y₂ : β) :
     nndist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nndist y₁ y₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_inr]
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
+    nnNorm_toLp_inr]
 
 @[simp]
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=
@@ -899,16 +924,16 @@ section IsBoundedSMul
 variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [IsBoundedSMul 𝕜 α] [IsBoundedSMul 𝕜 β]
 
 instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
-  .of_nnnorm_smul_le fun c f => by
+  .of_nnNorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [← prod_nnnorm_ofLp, ofLp_smul]
+    · simp only [← prod_nnNorm_ofLp, ofLp_smul]
       exact norm_smul_le _ _
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
+      rw [prod_nnNorm_eq_add hpt, prod_nnNorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
-      gcongr <;> exact nnnorm_smul_le _ _
+      gcongr <;> exact nnNorm_smul_le _ _
 
 variable {𝕜 p α β}
 
@@ -925,14 +950,14 @@ end IsBoundedSMul
 
 instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β]
     [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
-  .of_nnnorm_smul fun c f => by
+  .of_nnNorm_smul fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [← prod_nnnorm_ofLp, WithLp.ofLp_smul, nnnorm_smul]
+    · simp only [← prod_nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_smul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
+      rw [prod_nnNorm_eq_add hpt, prod_nnNorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
-        ← NNReal.mul_rpow, ← NNReal.mul_rpow, smul_fst, smul_snd, nnnorm_smul, nnnorm_smul]
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow, smul_fst, smul_snd, nnNorm_smul, nnNorm_smul]
 
 section SeminormedAddCommGroup
 
@@ -1040,10 +1065,13 @@ lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedA
     (x : α × β) :
     @Norm.norm _ (seminormedAddCommGroupToProd p α β).toNorm x = ‖toLp p x‖ := rfl
 
-lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+lemma nnNorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
     (x : α × β) :
-    @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
+    @NNNorm.nnNorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_seminormedAddCommGroupToProd := nnNorm_seminormedAddCommGroupToProd
 
 lemma isBoundedSMulSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]

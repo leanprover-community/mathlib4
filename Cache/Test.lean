@@ -3,15 +3,16 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Cli
-import Cache.Requests
-import Cache.Location
-import Cache.Marker
-import Cache.Upload
-import Cache.Query
-import Cache.Warning
-import Cache.Lean
+public import Cache.Cli
+public import Cache.Lean
+public import Cache.Location
+public import Cache.Marker
+public import Cache.Query
+public import Cache.Requests
+public import Cache.Upload
+public import Cache.Warning
 
 /-!
 # Unit tests for the cache CLI
@@ -1971,7 +1972,7 @@ def runAll : IO Unit := do
 end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
-def main : IO UInt32 := do
+public def main : IO UInt32 := do
   runAll
   let n ← failures.get
   if n == 0 then

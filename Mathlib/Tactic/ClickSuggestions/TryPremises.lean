@@ -9,8 +9,11 @@ public import Mathlib.Tactic.ClickSuggestions.FindPremises
 
 meta import Mathlib.Tactic.ClickSuggestions.FindPremises
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# generating lemma suggestions, given the the shortlist of candidate lemmas
+# generating lemma suggestions, given the shortlist of candidate lemmas
 -/
 
 meta section
@@ -155,7 +158,7 @@ def findRflTarget? (root subExpr : Expr) (rwKind : RwKind) : ClickSuggestionsM (
   catch _ =>
     return none
 
-/-- Compute the library rearch suggestions. This uses `token` to incrementally update the output. -/
+/-- Compute the library search suggestions. This uses `token` to incrementally update the output. -/
 public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalContext)
     (rwKind : RwKind) (parentDecl? : Option Name)
     (token : RefreshToken) : ClickSuggestionsM Unit := do

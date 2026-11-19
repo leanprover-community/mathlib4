@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute values in linear ordered rings.
 -/

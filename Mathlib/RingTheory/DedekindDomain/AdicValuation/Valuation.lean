@@ -553,8 +553,7 @@ theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.in
       grw [← exp_le_intValuation_iff_emultiplicity_le, hna]
     have hb : b ∈ v.asIdeal ^ multiplicity v.asIdeal (Ideal.span {a}) := by
       rwa [← intValuation_le_pow_iff_mem, ← v.intValuation_eq_exp_neg_multiplicity ha]
-    have hnz : Ideal.span {a} ≠ ⊥ := by rwa [ne_eq, Ideal.span_singleton_eq_bot]
-    simpa [← Ideal.irreducible_pow_sup_of_ge hnz v.irreducible n hvn, Submodule.mem_sup,
+    simpa [← Ideal.irreducible_pow_sup_of_ge v.irreducible n hvn, Submodule.mem_sup,
       ← eq_sub_iff_add_eq, ← intValuation_le_pow_iff_mem, Ideal.mem_span_singleton'] using hb
 
 /-- Given `x ∈ 𝒪[K]` we can find `a : A` such that `a` is close to `x` by the valuation `v`. -/

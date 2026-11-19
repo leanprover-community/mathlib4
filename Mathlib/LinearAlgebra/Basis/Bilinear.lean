@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about bilinear maps with a basis over each argument
 -/
