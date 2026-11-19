@@ -81,7 +81,10 @@ in `addHaar_image_le_lintegral_of_abs_det_le`. If `f` has derivative `A` at `x` 
 `μ (f '' (s ∩ closedBall x r)) ≤ (|A.det| + ε) * μ (closedBall x r)` for small `r`. Since
 `t ↦ μ (f '' (t ∩ s))` vanishes on null sets, the general bound
 `VitaliFamily.outerMeasure_le_lintegral_of_liminfRatio_le` applies, with the Besicovitch Vitali
-family of closed balls. This needs neither `s` nor `f'` to be measurable.
+family of closed balls. This needs neither `s` nor `f'` to be measurable. The fact that
+`t ↦ μ (f '' (t ∩ s))` vanishes on null sets (the Lusin N-property
+`addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero`) follows from the same local
+estimate and `Measure.measure_image_null_of_null_of_forall_exists_le_mul`.
 
 The measurability of `f '' s` follows from the deep Lusin-Souslin theorem ensuring that, in a
 Polish space, a continuous injective image of a measurable set is measurable.
@@ -593,42 +596,10 @@ assumptions.
 
 /-- A differentiable function maps sets of measure zero to sets of measure zero. -/
 theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : DifferentiableOn ℝ f s)
-    (hs : μ s = 0) : μ (f '' s) = 0 := by
-  rw [← nonpos_iff_eq_zero]
-  have :
-      ∀ A : E →L[ℝ] E, ∃ δ : ℝ≥0, 0 < δ ∧
-        ∀ (t : Set E), ApproximatesLinearOn f A t δ →
-          μ (f '' t) ≤ (Real.toNNReal |A.det| + 1 : ℝ≥0) * μ t := by
-    intro A
-    let m : ℝ≥0 := Real.toNNReal |A.det| + 1
-    have I : ENNReal.ofReal |A.det| < m := by
-      simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, zero_lt_one, ENNReal.coe_lt_coe]
-    rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, h'⟩
-    exact ⟨δ, h', fun t ht => h t f ht⟩
-  choose δ hδ using this
-  obtain ⟨t, A, _, _, t_cover, ht, -⟩ :
-    ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),
-      Pairwise (Disjoint on t) ∧
-        (∀ n : ℕ, MeasurableSet (t n)) ∧
-          (s ⊆ ⋃ n : ℕ, t n) ∧
-            (∀ n : ℕ, ApproximatesLinearOn f (A n) (s ∩ t n) (δ (A n))) ∧
-              (s.Nonempty → ∀ n, ∃ y ∈ s, A n = fderivWithin ℝ f s y) :=
-    exists_partition_approximatesLinearOn_of_hasFDerivWithinAt f s (fderivWithin ℝ f s)
-      (fun x xs => (hf x xs).hasFDerivWithinAt) δ fun A => (hδ A).1.ne'
-  calc
-    μ (f '' s) ≤ μ (⋃ n, f '' (s ∩ t n)) := by
-      apply measure_mono
-      rw [← image_iUnion, ← inter_iUnion]
-      exact Set.image_mono (subset_inter Subset.rfl t_cover)
-    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
-    _ ≤ ∑' n, (Real.toNNReal |(A n).det| + 1 : ℝ≥0) * μ (s ∩ t n) := by
-      apply tsum_le_tsum fun n => ?_
-      apply (hδ (A n)).2
-      exact ht n
-    _ ≤ ∑' n, ((Real.toNNReal |(A n).det| + 1 : ℝ≥0) : ℝ≥0∞) * 0 := by
-      gcongr with n
-      exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
-    _ = 0 := by simp only [tsum_zero, mul_zero]
+    (hs : μ s = 0) : μ (f '' s) = 0 :=
+  measure_image_null_of_null_of_forall_exists_le_mul hs fun x hx ↦ ⟨_,
+    ((hf x hx).hasFDerivWithinAt.eventually_addHaar_image_inter_closedBall_le μ
+      (ENNReal.coe_lt_coe.2 (lt_add_one _))).frequently⟩
 
 /-- Let `f` be differentiable on a set `s` with derivative `f'`. Let `g` be an a.e.-measurable
 function such that `|(f' x).det| ≤ g x` for all `x ∈ s`. Then `μ (f '' s) ≤ ∫⁻ x in s, g x ∂μ`.
