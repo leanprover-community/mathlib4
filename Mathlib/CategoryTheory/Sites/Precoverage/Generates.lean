@@ -84,7 +84,7 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
   refine ⟨?_, ?_⟩
   · intro x t₁ t₂ ht₁ ht₂
     let 𝒮 (Z : C) : Set (F.obj (.op Z)) :=
-      .range (fun (g : { g : Z ⟶ X | S.arrows g }) ↦ x _ g.2) ∪
+      .range (fun (g : { g : Z ⟶ X | S.arrows g }) ↦ x _ g.property) ∪
       .range (fun (g : Z ⟶ X) ↦ F.map g.op t₁) ∪ .range (fun (g : Z ⟶ X) ↦ F.map g.op t₂)
     let Q : Subfunctor F := K.subsheafify 𝒮
     have (Z : C) : _root_.Small.{max u v} (Q.toFunctor.obj (Opposite.op Z)) :=
@@ -101,7 +101,7 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
   · -- Let `x` be a compatible family of elements over `S`. We need to show it glues.
     intro x hx
     -- Let `𝒮` be the family of subsets consisting of the family of elements `x`.
-    let 𝒮 (Z : C) := Set.range (fun (g : { g : Z ⟶ X | S.arrows g }) ↦ x _ g.2)
+    let 𝒮 (Z : C) := Set.range (fun (g : { g : Z ⟶ X | S.arrows g }) ↦ x _ g.property)
     /- Let `Q` be the smallest `K`-subsheaf of `K` containing `𝒮`. This is `max u v`-small, because
     `𝒮` is `max u v`-small. -/
     let Q : Subfunctor F := K.subsheafify 𝒮

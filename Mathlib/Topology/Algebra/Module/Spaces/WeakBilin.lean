@@ -43,7 +43,6 @@ We prove the following results characterizing the weak topology:
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section

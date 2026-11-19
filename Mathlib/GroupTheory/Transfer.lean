@@ -44,8 +44,8 @@ variable (R S T : H.LeftTransversal) [FiniteIndex H]
 /-- The difference of two left transversals -/
 @[to_additive /-- The difference of two left transversals -/]
 def diff : A :=
-  let α := S.2.leftQuotientEquiv
-  let β := T.2.leftQuotientEquiv
+  let α := S.property.leftQuotientEquiv
+  let β := T.property.leftQuotientEquiv
   let _ := H.fintypeQuotientOfFiniteIndex
   ∏ q : G ⧸ H, ϕ
       ⟨(α q : G)⁻¹ * β q,
@@ -110,19 +110,19 @@ def transferTransversal : H.LeftTransversal :=
   ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
 
 lemma transferTransversal_apply (q : G ⧸ H) :
-    ↑((transferTransversal H g).2.leftQuotientEquiv q) = transferFunction H g q :=
+    ↑((transferTransversal H g).property.leftQuotientEquiv q) = transferFunction H g q :=
   IsComplement.leftQuotientEquiv_apply (coe_transferFunction g) q
 
 lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑((transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+    ↑((transferTransversal H g).property.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       g ^ (cast k : ℤ) * q.out.out := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 
 lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑((g • transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+    ↑((g • transferTransversal H g).property.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
       else g ^ (cast k : ℤ) * q.out.out := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
@@ -244,7 +244,8 @@ include hP
 open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 def transferSylow [P.FiniteIndex] : G →* P :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
@@ -253,7 +254,7 @@ variable [Fact p.Prime] [Finite (Sylow p G)]
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   have : IsMulCommutative P :=
-    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   replace hg := P.pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
@@ -264,12 +265,13 @@ open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ P.index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_domRestrict_eq_pow : ⇑((transferSylow P hP).domRestrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
-  funext fun g => transferSylow_eq_pow P hP g g.2
+  funext fun g => transferSylow_eq_pow P hP g g.property
 
 @[deprecated (since := "2026-07-19")]
 alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
@@ -346,7 +348,7 @@ theorem isComplement' (hP : IsCyclic P) :
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
     rw [Subsingleton.elim (MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)).ker ⊥,
-      Subsingleton.elim P.1 ⊤]
+      Subsingleton.elim P.toSubgroup ⊤]
     exact isComplement'_bot_top
   have := Fact.mk (Nat.minFac_prime hn)
   exact MonoidHom.ker_transferSylow_isComplement' P (hP.normalizer_le_centralizer rfl)

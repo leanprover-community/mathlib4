@@ -39,7 +39,6 @@ argument, essentially following from Arzela-Ascoli.
 
 We prove the most important properties of the Gromov-Hausdorff space: it is a polish space,
 i.e., it is complete and second countable. We also prove the Gromov compactness criterion.
-
 -/
 
 @[expose] public section
@@ -104,7 +103,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   refine ⟨fun h => ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
-    use fun x => f x, isometry_subtype_coe.comp f.isometry
+    use fun x => f x, isometry_subtypeVal.comp f.isometry
     rw [range_comp', f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
@@ -116,7 +115,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     exact ⟨cast E f⟩
 
 theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace p :=
-  eq_toGHSpace_iff.2 ⟨fun x => x, isometry_subtype_coe, Subtype.range_coe⟩
+  eq_toGHSpace_iff.2 ⟨fun x => x, isometry_subtypeVal, Subtype.range_coe⟩
 
 section
 
@@ -201,7 +200,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   have ΨΨ' : Ψ = Subtype.val ∘ Ψ' := rfl
   have : hausdorffDist (range Φ) (range Ψ) = hausdorffDist (range Φ') (range Ψ') := by
     rw [ΦΦ', ΨΨ', range_comp, range_comp]
-    exact hausdorffDist_image isometry_subtype_coe
+    exact hausdorffDist_image isometry_subtypeVal
   rw [this]
   -- Embed `s` in `ℓ^∞(ℝ)` through its Kuratowski embedding
   let F := kuratowskiEmbedding s
@@ -504,8 +503,8 @@ variable {X : Type u} [MetricSpace X]
 
 theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
     dist p.toGHSpace q.toGHSpace ≤ dist p q := by
-  have ha : Isometry ((↑) : p → X) := isometry_subtype_coe
-  have hb : Isometry ((↑) : q → X) := isometry_subtype_coe
+  have ha : Isometry ((↑) : p → X) := isometry_subtypeVal
+  have hb : Isometry ((↑) : q → X) := isometry_subtypeVal
   have A : dist p q = hausdorffDist (p : Set X) q := rfl
   have I : ↑p = range ((↑) : p → X) := Subtype.range_coe_subtype.symm
   have J : ↑q = range ((↑) : q → X) := Subtype.range_coe_subtype.symm
@@ -594,7 +593,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     · intro x' hx'
       rcases (Set.mem_image _ _ _).1 hx' with ⟨y, ⟨y_in_s', yx'⟩⟩
       rcases mem_range.1 y_in_s' with ⟨x, xy⟩
-      use Fl x, mem_image_of_mem _ x.2
+      use Fl x, mem_image_of_mem _ x.property
       rw [← yx', ← xy, dist_comm]
       exact le_of_eq (glueDist_glued_points (Z := s) Subtype.val Φ (ε₂ / 2 + δ) x)
   have : hausdorffDist (Fr '' range Φ) (range Fr) ≤ ε₃ := by
@@ -679,14 +678,14 @@ instance : SecondCountableTopology GHSpace := by
       intro x y
       -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
-      have hip : i < N p := ((E p) x).2
+      have hip : i < N p := ((E p) x).isLt
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
-      have hjp : j < N p := ((E p) y).2
+      have hjp : j < N p := ((E p) y).isLt
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = ((E q) (Ψ y)).1 := by
+      have j' : j = ((E q) (Ψ y)).val := by
         simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
@@ -799,7 +798,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have : x ∈ ⋃ y ∈ s q, ball y (u n) := (hs q qt) (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
-      let hi := ((E q) ⟨y, ys⟩).2
+      let hi := ((E q) ⟨y, ys⟩).isLt
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
       have hiq : i < N q := hi
       have hip : i < N p := by rwa [Npq.symm] at hiq
@@ -821,18 +820,18 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       rw [this]
       -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
-      have hip : i < N p := ((E p) x).2
+      have hip : i < N p := ((E p) x).isLt
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
-      have hjp : j < N p := ((E p) y).2
+      have hjp : j < N p := ((E p) y).isLt
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
-      have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
+      have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).val = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
-          ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F p).2 ((E p) x) ((E p) y)).1 := by
+          ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).val = ((F p).2 ((E p) x) ((E p) y)).val := by
             congr
           _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [F, (E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
@@ -842,9 +841,9 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
             refine (dist_le_diam_of_mem isCompact_univ.isBounded (mem_univ _) (mem_univ _)).trans ?_
             exact hdiam p pt
       -- Express `dist (Φ x) (Φ y)` in terms of `F q`
-      have Aq : ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ :=
+      have Aq : ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).val = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ :=
         calc
-          ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ((F q).2 ((E q) (Ψ x)) ((E q) (Ψ y))).1 := by
+          ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).val = ((F q).2 ((E q) (Ψ x)) ((E q) (Ψ y))).val := by
             congr!
           _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [F, (E q).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by
@@ -855,7 +854,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
             exact hdiam q qt
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
-      have : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 := by
+      have : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).val = ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).val := by
         have hpq' : (F p).snd ≍ (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
         rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
         rw [← hpq']

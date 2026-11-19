@@ -29,7 +29,6 @@ The `ModelCategory` instance is scoped in the namespace
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
-
 -/
 
 public section
@@ -145,7 +144,7 @@ private lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶
         apply (X.isZero_of_isStrictlyGE d i).eq_of_tgt
       exact isKInjective_of_injective _ d
     /- The cocycle `β` is a coboundary when `i` or `p` is a quasi-isomorphism. -/
-    obtain ⟨α, hα⟩ : ∃ (α : Cochain (cokernel i) (kernel p) 0), δ 0 1 α = β.1 := by
+    obtain ⟨α, hα⟩ : ∃ (α : Cochain (cokernel i) (kernel p) 0), δ 0 1 α = β.val := by
       cases hip
       · refine IsKInjective.eq_δ_of_cocycle β ?_ 0 (by simp)
         have : (ShortComplex.mk _ _ (cokernel.condition i)).ShortExact :=

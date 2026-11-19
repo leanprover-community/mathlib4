@@ -35,7 +35,6 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 * `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
   we need to port some `Seq` API to `Multiseries`.
-
 -/
 
 @[expose] public section

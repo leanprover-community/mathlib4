@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Jacobson radical of polynomial ring
-
 -/
 
 public section

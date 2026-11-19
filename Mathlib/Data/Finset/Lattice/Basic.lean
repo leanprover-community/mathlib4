@@ -30,7 +30,6 @@ All the theorems and instances expect `DecidableEq` instance for `α`
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -58,11 +57,11 @@ variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Max (Finset α) :=
-  ⟨fun s t => ⟨_, t.2.ndunion s.1⟩⟩
+  ⟨fun s t => ⟨_, t.nodup.ndunion s.val⟩⟩
 
 /-- `s ∩ t` is the set such that `a ∈ s ∩ t` iff `a ∈ s` and `a ∈ t`. -/
 instance : Min (Finset α) :=
-  ⟨fun s t => ⟨_, s.2.ndinter t.1⟩⟩
+  ⟨fun s t => ⟨_, s.nodup.ndinter t.val⟩⟩
 
 instance : Lattice (Finset α) where
   sup := (· ∪ ·)
@@ -92,12 +91,12 @@ theorem inf_eq_inter {s t : Finset α} : s ⊓ t = s ∩ t :=
 
 /-! #### union -/
 
-theorem union_val_nd (s t : Finset α) : (s ∪ t).1 = ndunion s.1 t.1 :=
+theorem union_val_nd (s t : Finset α) : (s ∪ t).val = ndunion s.val t.val :=
   rfl
 
 @[simp]
-theorem union_val (s t : Finset α) : (s ∪ t).1 = s.1 ∪ t.1 :=
-  ndunion_eq_union s.2
+theorem union_val (s t : Finset α) : (s ∪ t).val = s.val ∪ t.val :=
+  ndunion_eq_union s.nodup
 
 @[simp, grind =]
 theorem mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
@@ -135,8 +134,6 @@ theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ := su
 @[simp]
 theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) := sup_assoc _ _ _
 
-theorem union_idempotent (s : Finset α) : s ∪ s = s := sup_idem _
-
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
   subset_union_left.trans h
 
@@ -148,6 +145,8 @@ theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) 
 theorem union_right_comm (s t u : Finset α) : s ∪ t ∪ u = s ∪ u ∪ t := sup_right_comm _ _ _
 
 theorem union_self (s : Finset α) : s ∪ s = s := sup_idem _
+
+@[deprecated (since := "2026-11-16")] alias union_idempotent := union_self
 
 lemma union_eq_left : s ∪ t = s ↔ t ⊆ s := sup_eq_left
 
@@ -169,12 +168,12 @@ theorem union_eq_union_iff_left : s ∪ t = s ∪ u ↔ t ⊆ s ∪ u ∧ u ⊆ 
 theorem union_eq_union_iff_right : s ∪ u = t ∪ u ↔ s ⊆ t ∪ u ∧ t ⊆ s ∪ u :=
   sup_eq_sup_iff_right
 
-theorem inter_val_nd (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = ndinter s₁.1 s₂.1 :=
+theorem inter_val_nd (s₁ s₂ : Finset α) : (s₁ ∩ s₂).val = ndinter s₁.val s₂.val :=
   rfl
 
 @[simp]
-theorem inter_val (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = s₁.1 ∩ s₂.1 :=
-  ndinter_eq_inter s₁.2
+theorem inter_val (s₁ s₂ : Finset α) : (s₁ ∩ s₂).val = s₁.val ∩ s₂.val :=
+  ndinter_eq_inter s₁.nodup
 
 @[simp, grind =]
 theorem mem_inter {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ ∩ s₂ ↔ a ∈ s₁ ∧ a ∈ s₂ :=

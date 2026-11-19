@@ -80,7 +80,7 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
   have : ⟨q, hq⟩ ∈ PrimeSpectrum.basicOpen (f i) := hi
   rw [← SetLike.mem_coe, ← PrimeSpectrum.localization_away_comap_range (T i)] at this
   obtain ⟨q', hq'⟩ := this
-  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.1
+  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.asIdeal
   obtain ⟨n, g, hg⟩ := IsLocalization.Away.surj (f i) g'
   refine ⟨g * (f i), ?_, ?_⟩
   · refine Ideal.IsPrime.mul_notMem hq ?_ hi
@@ -99,9 +99,9 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
 
 lemma of_span_eq_top {s : Set S} (h : Ideal.span s = ⊤)
     (h : ∀ x ∈ s, IsLocalIso R (Localization.Away x)) : IsLocalIso R S := by
-  have heq : Ideal.span (Set.range fun i : s ↦ i.1) = ⊤ := by simpa
-  have (i : s) : IsLocalIso R (Localization.Away i.1) := h _ i.property
-  exact .of_span_range_eq_top _ heq fun i ↦ Localization.Away i.1
+  have heq : Ideal.span (Set.range fun i : s ↦ i.val) = ⊤ := by simpa
+  have (i : s) : IsLocalIso R (Localization.Away i.val) := h _ i.property
+  exact .of_span_range_eq_top _ heq fun i ↦ Localization.Away i.val
 
 lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
     [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
@@ -129,15 +129,16 @@ lemma trans [Algebra S T] [Algebra R T] [IsScalarTower R S T]
   let (g : S) : Algebra (Localization.Away g) (T' g) := localizationAlgebra (.powers g) T
   let T'' (g : S) (x : T) := Localization.Away (algebraMap _ (T' g) x)
   let t (g : S) : Set T := {x : T | IsStandardOpenImmersion (Localization.Away g) (T'' g x)}
-  let ι : Type _ := Σ i : s, t i.1
-  have (i : ι) : IsStandardOpenImmersion (Localization.Away i.1.1) (T'' i.1 i.2) := i.2.2
+  let ι : Type _ := Σ i : s, t i.val
+  have (i : ι) : IsStandardOpenImmersion (Localization.Away i.1.val) (T'' i.1 i.2) := i.2.property
   suffices h : Ideal.span (Set.range fun i : ι ↦ algebraMap S T i.1 * i.2) = ⊤ by
     have (i : ι) : IsStandardOpenImmersion R (T'' i.1 i.2) :=
-      have : IsScalarTower R (Localization.Away i.1.1) (T' i.1.1) :=
+      have : IsScalarTower R (Localization.Away i.1.val) (T' i.1.val) :=
         IsScalarTower.to₁₃₄ _ S _ _
-      have : IsStandardOpenImmersion (Localization.Away i.1.1) (T'' i.1.1 i.2.1) := i.2.2
-      have : IsStandardOpenImmersion R (Localization.Away i.1.1) := i.1.2
-      .trans _ (Localization.Away i.1.1) _
+      have : IsStandardOpenImmersion (Localization.Away i.1.val) (T'' i.1.val i.2.val) :=
+        i.2.property
+      have : IsStandardOpenImmersion R (Localization.Away i.1.val) := i.1.property
+      .trans _ (Localization.Away i.1.val) _
     exact .of_span_range_eq_top _ h fun i : ι ↦ T'' i.1 i.2
   have h1 := congr(Ideal.map (algebraMap S T) $(span_isStandardOpenImmersion_eq_top R S))
   rw [Ideal.map_top, Ideal.map_span] at h1

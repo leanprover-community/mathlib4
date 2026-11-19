@@ -162,6 +162,7 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
   rw [Module.End.isUnit_iff, Iff.comm]
   exact IsUnit.isUnit_iff_mulLeft_bijective
 
+@[simp]
 theorem toSpanSingleton_one_eq_algebraLinearMap :
     toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
 
