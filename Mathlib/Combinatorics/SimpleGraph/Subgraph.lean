@@ -276,7 +276,7 @@ protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet
 lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet = G'.edgeSet := by
   rw [edgeSet_coe, Set.image_preimage_eq_iff]
   rintro e he
-  induction e using Sym2.ind with | h a b =>
+  induction e using Sym2.ind with | mk a b =>
   rw [Subgraph.mem_edgeSet] at he
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
 
