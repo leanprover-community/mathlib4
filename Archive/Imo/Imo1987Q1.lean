@@ -78,9 +78,8 @@ def fixedPointsEquiv' :
     (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.val) ≃
       { σx : α × Perm α // σx.2 σx.1 = σx.1 } where
   toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.property⟩
-  invFun p :=
-    ⟨⟨card (fixedPoints p.val.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.val.2, rfl⟩,
-      ⟨p.val.1, p.property⟩⟩
+  invFun p := ⟨⟨card (fixedPoints p.val.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩,
+    ⟨p.val.2, rfl⟩, ⟨p.val.1, p.property⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
     simp only [mem_fiber] at hσ
     subst k; rfl
