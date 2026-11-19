@@ -11,8 +11,8 @@ public import Mathlib.Data.List.SignVariations
 # A certificate for a Sturm sequence
 
 A `SturmCertificate` describes the Sturm sequence of a polynomial with integer coefficients and its
-derivative, up to positive factors. `realRootCount?` checks the certificate and returns the number
-of distinct real roots of the polynomial.
+derivative, up to positive factors. `realRootCount?` validates the certificate and returns the
+number of distinct real roots of the polynomial.
 
 ## Main definitions
 
@@ -20,6 +20,8 @@ of distinct real roots of the polynomial.
 - `checkSturm`: check that the `SturmCertificate` represents a valid Sturm sequence.
 - `realRootCount?`: validate the certificate and compute the number of distinct real roots of the
   certificate's polynomial.
+- `realRootCountIoo?`: validate the certificate and compute the number of distinct real roots in an
+  open interval with rational endpoints of the certificate's polynomial.
 
 ## Implementation Notes
 
@@ -127,6 +129,24 @@ def realRootCount? (d : SturmCertificate) : Option ℕ :=
   let atBot :=
     (sturmSeq.map fun e => let l := coeffLead e; if e.length % 2 = 0 then -l else l).signVariations
   if checkSturm d then some (atBot - atTop) else none
+
+/-- Compute the integer `d ^ (p.length - 1) * f (n / d)`, where `f` is the polynomial
+that `p` represents and d > 0. -/
+def evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) : ℤ :=
+  match p with
+  | [] => 0
+  | c :: p => c * d ^ p.length + n * evalScaled n d p
+
+/-- Compute the number of real roots of the polynomial in the `SturmCertificate` that are in the
+open interval from `an / ad` to `bn / bd`.  The function returns `none` if the certificate is
+invalid, `ad` or `bd` is zero, `an / ad < bn / bd` is false, or an endpoint is a root of the
+certificate's polynomial. -/
+def realRootCountIoo? (d : SturmCertificate) (an : ℤ) (ad : ℕ) (bn : ℤ) (bd : ℕ) : Option ℕ :=
+  let sturmSeq := d.entries
+  let atA := (sturmSeq.map (evalScaled an ad)).signVariations
+  let atB := (sturmSeq.map (evalScaled bn bd)).signVariations
+  if checkSturm d && 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.s != 0 &&
+      evalScaled bn bd d.s != 0 then some (atA - atB) else none
 
 end Mathlib.Tactic.RealRootCount
 
