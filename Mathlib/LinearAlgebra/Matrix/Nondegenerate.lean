@@ -5,8 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
+
+import Mathlib.Algebra.Star.Pi
 
 /-!
 # Matrices associated with non-degenerate bilinear forms
@@ -35,7 +36,7 @@ attribute [local instance] Fintype.ofFinite
 def SeparatingRight : Prop :=
   (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0)
 
-/-- A matrix `M` is right-separating if for all `v ≠ 0`, there is a `w` with `v * M * w ≠ 0`. -/
+/-- A matrix `M` is left-separating if for all `v ≠ 0`, there is a `w` with `v * M * w ≠ 0`. -/
 def SeparatingLeft : Prop :=
   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0)
 
@@ -50,7 +51,7 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 end Finite
 
 section NonUnitalSemiring
-variable {m n R : Type*} [NonUnitalSemiring R] {M : Matrix m n R}
+variable {k l m n R : Type*} [NonUnitalSemiring R] {M : Matrix m n R}
 
 section Fintype
 variable [Fintype m] [Fintype n]
@@ -100,10 +101,8 @@ theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M
   have := Fintype.ofFinite m
   separatingRight_def.mp hM _ fun _ ↦ by simp [hv]
 
-
 section Finite
-variable {k l m n R : Type*} [Finite k] [Finite l] [Finite m] [Finite n] [NonUnitalSemiring R]
-variable {M : Matrix m n R} {r : k → m} {c : l → n}
+variable [Finite k] [Finite l] [Finite m] [Finite n] {r : k → m} {c : l → n}
 
 @[simp]
 theorem separatingLeft_conjTranspose_iff [StarRing R] :
