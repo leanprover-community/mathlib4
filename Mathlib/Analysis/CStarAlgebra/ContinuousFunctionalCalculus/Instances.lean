@@ -260,7 +260,7 @@ lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
 
 lemma snd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).snd =
-      cfcₙHom hx ((f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) := by
+      cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero := by
   simp [cfcAux]
 
 lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
