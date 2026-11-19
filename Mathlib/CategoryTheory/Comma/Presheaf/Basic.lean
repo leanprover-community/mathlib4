@@ -61,7 +61,6 @@ possible.
 
 ## Tags
 presheaf, over category, coyoneda
-
 -/
 
 @[expose] public section
@@ -149,7 +148,7 @@ lemma map_val {Y : C} {η : yoneda.obj Y ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
 /-- Functoriality of `OverArrows η s` in `η`. -/
 def map₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     (u : OverArrows η s) (ε : F ⟶ G) (hε : ε ≫ μ = η) : OverArrows μ s :=
-  ⟨ε.app _ u.val, MakesOverArrow.map₁ hε u.2⟩
+  ⟨ε.app _ u.val, MakesOverArrow.map₁ hε u.property⟩
 
 @[simp]
 lemma map₁_val {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C}
@@ -161,7 +160,7 @@ lemma map₁_val {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C
 def map₂ {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} {s : yoneda.obj X ⟶ A}
     {t : yoneda.obj Y ⟶ A} (u : OverArrows η t) (f : X ⟶ Y) (hst : yoneda.map f ≫ t = s) :
     OverArrows η s :=
-  ⟨F.map f.op u.val, MakesOverArrow.map₂ f hst u.2⟩
+  ⟨F.map f.op u.val, MakesOverArrow.map₂ f hst u.property⟩
 
 @[simp]
 lemma map₂_val {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} (f : X ⟶ Y)

@@ -14,6 +14,9 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Filter.AtTopBot.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Numbers are frequently ModEq to fixed numbers
 

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 /-!
-
 # Fixing submonoid, fixing subgroup of an action
 
 In the presence of an action of a monoid or a group,
@@ -35,7 +34,6 @@ TODO :
 * Maybe other lemmas are useful
 
 * Treat semigroups ?
-
 -/
 
 @[expose] public section
@@ -66,7 +64,7 @@ variable (α)
 theorem fixingSubmonoid_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubmonoid M)
       ((fun P : Submonoid M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+  fun _s _P => ⟨fun h s hs p => h p.property ⟨s, hs⟩, fun h p hp s => h s.property ⟨p, hp⟩⟩
 
 @[to_additive]
 theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
@@ -134,7 +132,7 @@ variable (α)
 theorem fixingSubgroup_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubgroup M)
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+  fun _s _P => ⟨fun h s hs p => h p.property ⟨s, hs⟩, fun h p hp s => h s.property ⟨p, hp⟩⟩
 
 @[to_additive (attr := simp)]
 lemma fixingSubgroup_empty : fixingSubgroup M (∅ : Set α) = ⊤ :=

@@ -655,6 +655,22 @@ lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
 
 @[deprecated (since := "2026-06-18")] alias single_one_mul_apply := coeff_single_one_mul
 
+@[to_additive (dont_translate := R) coeff_mul_natCast]
+lemma coeff_mul_natCast (x : R[M]) (n : ℕ) (m : M) :
+    (x * n).coeff m = x.coeff m * n := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_natCast_mul]
+lemma coeff_natCast_mul (x : R[M]) (n : ℕ) (m : M) :
+    (n * x).coeff m = n * x.coeff m := coeff_single_one_mul ..
+
+@[to_additive (dont_translate := R) coeff_mul_ofNat]
+lemma coeff_mul_ofNat (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (x * ofNat(n)).coeff m = x.coeff m * ofNat(n) := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_ofNat_mul]
+lemma coeff_ofNat_mul (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (ofNat(n) * x).coeff m = ofNat(n) * x.coeff m := coeff_single_one_mul ..
+
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/
 @[simps! apply]
@@ -894,6 +910,9 @@ lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
 
 @[to_additive (attr := simp)]
 lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sub_apply (x y : R[M]) (i : M) : coeff (x - y) i = coeff x i - coeff y i := rfl
 
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by ext; simp

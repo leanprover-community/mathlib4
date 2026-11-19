@@ -16,7 +16,6 @@ In this file we define residually finite groups and prove some basic properties.
 
 - `Group.ResiduallyFinite G`: A group `G` is residually finite if the intersection of all
   finite index normal subgroups is trivial.
-
 -/
 
 public section
@@ -110,7 +109,7 @@ instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   intro g hg
   ext
-  exact eq_one_of_forall_finiteIndexNormalSubgroup g.1 fun K ↦ hg (K.comap H.subtype)
+  exact eq_one_of_forall_finiteIndexNormalSubgroup g.val fun K ↦ hg (K.comap H.subtype)
 
 @[to_additive]
 instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G') := by

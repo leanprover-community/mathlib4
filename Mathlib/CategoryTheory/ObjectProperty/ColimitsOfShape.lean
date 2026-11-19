@@ -41,7 +41,6 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
   iterating over `ℕ`), and more generally the closure under colimits
   indexed by a category whose type of arrows has a cardinality
   that is bounded by a certain regular cardinal (@joelriou)
-
 -/
 
 @[expose] public section
@@ -182,7 +181,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
     ObjectProperty.Small.{w} (P.strictColimitsOfShape J) := by
   refine small_of_surjective
     (f := fun (F : { F : J ⥤ P.FullSubcategory // HasColimit (F ⋙ P.ι) }) ↦
-      (⟨_, letI := F.2; ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
+      (⟨_, letI := F.property; ⟨F.val ⋙ P.ι, fun j ↦ (F.val.obj j).property⟩⟩)) ?_
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 

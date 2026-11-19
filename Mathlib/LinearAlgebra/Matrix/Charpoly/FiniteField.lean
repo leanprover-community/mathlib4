@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Finite.Basic
 
 import Mathlib.LinearAlgebra.Matrix.CharP
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on characteristic polynomials and traces over finite fields.
 -/

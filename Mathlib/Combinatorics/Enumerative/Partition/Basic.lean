@@ -97,12 +97,12 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 
 /-- An element `s` of `Sym σ n` induces a partition given by its multiplicities. -/
 def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
-  parts := s.1.dedup.map s.1.count
+  parts := s.val.dedup.map s.val.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    change ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.val.toFinset, count a s.val = n
     rw [toFinset_sum_count_eq]
-    exact s.2
+    exact s.property
 
 variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
@@ -118,8 +118,8 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 `Sym τ n` corresponding to a given partition. -/
 def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
-  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
-  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.property]⟩
+  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.property]⟩
   left_inv := by intro x; simp
   right_inv := by intro x; simp
 
@@ -233,11 +233,11 @@ a part. -/
 def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
     {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
   toFun p := by
-    refine ⟨p.1.parts.erase a, ?_, ?_⟩
+    refine ⟨p.val.parts.erase a, ?_, ?_⟩
     · intro _ hi
-      exact p.1.parts_pos (p.1.parts.erase_subset a hi)
-    · have hs : a + (p.1.parts.erase a).sum = n := by
-        simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
+      exact p.val.parts_pos (p.val.parts.erase_subset a hi)
+    · have hs : a + (p.val.parts.erase a).sum = n := by
+        simpa [p.val.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.property)
       lia
   invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
   left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
@@ -246,12 +246,13 @@ def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
 @[simp]
 theorem partitionWithPartEquiv_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
     (p : {p : n.Partition // a ∈ p.parts}) :
-    (partitionWithPartEquiv ha1 ha p).parts = p.1.parts.erase a := by
+    (partitionWithPartEquiv ha1 ha p).parts = p.val.parts.erase a := by
   dsimp [partitionWithPartEquiv]
 
 @[simp]
 theorem partitionWithPartEquiv_symm_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
-    (p : (n - a).Partition) : ((partitionWithPartEquiv ha1 ha).symm p).1.parts = a ::ₘ p.parts := by
+    (p : (n - a).Partition) :
+    ((partitionWithPartEquiv ha1 ha).symm p).val.parts = a ::ₘ p.parts := by
   dsimp [partitionWithPartEquiv]
 
 end Partition

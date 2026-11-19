@@ -33,7 +33,6 @@ requires more unfolding without much obvious benefit.
 
 primitive element, separable field extension, separable extension, intermediate field, adjoin,
 exists_adjoin_simple_eq_top
-
 -/
 
 @[expose] public section
@@ -273,11 +272,11 @@ theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
   have := isAlgebraic_of_finite_intermediateField F E
-  have : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
+  have : ∀ K : IF, FiniteDimensional F K.val := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral _)
-  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
-  have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
-    le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
+  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.val)
+  have htop : ⨆ K : IF, K.val = ⊤ := le_top.antisymm fun x _ ↦
+    le_iSup (fun K : IF ↦ K.val) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 

@@ -281,9 +281,8 @@ multiple of `x`. -/]
 theorem exists_pow_eq_pow_two_mul {p : ℕ} (hx : x ^ p = 1) (hp : Odd p) (n : ℕ) :
     ∃ m, x ^ n = x ^ (2 * m) := by
   obtain ⟨r, rfl⟩ := hp
-  have key : x ^ (2 * (r + 1)) = x := by
-    have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega
-    rw [h2, pow_succ, hx, one_mul]
+  have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by lia
+  have key : x ^ (2 * (r + 1)) = x := by rw [h2, pow_succ, hx, one_mul]
   exact ⟨(r + 1) * n, by rw [← mul_assoc, pow_mul, key]⟩
 
 @[to_additive addOrderOf_smul_dvd]
@@ -543,6 +542,12 @@ theorem orderOf_neg_one {R} [Ring R] [Nontrivial R] :
   apply orderOf_eq_prime
   · simp
   simpa [neg_one_eq_one_iff] using h
+
+/-- The order of `-1` in `Rˣ` is `1` in characteristic `2`, and `2` otherwise. -/
+@[simp]
+theorem Units.orderOf_neg_one {R} [Ring R] [Nontrivial R] :
+    orderOf (-1 : Rˣ) = if ringChar R = 2 then 1 else 2 := by
+  simp [← orderOf_units]
 
 lemma CharP.orderOf_eq_two_iff {R} [Ring R] [Nontrivial R] [NoZeroDivisors R] (p : ℕ)
     (hp : p ≠ 2) [CharP R p] {x : R} : orderOf x = 2 ↔ x = -1 := by
@@ -1464,7 +1469,7 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
     (hn : card R = p ^ n) (hR : ∀ i ≤ n, (p : R) ^ i = 0 → i = n) : CharP R (p ^ n) := by
   obtain ⟨c, hc⟩ := CharP.exists R
   have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]
-  obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
+  obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.out] at hcpn
   obtain rfl : i = n := hR i hi <| by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 

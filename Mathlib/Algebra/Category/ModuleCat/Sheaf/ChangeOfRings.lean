@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 In this file, we define the restriction of scalars functor
 `restrictScalars α : SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R`
 attached to a morphism of sheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section

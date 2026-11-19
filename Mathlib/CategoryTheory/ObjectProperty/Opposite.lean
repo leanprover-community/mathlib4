@@ -10,7 +10,6 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The opposite of a property of objects
-
 -/
 
 @[expose] public section
@@ -28,10 +27,12 @@ section
 variable [CategoryStruct.{v} C]
 
 /-- The property of objects of `Cᵒᵖ` corresponding to `P : ObjectProperty C`. -/
+@[implicit_reducible]
 protected def op (P : ObjectProperty C) : ObjectProperty Cᵒᵖ :=
   fun X ↦ P X.unop
 
 /-- The property of objects of `C` corresponding to `P : ObjectProperty Cᵒᵖ`. -/
+@[implicit_reducible]
 protected def unop (P : ObjectProperty Cᵒᵖ) : ObjectProperty C :=
   fun X ↦ P (op X)
 
@@ -86,8 +87,8 @@ lemma unop_monotone_iff {P Q : ObjectProperty Cᵒᵖ} : P.unop ≤ Q.unop ↔ P
 /-- The bijection `Subtype P.op ≃ Subtype P` for `P : ObjectProperty C`. -/
 def subtypeOpEquiv (P : ObjectProperty C) :
     Subtype P.op ≃ Subtype P where
-  toFun x := ⟨x.1.unop, x.2⟩
-  invFun x := ⟨op x.1, x.2⟩
+  toFun x := ⟨x.val.unop, x.property⟩
+  invFun x := ⟨op x.val, x.property⟩
 
 @[simp]
 lemma op_ofObj {ι : Type*} (X : ι → C) : (ofObj X).op = ofObj (fun i ↦ op (X i)) := by

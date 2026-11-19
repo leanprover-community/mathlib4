@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullback and pushout squares
 
@@ -89,7 +92,7 @@ lemma of_iso (h : IsPullback fst snd f g)
       ← reassoc_of% commsnd, ← commg, h.w_assoc]
   isLimit' :=
     ⟨(IsLimit.postcomposeInvEquiv
-        (cospanExt e₂ e₃ e₄ commf.symm commg.symm) _).1
+        (cospanExt e₂ e₃ e₄ commf.symm commg.symm) _).toFun
           (IsLimit.ofIsoLimit h.isLimit (by
             refine PullbackCone.ext e₁ ?_ ?_
             · change fst = e₁.hom ≫ fst' ≫ e₂.inv
@@ -465,7 +468,7 @@ lemma of_iso (h : IsPushout f g inl inr)
       ← reassoc_of% commg, ← comminr, h.w_assoc]
   isColimit' :=
     ⟨(IsColimit.precomposeHomEquiv
-        (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).1
+        (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).toFun
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 

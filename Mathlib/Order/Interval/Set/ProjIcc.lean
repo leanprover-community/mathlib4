@@ -92,10 +92,8 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
   simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
@@ -112,12 +110,14 @@ theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   cases x
   apply projIcc_of_mem
 
-theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
+theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ =>
+  ⟨x, x.property, projIci_coe x⟩
 
-theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2, projIic_coe x⟩
+theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ =>
+  ⟨x, x.property, projIic_coe x⟩
 
 theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
-  ⟨x, x.2, projIcc_val h x⟩
+  ⟨x, x.property, projIcc_val h x⟩
 
 theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
 

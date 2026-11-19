@@ -337,7 +337,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
   simp only [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
-    Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
+    Submonoid.mem_comap.mp (hφ d.property), ↓reduceDIte]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
@@ -1065,7 +1065,9 @@ theorem num_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : num x⁻¹ ∣ denom x := by
   nth_rw 1 [← x.num_div_denom]
   rw [inv_div]
 
-theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := by
+theorem denom_inv_dvd (x : K⟮X⟯) : denom x⁻¹ ∣ num x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   rw [denom_dvd (num_ne_zero hx)]
   refine ⟨x.denom, ?_⟩
   nth_rw 1 [← x.num_div_denom]
@@ -1073,7 +1075,7 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert denom_inv_dvd (inv_ne_zero hx)
+  convert denom_inv_dvd x⁻¹
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by

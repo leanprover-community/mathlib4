@@ -20,7 +20,6 @@ for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preshea
 and `R` a sheaf of rings.
 In particular, if `α` is the identity of `R.val`, we obtain the
 sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
-
 -/
 
 @[expose] public section
@@ -177,9 +176,6 @@ variable [HasSheafify J AddCommGrpCat.{v}]
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
   comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrpCat)
-
-instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
 
 noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) where
   reflects _ _ _ := inferInstance
