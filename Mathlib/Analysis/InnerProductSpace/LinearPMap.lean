@@ -213,7 +213,7 @@ theorem mem_adjoint_domain_iff_exists {T : E →ₗ.[𝕜] F} (y : F) :
     let i : T.domain →L[𝕜] D :=
       { toLinearMap := Submodule.inclusion T.domain.le_topologicalClosure
         cont := continuous_inclusion T.domain.le_topologicalClosure }
-    let ℓExt := ℓ.extend i 
+    let ℓExt := ℓ.extend i
     use ((InnerProductSpace.toDual 𝕜 D).symm ℓExt : E)
     intro x
     change ⟪(InnerProductSpace.toDual 𝕜 D).symm ℓExt, i x⟫ = ℓ x
