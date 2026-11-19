@@ -124,6 +124,9 @@ public import Mathlib.Util.WhatsNew
 public meta import Lean.Elab.Tactic.Try
 public meta import Lean.Meta.Tactic.Try.Collect
 
+-- Preserve custom import ordering:
+set_option linter.style.header.imports false
+
 /-!
 # Common tactics, linters, and utilities
 

@@ -67,7 +67,7 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   cases subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton]
   have inj := IsLocalization.injective S hp
-  apply le_antisymm <;> (rw [Module.rank]; apply ciSup_le'; intro ⟨s, hs⟩)
+  apply le_antisymm <;> (rw [Module.rank_def]; apply ciSup_le'; intro ⟨s, hs⟩)
   · have := (faithfulSMul_iff_algebraMap_injective R S).mpr inj
     exact (hs.restrict_scalars' R).cardinal_le_rank
   · have := inj.nontrivial

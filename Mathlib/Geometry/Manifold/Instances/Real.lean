@@ -189,7 +189,7 @@ theorem frontier_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, a = y i } := by
   rw [frontier, closure_quadrant, interior_quadrant]
-  ext; simp; grind
+  ext; grind
 
 end
 

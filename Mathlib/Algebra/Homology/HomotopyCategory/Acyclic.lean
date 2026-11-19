@@ -19,7 +19,6 @@ In the lemma `HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W` we obtain
 that the class of quasiisomorphisms `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes.
-
 -/
 
 @[expose] public section

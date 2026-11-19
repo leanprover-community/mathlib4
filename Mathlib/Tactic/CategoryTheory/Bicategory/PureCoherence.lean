@@ -16,7 +16,6 @@ We provide a `bicategory_coherence` tactic,
 which proves that any two morphisms (with the same source and target)
 in a bicategory which are built out of associators and unitors
 are equal.
-
 -/
 
 public meta section

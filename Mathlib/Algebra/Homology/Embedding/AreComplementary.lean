@@ -18,7 +18,6 @@ a partition of the indices of `c`.
 If `e₁.IsTruncLE` and `e₂.IsTruncGE`, and `K : HomologicalComplex C c`,
 we construct a quasi-isomorphism `shortComplexTruncLEX₃ToTruncGE` between
 the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
-
 -/
 
 @[expose] public section
