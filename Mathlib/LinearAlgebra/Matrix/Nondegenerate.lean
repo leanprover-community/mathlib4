@@ -179,10 +179,9 @@ private lemma SeparatingRight.of_submatrix_eq {A : Matrix k l R} {B : Matrix m n
     ext y
     simpa [hs.extend_apply] using congr($this (s y))
   refine hA _ fun v ↦ ?_
-  have hmul : A *ᵥ Function.extend s w 0 = (B *ᵥ w) ∘ r :=
-    funext fun i ↦ (Fintype.sum_of_injective s hs _ _
-      (fun j hj ↦ by simp [Function.extend_apply' _ _ _ hj])
-      (fun y ↦ by simpa [hs.extend_apply] using congr(($hAB.symm i y) * w y))).symm
+  have hmul : A *ᵥ Function.extend s w 0 = (B *ᵥ w) ∘ r := by
+    rw [mulVec_extend_zero hs, hAB]
+    rfl
   have hv : (fun x ↦ ∑ i with r i = x, v i) ⬝ᵥ (B *ᵥ w) = v ⬝ᵥ (A *ᵥ Function.extend s w 0) := by
     rw [hmul]
     simp only [dotProduct, Finset.sum_mul, Function.comp_apply]
