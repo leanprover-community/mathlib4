@@ -180,7 +180,7 @@ theorem isGLB_sInf_of_preimage' [InfSet α] {s : Set (WithTop α)}
 
 /-- See `isGLB_sInf_of_preimage'` for a stronger version. -/
 @[to_dual
-/-- See `isGLB_sInf_of_preimage` for a stronger version. -/]
+/-- See `isLUB_sSup_of_preimage'` for a stronger version. -/]
 theorem isGLB_sInf_of_preimage [InfSet α] {s : Set (WithTop α)}
     (hs : IsGLB ((↑) ⁻¹' s : Set α) (sInf ((↑) ⁻¹' s))) (hs' : BddBelow s) : IsGLB s (sInf s) :=
   isGLB_sInf_of_preimage' (fun _ ↦ hs) hs'
