@@ -1130,16 +1130,16 @@ theorem _root_.ContinuousOn.re (hf : ContinuousOn f s) :
 omit [TopologicalSpace α]
 variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
-lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+lemma lipschitzWith_one_re : LipschitzWith 1 (re (K := K)) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound reCLM 1 (by simpa using norm_re_le_norm)
 
 theorem _root_.LipschitzWith.re (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ re (f x)) := by
-  simpa using! lipschitzWith_re.comp hf
+  simpa using! lipschitzWith_one_re.comp hf
 
 theorem _root_.LipschitzOnWith.re (hf : LipschitzOnWith Kf f s) :
     LipschitzOnWith Kf (fun x ↦ re (f x)) s := by
-  simpa using! lipschitzWith_re.comp_lipschitzOnWith hf
+  simpa using! lipschitzWith_one_re.comp_lipschitzOnWith hf
 
 end re
 
@@ -1192,16 +1192,16 @@ theorem _root_.ContinuousOn.im (hf : ContinuousOn f s) :
 omit [TopologicalSpace α]
 variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
-lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+lemma lipschitzWith_one_im : LipschitzWith 1 (im (K := K)) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound imCLM 1 (by simpa using norm_im_le_norm)
 
 theorem _root_.LipschitzWith.im (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ im (f x)) := by
-  simpa using! lipschitzWith_im.comp hf
+  simpa using! lipschitzWith_one_im.comp hf
 
 theorem _root_.LipschitzOnWith.im (hf : LipschitzOnWith Kf f s) :
     LipschitzOnWith Kf (fun x ↦ im (f x)) s := by
-  simpa using! lipschitzWith_im.comp_lipschitzOnWith hf
+  simpa using! lipschitzWith_one_im.comp_lipschitzOnWith hf
 
 end im
 
@@ -1267,16 +1267,16 @@ theorem _root_.ContinuousOn.conj (hf : ContinuousOn f s) :
 omit [TopologicalSpace α]
 variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
-theorem lipschitzWith_conj : LipschitzWith 1 (conj : K → K) := by
+theorem lipschitzWith_one_conj : LipschitzWith 1 (conj : K → K) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound conj 1 (by simp)
 
 theorem _root_.LipschitzWith.conj (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ conj (f x)) := by
-  simpa using! lipschitzWith_conj.comp hf
+  simpa using! lipschitzWith_one_conj.comp hf
 
 theorem _root_.LipschitzOnWith.conj (hf : LipschitzOnWith Kf f s) :
     LipschitzOnWith Kf (conj f) s := by
-  simpa using! lipschitzWith_conj.comp_lipschitzOnWith hf
+  simpa using! lipschitzWith_one_conj.comp_lipschitzOnWith hf
 
 end star
 
@@ -1343,16 +1343,16 @@ theorem _root_.ContinuousOn.ofReal (hf : ContinuousOn f s) :
 omit [TopologicalSpace α]
 variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
-theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+theorem lipschitzWith_one_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitzWith
 
 theorem _root_.LipschitzWith.ofReal (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ (f x : K)) := by
-  simpa using! lipschitzWith_ofReal.comp hf
+  simpa using! lipschitzWith_one_ofReal.comp hf
 
 theorem _root_.LipschitzOnWith.ofReal (hf : LipschitzOnWith Kf f s) :
     LipschitzOnWith Kf (fun x ↦ (f x : K)) s := by
-  simpa using! lipschitzWith_ofReal.comp_lipschitzOnWith hf
+  simpa using! lipschitzWith_one_ofReal.comp_lipschitzOnWith hf
 
 end ofReal
 
