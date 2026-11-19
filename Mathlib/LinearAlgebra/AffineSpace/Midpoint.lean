@@ -228,6 +228,8 @@ theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
     midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
 
+/-- The medial property of `midpoint`. See
+<https://teorth.github.io/equational_theories/implications/?934128>. -/
 lemma midpoint_midpoint_midpoint_comm (p₁ p₂ p₃ p₄ : P) :
     midpoint R (midpoint R p₁ p₂) (midpoint R p₃ p₄) =
       midpoint R (midpoint R p₁ p₃) (midpoint R p₂ p₄) := by
@@ -236,7 +238,8 @@ lemma midpoint_midpoint_midpoint_comm (p₁ p₂ p₃ p₄ : P) :
 
 /-- **Varignon's theorem**: the midpoints of the sides of the quadrilateral `p₁ p₂ p₃ p₄` form a
 parallelogram. The statement says that the two diagonals of this parallelogram have the same
-midpoint. See <https://en.wikipedia.org/wiki/Varignon%27s_theorem>. -/
+midpoint. See <https://en.wikipedia.org/wiki/Varignon%27s_theorem> and
+<https://teorth.github.io/equational_theories/implications/?934154>. -/
 theorem midpoint_midpoint_midpoint_rotate (p₁ p₂ p₃ p₄ : P) :
     midpoint R (midpoint R p₁ p₂) (midpoint R p₃ p₄) =
       midpoint R (midpoint R p₂ p₃) (midpoint R p₄ p₁) := by
