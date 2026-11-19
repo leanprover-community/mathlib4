@@ -364,7 +364,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
             (∀ x : E, x ∈ t → 0 < r x) ∧
               (s ⊆ ⋃ x ∈ t, closedBall x (r x)) ∧
                 (∑' x : ↥t, μ (closedBall (↑x) (r ↑x))) ≤ μ s + a :=
-      Besicovitch.exists_closedBall_covering_tsum_measure_le μ ha.ne' (fun _ => Ioi 0) s
+      Measure.exists_closedBall_covering_tsum_measure_le μ ha.ne' (fun _ => Ioi 0) s
         fun x _ δ δpos => ⟨δ / 2, by simp [half_pos δpos, δpos]⟩
     have : Encodable t := t_count.toEncodable
     calc
