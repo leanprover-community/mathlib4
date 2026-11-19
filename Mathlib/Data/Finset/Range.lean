@@ -130,7 +130,7 @@ open Finset
 
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
 def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
-  toFun i := i.1 - k
+  toFun i := i.val - k
   invFun j := ⟨j + k, by simp⟩
   left_inv := by grind
   right_inv := by grind

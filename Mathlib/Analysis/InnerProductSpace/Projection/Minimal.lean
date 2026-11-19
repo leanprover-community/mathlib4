@@ -208,7 +208,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
     · apply le_ciInf
       intro w
       apply nonneg_le_nonneg_of_sq_le_sq (norm_nonneg _)
-      have := h w w.2
+      have := h w w.property
       calc
         ‖u - v‖ * ‖u - v‖ ≤ ‖u - v‖ * ‖u - v‖ - 2 * ⟪u - v, w - v⟫_ℝ := by linarith
         _ ≤ ‖u - v‖ ^ 2 - 2 * ⟪u - v, w - v⟫_ℝ + ‖w - v‖ ^ 2 := by

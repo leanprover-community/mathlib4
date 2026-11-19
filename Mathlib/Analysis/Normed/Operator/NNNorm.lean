@@ -79,7 +79,7 @@ theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above 
   Subtype.ext <| opNorm_eq_of_bounds (zero_le (a := M)) h_above <| Subtype.forall'.mpr h_below
 
 theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
-  opNorm_le_iff C.2
+  opNorm_le_iff C.property
 
 theorem isLeast_opNNNorm (f : E →SL[σ₁₂] F) : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using! isLeast_Ici

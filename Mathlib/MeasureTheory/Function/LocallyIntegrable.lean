@@ -135,7 +135,7 @@ set `u ∩ s`. -/
 theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : ∃ T : Set (Set X), T.Countable ∧
     (∀ u ∈ T, IsOpen u) ∧ (s ⊆ ⋃ u ∈ T, u) ∧ (∀ u ∈ T, IntegrableOn f (u ∩ s) μ) := by
-  have : ∀ x : s, ∃ u, IsOpen u ∧ x.1 ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
+  have : ∀ x : s, ∃ u, IsOpen u ∧ x.val ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, x_mem, u_sub⟩

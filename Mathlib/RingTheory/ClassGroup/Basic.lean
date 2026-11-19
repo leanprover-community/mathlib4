@@ -230,7 +230,7 @@ set_option linter.overlappingInstances false
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 def FractionalIdeal.mk0 [IsDedekindDomain R] :
     (Ideal R)⁰ →* (FractionalIdeal R⁰ K)ˣ where
-  toFun I := Units.mk0 I (coeIdeal_ne_zero.mpr <| mem_nonZeroDivisors_iff_ne_zero.mp I.2)
+  toFun I := Units.mk0 I (coeIdeal_ne_zero.mpr <| mem_nonZeroDivisors_iff_ne_zero.mp I.property)
   map_one' := by simp
   map_mul' x y := by simp
 

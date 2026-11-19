@@ -469,7 +469,7 @@ def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
     rfl
   · intro s m e₁ e₂
     refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
-    change (m x).1 = (_, _)
+    change (m x).val = (_, _)
     have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]

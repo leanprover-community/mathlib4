@@ -36,14 +36,14 @@ instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
-  rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
+  rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.property]
 
 @[simp]
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
 @[gcongr, mono]
-theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
+theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.property.ne' h
 
 @[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
@@ -144,7 +144,7 @@ instance instOrderBot : OrderBot ℕ+ where
   bot_le a := a.property
 
 instance : IsBotOneClass ℕ+ where
-  isBot_one a := a.2
+  isBot_one a := a.property
 
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
@@ -217,7 +217,7 @@ theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
   simp
 
 theorem lt_add_left (n m : ℕ+) : n < m + n :=
-  lt_add_of_pos_left _ m.2
+  lt_add_of_pos_left _ m.property
 
 theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
@@ -251,7 +251,7 @@ theorem sub_le (a b : ℕ+) : a - b ≤ a := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.sub_le a b
-  · exact a.2
+  · exact a.property
 
 theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]

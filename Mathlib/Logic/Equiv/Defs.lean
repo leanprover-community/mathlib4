@@ -649,7 +649,7 @@ theorem sigmaCongrRight_refl {α} {β : α → Type*} :
 /-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
-  invFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.val, x.property⟩
 
 /-- A `Sigma` with `PLift` fibers is equivalent to the subtype. -/
 def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
@@ -919,14 +919,14 @@ variable {α β : Type*}
 /-- The left summand of `α ⊕ β` is equivalent to `α`. -/
 @[simps (attr := grind =)]
 def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
-  toFun x := x.1.getLeft x.2
+  toFun x := x.val.getLeft x.property
   invFun a := ⟨.inl a, Sum.isLeft_inl⟩
   left_inv | ⟨.inl _a, _⟩ => rfl
 
 /-- The right summand of `α ⊕ β` is equivalent to `β`. -/
 @[simps (attr := grind =)]
 def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
-  toFun x := x.1.getRight x.2
+  toFun x := x.val.getRight x.property
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
 

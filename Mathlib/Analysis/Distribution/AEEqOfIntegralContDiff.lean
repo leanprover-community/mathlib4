@@ -141,7 +141,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : 
     · exact meas_U
   rw [Function.extend_apply' _ _ _ (mt _ hx)]
   · apply zero_smul
-  · rintro ⟨x, rfl⟩; exact x.2
+  · rintro ⟨x, rfl⟩; exact x.property
 
 variable [SigmaCompactSpace M]
 
