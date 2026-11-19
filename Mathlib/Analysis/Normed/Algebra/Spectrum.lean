@@ -589,10 +589,10 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   have hla₂ : Tendsto Ring.inverse (map (val S) l) (𝓝 (↑u⁻¹ : A)) := by
     rw [← Ring.inverse_unit]
     exact (NormedRing.inverse_continuousAt _).tendsto.comp <|
-      continuousAt_subtypeVal.tendsto.comp <| map_mono hla
-  suffices mem : (↑ha.unit⁻¹ : A) ∈ S by
-    refine ⟨⟨a, ⟨(↑ha.unit⁻¹ : A), mem⟩, ?_, ?_⟩, rfl⟩
-    all_goals ext; simp
+      hu ▸ continuousAt_subtypeVal.tendsto.comp (map_mono hla)
+  suffices mem : (↑u⁻¹ : A) ∈ S by
+    refine ⟨⟨a, ⟨(↑u⁻¹ : A), mem⟩, ?_, ?_⟩, rfl⟩
+    all_goals ext; simp [hu]
   apply hS.mem_of_tendsto hla₂
   rw [Filter.eventually_map]
   apply hl.mono fun x hx ↦ ?_
