@@ -108,7 +108,7 @@ sum of `L (f a) (g b)` over all pairs `(a, b)` with `a * b = x`. -/
   /-- Additive convolution: the value at `x` is the sum of `L (f a) (g b)` over all pairs
   `(a, b)` with `a + b = x`. -/]
 def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
-  fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
+  fun x => ∑' ab : mulFiber x, L (f ab.val.1) (g ab.val.2)
 
 /-- Notation for discrete convolution with explicit bilinear map:
 `(f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`. -/
@@ -166,7 +166,7 @@ variable [TopologicalSpace F]
   /-- The additive convolution of `f` and `g` with bilinear map `L` exists at `x`: the family
   `ab ↦ L (f ab.1.1) (g ab.1.2)` indexed by `addFiber x` is summable. -/]
 def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
-  Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
+  Summable fun ab : mulFiber x => L (f ab.val.1) (g ab.val.2)
 
 /-- The convolution of `f` and `g` with bilinear map `L` exists at every point, that is,
 `ConvolutionExistsAt L f g x` holds for every `x`.
@@ -256,7 +256,7 @@ lemma convolution_eq_sum_mulAntidiagonal
     (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
   rw [convolution, ← Finset.tsum_subtype]
   exact (Set.equivOfEq (mulFiber_eq_mulAntidiagonal x)).tsum_eq
-    (fun ab => L (f ab.1.1) (g ab.1.2))
+    (fun ab => L (f ab.val.1) (g ab.val.2))
 
 /-- Convolution exists whenever the index monoid has `Finset.HasMulAntidiagonal`, since every
 fiber is then finite. -/
@@ -315,7 +315,7 @@ scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_apply]
 lemma ringConvolution_apply (f g : M → R) (x : M) :
-    (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+    (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.val.1 * g ab.val.2 := rfl
 
 @[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
 lemma zero_ringConvolution (f : M → R) :

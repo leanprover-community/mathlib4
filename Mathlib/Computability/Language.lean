@@ -47,7 +47,6 @@ with respect to other language operations.
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
   `l = m * l + n`, and `m` doesn't contain the empty string,
   then `l` is the language `m∗ * n`
-
 -/
 
 @[expose] public section
@@ -408,14 +407,3 @@ lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l
 
 end Language
-
-/-- Symbols for use by all kinds of grammars. -/
-inductive Symbol (T N : Type*)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
-  | nonterminal (n : N) : Symbol T N
-deriving
-  DecidableEq, Repr, Fintype
-
-attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

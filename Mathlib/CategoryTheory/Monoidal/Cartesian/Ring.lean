@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Ring
 
 /-!
 # Yoneda embedding of `RingCatObj C`
-
 -/
 
 @[expose] public section

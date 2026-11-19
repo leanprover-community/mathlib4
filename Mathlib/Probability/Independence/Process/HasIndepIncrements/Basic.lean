@@ -9,6 +9,9 @@ public import Mathlib.Probability.Independence.Basic
 
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stochastic processes with independent increments
 
@@ -65,7 +68,8 @@ protected lemma HasIndepIncrements.nat
   obtain rfl | hs := s.eq_empty_or_nonempty
   · have := (hX 0 (fun _ ↦ t 0) (fun _ ↦ by grind)).isProbabilityMeasure
     exact iIndepFun.of_subsingleton
-  · let g (x : s) : Fin (s.max' hs + 1) := ⟨x.1, Nat.lt_add_one_of_le (s.le_max' x.1 x.2)⟩
+  · let g (x : s) : Fin (s.max' hs + 1) :=
+      ⟨x.val, Nat.lt_add_one_of_le (s.le_max' x.val x.property)⟩
     refine iIndepFun.precomp (g := g) ?_ (hX (s.max' hs + 1) (fun m ↦ t m) ?_)
     · simp [g, Function.Injective]
     · exact ht.comp Fin.val_strictMono.monotone

@@ -20,7 +20,6 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 * [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
   Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
-
 -/
 
 @[expose] public section
@@ -122,7 +121,7 @@ protected def comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (g : L₂ →ₗ⁅σ₂
 
 /-- The identity morphism of a Lie-Rinehart algebra over the identity algebra homomorphism of the
 underlying algebra. -/
-protected def id : L₁ →ₗ⁅AlgHom.id R A₁⁆ L₁ where
+protected def id : L₁ →ₗ⁅.id R A₁⁆ L₁ where
   __ := LieHom.id
   map_smul_apply' _ _ := by simp
   apply_lie' _ _ := by simp
@@ -134,7 +133,7 @@ variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
 variable (R A₁ L₁) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`. -/
-def anchor : L₁ →ₗ⁅AlgHom.id R A₁⁆ Derivation R A₁ A₁ where
+def anchor : L₁ →ₗ⁅.id R A₁⁆ Derivation R A₁ A₁ where
   toFun x := .mk' (LieModule.toEnd R L₁ A₁ x) fun a b ↦ by
     simp [mul_comm b]
   map_add' _ _ := by ext; simp

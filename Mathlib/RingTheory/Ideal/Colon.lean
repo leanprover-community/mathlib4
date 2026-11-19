@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 This file defines `Submodule.colon N P` as the ideal of all elements `r : R` such that `r • P ⊆ N`.
 The normal notation for this would be `N : P` which has already been taken by type theory.
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ Given `c : CoconeTypes F`, we deduce a lemma
 a concrete condition under which the map
 `F.descColimitType c : F.ColimitType → c.pt` is injective, which is an
 important step when proving `c.IsColimit`.
-
 -/
 
 public section

@@ -89,7 +89,7 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
         principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy)))
         (Std.Total.directed _)
     · intro x
-      have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.2, le_refl (f x)⟩
+      have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.property, le_refl (f x)⟩
       exact neBot_of_le this
   have hℱs : ℱ ≤ 𝓟 s :=
     iInf_le_of_le (Classical.choice inferInstance) (principal_mono.mpr inter_subset_left)

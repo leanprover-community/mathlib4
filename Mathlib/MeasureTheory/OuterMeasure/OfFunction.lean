@@ -33,7 +33,6 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 ## Tags
 
 outer measure, Carathéodory-measurable, Carathéodory's criterion
-
 -/
 
 @[expose] public section

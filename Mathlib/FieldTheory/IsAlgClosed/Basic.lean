@@ -45,7 +45,6 @@ algebraic closure, algebraically closed
   see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
-
 -/
 
 @[expose] public section
@@ -195,6 +194,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   obtain ⟨x, hx⟩ := H f h
   exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
+
+-- TODO : add universe-polymorphic version (algebraic extensions have the same cardinality)
+/--
+If `k` has no nontrivial finite extension, then `k` is algebraically closed.
+-/
+theorem of_finiteDimensional_imp_finrank_eq_one
+    (H : ∀ (l : Type u) [Field l] [Algebra k l] [FiniteDimensional k l], Module.finrank k l = 1) :
+    IsAlgClosed k :=
+  .of_exists_root _ fun f f_monic f_irr ↦
+    have := Fact.mk f_irr
+    have := f_monic.finite_adjoinRoot
+    exists_root_of_natDegree_eq_one <| by
+      rw [← finrank_quotient_span_eq_natDegree]
+      exact H (AdjoinRoot f)
+
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
   apply IsAlgClosed.of_exists_root
@@ -271,7 +285,7 @@ attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.isAlgClosed, h.isAlgebraic⟩, fun h => ⟨h.1, h.2⟩⟩
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K where
@@ -473,7 +487,7 @@ noncomputable def equivOfEquiv (hSR : S ≃+* R) : L ≃+* M :=
 @[simp]
 theorem equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
     (↑(equivOfEquiv L M hSR) : L →+* M).comp (algebraMap S L) = (algebraMap R M).comp hSR :=
-  (equivOfEquivAux L M hSR).2
+  (equivOfEquivAux L M hSR).property
 
 @[simp]
 theorem equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :

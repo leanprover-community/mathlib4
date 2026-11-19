@@ -9,14 +9,12 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
-
 # Preimmersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of topological spaces
 is an embedding and the induced morphisms of stalks are all surjective. This is not a concept seen
 in the literature but it is useful for generalizing results on immersions to other maps including
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
-
 -/
 
 public section
@@ -104,7 +102,7 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   let L (x : (pullback f g :)) : { x : X × Y | f x.1 = g x.2 } :=
     ⟨⟨pullback.fst f g x, pullback.snd f g x⟩,
     by simp only [Set.mem_ofPred, ← Scheme.Hom.comp_apply, pullback.condition]⟩
-  have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val
+  have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtypeVal
     (SurjectiveOnStalks.isEmbedding_pullback f g)
   exact IsEmbedding.subtypeVal.comp ((TopCat.pullbackHomeoPreimage _ f.continuous _
     g.isEmbedding).isEmbedding.comp this)

@@ -29,7 +29,6 @@ for these two "identical" functors, we must not make `Functor.comp`
 more reducible: in particular, if `Functor.comp` had the attribute
 `instance_reducible`, an instance for `(F ⋙ G) ⋙ H` would be found
 when there is an instance for `F ⋙ (G ⋙ H)` (which would be bad).
-
 -/
 
 /-! The two following tests ensure that for the typeclass `Foo`,

@@ -38,7 +38,6 @@ We will try to relax the above hypotheses as much as possible.
 
 In this file, `e` stands for the ramification index and `f` for the inertia degree of `P` over `p`,
 leaving `p` and `P` implicit.
-
 -/
 
 deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")
@@ -144,9 +143,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
     obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
     rw [← quot_x_eq, Finset.smul_sum]
-    conv =>
-      lhs; congr; next => skip
-      intro x; rw [smul_comm A.det, d_smul, smul_zero]
+    conv_lhs =>
+      enter [2, x]; rw [smul_comm A.det, d_smul, smul_zero]
     exact Finset.sum_const_zero
   refine top_le_iff.mp
       (calc
@@ -308,7 +306,7 @@ theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 noncomputable def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
-  toFun x := ⟨x, Ideal.map_mono (Ideal.pow_le_pow_right i.le_succ) x.2⟩
+  toFun x := ⟨x, Ideal.map_mono (Ideal.pow_le_pow_right i.le_succ) x.property⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -505,22 +503,23 @@ variable [IsDedekindDomain S]
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem Factors.ne_bot (P : (factors (map (algebraMap R S) p)).toFinset) : (P : Ideal S) ≠ ⊥ :=
-  (prime_of_factor _ (Multiset.mem_toFinset.mp P.2)).ne_zero
+  (prime_of_factor _ (Multiset.mem_toFinset.mp P.property)).ne_zero
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.isPrime (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsPrime (P : Ideal S) :=
-  Ideal.isPrime_of_prime (prime_of_factor _ (Multiset.mem_toFinset.mp P.2))
+  Ideal.isPrime_of_prime (prime_of_factor _ (Multiset.mem_toFinset.mp P.property))
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem Factors.ramificationIdx_ne_zero (P : (factors (map (algebraMap R S) p)).toFinset) :
-    ramificationIdx' p P.1 ≠ 0 :=
-  IsDedekindDomain.ramificationIdx'_ne_zero (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.2))
-    (Factors.isPrime p P) (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.2)))
+    ramificationIdx' p P.val ≠ 0 :=
+  IsDedekindDomain.ramificationIdx'_ne_zero
+    (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.property)) (Factors.isPrime p P)
+    (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.property)))
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S) p)).toFinset) :
-    NeZero (ramificationIdx' p P.1) :=
+    NeZero (ramificationIdx' p P.val) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
@@ -532,24 +531,24 @@ instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset)
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.liesOver [p.IsMaximal] (P : (factors (map (algebraMap R S) p)).toFinset) :
-    P.1.LiesOver p :=
-  ⟨(comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P.1)).injective).symm⟩
+    P.val.LiesOver p :=
+  ⟨(comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P.val)).injective).symm⟩
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
-    finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) =
-      ramificationIdx' p P.1 * inertiaDeg' p (P : Ideal S) := by
+    finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.val) =
+      ramificationIdx' p P.val * inertiaDeg' p (P : Ideal S) := by
   rw [finrank_prime_pow_ramificationIdx, inertiaDeg'_algebraMap]
   exacts [Factors.ne_bot p P, NeZero.ne _]
 
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.finiteDimensional_quotient_pow [Module.Finite R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
-    FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) := by
+    FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.val) := by
   refine .of_finrank_pos ?_
   rw [pos_iff_ne_zero, Factors.finrank_pow_ramificationIdx]
-  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg'_pos p P.1).ne'
+  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg'_pos p P.val).ne'
 
 universe w
 
@@ -559,11 +558,11 @@ factors in `S` as `∏ i, P i ^ e i`, then `S ⧸ I` factors as `Π i, R ⧸ (P 
 noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
     S ⧸ map (algebraMap R S) p ≃+*
       ∀ P : (factors (map (algebraMap R S) p)).toFinset,
-        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1 :=
+        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.val :=
   (IsDedekindDomain.quotientEquivPiFactors hp).trans <|
     @RingEquiv.piCongrRight (factors (map (algebraMap R S) p)).toFinset
       (fun P => S ⧸ (P : Ideal S) ^ (factors (map (algebraMap R S) p)).count (P : Ideal S))
-      (fun P => S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) _ _
+      (fun P => S ⧸ (P : Ideal S) ^ ramificationIdx' p P.val) _ _
       fun P : (factors (map (algebraMap R S) p)).toFinset =>
       Ideal.quotEquivOfEq <| by
         rw [IsDedekindDomain.ramificationIdx'_eq_factors_count hp (Factors.isPrime p P)
@@ -587,7 +586,7 @@ then `S ⧸ I` factors `R ⧸ I`-linearly as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
     (S ⧸ map (algebraMap R S) p) ≃ₗ[R ⧸ p]
       ∀ P : (factors (map (algebraMap R S) p)).toFinset,
-        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1 :=
+        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.val :=
   { Factors.piQuotientEquiv p hp with
     map_smul' := by
       rintro ⟨c⟩ ⟨x⟩; ext P

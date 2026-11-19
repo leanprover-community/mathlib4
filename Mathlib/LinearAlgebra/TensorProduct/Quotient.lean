@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
-
 # Interaction between Quotients and Tensor Products
 
 This file contains constructions that relate quotients and tensor products. This file is also a home
@@ -34,7 +33,6 @@ the following isomorphisms:
 ## Tags
 
 Quotient, Tensor Product
-
 -/
 
 @[expose] public section
@@ -78,8 +76,8 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
       set g := (map m.mkQ n.mkQ) ∘ₗ (map LinearMap.id n.subtype)
       have eq : LinearMap.coprod f g = 0 := by
         ext x y
-        · simp [f, Submodule.Quotient.mk_eq_zero _ |>.2 x.2]
-        · simp [g, Submodule.Quotient.mk_eq_zero _ |>.2 y.2]
+        · simp [f, Submodule.Quotient.mk_eq_zero _ |>.2 x.property]
+        · simp [g, Submodule.Quotient.mk_eq_zero _ |>.2 y.property]
       congrm $eq (a, b))
     (by ext; simp) (by ext; simp)
 

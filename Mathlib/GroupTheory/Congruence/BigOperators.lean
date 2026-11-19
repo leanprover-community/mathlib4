@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
-
 -/
 
 public section

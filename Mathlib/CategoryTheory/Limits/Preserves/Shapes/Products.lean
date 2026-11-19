@@ -38,6 +38,10 @@ variable {J : Type w} (f : J → C)
 /-- The map of a fan is a limit iff the fan consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fan.mk` with `Functor.mapCone`.
 -/
+@[to_dual
+/-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
+This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
+-/]
 def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
@@ -46,12 +50,14 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
   exact Cone.ext (Iso.refl _) fun j ↦ by dsimp; cases j; simp
 
 /-- The property of preserving products expressed in terms of fans. -/
+@[to_dual /-- The property of preserving coproducts expressed in terms of cofans. -/]
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ g)) :
     IsLimit (Fan.mk (G.obj P) fun j => G.map (g j) : Fan fun j => G.obj (f j)) :=
   isLimitMapConeFanMkEquiv _ _ _ (isLimitOfPreserves G t)
 
 /-- The property of reflecting products expressed in terms of fans. -/
+@[to_dual /-- The property of reflecting coproducts expressed in terms of cofans. -/]
 def isLimitOfIsLimitFanMkObj [ReflectsLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j))) :
     IsLimit (Fan.mk P g) :=
@@ -65,13 +71,22 @@ variable [HasProduct f]
 If `G` preserves products and `C` has them, then the fan constructed of the mapped projection of a
 product is a limit.
 -/
+@[to_dual
+/-- If `G` preserves coproducts and `C` has them,
+then the cofan constructed of the mapped inclusion of a coproduct is a colimit.
+-/]
 def isLimitOfHasProductOfPreservesLimit [PreservesLimit (Discrete.functor f) G] :
     IsLimit (Fan.mk _ fun j : J => G.map (Pi.π f j) : Fan fun j => G.obj (f j)) :=
   isLimitFanMkObjOfIsLimit G f _ (productIsProduct _)
 
 variable [HasProduct fun j : J => G.obj (f j)]
 
+insert_to_dual_translation
+  CategoryTheory.Limits.PreservesProduct CategoryTheory.Limits.PreservesCoproduct
+
 /-- If `pi_comparison G f` is an isomorphism, then `G` preserves the limit of `f`. -/
+@[to_dual
+/-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/]
 lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
     PreservesLimit (Discrete.functor f) G := by
   apply preservesLimit_of_preserves_limit_cone (productIsProduct f)
@@ -79,7 +94,7 @@ lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _
     (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) i
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp)) map_ι_comp_inv_sigmaComparison]
 lemma inv_piComparison_comp_map_π [IsIso (piComparison G f)] (j : J) :
      inv (piComparison G f) ≫ G.map (Pi.π _ j) =
       Pi.π (fun x ↦ (G.obj (f x))) j := by
@@ -91,17 +106,23 @@ variable [PreservesLimit (Discrete.functor f) G]
 If `G` preserves limits, we have an isomorphism from the image of a product to the product of the
 images.
 -/
+@[to_dual
+/-- If `G` preserves colimits,
+we have an isomorphism from the image of a coproduct to the coproduct of the images.
+-/]
 def PreservesProduct.iso : G.obj (∏ᶜ f) ≅ ∏ᶜ fun j => G.obj (f j) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasProductOfPreservesLimit G f) (limit.isLimit _)
 
-@[simp]
+@[to_dual (attr := simp) iso_inv]
 theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison G f :=
   rfl
 
+@[to_dual instIsIsoSigmaComparison]
 instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
+@[to_dual]
 instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimitsOfShape I F] :
     PreservesLimitsOfShape Iᵒᵖ F :=
   letI : Groupoid I := Groupoid.ofIsGroupoid
@@ -109,87 +130,15 @@ instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimits
 
 end
 
-/-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
-This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
--/
-def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
-    IsColimit (Functor.mapCocone G (Cofan.mk P g)) ≃
-      IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
-  refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
-  · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
-
-/-- The property of preserving coproducts expressed in terms of cofans. -/
-def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
-    (g : ∀ j, f j ⟶ P) (t : IsColimit (Cofan.mk _ g)) :
-    IsColimit (Cofan.mk (G.obj P) fun j => G.map (g j) : Cofan fun j => G.obj (f j)) :=
-  isColimitMapCoconeCofanMkEquiv _ _ _ (isColimitOfPreserves G t)
-
-/-- The property of reflecting coproducts expressed in terms of cofans. -/
-def isColimitOfIsColimitCofanMkObj [ReflectsColimit (Discrete.functor f) G] {P : C}
-    (g : ∀ j, f j ⟶ P)
-    (t : IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j))) :
-    IsColimit (Cofan.mk P g) :=
-  isColimitOfReflects G ((isColimitMapCoconeCofanMkEquiv _ _ _).symm t)
-
-section
-
-variable [HasCoproduct f]
-
-/-- If `G` preserves coproducts and `C` has them,
-then the cofan constructed of the mapped inclusion of a coproduct is a colimit.
--/
-def isColimitOfHasCoproductOfPreservesColimit [PreservesColimit (Discrete.functor f) G] :
-    IsColimit (Cofan.mk _ fun j : J => G.map (Sigma.ι f j) : Cofan fun j => G.obj (f j)) :=
-  isColimitCofanMkObjOfIsColimit G f _ (coproductIsCoproduct _)
-
-variable [HasCoproduct fun j : J => G.obj (f j)]
-
-/-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/
-lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
-    PreservesColimit (Discrete.functor f) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (coproductIsCoproduct f)
-  apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
-  exact @IsColimit.ofPointIso _ _ _ _ _ _ _
-    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i
-
-@[reassoc (attr := simp)]
-lemma map_ι_comp_inv_sigmaComparison [IsIso (sigmaComparison G f)] (j : J) :
-    G.map (Sigma.ι _ j) ≫ inv (sigmaComparison G f) =
-      Sigma.ι (fun x ↦ (G.obj (f x))) j := by
-  simp
-
-variable [PreservesColimit (Discrete.functor f) G]
-
-/-- If `G` preserves colimits,
-we have an isomorphism from the image of a coproduct to the coproduct of the images.
--/
-def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
-  IsColimit.coconePointUniqueUpToIso (isColimitOfHasCoproductOfPreservesColimit G f)
-    (colimit.isColimit _)
-
-@[simp]
-theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f := rfl
-
-instance : IsIso (sigmaComparison G f) := by
-  rw [← PreservesCoproduct.inv_hom]
-  infer_instance
-
-end
-
 /-- If `F` preserves the limit of every `Discrete.functor f`, it preserves all limits of shape
 `Discrete J`. -/
+@[to_dual
+/-- If `F` preserves the colimit of every `Discrete.functor f`, it preserves all colimits of shape
+`Discrete J`. -/]
 lemma preservesLimitsOfShape_of_discrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesLimit (Discrete.functor f) F] :
     PreservesLimitsOfShape (Discrete J) F where
   preservesLimit := preservesLimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
-
-/-- If `F` preserves the colimit of every `Discrete.functor f`, it preserves all colimits of shape
-`Discrete J`. -/
-lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
-    [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
-    PreservesColimitsOfShape (Discrete J) F where
-  preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
 
 instance {I : Type w} (F : C ⥤ D) [PreservesColimitsOfShape (Discrete I) F] :
     PreservesColimitsOfShape (Discrete I)ᵒᵖ F :=

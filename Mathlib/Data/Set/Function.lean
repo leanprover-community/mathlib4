@@ -297,8 +297,10 @@ theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _
 alias _root_.Function.Injective.injOn := injOn_of_injective
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
-theorem injOn_subtype_val {p : α → Prop} {s : Set {x // p x}} : Set.InjOn Subtype.val s :=
+theorem injOn_subtypeVal {p : α → Prop} {s : Set {x // p x}} : Set.InjOn Subtype.val s :=
   Subtype.coe_injective.injOn
+
+@[deprecated (since := "2026-11-10")] alias injOn_subtype_val := injOn_subtypeVal
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn
 
@@ -459,7 +461,7 @@ theorem surjOn_iff_exists_map_subtype :
     ⟨_, (mapsTo_image f s).restrict f s _, h, surjective_mapsTo_image_restrict _ _, fun _ => rfl⟩,
     fun ⟨t', g, htt', hg, hfg⟩ y hy =>
     let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
-    ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
+    ⟨x, x.property, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
 
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
@@ -727,9 +729,10 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
   bijOn_of_subsingleton' _ Iff.rfl
 
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
-  ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
-    let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
+  ⟨fun x y h' => Subtype.ext <| h.injOn x.property y.property <| Subtype.ext_iff.1 h',
+    fun ⟨_, hy⟩ =>
+      let ⟨x, hx, hxy⟩ := h.surjOn hy
+      ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
@@ -783,7 +786,7 @@ theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
 theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
     BijOn f (s \ {a}) (t \ {f a}) := by
   convert h₁.subset_left sdiff_subset
-  simp [h₁.injOn.image_sdiff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
+  simp [h₁.injOn.image_sdiff, h₁.image_eq, h₂]
 
 end bijOn
 
@@ -1124,7 +1127,7 @@ lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t
 lemma SurjOn.exists_subset_injOn_image_eq (hfs : s.SurjOn f t) :
     ∃ u ⊆ s, u.InjOn f ∧ f '' u = t := by
   choose x hmem heq using hfs
-  exact ⟨range (fun a : t ↦ x a.2), by grind, fun _ ↦ by grind, by aesop⟩
+  exact ⟨range (fun a : t ↦ x a.property), by grind, fun _ ↦ by grind, by aesop⟩
 
 end Set
 

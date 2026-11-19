@@ -15,7 +15,6 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
-
 -/
 
 public section
@@ -109,7 +108,7 @@ theorem isLittleO_one_left_iff : (fun _x => 1 : α → F) =o[l] f ↔ Tendsto (f
     _ ↔ ∀ n : ℕ, True → ∀ᶠ x in l, ‖f x‖ ∈ Ici (n : ℝ) := by
       simp only [norm_one, mul_one, true_imp_iff, mem_Ici]
     _ ↔ Tendsto (fun x => ‖f x‖) l atTop :=
-      atTop_hasCountableBasis_of_archimedean.1.tendsto_right_iff.symm
+      atTop_hasCountableBasis_of_archimedean.toHasBasis.tendsto_right_iff.symm
 
 theorem _root_.Filter.Tendsto.isBigO_one {c : E'} (h : Tendsto f' l (𝓝 c)) :
     f' =O[l] (fun _x => 1 : α → F) :=
@@ -409,6 +408,11 @@ alias ⟨_, isLittleO_of_tendsto'⟩ := isLittleO_iff_tendsto'
 
 alias ⟨_, isLittleO_of_tendsto⟩ := isLittleO_iff_tendsto
 
+/-- A function `f` with `f 0 = 0` is `o(x)` if and only if `f x / x → 0`. -/
+theorem isLittleO_id_iff_tendsto {l : Filter 𝕜} {f : 𝕜 → 𝕜} (hf : f 0 = 0) :
+    f =o[l] id ↔ Tendsto (fun x ↦ f x / x) l (𝓝 0) :=
+  isLittleO_iff_tendsto fun _ hx ↦ by simp_all
+
 theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
     (fun _x => c) =o[l] g ↔ Tendsto (fun x => ‖g x‖) l atTop := by
   simp only [← isLittleO_one_left_iff ℝ]
@@ -454,13 +458,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRi
   {l : Filter α} {f g : α → 𝕜}
 
 theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
-  apply Asymptotics.isLittleO_of_tendsto'
-  · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
-    intro x h h0
-    simp only [h0, zero_div] at h
-    grind
-  · convert! Tendsto.comp tendsto_inv_atTop_zero h
-    simp
+  refine isLittleO_of_tendsto' ((h.eventually_ge_atTop 1).mono (by grind)) ?_
+  convert tendsto_inv_atTop_zero.comp h
+  simp
 
 theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
   refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)

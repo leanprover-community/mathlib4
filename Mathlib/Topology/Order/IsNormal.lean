@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.IsNormal
 public import Mathlib.Topology.Order.IsLUB
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A normal function is strictly monotone and continuous
 
@@ -51,6 +54,6 @@ theorem isNormal_iff_strictMono_and_continuous {f : α → β} :
     · rintro _ ⟨b, hb, rfl⟩
       exact (hs hb).le
     · apply image_closure_subset_closure_image hc (mem_image_of_mem ..)
-      exact ha.isLUB_Iio.mem_closure (Iio_nonempty.2 ha.1)
+      exact ha.isLUB_Iio.mem_closure (Iio_nonempty.2 ha.not_isMin)
 
 end Order

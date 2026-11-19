@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 We define finitely presentable objects as a synonym for `ℵ₀`-presentable objects,
 and link this definition with the preservation of filtered colimits.
-
 -/
 
 @[expose] public section
