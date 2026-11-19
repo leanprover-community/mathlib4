@@ -167,19 +167,17 @@ noncomputable abbrev adjoinAlgebraicToK (x : K) (int : IsIntegral S x) :
 noncomputable instance (x : K) (int : IsIntegral S x) : Algebra (adjoinAlgebraic K S x int) K :=
   (adjoinAlgebraicToK K S x int).toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (x : K) (int : IsIntegral S x) :
     IsScalarTower S (adjoinAlgebraic K S x int) K := by
   apply IsScalarTower.of_algebraMap_eq (fun y ↦ ?_)
   rw [IsScalarTower.algebraMap_eq S S[X] (adjoinAlgebraic K S x int)]
-  simp [RingHom.algebraMap_toAlgebra]
+  simp [RingHom.algebraMap_toAlgebra, adjoinAlgebraicToK]
 
 omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
-set_option backward.isDefEq.respectTransparency false in
 lemma adjoinAlgebraic_mem_range (x : K) (int : IsIntegral S x) :
     x ∈ (algebraMap (adjoinAlgebraic K S x int) K).range := by
   use Ideal.Quotient.mk _ Polynomial.X
-  simp [RingHom.algebraMap_toAlgebra]
+  simp [RingHom.algebraMap_toAlgebra, adjoinAlgebraicToK]
 
 set_option linter.unusedVariables false in
 /-- Extension of a local ring for a transcendental element over its residue field. -/
