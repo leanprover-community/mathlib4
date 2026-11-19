@@ -117,7 +117,7 @@ private lemma le_re_herglotzRieszKernel_aux (θ φ r R : ℝ) (h₁ : 0 < r) (h�
   rw [poissonKernel_eq_re_herglotzRieszKernel_aux]
   simp only [Complex.norm_mul, norm_real, norm_eq_abs, norm_exp_ofReal_mul_I, mul_one, sq_abs,
     sq_sub_sq]
-  field_simp [sub_pos.mpr h₂]
+  field_simp
   simp only [mul_comm I] -- make sure exponents are in the form `?angle * I` for the simplification
   rw [div_le_div_iff₀ (by positivity [h₁.trans h₂]) ?hpos, ← normSq_eq_norm_sq, normSq_sub,
     normSq_eq_norm_sq, normSq_eq_norm_sq]

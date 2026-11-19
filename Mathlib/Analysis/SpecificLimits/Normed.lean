@@ -431,7 +431,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     grind
   · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     nontriviality R
-    positivity [sub_pos.mpr h, one_le_norm_one R]
+    positivity [one_le_norm_one R]
 
 variable [HasSummableGeomSeries R]
 
