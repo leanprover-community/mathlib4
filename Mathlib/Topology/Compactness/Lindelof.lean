@@ -155,9 +155,9 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
 
 theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
     (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
-    ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
-  have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
-    fun x hx ↦
+    ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.property := by
+  have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.property))
+    (fun _ ↦ isOpen_interior) fun x hx ↦
       mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩
   rcases this with ⟨r, ⟨hr, hs⟩⟩
   use r, hr
@@ -396,7 +396,7 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
-      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.val]
       exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, mem_image_of_mem _ hi⟩
     · apply Set.iUnion₂_subset
       rintro i hi

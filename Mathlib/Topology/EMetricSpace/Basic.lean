@@ -314,7 +314,7 @@ theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set γ} (hs : 
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : γ) → x ∈ s → Set γ} (hs : IsCompact s)
-    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.2 := by
+    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.property := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
@@ -327,7 +327,7 @@ theorem lebesgue_number_lemma_of_emetric_nhds {c : γ → Set γ} (hs : IsCompac
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : γ) → x ∈ s → Set γ}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
-    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.2 := by
+    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.property := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc

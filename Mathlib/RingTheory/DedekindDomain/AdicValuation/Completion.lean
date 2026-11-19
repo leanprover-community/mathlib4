@@ -388,7 +388,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
       rw [Algebra.smul_def]
-      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.property
       rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
@@ -497,6 +497,6 @@ theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletio
     a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.val = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦
      ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
-  convert! isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2
+  convert! isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).property
 
 end IsDedekindDomain.HeightOneSpectrum

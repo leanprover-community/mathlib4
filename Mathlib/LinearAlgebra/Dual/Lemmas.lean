@@ -698,7 +698,7 @@ def quotDualCoannihilatorToDual (W : Submodule R (Dual R M)) :
 
 @[simp]
 theorem quotDualCoannihilatorToDual_apply (W : Submodule R (Dual R M)) (m : M) (w : W) :
-    W.quotDualCoannihilatorToDual (Quotient.mk m) w = w.1 m := rfl
+    W.quotDualCoannihilatorToDual (Quotient.mk m) w = w.val m := rfl
 
 theorem quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual :=
@@ -1031,11 +1031,11 @@ open OrderDual in
 def orderIsoFiniteCodimDim :
     {W : Subspace K V // FiniteDimensional K (V ⧸ W)} ≃o
     {W : Subspace K (Dual K V) // FiniteDimensional K W}ᵒᵈ where
-  toFun W := toDual ⟨W.1.dualAnnihilator, Submodule.finite_dualAnnihilator_iff.mpr W.2⟩
-  invFun W := ⟨(ofDual W).1.dualCoannihilator,
-    finiteDimensional_quot_dualCoannihilator_iff.mpr (ofDual W).2⟩
+  toFun W := toDual ⟨W.val.dualAnnihilator, Submodule.finite_dualAnnihilator_iff.mpr W.property⟩
+  invFun W := ⟨(ofDual W).val.dualCoannihilator,
+    finiteDimensional_quot_dualCoannihilator_iff.mpr (ofDual W).property⟩
   left_inv _ := Subtype.ext dualAnnihilator_dualCoannihilator_eq
-  right_inv W := have := (ofDual W).2; Subtype.ext dualCoannihilator_dualAnnihilator_eq
+  right_inv W := have := (ofDual W).property; Subtype.ext dualCoannihilator_dualAnnihilator_eq
   map_rel_iff' := dualAnnihilator_le_dualAnnihilator_iff
 
 open OrderDual in

@@ -156,7 +156,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
       (f := (IsScalarTower.toAlgHom R P S).comp f₀) fun x ↦ by
-    simpa using IsLocalization.map_units (M := M) _ ⟨f₀ x.1, x.2⟩
+    simpa using IsLocalization.map_units (M := M) _ ⟨f₀ x.val, x.property⟩
   have hf₁ : Function.Surjective fP := by
     intro x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M x

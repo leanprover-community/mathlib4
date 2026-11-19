@@ -56,13 +56,13 @@ variable (M : Type*) [CommMonoid M] (p : ℕ)
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeffMonoidHom (n : ℕ) : Perfection M p →* M where
-  toFun f := f.1 n
+  toFun f := f.val n
   map_one' := rfl
   map_mul' _ _ := rfl
 
 /-- The `p`-th root of an element of the perfection. -/
 def pthRootMonoidHom : Perfection M p →* Perfection M p where
-  toFun f := ⟨fun n => coeffMonoidHom M p (n + 1) f, fun _ => f.2 _⟩
+  toFun f := ⟨fun n => coeffMonoidHom M p (n + 1) f, fun _ => f.property _⟩
   map_one' := rfl
   map_mul' _ _ := rfl
 
@@ -84,12 +84,12 @@ attribute [local simp] coeffMonoidHom_pthRootMonoidHom
 
 theorem coeffMonoidHom_pow_p (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (f ^ p) = coeffMonoidHom M p n f := by
-  rw [map_pow]; exact f.2 n
+  rw [map_pow]; exact f.property n
 
 @[simp]
 theorem coeffMonoidHom_pow_p' (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) f ^ p = coeffMonoidHom M p n f :=
-  f.2 n
+  f.property n
 
 instance : PerfectRing (Perfection M p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
@@ -257,7 +257,7 @@ theorem coeff_pow_p (f : Perfection R p) (n : ℕ) :
 
 @[simp]
 theorem coeff_pow_p' (f : Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
-  f.2 n
+  f.property n
 
 @[simp]
 theorem coeff_frobenius (f : Perfection R p) (n : ℕ) :
@@ -428,7 +428,7 @@ variable {p R P}
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
     ⟨fun _ _ hxy => m.injective fun n => congr(Perfection.coeff R p n $hxy), fun f =>
-      let ⟨x, hx⟩ := m.surjective f.1 f.2
+      let ⟨x, hx⟩ := m.surjective f.val f.property
       ⟨x, Perfection.ext hx⟩⟩
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :

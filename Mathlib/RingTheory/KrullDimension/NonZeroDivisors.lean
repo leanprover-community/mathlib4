@@ -48,11 +48,11 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     Order.krullDim_eq_iSup_length, ← WithBot.coe_one, ← WithBot.coe_add,
     ENat.iSup_add, WithBot.coe_le_coe, iSup_le_iff]
   intro l
-  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.1.asIdeal) bot_le
+  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.val.asIdeal) bot_le
   let p' : PrimeSpectrum R := ⟨p, hp.1.1⟩
   have hp' : p' < l.head := lt_of_le_of_ne hp' fun h ↦ Set.disjoint_iff.mp
     (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hp)
-    ⟨show r ∈ p by simpa [← h] using l.head.2, hr⟩
+    ⟨show r ∈ p by simpa [← h] using l.head.property, hr⟩
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 

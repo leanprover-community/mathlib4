@@ -515,7 +515,7 @@ theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) =
 
 /-- Any partially defined representative function extends to a complete one. -/
 lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
-    (h_notMem : ∀ x : t, x.1 ∉ u → f₀ x = x) (h_mem : ∀ x : t, x.1 ∈ u → P.Rel x (f₀ x))
+    (h_notMem : ∀ x : t, x.val ∉ u → f₀ x = x) (h_mem : ∀ x : t, x.val ∈ u → P.Rel x (f₀ x))
     (h_eq : ∀ x y : t, P.Rel x y → f₀ x = f₀ y) : ∃ f, IsRepFun P f ∧ ∀ x : t, f x = f₀ x := by
   classical
   set f : α → α := fun a ↦ if ha : a ∈ u then
@@ -533,7 +533,7 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
     · exact h₁ ⟨_, hab.trans h₂.choose_spec⟩ |>.elim
     congr 1
     rwa [← rel_iff_partOf_eq_partOf_of_mem _ hab.left_mem hab.right_mem]
-  obtain (ha | ha) := em (a.1 ∈ u) |>.symm
+  obtain (ha | ha) := em (a.val ∈ u) |>.symm
   · simp [hfdef, ha, h_notMem _ ha]
   simp only [hfdef, ha, ↓reduceDIte]
   split_ifs with h
@@ -544,7 +544,8 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
 equal to the identity on `t`. -/
 lemma exists_extend_partial' (P : Partition u)
     (h : ∀ ⦃x y⦄, x ∈ t → y ∈ t → P.Rel x y → x = y) : ∃ f, IsRepFun P f ∧ EqOn f id t := by
-  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.2 y.2)
+  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp)
+    (fun x y ↦ h x.property y.property)
 
 /-- Every partition has a representative function. -/
 lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by

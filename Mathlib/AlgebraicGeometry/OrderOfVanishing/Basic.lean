@@ -227,7 +227,7 @@ lemma ord_algebraMap_section_nonneg (w : U) {r : Γ(X, U)} (hr : r ≠ 0) :
 lemma ord_eq_zero_of_mem_basicOpen (w : U) {r : Γ(X, U)} (hmem : (w : X) ∈ X.basicOpen r) :
     ord (algebraMap Γ(X, U) X.functionField r) (w : X) = 0 := by
   rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField]
-  exact ord_algebraMap_eq_zero_of_isUnit ((X.mem_basicOpen r w w.2).mp hmem)
+  exact ord_algebraMap_eq_zero_of_isUnit ((X.mem_basicOpen r w w.property).mp hmem)
 
 end Chart
 
