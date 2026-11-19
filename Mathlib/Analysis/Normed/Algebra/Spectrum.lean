@@ -526,11 +526,11 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
       (fun n ↦ ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖ₑ⁻¹ := by
   have : (fun n ↦ ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) =
       (formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap
-        ((ContinuousLinearMap.id 𝕜 𝕜).smulRightL 𝕜 𝕜 A a) := by
+        (StrongDual.smulRightL 𝕜 𝕜 A (.id 𝕜 𝕜) a) := by
     ext
     simp [compContinuousLinearMap, formalMultilinearSeries_geometric]
   rw [this]
-  let h := map_zero <| (ContinuousLinearMap.id 𝕜 𝕜).smulRightL 𝕜 𝕜 A a
+  let h := map_zero <| StrongDual.smulRightL 𝕜 𝕜 A (.id 𝕜 𝕜) a
   convert (h ▸ hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A).compContinuousLinearMap
   all_goals simp [eNorm_eq_nnNorm]
 
