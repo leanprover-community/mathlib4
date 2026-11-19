@@ -84,6 +84,15 @@ to_dual_insert_cast Icc := by simp only [and_comm]
 @[simp, grind =, push, to_dual none] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := .rfl
 @[to_dual none] theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b := rfl
 
+notation "I(" a ", " b ")" => Ioo a b
+notation "I(" a ", " b "]" => Ioc a b
+notation "I[" a ", " b ")" => Ico a b
+notation "I[" a ", " b "]" => Icc a b
+notation "I(" ", " b ")" => Iio b
+notation "I(" ", " b "]" => Iic b
+notation "I(" a ", " ")" => Ioi a
+notation "I[" a ", " ")" => Ici a
+
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
