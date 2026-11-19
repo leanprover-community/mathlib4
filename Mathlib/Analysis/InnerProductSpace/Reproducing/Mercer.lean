@@ -132,10 +132,10 @@ lemma mercerForm_apply (f g : Lp V 2 μ) :
     mercerForm hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
   rfl
 
-theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef]
+theorem mercerForm_conj_symm [CompleteSpace V] (hK' : K.IsHermitian)
     (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm hK f g) = mercerForm hK g f := by
   simp [← integral_conj, ← integral_prod_swap (fun p : X × X ↦ ⟪K p.1 p.2 (g p.2), f p.1⟫_𝕜),
     ← ContinuousLinearMap.adjoint_inner_left, ← ContinuousLinearMap.star_eq_adjoint,
-    (Fact.out : K.PosSemidef).1.apply]
+    hK'.apply]
 
 end RKHS
