@@ -209,9 +209,9 @@ instance wellFoundedLT [LT ι] [WellFoundedLT ι] [∀ i, LT (α i)] [∀ i, Wel
 
 instance wellFoundedGT [LT ι] [WellFoundedGT ι] [∀ i, LT (α i)] [∀ i, WellFoundedGT (α i)] :
     WellFoundedGT (Σₗ' i, α i) := by
-  change WellFounded (Function.swap <| Lex (· < ·) (fun _ ↦ (· < ·)))
+  change WellFounded (Function.swap <| Lex (· < ·) fun _ ↦ (· < ·))
   rw [swap_lex]
-  exact wellFounded 
+  exact wellFounded
 
 end Lex
 
