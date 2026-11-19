@@ -279,11 +279,11 @@ variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
 @[deprecated (since := "2026-05-05")]
 alias restrictScalars_coe_algHom := restrictScalars_toAlgHom
 
-@[simp] lemma restrictScalars_linearMapOfClass :
-    (LinearMap.ofClass f).restrictScalars R₀ = .ofClass (f.restrictScalars R₀) := rfl
+@[simp] lemma restrictScalars_toLinearMap :
+    f.toLinearMap.restrictScalars R₀ = (f.restrictScalars R₀).toLinearMap := rfl
 
 @[deprecated (since := "2026-11-19")] alias restrictScalars_coe_linearMap :=
-  restrictScalars_linearMapOfClass
+  restrictScalars_toLinearMap
 
 lemma restrictScalars_injective :
     Function.Injective (restrictScalars R₀ : (𝒜 →ₐᵍ[R] ℬ) → _) :=

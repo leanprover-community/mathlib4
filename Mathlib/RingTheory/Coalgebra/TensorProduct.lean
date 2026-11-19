@@ -196,7 +196,7 @@ theorem map_tmul (f : M →ₗc[S] N) (g : P →ₗc[R] Q) (x : M) (y : P) :
 
 @[simp]
 theorem map_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
-    LinearMap.ofClass (map f g) = AlgebraTensorModule.map (.ofClass f) (.ofClass g) := rfl
+    (map f g).toLinearMap = AlgebraTensorModule.map f.toLinearMap g.toLinearMap := rfl
 
 variable (R S M N P)
 

@@ -255,7 +255,7 @@ def AlgHom.tensorEqualizerAux :
     T ⊗[R] AlgHom.equalizer f g →ₗ[S]
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
-  LinearMap.tensorEqLocus S T (.ofClass f) (.ofClass g)
+  LinearMap.tensorEqLocus S T f.toLinearMap g.toLinearMap
 
 private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
 

@@ -168,7 +168,7 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 
 @[simp]
 lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
-    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (.ofClass h) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ h.toLinearMap = (1 : WithConv (B →ₗ[R] A)).ofConv := by
   ext; simp
 
 variable [Semiring B] [Algebra R B]
@@ -265,7 +265,7 @@ variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
 @[expose, simps]
 def convPrecomp (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
-  toFun f := toConv (f.ofConv.comp (.ofClass h))
+  toFun f := toConv (f.ofConv.comp h.toLinearMap)
   map_one' := WithConv.ext (convOne_comp_coalgHom h)
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
   map_zero' := WithConv.ext (by ext; simp)

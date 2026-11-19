@@ -136,13 +136,12 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h
   rfl
 
 @[simp]
-theorem ofClass_linearMap_mk {f : A →ₗ[R] B} (h h₁) :
-    LinearMap.ofClass (⟨f, h, h₁⟩ : A →ₗc[R] B) = f :=
+theorem toLinearMap_linearMap_mk {f : A →ₗ[R] B} (h h₁) :
+     (⟨f, h, h₁⟩ : A →ₗc[R] B).toLinearMap = f :=
   rfl
 
-@[deprecated (since := "2026-11-19")] alias coe_linearMap_mk := ofClass_linearMap_mk
+@[deprecated (since := "2026-11-19")] alias coe_linearMap_mk := toLinearMap_linearMap_mk
 
-@[simp]
 theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = (.ofClass f) :=
   rfl
 
@@ -201,9 +200,9 @@ theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩
 /-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
-  { toLinearMap := (LinearMap.ofClass f).copy f' h
+  { toLinearMap := f.toLinearMap.copy f' h
     counit_comp := by ext; simp_all
-    map_comp_comul := by simp only [(LinearMap.ofClass f).copy_eq f' h,
+    map_comp_comul := by simp only [(LinearMap.ofClass f).copy_eq f' h, toLinearMap_eq_ofClass,
       CoalgHomClass.map_comp_comul] }
 
 @[simp]
@@ -232,16 +231,16 @@ theorem id_toLinearMap : .ofClass (CoalgHom.id R A) = LinearMap.id := rfl
 
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
-  { (.ofClass φ₁) ∘ₗ (.ofClass φ₂) with
-    counit_comp := by ext; simp
-    map_comp_comul := by ext; simp [map_comp] }
+  { φ₁.toLinearMap ∘ₗ φ₂.toLinearMap with
+    counit_comp := by ext; simp [toLinearMap_eq_ofClass]
+    map_comp_comul := by ext; simp [map_comp, toLinearMap_eq_ofClass] }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ := rfl
 
 @[simp]
 theorem comp_toLinearMap (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) :
-    LinearMap.ofClass (φ₁.comp φ₂) = (.ofClass φ₁) ∘ₗ (.ofClass φ₂) := rfl
+    (φ₁.comp φ₂).toLinearMap = φ₁.toLinearMap ∘ₗ φ₂.toLinearMap := rfl
 
 variable (φ : A →ₗc[R] B)
 
@@ -303,7 +302,7 @@ theorem counitCoalgHom_apply (x : A) :
 
 @[simp]
 theorem counitCoalgHom_toLinearMap :
-    .ofClass (counitCoalgHom R A) = counit (R := R) (A := A) := rfl
+    (counitCoalgHom R A).toLinearMap = counit (R := R) (A := A) := rfl
 
 variable {R}
 

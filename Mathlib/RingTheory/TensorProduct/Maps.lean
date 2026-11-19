@@ -156,7 +156,7 @@ def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (
         { toFun := (·.restrictScalars R)
           map_add' := fun _ _ => LinearMap.ext fun _ => rfl
           map_smul' := fun _ _ => LinearMap.ext fun _ => rfl }
-      LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ (.ofClass g))
+      LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ g.toLinearMap)
     (fun a₁ a₂ b₁ b₂ => show f (a₁ * a₂) * g (b₁ * b₂) = f a₁ * g b₁ * (f a₂ * g b₂) by
       rw [map_mul, map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
     (show f 1 * g 1 = 1 by rw [map_one, map_one, one_mul])

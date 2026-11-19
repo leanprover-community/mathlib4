@@ -61,7 +61,7 @@ variable (R) in
 def toComon : CoalgCat R ⥤ Comon (ModuleCat R) where
   obj X := toComonObj X
   map f :=
-    { hom := ModuleCat.ofHom (.ofClass f.toCoalgHom')
+    { hom := ModuleCat.ofHom f.toCoalgHom'.toLinearMap
       isComonHom_hom :=
         { hom_counit := ModuleCat.hom_ext f.toCoalgHom'.counit_comp
           hom_comul := ModuleCat.hom_ext f.toCoalgHom'.map_comp_comul.symm } }

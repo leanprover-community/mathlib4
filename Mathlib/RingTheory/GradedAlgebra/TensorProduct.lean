@@ -37,7 +37,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance baseChange : GradedAlgebra fun i ↦ (𝒜 i).baseChange S where
   one_mem := tmul_mem_baseChange_of_mem _ <| one_mem_graded 𝒜
   mul_mem i j := by
-    suffices h : ((𝒜 i).baseChange S).map₂ (.ofClass (Algebra.lmul S (S ⊗[R] A)))
+    suffices h : ((𝒜 i).baseChange S).map₂ (Algebra.lmul S (S ⊗[R] A)).toLinearMap
       ((𝒜 j).baseChange S) ≤ (𝒜 (i + j)).baseChange S from fun xi xj ↦ (h <| apply_mem_map₂ _ · ·)
     simp_rw [baseChange_eq_span, map₂_span_span, span_le, Set.image2_subset_iff]
     rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩

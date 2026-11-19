@@ -196,7 +196,7 @@ namespace LinearDisjoint
 /-- Linear disjointness is preserved by injective algebra homomorphisms. -/
 theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
     (f : S →ₐ[R] T) (hf : Function.Injective f) :
-    (M.map (.ofClass f)).LinearDisjoint (N.map (.ofClass f)) := by
+    (M.map f.toLinearMap).LinearDisjoint (N.map f.toLinearMap) := by
   rw [linearDisjoint_iff] at H ⊢
   have := hf.comp H
   rw [← coe_mulMap_comp_eq] at this

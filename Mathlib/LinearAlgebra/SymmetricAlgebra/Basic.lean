@@ -57,7 +57,7 @@ abbrev algHom : TensorAlgebra R M →ₐ[R] SymmetricAlgebra R M := RingCon.mk�
 lemma algHom_surjective : Function.Surjective (algHom R M) := Quotient.mk_surjective
 
 /-- Canonical inclusion of `M` into the symmetric algebra `SymmetricAlgebra R M`. -/
-def ι : M →ₗ[R] SymmetricAlgebra R M := (.ofClass <| algHom R M) ∘ₗ TensorAlgebra.ι R
+def ι : M →ₗ[R] SymmetricAlgebra R M := (algHom R M).toLinearMap ∘ₗ TensorAlgebra.ι R
 
 @[elab_as_elim]
 theorem induction {motive : SymmetricAlgebra R M → Prop}
@@ -114,11 +114,11 @@ lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
   simp [lift, ι, algHom, RingCon.liftₐEquiv]
 
 @[simp]
-lemma lift_comp_ι : (.ofClass (lift f)) ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
+lemma lift_comp_ι : (lift f).toLinearMap ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
 
 @[ext 1200]
 theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
-    (h : (.ofClass F) ∘ₗ ι R M = (.ofClass G) ∘ₗ ι R M) : F = G := by
+    (h : F.toLinearMap ∘ₗ ι R M = G.toLinearMap ∘ₗ ι R M) : F = G := by
   ext x
   congrm $h x
 
@@ -223,10 +223,10 @@ noncomputable def lift : A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equi
 lemma lift_eq (a : M) : h.lift g (f a) = g a := by simp [lift]
 
 @[simp]
-lemma lift_comp_linearMap : (.ofClass <| h.lift g) ∘ₗ f = g := LinearMap.ext <| lift_eq h g
+lemma lift_comp_linearMap : (h.lift g).toLinearMap ∘ₗ f = g := LinearMap.ext <| lift_eq h g
 
 lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
-    (hFG : (.ofClass F) ∘ₗ f = (.ofClass G) ∘ₗ f) : F = G := by
+    (hFG : F.toLinearMap ∘ₗ f = G.toLinearMap ∘ₗ f) : F = G := by
   suffices F.comp h.equiv.toAlgHom = G.comp h.equiv.toAlgHom by
     rw [DFunLike.ext'_iff] at this ⊢
     exact h.equiv.surjective.injective_comp_right this
@@ -234,7 +234,7 @@ lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
   simpa using congr($hFG x)
 
 variable {g} in
-lemma lift_unique {F : A →ₐ[R] A'} (hF : (.ofClass F) ∘ₗ f = g) : F = h.lift g :=
+lemma lift_unique {F : A →ₐ[R] A'} (hF : F.toLinearMap ∘ₗ f = g) : F = h.lift g :=
   h.algHom_ext (by simpa)
 
 end UniversalProperty
