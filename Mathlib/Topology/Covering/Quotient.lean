@@ -100,7 +100,8 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
   have := hf.isCancelSMul
   .symm <| .ofBijective (fun g ↦ ⟨g • e, (hf.map_smul g).trans e.property⟩)
     ⟨fun _ _ eq ↦ IsCancelSMul.right_cancel _ _ e.val congr($eq), fun e' ↦
-      have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.property.trans e.property.symm); ⟨g, Subtype.ext eq⟩⟩
+      have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.property.trans e.property.symm)
+      ⟨g, Subtype.ext eq⟩⟩
 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
   (Equiv.eq_symm_apply _).mp <| Subtype.ext (one_smul ..).symm

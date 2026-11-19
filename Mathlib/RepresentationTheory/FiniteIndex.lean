@@ -42,9 +42,10 @@ variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G}
 `a : A`, this is the function `G → A` sending `sg` to `ρ(s)(a)` for all `s : S` and everything else
 to 0. -/
 noncomputable def indToCoindAux (g : G) : A →ₗ[k] (G → A) :=
-  LinearMap.pi (fun g₁ => if h : (QuotientGroup.rightRel S).r g₁ g then
-    A.ρ ⟨g₁ * g⁻¹, by rcases h with ⟨s, rfl⟩; exact mul_inv_cancel_right s.val g ▸ s.property⟩
-    else 0)
+  LinearMap.pi fun g₁ =>
+    if h : (QuotientGroup.rightRel S).r g₁ g then
+      A.ρ ⟨g₁ * g⁻¹, by rcases h with ⟨s, rfl⟩; exact mul_inv_cancel_right s.val g ▸ s.property⟩
+    else 0
 
 variable {A}
 

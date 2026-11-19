@@ -436,7 +436,8 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq (ι := I) H hUST hUSX hUY (·) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.val.property;
+    (fun i ↦
+      have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.val.property
       inferInstance)
     (f.flat_appLE hUS hUT _)
 

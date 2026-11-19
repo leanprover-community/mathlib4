@@ -184,8 +184,10 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
       rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
       · replace hx : s ∈ q₁.val.asIdeal := by simpa using! hx
         simpa using! H hx
-      · rw [← q₂.property] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.val.asIdeal.ResidueField]
-      · rw [← q₁.property] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.val.asIdeal.ResidueField]
+      · rw [← q₂.property] at hr
+        simpa [IsScalarTower.algebraMap_apply R S q₂.val.asIdeal.ResidueField]
+      · rw [← q₁.property] at hr
+        simpa [IsScalarTower.algebraMap_apply R S q₁.val.asIdeal.ResidueField]
 
 variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,

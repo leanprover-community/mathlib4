@@ -228,8 +228,8 @@ def retractionKerToTensorEquivSection :
     ext s p
     obtain ⟨s, rfl⟩ := hf s
     have (x y : _) : (l.val x).val * (l.val y).val = 0 := by
-      rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l.val x).property
-        (l.val y).property
+      rw [← Ideal.mem_bot, ← hf', pow_two]
+      exact Ideal.mul_mem_mul (l.val x).property (l.val y).property
     simp only [AlgebraTensorModule.curry_apply,
       Derivation.coe_comp, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Derivation.coeFn_coe,
       Function.comp_apply, curry_apply, retractionOfSectionOfKerSqZero_tmul_D,
