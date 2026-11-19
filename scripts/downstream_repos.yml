@@ -50,6 +50,9 @@
   default_branch: main
   name: Power Series Arithmetic
   zulip-contact: Geoffrey Irving
+- github: https://github.com/gpartin/LeanDiracDerivation
+  default_branch: main
+  name: Cubical lattice Dirac factorization and continuum limit
 - github: https://github.com/james18lpc/GibbsMeasure
   default_branch: main
   name: Gibbs Measures
