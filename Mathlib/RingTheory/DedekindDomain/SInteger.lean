@@ -146,7 +146,7 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))]
       exists_primeCompl_mul_eq_of_integer v (z : K) (Set.integer_valuation_le_one S K z hv)
     exact d.2 (hle (hD.2 ⟨n, ((mul_comm _ _).trans hnd).symm⟩))
   -- Since the class group is torsion, `D ^ n = (α)` for some `n ≠ 0` and `α ∈ R`.
-  obtain ⟨n, hn, α, hα⟩ := ClassGroup.exists_pow_eq_span_singleton Fact.out D
+  obtain ⟨n, hn, α, hα⟩ := ClassGroup.exists_pow_isPrincipal Fact.out D
   have hα_mem : α ∈ D := pow_le_self hn (hα ▸ Submodule.mem_span_singleton_self α)
   obtain ⟨β, hβ⟩ := hD.1 hα_mem
   have hα_mem' : α ∈ Localization.submonoid S := by
