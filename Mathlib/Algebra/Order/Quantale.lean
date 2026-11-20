@@ -99,6 +99,8 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
 structure Quantale (α : Type*)
   [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
+section
+
 variable {α ι : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
 variable {x y z : α} {s : Set α} {f : ι → α}
 
