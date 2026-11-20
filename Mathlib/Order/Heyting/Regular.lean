@@ -87,8 +87,8 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun _ _ =>
       eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
-    inf_compl_le_bot := fun _ => (this _).1.le_bot
-    top_le_sup_compl := fun _ => (this _).2.top_le }
+    inf_compl_le_bot := fun _ => (this _).disjoint.le_bot
+    top_le_sup_compl := fun _ => (this _).codisjoint.top_le }
 
 variable (α)
 
@@ -122,10 +122,10 @@ instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
 instance inf : Min (Regular α) :=
-  ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
+  ⟨fun a b => ⟨a ⊓ b, a.property.inf b.property⟩⟩
 
 instance himp : HImp (Regular α) :=
-  ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
+  ⟨fun a b => ⟨a ⇨ b, a.property.himp b.property⟩⟩
 
 instance : Compl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
@@ -178,14 +178,14 @@ theorem coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
 
 @[simp]
 theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
-  coe_injective a.2
+  coe_injective a.property
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans
-      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
+      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.property⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 

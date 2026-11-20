@@ -72,7 +72,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
 @[simp]
 theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
-  simp [bernoulli, ← smul_X_eq_monomial, sum_range_succ, ← C_1, -map_one, neg_div, sub_eq_add_neg]
+  simp [bernoulli, ← smul_X_eq_monomial, sum_range_succ, ← C_1, -map_one, sub_eq_add_neg]
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by

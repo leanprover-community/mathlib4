@@ -44,7 +44,7 @@ instance injective_isZariskiLocalAtTarget :
   refine topologically_isZariskiLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
-  congrm ($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).1
+  congrm ($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).val
 
 end Injective
 
@@ -79,7 +79,7 @@ lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g
 
 instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
   id_mem _ := inferInstance
-  comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
+  comp_mem _ _ hf hg := ⟨hg.surj.comp hf.surj⟩
 
 instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
@@ -96,7 +96,7 @@ instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective 
   intro α β _ _ f ι U H _ hf x
   obtain ⟨i, hxi⟩ : ∃ i, x ∈ U i := by simpa using congr(x ∈ $H)
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
-  exact ⟨y, congr(($hy).1)⟩
+  exact ⟨y, congr(($hy).val)⟩
 
 @[simp]
 lemma range_eq_univ [Surjective f] : Set.range f = Set.univ := by
@@ -297,7 +297,7 @@ instance specializingMap_isZariskiLocalAtTarget :
     have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
-    have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
+    have hfx : f x ∈ U i := (U i).is_open'.stableUnderGeneralization hy hi
     have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
       simp only [closure_subtype, Set.image_singleton]
       rwa [← specializes_iff_mem_closure]

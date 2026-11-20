@@ -97,7 +97,7 @@ variable {𝓕 𝓖 : Filter ι}
 
 @[macro_inline]
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
-  coe x i := x.1 i
+  coe x i := x.val i
   coe_injective _ _ := Subtype.ext
 
 variable {R A} in
@@ -121,13 +121,13 @@ lemma range_coe_principal {S : Set ι} :
     range ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) = S.pi A :=
   range_coe R A
 
-@[simp] lemma eventually (x : Πʳ i, [R i, A i]_[𝓕]) : ∀ᶠ i in 𝓕, x i ∈ A i := x.2
+@[simp] lemma eventually (x : Πʳ i, [R i, A i]_[𝓕]) : ∀ᶠ i in 𝓕, x i ∈ A i := x.property
 
 variable (𝓕) in
 /-- The *structure map* of the restricted product is the obvious inclusion from `Π i, A i`
 into `Πʳ i, [R i, A i]_[𝓕]`. -/
 def structureMap (x : Π i, A i) : Πʳ i, [R i, A i]_[𝓕] :=
-  ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
+  ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).property⟩
 
 @[simp]
 lemma structureMap_apply {x : Π i, A i} (i : ι) :
@@ -138,7 +138,7 @@ lemma structureMap_apply {x : Π i, A i} (i : ι) :
 `Πʳ i, [R i, A i]_[𝓕]`. This is the corresponding map. -/
 def inclusion (h : 𝓕 ≤ 𝓖) (x : Πʳ i, [R i, A i]_[𝓖]) :
     Πʳ i, [R i, A i]_[𝓕] :=
-  ⟨x, x.2.filter_mono h⟩
+  ⟨x, x.property.filter_mono h⟩
 
 @[simp]
 lemma inclusion_apply (h : 𝓕 ≤ 𝓖) {x : Πʳ i, [R i, A i]_[𝓖]} (i : ι) :
@@ -151,16 +151,16 @@ lemma inclusion_eq_id : inclusion R A (le_refl 𝓕) = id := rfl
 lemma exists_inclusion_eq_of_eventually (h : 𝓕 ≤ 𝓖) {x : Πʳ i, [R i, A i]_[𝓕]}
     (hx𝓖 : ∀ᶠ i in 𝓖, x i ∈ A i) :
     ∃ x' : Πʳ i, [R i, A i]_[𝓖], inclusion R A h x' = x :=
-  ⟨⟨x.1, hx𝓖⟩, rfl⟩
+  ⟨⟨x.val, hx𝓖⟩, rfl⟩
 
 lemma exists_structureMap_eq_of_forall {x : Πʳ i, [R i, A i]_[𝓕]}
-    (hx : ∀ i, x.1 i ∈ A i) :
+    (hx : ∀ i, x.val i ∈ A i) :
     ∃ x' : Π i, A i, structureMap R A 𝓕 x' = x :=
   ⟨fun i ↦ ⟨x i, hx i⟩, rfl⟩
 
 lemma range_inclusion (h : 𝓕 ≤ 𝓖) :
     Set.range (inclusion R A h) = {x | ∀ᶠ i in 𝓖, x i ∈ A i} :=
-  subset_antisymm (range_subset_iff.mpr fun x ↦ x.2)
+  subset_antisymm (range_subset_iff.mpr fun x ↦ x.property)
     (fun _ hx ↦ mem_range.mpr <| exists_inclusion_eq_of_eventually R A h hx)
 
 @[simp]
@@ -173,8 +173,8 @@ lemma image_coe_preimage_inclusion_subset (h : 𝓕 ≤ 𝓖)
   fun _ ⟨x, hx, hx'⟩ ↦ ⟨inclusion R A h x, hx, hx'⟩
 
 lemma range_structureMap :
-    Set.range (structureMap R A 𝓕) = {f | ∀ i, f.1 i ∈ A i} :=
-  subset_antisymm (range_subset_iff.mpr fun x i ↦ (x i).2)
+    Set.range (structureMap R A 𝓕) = {f | ∀ i, f.val i ∈ A i} :=
+  subset_antisymm (range_subset_iff.mpr fun x i ↦ (x i).property)
     (fun _ hx ↦ mem_range.mpr <| exists_structureMap_eq_of_forall R A hx)
 
 @[simp]
@@ -205,7 +205,7 @@ lemma one_apply [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] (i : ι) :
 
 @[to_additive]
 instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] : Inv (Πʳ i, [R i, B i]_[𝓕]) where
-  inv x := ⟨fun i ↦ (x i)⁻¹, x.2.mono fun _ ↦ inv_mem⟩
+  inv x := ⟨fun i ↦ (x i)⁻¹, x.property.mono fun _ ↦ inv_mem⟩
 
 @[to_additive (attr := simp)]
 lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)]
@@ -214,7 +214,7 @@ lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)]
 
 @[to_additive]
 instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] : Mul (Πʳ i, [R i, B i]_[𝓕]) where
-  mul x y := ⟨fun i ↦ x i * y i, y.2.mp (x.2.mono fun _ ↦ mul_mem)⟩
+  mul x y := ⟨fun i ↦ x i * y i, y.property.mp (x.property.mono fun _ ↦ mul_mem)⟩
 
 @[to_additive (attr := simp)]
 lemma mul_apply [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)]
@@ -224,7 +224,7 @@ lemma mul_apply [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)]
 @[to_additive]
 instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)] :
     SMul G (Πʳ i, [R i, B i]_[𝓕]) where
-  smul g x := ⟨fun i ↦ g • (x i), x.2.mono fun _ ↦ SMulMemClass.smul_mem g⟩
+  smul g x := ⟨fun i ↦ g • (x i), x.property.mono fun _ ↦ SMulMemClass.smul_mem g⟩
 
 @[to_additive (attr := simp)]
 lemma smul_apply {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)] (g : G)
@@ -234,7 +234,7 @@ lemma smul_apply {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (
 @[to_additive]
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Div (Πʳ i, [R i, B i]_[𝓕]) where
-  div x y := ⟨fun i ↦ x i / y i, y.2.mp (x.2.mono fun _ ↦ div_mem)⟩
+  div x y := ⟨fun i ↦ x i / y i, y.property.mp (x.property.mono fun _ ↦ div_mem)⟩
 
 @[to_additive (attr := simp)]
 lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
@@ -244,7 +244,7 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
 @[to_additive]
 instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
-  pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
+  pow x n := ⟨fun i ↦ x i ^ n, x.property.mono fun _ hi ↦ pow_mem hi n⟩
 
 @[to_additive]
 lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
@@ -264,7 +264,7 @@ instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
 @[to_additive]
 instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
-  pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
+  pow x n := ⟨fun i ↦ x i ^ n, x.property.mono fun _ hi ↦ zpow_mem hi n⟩
 
 @[to_additive]
 lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
@@ -380,7 +380,7 @@ See also `mapAlongMonoidHom`, `mapAlongAddMonoidHom` and `mapAlongRingHom` for v
 -/
 def mapAlong (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] :=
   ⟨fun j ↦ φ j (x (f j)), by
-  filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
+  filter_upwards [hf.eventually x.property, hφ] using fun _ h1 h2 ↦ h2 h1⟩
 
 @[simp]
 lemma mapAlong_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :

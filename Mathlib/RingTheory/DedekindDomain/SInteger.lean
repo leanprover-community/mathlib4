@@ -138,13 +138,13 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))]
     simp [D, Submodule.mem_colon_singleton, Submodule.mem_one, Algebra.smul_def]
   have hD_ne_zero : D ≠ 0 := by
     obtain ⟨⟨a, b⟩, h⟩ := IsLocalization.surj R⁰ (z : K)
-    exact fun h0 ↦ nonZeroDivisors.ne_zero b.2 <| by
+    exact fun h0 ↦ nonZeroDivisors.ne_zero b.property <| by
       simpa [h0] using hD.2 ⟨a, ((mul_comm _ _).trans h).symm⟩
   -- `D` is not contained in any prime `v ∉ S`, since `z` is a `v`-integer for such `v`.
   have hD_not_le {v : HeightOneSpectrum R} (hv : v ∉ S) : ¬ D ≤ v.asIdeal := fun hle ↦ by
     obtain ⟨n, d, hnd⟩ :=
       exists_primeCompl_mul_eq_of_integer v (z : K) (Set.integer_valuation_le_one S K z hv)
-    exact d.2 (hle (hD.2 ⟨n, ((mul_comm _ _).trans hnd).symm⟩))
+    exact d.property (hle (hD.2 ⟨n, ((mul_comm _ _).trans hnd).symm⟩))
   -- Since the class group is torsion, `D ^ n = (α)` for some `n ≠ 0` and `α ∈ R`.
   have hD_mem : D ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hD_ne_zero
   obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 <|

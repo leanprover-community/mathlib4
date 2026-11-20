@@ -426,11 +426,11 @@ namespace Cover
 
 variable {J}
 
-instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.1⟩
+instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.val⟩
 
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S => (S : Sieve X)⟩
 
-theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.2
+theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.property
 
 @[ext]
 theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S = T :=
@@ -481,7 +481,7 @@ attribute [reassoc] Arrow.Relation.w
 corresponding to `g ≫ I.f`. -/
 @[simps]
 def Arrow.precomp {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) : S.Arrow :=
-  ⟨Z, g ≫ I.f, S.1.downward_closed I.hf g⟩
+  ⟨Z, g ≫ I.f, S.val.downward_closed I.hf g⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `I : S.Arrow` and a morphism `g : Z ⟶ I.Y`, this is the obvious relation
