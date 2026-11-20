@@ -33,6 +33,8 @@ isomorphic to its double dual.
 `AddPontryaginDual` and its basic API are generated from `PontryaginDual` by `to_additive`.
 Since `to_additive` can only translate a constant to a constant, we introduce the abbreviation
 `AdditiveCircle := Additive Circle` and register it as the additive version of `Circle`.
+The name part `Circle` is translated to `AdditiveCircle` by the `to_additive` dictionary, so
+`to_additive` generates names such as `AddPontryaginDual.instFunLikeAdditiveCircle` automatically.
 -/
 
 @[expose] public section
@@ -59,7 +61,7 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup AdditiveCircle := inf
 
 end AdditiveCircle
 
-attribute [to_additive existing AdditiveCircle] Circle
+attribute [to_additive existing] Circle
 attribute [to_additive existing] Circle.instCommGroup Circle.instIsTopologicalGroup
 attribute [to_additive existing AdditiveCircle.instTopologicalSpace] instTopologicalSpaceCircle
 
@@ -76,7 +78,9 @@ variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Gro
 def PontryaginDual :=
   A →ₜ* Circle
 
-@[to_additive instTopologicalSpaceAddPontryaginDual]
+namespace PontryaginDual
+
+@[to_additive]
 instance : TopologicalSpace (PontryaginDual A) :=
   inferInstanceAs (TopologicalSpace (A →ₜ* Circle))
 
@@ -99,8 +103,6 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
 
 variable {A B C G}
 
-namespace PontryaginDual
-
 open ContinuousMonoidHom
 
 @[to_additive]
@@ -116,27 +118,28 @@ instance : IsTopologicalGroup (PontryaginDual A) :=
 @[to_additive]
 instance : Inhabited (PontryaginDual A) := inferInstanceAs (Inhabited (A →ₜ* Circle))
 
-@[to_additive instFunLikeAdditiveCircle]
+@[to_additive]
 instance : FunLike (PontryaginDual A) A Circle :=
   inferInstanceAs (FunLike (A →ₜ* Circle) A Circle)
 
-@[to_additive instContinuousMapClassAdditiveCircle]
+@[to_additive]
 instance : ContinuousMapClass (PontryaginDual A) A Circle :=
   inferInstanceAs (ContinuousMapClass (A →ₜ* Circle) A Circle)
 
-@[to_additive instAddMonoidHomClassAdditiveCircle]
+@[to_additive]
 instance : MonoidHomClass (PontryaginDual A) A Circle :=
   inferInstanceAs (MonoidHomClass (A →ₜ* Circle) A Circle)
 
-@[to_additive instContinuousEvalConstAdditiveCircle]
+@[to_additive]
 instance : ContinuousEvalConst (PontryaginDual A) A Circle :=
   inferInstanceAs (ContinuousEvalConst (A →ₜ* Circle) A Circle)
 
-@[to_additive instContinuousEvalAdditiveCircle]
+@[to_additive]
 instance [LocallyCompactSpace A] : ContinuousEval (PontryaginDual A) A Circle :=
   inferInstanceAs (ContinuousEval (A →ₜ* Circle) A Circle)
 
-@[to_additive]
+/-- A discrete monoid has compact Pontryagin dual. -/
+@[to_additive /-- A discrete additive monoid has compact Pontryagin dual. -/]
 instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
   inferInstanceAs (CompactSpace (A →ₜ* Circle))
 
@@ -154,9 +157,6 @@ theorem inv_apply (ψ : PontryaginDual A) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := r
 
 @[to_additive (attr := simp)]
 theorem div_apply (ψ φ : PontryaginDual A) (a : A) : (ψ / φ) a = ψ a / φ a := rfl
-
-/-- A discrete monoid has compact Pontryagin dual. -/
-add_decl_doc instLocallyCompactSpacePontryaginDual
 
 /-- A compact monoid has discrete Pontryagin dual. -/
 instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
@@ -228,12 +228,10 @@ The instances whose proofs use the geometry of `Circle` cannot be translated by 
 We transfer them along the homeomorphism `AddPontryaginDual A ≃ₜ PontryaginDual (Multiplicative A)`.
 -/
 
-section AddPontryaginDual
+namespace AddPontryaginDual
 
 variable (A H : Type*) [AddMonoid A] [AddGroup H] [TopologicalSpace A] [TopologicalSpace H]
   [IsTopologicalAddGroup H]
-
-namespace AddPontryaginDual
 
 /-- The additive Pontryagin dual of `A` is homeomorphic to the Pontryagin dual of
 `Multiplicative A`. -/
@@ -340,7 +338,5 @@ theorem continuous_of_continuous_uncurry {X : Type*} [TopologicalSpace X]
     Continuous f :=
   ContinuousAddMonoidHom.continuous_of_continuous_uncurry (B := A) (C := AdditiveCircle) f
     (continuous_ofMul.comp h)
-
-end AddPontryaginDual
 
 end AddPontryaginDual
