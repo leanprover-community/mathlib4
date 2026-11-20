@@ -80,9 +80,9 @@ variable (P : Ideal R) [P.IsPrime] (I : Ideal R)
 @[simp]
 lemma count_normalizedFactors_eq_multiplicity :
     Multiset.count P (normalizedFactors I) = multiplicity P I := by
-  obtain rfl | hP := eq_or_ne P ⊥
-  · rw [← Submodule.zero_eq_bot, Multiset.count_eq_zero.mpr (zero_notMem_normalizedFactors _),
-      multiplicity_zero_left]
+  obtain rfl | hP := eq_or_ne P 0
+  · rw [multiplicity_zero_left, Multiset.count_eq_zero]
+    exact zero_notMem_normalizedFactors I
   rw [multiplicity_eq_count_normalizedFactors (prime_of_isPrime hP inferInstance).irreducible,
     normalize_eq]
 
@@ -94,13 +94,11 @@ lemma factorization_eq_multiplicity : factorization I P = multiplicity P I := by
 /-- The count of a prime ideal `P` in the factors of `Associates.mk I` is `multiplicity P I`. -/
 lemma count_associates_factors_eq_multiplicity :
     (Associates.mk P).count (Associates.mk I).factors = multiplicity P I := by
-  obtain rfl | hP := eq_or_ne P ⊥
-  · rw [← Submodule.zero_eq_bot, Associates.mk_zero, multiplicity_zero_left, Associates.count,
-      dite_eq_right fun h ↦ absurd h not_irreducible_zero, Pi.zero_apply]
+  obtain rfl | hP := eq_or_ne P 0
+  · rw [Associates.mk_zero, multiplicity_zero_left, Associates.count,
+      dite_eq_right not_irreducible_zero, Pi.zero_apply]
   obtain rfl | hI := eq_or_ne I 0
-  · rw [Associates.mk_zero, Associates.factors_zero, multiplicity_zero_right, Associates.count,
-      dite_eq_left (Associates.irreducible_mk.mpr (prime_of_isPrime hP inferInstance).irreducible)]
-    rfl
+  · rw [Associates.mk_zero, Associates.factors_zero, multiplicity_zero_right, Associates.count_top]
   rw [count_associates_factors_eq hI inferInstance hP, count_normalizedFactors_eq_multiplicity]
 
 end Ideal
