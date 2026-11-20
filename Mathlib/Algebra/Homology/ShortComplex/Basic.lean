@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Short complexes
 

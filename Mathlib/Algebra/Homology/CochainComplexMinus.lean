@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded above cochain complexes
 
