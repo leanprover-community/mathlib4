@@ -236,7 +236,7 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
 protected def phi (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
-set_option quotPrecheck false -- Porting note: we need a `[quot_precheck]` instance on fbinop%
+set_option quotPrecheck false in -- Porting note: we need a `[quot_precheck]` instance on fbinop%
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
 (in `UniformFun.mono` and `UniformFun.iInf_eq`) and that

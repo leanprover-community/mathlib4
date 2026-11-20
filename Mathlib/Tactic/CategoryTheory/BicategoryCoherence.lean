@@ -106,13 +106,15 @@ meta def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
-set_option quotPrecheck false in
 /-- Auxiliary definition for `bicategorical_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
 -- but it would require preparing many implicit arguments by hand.
 meta def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
   Term.elabTerm
-    (← ``((FreeBicategory.lift (Prefunctor.id _)).map₂ (LiftHom₂.lift $(← Term.exprToSyntax e))))
+    (← ``(PrelaxFunctorStruct.map₂
+      (PrelaxFunctor.toPrelaxFunctorStruct <| Pseudofunctor.toPrelaxFunctor <|
+        FreeBicategory.lift <| Prefunctor.id _)
+      (LiftHom₂.lift $(← Term.exprToSyntax e))))
     none
 
 /-- Coherence tactic for bicategories. -/
