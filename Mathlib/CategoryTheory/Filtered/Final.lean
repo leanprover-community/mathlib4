@@ -212,7 +212,7 @@ lemma ObjectProperty.final_ι_iff_of_isFilteredOrEmpty
 lemma ObjectProperty.initial_ι_iff_of_isCofilteredOrEmpty
     (P : ObjectProperty C) [IsCofilteredOrEmpty C] :
     P.ι.Initial ↔ ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (Y ⟶ X) := by
-  rw [← P.final_ι_op_iff, final_ι_iff_of_isFiltered]
+  rw [← P.final_ι_op_iff, final_ι_iff_of_isFilteredOrEmpty]
   refine ⟨fun h X ↦ ?_, fun h ⟨X⟩ ↦ ?_⟩
   · obtain ⟨Y, hY, ⟨f⟩⟩ := h (op X)
     exact ⟨Y.unop, hY, ⟨f.unop⟩⟩
@@ -224,12 +224,12 @@ lemma ObjectProperty.isFilteredOrEmpty
     (hP : P.ι.Final := by infer_instance) :
     IsFilteredOrEmpty P.FullSubcategory where
   cocone_objs X Y := by
-    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    rw [ObjectProperty.final_ι_iff_of_isFilteredOrEmpty] at hP
     obtain ⟨Z, hZ, ⟨f⟩⟩ := hP (IsFiltered.max X.obj Y.obj)
     exact ⟨⟨Z, hZ⟩, ObjectProperty.homMk (IsFiltered.leftToMax _ _ ≫ f),
       ObjectProperty.homMk (IsFiltered.rightToMax _ _ ≫ f), by tauto⟩
   cocone_maps X Y f g := by
-    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    rw [ObjectProperty.final_ι_iff_of_isFilteredOrEmpty] at hP
     obtain ⟨Z, hZ, ⟨h⟩⟩ := hP (IsFiltered.coeq f.hom g.hom)
     refine ⟨⟨Z, hZ⟩, ObjectProperty.homMk (IsFiltered.coeqHom f.hom g.hom ≫ h), ?_⟩
     ext
@@ -251,7 +251,7 @@ lemma ObjectProperty.isFiltered
     IsFiltered P.FullSubcategory where
   toIsFilteredOrEmpty := P.isFilteredOrEmpty hP
   nonempty := by
-    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    rw [ObjectProperty.final_ι_iff_of_isFilteredOrEmpty] at hP
     obtain ⟨X, hX, _⟩ := hP (Classical.arbitrary _)
     exact ⟨⟨X, hX⟩⟩
 
@@ -262,7 +262,7 @@ lemma ObjectProperty.isCofiltered
     IsCofiltered P.FullSubcategory where
   toIsCofilteredOrEmpty := P.isCofilteredOrEmpty hP
   nonempty := by
-    rw [ObjectProperty.initial_ι_iff_of_isCofiltered] at hP
+    rw [ObjectProperty.initial_ι_iff_of_isCofilteredOrEmpty] at hP
     obtain ⟨X, hX, _⟩ := hP (Classical.arbitrary _)
     exact ⟨⟨X, hX⟩⟩
 
