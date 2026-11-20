@@ -61,7 +61,7 @@ instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
 @[simp]
-lemma coe_scalar [Semiring R] (u : Rˣ) : ↑(scalar n u) = Matrix.scalar n u.1 := rfl
+lemma coe_scalar [Semiring R] (u : Rˣ) : ↑(scalar n u) = Matrix.scalar n u.val := rfl
 
 end CoeFnInstance
 
@@ -110,7 +110,7 @@ theorem det_scalar (u : Rˣ) : det (scalar n u) = u ^ Fintype.card n := by
 
 lemma det_surjective [Nonempty n] : Function.Surjective (det : GL n R → Rˣ) := fun r ↦ by
   obtain ⟨i⟩ := ‹Nonempty n›
-  refine ⟨⟨diagonal fun j ↦ if j = i then r else 1, diagonal fun j ↦ if j = i then r⁻¹.1 else 1,
+  refine ⟨⟨diagonal fun j ↦ if j = i then r else 1, diagonal fun j ↦ if j = i then r⁻¹.val else 1,
     ?_, ?_⟩, by simp [det]⟩
   <;> simp only [diagonal_mul_diagonal, mul_ite, ite_mul, Units.mul_inv, one_mul, mul_one,
       diagonal_eq_one]
@@ -274,17 +274,29 @@ variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype 
 def reindex (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
 @[simp]
-theorem symm_reindexMulEquiv (e : m ≃ n) :
+theorem symm_reindex (e : m ≃ n) :
     (reindex R e).symm = reindex R e.symm :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+theorem reindex_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (a : GL m R) :
+    reindex S e (map f a) = map f (reindex R e a) :=
+  rfl
+
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : GL m S →* GL n S).comp (map f) = (map f).comp (reindex R e) :=
+  rfl
+
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
+    (reindex R e).trans (mapEquiv n f) = (mapEquiv m f).trans (reindex S e) :=
+  rfl
 
 end Reindex
 
@@ -336,7 +348,7 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
   ext
   simp only [map,
     Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_ofClass]
-  exact Eq.symm (RingHom.map_det f g.1)
+  exact Eq.symm (RingHom.map_det f g.val)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [map_inv, mul_inv_cancel]
@@ -386,7 +398,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 /-- `toGL` is the map from the special linear group to the general linear group. -/
 def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
-  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
+  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.val) (mul_inv_cancel A), congr_arg (·.val) (inv_mul_cancel A)⟩
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
@@ -421,7 +433,7 @@ lemma range_toGL_eq_ker_det :
 @[simps]
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
   toFun g := ⟨toGL g, coeToGL_det g⟩
-  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.property⟩
   left_inv _ := rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl

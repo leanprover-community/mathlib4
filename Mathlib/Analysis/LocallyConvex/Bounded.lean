@@ -230,7 +230,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   rcases this.choice with ⟨x, hx⟩
   refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
-    (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
+    (H (_ ∘ x) fun n => (x n).property).eventually (eventually_mem_set.mpr hV)] using fun n => id
 
 /-- Given any sequence `ε` of scalars which tends to `𝓝[≠] 0`, we have that a set `S` is bounded
   if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any
@@ -377,6 +377,41 @@ theorem isBounded_iff_isVonNBounded {s : Set E} :
 end NormedField
 
 end Bornology
+
+namespace Topology.IsInducing
+open Bornology
+
+variable {𝕜 E F ι : Type*} {Eι : ι → Type*} [NormedDivisionRing 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [∀ i, AddCommGroup (Eι i)] [∀ i, Module 𝕜 (Eι i)]
+    [∀ i, TopologicalSpace (Eι i)]
+    {f : (i : ι) → E →ₗ[𝕜] Eι i}
+
+/-- If the topology on `E` is induced by a linear map, then a set `s : Set E` is von
+Neumann bounded if and only if its image is von Neumann bounded. -/
+protected lemma isVonNBounded_iff {f : E →ₗ[𝕜] F} (hf : Topology.IsInducing f) {s : Set E} :
+    IsVonNBounded 𝕜 s ↔ IsVonNBounded 𝕜 (f '' s) := by
+  simp [isVonNBounded_iff_tendsto_smallSets_nhds, hf.nhds_eq_comap,
+    smallSets_comap_eq_comap_image, Function.comp_def]
+
+/-- If the topology on `E` is induced by a linear map, then a set `s : Set E` is von
+Neumann bounded if its image is von Neumann bounded. -/
+protected alias ⟨_, isVonNBounded⟩ := Topology.IsInducing.isVonNBounded_iff
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if and only if its image under each map is von Neumann bounded. -/
+protected lemma isVonNBounded_pi_iff
+    (hf : Topology.IsInducing (fun x i ↦ f i x)) {s : Set E} :
+    IsVonNBounded 𝕜 s ↔ ∀ i, IsVonNBounded 𝕜 (f i '' s) := by
+  replace hf : IsInducing (LinearMap.pi f) := hf
+  simpa [isVonNBounded_pi_iff, Set.image_image] using hf.isVonNBounded_iff
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if its image under each map is von Neumann bounded. -/
+protected alias ⟨_, isVonNBounded_pi⟩ := Topology.IsInducing.isVonNBounded_pi_iff
+
+end Topology.IsInducing
 
 section IsUniformAddGroup
 

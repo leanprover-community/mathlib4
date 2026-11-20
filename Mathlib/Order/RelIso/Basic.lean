@@ -141,7 +141,7 @@ protected def id (r : α → α → Prop) : r →r r :=
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
-  ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+  ⟨fun x => g (f x), fun h => g.map_rel' (f.map_rel' h)⟩
 
 /-- The identity relation homomorphism from a subrelation to its containing relation. -/
 @[simps]
@@ -215,7 +215,7 @@ infixl:25 " ↪r " => RelEmbedding
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
-  ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
+  ⟨fun _ => hs.refl _, fun h => hs.symm h, fun h₁ h₂ => hs.trans h₁ h₂⟩
 
 namespace RelEmbedding
 
@@ -285,7 +285,7 @@ protected def refl (r : α → α → Prop) : r ↪r r :=
 
 /-- Composition of two relation embeddings is a relation embedding. -/
 protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
-  ⟨f.1.trans g.1, by simp [f.map_rel_iff, g.map_rel_iff]⟩
+  ⟨f.toEmbedding.trans g.toEmbedding, by simp [f.map_rel_iff, g.map_rel_iff]⟩
 
 instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
   ⟨RelEmbedding.refl _⟩
@@ -626,7 +626,8 @@ theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
-  ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
+  ⟨f.toEquiv.symm, @fun a b => by
+    erw [← f.map_rel_iff, f.toEquiv.apply_symm_apply, f.toEquiv.apply_symm_apply]⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
@@ -640,12 +641,12 @@ def Simps.symm_apply (h : r ≃r s) : β → α :=
 initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
-@[refl, simps! apply]
+@[refl, simps! toEquiv apply]
 protected def refl (r : α → α → Prop) : r ≃r r :=
   ⟨Equiv.refl _, Iff.rfl⟩
 
 /-- Composition of two relation isomorphisms is a relation isomorphism. -/
-@[simps! apply]
+@[simps! toEquiv apply]
 protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
   ⟨f₁.toEquiv.trans f₂.toEquiv, f₂.map_rel_iff.trans f₁.map_rel_iff⟩
 
@@ -658,6 +659,28 @@ theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
 
 @[simp] lemma apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x := e.right_inv x
 @[simp] lemma symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x := e.left_inv x
+
+/-- Build a relation isomorphism from a bijective map that preserves and reflects the relation. -/
+@[simps toEquiv]
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) :
+    r ≃r s where
+  toEquiv := .ofBijective f hf
+  map_rel_iff' := hf' ..
+
+@[simp, grind =] lemma coe_ofBijective (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) :
+    ⇑(ofBijective f hf hf') = f := rfl
+
+@[simp] lemma ofBijective_coe (e : r ≃r s) :
+    ofBijective e e.bijective (fun _ _ => e.map_rel_iff) = e := by ext; rfl
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) (b : β) :
+    f ((ofBijective f hf hf').symm b) = b :=
+  (ofBijective ..).apply_symm_apply _
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) (a : α) :
+    (ofBijective f hf hf').symm (f a) = a :=
+  (ofBijective ..).symm_apply_apply _
 
 @[simp] lemma symm_comp_self (e : r ≃r s) : e.symm ∘ e = id := funext e.symm_apply_apply
 @[simp] lemma self_comp_symm (e : r ≃r s) : e ∘ e.symm = id := funext e.apply_symm_apply
@@ -836,6 +859,16 @@ def relEmbeddingCongr {α₁ β₁ α₂ β₂}
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
 
+@[simp] lemma relEmbeddingCongr_refl : relEmbeddingCongr (.refl r) (.refl s) = .refl (r ↪r s) := rfl
+
+@[simp]
+lemma relEmbeddingCongr_trans_relEmbeddingCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relEmbeddingCongr e₁ e₂).trans (relEmbeddingCongr e₁' e₂') =
+      relEmbeddingCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
 /-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr` for `RelIso`. -/
@@ -850,6 +883,15 @@ def relIsoCongr {α₁ β₁ α₂ β₂}
   right_inv f₂ := by ext; simp
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relIsoCongr
+
+@[simp] lemma relIsoCongr_refl : relIsoCongr (.refl r) (.refl s) = .refl (r ≃r s) := rfl
+
+@[simp] lemma relIsoCongr_trans_relIsoCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relIsoCongr e₁ e₂).trans (relIsoCongr e₁' e₂') =
+      relIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.

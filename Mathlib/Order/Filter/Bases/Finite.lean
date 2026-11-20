@@ -106,7 +106,7 @@ theorem HasBasis.biInf_finset {ι : Type*} {ι' : ι → Type*} (I : Finset ι)
     (⨅ i ∈ I, l i).HasBasis (fun f : ∀ i : I, ι' i ↦ ∀ i : I, p i (f i))
       fun f ↦ ⋂ i : I, s i (f i) := by
   rw [iInf_subtype']
-  exact HasBasis.iInf_of_finite fun i : I ↦ hl i i.2
+  exact HasBasis.iInf_of_finite fun i : I ↦ hl i i.property
 
 open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}

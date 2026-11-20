@@ -75,9 +75,9 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     exact t.hasSeparatingCover_empty_left
   obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
-    apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
+    apply normal_exists_closure_subset t_cl (T_open (g n).val (g n).property)
     rw [T_int]
-    exact sInter_subset_of_mem (g n).2
+    exact sInter_subset_of_mem (g n).property
   have clg'_int : t = ⋂ i, closure (g' i) := by
     apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
     rw [T_int]
