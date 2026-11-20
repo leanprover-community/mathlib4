@@ -186,8 +186,8 @@ If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if 
 at `x`.
 -/
 lemma meromorphicAt_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
-    MeromorphicAt (f + g) x ↔ MeromorphicAt g x := by
-  exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
+    MeromorphicAt (f + g) x ↔ MeromorphicAt g x :=
+  ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
 If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `g` is meromorphic
@@ -219,8 +219,8 @@ If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if 
 at `x`.
 -/
 lemma meromorphicAt_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
-    MeromorphicAt (f - g) x ↔ MeromorphicAt g x := by
-  exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
+    MeromorphicAt (f - g) x ↔ MeromorphicAt g x :=
+  ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
 If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
@@ -235,8 +235,8 @@ If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if 
 at `x`.
 -/
 lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
-    MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
-  exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
+    MeromorphicAt (f - g) x ↔ MeromorphicAt f x :=
+  ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
 
 /--
 If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
@@ -903,7 +903,7 @@ Meromorphic functions are measurable.
   have h₁' := h₁.to_subtype
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
-  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
+  exact .of_union_range_cover (.subtypeVal h₂.measurableSet) (.subtypeVal h₁.measurableSet)
     (by simp [-mem_compl_iff]) h₃.domRestrict.measurable (measurable_of_countable _)
 
 /-- `Meromorphic` is invariant under translation. -/

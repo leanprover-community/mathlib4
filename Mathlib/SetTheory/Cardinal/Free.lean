@@ -58,7 +58,8 @@ instance : Countable (FreeMonoid α) := .of_equiv _ FreeMonoid.toListEquiv.symm
 @[to_additive]
 instance : Countable (FreeGroup α) := inferInstanceAs <| Countable (Quot _)
 
-instance : Countable (FreeAddCommGroup α) := inferInstanceAs <| Countable (Quot _)
+@[to_additive]
+instance : Countable (FreeCommGroup α) := inferInstanceAs <| Countable (Quot _)
 
 instance : Countable (FreeRing α) := inferInstanceAs <| Countable (MonoidAlgebra ℤ _)
 

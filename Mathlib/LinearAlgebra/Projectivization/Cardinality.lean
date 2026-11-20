@@ -40,7 +40,7 @@ noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } �
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
 instance isEmpty_of_subsingleton [Subsingleton V] : IsEmpty (ℙ k V) := by
-  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.2 (Subsingleton.elim v.1 0)⟩
+  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.property (Subsingleton.elim v.val 0)⟩
   simpa using (nonZeroEquivProjectivizationProdUnits k V).symm.isEmpty
 
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/

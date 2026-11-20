@@ -60,7 +60,7 @@ the supremum of the sum of `edist (f (u (i+1))) (f (u i))` over all finite incre
 sequences `u` in `s`. -/
 noncomputable def eVariationOn (f : α → E) (s : Set α) : ℝ≥0∞ :=
   ⨆ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
-    ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))
+    ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))
 
 /-- A function has bounded variation on a set `s` if its total variation there is finite. -/
 def BoundedVariationOn (f : α → E) (s : Set α) :=
@@ -112,7 +112,8 @@ theorem sum_le_of_monotoneOn_Icc {f : α → E} {s : Set α} {m n : ℕ} {u : �
     _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range n ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
-      sum_le (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
+      sum_le (fun i j h ↦ hu (π i).property (π j).property (monotone_projIcc hmn h))
+        fun i ↦ us _ (π i).property
 
 theorem sum_le_of_monotoneOn_Iic {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Iic n)) (us : ∀ i ≤ n, u i ∈ s) :
@@ -125,7 +126,7 @@ it is sometimes handy. -/
 theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
     eVariationOn f s =
       ⨆ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
-        ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
+        ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) := by
   apply le_antisymm
   · apply iSup_le
     rintro ⟨n, u, u_mono, u_mem⟩
@@ -354,11 +355,11 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
   by_cases hs : s = ∅
   · simp [hs]
   have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ s } :=
-    nonempty_monotone_mem (nonempty_iff_ne_empty.2 hs)
+    nonempty_monotone_mem (ne_empty_iff_nonempty.1 hs)
   by_cases ht : t = ∅
   · simp [ht]
   have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ t } :=
-    nonempty_monotone_mem (nonempty_iff_ne_empty.2 ht)
+    nonempty_monotone_mem (ne_empty_iff_nonempty.1 ht)
   refine ENNReal.iSup_add_iSup_le ?_
   /- We start from two sequences `u` and `v` along `s` and `t` respectively, and we build a new
     sequence `w` along `s ∪ t` by juxtaposing them. Its variation is larger than the sum of the

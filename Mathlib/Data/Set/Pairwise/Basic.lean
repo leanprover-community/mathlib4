@@ -316,7 +316,7 @@ theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn
 theorem PairwiseDisjoint.range (g : s → ι) (hg : ∀ i : s, f (g i) ≤ f i)
     (ht : s.PairwiseDisjoint f) : (range g).PairwiseDisjoint f := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-  exact ((ht x.2 y.2) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
+  exact ((ht x.property y.property) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
 
 theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
@@ -431,7 +431,7 @@ lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
-    rwa [le_bot_iff, bot_eq_empty, ← Ne, ← nonempty_iff_ne_empty] at ht
+    rwa [le_bot_iff, bot_eq_empty, ← Ne, ne_empty_iff_nonempty] at ht
   obtain ⟨x, hx⟩ := ht
   exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 

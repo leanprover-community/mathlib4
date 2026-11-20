@@ -175,7 +175,10 @@ theorem mapsTo_closedEBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
   (hf.preimage_closedEBall x r).ge
 
 /-- The injection from a subtype is an isometry -/
-theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
+theorem _root_.isometry_subtypeVal {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
+
+@[deprecated (since := "2026-11-10")]
+alias _root_.isometry_subtype_coe := _root_.isometry_subtypeVal
 
 theorem _root_.NNReal.isometry_coe : Isometry ((↑) : NNReal → ℝ) := fun _ _ ↦ rfl
 

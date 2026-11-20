@@ -136,16 +136,16 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
 `n`, formed by adding a term `X ^ n`. -/
 def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n where
-  toFun p := ⟨p.1.eraseLead, by
+  toFun p := ⟨p.val.eraseLead, by
     rcases p with ⟨p, hp, rfl⟩
     simp only [mem_degreeLT]
     refine lt_of_lt_of_le ?_ degree_le_natDegree
     exact degree_eraseLead_lt (Polynomial.Monic.ne_zero_of_polynomial_ne hp one_ne_zero)⟩
   invFun := fun p =>
-    ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
+    ⟨X^n + p.val, monic_X_pow_add (mem_degreeLT.1 p.property), by
         rw [natDegree_add_eq_left_of_degree_lt]
         · simp
-        · simp [mem_degreeLT.1 p.2]⟩
+        · simp [mem_degreeLT.1 p.property]⟩
   left_inv := by
     rintro ⟨p, hp, rfl⟩
     ext1
@@ -285,7 +285,7 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = 
   · rfl
 
 @[deprecated coeff_restriction (since := "2026-11-16")]
-theorem coeff_restriction' {p : R[X]} {n : ℕ} : ((restriction p).coeff n).1 = p.coeff n := by
+theorem coeff_restriction' {p : R[X]} {n : ℕ} : ((restriction p).coeff n).val = p.coeff n := by
   simp
 
 @[simp]
@@ -583,7 +583,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     · rw [Ne, eq_top_iff_one, mem_map_C_iff, not_forall]
       use 0
       rw [AddMonoidAlgebra.coeff_one_zero, ← eq_top_iff_one]
-      exact h.1
+      exact h.ne_top'
     · intro f g
       simp only [mem_map_C_iff]
       contrapose!
@@ -594,7 +594,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
-        · apply mt h.2
+        · apply mt h.mem_or_mem'
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem

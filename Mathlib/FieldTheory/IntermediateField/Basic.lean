@@ -222,15 +222,12 @@ protected theorem zsmul_mem {x : L} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
 protected theorem intCast_mem (n : ℤ) : (n : L) ∈ S :=
   intCast_mem S n
 
-@[simp, norm_cast]
 protected theorem coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_neg (x : S) : (↑(-x) : L) = -↑x :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
   rfl
 
@@ -242,17 +239,14 @@ protected theorem coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
 protected theorem coe_div (x y : S) : (↑(x / y) : L) = ↑x / ↑y :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_zero : ((0 : S) : L) = 0 :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_one : ((1 : S) : L) = 1 :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
-  SubmonoidClass.coe_pow x n
+  rfl
 
 end InheritedLemmas
 
@@ -290,7 +284,7 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     let hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
-    exact hy.symm ▸ y.2
+    exact hy.symm ▸ y.property
 
 @[simp]
 theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
@@ -708,16 +702,17 @@ theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
 
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
-  exact x.2
+  exact x.property
 
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
-    x.1 ∈ lift E ↔ x ∈ E :=
+    x.val ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
 /-- The algEquiv between an intermediate field and its lift. -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
-  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
-  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  toFun x := ⟨x.val.val, (mem_lift x.val).mpr x.property⟩
+  invFun x := ⟨⟨x.val, lift_le F x.property⟩,
+    (mem_lift ⟨x.val, lift_le F x.property⟩).mp x.property⟩
   left_inv := congrFun rfl
   right_inv := congrFun rfl
   map_mul' _ _ := rfl
@@ -725,7 +720,7 @@ def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F 
   commutes' _ := rfl
 
 lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
-    (liftAlgEquiv F x).1 = x := rfl
+    (liftAlgEquiv F x).val = x := rfl
 
 section RestrictScalars
 
@@ -858,14 +853,14 @@ into an order isomorphism from
 @[simps apply symm_apply]
 def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
-  toFun E := extendScalars E.2
+  toFun E := extendScalars E.property
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.2 :=
+    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end Subfield
@@ -908,14 +903,14 @@ into an order isomorphism from
 `IntermediateField.restrictScalars`. -/
 @[simps]
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
-  toFun E := extendScalars E.2
+  toFun E := extendScalars E.property
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.2 :=
+    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end IntermediateField
@@ -940,7 +935,7 @@ If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an interme
 def restrict : IntermediateField K E :=
   (IntermediateField.inclusion h).fieldRange
 
-theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F :=
+theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.val ∈ F :=
   Set.ext_iff.mp (Set.range_inclusion h) x
 
 @[simp]

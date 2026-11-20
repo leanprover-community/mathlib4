@@ -36,13 +36,13 @@ variable {X Y Z : TopCat.{u}}
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ X :=
   ofHom ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
-lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
+lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.val.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ Y :=
   ofHom ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
-lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
+lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.val.2 := rfl
 
 /-- The explicit pullback cone of `X, Y` given by `{ p : X × Y // f p.1 = g p.2 }`. -/
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
@@ -150,8 +150,8 @@ def pullbackHomeoPreimage
     {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : IsEmbedding g) :
     { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
-  toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
-  invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
+  toFun := fun x ↦ ⟨x.val.1, _, x.property.symm⟩
+  invFun := fun x ↦ ⟨⟨x.val, Exists.choose x.property⟩, (Exists.choose_spec x.property).symm⟩
   left_inv := by
     intro x
     ext <;> dsimp
@@ -161,10 +161,10 @@ def pullbackHomeoPreimage
   continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
-    convert hf.comp continuous_subtype_val
+    refine continuous_subtypeVal.prodMk <| hg.isInducing.continuous_iff.mpr ?_
+    convert hf.comp continuous_subtypeVal
     ext x
-    exact Exists.choose_spec x.2
+    exact Exists.choose_spec x.property
 
 theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=

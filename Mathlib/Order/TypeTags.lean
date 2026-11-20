@@ -59,18 +59,19 @@ instance inhabited : Inhabited (WithBot α) :=
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[to_dual (attr := elab_as_elim, induction_eliminator, cases_eliminator)
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/]
-def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
+def recBotCoe {motive : WithBot α → Sort*} (bot : motive ⊥) (coe : ∀ a : α, motive a) :
+    ∀ n : WithBot α, motive n
   | ⊥ => bot
   | (a : α) => coe a
 
 @[to_dual (attr := simp)]
-theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
-    @recBotCoe _ C d f ⊥ = d :=
+theorem recBotCoe_bot {motive : WithBot α → Sort*} (bot : motive ⊥) (coe : ∀ a : α, motive a) :
+    recBotCoe bot coe ⊥ = bot :=
   rfl
 
 @[to_dual (attr := simp)]
-theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
-    @recBotCoe _ C d f ↑x = f x :=
+theorem recBotCoe_coe {motive : WithBot α → Sort*} (bot : motive ⊥) (coe : ∀ a : α, motive a)
+    (x : α) : recBotCoe bot coe (x : WithBot α) = coe x :=
   rfl
 
 end WithBot

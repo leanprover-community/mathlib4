@@ -138,7 +138,7 @@ theorem tendsto_normSq_coprime_pair :
     suffices ((z : ℂ).im⁻¹ • g).comp f = LinearMap.id by exact LinearMap.ker_eq_bot_of_inverse this
     apply LinearMap.ext
     intro c
-    have hz : (z : ℂ).im ≠ 0 := z.2.ne'
+    have hz : (z : ℂ).im ≠ 0 := z.coe_im_pos.ne'
     rw [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.id_apply]
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
@@ -250,7 +250,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.property)
 
 end TendstoLemmas
 
@@ -283,11 +283,11 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine ⟨g, g.2, ?_⟩
+  refine ⟨g, g.property, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
-    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.property))
   exact hg ⟨g1, this⟩
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
@@ -980,6 +980,6 @@ lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
     rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos γ τ.im_ne_zero),
       normSq_eq_norm_sq] at h1
     simpa only [sq_le_one_iff_abs_le_one, abs_norm] using
-      (mul_le_iff_le_one_right τ.2).mp h1
+      (mul_le_iff_le_one_right τ.coe_im_pos).mp h1
 
 end ModularGroup
