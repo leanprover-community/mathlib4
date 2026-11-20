@@ -221,7 +221,7 @@ namespace CategoryTheory.Iso
 /-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgCat.{v} R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
-  { i.hom.hom.toNonUnitalAlgHom with
+  { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
     left_inv := fun x ↦ by simp
@@ -240,7 +240,7 @@ def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgCat.{v} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.hom.toNonUnitalAlgHom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
 
 namespace AlgCat

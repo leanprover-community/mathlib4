@@ -896,7 +896,6 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
     nontriviality S
     obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
     rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk, Polynomial.aeval_def, Algebra.toRingHom_ofId]
-  map_smul' := by simp
 
 -- This lemma should have the simp tag but this causes a lint issue.
 set_option backward.isDefEq.respectTransparency.types false in

@@ -165,7 +165,7 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ 
 /-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]
 def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
-  __ := i.hom.hom.toNonUnitalAlgHom
+  __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
@@ -180,7 +180,7 @@ def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.hom.toNonUnitalAlgHom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact (isoMk e).isIso_hom
 
 variable (R)

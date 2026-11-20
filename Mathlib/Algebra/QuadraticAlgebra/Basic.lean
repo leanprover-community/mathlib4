@@ -496,7 +496,6 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
     (by grind [Units.inv_mul_cancel_left])
   left_inv _ := by ext <;> simp [mul_assoc]
   right_inv _ := by ext <;> simp [mul_assoc]
-  map_smul' := by simp
 
 @[deprecated (since := "2026-08-14")] alias map := changeGenerator
 @[deprecated (since := "2026-08-14")] alias map_omega := changeGenerator_omega

@@ -607,7 +607,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 This is a computable alternative to `AlgEquiv.ofInjective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
-  { f.rangeRestrict.toNonUnitalAlgHom with
+  { f.rangeRestrict with
     toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
