@@ -484,7 +484,7 @@ def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : �
   { -- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
     -- imports this file.
       Ideal.Quotient.lift
-      I (f : A →+* B) hI with
+      I f.toRingHom hI with
     commutes' := fun r => by
       have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
       rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
@@ -522,17 +522,17 @@ theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.k
 This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightInverse`) /
 is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
-def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f) →ₐ[R₁] B :=
+def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f.toRingHom) →ₐ[R₁] B :=
   AlgHom.mk' (RingHom.kerLift (f : A →+* B)) fun _ _ => KerLift.map_smul f _ _
 
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
-    kerLiftAlg f (Quotient.mk (RingHom.ker f) a) = f a := by
+    kerLiftAlg f (Quotient.mk (RingHom.ker f.toRingHom) a) = f a := by
   rfl
 
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    (kerLiftAlg f : A ⧸ ker f →+* B) = RingHom.kerLift (f : A →+* B) :=
+    (kerLiftAlg f : A ⧸ ker f.toRingHom →+* B) = RingHom.kerLift (f : A →+* B) :=
   rfl
 
 /-- The induced algebra morphism from the quotient by the kernel is injective. -/
@@ -542,14 +542,14 @@ theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLif
 /-- The **first isomorphism** theorem for algebras, computable version. -/
 @[simps!]
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f) ≃ₐ[R₁] B :=
+    (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f.toRingHom) ≃ₐ[R₁] B :=
   { RingHom.quotientKerEquivOfRightInverse hf,
     kerLiftAlg f with }
 
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps! -isSimp apply]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
-    (A ⧸ (RingHom.ker f)) ≃ₐ[R₁] B :=
+    (A ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
 @[simp]
@@ -709,7 +709,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
-  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
+  { quotientMap J f.toRingHom hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
     quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap] }
 
 @[simp]

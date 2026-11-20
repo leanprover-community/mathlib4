@@ -152,17 +152,15 @@ theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
 
--- make the coercion the simp-normal form
-@[simp]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
+@[simp]
+theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑f.toRingHom = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
+theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑f.toMonoidHom = f :=
   rfl
 
 @[simp, norm_cast]
@@ -170,7 +168,7 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : f.toRingHom.toMonoidHom = f :=
   rfl
 
 @[simp]
