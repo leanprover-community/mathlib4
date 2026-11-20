@@ -127,7 +127,7 @@ lemma _root_.TopRep.resolutionXRes_succ (φ : H →ₜ* G) (i : ℕ) :
     resolutionXRes X φ (i + 1) = ofHom (coind₁ResMap φ (resolutionXRes _ φ i).hom) := rfl
 
 @[simp]
-lemma resolutionXRes_id (X : TopRep k G) (i : ℕ) :
+lemma _root_.TopRep.resolutionXRes_id (X : TopRep k G) (i : ℕ) :
     resolutionXRes X (.id G) i = 𝟙 (resolutionX X i) := by
   induction i with
   | zero => rfl
@@ -135,7 +135,7 @@ lemma resolutionXRes_id (X : TopRep k G) (i : ℕ) :
     rw [resolutionXRes_succ, ih]
     ext; rfl
 
-lemma resolutionXRes_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (i : ℕ) :
+lemma _root_.TopRep.resolutionXRes_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (i : ℕ) :
     resolutionXRes X (φ.comp ψ) i =
       (resFunctor (ψ : K →* H)).map (resolutionXRes X φ i) ≫ resolutionXRes _ ψ i := by
   induction i with
