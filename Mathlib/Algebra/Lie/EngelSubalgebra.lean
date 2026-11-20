@@ -157,7 +157,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   use n
   ext y
   rw [coe_ad_pow]
-  specialize h x x.2 y.2
+  specialize h x x.property y.property
   rw [mem_engel_iff] at h
   obtain ⟨m, hm⟩ := h
   obtain (hmn | hmn) : m ≤ n ∨ n ≤ m := le_total m n

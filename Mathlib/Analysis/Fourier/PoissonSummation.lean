@@ -138,11 +138,11 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
-  refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
+  refine fun y => (hd y.val (by linarith [hx.1, y.property.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_iff_right₀ hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
-  convert claim x (by linarith only [hx.1]) y.1 y.2.1
-  · apply abs_of_nonneg; linarith [y.2.1]
+  convert claim x (by linarith only [hx.1]) y.val y.property.1
+  · apply abs_of_nonneg; linarith [y.property.1]
   · exact abs_of_pos hx'.1
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)

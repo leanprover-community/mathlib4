@@ -512,7 +512,7 @@ theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
   rintro - ⟨g, hg, rfl⟩
-  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
+  exact H.mul_mem (H.mul_mem h.property (hP hg)) (H.inv_mem h.property)
 
 theorem conj_smul_eq_self_of_mem {H : Subgroup G} {h : G} (hh : h ∈ H) :
     MulAut.conj h • H = H := by
