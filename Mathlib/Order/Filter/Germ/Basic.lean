@@ -13,6 +13,9 @@ public import Mathlib.Order.Filter.Tendsto
 
 import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Germ of a function at a filter
 

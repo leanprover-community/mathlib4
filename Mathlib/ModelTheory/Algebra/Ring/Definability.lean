@@ -10,6 +10,9 @@ public import Mathlib.ModelTheory.Definability
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definable Subsets in the language of rings
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.GCongr  -- shake: keep (for the `@[gcongr]` lemmas that `grw` uses)
 public import Mathlib.Tactic.GRewrite.Elab
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The generalized rewriting tactic
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Topology.Algebra.Group.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Short exact sequences of topological groups
 
