@@ -294,8 +294,7 @@ def Quotient.algebraQuotientOfRamificationIdxNeZero [hfp : NeZero e] :
     Algebra (R ⧸ p) (S ⧸ P) :=
   Quotient.algebraQuotientOfLEComap (le_comap_of_ramificationIdx'_ne_zero hfp.out)
 
-attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
-
+attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero in
 @[simp, deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero
     [NeZero e] (x : R) :
@@ -342,6 +341,7 @@ theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a �
 section
 variable [hfp : NeZero (ramificationIdx' p P)]
 
+attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 noncomputable def quotientToQuotientRangePowQuotSucc
@@ -414,6 +414,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
   rwa [sup_comm, irreducible_pow_sup hspan0 ((prime_iff_isPrime hP0).mpr hP).irreducible,
     count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
 
+attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero in
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
 `R ⧸ p`-linearly isomorphic to `S ⧸ P`. -/
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
@@ -429,6 +430,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
   · exact quotientToQuotientRangePowQuotSucc_injective p P hi a_mem a_notMem
   · exact quotientToQuotientRangePowQuotSucc_surjective p P hP hi a_mem a_notMem
 
+attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero in
 /-- Since the inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)` has a kernel isomorphic to `P / S`,
 `[P^i / P^e : R / p] = [P^(i+1) / P^e : R / p] + [P / S : R / p]` -/
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
@@ -441,6 +443,7 @@ theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : 
     (quotientRangePowQuotSuccInclusionEquiv p P hP0 hi).symm.rank_eq]
   exact (Submodule.rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion p P i))).symm
 
+attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero in
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :
@@ -522,13 +525,13 @@ instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S)
     NeZero (ramificationIdx' p P.val) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
-attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
-
+attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero in
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
+attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero in
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 instance Factors.liesOver [p.IsMaximal] (P : (factors (map (algebraMap R S) p)).toFinset) :
     P.val.LiesOver p :=
