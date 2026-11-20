@@ -10,10 +10,10 @@ public meta import Lean.Elab.Tactic.Calc
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Data.String.Defs
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 
-meta import ProofWidgets.Component.Basic
+public import Batteries.CodeAction.Attr
+public import ProofWidgets.Component.OfRpcMethod
 
 /-! # Calc widget
 

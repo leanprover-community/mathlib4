@@ -8,6 +8,7 @@ module
 public import Lean.ToExpr
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Additional operations on Expr and rational numbers

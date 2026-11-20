@@ -9,7 +9,6 @@ public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
 
-import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!

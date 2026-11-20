@@ -10,6 +10,7 @@ public meta import Lean.Meta.Tactic.Simp.Main
 
 import Lean.Elab.Tactic.Location
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Rewriting at specified locations

@@ -7,9 +7,6 @@ Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
 module
 
 public import Lean.Meta.AppBuilder
-public import Lean.Meta.Match.MatcherInfo
-public import Lean.ProjFns
-public import Lean.Structure
 
 import Lean.Meta.Transform
 -- Import this linter explicitly to ensure that

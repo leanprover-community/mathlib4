@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Galois.Abelian
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Cyclotomic extensions

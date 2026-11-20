@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Saturated subgroups

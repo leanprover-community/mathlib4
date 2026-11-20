@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Notation.Prod
 
-import Mathlib.Tactic.Spread
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

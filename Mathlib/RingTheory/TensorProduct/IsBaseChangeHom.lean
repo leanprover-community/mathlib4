@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 
-import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-! # Base change properties for modules of linear maps
 

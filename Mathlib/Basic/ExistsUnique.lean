@@ -6,6 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # `ExistsUnique`

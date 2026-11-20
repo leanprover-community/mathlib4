@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 public import Mathlib.RingTheory.Binomial
 
 import Mathlib.Analysis.Complex.OperatorNorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Binomial Series

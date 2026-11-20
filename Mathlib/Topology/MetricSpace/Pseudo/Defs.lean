@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Pseudo-metric spaces

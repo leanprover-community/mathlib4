@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
+public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

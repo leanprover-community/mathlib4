@@ -8,6 +8,8 @@ module
 public meta import Mathlib.Util.Qq
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` plugin for `^`.

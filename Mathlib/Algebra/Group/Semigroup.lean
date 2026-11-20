@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.Simps
+public import Mathlib.Tactic.Lemma
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

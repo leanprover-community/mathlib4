@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
 
 import Mathlib.Data.Fintype.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.

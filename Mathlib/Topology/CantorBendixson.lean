@@ -7,6 +7,7 @@ module
 
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 public import Mathlib.Topology.DerivedSet
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Cantor-Bendixson derivatives and perfect kernel

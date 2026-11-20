@@ -6,7 +6,6 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
-public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Derivative

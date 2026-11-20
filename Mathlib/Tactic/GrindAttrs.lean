@@ -10,6 +10,7 @@ public import Lean.Meta.Tactic.Grind.RegisterCommand
 public import Std.Data.HashSet.Basic
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Custom grind-sets

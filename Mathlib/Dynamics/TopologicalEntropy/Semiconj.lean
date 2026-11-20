@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone
 module
 
 public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy

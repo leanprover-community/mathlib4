@@ -12,6 +12,7 @@ public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
+public import Lean.Widget.InteractiveGoal
 
 /-!
 # Point & click suggestions
