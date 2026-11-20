@@ -199,7 +199,7 @@ theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
   exact ⟨op c, ⟨f.op⟩⟩
 
-lemma ObjectProperty.final_ι_iff_of_isFiltered
+lemma ObjectProperty.final_ι_iff_of_isFilteredOrEmpty
     (P : ObjectProperty C) [IsFilteredOrEmpty C] :
     P.ι.Final ↔ ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (X ⟶ Y) := by
   refine ⟨fun _ X ↦ ?_, fun h ↦ ?_⟩
