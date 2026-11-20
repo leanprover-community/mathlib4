@@ -107,7 +107,6 @@ section Real
 variable (𝔸 : Type*) [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸]
 
 /-- Extend normed algebras over `ℚ` to normed algebras over `ℝ` on Banach algebras. -/
-@[no_expose]
 abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
   __ := (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
     Rat.isUniformEmbedding_coe_real.isUniformInducing Rat.denseRange_cast
