@@ -138,7 +138,6 @@ theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
 
 @[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
 
-@[simp]
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
   rfl
 
@@ -150,7 +149,7 @@ theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
 
 @[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
 
-theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B).toLinearMap :=
+theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = e.toCoalgHom.toLinearMap :=
   rfl
 
 section
@@ -178,10 +177,9 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass,
-        LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
-      rw [← CoalgHom.toLinearMap_eq_ofClass, ← toLinearEquiv_toLinearMap,
-        LinearEquiv.comp_symm_cancel_right] }
+      simp only [TensorProduct.congr, LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc,
+        CoalgHom.map_comp_comul]
+      rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
@@ -330,12 +328,12 @@ structure on `B`. -/
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, CoalgHom.toLinearMap_eq_ofClass]
+    simp [← (ℛ R _).eq]
   lTensor_counit_comp_comul := by
     simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, CoalgHom.toLinearMap_eq_ofClass]
+    simp [← (ℛ R _).eq]
 
 end CoalgEquiv

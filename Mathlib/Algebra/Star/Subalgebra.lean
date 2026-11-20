@@ -836,11 +836,11 @@ variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
   [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S] [Module S A]
   [Module S B] [Module R A] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
   [Star A] [Star B]
-#where
+
 /-- Restrict the scalar ring of a star algebra equivalence. -/
 @[simps]
 def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
-  { LinearMap.restrictScalars R ((f.toStarAlgHom : A →⋆ₐ[S] B).toLinearMap : A →ₗ[S] B), f with
+  { f.toAlgEquiv.toLinearMap.restrictScalars R, f with
     toFun := f }
 
 theorem StarAlgEquiv.restrictScalars_injective :

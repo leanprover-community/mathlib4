@@ -129,13 +129,16 @@ instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
 instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
+@[simp]
+protected lemma coe_toLinearMap (f : A₁ →CP A₂) : ⇑f.toLinearMap = f := rfl
+
 open CStarMatrix in
 lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
-  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (.ofClass φ) := by
-    simp only [mapₗ, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
+  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ φ.toLinearMap := by
+    simp only [mapₗ, CompletelyPositiveMap.coe_toLinearMap, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   simpa [reindexₐ_symm] using map_nonneg (reindexₐ ℂ A₂ e).symm hmain

@@ -180,10 +180,10 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def map (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
     M ⊗[R] P →ₗc[S] N ⊗[R] Q where
   toLinearMap := AlgebraTensorModule.map f.toLinearMap g.toLinearMap
-  counit_comp := by ext; simp [CoalgHom.toLinearMap_eq_ofClass]
+  counit_comp := by ext; simp
   map_comp_comul := by
     ext x y
-    dsimp [CoalgHom.toLinearMap_eq_ofClass]
+    dsimp
     simp only [← CoalgHomClass.map_comp_comul_apply]
     hopf_tensor_induction comul (R := S) x with x₁ x₂
     hopf_tensor_induction comul (R := R) y with y₁ y₂

@@ -114,15 +114,15 @@ variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower
 lemma nonUnitalAlgHom_comp_convMul_distrib
     [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
     (h : A →ₙₐ[R] B) (f g : WithConv (C →ₗ[R] A)) :
-    (.ofClass h) ∘ₗ (f * g).ofConv =
-      (toConv ((.ofClass h) ∘ₗ f.ofConv) * toConv ((.ofClass h) ∘ₗ g.ofConv)).ofConv := by
+    h.toLinearMap ∘ₗ (f * g).ofConv =
+      (toConv (h.toLinearMap ∘ₗ f.ofConv) * toConv (h.toLinearMap ∘ₗ g.ofConv)).ofConv := by
   simp [convMul_def, map_comp, ← comp_assoc, NonUnitalAlgHom.comp_mul']
 
 lemma convMul_comp_coalgHom_distrib [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
     (f g : WithConv (C →ₗ[R] A)) (h : B →ₗc[R] C) :
     (f * g).ofConv.comp h.toLinearMap =
       (toConv (f.ofConv.comp h.toLinearMap) * toConv (g.ofConv.comp h.toLinearMap)).ofConv := by
-  simp [convMul_def, map_comp, comp_assoc, CoalgHom.toLinearMap_eq_ofClass]
+  simp [convMul_def, map_comp, comp_assoc]
 
 /-- Non-unital convolution semiring structure on linear maps from a coalgebra to a
 non-unital algebra. -/
@@ -169,7 +169,7 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 @[simp]
 lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
     (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ h.toLinearMap = (1 : WithConv (B →ₗ[R] A)).ofConv := by
-  ext; simp [CoalgHom.toLinearMap_eq_ofClass]
+  ext; simp
 
 variable [Semiring B] [Algebra R B]
 
@@ -270,7 +270,7 @@ def convPrecomp (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithCo
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
   map_zero' := WithConv.ext (by ext; simp)
   map_add' f g := WithConv.ext (by ext; simp)
-  commutes' r := WithConv.ext (by ext; simp [CoalgHom.toLinearMap_eq_ofClass])
+  commutes' r := WithConv.ext (by ext; simp)
 
 lemma convPrecomp_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
     Function.Injective (convPrecomp h (A := A)) := fun _ _ e ↦

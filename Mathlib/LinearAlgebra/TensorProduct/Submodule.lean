@@ -65,19 +65,14 @@ theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.val * n.val
 
 theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
     mulMap (M.map f.toLinearMap) (N.map f.toLinearMap) ∘ₗ
-      TensorProduct.map ((LinearMap.ofClass f).submoduleMap M)
-          ((LinearMap.ofClass f).submoduleMap N)
-        = (.ofClass f) ∘ₗ mulMap M N := by
+      TensorProduct.map (f.toLinearMap.submoduleMap M) (f.toLinearMap.submoduleMap N)
+        = f.toLinearMap ∘ₗ mulMap M N := by
   ext
-  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
-    TensorProduct.curry_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_ofClass,
-    mulMap_tmul, map_mul]
-  rfl
+  simp
 
 theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
     mulMap (M.map f.toLinearMap) (N.map f.toLinearMap) ∘
-      TensorProduct.map ((LinearMap.ofClass f).submoduleMap M)
-          ((LinearMap.ofClass f).submoduleMap N)
+      TensorProduct.map (f.toLinearMap.submoduleMap M) (f.toLinearMap.submoduleMap N)
         = f ∘ mulMap M N :=
   congr(⇑($(mulMap_map_comp_eq M N f)))
 

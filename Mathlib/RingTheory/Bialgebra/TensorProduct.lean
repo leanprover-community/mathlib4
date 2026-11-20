@@ -139,7 +139,7 @@ variable (R S A) in
 bialgebra equivalence. -/
 @[expose] protected def rid : A ⊗[R] R ≃ₐc[S] A where
   toCoalgEquiv := Coalgebra.TensorProduct.rid R S A
-  map_mul' x y := by simp [coalgebra_rid_eq_algebra_rid_apply, CoalgHom.toLinearMap_eq_ofClass]
+  map_mul' x y := by simp [coalgebra_rid_eq_algebra_rid_apply]
 
 @[simp]
 theorem rid_toCoalgEquiv :

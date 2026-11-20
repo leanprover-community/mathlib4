@@ -117,7 +117,7 @@ instance funLike : FunLike (A →ₐc[R] B) A B where
   coe_injective f g h := by
     rcases f with ⟨_, _⟩
     rcases g with ⟨_, _⟩
-    simp_all [CoalgHom.toLinearMap_eq_ofClass]
+    simp_all
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_add := fun f => f.map_add'
@@ -154,15 +154,13 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-@[simp, norm_cast]
-theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
+@[simp]
+theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑f.toCoalgHom = f :=
   rfl
 
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
-@[simp]
-theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑f.toLinearMap = f :=
-  rfl
+theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑f.toLinearMap = f := by simp
 
 /-- Turn a bialgebra homomorphism into an algebra homomorphism. -/
 @[coe]
@@ -226,8 +224,8 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
 equalities. -/
 protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₐc[R] B :=
   { toCoalgHom := (f : A →ₗc[R] B).copy f' h
-    map_one' := by simp_all [CoalgHom.toLinearMap_eq_ofClass]
-    map_mul' := by intros; simp_all [CoalgHom.toLinearMap_eq_ofClass] }
+    map_one' := by simp_all
+    map_mul' := by intros; simp_all }
 
 @[simp]
 theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=

@@ -39,6 +39,8 @@ structure CoalgHom (R A B : Type*) [CommSemiring R]
   counit_comp : counit ∘ₗ toLinearMap = counit
   map_comp_comul : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
 
+attribute [simp] CoalgHom.counit_comp CoalgHom.map_comp_comul
+
 @[inherit_doc CoalgHom]
 infixr:25 " →ₗc " => CoalgHom _
 
@@ -121,6 +123,11 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
+theorem map_comp_comul_apply (f : A →ₗc[R] B) (x : A) :
+    TensorProduct.map f.toLinearMap f.toLinearMap (comul x) = comul (f x) :=
+  congr($(map_comp_comul f) _)
+
+@[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
     ⇑(ofClass f) = f :=
   rfl
@@ -201,7 +208,7 @@ equalities. -/
 protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
   { toLinearMap := f.toLinearMap.copy f' h
     counit_comp := by ext; simp_all
-    map_comp_comul := by simp only [f.toLinearMap.copy_eq f' h, map_comp_comul] }
+    map_comp_comul := by simp [f.toLinearMap.copy_eq f' h] }
 
 @[simp]
 theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
@@ -230,8 +237,8 @@ theorem id_toLinearMap : (CoalgHom.id R A).toLinearMap = LinearMap.id := rfl
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
   { φ₁.toLinearMap ∘ₗ φ₂.toLinearMap with
-    counit_comp := by ext; simp [toLinearMap_eq_ofClass]
-    map_comp_comul := by ext; simp [map_comp, toLinearMap_eq_ofClass] }
+    counit_comp := by ext; simp
+    map_comp_comul := by ext; simp [map_comp] }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ := rfl
