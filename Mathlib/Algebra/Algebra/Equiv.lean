@@ -1010,13 +1010,13 @@ end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
-def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
+def ULift.algEquiv {R : Type u} {A : Type v} [NonUnitalNonAssocSemiring A] [SMul R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   map_smul' _ _ := rfl
 
 @[simp]
-lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+lemma ULift.down_algEquiv_symm_apply {R A : Type*} [NonUnitalNonAssocSemiring A] [SMul R A]
     (a : A) :
     (ULift.algEquiv (R := R).symm a).down = a :=
   rfl
