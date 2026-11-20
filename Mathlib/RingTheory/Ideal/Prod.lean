@@ -73,28 +73,33 @@ theorem ideal_prod_eq (I : Ideal (R × S)) :
   simpa using I.add_mem (I.mul_mem_left (1, 0) h₁) (I.mul_mem_left (0, 1) h₂)
 
 @[simp]
-theorem map_fst_prod (I : Ideal R) (J : Ideal S) : map (RingHom.fst R S) (prod I J) = I := by
+theorem map_fst_prod (I : Ideal R) (J : Ideal S) : map Prod.fst (prod I J) = I := by
   ext x
-  rw [mem_map_iff_of_surjective (RingHom.fst R S) Prod.fst_surjective]
+  rw [← RingHom.coe_fst, mem_map_iff_of_surjective (RingHom.fst R S) Prod.fst_surjective]
   exact
     ⟨by
       rintro ⟨x, ⟨h, rfl⟩⟩
       exact h.1, fun h => ⟨⟨x, 0⟩, ⟨⟨h, Ideal.zero_mem _⟩, rfl⟩⟩⟩
 
 @[simp]
-theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map (RingHom.snd R S) (prod I J) = J := by
+theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map Prod.snd (prod I J) = J := by
   ext x
-  rw [mem_map_iff_of_surjective (RingHom.snd R S) Prod.snd_surjective]
+  rw [← RingHom.coe_snd, mem_map_iff_of_surjective (RingHom.snd R S) Prod.snd_surjective]
   exact
     ⟨by
       rintro ⟨x, ⟨h, rfl⟩⟩
       exact h.2, fun h => ⟨⟨0, x⟩, ⟨⟨Ideal.zero_mem _, h⟩, rfl⟩⟩⟩
 
 @[simp]
-theorem map_prodComm_prod :
-    map ((RingEquiv.prodComm : R × S ≃+* S × R) : R × S →+* S × R) (prod I J) = prod J I := by
+theorem map_swap_prod :
+    map Prod.swap (prod I J) = prod J I := by
+  rw [← RingEquiv.coe_prodComm]
   refine Trans.trans (ideal_prod_eq _) ?_
-  simp [map_map]
+  simp_rw [map_map]
+  eta_expand
+  simp
+
+@[deprecated (since := "2026-11-20")] alias map_prodComm_prod := map_swap_prod
 
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
 `S`. -/
@@ -163,7 +168,7 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
 theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal R) I).IsPrime) :
     I.IsPrime := by
   apply isPrime_of_isPrime_prod_top (S := R)
-  rw [← map_prodComm_prod]
+  rw [← map_swap_prod]
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
 
@@ -173,7 +178,7 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   let : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
-  rw [← map_prodComm_prod]
+  rw [← map_swap_prod]
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := S) (S := R))
 

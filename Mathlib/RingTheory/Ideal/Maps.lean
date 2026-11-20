@@ -174,11 +174,15 @@ lemma comap_comapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R 
     (I.comap g).comap f.toRingHom = I.comap (g.toRingHom.comp f.toRingHom) :=
   I.comap_comap f.toRingHom g.toRingHom
 
-theorem map_map {T : Type*} [Semiring T] {I : Ideal R} (f : R →+* S) (g : S →+* T) :
-    (I.map f).map g = I.map (g.comp f) :=
-  ((gc_map_comap f).compose (gc_map_comap g)).l_unique (gc_map_comap (g.comp f)) fun _ =>
+theorem map_map {F G T : Type*} [Semiring T] {I : Ideal R}
+    [FunLike F R S] [RingHomClass F R S] [FunLike G S T] [RingHomClass G S T] (f : F) (g : G) :
+    (I.map f).map g = I.map ((g : S → T) ∘ (f : R → S)) :=
+  ((gc_map_comap (RingHomClass.toRingHom f)).compose
+    (gc_map_comap (RingHomClass.toRingHom g))).l_unique
+    (gc_map_comap ((RingHomClass.toRingHom g).comp (RingHomClass.toRingHom f))) fun _ =>
     comap_comap _ _
 
+@[deprecated map_map +typeChanged (since := "2026-11-20")]
 lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [Algebra R B] [Semiring C] [Algebra R C] {I : Ideal A} (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
     (I.map f).map g = I.map (g.comp f) :=
@@ -473,10 +477,10 @@ end Injective
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm (map f I) = I`. -/
 @[simp]
-theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) :
-    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
+theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) : (I.map f).map f.symm = I := by
+  rw [map_map]
+  convert map_id I
+  ext; simp
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
   then `comap f (comap f.symm I) = I`. -/

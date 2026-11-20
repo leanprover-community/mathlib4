@@ -50,10 +50,10 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
 The underlying ideal is (definitionally) equal to `Ideal.comap`, whose underlying set is
 definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
-  __ := I.toIdeal.comap f
+  __ := I.toIdeal.comap f.toRingHom
   is_homogeneous' n a ha := by
-    rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
-    exact I.is_homogeneous' _ ha
+    rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff]
+    simpa using I.is_homogeneous' _ ha
 
 variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ}
   {K : HomogeneousIdeal 𝒞}
@@ -76,7 +76,8 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 @[simp] lemma toIdeal_map : (I.map f).toIdeal = I.toIdeal.map f := rfl
 
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
-  inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF already has the instance
+  inferInstanceAs (J.toIdeal.comap f.toRingHom).IsPrime
+  -- this shows that the simpNF already has the instance
 
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 

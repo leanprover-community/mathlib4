@@ -269,7 +269,8 @@ def uniformEquiv {S : Type*} [CommRing S] [WithIdeal S] (e : R ≃+* S)
     (h : i.map e.toRingHom = i) : UniformEquiv R S where
   __ := e
   uniformContinuous_toFun := uniformContinuous_of_map_le (f := e.toRingHom) (by rw [h])
-  uniformContinuous_invFun := uniformContinuous_of_map_le (f := e.symm.toRingHom) (by simp [← h])
+  uniformContinuous_invFun := uniformContinuous_of_map_le (f := e.symm.toRingHom) (by
+    simpa [← h] using (i.comap_map_of_bijective e.toRingHom e.bijective).le)
 
 variable {R} in
 lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNilpotent a := by
