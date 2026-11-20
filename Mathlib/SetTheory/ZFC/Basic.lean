@@ -210,12 +210,6 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : @Std.Refl ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ => id⟩
-
-instance : IsTrans ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
-
 @[simp]
 theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
   | ⟨_, A⟩, ⟨_, _⟩ =>
@@ -225,12 +219,6 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         ⟨b, za.trans ab⟩⟩
 
 lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := SetLike.coe_subset_coe
-
-instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
-  ⟨@le_antisymm ZFSet _⟩
-
-instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -551,8 +539,8 @@ lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by
 
 /-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
 def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
-  toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
-  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
+  toFun y := ⟨y.val, Set.mem_powerset (mem_powerset.1 y.property)⟩
+  invFun s := ⟨x.sep (· ∈ s.val), mem_powerset.2 sep_subset⟩
   left_inv := by simp +contextual [Function.LeftInverse]
   right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.ofPred_and]
 

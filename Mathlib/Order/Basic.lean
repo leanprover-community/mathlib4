@@ -436,6 +436,16 @@ lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.S
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
 
+@[to_dual self]
+theorem map_le_of_lt_imp_le_of_le [PartialOrder α] [Preorder β] {x y : α}
+    {f : α → β} (h : x < y → f x ≤ f y) (hxy : x ≤ y) : f x ≤ f y :=
+  hxy.eq_or_lt.elim (fun heq ↦ heq ▸ le_rfl) h
+
+@[to_dual self]
+theorem map_le_of_gt_imp_le_of_ge [PartialOrder α] [Preorder β] {x y : α}
+    {f : α → β} (h : y < x → f x ≤ f y) (hxy : y ≤ x) : f x ≤ f y :=
+  hxy.eq_or_lt.elim (fun heq ↦ heq ▸ le_rfl) h
+
 /-! ### Extensionality lemmas -/
 
 @[ext]
@@ -824,11 +834,11 @@ theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 
@@ -848,8 +858,9 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
-    ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
+  fast_instance% @LinearOrder.lift (Subtype p) _ _
+    ⟨fun x y ↦ ⟨max x y, max_rec' _ x.property y.property⟩⟩
+    ⟨fun x y ↦ ⟨min x y, min_rec' _ x.property y.property⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
 

@@ -11,7 +11,6 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 
 /-!
 # Algebra structure on monoid algebras
-
 -/
 
 @[expose] public noncomputable section
@@ -78,7 +77,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
 In particular this provides the instance `Algebra R R[M]`. -/
 @[to_additive (dont_translate := R A)
-/-- The instance `Algebra R R[M]` whenever we have `Algebra R R`.
+/-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/]
 instance algebra : Algebra R A[M] where
@@ -386,7 +385,7 @@ alias mapRangeRingHom_comp_algebraMap := mapRingHom_comp_algebraMap
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
-@[to_additive
+@[to_additive (dont_translate := R)
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
 noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where

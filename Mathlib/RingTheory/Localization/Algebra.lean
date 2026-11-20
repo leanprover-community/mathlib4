@@ -19,7 +19,6 @@ localization commutes with taking kernels for ring homomorphisms.
 
 The proof that localization commutes with taking kernels does not use the result for linear maps,
 as the translation is currently tedious and can be unified easily after the localization refactor.
-
 -/
 
 @[expose] public section
@@ -94,10 +93,11 @@ instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
-noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
-  ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
+noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ where
+  __ := IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f)
+  commutes' r := by
     obtain ⟨a, m, rfl⟩ := IsLocalization.exists_mk'_eq M r
-    simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
+    simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :

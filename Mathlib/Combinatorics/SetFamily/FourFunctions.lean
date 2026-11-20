@@ -304,8 +304,8 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
     (∑ a ∈ s, f₁ a) * ∑ a ∈ t, f₂ a ≤ (∑ a ∈ s ⊼ t, f₃ a) * ∑ a ∈ s ⊻ t, f₄ a := by
   classical
-  set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.1,
-    isSublattice_latticeClosure.2⟩
+  set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.supClosed,
+    isSublattice_latticeClosure.infClosed⟩
   have : Finite L := (s.finite_toSet.union t.finite_toSet).latticeClosure.to_subtype
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn

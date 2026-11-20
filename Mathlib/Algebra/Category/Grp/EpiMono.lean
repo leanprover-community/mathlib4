@@ -108,8 +108,8 @@ instance : SMul B X' where
   smul b x :=
     match x with
     | fromCoset y => fromCoset ⟨b • y, by
-          rw [← y.2.choose_spec, leftCoset_assoc]
-          let b' : B := y.2.choose
+          rw [← y.property.choose_spec, leftCoset_assoc]
+          let b' : B := y.property.choose
           use b * b'⟩
     | ∞ => ∞
 
@@ -219,7 +219,7 @@ The strategy is the following: assuming `epi f`
 
 theorem g_apply_fromCoset (x : B) (y : X) :
     g x (fromCoset y) = fromCoset ⟨x • ↑y,
-      by obtain ⟨z, hz⟩ := y.2; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
+      by obtain ⟨z, hz⟩ := y.property; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
 
 theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
 

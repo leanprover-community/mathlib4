@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
-
 # The Jacobi-Zariski exact sequence
 
 Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence
@@ -46,7 +45,6 @@ The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat
 is stronger than the `Tor`-vanishing conditions required in the full statement of
 [Stacks Project, 00S2], this should be refactored and generalized once more API
 for `Tor` modules is available.
-
 -/
 
 @[expose] public section
@@ -119,7 +117,7 @@ lemma Cotangent.exact :
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
-    have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
+    have hz : z.val ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
       ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
@@ -382,7 +380,7 @@ lemma exact_δ_map :
   · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
 lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
-    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
+    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.val) (z)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
@@ -392,7 +390,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
-    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
+    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.val := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]

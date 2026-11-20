@@ -433,15 +433,20 @@ theorem lt_succ_iff_of_not_isMax' (hb : ¬IsMax b) : b < succ a ↔ b ≤ a := b
   contrapose!
   exact succ_le_iff_of_not_isMax' hb
 
-@[to_dual (reorder := ha hb)]
-theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+@[to_dual]
+theorem succ_lt_succ_iff_of_not_isMax (hb : ¬IsMax b) :
     succ a < succ b ↔ a < b := by
-  rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
+  by_cases ha : IsMax a
+  · rw [ha.succ_eq]
+    exact iff_of_false ha.not_lt ha.not_lt
+  · rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
 
-@[to_dual (reorder := ha hb)]
-theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
-    succ a ≤ succ b ↔ a ≤ b := by
-  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
+@[to_dual]
+theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ succ b ↔ a ≤ b := by
+  by_cases hb : IsMax b
+  · rw [hb.succ_eq, succ_le_iff_of_not_isMax ha]
+    exact ⟨le_of_lt, fun h => h.lt_of_ne fun h' => ha (h' ▸ hb)⟩
+  · rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 
 @[to_dual]
 theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
@@ -458,8 +463,8 @@ theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b 
 @[to_dual]
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a = succ b ↔ a = b := by
-  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha hb,
-    succ_lt_succ_iff_of_not_isMax ha hb]
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha,
+    succ_lt_succ_iff_of_not_isMax hb]
 
 @[to_dual pred_le_iff_eq_or_le]
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
@@ -561,13 +566,9 @@ theorem Iio_succ_eq_insert (a : α) : Iio (succ a) = insert a (Iio a) :=
 theorem Ico_succ_right_eq_insert (h : a ≤ b) : Ico a (succ b) = insert b (Ico a b) :=
   Ico_succ_right_eq_insert_of_not_isMax h <| not_isMax b
 
-@[deprecated (since := "2026-04-28")] alias Ico_pred_right_eq_insert := Ioc_pred_left_eq_insert
-
 @[to_dual Ioo_pred_left_eq_insert]
 theorem Ioo_succ_right_eq_insert (h : a < b) : Ioo a (succ b) = insert b (Ioo a b) :=
   Ioo_succ_right_eq_insert_of_not_isMax h <| not_isMax b
-
-@[deprecated (since := "2026-04-28")] alias Ioo_pred_right_eq_insert := Ioo_pred_left_eq_insert
 
 @[to_dual (attr := simp) Ioo_eq_empty_iff_pred_le]
 theorem Ioo_eq_empty_iff_le_succ : Ioo a b = ∅ ↔ b ≤ succ a := by
@@ -762,6 +763,10 @@ theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop �
 theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=
   succ_coe_of_not_isMax <| not_isMax a
 
+@[to_dual (attr := simp)]
+theorem succ_coe_eq_top_iff {a : α} : succ (a : WithTop α) = ⊤ ↔ IsMax a := by
+  apply (Ne.ite_eq_left_iff _).trans <;> simp
+
 end Succ
 
 section Pred
@@ -847,7 +852,7 @@ variable {α : Type*} [PartialOrder α] {s : Set α} [s.OrdConnected]
 
 open scoped Classical in
 noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s where
-  pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
+  pred x := if h : Order.pred x.val ∈ s then ⟨Order.pred x.val, h⟩ else x
   pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
   min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
     dsimp at h
@@ -871,8 +876,8 @@ noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s w
     · exact h.le
 
 @[simp, norm_cast]
-lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
-    (pred a).1 = pred ↑a := by classical
+lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.val ∈ s) :
+    (pred a).val = pred ↑a := by classical
   change Subtype.val (dite ..) = _
   simp [h]
 
@@ -885,7 +890,7 @@ lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     pred ↑a ∉ s ↔ IsMin a where
   mp := isMin_of_pred_notMem
   mpr h nh := by
-    replace h := congr($h.pred_eq.1)
+    replace h := congr($(h.pred_eq).val)
     rw [coe_pred_of_mem nh] at h
     simp at h
 
@@ -897,7 +902,7 @@ noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
 set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
-    (succ a).1 = succ ↑a := by classical
+    (succ a).val = succ ↑a := by classical
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
@@ -912,7 +917,7 @@ lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     succ ↑a ∉ s ↔ IsMax a where
   mp := isMax_of_succ_notMem
   mpr h nh := by
-    replace h := congr($h.succ_eq.1)
+    replace h := congr($(h.succ_eq).val)
     rw [coe_succ_of_mem nh] at h
     simp at h
 

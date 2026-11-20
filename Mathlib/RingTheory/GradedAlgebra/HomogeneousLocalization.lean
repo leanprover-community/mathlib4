@@ -66,9 +66,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
-
+* [Robin Hartshorne, *Algebraic Geometry*][har77]
 -/
 
 @[expose] public section
@@ -117,7 +115,7 @@ section Neg
 variable [NegMemClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : Neg (NumDenSameDeg 𝒜 x) where
-  neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.2⟩, c.den, c.den_mem⟩
+  neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.property⟩, c.den, c.den_mem⟩
 
 @[simp]
 theorem deg_neg (c : NumDenSameDeg 𝒜 x) : (-c).deg = c.deg :=
@@ -217,9 +215,9 @@ instance : Add (NumDenSameDeg 𝒜 x) where
   add c1 c2 :=
     { deg := c1.deg + c2.deg
       num := ⟨c1.den * c2.num + c2.den * c1.num,
-        add_mem (GradedMul.mul_mem c1.den.2 c2.num.2)
-          (add_comm c2.deg c1.deg ▸ GradedMul.mul_mem c2.den.2 c1.num.2)⟩
-      den := ⟨c1.den * c2.den, GradedMul.mul_mem c1.den.2 c2.den.2⟩
+        add_mem (GradedMul.mul_mem c1.den.property c2.num.property)
+          (add_comm c2.deg c1.deg ▸ GradedMul.mul_mem c2.den.property c1.num.property)⟩
+      den := ⟨c1.den * c2.den, GradedMul.mul_mem c1.den.property c2.den.property⟩
       den_mem := Submonoid.mul_mem _ c1.den_mem c2.den_mem }
 
 @[simp]
@@ -503,7 +501,7 @@ def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
   map_one' := rfl
   map_mul' f g := by ext; simp [Localization.mk_mul]
   map_zero' := rfl
-  map_add' f g := by ext; simp [Localization.add_mk, add_comm f.1 g.1]
+  map_add' f g := by ext; simp [Localization.add_mk, add_comm f.val g.val]
 
 instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
   (fromZeroRingHom 𝒜 x).toAlgebra
@@ -539,10 +537,10 @@ theorem den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
   (Quotient.out f).den_mem
 
 theorem num_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.num ∈ 𝒜 f.deg :=
-  (Quotient.out f).num.2
+  (Quotient.out f).num.property
 
 theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg :=
-  (Quotient.out f).den.2
+  (Quotient.out f).den.property
 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ :=
@@ -576,13 +574,13 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   obtain ⟨b, s, rfl⟩ := IsLocalization.exists_mk'_eq 𝔭.primeCompl b
   rw [val_mk, Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq_mul,
     one_mul, IsLocalization.eq_iff_exists (M := 𝔭.primeCompl)] at eq0
-  obtain ⟨c, hc : _ = c.1 * (f.den.1 * s.1)⟩ := eq0
-  have : f.num.1 ∉ 𝔭 := by
-    exact fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
-      (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
-  refine .of_mul_eq_one (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
+  obtain ⟨c, hc : _ = c.val * (f.den.val * s.val)⟩ := eq0
+  have : f.num.val ∉ 𝔭 :=
+    fun h ↦ mul_mem c.property (mul_mem f.den_mem s.property)
+      (hc ▸ Ideal.mul_mem_left _ c.val (Ideal.mul_mem_right b _ h))
+  refine .of_mul_eq_one (Quotient.mk'' ⟨f.deg, f.den, f.num, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1]
+  simp [mul_comm f.den.val]
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
@@ -671,7 +669,8 @@ induces a map from the homogeneous localization `A⁰_P` to the homogeneous loca
 def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
   toFun := Quotient.map'
-    (fun x ↦ ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩)
+    (fun x ↦ ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩,
+      comap_le x.den_mem⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
       apply_fun IsLocalization.map (Localization Q) g.toRingHom comap_le at e
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
@@ -696,7 +695,9 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
   map (.id _) h
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
-    map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
+    map g comap_le (mk x) =
+      mk ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩,
+        comap_le x.den_mem⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -834,7 +835,7 @@ lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_
     (h := (val_injective _).hasLeftInverse.choose_spec)
   dsimp [awayMap]
   convert_to! (e (e.symm ⟨awayMapAux 𝒜 (f := f) ⟨_, hx⟩ a,
-    range_awayMapAux_subset 𝒜 hg hx ⟨_, rfl⟩⟩)).1 = _
+    range_awayMapAux_subset 𝒜 hg hx ⟨_, rfl⟩⟩)).val = _
   rw [e.apply_symm_apply]
 
 lemma val_awayMap (a) : (awayMap 𝒜 hg hx a).val = Localization.awayLift (algebraMap A _) _
@@ -979,7 +980,7 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
         exact H ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
     · convert zero_mem (Submodule.span (𝒜 0) _)
       ext
-      have : (DirectSum.decompose 𝒜 (∏ i : ι', v i ^ ai i) n).1 = 0 := by
+      have : (DirectSum.decompose 𝒜 (∏ i : ι', v i ^ ai i) n).val = 0 := by
         refine DirectSum.decompose_of_mem_ne _ ?_ H
         exact SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
       simp [this, Localization.mk_zero]
@@ -993,7 +994,7 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
     convert Submodule.smul_mem _ r hx'
     ext
     simp [Algebra.smul_def, algebraMap_eq, fromZeroRingHom, Localization.mk_mul,
-      -decompose_mul, coe_decompose_mul_of_left_mem_zero 𝒜 r.2]
+      -decompose_mul, coe_decompose_mul_of_left_mem_zero 𝒜 r.property]
 
 variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /-- This is strictly weaker than `Away.adjoin_mk_prod_pow_eq_top`. -/
@@ -1111,9 +1112,9 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
     simp [f', Localization.mk_pow]
   refine ⟨_, ?_, le_rfl⟩
   let b := ∑ i, dx i
-  let s' : Set ((Fin (b + 1)) × (s → Fin (d + 1))) := { ai | ∑ i, (ai.2 i).1 * dx i = ai.1 * d }
-  let F : s' → Away 𝒜 f := fun ai ↦ Away.mk 𝒜 hf ai.1.1.1 (∏ i, i ^ (ai.1.2 i).1)
-    (by convert SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i; exact ai.2.symm)
+  let s' : Set ((Fin (b + 1)) × (s → Fin (d + 1))) := { ai | ∑ i, (ai.2 i).val * dx i = ai.1 * d }
+  let F : s' → Away 𝒜 f := fun ai ↦ Away.mk 𝒜 hf ai.val.1.val (∏ i, i ^ (ai.val.2 i).val)
+    (by convert SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i; exact ai.property.symm)
   apply (Set.finite_range F).subset
   rintro _ ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩

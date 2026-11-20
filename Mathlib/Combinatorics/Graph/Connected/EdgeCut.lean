@@ -17,7 +17,6 @@ This file defines the edge cuts and bridges of a graph.
 * `IsEdgeCut`: a set of edges between a set of vertices and its complement.
 * `IsBridge`: an edge that forms a singleton edge cut (an isthmus / bridge edge).
 * `IsBond`: a bond of a graph is a minimal nonempty edge cut.
-
 -/
 
 public section
@@ -162,7 +161,7 @@ end IsBridge
 section IsBond
 
 /-- A bond of a graph is a minimal nonempty edge-cut; see
-[Diestel, *Graph Theory*, Section 1.9][diestel2017]. -/
+[Diestel, *Graph Theory*, Section 1.9][diestel2025]. -/
 @[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 

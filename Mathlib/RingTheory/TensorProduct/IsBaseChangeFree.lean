@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 * `IsBaseChange.basis` : the natural basis of the base change of a module with a basis
 
 * `IsBaseChange.free` : a base change of a free module is free.
-
 -/
 
 @[expose] public section
