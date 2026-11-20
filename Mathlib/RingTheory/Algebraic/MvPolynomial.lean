@@ -43,7 +43,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     ((optionEquivLeft R s).symm.trans (optionEquivRight R s)).toAlgHom
   let v := ((Polynomial.aeval (R := supported R s)
     (Polynomial.aeval (X i : MvPolynomial σ R) f)).restrictScalars R).comp
-      (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
+      (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial (R := R) s).symm).toAlgHom
   replace hf : Function.Injective u := by
     simp only [AlgHom.coe_comp, Subalgebra.coe_val,
       AlgEquiv.coe_toAlgHom, AlgEquiv.coe_trans, Function.comp_assoc, u]
