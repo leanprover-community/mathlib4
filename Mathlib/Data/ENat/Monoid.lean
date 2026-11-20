@@ -11,6 +11,7 @@ public import Mathlib.Data.ENat.Basic
 
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # `LinearOrderedAddCommMonoidWithTop` structure on `ENat`
@@ -28,17 +29,19 @@ namespace ENat
 
 variable {a b c m n : ℕ∞}
 
-@[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp, basify_op ←] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
 
-@[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
-@[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+@[simp, basify_simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
+@[simp, basify_simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
 
 /-- A version of `mul_top` where the RHS is stated as an `ite` -/
+@[basify_simp]
 theorem mul_top' : m * ⊤ = if m = 0 then 0 else ⊤ := WithTop.mul_top' m
 
 /-- A version of `top_mul` where the RHS is stated as an `ite` -/
+@[basify_simp]
 theorem top_mul' : ⊤ * m = if m = 0 then 0 else ⊤ := WithTop.top_mul' m
 
 @[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow hn
@@ -74,7 +77,7 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
   · rename_i a; cases a <;> simp
   · simp only [toNat_natCast]; rw [← natCast_mul, toNat_natCast]
 
-@[deprecated add_pos_of_right (since := "2026-05-25")]
+@[deprecated add_pos_of_right +typeChanged (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=
   add_pos_of_right zero_lt_one n
 
@@ -120,10 +123,8 @@ lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a 
 lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x * a ≤ y * a ↔ x ≤ y :=
   (ENat.mul_left_strictMono ha h_top).le_iff_le
 
-@[gcongr]
-lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
-    x * a ≤ y * a := by
-  simpa [ha, h_top]
+@[deprecated (since := "2026-11-04")]
+alias mul_le_mul_of_le_right := mul_le_mul_left
 
 lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
   have hc' : 1 ≤ c := by
@@ -247,7 +248,7 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
 @[simp]
 lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
-  map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
+  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 namespace WithBot
 

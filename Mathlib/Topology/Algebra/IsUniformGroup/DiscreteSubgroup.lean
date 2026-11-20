@@ -6,9 +6,12 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
+
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Discrete subgroups of topological groups
@@ -35,12 +38,13 @@ def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K)
     simp only [subgroupOfEquivOfLe, Topology.IsInducing.subtypeVal.isOpen_iff,
       exists_exists_and_eq_and]
     simpa [Set.ext_iff] using fun s ↦ exists_congr
-      fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind⟩)
+      fun t ↦ and_congr_right fun _ ↦
+        ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind [Subgroup.mem_subgroupOf]⟩)
 
 @[to_additive (attr := simp)]
 lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
     {H K : Subgroup G} (hHK : H ≤ K) (g : H) :
-    (subgroupOfContinuousMulEquivOfLe hHK).symm g = ⟨⟨g.1, hHK g.2⟩, g.2⟩ :=
+    (subgroupOfContinuousMulEquivOfLe hHK).symm g = ⟨⟨g.val, hHK g.property⟩, g.property⟩ :=
   rfl
 
 @[to_additive (attr := simp)]

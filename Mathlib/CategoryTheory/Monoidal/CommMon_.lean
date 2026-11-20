@@ -5,8 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative monoids in a braided monoidal category.
@@ -299,7 +301,7 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
   map α := ((Functor.mapCommMonFunctor (Discrete PUnit) C).map α).app _
 
 /-- Implementation of `CommMon.equivLaxBraidedFunctorPUnit`. -/
-@[simps!]
+@[simps! obj]
 def commMonToLaxBraidedObj (A : CommMon C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 

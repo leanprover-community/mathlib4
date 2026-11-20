@@ -26,7 +26,6 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   between `S` and `R`, then `A/S₀/R` is a tower
 * `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
   given that `A/S/R` is a tower
-
 -/
 
 @[expose] public section

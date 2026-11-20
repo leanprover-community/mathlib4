@@ -17,7 +17,6 @@ we define a Cech complex functor
 `P : Cᵒᵖ ⥤ A` in a preadditive category (where products exist) to the cochain
 complex which in degree `n` consists of the product, indexed by `i : Fin (n + 1) → ι`,
 of the value of `P` on the product of the objects `U (i a)` for `a : Fin (n + 1)`.
-
 -/
 
 @[expose] public section

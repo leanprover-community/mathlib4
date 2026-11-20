@@ -104,7 +104,7 @@ isomorphic to `EG`, the universal cover of the classifying space of `G` as a sim
 def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
     classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
+    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).isLimit fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -127,7 +127,6 @@ def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
@@ -203,8 +202,8 @@ def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n +
   Iso.refl _
 
 instance x_projective (G : Type u) [Group G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) := by
-  exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+    Projective ((standardComplex k G).X n) :=
+  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 set_option backward.defeqAttrib.useBackward true in
 unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
@@ -268,7 +267,7 @@ set_option backward.isDefEq.respectTransparency false in
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
-    (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
+    (forget₂ToModuleCatHomotopyEquiv k G).hom.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   refine ModuleCat.hom_ext <| MonoidAlgebra.lhom_ext' fun (x : Fin 1 → G) => LinearMap.ext_ring ?_
   simp [forget₂ToModuleCatHomotopyEquiv, HomotopyEquiv.ofIso, HomotopyEquiv.trans,
     SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv, ChainComplex.single₀_map_f_zero,
@@ -283,7 +282,7 @@ theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
-      ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
+      ← (forget₂ToModuleCatHomotopyEquiv k G).hom.comm' 1 0 rfl]
     exact comp_zero
   exact LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp this) _
 
@@ -293,7 +292,6 @@ def εToSingle₀ :
     standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
   ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 
-set_option backward.defeqAttrib.useBackward true in
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =

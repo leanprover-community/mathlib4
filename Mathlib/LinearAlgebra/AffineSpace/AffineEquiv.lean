@@ -211,6 +211,10 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
+@[simp]
+lemma toEquiv_ofBijective (φ : P₁ →ᵃ[k] P₂) (hφ) :
+    (ofBijective (φ := φ) hφ).toEquiv = .ofBijective φ hφ := rfl
+
 theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
@@ -227,7 +231,7 @@ theorem symm_apply_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e.symm p₁ = p₂
 theorem eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : p₂ = e.symm p₁ ↔ e p₂ = p₁ :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
   e.eq_symm_apply.symm
 
@@ -362,8 +366,8 @@ This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`.
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ where
   toFun e :=
     { val := e, inv := e.symm,
-      val_inv := congr_arg toAffineMap e.symm_trans_self
-      inv_val := congr_arg toAffineMap e.self_trans_symm }
+      val_inv := congr(toAffineMap $e.symm_trans_self)
+      inv_val := congr(toAffineMap $e.self_trans_symm) }
   invFun u :=
     { toFun := (u : P₁ →ᵃ[k] P₁)
       invFun := (↑u⁻¹ : P₁ →ᵃ[k] P₁)
@@ -414,6 +418,9 @@ def prodComm : P₁ × P₂ ≃ᵃ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 /-- Product of affine spaces is associative up to affine isomorphism. -/
 @[simps! apply symm_apply linear]

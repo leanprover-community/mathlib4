@@ -5,10 +5,8 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Internal
-public import Mathlib.Algebra.DirectSum.Ring
 
 /-!
 # Internally-graded rings and algebras
@@ -139,12 +137,12 @@ theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing
 theorem decompose_mul_add_left [AddLeftCancelMonoid ι] [GradedRing 𝒜] (a : 𝒜 i) {b : A} :
     decompose 𝒜 (↑a * b) (i + j) =
       @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ a (decompose 𝒜 b j) :=
-  Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.2
+  Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.property
 
 theorem decompose_mul_add_right [AddRightCancelMonoid ι] [GradedRing 𝒜] {a : A} (b : 𝒜 j) :
     decompose 𝒜 (a * ↑b) (i + j) =
       @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
-  Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.2
+  Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.property
 
 theorem coe_decompose_mul_of_left_mem_zero [AddMonoid ι] [GradedRing 𝒜] {a b : A}
     (a_mem : a ∈ 𝒜 0) : (decompose 𝒜 (a * b) j : A) = a * decompose 𝒜 b j := by
@@ -227,7 +225,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
 @[simp]
 theorem GradedAlgebra.proj_apply (i : ι) (r : A) :
@@ -259,14 +257,14 @@ is a ring homomorphism.
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
   map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
-  map_zero' := by rw [decompose_zero, zero_apply, ZeroMemClass.coe_zero]
-  map_add' _ _ := by rw [decompose_add, add_apply, AddMemClass.coe_add]
+  map_zero' := by rw [decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
+  map_add' _ _ := by rw [decompose_add, DirectSum.add_apply, AddMemClass.coe_add]
   map_mul' := by
     refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
-    · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · simp only [zero_mul, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
-      · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+      · simp only [mul_zero, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         simp only
         by_cases h : i + j = 0
@@ -279,9 +277,9 @@ def GradedRing.projZeroRingHom : A →+* A where
           · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
           · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
-        simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
+        simp only [mul_add, decompose_add, DirectSum.add_apply, AddMemClass.coe_add, hd, he]
     · rintro _ _ ha hb _
-      simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
+      simp only [add_mul, decompose_add, DirectSum.add_apply, AddMemClass.coe_add, ha, hb]
 
 section GradeZero
 

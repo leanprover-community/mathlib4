@@ -8,12 +8,10 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Data.Set.Lattice.Disjoint
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Simple graphs
@@ -106,13 +104,13 @@ attribute [grind ext] SimpleGraph.ext
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
-  toFun x := ⟨fun v w ↦ x.1 v w, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
+  toFun x := ⟨fun v w ↦ x.val v w, fun v w ↦ by simp [x.property.1], fun v ↦ by simp [x.property.2]⟩
   inj' := by
     rintro ⟨adj, _⟩ ⟨adj', _⟩
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr($h v w)
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -211,12 +209,6 @@ instance [Infinite V] : Infinite (SimpleGraph V) := by
   simpa using congr(($h).Adj (f 0) (f (a + 1)))
 
 section Order
-
-/-- The relation that one `SimpleGraph` is a subgraph of another.
-Note that this should be spelled `≤`. -/
-@[deprecated "use `≤` instead" (since := "2026-03-25")]
-def IsSubgraph (x y : SimpleGraph V) : Prop :=
-  ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (SimpleGraph V) where
@@ -438,7 +430,7 @@ theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+  SetRel.dom_eq_empty_iff.mpr Set.empty_def.symm
 
 /-- Only the empty graph has empty support. -/
 @[simp]
@@ -489,10 +481,15 @@ theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun _ _ => Adj.ne) e
 
-@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
+@[simp] lemma notMem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
   imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
 
-alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
+@[deprecated (since := "2026-09-28")] alias not_mem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiag
+
+alias _root_.Sym2.IsDiag.notMem_edgeSet := notMem_edgeSet_of_isDiag
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := Sym2.IsDiag.notMem_edgeSet
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
@@ -522,6 +519,9 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simp [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding, Std.irrefl_iff]
+
+theorem disjoint_edgeSet_diagSet : Disjoint G.edgeSet Sym2.diagSet :=
+  Set.subset_compl_iff_disjoint_right.mp G.edgeSet_subset_compl_diagSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -572,7 +572,7 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
-  rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
+  simp [← Set.ne_empty_iff_nonempty]
 
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
@@ -636,6 +636,22 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
+
+variable {G} in
+@[simp]
+theorem finite_edgeSet_iff_finite_support : G.edgeSet.Finite ↔ G.support.Finite := by
+  refine ⟨fun hfin ↦ ?_, (·.sym2.subset <| edgeSet_subset_sym2_iff.mpr subset_rfl)⟩
+  have : Finite G.edgeSet := hfin
+  classical
+  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
+  ext
+  simp [mem_support, Sym2.mem_iff_exists]
+
+variable {G} in
+@[simp]
+theorem infinite_edgeSet_iff_infinite_support : G.edgeSet.Infinite ↔ G.support.Infinite := by
+  contrapose!
+  exact finite_edgeSet_iff_finite_support
 
 end EdgeSet
 
@@ -769,7 +785,7 @@ theorem mk'_mem_incidenceSet_right_iff : s(a, b) ∈ G.incidenceSet b ↔ G.Adj 
   and_iff_left <| Sym2.mem_mk_right _ _
 
 theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
-  and_iff_right e.2
+  and_iff_right e.property
 
 theorem iUnion_incidenceSet : ⋃ v, G.incidenceSet v = G.edgeSet := by
   ext ⟨_, _⟩
@@ -788,7 +804,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
+  refine (G.incidenceSet_inter_incidenceSet_subset h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 
@@ -990,8 +1006,8 @@ theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
 vertex and the set of vertices adjacent to the vertex. -/
 @[simps]
 def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v where
-  toFun e := ⟨G.otherVertexOfIncident e.2, G.incidence_other_prop e.2⟩
-  invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
+  toFun e := ⟨G.otherVertexOfIncident e.property, G.incidence_other_prop e.property⟩
+  invFun w := ⟨s(v, w.val), G.mem_incidence_iff_neighbor.mpr w.property⟩
   left_inv x := by simp [otherVertexOfIncident]
   right_inv := fun ⟨w, hw⟩ => by
     simp only [Subtype.mk.injEq]
@@ -1044,7 +1060,7 @@ def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
   simp [neighborSet, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [Set.nonempty_iff_ne_empty]
+  simp [← Set.ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
   neighborSet_eq_empty
@@ -1129,7 +1145,7 @@ theorem IsUniversal.not_isIsolated [Nontrivial V] (h : G.IsUniversal v) (w : V) 
 
 theorem IsIsolated.not_isUniversal [Nontrivial V] (h : G.IsIsolated v) (w : V) :
     ¬G.IsUniversal w := by
-  contrapose! h
+  contrapose h
   exact h.not_isIsolated v
 
 @[simp]

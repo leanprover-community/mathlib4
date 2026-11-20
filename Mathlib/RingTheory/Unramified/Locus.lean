@@ -22,6 +22,8 @@ import Mathlib.RingTheory.Localization.InvSubmonoid
   The unramified locus is the whole spectrum if and only if `A` is unramified over `R`.
 - `Algebra.isOpen_unramifiedLocus` :
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
+- `Algebra.IsUnramifiedIn` :
+  A prime `𝔭` of `R` is unramified in `A` if every prime of `A` lying over `𝔭` is unramified.
 -/
 
 @[expose] public section
@@ -74,7 +76,7 @@ open _root_.TensorProduct in
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/
 theorem IsUnramifiedAt.residueField
     (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
-    [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q]
+    [Algebra.IsUnramifiedAt R Q]
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
     (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
     IsUnramifiedAt P.ResidueField Q' := by
@@ -94,7 +96,7 @@ section IsUnramifiedIn
 variable {R : Type*} [CommRing R]
 
 /-- A prime `𝔭` of `R` is unramified in `A` if every prime ideal `𝔓` of `A` lying over `𝔭` is
-unramified . -/
+unramified. -/
 def IsUnramifiedIn (A : Type*) [CommRing A] [Algebra R A] (𝔭 : Ideal R) : Prop :=
   ∀ (𝔓 : Ideal A) (_ : 𝔓.IsPrime), 𝔓.LiesOver 𝔭 → Algebra.IsUnramifiedAt R 𝔓
 
@@ -104,6 +106,7 @@ theorem isUnramifiedIn_top : IsUnramifiedIn A (⊤ : Ideal R) :=
   fun P hP _ ↦ (hP.ne_top ((Ideal.eq_top_iff_of_liesOver P (⊤ : Ideal R)).mpr rfl)).elim
 
 end IsUnramifiedIn
+
 section
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
@@ -131,11 +134,11 @@ lemma unramifiedLocus_eq_univ_iff :
     Module.support_eq_empty_iff, Algebra.formallyUnramified_iff]
 
 theorem formallyUnramified_iff_forall :
-    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
 
 theorem unramified_iff_forall [FiniteType R A] :
-    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   .trans ⟨fun h ↦ h.formallyUnramified, fun h ↦ ⟨h, inferInstance⟩⟩ formallyUnramified_iff_forall
 
 lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) := by

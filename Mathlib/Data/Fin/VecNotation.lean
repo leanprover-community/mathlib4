@@ -382,7 +382,7 @@ def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : �
 /-- `vecAlt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
 def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
-  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.2 k.2⟩
+  v ⟨(k : ℕ) + k + 1, hm.symm ▸ Nat.add_succ_lt_add k.isLt k.isLt⟩
 
 section bits
 
@@ -498,5 +498,12 @@ lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
     Function.comp_apply, cons_val_succ, Equiv.swap_apply_of_ne_of_ne (by grind) (by grind)]
 
 end swap
+
+@[simp]
+lemma injective_pair_iff_ne {x y : α} : Function.Injective ![x, y] ↔ x ≠ y := by
+  simp [Function.Injective, Fin.forall_fin_two, eq_comm]
+
+@[deprecated Matrix.injective_pair_iff_ne (since := "2026-09-04")]
+alias _root_.injective_pair_iff_ne := injective_pair_iff_ne
 
 end Matrix

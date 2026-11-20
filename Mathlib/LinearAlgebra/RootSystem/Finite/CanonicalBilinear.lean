@@ -38,7 +38,6 @@ Weyl group.
 ## References:
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
-
 -/
 
 @[expose] public section
@@ -380,7 +379,7 @@ lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).p
 
 lemma zero_le_posForm (x : span S (range P.root)) :
     0 ≤ (P.posRootForm S).posForm x x := by
-  obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.1 x.2
+  obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.val x.property
   have : s = (P.posRootForm S).posForm x x :=
     FaithfulSMul.algebraMap_injective S R <| (P.algebraMap_posRootForm_posForm S x x) ▸ hs
   rwa [← this]

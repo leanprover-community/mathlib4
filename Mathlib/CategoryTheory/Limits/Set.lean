@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Lattice
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Types.Set
 
@@ -15,7 +14,6 @@ public import Mathlib.CategoryTheory.Types.Set
 
 Given `X : Type u`, the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type preserves filtered colimits.
-
 -/
 
 public section

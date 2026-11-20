@@ -5,10 +5,11 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 
 /-!
@@ -62,7 +63,7 @@ theorem mem_map_C_of_forall_coeff_mem (hI : I.FG) (hf : ∀ m : σ →₀ ℕ, p
   have h_sum : p = ∑ a ∈ S.attach, g a * C a.val := by
     simp [MvPowerSeries.ext_iff, hg]
   rw [← hS, h_sum]
-  exact sum_mem _ fun a _ => mul_mem_left _ _ (mem_map_of_mem _ (subset_span a.2))
+  exact sum_mem _ fun a _ => mul_mem_left _ _ (mem_map_of_mem _ (subset_span a.property))
 
 /-- Suppose that `I` is finitely generated, then the push-forward of an ideal `I` of `R` to
 `MvPowerSeries σ R` via inclusion is exactly the set of power series whose
