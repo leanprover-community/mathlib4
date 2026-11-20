@@ -747,7 +747,7 @@ variable (p μ G)
 
 /-- Coercion from nonnegative simple functions of Lp to nonnegative functions of Lp. -/
 def coeSimpleFuncNonnegToLpNonneg :
-    Nonneg (Lp.simpleFunc G p μ) → Nonneg (Lp G p μ) := fun g => ⟨g, g.property⟩
+    Nonneg (Lp.simpleFunc G p μ) → Nonneg (Lp G p μ) := fun g => ⟨g, g.val_nonneg⟩
 
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
@@ -785,7 +785,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   have hx_tendsto :
       Tendsto (fun n : ℕ => eLpNorm ((x n : α → G) - (g : α → G)) p μ) atTop (𝓝 0) := by
     apply SimpleFunc.tendsto_approxOn_Lp_eLpNorm g_meas zero_mem hp_ne_top
-    · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.property
+    · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.val_nonneg
       refine hg_nonneg.mono fun a ha => subset_closure ?_
       simpa using ha
     · simp_rw [sub_zero]; finiteness

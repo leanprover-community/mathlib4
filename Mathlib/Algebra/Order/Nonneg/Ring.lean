@@ -70,12 +70,12 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero (Nonneg α) where
-  isBot_zero a := a.property
+  isBot_zero a := a.val_nonneg
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd (Nonneg α) where
-  le_add_self _ b := le_add_of_nonneg_left b.property
-  le_self_add _ b := le_add_of_nonneg_right b.property
+  le_add_self _ b := le_add_of_nonneg_left b.val_nonneg
+  le_self_add _ b := le_add_of_nonneg_right b.val_nonneg
   exists_add_of_le := fun {a b} h =>
     ⟨⟨b - a, sub_nonneg_of_le h⟩, Nonneg.ext (add_sub_cancel _ _).symm⟩
 

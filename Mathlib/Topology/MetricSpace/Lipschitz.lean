@@ -350,6 +350,6 @@ theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set 
     exact this.extend_real
   choose g hg using this
   refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
-  · exact (dist_pi_le_iff (mul_nonneg K.property dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
+  · exact (dist_pi_le_iff (mul_nonneg K.val_nonneg dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
   · ext1 i
     exact (hg i).2 hx

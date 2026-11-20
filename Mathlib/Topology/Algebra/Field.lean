@@ -97,7 +97,7 @@ def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     refine ⟨by fun_prop, ?_⟩
     suffices Continuous fun (x : { r : R // 0 < r }) ↦ (x⁻¹ : R) by
       simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def,
-        Nonneg.unitsEquivPos] using this.nonnegMk fun x ↦ inv_nonneg.2 x.2.le
+        Nonneg.unitsEquivPos] using this.nonnegMk fun x ↦ inv_nonneg.2 x.property.le
     rw [continuous_iff_continuousAt]
     exact fun x ↦ ContinuousAt.inv₀ (by fun_prop) x.property.ne'
 

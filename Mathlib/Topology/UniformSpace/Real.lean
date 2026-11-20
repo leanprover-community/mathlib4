@@ -62,6 +62,6 @@ lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => .mk (f x) (hf x), f.2.nonnegMk _⟩, DFunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x => .mk (f x) (hf x), f.continuous.nonnegMk _⟩, DFunLike.ext' rfl⟩
 
 end NNReal

@@ -252,30 +252,30 @@ theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := Nonneg.ima
 
 @[simp]
 theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=
-  Nonneg.imageVal_Icc ..
+  Nonneg.image_val_Icc ..
 
 @[simp]
 theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y :=
-  Nonneg.imageVal_Ioc ..
+  Nonneg.image_val_Ioc ..
 
 @[simp]
 theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y :=
-  Nonneg.imageVal_Ico ..
+  Nonneg.image_val_Ico ..
 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y :=
-  Nonneg.imageVal_Ioo ..
+  Nonneg.image_val_Ioo ..
 
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : toReal '' uIcc x y = uIcc ↑x ↑y :=
-  Nonneg.imageVal_uIcc ..
+  Nonneg.image_val_uIcc ..
 
 @[simp]
 theorem image_coe_uIoc (x y : ℝ≥0) : toReal '' uIoc x y = uIoc ↑x ↑y :=
-  Nonneg.imageVal_uIoc ..
+  Nonneg.image_val_uIoc ..
 
 @[simp]
 theorem image_coe_uIoo (x y : ℝ≥0) : toReal '' uIoo x y = uIoo ↑x ↑y :=
-  Nonneg.imageVal_uIoo ..
+  Nonneg.image_val_uIoo ..
 
 end NNReal

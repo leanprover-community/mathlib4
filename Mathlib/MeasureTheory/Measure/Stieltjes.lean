@@ -202,7 +202,7 @@ instance : AddCommMonoid (StieltjesFunction R) where
 instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
     toFun := fun x ↦ c * f x
-    mono' := f.mono.const_mul c.property
+    mono' := f.mono.const_mul c.val_nonneg
     right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.val }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _

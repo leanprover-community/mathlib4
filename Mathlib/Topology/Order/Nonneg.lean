@@ -39,3 +39,13 @@ end Nonneg
 lemma Continuous.nonnegMk {X : Type*} [TopologicalSpace X] {f : X → M} (hf : Continuous f)
     (hf₀ : ∀ x, 0 ≤ f x) : Continuous fun x ↦ (⟨f x, hf₀ x⟩ : Nonneg M) :=
   Nonneg.isInducing_val.continuous_iff.2 hf
+
+lemma IsOpenMap.nonnegMk {X : Type*} [TopologicalSpace X] {f : X → M} (hf : IsOpenMap f)
+    (hf₀ : ∀ x, 0 ≤ f x) : IsOpenMap fun x ↦ (⟨f x, hf₀ x⟩ : Nonneg M) := fun u hu ↦ by
+  convert (hf u hu).preimage Nonneg.continuous_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Nonneg.ext_iff
+
+lemma IsClosedMap.nonnegMk {X : Type*} [TopologicalSpace X] {f : X → M} (hf : IsClosedMap f)
+    (hf₀ : ∀ x, 0 ≤ f x) : IsClosedMap fun x ↦ (⟨f x, hf₀ x⟩ : Nonneg M) := fun u hu ↦ by
+  convert (hf u hu).preimage Nonneg.continuous_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Nonneg.ext_iff

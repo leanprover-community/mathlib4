@@ -61,8 +61,8 @@ proofs of decidable equality and decidable order in order to ensure the decidabi
 all definitionally equal. -/
 instance instLinearOrder [LinearOrder M] : LinearOrder (Nonneg M) :=
   fast_instance% @LinearOrder.lift (Nonneg M) _ _
-    ⟨fun x y ↦ ⟨max x.val y.val, max_rec' _ x.2 y.2⟩⟩
-    ⟨fun x y ↦ ⟨min x.val y.val, min_rec' _ x.2 y.2⟩⟩ val val_injective (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
+    ⟨fun x y ↦ ⟨max x.val y.val, max_rec' _ x.val_nonneg y.val_nonneg⟩⟩
+    ⟨fun x y ↦ ⟨min x.val y.val, min_rec' _ x.val_nonneg y.val_nonneg⟩⟩ val val_injective
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end Nonneg

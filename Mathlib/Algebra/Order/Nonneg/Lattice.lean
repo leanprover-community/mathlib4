@@ -45,7 +45,7 @@ lemma strictMono_val : StrictMono (val : Nonneg M → M) := fun _ _ ↦ id
 /-- `Nonneg M` is order-isomorphic to the interval `Set.Ici 0` of `M`. -/
 @[simps] def orderIsoIci : Nonneg M ≃o Ici (0 : M) where
   toFun a := ⟨a.val, a.val_nonneg⟩
-  invFun a := ⟨a.1, a.2⟩
+  invFun a := ⟨a.val, a.property⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_rel_iff' := .rfl

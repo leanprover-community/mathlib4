@@ -197,7 +197,7 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
   constructor
   · rintro ⟨c, hc, rfl⟩
     exact ⟨⟨c.support, Nonneg.val ∘ c, by simp [← Nonneg.coe_inj]⟩, hc,
-      fun y ↦ (c y).property, rfl⟩
+      fun y ↦ (c y).val_nonneg, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
@@ -218,7 +218,7 @@ meta def hull.unexpander : Lean.PrettyPrinter.Unexpander
 lemma mem_hull_singleton {x y : E} :
     y ∈ R ∙₊ x ↔ ∃ r : R, 0 ≤ r ∧ r • x = y := by
   rw [mem_span_singleton]
-  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.val, r.property, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
+  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.val, r.val_nonneg, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
 
 theorem le_hull_singleton_iff {C : PointedCone R E} {x : E} :
     C ≤ R ∙₊ x ↔ ∀ y ∈ C, ∃ r : R, 0 ≤ r ∧ r • x = y := by

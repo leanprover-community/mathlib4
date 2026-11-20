@@ -63,7 +63,7 @@ protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E where
   carrier := closure ↑K
   zero_mem' := subset_closure (zero_mem K)
   smul_mem' c _ h₁ :=
-    map_mem_closure (continuous_const_smul c.val) h₁ fun _ h₂ ↦ K.smul_mem c.property h₂
+    map_mem_closure (continuous_const_smul c.val) h₁ fun _ h₂ ↦ K.smul_mem c.val_nonneg h₂
   add_mem' h₁ h₂ := map_mem_closure₂ continuous_add h₁ h₂ (fun _ ha _ hb ↦ K.add_mem ha hb)
 
 @[simp, norm_cast]
