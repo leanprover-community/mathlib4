@@ -350,7 +350,7 @@ lemma cocyclesResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X �
 homomorphism `φ : H →ₜ* G` and a morphism of topological `H`-representations
 `f : res φ X ⟶ Y`.
 The name refers to the fact that this map is the composition of the restriction map
-`resNatTrans k φ` and `H.map f`. -/
+`resNatTrans k φ` and `(HₜFunct k H n).map f`. -/
 -- TODO : bring the names of the analogous maps for `groupCohomology` in line with this.
 noncomputable abbrev resMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     continuousCohomology n X ⟶ continuousCohomology n Y :=
