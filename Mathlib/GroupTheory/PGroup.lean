@@ -330,11 +330,11 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
       fun x => by simp only [Quotient.eq'']; congr
     refine
       Eq.symm
-        (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
+        (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.val) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
-            Subtype.ext (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
+            Subtype.ext (mem_fixedPoints'.mp a₂.property a₁.val (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
-          rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
+          rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.property])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
@@ -425,9 +425,9 @@ set_option backward.isDefEq.respectTransparency false in
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
     (ϕ : K →* G) (hϕ : IsPGroup p ϕ.ker) : IsPGroup p (H.comap ϕ) := by
   intro g
-  obtain ⟨j, hj⟩ := hH ⟨ϕ g.1, g.2⟩
+  obtain ⟨j, hj⟩ := hH ⟨ϕ g.val, g.property⟩
   rw [Subtype.ext_iff, H.coe_pow, Subtype.coe_mk, ← ϕ.map_pow] at hj
-  obtain ⟨k, hk⟩ := hϕ ⟨g.1 ^ p ^ j, hj⟩
+  obtain ⟨k, hk⟩ := hϕ ⟨g.val ^ p ^ j, hj⟩
   rw [Subtype.ext_iff, ϕ.ker.coe_pow, Subtype.coe_mk, ← pow_mul, ← pow_add] at hk
   exact ⟨j + k, by rwa [Subtype.ext_iff, (H.comap ϕ).coe_pow]⟩
 
