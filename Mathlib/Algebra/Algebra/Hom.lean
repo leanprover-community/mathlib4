@@ -100,13 +100,6 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
-@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [CommSemiring R]
-    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
-    (f : F) : LinearMap.ofClass (ofClass f) = .ofClass f := rfl
-
-@[deprecated (since := "2026-09-08")] alias
-_root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
-
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
@@ -350,6 +343,13 @@ theorem ofLinearMap_id (map_one) (map_mul) :
 theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
+
+@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) : (ofClass f).toLinearMap = .ofClass f := rfl
+
+@[deprecated (since := "2026-09-08")] alias
+_root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
 
 @[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where

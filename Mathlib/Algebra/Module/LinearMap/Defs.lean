@@ -620,19 +620,20 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
+def toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ where
+  toFun := f.toFun
+  map_add' := f.map_add
+  map_smul' := f.map_smulₑ
+
 @[simp]
-theorem coe_linearMapOfClass (f : M →ₑ+[σ.toMonoidHom] M₂) : (LinearMap.ofClass f : M → M₂) = f :=
+theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : (f.toLinearMap : M → M₂) = f :=
   rfl
 
-@[deprecated (since := "2026-11-20")] alias coe_toLinearMap := coe_linearMapOfClass
-
-theorem linearMapOfClass_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
-    (h : LinearMap.ofClass f = .ofClass g) :
+theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
+    (h : f.toLinearMap = g.toLinearMap) :
     f = g := by
   ext m
   congrm $h m
-
-@[deprecated (since := "2026-11-20")] alias toLinearMap_injective := linearMapOfClass_injective
 
 end DistribMulActionHom
 
