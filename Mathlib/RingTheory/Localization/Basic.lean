@@ -229,9 +229,9 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 `S ≃ₐ[A] Q`. -/
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
-  .ofCommutes (ringEquivOfRingEquiv S Q h.toRingEquiv H)
-  fun _ ↦ by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+  .ofCommutes (ringEquivOfRingEquiv S Q h.toRingEquiv H) fun _ ↦ by
+    dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 

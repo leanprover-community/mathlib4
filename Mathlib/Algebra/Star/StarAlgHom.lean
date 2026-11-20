@@ -636,7 +636,8 @@ add_decl_doc StarAlgEquiv.toStarRingEquiv
 the star operation. -/
 add_decl_doc StarAlgEquiv.toAlgEquiv
 
-@[deprecated (since := "2026-11-13")] alias NonUnitalAlgEquivClass := AlgEquivClass
+@[deprecated "These classes are now identitcal." (since := "2026-11-13")]
+alias NonUnitalAlgEquivClass := AlgEquivClass
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. -/
