@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 

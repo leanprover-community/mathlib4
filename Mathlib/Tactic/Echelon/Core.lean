@@ -201,8 +201,8 @@ private opaque ModelValueTypeSpec {u : Level} (α : Q(Type u)) : {β : Type // N
   ⟨Unit, ⟨()⟩⟩
 /-- An opaque model type that is used in place of the actual model type.
 We artificially add a parameter `α` to avoid mixing model types of different rings. -/
-def ModelType {u : Level} (α : Q(Type u)) : Type := (ModelValueTypeSpec α).1
-instance {u : Level} (α : Q(Type u)) : Nonempty (ModelType α) := (ModelValueTypeSpec α).2
+def ModelType {u : Level} (α : Q(Type u)) : Type := (ModelValueTypeSpec α).val
+instance {u : Level} (α : Q(Type u)) : Nonempty (ModelType α) := (ModelValueTypeSpec α).property
 /-- A computation model of a ring `α`. It should be constructed using `Model.mk`. -/
 abbrev Model {u : Level} (α : Q(Type u)) : Type := ModelAux α (ModelType α)
 /--

@@ -38,7 +38,6 @@ some theory of _bounded_ power series over normed rings.
 ## References
 
 * [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010], section II.2
-
 -/
 
 public noncomputable section
@@ -229,8 +228,7 @@ The Amice transform `D(Multiplicative ℤ_[p], ℤ_[p]) → ℤ_[p][X]`, as an i
 normed ring, as in `amiceTransformEquiv`.)
 -/
 def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] PowerSeries ℤ_[p] :=
-  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_one amiceTransformₐ)
-    (map_mul amiceTransformₐ)
+  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_mul amiceTransformₐ)
 
 end multiplicative
 

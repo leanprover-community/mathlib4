@@ -169,12 +169,6 @@ Currently, these checks are quite lenient, but could be made stricter in the fut
 lean_exe «check-title-labels» where
   srcDir := "scripts"
 
--- TODO: provided for backwards compatibility; delete after #44306
-lean_exe «check_title_labels» where
-  srcDir := "scripts"
-  -- TODO: modulise this script, so remove the need for this option
-  allowNonModules := true
-
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
 lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"

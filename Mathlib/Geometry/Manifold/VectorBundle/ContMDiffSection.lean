@@ -16,7 +16,6 @@ sections of a vector bundle over a manifold `M` and prove that it's a module ove
 
 In passing, we prove that binary and finite sums, differences and scalar products of `C^n`
 sections are `C^n`.
-
 -/
 
 @[expose] public section
@@ -56,8 +55,8 @@ lemma ContMDiffWithinAt.add_section (hs : CMDiffAt[u] n (T% s) x₀) (ht : CMDif
     · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
     · intro x hx
-      apply (e.linear 𝕜 hx).1
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1
+      apply (e.linear 𝕜 hx).map_add
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_add
 
 lemma ContMDiffAt.add_section (hs : CMDiffAt n (T% s) x₀) (ht : CMDiffAt n (T% t) x₀) :
     CMDiffAt n (T% (s + t)) x₀ := by
@@ -120,8 +119,8 @@ lemma ContMDiffWithinAt.smul_section (hf : CMDiffAt[u] n f x₀) (hs : CMDiffAt[
     · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
     · intro x hx
-      apply (e.linear 𝕜 hx).2
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
+      apply (e.linear 𝕜 hx).map_smul
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_smul
 
 lemma ContMDiffAt.smul_section (hf : CMDiffAt n f x₀) (hs : CMDiffAt n (T% s) x₀) :
     CMDiffAt n (T% (f • s)) x₀ := by

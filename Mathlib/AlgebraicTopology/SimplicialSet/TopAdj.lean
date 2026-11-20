@@ -20,7 +20,6 @@ realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
 * `SSet.stdSimplex.toTopObjIsoI : |Δ[1]| ≅ TopCat.I`;
 * `SSet.stdSimplex.toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`:
 the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
-
 -/
 
 @[expose] public section
@@ -82,7 +81,7 @@ of the singular simplicial set of `X` and `X`. -/
 noncomputable def toSSetObj₀Equiv {X : TopCat.{u}} :
     toSSet.obj X _⦋0⦌ ≃ X :=
   (toSSetObjEquiv X _).trans
-    { toFun f := f.1 (default : _)
+    { toFun f := f.toFun (default : _)
       invFun x := ⟨fun _ ↦ x, by fun_prop⟩
       left_inv _ := by
         ext x

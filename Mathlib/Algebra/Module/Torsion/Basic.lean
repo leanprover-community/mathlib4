@@ -224,7 +224,7 @@ abbrev IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 
 theorem isTorsionBySet_annihilator : IsTorsionBySet R M (annihilator R M) :=
-  fun _ r ↦ Module.mem_annihilator.mp r.2 _
+  fun _ r ↦ Module.mem_annihilator.mp r.property _
 
 theorem isTorsionBy_iff_mem_annihilator {a : R} :
     IsTorsionBy R M a ↔ a ∈ annihilator R M := by
@@ -329,7 +329,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (s : Set R) (a : R)
 
 theorem isTorsionBySet_of_subset {s t : Set R} (h : s ⊆ t)
     (ht : IsTorsionBySet R M t) : IsTorsionBySet R M s :=
-  fun m r ↦ @ht m ⟨r, h r.2⟩
+  fun m r ↦ @ht m ⟨r, h r.property⟩
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by

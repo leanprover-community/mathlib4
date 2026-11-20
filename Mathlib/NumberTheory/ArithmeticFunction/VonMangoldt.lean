@@ -32,7 +32,6 @@ to deduce alternative expressions for the von Mangoldt function via Möbius inve
 We use the standard notation `Λ` to represent the von Mangoldt function.
 It is accessible in the locales `ArithmeticFunction` (like the notations for other arithmetic
 functions) and also in the scope `ArithmeticFunction.vonMangoldt`.
-
 -/
 
 @[expose] public section

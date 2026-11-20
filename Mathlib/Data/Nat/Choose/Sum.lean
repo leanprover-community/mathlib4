@@ -125,7 +125,7 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by lia), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
+      rw [← insert_right_Ico (by lia), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
         choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
@@ -216,7 +216,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
-  exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
+  exact ite_eq_right h0.ne_empty
 
 variable [NonAssocSemiring R]
 

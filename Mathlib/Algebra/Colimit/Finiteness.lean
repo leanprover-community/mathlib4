@@ -37,7 +37,8 @@ namespace fgSystem
 
 instance : IsDirectedOrder {N : Submodule R M // N.FG} where
   directed N₁ N₂ :=
-    ⟨⟨_, N₁.2.sup N₂.2⟩, Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩
+    ⟨⟨_, N₁.property.sup N₂.property⟩, Subtype.coe_le_coe.mp le_sup_left,
+      Subtype.coe_le_coe.mp le_sup_right⟩
 
 instance : DirectedSystem _ (fgSystem R M · · · ·) where
   map_self _ _ := rfl
@@ -56,7 +57,7 @@ variable {R M}
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma equiv_comp_of (N : {N : Submodule R M // N.FG}) :
-    (equiv R M).toLinearMap ∘ₗ of _ _ _ _ N = N.1.subtype := by
+    (equiv R M).toLinearMap ∘ₗ of _ _ _ _ N = N.val.subtype := by
   ext; simp [equiv]
 
 end fgSystem

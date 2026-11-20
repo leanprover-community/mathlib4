@@ -11,11 +11,9 @@ public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
 
 /-!
-
 # Definable Subsets in the language of rings
 
 This file proves that the set of zeros of a multivariable polynomial is a definable subset.
-
 -/
 
 public section
@@ -31,16 +29,16 @@ theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
     Set.Definable (⋃ p ∈ S, p.coeff '' p.support : Set K) Language.ring
       (zeroLocus K (Ideal.span (S : Set (MvPolynomial ι K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
-  let p' := genericPolyMap (fun p : S => p.1.support)
+  let p' := genericPolyMap (fun p : S => p.val.support)
   let := Classical.decEq ι
   let := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
   refine ⟨BoundedFormula.iInf
       (fun i : S => Term.equal
         ((termOfFreeCommRing (p' i)).relabel
-          (Sum.map (fun p => ⟨p.1.1.coeff p.2.1, by
+          (Sum.map (fun p => ⟨p.1.val.coeff p.2.val, by
             simp only [Set.mem_iUnion]
-            exact ⟨p.1.1, p.1.2, Set.mem_image_of_mem _ p.2.2⟩⟩) id)) 0), ?_⟩
+            exact ⟨p.1.val, p.1.property, Set.mem_image_of_mem _ p.2.property⟩⟩) id)) 0), ?_⟩
   simp [Formula.Realize, Term.equal, Function.comp_def, p', MvPolynomial.aeval_eq_eval₂Hom]
 
 end Ring

@@ -56,19 +56,19 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
       simp_all only [lt_sSup_iff, mem_ofPred_eq, Subtype.exists, mem_Icc, Rat.cast_nonneg,
         mem_iUnion, exists_prop, exists_and_left, f]
       constructor
-      · rintro ⟨y, hyI, y_mem, (hy : a.1 < y)⟩
+      · rintro ⟨y, hyI, y_mem, (hy : a.val < y)⟩
         obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
         refine ⟨q, hqa, ⟨?_, hqy.le.trans hyI.2⟩, lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)⟩
-        simp [← Rat.cast_nonneg (K := ℝ), a.2.1.trans hqa.le]
+        simp [← Rat.cast_nonneg (K := ℝ), a.property.1.trans hqa.le]
       · intro he
         obtain ⟨q, hqa, hqI, h⟩ := he
         refine ⟨q, ⟨by simp [hqI.1], hqI.2⟩, h, ?_⟩
-        change a.1 < q
+        change a.val < q
         simp [hqa]
     rw [sSup_eq_iUnion_rat]
     refine MeasurableSet.iUnion (fun b ↦ MeasurableSet.iUnion
       (fun bI ↦ MeasurableSet.iUnion (fun _ ↦ ?_)))
-    refine measurableSet_lt ?_ measurable_snd.subtype_val
+    refine measurableSet_lt ?_ measurable_snd.subtypeVal
     simp_rw [measureReal_def]
     have hκ := κ.measurable_coe (s := Icc 0 ⟨b, bI⟩) measurableSet_Icc
     fun_prop
@@ -82,12 +82,12 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
   · intro (hξ : f a ξ ≤ x)
     change ξ ≤ (κ a).real (Icc 0 x)
     by_cases hx : x = 1
-    · simp [hx, ← univ_eq_Icc, ξ.2.2]
+    · simp [hx, ← univ_eq_Icc, ξ.property.2]
     let g := fun y ↦ (κ a).real (Icc 0 y)
     let nebot : NeBot (𝓝[>] x) := by
       refine nhdsGT_neBot_of_exists_gt ?_
       use 1
-      exact lt_of_le_of_ne x.2.2 hx
+      exact lt_of_le_of_ne x.property.2 hx
     refine le_of_tendsto_of_tendsto (b := 𝓝[>] x) (g := g) continuousWithinAt_const ?_ ?_
     · let h := cdf ((κ a).map Subtype.val)
       have h_continuousWithinAt := continuousWithinAt_Ioi_iff_Ici.mpr (h.right_continuous x)
