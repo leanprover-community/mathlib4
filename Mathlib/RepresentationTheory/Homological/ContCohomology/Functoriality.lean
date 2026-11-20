@@ -36,9 +36,9 @@ namespace ContinuousCohomology
 open TopRep ContRepresentation
 
 variable {k : Type u} {G H K : Type v} [Ring k] [TopologicalSpace k]
-  [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-  [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
-  [Group K] [TopologicalSpace K] [IsTopologicalGroup K]
+  [Monoid G] [TopologicalSpace G] [SeparatelyContinuousMul G]
+  [Monoid H] [TopologicalSpace H] [SeparatelyContinuousMul H]
+  [Monoid K] [TopologicalSpace K] [SeparatelyContinuousMul K]
   {X X' X'' : TopRep k G} {Y : TopRep k H} {Z : TopRep k K}
 
 /-- The morphisms between the levels of the standard resolutions of `X` and `X'` induced by a

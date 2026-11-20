@@ -231,7 +231,7 @@ instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence :=
 
 end equivAction
 
-variable {G : Type v} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+variable {G : Type v} [Monoid G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 /-- The `G`-invariant topologicalsubmodule of a topological representation. -/
 abbrev invariants (X : TopRep k G) : TopModuleCat k := .of k X.ρ.invariants
@@ -279,16 +279,16 @@ instance {H : Type*} [Monoid H] (φ : H →* G) : (resFunctor (k := k) φ).Addit
 
 section invariantsResMap
 
-variable {G H : Type*} [Group G]
+variable {G H : Type*} [Monoid G]
 
 @[simp]
 lemma resFunctor_map_hom [Monoid H] (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
     ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
 
-variable [Group H]
+variable [Monoid H]
 
 /-- The morphism between invariant submodules induced by a morphism `res φ X ⟶ Y` of
-topological `H`-representations, where `φ : H →* G` is a group homomorphism. -/
+topological `H`-representations, where `φ : H →* G` is a monoid homomorphism. -/
 def invariantsResMap (φ : H →* G) {X : TopRep k G} {Y : TopRep k H} (f : res φ X ⟶ Y) :
     X.invariants ⟶ Y.invariants :=
   TopModuleCat.ofHom (f.hom.mapInvariantsOfRes φ)
@@ -303,7 +303,7 @@ lemma invariantsResMap_map_comp {X X' : TopRep k G} {Y : TopRep k H} (φ : H →
       (invariantsFunctor k G).map f ≫ invariantsResMap φ g := rfl
 
 /-- The restriction map `X.invariants ⟶ (X.res φ).invariants` between invariant submodules
-along a group homomorphism `φ : H →* G`. -/
+along a monoid homomorphism `φ : H →* G`. -/
 def invariantsRes (φ : H →* G) (X : TopRep k G) :
     X.invariants ⟶ (X.res φ).invariants :=
   TopModuleCat.ofHom (ContIntertwiningMap.mapInvariantsOfRes φ ContIntertwiningMap.id)
