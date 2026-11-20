@@ -633,17 +633,17 @@ end RingHom
 
 namespace RingEquiv
 
-variable [Fintype m] [DecidableEq m]
-variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
+variable [Fintype m]
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
 
 /-- The `RingEquiv` between spaces of square matrices induced by a `RingEquiv` between their
 coefficients. This is `Matrix.map` as a `RingEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃+* β) : Matrix m m α ≃+* Matrix m m β :=
-  { f.toRingHom.mapMatrix,
-    f.toAddEquiv.mapMatrix with
+  { f.toAddEquiv.mapMatrix with
     toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    invFun := fun M => M.map f.symm
+    map_mul' := by simp }
 
 @[simp]
 theorem mapMatrix_refl : (RingEquiv.refl α).mapMatrix = RingEquiv.refl (Matrix m m α) :=
@@ -719,14 +719,11 @@ variable [SMul R α] [SMul R β] [SMul R γ]
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
 coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
-def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β where
-  toFun M := M.map f
-  invFun M := M.map f.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-  map_add' _ _ := by ext; simp
-  map_mul' _ _ := by ext; simp [Matrix.mul_apply]
-  map_smul' _ _ := by ext; simp
+def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
+  { f.toRingEquiv.mapMatrix with
+    toFun M := M.map f
+    invFun M := M.map f.symm
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=
