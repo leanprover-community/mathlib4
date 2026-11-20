@@ -202,7 +202,7 @@ namespace Equiv
 from `e ⁻¹' s` to `s`. -/
 @[simps, implicit_reducible]
 def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
-  toFun a := ⟨e a, Finset.mem_preimage.1 a.2⟩
+  toFun a := ⟨e a, Finset.mem_preimage.1 a.property⟩
   invFun b := ⟨e.symm b, by simp⟩
   left_inv _ := by simp
   right_inv _ := by simp
