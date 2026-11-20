@@ -63,7 +63,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   -- so it suffices to find a single `y ∈ K` with `colon N {y • x} ≤ I`
   suffices step2 : ∃ y : K, colon N {y • x} ≤ I by
     obtain ⟨y, hyI⟩ := step2
-    exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
+    exact ⟨y • x, le_antisymm (step1 y y.property) hyI⟩
   -- if not, then for every `y ∈ K`, there exists an `f y ∈ colon N {y • x}` with `f y ∉ I`
   by_contra! h'
   simp only [IsConcreteLE.not_le_iff_exists] at h'

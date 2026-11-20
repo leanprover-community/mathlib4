@@ -561,9 +561,9 @@ theorem is_pow_of_dvd_count {a : Associates α}
   rw [factors_mk a0 hz] at hk
   have hk' : ∀ p, p ∈ factors' a0 → k ∣ (factors' a0).count p := by
     rintro p -
-    have pp : p = ⟨p.val, p.2⟩ := by simp only [Subtype.coe_eta]
-    rw [pp, ← count_some p.2]
-    exact hk p.val p.2
+    have pp : p = ⟨p.val, p.property⟩ := by simp only [Subtype.coe_eta]
+    rw [pp, ← count_some p.property]
+    exact hk p.val p.property
   obtain ⟨u, hu⟩ := Multiset.exists_smul_of_dvd_count _ hk'
   use FactorSet.prod (u : FactorSet α)
   apply eq_of_factors_eq_factors

@@ -461,7 +461,7 @@ theorem surjOn_iff_exists_map_subtype :
     ⟨_, (mapsTo_image f s).restrict f s _, h, surjective_mapsTo_image_restrict _ _, fun _ => rfl⟩,
     fun ⟨t', g, htt', hg, hfg⟩ y hy =>
     let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
-    ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
+    ⟨x, x.property, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
 
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
@@ -729,9 +729,10 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
   bijOn_of_subsingleton' _ Iff.rfl
 
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
-  ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
-    let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
+  ⟨fun x y h' => Subtype.ext <| h.injOn x.property y.property <| Subtype.ext_iff.1 h',
+    fun ⟨_, hy⟩ =>
+      let ⟨x, hx, hxy⟩ := h.surjOn hy
+      ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
@@ -1126,7 +1127,7 @@ lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t
 lemma SurjOn.exists_subset_injOn_image_eq (hfs : s.SurjOn f t) :
     ∃ u ⊆ s, u.InjOn f ∧ f '' u = t := by
   choose x hmem heq using hfs
-  exact ⟨range (fun a : t ↦ x a.2), by grind, fun _ ↦ by grind, by aesop⟩
+  exact ⟨range (fun a : t ↦ x a.property), by grind, fun _ ↦ by grind, by aesop⟩
 
 end Set
 

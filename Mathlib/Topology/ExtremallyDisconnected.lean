@@ -123,7 +123,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     · rw [hZ₁₂.inter_eq, inter_empty]
   refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
-    have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
+    have : φ x ∈ Z₁ ∪ Z₂ := (g x).property
     rcases this with hφ | hφ
     · exact ((hφ₁ x ▸ hφ.1) hx).elim
     · exact hφ

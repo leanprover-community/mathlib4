@@ -179,7 +179,7 @@ theorem invertible_iff_generator_ne_zero (I : FractionalIdeal R₁⁰ K)
 alias invertible_iff_generator_nonzero := invertible_iff_generator_ne_zero
 
 theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)]
-    (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.1 := by
+    (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.val := by
   rw [val_eq_coe, isPrincipal_iff]
   use (generator (I : Submodule R₁ K))⁻¹
   have hI : I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 :=

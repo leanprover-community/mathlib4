@@ -375,7 +375,8 @@ theorem Cospherical.subtypeVal_iff {S : AffineSubspace ℝ P} [Nonempty S]
     have hp_dist : dist (p : P) c = r := by grind
     have hp₀_dist : dist (p₀ : P) c = r := by grind
     have hpp₀ : dist (p : P) (c : P) = dist (p₀ : P) (c : P) := hp_dist.trans hp₀_dist.symm
-    exact (dist_eq_iff_dist_orthogonalProjection_eq (s := S) (p₃ := c) p.2 p₀.2).1 hpp₀
+    exact (dist_eq_iff_dist_orthogonalProjection_eq (s := S) (p₃ := c) p.property p₀.property).1
+      hpp₀
 
 @[deprecated (since := "2026-11-10")]
 alias Cospherical.subtype_val_iff := Cospherical.subtypeVal_iff

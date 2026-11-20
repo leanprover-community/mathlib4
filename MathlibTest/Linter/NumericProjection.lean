@@ -88,15 +88,15 @@ Note: This linter can be disabled with `set_option linter.style.numericProjectio
 #guard_msgs in
 example (h : MyFn) := h.1
 
-/-! We also see through these type definitions, but `And` and `Subtype` are exempt. -/
+/-! We also see through these type definitions, but `And` and `Prod` are exempt. -/
 
 def MyAnd (p q : Prop) : Prop := p ∧ q
 
 example (h : MyAnd True True) := h.2
 
-def MySubtype := { a : Nat // a < 42 }
+def MyProd := Nat × Bool
 
-example (a : MySubtype) := a.1
+example (a : MyProd) := a.1
 
 /-! The above are hardcoded exemptions, but we can also exempt by attribute. -/
 

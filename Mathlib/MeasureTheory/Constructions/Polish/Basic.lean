@@ -264,7 +264,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
       refine mem_iInter.2 fun n => ?_
-      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n :)
+      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.property n :)
       rw [← this, ← f_range n]
       exact mem_range_self _
     · intro y hy
@@ -338,7 +338,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   have : Countable b := b_count.to_subtype
   have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := fun s ↦ by
     apply MeasurableSet.isClopenable
-    exact hf.subtype_mk (hb.isOpen s.2).measurableSet
+    exact hf.subtype_mk (hb.isOpen s.property).measurableSet
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
       ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
@@ -424,7 +424,8 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       ¬MeasurablySeparable (f '' cylinder p.2.1 p.1) (g '' cylinder p.2.2 p.1) }
   -- for each such pair, one can find longer cylinders whose images are not Borel-separated either
   have : ∀ p : A, ∃ q : A,
-      q.1.1 = p.1.1 + 1 ∧ q.1.2.1 ∈ cylinder p.1.2.1 p.1.1 ∧ q.1.2.2 ∈ cylinder p.1.2.2 p.1.1 := by
+      q.val.1 = p.val.1 + 1 ∧ q.val.2.1 ∈ cylinder p.val.2.1 p.val.1 ∧
+      q.val.2.2 ∈ cylinder p.val.2.2 p.val.1 := by
     rintro ⟨⟨n, x, y⟩, hp⟩
     rcases I n x y hp with ⟨x', y', hx', hy', h'⟩
     exact ⟨⟨⟨n + 1, x', y'⟩, h'⟩, rfl, hx', hy'⟩
@@ -434,13 +435,13 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
-  have pn_fst : ∀ n, (p n).1.1 = n := fun n ↦ by
+  have pn_fst : ∀ n, (p n).val.1 = n := fun n ↦ by
     induction n with
     | zero => rfl
     | succ n IH => simp only [prec, hFn, IH]
   -- check that the cylinders we construct are indeed decreasing, by checking that the coordinates
   -- are stationary.
-  have Ix : ∀ m n, m + 1 ≤ n → (p n).1.2.1 m = (p (m + 1)).1.2.1 m := by
+  have Ix : ∀ m n, m + 1 ≤ n → (p n).val.2.1 m = (p (m + 1)).val.2.1 m := by
     intro m
     apply Nat.le_induction
     · rfl
@@ -450,7 +451,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       rw [pn_fst]
       exact hmn
     rw [prec, I, IH]
-  have Iy : ∀ m n, m + 1 ≤ n → (p n).1.2.2 m = (p (m + 1)).1.2.2 m := by
+  have Iy : ∀ m n, m + 1 ≤ n → (p n).val.2.2 m = (p (m + 1)).val.2.2 m := by
     intro m
     apply Nat.le_induction
     · rfl
@@ -461,12 +462,12 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       exact hmn
     rw [prec, I, IH]
   -- denote by `x` and `y` the limit points of these two sequences of cylinders.
-  set x : ℕ → ℕ := fun n => (p (n + 1)).1.2.1 n with hx
-  set y : ℕ → ℕ := fun n => (p (n + 1)).1.2.2 n with hy
+  set x : ℕ → ℕ := fun n => (p (n + 1)).val.2.1 n with hx
+  set y : ℕ → ℕ := fun n => (p (n + 1)).val.2.2 n with hy
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert (p n).2 using 3
+    convert (p n).property using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -688,20 +689,20 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
   -- for each pair of disjoint sets in the topological basis `b`, consider Borel sets separating
   -- their images, by injectivity of `f` and the Lusin separation theorem.
   have : ∀ p : A, ∃ q : Set β,
-      f '' (p.1.1 : Set γ) ⊆ q ∧ Disjoint (f '' (p.1.2 : Set γ)) q ∧ MeasurableSet q := by
+      f '' (p.val.1 : Set γ) ⊆ q ∧ Disjoint (f '' (p.val.2 : Set γ)) q ∧ MeasurableSet q := by
     intro p
     apply
-      AnalyticSet.measurablySeparable ((hb.isOpen p.1.1.2).analyticSet_image f_cont)
-        ((hb.isOpen p.1.2.2).analyticSet_image f_cont)
-    exact Disjoint.image p.2 f_inj.injOn (subset_univ _) (subset_univ _)
+      AnalyticSet.measurablySeparable ((hb.isOpen p.val.1.property).analyticSet_image f_cont)
+        ((hb.isOpen p.val.2.property).analyticSet_image f_cont)
+    exact Disjoint.image p.property f_inj.injOn (subset_univ _) (subset_univ _)
   choose q hq1 hq2 q_meas using this
   -- define sets `E i` and `F n` as in the proof sketch above
   let E : b → Set β := fun s =>
-    closure (f '' s) ∩ ⋂ (t : b) (ht : Disjoint s.1 t.1), q ⟨(s, t), ht⟩ \ q ⟨(t, s), ht.symm⟩
+    closure (f '' s) ∩ ⋂ (t : b) (ht : Disjoint s.val t.val), q ⟨(s, t), ht⟩ \ q ⟨(t, s), ht.symm⟩
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
       ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), E s
+  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.val ∧ diam s.val ≤ u n), E s
   -- it is enough to show that `range f = ⋂ F n`, as the latter set is obviously measurable.
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
@@ -738,13 +739,13 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
   -- Now, let us prove the harder inclusion `⋂ F n ⊆ range f`.
   · intro x hx
     -- pick for each `n` a good set `s n` of small diameter for which `x ∈ E (s n)`.
-    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
+    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.val ∧ diam s.val ≤ u n), x ∈ E s := fun n => by
       simpa only [F, mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
-    have C2 : ∀ n, (s n).1.Nonempty := by grind [not_nonempty_iff_eq_empty]
+    have C2 : ∀ n, (s n).val.Nonempty := by grind [not_nonempty_iff_eq_empty]
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
-    have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
+    have I : ∀ m n, ((s m).val ∩ (s n).val).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
       by_contra h
@@ -1037,7 +1038,8 @@ theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i))
   have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
-  refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  refine measurable_of_tendsto_metrizable' L.filter ?_
+    (tendsto_pi_nhds.mpr fun e => e.property.hasProd)
   fun_prop
 
 /-- The product of almost everywhere measurable functions is measurable. -/
