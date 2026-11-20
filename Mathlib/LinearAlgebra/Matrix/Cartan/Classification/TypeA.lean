@@ -86,6 +86,7 @@ private lemma not_isFiniteCartan_addLeaf_A_end_triple {u : Fin n} {a b : ℤ} (h
 private lemma hasDynkinType_addLeaf_A_end {u : Fin n} {a b : ℤ} (hu : u.val + 1 = n)
     (hab : IsBond a b) (h : (addLeaf (A n) u a b).IsFiniteCartan) :
     (addLeaf (A n) u a b).HasDynkinType := by
+  simp only [IsBond, bonds, Finset.mem_insert, Finset.mem_singleton, Prod.mk.injEq] at hab
   rcases hab with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   -- single bond: `Aₙ₊₁`
   · exact addLeaf_A_end_eq_A u hu ▸ hasDynkinType_A _
