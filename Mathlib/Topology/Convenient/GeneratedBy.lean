@@ -30,7 +30,6 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
   for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
-
 -/
 
 @[expose] public section
@@ -47,7 +46,7 @@ namespace TopologicalSpace
 /-- Given a family of topological spaces `X i`, the `X`-generated topology on
 a topological space `Y` is the topology that is coinduced
 by all continuous maps `X i → Y`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def generatedBy : TopologicalSpace Y :=
   ⨆ (i : ι) (f : C(X i, Y)), coinduced f inferInstance
 
@@ -120,7 +119,7 @@ lemma TopologicalSpace.generatedBy_le : generatedBy X ≤ tY :=
 omit tY in
 lemma TopologicalSpace.generatedBy_mono {t₁ t₂ : TopologicalSpace Y} (h : t₁ ≤ t₂) :
     t₁.generatedBy X ≤ t₂.generatedBy X :=
-  iSup₂_le fun i f ↦ le_iSup₂_of_le i ⟨f, continuous_le_rng h @f.2⟩ le_rfl
+  iSup₂_le fun i f ↦ le_iSup₂_of_le i ⟨f, continuous_le_rng h (by fun_prop)⟩ le_rfl
 
 namespace Topology
 

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.CommSq
 
 /-!
@@ -30,7 +29,6 @@ we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
 or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
-
 -/
 
 @[expose] public section
@@ -168,6 +166,7 @@ def flipFunctor : Square C ⥤ Square C where
       τ₃ := φ.τ₂
       τ₄ := φ.τ₄ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Flipping commutative squares is an auto-equivalence. -/
 @[simps]
@@ -177,7 +176,6 @@ def flipEquivalence : Square C ≌ Square C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
@@ -203,6 +201,7 @@ def fromArrowArrowFunctor : Arrow (Arrow C) ⥤ Square C where
       comm₂₄ := φ.right.w.symm
       comm₃₄ := Arrow.rightFunc.congr_map φ.w.symm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Square C ≌ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
@@ -214,7 +213,6 @@ def arrowArrowEquivalence : Square C ≌ Arrow (Arrow C) where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/
@@ -240,6 +238,7 @@ def fromArrowArrowFunctor' : Arrow (Arrow C) ⥤ Square C where
       comm₂₄ := Arrow.rightFunc.congr_map φ.w.symm
       comm₃₄ := φ.right.w.symm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Square C ≌ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
@@ -363,6 +362,7 @@ def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `F.mapSquare ⟶ G.mapSquare` induces
 by a natural transformation `F ⟶ G`. -/

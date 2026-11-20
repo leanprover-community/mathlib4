@@ -5,10 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families
@@ -120,7 +120,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
     refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
-    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_setOf_eq, and_imp,
+    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_ofPred_eq, and_imp,
       mem_shatterer]
     exact fun s _ ↦ aux (fun t ht ↦ (mem_filter.1 ht).2)
   rw [← card_memberSubfamily_add_card_nonMemberSubfamily a]
@@ -170,9 +170,9 @@ lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s 
       rw [insert_eq_self.2 (mem_inter.1 ha).2] at hu
       exact hu.1 hu.2
     rw [insert_eq_self.2 <| inter_subset_right (s₁ := s) ?_] at hv
-    cases hv.1 hv.2
-    rw [hsv]
-    exact mem_insert_self _ _
+    · cases hv.1 hv.2
+    · rw [hsv]
+      exact mem_insert_self _ _
   · refine ⟨insert a u, hu.2, ?_⟩
     rw [inter_insert_of_notMem ha]
 

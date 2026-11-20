@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The upper half plane
 
@@ -53,15 +56,13 @@ instance : Inhabited ℍ := ⟨.I⟩
 
 @[simp, norm_cast] theorem coe_inj {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
-@[deprecated (since := "2026-01-31")] alias ext_iff' := coe_inj
-
 theorem coe_injective : Function.Injective UpperHalfPlane.coe := fun _ _ ↦ UpperHalfPlane.ext
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
   prf z hz := ⟨⟨z, hz⟩, rfl⟩
 
 protected theorem «forall» {P : ℍ → Prop} : (∀ z, P z) ↔ ∀ z hz, P ⟨z, hz⟩ :=
-  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.1 z.2⟩
+  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.coe z.coe_im_pos⟩
 
 protected theorem «exists» {P : ℍ → Prop} : (∃ z, P z) ↔ ∃ z hz, P ⟨z, hz⟩ :=
   ⟨fun ⟨⟨z, hz⟩, hP⟩ ↦ ⟨z, hz, hP⟩, fun ⟨z, hz, hP⟩ ↦ ⟨⟨z, hz⟩, hP⟩⟩
@@ -77,9 +78,6 @@ def re (z : ℍ) :=
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
 theorem ext_re_im {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   UpperHalfPlane.ext <| Complex.ext hre him
-
-@[deprecated (since := "2026-01-29")]
-alias ext' := ext_re_im
 
 @[simp]
 theorem coe_im (z : ℍ) : (z : ℂ).im = z.im :=
@@ -101,7 +99,7 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
 @[simp]
-theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
+theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.coe_im_pos) : mk z h = z :=
   rfl
 
 @[simp]
@@ -112,11 +110,6 @@ lemma I_re : I.re = 0 := Complex.I_re
 
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
-
-@[deprecated coe_mk (since := "2026-01-29")]
-lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
-    UpperHalfPlane.coe ⟨z, hz⟩ = z :=
-  rfl
 
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
@@ -144,7 +137,7 @@ end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
@@ -188,16 +181,12 @@ lemma ne_ofReal (z : ℍ) (x : ℝ) : (z : ℂ) ≠ x :=
 
 lemma ne_intCast (z : ℍ) (n : ℤ) : (z : ℂ) ≠ n := mod_cast ne_ofReal z n
 
-@[deprecated (since := "2026-01-29")] alias ne_int := ne_intCast
-
 lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z n
-
-@[deprecated (since := "2026-01-29")] alias ne_nat := ne_natCast
 
 section PosRealAction
 
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
-  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
+  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.property z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
   mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)
 

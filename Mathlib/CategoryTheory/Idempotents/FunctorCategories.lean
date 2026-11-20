@@ -16,7 +16,6 @@ that a functor category `J ⥤ C` is idempotent complete when the target categor
 We also provide a fully faithful functor
 `karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)` for all categories
 `J` and `C`.
-
 -/
 
 @[expose] public section
@@ -56,12 +55,11 @@ theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
 
 variable (J C)
 
-set_option backward.isDefEq.respectTransparency false in
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
   refine ⟨fun F p hp => ?_⟩
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
-  haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
+  have : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
       the equalizer of the identity and `p.app j` on each object `(j : J)`. -/
   let Y : J ⥤ C :=
@@ -138,6 +136,7 @@ instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
     ext j
     exact hom_ext_iff.mp (congr_app h j)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The composition of `(J ⥤ C) ⥤ Karoubi (J ⥤ C)` and `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`
 equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition with

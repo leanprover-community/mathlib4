@@ -26,7 +26,6 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   between `S` and `R`, then `A/S₀/R` is a tower
 * `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
   given that `A/S/R` is a tower
-
 -/
 
 @[expose] public section
@@ -36,12 +35,11 @@ open scoped Pointwise
 
 universe u v w u₁ v₁
 
-variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
+variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace Algebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable {A}
 
 theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=

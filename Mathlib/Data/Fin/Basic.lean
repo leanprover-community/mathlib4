@@ -5,10 +5,12 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
-public import Mathlib.Data.Int.DivMod
-public import Mathlib.Order.Lattice
-public import Mathlib.Tactic.Common
 public import Batteries.Data.Fin.Basic
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # The finite type with `n` elements
@@ -21,13 +23,12 @@ This file expands on the development in the core library.
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
   Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
-
 -/
 
 @[expose] public section
 
 
-assert_not_exists Monoid Finset
+assert_not_exists Monoid Finset Preorder
 
 open Fin Nat Function
 
@@ -35,11 +36,11 @@ attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
 theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
     (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
-  .symm <| Fin.forall_iff
+  .symm Fin.forall_iff
 
 theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
     (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
-  .symm <| Fin.exists_iff
+  .symm Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
@@ -59,7 +60,7 @@ instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
 /-- A dependent variant of `Fin.elim0`. -/
-def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
+def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.isLt (Nat.not_lt_zero _)
 
 variable {n m : ℕ}
 
@@ -73,7 +74,7 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim Fin.pos
 
 protected theorem prop (a : Fin n) : a.val < n :=
-  a.2
+  a.isLt
 
 lemma lt_last_iff_ne_last {a : Fin (n + 1)} : a < last n ↔ a ≠ last n := by
   simp [Fin.lt_iff_le_and_ne, le_last]
@@ -102,8 +103,8 @@ lemma sub_ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (ha : a ≠ last n) (hab 
 /-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
 def equivSubtype : Fin n ≃ { i // i < n } where
-  toFun a := ⟨a.1, a.2⟩
-  invFun a := ⟨a.1, a.2⟩
+  toFun a := ⟨a.val, a.isLt⟩
+  invFun a := ⟨a.val, a.property⟩
 
 lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
 
@@ -116,7 +117,7 @@ section coe
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   Fin.ext_iff.symm
 
-theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
+theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.val ≠ b.val :=
   Fin.ext_iff.not
 
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
@@ -125,7 +126,7 @@ theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
-    f ≍ g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
+    f ≍ g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.isLt⟩ := by
   subst h
   simp [funext_iff]
 
@@ -134,7 +135,7 @@ If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equ
 then they coincide (in the heq sense). -/
 protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
     {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
-    f ≍ g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
+    f ≍ g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.isLt⟩ ⟨(j : ℕ), h' ▸ j.isLt⟩ := by
   subst h
   subst h'
   simp [funext_iff]
@@ -206,6 +207,7 @@ theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
 The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
+@[deprecated pos_iff_ne_zero (since := "2026-11-16")]
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← val_pos_iff, Nat.pos_iff_ne_zero, val_ne_zero_iff]
 
@@ -321,8 +323,8 @@ end Monoid
 
 theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
-  rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.2),
-    Nat.mod_eq_of_lt (show ↑b < n from b.2)]
+  rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.isLt),
+    Nat.mod_eq_of_lt (show ↑b < n from b.isLt)]
 
 theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
     (a + b).val = a.val + b.val := by
@@ -337,7 +339,7 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).val < n -
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
-    haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
+    haveI : NeZero (n - i.val) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
   simp [coe_sub_iff_le.mpr (Fin.le_of_lt hij)]
@@ -419,18 +421,18 @@ lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b
   rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
-  (natCast_le_natCast (hab.trans hbn) hbn).2 hab
+  (natCast_le_natCast (Nat.le_trans hab hbn) hbn).2 hab
 
 lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
-  (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
+  (natCast_lt_natCast (Nat.le_trans (Nat.le_of_lt hab) hbn) hbn).2 hab
 
 @[simp]
 lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (Nat.lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
   simp only [val_castLE, val_natCast]
-  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
+  rw [Nat.mod_eq_of_lt (a := a % m) (Nat.lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
 
@@ -466,7 +468,7 @@ lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
     motive i := by
   obtain ⟨i, hi⟩ := i
   induction i using Nat.strong_induction_on with
-  | h j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+  | ind j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
 
 end Rec
 
@@ -480,7 +482,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
     · simp at h
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
-      obtain hij | hij := (le_def.1 hij).eq_or_lt
+      obtain hij | hij := Nat.eq_or_lt_of_le <| le_def.1 hij
       · obtain rfl := Fin.ext hij
         exact H _
       · exact _root_.trans (ihj hij) (H j)
@@ -496,7 +498,7 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
   rw [Fin.val_neg', Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
-  constructor
+  exact Nat.lt_add_one _
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   Fin.ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
@@ -507,7 +509,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
   have hkb : k ≤ b := by lia
-  refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, ?_⟩
+  refine ⟨⟨k, Nat.lt_of_le_of_lt hkb b.is_lt⟩, hkb, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
@@ -516,7 +518,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   · lia
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by lia
-  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
+  refine ⟨⟨k, Nat.lt_trans hkb b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) : 0 < a :=
@@ -547,13 +549,5 @@ instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) :
   suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using! NeZero.ne m
   apply Nat.mod_eq_of_lt
   simpa using! zero_lt_of_ne_zero (NeZero.ne n)
-
-section Mul
-
-/-!
-### mul
--/
-
-end Mul
 
 end Fin

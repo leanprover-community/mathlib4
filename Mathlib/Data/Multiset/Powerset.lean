@@ -79,7 +79,7 @@ def powerset (s : Multiset α) : Multiset (Multiset α) :=
     (fun _ _ h => Quot.sound (powersetAux_perm h))
 
 theorem powerset_coe (l : List α) : @powerset α l = ((sublists l).map (↑) : List (Multiset α)) :=
-  congr_arg ((↑) : List (Multiset α) → Multiset (Multiset α)) powersetAux_eq_map_coe
+  congr(((↑) : List (Multiset α) → Multiset (Multiset α)) $powersetAux_eq_map_coe)
 
 @[simp]
 theorem powerset_coe' (l : List α) : @powerset α l = ((sublists' l).map (↑) : List (Multiset α)) :=
@@ -150,13 +150,13 @@ theorem revzip_powersetAux_lemma {α : Type*} [DecidableEq α] (l : List α) {l'
 
 theorem revzip_powersetAux_perm_aux' {l : List α} :
     revzip (powersetAux l) ~ revzip (powersetAux' l) := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   rw [revzip_powersetAux_lemma l revzip_powersetAux, revzip_powersetAux_lemma l revzip_powersetAux']
   exact powersetAux_perm_powersetAux'.map _
 
 theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     revzip (powersetAux l₁) ~ revzip (powersetAux l₂) := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
 
@@ -247,7 +247,7 @@ theorem powersetCard_coe' (n) (l : List α) : @powersetCard α n l = powersetCar
 
 theorem powersetCard_coe (n) (l : List α) :
     @powersetCard α n l = ((sublistsLen n l).map (↑) : List (Multiset α)) :=
-  congr_arg ((↑) : List (Multiset α) → Multiset (Multiset α)) powersetCardAux_eq_map_coe
+  congr(((↑) : List (Multiset α) → Multiset (Multiset α)) $powersetCardAux_eq_map_coe)
 
 @[simp]
 theorem powersetCard_zero_left (s : Multiset α) : powersetCard 0 s = {0} :=
@@ -300,16 +300,31 @@ theorem powersetCard_self (s : Multiset α) : powersetCard s.card s = {s} := by
   | empty => simp
   | cons _ _ ih => simp [ih]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
   induction s using Multiset.induction generalizing n with
   | empty => cases n <;> simp [powersetCard_zero_left]
   | cons t s ih => cases n <;> simp [ih]
 
+lemma _root_.Disjoint.powersetCard_powersetCard_multiset {s t : Multiset α}
+    (h : Disjoint s t) {n m : ℕ} (hn : n ≠ 0 ∨ m ≠ 0) :
+    Disjoint (powersetCard n s) (powersetCard m t) := by
+  rw [disjoint_left]
+  intro u hu hv
+  rw [mem_powersetCard] at hu hv
+  obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp
+    (hn.elim (fun h => hu.2.symm ▸ Nat.pos_of_ne_zero h)
+             (fun h => hv.2.symm ▸ Nat.pos_of_ne_zero h))
+  exact disjoint_left.1 h (mem_of_le hu.1 hx) (mem_of_le hv.1 hx)
+
+lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Multiset α) :
+    Disjoint (powersetCard m s) (powersetCard n t) := by
+  aesop (add simp [disjoint_left])
+
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
     _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
-  fun _ _ h ↦ disjoint_left.mpr fun hi hj ↦
-    h ((Multiset.mem_powersetCard.mp hi).2.symm.trans (Multiset.mem_powersetCard.mp hj).2)
+  fun _ _ hij => disjoint_powersetCard_of_ne hij s s
 
 theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetCard k) = S.powerset := by

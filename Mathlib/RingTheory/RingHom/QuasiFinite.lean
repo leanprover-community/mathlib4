@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 
@@ -75,21 +74,21 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   introv R hs H
   algebraize [f]
   refine ⟨fun P _ ↦ ?_⟩
-  have (r : s) : Module.Finite P.ResidueField (P.Fiber (Localization.Away r.1)) := by
-    have : Algebra.QuasiFinite R (Localization.Away r.1) := quasiFinite_algebraMap.mp (H r)
+  have (r : s) : Module.Finite P.ResidueField (P.Fiber (Localization.Away r.val)) := by
+    have : Algebra.QuasiFinite R (Localization.Away r.val) := quasiFinite_algebraMap.mp (H r)
     infer_instance
-  let φ (r : s) : P.Fiber S →ₐ[P.ResidueField] P.Fiber (Localization.Away r.1) :=
+  let φ (r : s) : P.Fiber S →ₐ[P.ResidueField] P.Fiber (Localization.Away r.val) :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
-  let f : P.Fiber S →ₐ[P.ResidueField] Π r : s, (P.Fiber (Localization.Away r.1)) :=
+  let f : P.Fiber S →ₐ[P.ResidueField] Π r : s, (P.Fiber (Localization.Away r.val)) :=
     AlgHom.pi φ
-  have : IsNoetherian P.ResidueField (Π r : s, (P.Fiber (Localization.Away r.1))) :=
+  have : IsNoetherian P.ResidueField (Π r : s, (P.Fiber (Localization.Away r.val))) :=
     isNoetherian_of_isNoetherianRing_of_finite ..
   suffices Function.Injective f from .of_injective f.toLinearMap this
   rw [injective_iff_map_eq_zero]
   intro a ha
   apply eq_zero_of_localization _ fun J hJ ↦ ?_
   let I := (PrimeSpectrum.primesOverOrderIsoFiber R S P).symm ⟨J, inferInstance⟩
-  have : ¬ (s : Set S) ⊆ I.1 := fun h ↦
+  have : ¬ (s : Set S) ⊆ I.val := fun h ↦
     Ideal.IsPrime.ne_top' (top_le_iff.mp (hs.symm.trans_le (Ideal.span_le.mpr h)))
   obtain ⟨r, hrs, hrI⟩ := Set.not_subset.mp this
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=

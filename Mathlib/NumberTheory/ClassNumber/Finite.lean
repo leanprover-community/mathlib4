@@ -6,12 +6,12 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Norm.Basic
+
+import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
@@ -78,7 +78,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [map_sum, map_smul, map_sum, map_smul,
     normBound, smul_mul_assoc, ← mul_pow]
-  convert! Matrix.det_sum_smul_le Finset.univ _ hy using 3
+  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -185,6 +185,7 @@ open Real
 
 attribute [-instance] Real.decidableEq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
@@ -234,7 +235,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     congr
     simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
-      smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   · exact mod_cast ε_le
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
@@ -277,13 +278,13 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   set M := ∏ m ∈ finsetApprox bS adm, m
   have hM : algebraMap R S M ≠ 0 := prod_finsetApprox_ne_zero bS adm
   obtain ⟨b, b_mem, b_ne_zero, b_min⟩ := exists_min abv I
-  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1 by
+  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.val by
     obtain ⟨J, hJ⟩ := this
     refine ⟨⟨J, ?_⟩, ?_, ?_⟩
     · rw [mem_nonZeroDivisors_iff_ne_zero]
       rintro rfl
       rw [Ideal.zero_eq_bot, Ideal.mul_bot] at hJ
-      exact hM (Ideal.span_singleton_eq_bot.mp (I.2.2 _ hJ))
+      exact hM (Ideal.span_singleton_eq_bot.mp (I.property.2 _ hJ))
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
@@ -299,8 +300,8 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' bS adm a b_ne_zero
   apply @dvd_of_mul_left_dvd _ _ q
   simp only [Algebra.smul_def] at lt
-  rw [←
-    sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]
+  rw [← sub_eq_zero.mp
+    (b_min _ (I.val.sub_mem (I.val.mul_mem_left _ ha) (I.val.mul_mem_left _ b_mem)) lt)]
   refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
@@ -310,7 +311,8 @@ By showing this function is surjective, we prove that the class group is finite.
 noncomputable def mkMMem [IsDedekindDomain S]
     (J : { J : Ideal S // algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
   ClassGroup.mk0
-    ⟨J.1, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.1 J.2)⟩
+    ⟨J.val, mem_nonZeroDivisors_iff_ne_zero.mpr
+      (ne_bot_of_prod_finsetApprox_mem bS adm J.val J.property)⟩
 
 theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by
@@ -326,7 +328,7 @@ algebraic extension `L` is finite if there is an admissible absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R S] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
@@ -348,7 +350,7 @@ absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfAlgebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfFinite [IsIntegralClosure S R L] :
     Fintype (ClassGroup S) := by
   letI := Classical.decEq L

@@ -5,11 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.NNReal.Basic
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Data.Real.ENatENNReal
 
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # Extended floor and ceil
@@ -26,7 +26,7 @@ This file defines the extended floor and ceil functions `ENat.floor, ENat.ceil :
 * `⌊r⌋ₑ` is `ENat.floor r`.
 * `⌈r⌉ₑ` is `ENat.ceil r`.
 
-The index `ₑ` is used in analogy to the notation for `enorm`.
+The index `ₑ` is used in analogy to the notation for `eNorm`.
 
 ## TODO
 

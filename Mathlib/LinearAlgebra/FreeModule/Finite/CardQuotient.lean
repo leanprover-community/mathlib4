@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 * `Submodule.natAbs_det_basis_change`: let `b` be a `ℤ`-basis for a module `M` over `ℤ` and
   let `bN` be a basis for a submodule `N` of the same dimension. Then the cardinal of `M ⧸ N`
   is given by taking the determinant of `bN` over `b`.
-
 -/
 
 public section
@@ -110,6 +109,7 @@ theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
   rw [relIndex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ b₂ : Basis ι ℚ E) (h₁ : L₁ = .closure (Set.range b₁)) (h₂ : L₂ = .closure (Set.range b₂)) :

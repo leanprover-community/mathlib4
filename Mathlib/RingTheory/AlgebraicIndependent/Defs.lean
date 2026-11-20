@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Algebraic Independence
@@ -35,7 +35,6 @@ We show that algebraic independence is preserved under injective maps of the ind
 ## References
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
-
 -/
 
 @[expose] public section
@@ -45,7 +44,7 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-variable {ι ι' : Type*} (R : Type*) {K A A' : Type*} (x : ι → A)
+variable {ι ι' : Type*} (R : Type*) {A A' : Type*} (x : ι → A)
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`

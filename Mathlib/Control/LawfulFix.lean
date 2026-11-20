@@ -5,9 +5,13 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Stream.Init
 public import Mathlib.Control.Fix
 public import Mathlib.Order.OmegaCompletePartialOrder
+
+import Mathlib.Data.Stream.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lawful fixed point operators
@@ -113,7 +117,7 @@ theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
 
 end Fix
 
-open Fix
+open Part.Fix
 
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)

@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous submodules of a graded module
@@ -37,7 +37,7 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-open SetLike DirectSum Pointwise Set
+open SetLike DirectSum Set
 
 variable {ιA ιM σA σM A M : Type*}
 
@@ -79,7 +79,7 @@ instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
     rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
     simpa using h
 
-instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ)
 
 instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
   zero_mem p := p.toSubmodule.zero_mem
@@ -104,8 +104,6 @@ instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) 
   coe p := p.toSubmodule
   coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
 
-instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
-
 @[ext]
 theorem HomogeneousSubmodule.ext
     {I J : HomogeneousSubmodule 𝒜 ℳ} (h : I.toSubmodule = J.toSubmodule) : I = J :=
@@ -120,7 +118,7 @@ theorem HomogeneousSubmodule.ext' {I J : HomogeneousSubmodule 𝒜 ℳ}
   ext
   rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
   apply forall_congr'
-  exact fun i ↦ h i _ (decompose ℳ _ i).2
+  exact fun i ↦ h i _ (decompose ℳ _ i).property
 
 @[simp]
 theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :

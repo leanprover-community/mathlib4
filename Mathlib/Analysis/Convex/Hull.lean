@@ -6,7 +6,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Order.Closure
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex hull
@@ -52,6 +54,7 @@ theorem subset_convexHull : s ⊆ convexHull 𝕜 s :=
 
 theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) := (convexHull 𝕜).isClosed_closure s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem convexHull_eq_iInter : convexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t := by
   simp [convexHull, iInter_subtype, iInter_and]
 
@@ -92,8 +95,7 @@ theorem convexHull_eq_empty : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr convexHull_eq_empty
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 

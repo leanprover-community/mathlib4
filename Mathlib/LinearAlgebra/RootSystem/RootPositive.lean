@@ -31,7 +31,6 @@ positive semi-definite on weight space and positive-definite on the span of root
 * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
 * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
   orthogonal.
-
 -/
 
 @[expose] public section
@@ -139,11 +138,13 @@ def posForm :
     · simpa
     · simpa)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma algebraMap_posForm {x y : span S (range P.root)} :
     algebraMap S R (B.posForm x y) = B.form x y := by
   change Algebra.linearMap S R _ = _
   simp [posForm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma algebraMap_apply_eq_form_iff {x y : span S (range P.root)} {s : S} :
     algebraMap S R s = B.form x y ↔ s = B.posForm x y := by
   simp [RootPositiveForm.posForm]

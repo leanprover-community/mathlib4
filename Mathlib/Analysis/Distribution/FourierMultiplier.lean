@@ -25,12 +25,11 @@ distributions. The multiplier function is throughout assumed to have temperate g
   derivative is equal to the Fourier multiplier with `inner ℝ . m`.
 * `TemperedDistribution.laplacian_eq_fourierMultiplierCLM`: the distributional Laplacian is equal to
   the Fourier multiplier with `‖·‖`.
-
 -/
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F : Type*}
 
 namespace SchwartzMap
 

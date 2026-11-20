@@ -6,14 +6,14 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.Algebra.Module.SnakeLemma
+
+import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
 # Base change along flat modules preserves equalizers
 
 We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
-
 -/
 
 @[expose] public section
@@ -109,6 +109,7 @@ def LinearMap.tensorKerInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (ker f).subtype
       (ker f).injective_subtype) (by simp [Module.Flat.ker_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
     (x : ker (AlgebraTensorModule.lTensor S M f)) :
@@ -127,6 +128,7 @@ def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (eqLocus f g).subtype
       (eqLocus f g).injective_subtype) (by simp [Module.Flat.eqLocus_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
@@ -137,7 +139,7 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
 def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
-  LinearEquiv.ofLinear (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
+  LinearEquiv.ofLinearMap (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
     (by ext x; simp)
     (by
       ext m x
@@ -162,7 +164,7 @@ def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
     M ⊗[R] eqLocus f g ≃ₗ[S]
       eqLocus (AlgebraTensorModule.lTensor S M f)
         (AlgebraTensorModule.lTensor S M g) :=
-  LinearEquiv.ofLinear (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
+  LinearEquiv.ofLinearMap (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
     (by ext; simp)
     (by
       ext m x
@@ -176,10 +178,14 @@ lemma LinearMap.tensorEqLocusEquiv_apply [Module.Flat R M] (x : M ⊗[R] LinearM
   rfl
 
 @[simp]
-lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M]
+lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
     (lTensor M (eqLocus f g).subtype) ((tensorEqLocusEquiv S M f g).symm x) = x :=
   lTensor_eqLocus_subtype_tensorEqLocusInv S M f g x
+
+@[deprecated (since := "2026-09-17")]
+alias LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm :=
+  LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm
 
 variable {M}
 
@@ -234,7 +240,7 @@ def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
 @[simp]
 lemma LinearMap.tensorKerEquivOfSurjective_symm_tmul [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] (a y) :
-    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
+    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).val = a ⊗ₜ y.val := rfl
 
 end Module
 
@@ -258,7 +264,6 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x := by
   induction x with
-  | zero => rfl
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
@@ -325,21 +330,18 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with
-        | zero => simp only [smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
         | tmul x y =>
         induction x with
-        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
         | tmul x z =>
         induction r' with
-        | zero => simp only [zero_smul, LinearEquiv.map_zero]
         | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
         | tmul r s =>
         rw [smul_tmul']
         ext1
         dsimp [e₄', ePp, φ]
-        change ((r * x) ⊗ₜ[R] ((s * z) * y.1)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.1))
+        change ((r * x) ⊗ₜ[R] ((s * z) * y.val)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.val))
         rw [Algebra.TensorProduct.tmul_mul_tmul, mul_assoc] }
   exact e₄.symm
 
@@ -347,8 +349,8 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma Algebra.kerTensorProductMapIdToAlgHomEquiv_symm_apply [Module.Flat R T]
     (h₁ : Function.Surjective (algebraMap S T)) (x y z) :
-    ((kerTensorProductMapIdToAlgHomEquiv R S T A h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).1 =
-      x ⊗ₜ (y * z.1) := rfl
+    ((kerTensorProductMapIdToAlgHomEquiv R S T A h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).val =
+      x ⊗ₜ (y * z.val) := rfl
 
 end Algebra
 

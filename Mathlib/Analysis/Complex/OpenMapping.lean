@@ -5,12 +5,11 @@ Authors: Vincent Beffara
 -/
 module
 
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -93,7 +92,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   have h2 : ∀ᶠ z in 𝓝 z₀, AnalyticAt ℂ f z := (isOpen_analyticAt ℂ f).eventually_mem hf
   obtain ⟨ρ, hρ, h3, h4⟩ :
     ∃ ρ > 0, AnalyticOnNhd ℂ f (closedBall z₀ ρ) ∧ ∀ z ∈ closedBall z₀ ρ, z ≠ z₀ → f z ≠ f z₀ := by
-    simpa only [setOf_and, subset_inter_iff] using!
+    simpa only [ofPred_and, subset_inter_iff] using!
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
   replace h3 : DiffContOnCl ℂ f (ball z₀ ρ) :=
     ⟨h3.differentiableOn.mono ball_subset_closedBall,
@@ -257,16 +256,18 @@ theorem isOpenQuotientMap_pow (n : ℕ) [NeZero n] : IsOpenQuotientMap (· ^ n :
 
 theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
     IsOpenQuotientMap
-      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) where
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.property⟩ : {z : ℂ // z ≠ 0}) where
   surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
-    ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
+    ⟨⟨w, by rintro rfl; exact z.property (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩,
+      Subtype.ext h⟩
   continuous := by fun_prop
-  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr <|
-    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.1.isOpenMap_subtype_val
+  isOpenMap :=
+    (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
+      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtypeVal
 
 theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
     IsOpenQuotientMap
-      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) := by
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.property⟩ : {z : ℂ // z ≠ 0}) := by
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
   · have : NeZero n := ⟨Nat.cast_ne_zero.mp (NeZero.ne (n : ℤ))⟩
     exact isOpenQuotientMap_pow_compl_zero n

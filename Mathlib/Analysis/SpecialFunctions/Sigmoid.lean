@@ -5,12 +5,13 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Sigmoid function
@@ -123,11 +124,13 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
-    by norm_num
+    by simp
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
   tendsto_const_nhds.add_atTop (tendsto_exp_comp_atTop.mpr tendsto_neg_atBot_atTop)
@@ -258,7 +261,9 @@ lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   ext
   simp
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) :=
   tendsto_subtype_rng.mpr Real.tendsto_sigmoid_atTop
@@ -278,7 +283,7 @@ noncomputable def OrderEmbedding.sigmoid : ℝ ↪o I :=
 
 lemma Topology.isEmbedding_sigmoid : IsEmbedding unitInterval.sigmoid :=
   OrderEmbedding.sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
-    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.2.1 b.2.2)
+    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.property.1 b.property.2)
 
 lemma measurableEmbedding_sigmoid : MeasurableEmbedding unitInterval.sigmoid :=
   Topology.isEmbedding_sigmoid.measurableEmbedding <| unitInterval.range_sigmoid ▸ measurableSet_Ioo

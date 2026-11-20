@@ -35,12 +35,12 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
+    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
@@ -48,7 +48,7 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
@@ -65,22 +65,22 @@ lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
 
 @[simp]
-theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.val r) = ball a r :=
   rfl
 
 @[simp]
 theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+    Subtype.val ⁻¹' (closedBall a.val r) = closedBall a r :=
   rfl
 
 @[simp]
 theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+    Subtype.val '' (ball a r) = ball a.val r ∩ {a | p a} := by
   rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
 
 @[simp]
 theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
-    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+    Subtype.val '' (closedBall a r) = closedBall a.val r ∩ {a | p a} := by
   rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
 
 end Subtype

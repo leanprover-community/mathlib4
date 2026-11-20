@@ -6,7 +6,6 @@ Authors: Tanner Duve, Elan Roth
 module
 
 public import Mathlib.Computability.RecursiveIn
-public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Turing degrees
@@ -27,10 +26,8 @@ equivalence relation, and defines Turing degrees as the quotient under this rela
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 
 ## References
-
-* [Odifreddi1989] Odifreddi, Piergiorgio.
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
-  Vol. I*. Springer-Verlag, 1989.
+* [Odifreddi, Piergiorgio, *Classical Recursion Theory: The Theory of Functions and Sets of
+  Natural Numbers*][odifreddi1989]
 
 ## Tags
 
@@ -38,8 +35,6 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
 public section
-
-open Primrec
 
 variable {f g h : ℕ →. ℕ}
 

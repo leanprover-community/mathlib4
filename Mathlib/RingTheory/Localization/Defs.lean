@@ -5,13 +5,11 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Data.Fintype.Prod
+public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.OreLocalization.Ring
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.Ring
 
 /-!
@@ -151,7 +149,7 @@ abbrev toLocalizationMap : M.LocalizationMap S where
 
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
-    (toLocalizationMap M S).toMonoidHom = (.ofClass (algebraMap R S) : R →*₀ S) := rfl
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
 
@@ -172,28 +170,22 @@ theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRe
 
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
-  map_units r := h₂ r r.2
+  map_units r := h₂ r r.property
   surj s :=
     have ⟨⟨x, y, hy⟩, H⟩ := IsLocalization.surj M s
     ⟨⟨x, y, h₁ hy⟩, H⟩
   exists_of_eq {x y} := by
     rw [IsLocalization.eq_iff_exists M]
     rintro ⟨c, hc⟩
-    exact ⟨⟨c, h₁ c.2⟩, hc⟩
+    exact ⟨⟨c, h₁ c.property⟩, hc⟩
 
 theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
     IsLocalization N S :=
   of_le M N h₁ fun n hn ↦ have ⟨m, hm, dvd⟩ := h₂ n hn
     isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
 
-theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m := by
-  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)⟩
-  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
-  have ⟨⟨r, m⟩, hrm⟩ := surj M s
-  apply_fun (algebraMap R S x * ·) at hrm
-  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrm
-  have ⟨m', eq⟩ := (eq_iff_exists M S).mp hrm
-  exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
+theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m :=
+  (toLocalizationMap M S).map_isUnit_iff
 
 end
 
@@ -313,7 +305,7 @@ theorem exists_mk'_eq (z : S) : ∃ (x : R) (y : M), mk' S x y = z :=
 
 variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
   .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| mk'_surjective M
@@ -321,7 +313,7 @@ noncomputable def fintype' [Fintype R] : Fintype S :=
 variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
   uniqueOfZeroEqOne <| by simpa using IsLocalization.map_units S ⟨0, h⟩
 
@@ -352,7 +344,7 @@ theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y �
 regular iff `r : R` is. -/
 @[simp] lemma isRegular_mk' (hM : ∀ m ∈ M, IsRegular m) {r : R} {m : M} :
     IsRegular (IsLocalization.mk' S r m) ↔ IsRegular r := by
-  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).1.eq_iff
+  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.property).left.eq_iff
   simp +contextual only [← isLeftRegular_iff_isRegular, IsLeftRegular, Function.Injective,
     (mk'_surjective M).forall, ← mk'_mul, Prod.forall, Subtype.forall, IsLocalization.eq,
     Submonoid.coe_mul, this, exists_const, mul_assoc]
@@ -399,7 +391,7 @@ theorem mk'_self {x : R} (hx : x ∈ M) : mk' S x ⟨x, hx⟩ = 1 :=
 theorem mk'_self' {x : M} : mk' S (x : R) x = 1 :=
   (toLocalizationMap M S).mk'_self' _
 
-theorem mk'_self'' {x : M} : mk' S x.1 x = 1 :=
+theorem mk'_self'' {x : M} : mk' S x.val x = 1 :=
   mk'_self' _
 
 end Ext
@@ -469,13 +461,14 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
         simp only [map_add, Submonoid.coe_mul, map_mul]
         ring)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
-    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
+    w * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y)⁻¹ + z₁ =
     z₂ ↔ w + g y * z₁ = g y * z₂ := by
-  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.restrict M) h y),
+  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y),
     mul_assoc, ← mul_add, Units.inv_mul_eq_iff_eq_mul, Units.inv_mul_cancel_left,
     IsUnit.coe_liftRight]
-  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.restrict_apply]
+  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.domRestrict_apply]
 
 theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w' v) :
     ((toLocalizationMap M S).lift hg) z * w + w' = v ↔
@@ -485,7 +478,6 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     mul_comm]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
@@ -511,7 +503,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 `g : R →* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` maps `f x * (f y)⁻¹` to `g x * (g y)⁻¹` for all `x : R, y ∈ M`. -/
 theorem lift_mk' (x y) :
-    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) hg y)⁻¹ :=
+    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) hg y)⁻¹ :=
   (toLocalizationMap M S).lift_mk' _ _ _
 
 theorem lift_mk'_spec (x v) (y : M) : lift hg (mk' S x y) = v ↔ g x = g y * v :=
@@ -548,7 +540,7 @@ theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
 theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
     (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
-  RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
+  RingHom.toMonoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 
 /-- To show `j` and `k` agree on the whole localization, it suffices to show they agree
 on the image of the base ring, if they preserve `1` and `*`. -/
@@ -607,7 +599,7 @@ such that `g(M) ⊆ T`.
 We send `z : S` to `algebraMap P Q (g x) * (algebraMap P Q (g y))⁻¹`, where
 `(x, y) : R × M` are such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
-  lift (M := M) (g := (algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.2⟩
+  lift (M := M) (g := (algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.property⟩
 
 end
 
@@ -617,19 +609,19 @@ include hy
 
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
-  lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
+  lift_eq (fun y => map_units _ ⟨g y, hy y.property⟩) x
 
 @[simp]
 theorem map_comp : (map Q g hy).comp (algebraMap R S) = (algebraMap P Q).comp g :=
-  lift_comp fun y => map_units _ ⟨g y, hy y.2⟩
+  lift_comp fun y => map_units _ ⟨g y, hy y.property⟩
 
-theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.2⟩ :=
+theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.property⟩ :=
   Submonoid.LocalizationMap.map_mk' (toLocalizationMap M S) (g := g.toMonoidHom)
-    (fun y => hy y.2) (k := toLocalizationMap T Q) ..
+    (fun y => hy y.property) (k := toLocalizationMap T Q) ..
 
 theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algebraMap P Q (g x)) :
     map Q g hy = j :=
-  lift_unique (fun y => map_units _ ⟨g y, hy y.2⟩) hj
+  lift_unique (fun y => map_units _ ⟨g y, hy y.property⟩) hj
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
@@ -637,8 +629,8 @@ theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSem
     [Algebra A W] [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) :
     (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx => hl (hy hx) :=
   RingHom.ext fun x =>
-    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y => hy y.2)
-      (toLocalizationMap U W) (fun w => hl w.2) x
+    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y => hy y.property)
+      (toLocalizationMap U W) (fun w => hl w.property) x
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
@@ -666,6 +658,7 @@ section
 
 variable (S Q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M, T` respectively, an
 isomorphism `j : R ≃+* P` such that `j(M) = T` induces an isomorphism of localizations
 `S ≃+* Q`. -/
@@ -699,7 +692,7 @@ theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x
 
 theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x : R) (y : M) :
     ringEquivOfRingEquiv S Q j H (mk' S x y) =
-      mk' Q (j x) ⟨j y, show j y ∈ T from H ▸ Set.mem_image_of_mem j y.2⟩ := by
+      mk' Q (j x) ⟨j y, show j y ∈ T from H ▸ Set.mem_image_of_mem j y.property⟩ := by
   simp [map_mk']
 
 @[simp]
@@ -736,17 +729,17 @@ variable (M)
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
     IsLocalization (M.map h) S := by
-  letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+  let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor; constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert! IsLocalization.map_units S ⟨y, hy⟩
+    convert IsLocalization.map_units S ⟨y, hy⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply]
     exact congr_arg _ (h.symm_apply_apply _)
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
     refine ⟨⟨h x, _, _, s.prop, rfl⟩, ?_⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
-    convert! e <;> exact h.symm_apply_apply _
+    convert e <;> exact h.symm_apply_apply _
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
       IsLocalization.eq_iff_exists M S]
@@ -756,10 +749,10 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h) S := by
-  letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+  let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
   intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
-  convert! isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
+  convert isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
   · rw [← Submonoid.map_coe_toMulEquiv, RingEquiv.coe_toMulEquiv_symm, ←
       Submonoid.comap_equiv_eq_map_symm, Submonoid.comap_map_eq_of_injective]
     exact h.toEquiv.injective
@@ -774,7 +767,7 @@ theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring
     (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
   rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
-  convert! (inferInstance : IsLocalization M₁ K)
+  convert (inferInstance : IsLocalization M₁ K)
   exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end
@@ -870,7 +863,7 @@ variable [IsLocalization M S]
 theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
   constructor <;> intro h
   · obtain ⟨c, hc⟩ := (map_eq_zero_iff M _ _).mp h
-    exact (hM c.2).1 x hc
+    exact (hM c.property).1 x hc
   · rw [h, map_zero]
 
 protected theorem injectiveₛ (hM : ∀ m ∈ M, IsRegular m) : Injective (algebraMap R S) :=
@@ -908,7 +901,7 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S]
 
 namespace Localization
 

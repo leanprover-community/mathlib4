@@ -102,7 +102,7 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   have hst (x : α) : x ∈ fs \ ft ↔ x ∈ s \ t := by simp [hs, ht]
   have hts (x : α) : x ∈ ft \ fs ↔ x ∈ t \ s := by simp [hs, ht]
   have hc : fs.card = ft.card := by
-    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert! h
+    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert h
   replace hc := Finset.card_sdiff_comm hc
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
@@ -122,8 +122,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   have h := setDiffEquiv (Fintype.card_congr e)
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
-  let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
-  let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let epc := (Set.equivOfEq hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let eqc := (Set.equivOfEq hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
@@ -141,17 +141,15 @@ theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx :
 
 theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) :=
-  (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).2
+  (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).property
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
-  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply,
-    sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
-  rfl
+  simp [extendSubtype, subtypeCongr, hx]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) :=
-  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).2
+  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).property
 
 /-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
 there exists a permutation of `β` that maps `f` to `g`. -/
@@ -167,12 +165,11 @@ theorem Perm.exists_extending_pair [Finite α]
 theorem Perm.exists_map_finset_eq
     (s t : Finset β) (h : s.card = t.card) :
     ∃ σ : Perm β, s.map σ.toEmbedding = t := by
-  classical
   obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
     (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)
   refine ⟨σ, Finset.eq_of_subset_of_card_le (fun b hb => ?_) (by simp [h])⟩
   obtain ⟨a, ha, rfl⟩ := Finset.mem_map.mp hb
-  exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).2
+  exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).property
 
 end Equiv

@@ -3,12 +3,14 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.WLOG
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.WLOG
 
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
@@ -22,6 +24,8 @@ In this file we formalise constant descent Vieta jumping,
 and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
+
+public section
 
 attribute [local simp] sq
 
@@ -92,7 +96,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- Our assumptions ensure that we can then prove the claim.
   suffices exc : exceptional.Nonempty by
     -- Suppose that there exists an element in the exceptional locus.
-    simp only [Set.Nonempty, Prod.exists, Set.mem_setOf_eq, exceptional] at exc
+    simp only [Set.Nonempty, Prod.exists, Set.mem_ofPred_eq, exceptional] at exc
     -- Let (a,b) be such an element, and consider all the possible cases.
     rcases exc with ⟨a, b, hH, hb⟩
     rcases hb with (_ | rfl | rfl | hB | hB)
@@ -115,8 +119,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       solve_by_elim
   -- To finish the main proof, we need to show that the exceptional locus is nonempty.
   -- So we assume that the exceptional locus is empty, and work towards deriving a contradiction.
-  rw [Set.nonempty_iff_ne_empty]
-  intro exceptional_empty
+  by_contra! exceptional_empty
   -- Observe that S is nonempty.
   have S_nonempty : S.Nonempty := by
     -- It contains the image of p.
@@ -126,9 +129,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     rwa [exceptional_empty, Set.sdiff_empty]
   -- We are now set for an infinite descent argument.
   -- Let m be the smallest element of the nonempty set S.
-  let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
-  have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S hk
+  obtain ⟨m, m_mem, m_min⟩ := Nat.lt_wfRel.wf.has_min S S_nonempty
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim
@@ -138,7 +139,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- This means that m_y = m,
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
-  simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
+  simp only [exceptional, hHm, Set.mem_ofPred_eq, true_and] at h_base
   push Not at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.

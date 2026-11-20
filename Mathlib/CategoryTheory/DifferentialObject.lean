@@ -5,10 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Int.Cast.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Differential objects in a category.
@@ -161,7 +163,6 @@ universe v' u'
 variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
@@ -223,15 +224,17 @@ The type of `C`-morphisms that can be lifted back to morphisms in the category `
 abbrev HomSubtype (X Y : DifferentialObject S C) :=
   { f : FC X.obj Y.obj // X.d ≫ (ConcreteCategory.ofHom f)⟦1⟧' = (ConcreteCategory.ofHom f) ≫ Y.d }
 
+@[macro_inline]
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
-  coe f := f.1
+  coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where
-  hom f := ⟨ConcreteCategory.hom (C := C) f.1, by simp [ConcreteCategory.ofHom_hom]⟩
-  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by simpa [ConcreteCategory.hom_ofHom] using f.2⟩
+  hom f := ⟨ConcreteCategory.hom (C := C) f.f, by simp [ConcreteCategory.ofHom_hom]⟩
+  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by
+    simpa [ConcreteCategory.hom_ofHom] using f.property⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)
@@ -254,7 +257,6 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where
@@ -276,7 +278,6 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -294,8 +295,8 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by

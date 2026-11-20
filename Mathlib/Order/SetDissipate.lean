@@ -6,14 +6,13 @@ Authors: Peter Pfaffelhuber
 
 module
 
-public import Mathlib.Order.SetAccumulate
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Dissipate
 
 The function `dissipate` takes `s : α → Set β` with `LE α` and returns `⋂ y ≤ x, s y`.
 It is related to `accumulate s := ⋃ y ≤ x, s y`.
-
 -/
 
 @[expose] public section
@@ -36,14 +35,14 @@ theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ dissipate s x ↔ ∀ y 
   simp [dissipate_def]
 
 theorem dissipate_subset [LE α] {x y : α} (hy : y ≤ x) : dissipate s x ⊆ s y :=
-  biInter_subset_of_mem hy
+  fun _ hz ↦ mem_dissipate.1 hz y hy
 
 theorem iInter_subset_dissipate [LE α] (x : α) : ⋂ i, s i ⊆ dissipate s x := by
   simp only [dissipate, subset_iInter_iff]
   exact fun x h ↦ iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
 
 theorem antitone_dissipate [Preorder α] : Antitone (dissipate s) :=
-  fun _ _ hab ↦ biInter_subset_biInter_left fun _ hz => le_trans hz hab
+  fun _ _ hab _ hz ↦ mem_dissipate.2 fun y hy ↦ mem_dissipate.1 hz y (hy.trans hab)
 
 @[gcongr]
 theorem dissipate_subset_dissipate [Preorder α] {x y} (h : y ≤ x) :
@@ -74,8 +73,6 @@ lemma dissipate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : dissip
 lemma dissipate_zero_nat (s : ℕ → Set β) : dissipate s 0 = s 0 := by
   simp [dissipate_def]
 
-open Nat
-
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
   dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1) := by
@@ -99,7 +96,7 @@ lemma directed_dissipate {s : ℕ → Set α} : Directed (· ⊇ ·) (dissipate 
 
 lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Directed (· ⊇ ·) s) :
     (∃ n, dissipate s n = ∅) ↔ ∃ n, s n = ∅ := by
-  refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩⟩
+  refine ⟨?_, by gcongr; exact dissipate_subset le_rfl⟩
   contrapose!
   intro h n
   obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n

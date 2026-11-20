@@ -21,7 +21,7 @@ representation `X` of `G`, a topological representation `Y` of `H`, and a morphi
 * `ContinuousCohomology.cochainsResMap φ f` : the cochain map
   `homogeneousCochains X ⟶ homogeneousCochains Y` induced by `φ : H →ₜ* G` and
   `f : res φ X ⟶ Y`, sending an invariant function `σ : C(G, C(G, ⋯))` to `f ∘ σ ∘ φ`.
-* `ContinuousCohomology.ResMap φ f n` : the induced map `Hⁿ(G, X) ⟶ Hⁿ(H, Y)` on continuous
+* `ContinuousCohomology.resMap φ f n` : the induced map `Hⁿ(G, X) ⟶ Hⁿ(H, Y)` on continuous
   cohomology.
 -/
 
@@ -81,7 +81,8 @@ variable (k G)
 `TopRep k G ⥤ CochainComplex (TopRep k G) ℕ`, acting on morphisms by `resolutionMap`.
 The shifting removes the initial term `X` from the resolution of `X`, so that the zeroth term
 is `C(G,X)`. -/
-@[simps] abbrev resolution'Functor : TopRep k G ⥤ CochainComplex (TopRep k G) ℕ where
+@[simps obj map_f, implicit_reducible]
+def resolution'Functor : TopRep k G ⥤ CochainComplex (TopRep k G) ℕ where
   obj           := resolution'
   map {X Y} f   := {
     f n   := resolutionMap f (n + 1)
@@ -116,7 +117,7 @@ variable (X) in
 of the restriction of `X` induced by a continuous group homomorphism `φ : H →ₜ* G`.
 This morphism is given by `F ↦ F ∘ φ`. -/
 abbrev _root_.TopRep.resolutionXRes (φ : H →ₜ* G) :
-    (i : ℕ) → (res φ (resolutionX X i)) ⟶ (resolutionX (res φ.toMonoidHom X) i)
+    (i : ℕ) → (res φ (resolutionX X i)) ⟶ (resolutionX (res (φ : H →* G) X) i)
   | 0 => 𝟙 _
   | i + 1 => ofHom (coind₁ResMap φ (resolutionXRes φ i).hom)
 
@@ -136,14 +137,14 @@ lemma resolutionXRes_id (X : TopRep k G) (i : ℕ) :
 
 lemma resolutionXRes_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (i : ℕ) :
     resolutionXRes X (φ.comp ψ) i =
-      (resFunctor ψ.toMonoidHom).map (resolutionXRes X φ i) ≫ resolutionXRes _ ψ i := by
+      (resFunctor (ψ : K →* H)).map (resolutionXRes X φ i) ≫ resolutionXRes _ ψ i := by
   induction i with
   | zero => rfl
   | succ i ih =>
     rw [resolutionXRes_succ, resolutionXRes_succ, resolutionXRes_succ, ih]
     ext; rfl
 
-/-- The maps `resolutionResMap φ f` commute with the differentials of the resolutions. -/
+/-- The maps `resolutionXRes X φ` commute with the differentials of the resolutions. -/
 lemma resolutionXRes_comp_d (φ : H →ₜ* G) (i : ℕ) :
     resolutionXRes X φ i ≫ d _ i =
       (resFunctor (φ : H →* G)).map (d X i) ≫ resolutionXRes X φ (i + 1) := by
@@ -161,7 +162,7 @@ lemma resolutionXRes_comp_d (φ : H →ₜ* G) (i : ℕ) :
 /-- The maps `resolutionXRes X φ` are natural in `X`. -/
 lemma resolutionXRes_naturality (φ : H →ₜ* G) (f : X ⟶ X') (i : ℕ) :
     (resFunctor (φ : H →* G)).map (resolutionMap f i) ≫ resolutionXRes X' φ i =
-      resolutionXRes X φ i ≫ resolutionMap ((resFunctor φ.toMonoidHom).map f) i := by
+      resolutionXRes X φ i ≫ resolutionMap ((resFunctor (φ : H →* G)).map f) i := by
   induction i with
   | zero => rfl
   | succ i ih =>
@@ -172,13 +173,12 @@ lemma resolutionXRes_naturality (φ : H →ₜ* G) (f : X ⟶ X') (i : ℕ) :
 /-- The cochain map from the restriction along `φ : H →ₜ* G` of the shifted standard resolution
 of `X` to the shifted standard resolution of `res φ X`, with levels `resolutionXRes X φ`. -/
 abbrev resolution'Res (φ : H →ₜ* G) :
-    ((resFunctor φ.toMonoidHom).mapHomologicalComplex (.up ℕ)).obj (resolution' X)
-    ⟶ resolution' (res φ.toMonoidHom X) where
+    ((resFunctor (φ : H →* G)).mapHomologicalComplex (.up ℕ)).obj (resolution' X)
+    ⟶ resolution' (res (φ : H →* G) X) where
   f n := resolutionXRes X φ (n + 1)
   comm' := by
     intro _ _ rfl
-    simp only [mapHomologicalComplex_obj_d, ContinuousMonoidHom.coe_toMonoidHom,
-      CochainComplex.of_d, resolution'd_eq]
+    simp only [mapHomologicalComplex_obj_d, CochainComplex.of_d, resolution'd_eq]
     exact resolutionXRes_comp_d φ _
 
 /-- The cochain maps `resolution'Res φ` as a natural transformation. -/
@@ -190,48 +190,50 @@ def resolution'ResNatTrans (φ : H →ₜ* G) :
     ext n : 1
     exact resolutionXRes_naturality φ f (n + 1)
 
+lemma resolution'ResNatTrans_app_f (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
+    ((resolution'ResNatTrans φ).app X).f n = resolutionXRes X φ (n + 1) := rfl
+
 /-- The restriction map between the `n`-th levels of the homogeneous cochain complexes of `X`
 and `res φ X`, sending an invariant function `σ` to `σ ∘ φ`. -/
 def homogeneousCochainsXRes (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
-    X.homogeneousCochains.X n ⟶ (X.res φ.toMonoidHom).homogeneousCochains.X n :=
-  (X.resolutionX _).invariantsRes φ.toMonoidHom
-  ≫ (invariantsFunctor k H).map (resolutionXRes X φ _)
+    X.homogeneousCochains.X n ⟶ (X.res (φ : H →* G)).homogeneousCochains.X n :=
+  (X.resolutionX _).invariantsRes (φ : H →* G) ≫ (invariantsFunctor k H).map (resolutionXRes X φ _)
 
 lemma homogeneousCochainsXRes_zero (φ : H →ₜ* G) (X : TopRep k G) :
     homogeneousCochainsXRes φ X 0 =
     X.coind₁.invariantsRes φ ≫ (invariantsFunctor k H).map (ofHom (coind₁ResMap φ .id)) := rfl
 
 lemma homogeneousCochainsXRes_succ (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
-    homogeneousCochainsXRes φ X (n + 1) =
-    (X.resolution'X n).coind₁.invariantsRes φ ≫ (invariantsFunctor k H).map
-    (ofHom (coind₁ResMap φ (X.resolutionXRes φ (n + 1)).hom)) := rfl
+    homogeneousCochainsXRes φ X (n + 1) = (X.resolution'X n).coind₁.invariantsRes φ ≫
+      (invariantsFunctor k H).map (ofHom (coind₁ResMap φ (X.resolutionXRes φ (n + 1)).hom)) := rfl
 
 variable (k) in
 /-- The natural transformation on homogeneous cochain complexes induced by restriction along a
 continuous group homomorphism `φ : H →ₜ* G`, with levels `homogeneousCochainsXRes φ`. -/
 def homogeneousCochainsResNatTrans (φ : H →ₜ* G) : homogeneousCochainsFunctor k G
-    ⟶ (resFunctor φ.toMonoidHom) ⋙ homogeneousCochainsFunctor k H :=
+    ⟶ (resFunctor (φ : H →* G)) ⋙ homogeneousCochainsFunctor k H :=
   (𝟙 (resolution'Functor k G)
-    ◫ ((invariantsResNatTrans φ.toMonoidHom (k := k)).mapHomologicalComplex _
+    ◫ ((invariantsResNatTrans (φ : H →* G) (k := k)).mapHomologicalComplex _
     ≫ (mapHomologicalComplexCompIso (.refl _) _).inv))
   ≫ (associator _ _ _).inv
   ≫ (resolution'ResNatTrans φ ◫ (𝟙 _))
   ≫ (associator _ _ _).hom
 
 lemma homogeneousCochainsResNatTrans_app_f (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
-    ((homogeneousCochainsResNatTrans k φ).app X).f n = homogeneousCochainsXRes φ X n := rfl
+    ((homogeneousCochainsResNatTrans k φ).app X).f n = homogeneousCochainsXRes φ X n := by
+  simp [homogeneousCochainsResNatTrans, homogeneousCochainsXRes, resolution'ResNatTrans_app_f]
 
 variable (k) in
 /-- The restriction natural transformation `Hⁿ(G, -) ⟶ resFunctor φ ⋙ Hⁿ(H, -)` on continuous
 cohomology induced by a continuous group homomorphism `φ : H →ₜ* G`. -/
 noncomputable abbrev resNatTrans (φ : H →ₜ* G) (n : ℕ) :
-    HₜFunct k G n ⟶ resFunctor φ.toMonoidHom ⋙ HₜFunct k H n :=
+    HₜFunct k G n ⟶ resFunctor (φ : H →* G) ⋙ HₜFunct k H n :=
   homogeneousCochainsResNatTrans k φ ◫ 𝟙 _
 
 lemma resNatTrans_app (φ : H →ₜ* G) (n : ℕ) (X : TopRep k G) :
     (resNatTrans k φ n).app X =
       HomologicalComplex.homologyMap ((homogeneousCochainsResNatTrans k φ).app X) n := by
-  simp only [resNatTrans, NatTrans.hcomp_id_app, HomologicalComplex.homologyFunctor_map]
+  rw [resNatTrans, hcomp_id, whiskerRight_app, HomologicalComplex.homologyFunctor_map]
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
@@ -251,6 +253,7 @@ lemma resolutionResMap_zero (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
 lemma resolutionResMap_succ (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
     resolutionResMap φ f (i + 1) = ofHom (coind₁ResMap φ (resolutionResMap φ f i).hom) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma resolutionResMap_id (X : TopRep k G) (i : ℕ) :
     resolutionResMap (ContinuousMonoidHom.id G) (𝟙 X) i = 𝟙 (resolutionX X i) := by
@@ -300,6 +303,11 @@ def cochainsResMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     rw [homogeneousCochains.d_eq, homogeneousCochains.d_eq, ← invariantsResMap_comp,
       resolutionResMap_comp_d, invariantsResMap_map_comp]
 
+@[deprecated (since := "2026-07-27")] alias cochainsMap := cochainsResMap
+@[deprecated (since := "2026-07-27")] alias cochainsMap_f := cochainsResMap_f
+@[deprecated (since := "2026-07-27")] alias cochainsMap_f_hom := cochainsResMap_f_hom
+
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma cochainsResMap_id (X : TopRep k G) :
     cochainsResMap (ContinuousMonoidHom.id G) (𝟙 X) = 𝟙 (homogeneousCochains X) := by
@@ -308,12 +316,17 @@ lemma cochainsResMap_id (X : TopRep k G) :
   ext v
   rfl
 
+@[deprecated (since := "2026-07-27")] alias cochainsMap_id := cochainsResMap_id
+
 @[reassoc]
 lemma cochainsResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y) (g : res ψ Y ⟶ Z) :
     cochainsResMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsResMap φ f ≫ cochainsResMap ψ g := by
   ext i v x
-  exact congr($(resolutionResMap_comp φ ψ f g (i + 1)).hom v.1 x)
+  congrm($(resolutionResMap_comp φ ψ f g (i + 1)).hom v x)
+
+@[deprecated (since := "2026-07-27")] alias cochainsMap_comp := cochainsResMap_comp
+@[deprecated (since := "2026-07-27")] alias cochainsMap_comp_assoc := cochainsResMap_comp_assoc
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/
@@ -337,7 +350,7 @@ lemma cocyclesResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X �
 homomorphism `φ : H →ₜ* G` and a morphism of topological `H`-representations
 `f : res φ X ⟶ Y`.
 The name refers to the fact that this map is the composition of the restriction map
-`resNatTrans k φ` and `(HₜFunct k G n).map f`. -/
+`resNatTrans k φ` and `H.map f`. -/
 -- TODO : bring the names of the analogous maps for `groupCohomology` in line with this.
 noncomputable abbrev resMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     continuousCohomology n X ⟶ continuousCohomology n Y :=
@@ -362,7 +375,7 @@ lemma resMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y) (g 
 /-!
 ### Relation to the functorial constructions
 
-The maps `resolutionResMap`, `cochainsResMap` and `ResMap` combine restriction along `φ : H →ₜ* G`
+The maps `resolutionResMap`, `cochainsResMap` and `resMap` combine restriction along `φ : H →ₜ* G`
 with functoriality in the coefficient representation. The following lemmas express them in terms of
 the two constructions they combine: `resolutionXRes`, `homogeneousCochainsResNatTrans` and
 `resNatTrans` (pure restriction), and `resolutionMap` and the functors
@@ -378,16 +391,16 @@ lemma resolutionResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
   | zero => rfl
   | succ i ih =>
     rw [resolutionResMap_succ, resolutionXRes_succ, resolutionMap_succ, ih]
-    ext F x
     rfl
 
 /-- `resolutionXRes` is the special case of `resolutionResMap` where the coefficient map is the
 identity. -/
 lemma resolutionResMap_id_snd (φ : H →ₜ* G) (i : ℕ) :
-    resolutionResMap φ (𝟙 (res φ.toMonoidHom X)) i = resolutionXRes X φ i := by
+    resolutionResMap φ (𝟙 (res (φ : H →* G) X)) i = resolutionXRes X φ i := by
   induction i with
   | zero => rfl
-  | succ i ih => rw [resolutionResMap_succ, resolutionXRes_succ, ih]
+  | succ i ih =>
+    rw [resolutionResMap_succ, resolutionXRes_succ, ih]
 
 /-- `resolutionMap` is the special case of `resolutionResMap` along the identity of `G`. -/
 lemma resolutionResMap_id_fst (f : X ⟶ X') (i : ℕ) :
@@ -395,9 +408,8 @@ lemma resolutionResMap_id_fst (f : X ⟶ X') (i : ℕ) :
   induction i with
   | zero => rfl
   | succ i ih =>
-    rw [resolutionResMap_succ, resolutionMap_succ, ih]
-    ext F x
-    rfl
+    rw [resolutionResMap_succ (ContinuousMonoidHom.id G) f, resolutionMap_succ, ih]
+    congrm(ofHom $(ContIntertwiningMap.comp_id _))
 
 /-- `cochainsResMap φ f` is the component of the restriction natural transformation on homogeneous
 cochains followed by the functorial map on homogeneous cochains. -/
@@ -406,7 +418,8 @@ lemma cochainsResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     cochainsResMap φ f = (homogeneousCochainsResNatTrans k φ).app X ≫
       (homogeneousCochainsFunctor k H).map f := by
   ext i v x
-  exact congr($(resolutionResMap_eq φ f (i + 1)).hom v.1 x)
+  simpa [homogeneousCochainsResNatTrans_app_f]
+    using! congr($(resolutionResMap_eq φ f (i + 1)).hom v x)
 
 /-- The levelwise form of `cochainsResMap_eq`: the restriction part expressed via
 `homogeneousCochainsXRes` and the coefficient part via `resolutionMap`. -/
@@ -414,44 +427,54 @@ lemma cochainsResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
 lemma cochainsResMap_f_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     (cochainsResMap φ f).f n = homogeneousCochainsXRes φ X n ≫
       (invariantsFunctor k H).map (resolutionMap f (n + 1)) := by
-  rw [cochainsResMap_eq]
-  rfl
+  rw [cochainsResMap_eq, HomologicalComplex.comp_f, homogeneousCochainsResNatTrans_app_f]
+  simp
 
 /-- The component of the restriction natural transformation on homogeneous cochains is the
 special case of `cochainsResMap` where the coefficient map is the identity. -/
 lemma cochainsResMap_id_right (φ : H →ₜ* G) :
-    cochainsResMap φ (𝟙 (res φ.toMonoidHom X)) = (homogeneousCochainsResNatTrans k φ).app X := by
+    cochainsResMap φ (𝟙 (res (φ : H →* G) X)) = (homogeneousCochainsResNatTrans k φ).app X := by
   ext i v x
-  exact congr($(resolutionResMap_id_snd φ (i + 1)).hom v.1 x)
+  rw [cochainsResMap_eq, map_id]
+  simp
 
 /-- The functorial map on homogeneous cochains is the special case of `cochainsResMap` along the
 identity of `G`. -/
 lemma cochainsResMap_id_left (f : X ⟶ X') :
     cochainsResMap (ContinuousMonoidHom.id G) f = (homogeneousCochainsFunctor k G).map f := by
   ext i v x
-  exact congr($(resolutionResMap_id_fst f (i + 1)).hom v.1 x)
+  congrm($(resolutionResMap_id_fst f (i + 1)).hom v x)
 
-/-- `ResMap φ f n` is the component of the restriction natural transformation `resNatTrans`
+/-- `resMap φ f n` is the component of the restriction natural transformation `resNatTrans`
 followed by the functorial map on continuous cohomology. -/
 @[reassoc]
-lemma ResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
+lemma resMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     resMap φ f n = (resNatTrans k φ n).app X ≫ (HₜFunct k H n).map f := by
-  rw [resNatTrans_app]
-  exact (congrArg (HomologicalComplex.homologyMap · n) (cochainsResMap_eq φ f)).trans
-    (HomologicalComplex.homologyMap_comp _ _ _)
+  rw [resNatTrans_app, resMap, cochainsResMap_eq]
+  simp [HomologicalComplex.homologyMap_comp]
 
-/-- The component of `resNatTrans` is the special case of `ResMap` where the coefficient map is
+/-- The component of `resNatTrans` is the special case of `resMap` where the coefficient map is
 the identity. -/
-lemma ResMap_id_right (φ : H →ₜ* G) (n : ℕ) :
-    resMap φ (𝟙 (res φ.toMonoidHom X)) n = (resNatTrans k φ n).app X := by
-  rw [resNatTrans_app]
-  exact congrArg (HomologicalComplex.homologyMap · n) (cochainsResMap_id_right φ)
+lemma resMap_id_right (φ : H →ₜ* G) (n : ℕ) :
+    resMap φ (𝟙 (res (φ : H →* G) X)) n = (resNatTrans k φ n).app X := by
+  rw [resNatTrans_app, resMap_eq, resNatTrans_app, map_id]
+  simp [HomologicalComplex.homologyFunctor]
 
-/-- The functorial map on continuous cohomology is the special case of `ResMap` along the
+/-- The functorial map on continuous cohomology is the special case of `resMap` along the
 identity of `G`. -/
-lemma ResMap_id_left (f : X ⟶ X') (n : ℕ) :
+lemma resMap_id_left (f : X ⟶ X') (n : ℕ) :
     resMap (ContinuousMonoidHom.id G) f n = (HₜFunct k G n).map f := by
-  simp only [resMap, cochainsResMap_id_left]
-  rfl
+  simp [resMap, cochainsResMap_id_left, continuousCohomologyFunctor]
+
+@[deprecated (since := "2026-11-19")] alias cocyclesMap := cocyclesResMap
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_id := cocyclesResMap_id
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp := cocyclesResMap_comp
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp_assoc := cocyclesResMap_comp_assoc
+@[deprecated (since := "2026-11-19")] alias map := resMap
+@[deprecated (since := "2026-11-19")] alias π_map := π_resMap
+@[deprecated (since := "2026-11-19")] alias π_map_assoc := π_resMap_assoc
+@[deprecated (since := "2026-11-19")] alias map_id := resMap_id
+@[deprecated (since := "2026-11-19")] alias map_comp := resMap_comp
+@[deprecated (since := "2026-11-19")] alias map_comp_assoc := resMap_comp_assoc
 
 end ContinuousCohomology

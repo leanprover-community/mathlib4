@@ -6,10 +6,10 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Tactic.GCongr
 public import Mathlib.Topology.Order.LeftRightNhds
+
+import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
@@ -67,8 +67,6 @@ We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
 
-variable [Archimedean K]
-
 open Nat
 
 theorem of_convergence_epsilon :
@@ -115,6 +113,7 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; lia
       _ ≤ B * nB := by gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convs Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v

@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
@@ -23,7 +22,6 @@ of the underlying map of topological spaces, including
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
 - `DenseRange` (`IsDominant`)
-
 -/
 
 @[expose] public section
@@ -46,7 +44,7 @@ instance injective_isZariskiLocalAtTarget :
   refine topologically_isZariskiLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
-  exact congr(($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).1)
+  congrm ($(@hf i ⟨x₁, hxi⟩ ⟨x₂, show f x₂ ∈ U i from e ▸ hxi⟩ (Subtype.ext e))).val
 
 end Injective
 
@@ -81,7 +79,7 @@ lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g
 
 instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
   id_mem _ := inferInstance
-  comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
+  comp_mem _ _ hf hg := ⟨hg.surj.comp hf.surj⟩
 
 instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
@@ -98,7 +96,7 @@ instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective 
   intro α β _ _ f ι U H _ hf x
   obtain ⟨i, hxi⟩ : ∃ i, x ∈ U i := by simpa using congr(x ∈ $H)
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
-  exact ⟨y, congr(($hy).1)⟩
+  exact ⟨y, congr(($hy).val)⟩
 
 @[simp]
 lemma range_eq_univ [Surjective f] : Set.range f = Set.univ := by
@@ -120,7 +118,7 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
   use Limits.Sigma.ι Y i x
-  rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
+  rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_comp_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
@@ -239,6 +237,7 @@ lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
 lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
@@ -298,7 +297,7 @@ instance specializingMap_isZariskiLocalAtTarget :
     have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
-    have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
+    have hfx : f x ∈ U i := (U i).is_open'.stableUnderGeneralization hy hi
     have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
       simp only [closure_subtype, Set.image_singleton]
       rwa [← specializes_iff_mem_closure]

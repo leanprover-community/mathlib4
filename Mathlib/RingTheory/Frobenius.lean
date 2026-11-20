@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.RingTheory.Unramified.Locus
+
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Frobenius elements
@@ -84,7 +85,7 @@ def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
   toRingHom := Ideal.quotientMap Q φ H.le_comap
   commutes' x := by
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact DFunLike.congr_arg (Ideal.Quotient.mk Q) (φ.commutes x)
+    congrm Ideal.Quotient.mk Q $(φ.commutes x)
 
 lemma restrict_apply (x : S ⧸ Q) :
     H.restrict x = x ^ Nat.card (R ⧸ Q.under R) := by
@@ -111,23 +112,27 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   set q := Nat.card (R ⧸ Q.under R)
   have hm : m ≠ 0 := by rintro rfl; exact hk' (by simp)
   obtain ⟨k, hk, hζ⟩ := IsPrimitiveRoot.exists_pos hζ hm
-  have hk' : ↑k ∉ Q := fun h ↦ hk' (Q.mem_of_dvd (Nat.cast_dvd_cast (hζ.2 m ‹_›)) h)
+  have hk' : ↑k ∉ Q := fun h ↦ hk' (Q.mem_of_dvd (Nat.cast_dvd_cast (hζ.dvd_of_pow_eq_one m ‹_›)) h)
   have : NeZero k := ⟨hk.ne'⟩
-  obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ) (by rw [← map_pow, hζ.1, map_one])
+  obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ)
+    (by rw [← map_pow, hζ.pow_eq_one, map_one])
   have (j : _) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
     rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit NeZero.out).pow (i * j)),
       sub_mul, one_mul, ← pow_add, ← add_mul, tsub_add_cancel_of_le (by linarith), add_mul,
-        pow_add, pow_mul _ k, hζ.1, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm, pow_mul]
+        pow_add, pow_mul _ k, hζ.pow_eq_one, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm,
+        pow_mul]
     exact H _
   have h₁ := sum_mem (t := Finset.range k) fun j _ ↦ this j
   have h₂ := geom_sum_mul (ζ ^ (q + k - i)) k
-  rw [pow_right_comm, hζ.1, one_pow, sub_self, mul_eq_zero, sub_eq_zero] at h₂
+  rw [pow_right_comm, hζ.pow_eq_one, one_pow, sub_self, mul_eq_zero, sub_eq_zero] at h₂
   rcases h₂ with h₂ | h₂
   · simp [h₂, pow_mul, hk'] at h₁
   replace h₂ := congr($h₂ * ζ ^ i)
-  rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.1, mul_one] at h₂
+  rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.pow_eq_one,
+    mul_one] at h₂
   rw [h₂, e]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Frobenius element at `Q` restricts to an automorphism of `S_Q`. -/
 noncomputable
 def localize [Q.IsPrime] : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q where
@@ -143,6 +148,7 @@ lemma localize_algebraMap [Q.IsPrime] (x : S) :
 
 open IsLocalRing nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdeal _) := by
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by
@@ -234,16 +240,16 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   obtain ⟨σ, hσ⟩ := Ideal.Quotient.stabilizerHom_surjective G P Q l
   refine ⟨σ, fun x ↦ ?_⟩
   rw [← Ideal.Quotient.eq, Nat.card_eq_fintype_card, hk]
-  exact DFunLike.congr_fun hσ (Ideal.Quotient.mk Q x)
+  congrm $hσ (Ideal.Quotient.mk Q x)
 
 variable (S G) in
 lemma exists_primesOver_isConj (P : Ideal R)
-    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
-    ∃ σ : Ideal.primesOver P S → G, (∀ Q, IsArithFrobAt R (σ Q) Q.1) ∧
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.val)) :
+    ∃ σ : Ideal.primesOver P S → G, (∀ Q, IsArithFrobAt R (σ Q) Q.val) ∧
       (∀ Q₁ Q₂, IsConj (σ Q₁) (σ Q₂)) := by
   obtain ⟨⟨Q, hQ₁, hQ₂⟩, hQ₃⟩ := hP
-  have (Q' : Ideal.primesOver P S) : ∃ σ : G, Q'.1 = σ • Q :=
-    Algebra.IsInvariant.exists_smul_of_under_eq R S G _ _ (hQ₂.over.symm.trans Q'.2.2.over)
+  have (Q' : Ideal.primesOver P S) : ∃ σ : G, Q'.val = σ • Q :=
+    Algebra.IsInvariant.exists_smul_of_under_eq R S G _ _ (hQ₂.over.symm.trans Q'.property.2.over)
   choose τ hτ using this
   obtain ⟨σ, hσ⟩ := exists_of_isInvariant R G Q
   refine ⟨fun Q' ↦ τ Q' * σ * (τ Q')⁻¹, fun Q' ↦ hτ Q' ▸ hσ.conj (τ Q'), fun Q₁ Q₂ ↦
@@ -272,7 +278,7 @@ lemma _root_.isConj_arithFrobAt
     (H : Q.under R = Q'.under R) : IsConj (arithFrobAt R G Q) (arithFrobAt R G Q') := by
   obtain ⟨P, hP, h₁, h₂⟩ : ∃ P : Ideal R, P.IsPrime ∧ P = Q.under R ∧ P = Q'.under R :=
     ⟨Q.under R, inferInstance, rfl, H⟩
-  convert!
+  convert
     (exists_primesOver_isConj S G P ⟨⟨Q, ‹_›, ⟨h₁⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.2 ⟨Q, ‹_›, ⟨h₁⟩⟩
       ⟨Q', ‹_›, ⟨h₂⟩⟩
   · subst h₁; rfl

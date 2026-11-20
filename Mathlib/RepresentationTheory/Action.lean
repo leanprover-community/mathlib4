@@ -10,15 +10,13 @@ public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
 /-!
+# Linearization of `G`-sets as representations
 
-## Main Purpose
-This file is the preliminary for the `linearize` functor from `Action (Type w) G` to `Rep k G`,
-constructing the functor from the `Representation` would reduce the amount of DefEq abuses that we
-currently are doing in the `Rep` file.
-
-TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
-reconstruct the current `linearize` functor using this file.
-
+Given a `G`-set `X`, the action on `X` induces a `G`-representation of the free `k`-module `k[X.V]`
+on `X.V`. This file builds this construction directly in terms of `Representation` and
+`IntertwiningMap`, as a preliminary to the `linearize` functor
+`Action (Type w) G ⥤ Rep k G`. Working with `Representation` here avoids the defeq abuse
+currently present in `Mathlib/RepresentationTheory/Rep.lean`.
 -/
 
 universe w w' u u' v v'
@@ -123,7 +121,6 @@ lemma μ_apply_single_single (x : X.V) (y : Y.V) (r s : k) :
     μ (k := k) X Y (.single x r ⊗ₜ .single y s) = .single (x, y) (r * s) := by
   ext; simp [← toLinearMap_apply]
 
-open TensorProduct in
 lemma coeff_μ_tmul (l1 : k[X.V]) (l2 : k[Y.V]) (xy : (X ⊗ Y).V) :
     (μ X Y (l1 ⊗ₜ l2)).coeff xy = l1.coeff xy.1 * l2.coeff xy.2 := by
   simp [← toLinearMap_apply, types_tensorObj_def, finsuppTensorFinsupp'_apply_apply _]
@@ -226,6 +223,7 @@ end comm
 
 end LinearizeMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2

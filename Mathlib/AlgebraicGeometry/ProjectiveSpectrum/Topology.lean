@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.Opens
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Projective spectrum of a graded ring
@@ -42,7 +41,7 @@ It is naturally endowed with a topology: the Zariski topology.
 
 noncomputable section
 
-open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
+open DirectSum SetLike TopCat TopologicalSpace
 
 variable {A σ : Type*}
 variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
@@ -105,7 +104,7 @@ theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :
 
 theorem mem_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (f : A) :
     f ∈ vanishingIdeal t ↔ ∀ x : ProjectiveSpectrum 𝒜, x ∈ t → f ∈ x.asHomogeneousIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : ProjectiveSpectrum 𝒜) :
@@ -126,6 +125,7 @@ theorem gc_ideal :
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
+attribute [local implicit_reducible] OrderDual in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
@@ -284,19 +284,19 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
     (by
       intro Zs h
       rw [Set.sInter_eq_iInter]
-      let f : Zs → Set _ := fun i => Classical.choose (h i.2)
+      let f : Zs → Set _ := fun i => Classical.choose (h i.property)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert! H using 2
+      convert H using 2
       funext i
-      exact (Classical.choose_spec (h i.2)).symm)
+      exact (Classical.choose_spec (h i.property)).symm)
     (by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩
       exact ⟨_, (union_zeroLocus 𝒜 s t).symm⟩)
 
 /-- The underlying topology of `Proj` is the projective spectrum of graded ring `A`. -/
-def top : TopCat :=
-  TopCat.of (ProjectiveSpectrum 𝒜)
+@[implicit_reducible]
+def top : TopCat := ↧(ProjectiveSpectrum 𝒜)
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
   simp only [@eq_comm _ Uᶜ]; rfl
@@ -330,7 +330,7 @@ section BasicOpen
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : A) : TopologicalSpace.Opens (ProjectiveSpectrum 𝒜) where
   carrier := { x | r ∉ x.asHomogeneousIdeal }
-  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans Classical.not_not.symm⟩
 
 @[simp]
 theorem mem_basicOpen (f : A) (x : ProjectiveSpectrum 𝒜) :
@@ -385,7 +385,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
-        exact fun rid => hz (z.1.2 i rid)
+        exact fun rid => hz (z.asHomogeneousIdeal.is_homogeneous' i rid)
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis

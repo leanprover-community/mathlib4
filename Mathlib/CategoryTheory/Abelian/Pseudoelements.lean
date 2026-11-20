@@ -5,9 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Exact
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Pseudoelements in abelian categories
@@ -104,10 +103,10 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 /-- Two arrows `f : X ⟶ P` and `g : Y ⟶ P` are called pseudo-equal if there is some object
 `R` and epimorphisms `p : R ⟶ X` and `q : R ⟶ Y` such that `p ≫ f = q ≫ g`. -/
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
-  ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
+  ∃ (R : C) (p : R ⟶ f.left) (q : R ⟶ g.left) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
 instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
-  refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
+  refl f := ⟨f.left, 𝟙 f.left, 𝟙 f.left, inferInstance, inferInstance, by simp⟩
 
 instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
   symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
@@ -179,7 +178,6 @@ scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.
 
 theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
 with each morphism. Sadly, this is not a definitional equality, but at least it is true. -/
 theorem comp_apply {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) (a : P) : (f ≫ g) a = g (f a) :=
@@ -205,11 +203,10 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
-    ⟨biprod f.1 Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
+    ⟨biprod f.left Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
       rw [hf, Over.coe_hom, HasZeroMorphisms.comp_zero, HasZeroMorphisms.comp_zero]⟩⟩
 
 end
@@ -241,9 +238,7 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
 
 end Zero
 
-open Pseudoelement
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -300,13 +295,12 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
   fun qbar =>
   Quotient.inductionOn qbar fun q =>
     ⟨(pullback.fst f q.hom : Over P),
-      Quotient.sound <|
+      Quotient.sound
         ⟨pullback f q.hom, 𝟙 (pullback f q.hom), pullback.snd _ _, inferInstance, inferInstance, by
           rw [Category.id_comp, ← pullback.condition, app_hom, Over.coe_hom]⟩⟩
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
   intro h
@@ -354,7 +348,6 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
@@ -382,11 +375,11 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       -- Let's give a name to the second pullback morphism.
       let j : pullback (kernel.ι (cokernel.π S.f)) (kernel.ι S.g) ⟶ kernel S.g := pullback.snd _ _
       -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
-      haveI pe : Epi j := epi_of_epi_fac hz₂
+      have pe : Epi j := epi_of_epi_fac hz₂
       -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
       -- always a monomorphism and the pullback of a monomorphism is a monomorphism.
       -- But mono + epi = iso, so `j` is an isomorphism.
-      haveI : IsIso j := isIso_of_mono_of_epi _
+      have : IsIso j := isIso_of_mono_of_epi _
       -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
@@ -417,8 +410,6 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           -- Can we prevent quotient.sound from giving us this weird `coe_b` thingy?
           change app g (a'' : Over P) ≈ app g a
           exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
-
-variable [Limits.HasPullbacks C]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such

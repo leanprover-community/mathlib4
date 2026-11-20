@@ -1,5 +1,9 @@
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Util.ParseCommand
+module
+
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Util.ParseCommand
+
+@[expose] public section
 
 /-- info: No tags found. -/
 #guard_msgs in
@@ -9,6 +13,19 @@ namespace X
 
 @[stacks A04Q "A comment", kerodon B15R "Also a comment"]
 theorem tagged : True := .intro
+
+set_option doc.verso true in
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem versoTagged : True := .intro
+
+/-- This docstring should appear before any Stacks or Kerodon references. -/
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem taggedWithOwnDocstring : True := .intro
+
+set_option doc.verso true in
+/-- This docstring should appear before any Stacks or Kerodon references. -/
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem versoTaggedWithOwnDocstring : True := .intro
 
 end X
 
@@ -20,6 +37,33 @@ info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) (A comm
 #guard_msgs in
 run_cmd
   Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.tagged}"
+
+/--
+info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) \(A comment\)
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) \(Also a comment\))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.versoTagged}"
+
+-- Known issue: due to async elaboration, the stacks / kerodon tags get overwritten by
+-- the declaration's own docstring.
+/--
+info: some (This docstring should appear before any Stacks or Kerodon references.)
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.taggedWithOwnDocstring}"
+
+-- Known issue: due to async elaboration, the stacks / kerodon tags get overwritten by
+-- the declaration's own docstring.
+/--
+info: some (This docstring should appear before any Stacks or Kerodon references. )
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.versoTaggedWithOwnDocstring}"
 
 #guard_msgs in
 @[stacks 0BR2, kerodon 0X12]
@@ -48,14 +92,26 @@ example : True := .intro
 
 /--
 info:
-[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.taggedWithOwnDocstring`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTagged`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (A comment)
 -/
 #guard_msgs in
 #stacks_tags
 
 /--
 info:
-[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
+True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.taggedWithOwnDocstring`. (A comment)
+True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTagged`. (A comment)
+True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (A comment)
 True
 -/
 #guard_msgs in
@@ -63,7 +119,16 @@ True
 
 /--
 info:
-[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.taggedWithOwnDocstring`. (Also a comment)
+True
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.versoTagged`. (Also a comment)
+True
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (Also a comment)
+True
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.tagged`. (Also a comment)
 True
 -/
 #guard_msgs in
@@ -83,7 +148,7 @@ run_cmd
 
 /--
 info:
-[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration 'W.wikiTagged'. (A Wikidata comment)
+[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration `W.wikiTagged`. (A Wikidata comment)
 -/
 #guard_msgs in
 #wikidata_tags
@@ -104,7 +169,7 @@ theorem IsAbelian : 1 + 1 = 2 := by
   rfl
 
 /--
-info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+info: some ([LMFDB group\.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
@@ -125,18 +190,153 @@ error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, pe
 
 /--
 info:
-[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration `IsAbelian`. (A vacuous comment)
 -/
 #guard_msgs in
 #lmfdb_tags
 
+-- Ensure Verso does not try to interpret the `_` in the tag name as formatting.
+set_option doc.verso true in
+@[lmfdb tag_99 "A vacuous comment"]
+theorem foo : 1 + 1 = 2 := by
+  rfl
+
+-- A period has no special meaning in Verso, but it can still be escaped.
+set_option doc.verso true in
+@[lmfdb tag.99 "A vacuous comment"]
+theorem bar : 1 + 1 = 2 := by
+  rfl
+
 end LMFDB
+
+namespace Pibase
+
+@[pibase topology P000001 "A vacuous comment"]
+theorem p : True := .intro
+
+@[pibase topology S000023]
+theorem s : True := .intro
+
+@[pibase topology T000001]
+theorem t : True := .intro
+
+/--
+info: some ([π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `Pibase.p}"
+
+/--
+info:
+[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration `p`. (A vacuous comment)
+[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration `s`.
+[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration `t`.
+-/
+#guard_msgs in
+#pibase_tags topology
+
+-- The `topology` topic token is non-reserved: `topology` must remain usable as an identifier
+-- (it appears as one throughout Mathlib, e.g. `AlgebraicGeometry.ProEt.topology`).
+example (topology : Nat) : Nat := topology
+
+/-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"
+
+/-- error: <input>:1:7: π-Base ids must consist of P, S, or T followed by six digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P00001X"
+
+/-- error: <input>:1:7: π-Base ids must start with P, S, or T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "Q000001"
+
+/-- info: S000023 -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "S000023"
+
+end Pibase
+
+namespace DLMF
+
+@[dlmf 5.5.E1 "A vacuous comment"]
+theorem test : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([DLMF 5\.5\.E1](https://dlmf.nist.gov/5.5.E1) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `DLMF.test}"
+
+/--
+error: <input>:1:6: DLMF references must consist only of (lowercase) roman numerals, the letters E/T/F, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "random*string"
+
+/-- info: 18.30.iv -/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "18.30.iv"
+
+/--
+info:
+[DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) corresponds to declaration `test`. (A vacuous comment)
+-/
+#guard_msgs in
+#dlmf_tags
+
+end DLMF
+
+namespace OEIS
+
+@[oeis A123456 "A vacuous comment"]
+theorem test : 1 + 1 = 2 := by
+  rfl
+
+@[oeis A123456]
+theorem test' : 1 + 1 = 2 := by
+  rfl
+
+/-- error: <input>:1:11: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in
+run_cmd
+  Lean.ofExcept <| Lean.Parser.runParserCategory (← Lean.getEnv)
+    `command "@[oeis A123] theorem test'' : True := .intro"
+
+/--
+info: some ([OEIS A123456](https://oeis.org/A123456) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) ``OEIS.test}"
+
+/-- error: <input>:1:6: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "search"
+
+/-- error: <input>:1:4: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123"
+
+/-- error: <input>:1:7: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123ABC"
+
+/-- error: <input>:1:7: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "B123456"
+
+/-- info: A123456 -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123456"
+
+/--
+info:
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test'`.
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test`. (A vacuous comment)
+-/
+#guard_msgs in
+#oeis_tags
+
+end OEIS
 
 section errors
 
 open Lean Parser Mathlib.CrossRef
 
-def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+meta def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then

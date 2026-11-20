@@ -6,8 +6,12 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.ZeroCons
 public import Mathlib.Order.Directed
+
+import Mathlib.Data.Multiset.ZeroCons
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finsets of ordered types
@@ -22,13 +26,14 @@ variable {α : Type u}
 
 theorem Directed.finset_le {r : α → α → Prop} [IsTrans α r] {ι} [hι : Nonempty ι] {f : ι → α}
     (D : Directed r f) (s : Finset ι) : ∃ z, ∀ i ∈ s, r (f i) (f z) :=
-  show ∃ z, ∀ i ∈ s.1, r (f i) (f z) from
-    Multiset.induction_on s.1 (let ⟨z⟩ := hι; ⟨z, fun _ ↦ by simp⟩)
+  show ∃ z, ∀ i ∈ s.val, r (f i) (f z) from
+    Multiset.induction_on s.val (let ⟨z⟩ := hι; ⟨z, fun _ ↦ by simp⟩)
       fun i _ ⟨j, H⟩ ↦
       let ⟨k, h₁, h₂⟩ := D i j
       ⟨k, fun _ h ↦ (Multiset.mem_cons.1 h).casesOn (fun h ↦ h.symm ▸ h₁)
         fun h ↦ _root_.trans (H _ h) h₂⟩
 
+@[to_dual exists_ge]
 theorem Finset.exists_le [Nonempty α] [Preorder α] [IsDirectedOrder α] (s : Finset α) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
   directed_id.finset_le _
