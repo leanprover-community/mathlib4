@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
@@ -210,9 +211,7 @@ theorem mem_adjoint_domain_iff_exists {T : E →ₗ.[𝕜] F} (y : F) :
   · intro hy
     let ℓ := T.adjointDomainMkCLM ⟨y, hy⟩
     let D := T.domain.topologicalClosure
-    let i : T.domain →L[𝕜] D :=
-      { toLinearMap := Submodule.inclusion T.domain.le_topologicalClosure
-        cont := continuous_inclusion T.domain.le_topologicalClosure }
+    let i := Submodule.inclusionL T.domain.le_topologicalClosure
     let ℓExt := ℓ.extend i
     use ((InnerProductSpace.toDual 𝕜 D).symm ℓExt : E)
     intro x
