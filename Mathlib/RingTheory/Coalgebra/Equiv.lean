@@ -147,7 +147,9 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
+@[simp]
+theorem coe_toCoalgHom : ⇑e.toCoalgHom = e :=
+  rfl
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = e.toCoalgHom.toLinearMap :=
   rfl
