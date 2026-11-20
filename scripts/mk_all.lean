@@ -13,7 +13,6 @@ set_option linter.style.header false
 # Script to create a file importing all files from a folder
 
 This file declares a command to gather all Lean files from a folder into a single Lean file.
-
 -/
 
 open Lean System.FilePath
@@ -82,12 +81,10 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := (if useModule then "module  -- shake: keep-all --deprecated_module: ignore\n\n" else "") ++
+    let fileContent := (if useModule then "module -- shake: keep-all -- deprecated_module: ignore\n\n" else "") ++
       ("\n".intercalate (allFiles.map fun m =>
         (if useModule then "public " else "") ++
-        (if metaImports.contains m then "meta " else "") ++ "import " ++ m).toList) ++
-      (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
-      "\n"
+        (if metaImports.contains m then "meta " else "") ++ "import " ++ m).toList) ++ "\n"
     if !fileExists then
       if check then
         IO.println s!"File '{fileName}' does not exist"

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Data.Finset.Sym
 public import Mathlib.Data.Finsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely supported functions from the symmetric square
 

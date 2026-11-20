@@ -687,7 +687,7 @@ lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
     restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
-Present a function with with finite support as a finsum of singleton indicator functions.
+Present a function with finite support as a finsum of singleton indicator functions.
 -/
 @[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] [AddCommMonoid Y] {U : Set X}
     {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :
@@ -831,7 +831,7 @@ noncomputable abbrev truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppW
     locallyFinsuppWithin U Y := D.truncate 1 zero_le_one
 
 /-- Evaluation of the truncation. -/
-@[simp] lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
+lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
     D.truncate y hy z = min (D z) y := by simp
 
 /-- Truncation of the zero function. -/

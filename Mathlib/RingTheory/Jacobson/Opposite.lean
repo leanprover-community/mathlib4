@@ -9,13 +9,11 @@ public import Mathlib.RingTheory.Jacobson.Radical
 
 import Mathlib.Algebra.Group.Units.Opposite
 import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Tactic.NoncommRing
 
 /-!
 # Left-right symmetry of the Jacobson radical
 
-We characterize membership in the Jacobson radical by invertibility of `1 + a * x`
-and `1 + x * a`, then use these criteria to prove `Ring.op_mem_jacobson`.
+We use the unit criterion `Ring.mem_jacobson_iff` to prove `Ring.op_mem_jacobson`.
 We also show that radical powers and nilpotence are preserved under taking opposites,
 and construct the corresponding isomorphism of radical quotient rings.
 
@@ -31,49 +29,19 @@ open MulOpposite
 
 variable {R : Type*} [Ring R] {x : R}
 
-/-- Membership in the Jacobson radical is detected by left inverses. -/
-theorem mem_jacobson_iff_exists_left_inv :
-    x ∈ jacobson R ↔ ∀ a : R, ∃ b : R, b * (1 + a * x) = 1 := by
-  rw [← Ideal.jacobson_bot, Ideal.mem_jacobson_iff]
-  simp only [Ideal.mem_bot, sub_eq_zero, mul_add, mul_one, mul_assoc, add_comm]
-
-/-- The left inverses in the radical criterion are actually two-sided inverses. -/
-theorem mem_jacobson_iff_isUnit_one_add_mul :
-    x ∈ jacobson R ↔ ∀ a : R, IsUnit (1 + a * x) := by
-  rw [mem_jacobson_iff_exists_left_inv]
-  constructor
-  · intro h a
-    obtain ⟨b, hb⟩ := h a
-    have heq : b = 1 + (-b * a) * x := by
-      calc
-        b = b * (1 + a * x) + (-b * a) * x := by noncomm_ring
-        _ = 1 + (-b * a) * x := by rw [hb]
-    obtain ⟨c, hc⟩ := h (-b * a)
-    rw [← heq] at hc
-    have hcb : c = 1 + a * x := by
-      calc
-        c = c * (b * (1 + a * x)) := by rw [hb, mul_one]
-        _ = 1 + a * x := by rw [← mul_assoc, hc, one_mul]
-    exact ⟨⟨1 + a * x, b, by rwa [hcb] at hc, hb⟩, rfl⟩
-  · intro h a
-    exact (h a).exists_left_inv
-
-/-- The equivalent unit criterion with multiplication on the other side. -/
-theorem mem_jacobson_iff_isUnit_one_add_mul' :
-    x ∈ jacobson R ↔ ∀ a : R, IsUnit (1 + x * a) := by
-  rw [mem_jacobson_iff_isUnit_one_add_mul]
-  exact forall_congr' fun a ↦ isUnit_one_add_mul_comm a x
-
 /-- The Jacobson radical is invariant under passage to the opposite ring. -/
 @[simp]
 theorem op_mem_jacobson :
     MulOpposite.op x ∈ jacobson Rᵐᵒᵖ ↔ x ∈ jacobson R := by
-  rw [mem_jacobson_iff_isUnit_one_add_mul, mem_jacobson_iff_isUnit_one_add_mul']
+  rw [mem_jacobson_iff, mem_jacobson_iff]
   constructor
   · intro h a
-    simpa using (h (MulOpposite.op a)).unop
+    rw [add_comm, ← isUnit_one_add_mul_comm a x, add_comm]
+    simpa using (h (op a)).unop
   · intro h a
-    simpa using (h a.unop).op
+    have ha := h a.unop
+    rw [add_comm, ← isUnit_one_add_mul_comm a.unop x, add_comm] at ha
+    simpa using ha.op
 
 /-- Powers of the Jacobson radical are preserved by the opposite operation. -/
 theorem op_mem_jacobson_pow (n : ℕ) (x : R) :

@@ -62,7 +62,6 @@ The public-facing existence theorems stated using the integral curve API are in
 
 differential equation, dynamical system, initial value problem, Picard-Lindelöf theorem,
 Cauchy-Lipschitz theorem
-
 -/
 
 @[expose] public section
@@ -164,7 +163,7 @@ lemma ext {α β : FunSpace t₀ x₀ r L} (h : ∀ t, α t = β t) : α = β :=
 
 /-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
-  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken zero_le, mem_closedBall_self r.2⟩
+  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken zero_le, mem_closedBall_self r.property⟩
 
 protected lemma continuous (α : FunSpace t₀ x₀ L r) : Continuous α := α.lipschitzWith.continuous
 
@@ -211,11 +210,11 @@ instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
 /-- Extend the domain of `α` from `Icc tmin tmax` to `ℝ` such that `α t = α tmin` for all `t ≤ tmin`
 and `α t = α tmax` for all `t ≥ tmax`. -/
 noncomputable def compProj (α : FunSpace t₀ x₀ r L) (t : ℝ) : E :=
-  α <| projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t
+  α <| projIcc tmin tmax (le_trans t₀.property.1 t₀.property.2) t
 
 @[simp]
 lemma compProj_apply {α : FunSpace t₀ x₀ r L} {t : ℝ} :
-    α.compProj t = α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) := rfl
+    α.compProj t = α (projIcc tmin tmax (le_trans t₀.property.1 t₀.property.2) t) := rfl
 
 lemma compProj_val {α : FunSpace t₀ x₀ r L} {t : Icc tmin tmax} :
     α.compProj t = α t := by simp only [compProj_apply, projIcc_val]
@@ -234,13 +233,13 @@ protected lemma mem_closedBall
   rw [mem_closedBall, dist_eq_norm]
   calc
     ‖α t - x₀‖ ≤ ‖α t - α t₀‖ + ‖α t₀ - x₀‖ := norm_sub_le_norm_sub_add_norm_sub ..
-    _ ≤ L * |t.1 - t₀.1| + r := by
+    _ ≤ L * |t.val - t₀.val| + r := by
       apply add_le_add _ <| mem_closedBall_iff_norm.mp α.mem_closedBall₀
       rw [← dist_eq_norm]
       exact α.lipschitzWith.dist_le_mul t t₀
     _ ≤ L * max (tmax - t₀) (t₀ - tmin) + r := by
       gcongr
-      exact abs_sub_le_max_sub t.2.1 t.2.2 _
+      exact abs_sub_le_max_sub t.property.1 t.property.2 _
     _ ≤ a - r + r := by gcongr
     _ = a := sub_add_cancel _ _
 
@@ -273,7 +272,7 @@ lemma intervalIntegrable_comp_compProj (hf : IsPicardLindelof f t₀ x₀ a r L 
     IntervalIntegrable (fun t' ↦ f t' (α.compProj t')) volume t₀ t := by
   apply ContinuousOn.intervalIntegrable
   apply α.continuousOn_comp_compProj hf |>.mono
-  exact uIcc_subset_Icc t₀.2 t.2
+  exact uIcc_subset_Icc t₀.property t.property
 
 /-- The map on `FunSpace` defined by `picard`, some `n`-th iterate of which will be a contracting
 map -/
@@ -287,7 +286,8 @@ noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ c
     apply intervalIntegral.norm_integral_le_of_norm_le_const
     intro t ht
     -- Can `grind` do this in the future?
-    have ht : t ∈ Icc tmin tmax := subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.2 t₁.2) ht
+    have ht : t ∈ Icc tmin tmax :=
+      subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.property t₁.property) ht
     exact hf.norm_le _ ht _ <| α.mem_closedBall hf.mul_max_le
   mem_closedBall₀ := by simp [hx]
 
@@ -315,14 +315,14 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (n : ℕ) (t : Icc tmin tmax)
     {α β : FunSpace t₀ x₀ r L}
     (h : dist ((next hf hx)^[n] α t) ((next hf hx)^[n] β t) ≤
-      (K * |t - t₀.1|) ^ n / n ! * dist α β) :
+      (K * |t - t₀.val|) ^ n / n ! * dist α β) :
     dist (f t ((next hf hx)^[n] α t)) (f t ((next hf hx)^[n] β t)) ≤
-      K ^ (n + 1) * |t - t₀.1| ^ n / n ! * dist α β :=
+      K ^ (n + 1) * |t - t₀.val| ^ n / n ! * dist α β :=
   calc
     _ ≤ K * dist ((next hf hx)^[n] α t) ((next hf hx)^[n] β t) :=
-      hf.lipschitzOnWith t.1 t.2 |>.dist_le_mul
+      hf.lipschitzOnWith t.val t.property |>.dist_le_mul
         _ (FunSpace.mem_closedBall hf.mul_max_le) _ (FunSpace.mem_closedBall hf.mul_max_le)
-    _ ≤ K ^ (n + 1) * |t - t₀.1| ^ n / n ! * dist α β := by
+    _ ≤ K ^ (n + 1) * |t - t₀.val| ^ n / n ! * dist α β := by
       rw [pow_succ', mul_assoc, mul_div_assoc, mul_assoc]
       gcongr
       rwa [← mul_pow]
@@ -331,7 +331,7 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
 lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) (t : Icc tmin tmax) :
     dist ((next hf hx)^[n] α t) ((next hf hx)^[n] β t) ≤
-      (K * |t.1 - t₀.1|) ^ n / n ! * dist α β := by
+      (K * |t.val - t₀.val|) ^ n / n ! * dist α β := by
   induction n generalizing t with
   | zero => simpa using!
       ContinuousMap.dist_apply_le_dist (f := toContinuousMap α) (g := toContinuousMap β) _
@@ -341,17 +341,17 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       ← intervalIntegral.integral_sub (intervalIntegrable_comp_compProj hf _ t)
         (intervalIntegrable_comp_compProj hf _ t)]
     calc
-      _ ≤ ∫ τ in uIoc t₀.1 t.1, K ^ (n + 1) * |τ - t₀| ^ n / n ! * dist α β := by
+      _ ≤ ∫ τ in uIoc t₀.val t.val, K ^ (n + 1) * |τ - t₀| ^ n / n ! * dist α β := by
         rw [intervalIntegral.norm_intervalIntegral_eq]
         apply MeasureTheory.norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc (by fun_prop))
         apply ae_restrict_mem measurableSet_Ioc |>.mono
         intro t' ht'
         -- Can `grind` do this in the future?
         have ht' : t' ∈ Icc tmin tmax :=
-          subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₀.2 t.2) ht'
+          subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₀.property t.property) ht'
         rw [← dist_eq_norm, compProj_of_mem, compProj_of_mem]
         exact dist_comp_iterate_next_le hf hx _ ⟨t', ht'⟩ (hn _)
-      _ ≤ (K * |t.1 - t₀.1|) ^ (n + 1) / (n + 1) ! * dist α β := by
+      _ ≤ (K * |t.val - t₀.val|) ^ (n + 1) / (n + 1) ! * dist α β := by
         apply le_of_abs_le
         -- critical: `integral_pow_abs_sub_uIoc`
         rw [← intervalIntegral.abs_intervalIntegral_eq, intervalIntegral.integral_mul_const,
@@ -371,8 +371,8 @@ lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L
   · intro t
     apply le_trans <| dist_iterate_next_apply_le hf hx α β n t
     gcongr
-    exact abs_sub_le_max_sub t.2.1 t.2.2 _
-  · have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    exact abs_sub_le_max_sub t.property.1 t.property.2 _
+  · have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.property.2
     positivity
 
 /-- Some `n`-th iterate of `next` is a contracting map, and its associated Lipschitz constant is
@@ -383,7 +383,7 @@ lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a r
   obtain ⟨n, hn⟩ := FloorSemiring.tendsto_pow_div_factorial_atTop (K * max (tmax - t₀) (t₀ - tmin))
     |>.eventually (gt_mem_nhds zero_lt_one) |>.exists
   have : (0 : ℝ) ≤ (K * max (tmax - t₀) (t₀ - tmin)) ^ n / n ! := by
-    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.property.2
     positivity
   refine ⟨n, ⟨_, this⟩, fun x hx ↦ ?_⟩
   exact ⟨hn, LipschitzWith.of_dist_le_mul fun α β ↦ dist_iterate_next_iterate_next_le hf hx α β n⟩
@@ -453,7 +453,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
   obtain ⟨m, C, h⟩ := exists_contractingWith_iterate_next hf
   let L' := (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) * (1 - C)⁻¹
   have hL' : 0 ≤ L' := by
-    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.property.2
     positivity
   refine ⟨.mk L' hL', fun x y hx hy α β hα hβ ↦ ?_⟩
   rw [NNReal.coe_mk]
@@ -465,7 +465,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
   · nth_rw 1 [← hα, dist_next_next]
     apply Filter.Tendsto.mul_const
     apply Filter.Tendsto.const_mul
-    convert! hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
+    convert! hasSum_geometric_of_lt_one C.property (h y hy).1 |>.tendsto_sum_nat
     simp [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one]
 
 end
@@ -623,7 +623,7 @@ lemma shrink {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmi
 /-- `IsPicardLindelof` is preserved when shrinking the time interval. -/
 lemma shrink_time {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmin tmax}
     {x₀ : E} {a r L K : ℝ≥0} (hf : IsPicardLindelof f t₀ x₀ a r L K) (t₀' : Icc tmin' tmax')
-    (ht₀ : t₀.1 = t₀'.1) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
+    (ht₀ : t₀.val = t₀'.val) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
     IsPicardLindelof f t₀' x₀ a r L K := by
   apply hf.shrink t₀' htmin htmax le_rfl
   calc L * max (tmax' - t₀') (t₀' - tmin')
@@ -689,8 +689,8 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
       _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
         gcongr
         apply hl.norm_sub_le _ (mem_of_mem_nhds hs)
-        apply subset_trans _ has hx
-        exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
+        grw [half_lt_self ha, has] at hx -- this is where we need `a / 2`
+        exact hx
       _ ≤ K * a + ‖f x₀‖ := by
         gcongr
         rw [← mem_closedBall_iff_norm]
@@ -701,10 +701,12 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   refine ⟨ε, hε0,
     .mk (a / 2) (half_pos ha).le, (.mk (a / 2) (half_pos ha).le) / 2,
     .mk L hL0.le, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
-  apply of_time_independent hb <|
-    hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
-  simp [ε, field]
-  norm_num
+  apply of_time_independent hb
+  · dsimp only [NNReal.coe_mk]
+    grw [half_lt_self ha, has]
+    exact hl
+  · simp [ε, field]
+    norm_num
 
 end
 

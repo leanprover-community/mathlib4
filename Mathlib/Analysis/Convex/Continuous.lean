@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Intrinsic
 
 import Mathlib.Analysis.Normed.Affine.Convex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex functions are continuous
 
@@ -229,7 +232,7 @@ lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
   · simp
   have : Nonempty (affineSpan ℝ C) := ⟨⟨p, subset_affineSpan ℝ C hp⟩⟩
   set ψ := (AffineIsometryEquiv.constVSub ℝ (⟨p, subset_affineSpan ℝ C hp⟩ : affineSpan ℝ C)).symm
-  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtype_coe.comp ψ.isometry
+  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtypeVal.comp ψ.isometry
   have hL := (hf.comp_affineMap
     ((affineSpan ℝ C).subtype.comp ψ.toAffineEquiv.toAffineMap)).locallyLipschitzOn_interior
   refine (hiso.locallyLipschitzOn_image (by simpa using hL)).mono ?_
@@ -320,7 +323,6 @@ lemma ConcaveOn.continuousOn_Ico {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : Concave
   simpa using hf_cnv.neg.continuousOn_Ico hf_cont.neg
 
 lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
   suffices ContinuousOn f (Ico y z) ∧ ContinuousOn f (Ioc y z) by
@@ -337,9 +339,8 @@ lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn
   · exact hf_cvx.subset Ioc_subset_Icc_self (convex_Ioc y z)
 
 lemma ConcaveOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
-  simpa using hf_cnv.neg.continuousOn_Icc hyz hfy.neg hfz.neg
+  simpa using hf_cnv.neg.continuousOn_Icc hfy.neg hfz.neg
 
 end Intervals

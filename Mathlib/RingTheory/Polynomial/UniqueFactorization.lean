@@ -103,10 +103,11 @@ noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
   have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
   let H := { x : Associates D[X] // x ∣ y }
   let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
-  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  let i : G → H := fun x ↦ ⟨Associates.mk x.val, Associates.mk_dvd_mk.2 x.property.2⟩
   refine Fintype.ofInjective i fun x y heq ↦ ?_
   rw [Subtype.mk.injEq] at heq ⊢
-  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
+  exact eq_of_monic_of_associated x.property.1 y.property.1
+    (Associates.mk_eq_mk_iff_associated.mp heq)
 
 end Polynomial
 
@@ -143,14 +144,3 @@ instance (priority := 100) uniqueFactorizationMonoid :
 end MvPolynomial
 
 end UniqueFactorizationDomain
-
-/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
-See also `WfDvdMonoid.exists_irreducible_factor`. -/
-theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
-    (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
-  by_cases hf : f = 0
-  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
-  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
-  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
-    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
-  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩

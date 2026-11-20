@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`
 
@@ -39,10 +42,11 @@ noncomputable def homeomorphSphereProd (E : Type*) [NormedAddCommGroup E] [Norme
     (r : ℝ) (hr : 0 < r) :
     ({0}ᶜ : Set E) ≃ₜ (sphere (0 : E) r × Ioi (0 : ℝ)) where
   toFun x :=
-    have : 0 < ‖(x : E)‖ := by simpa [-Subtype.coe_prop] using x.2
-    (⟨r • ‖x.1‖⁻¹ • x.1, by simp [norm_smul, abs_of_pos hr, this.ne']⟩,
-      ⟨‖x.1‖ / r, by rw [mem_Ioi]; positivity⟩)
-  invFun x := ⟨x.2.1 • x.1.1, smul_ne_zero x.2.2.out.ne' (ne_of_mem_sphere x.1.2 hr.ne')⟩
+    have : 0 < ‖(x : E)‖ := by simpa [-Subtype.coe_prop] using x.property
+    (⟨r • ‖x.val‖⁻¹ • x.val, by simp [norm_smul, abs_of_pos hr, this.ne']⟩,
+      ⟨‖x.val‖ / r, by rw [mem_Ioi]; positivity⟩)
+  invFun x := ⟨x.2.val • x.1.val,
+    smul_ne_zero x.2.property.out.ne' (ne_of_mem_sphere x.1.property hr.ne')⟩
   left_inv
   | ⟨x, hx⟩ => by
     have : 0 < ‖x‖ := by simpa using hx
@@ -84,17 +88,17 @@ theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metr
     specialize this hU.neg (by simpa) (-x) (by simpa) hx₀
     simp only [neg_smul, nhds_neg, Set.neg_smul, Filter.mem_neg] at this
     simpa using this
-  have hr₀ : 0 < r := lt_of_le_of_ne (by simpa using norm_nonneg y.1) hr.symm
+  have hr₀ : 0 < r := lt_of_le_of_ne (by simpa using norm_nonneg y.val) hr.symm
   lift x to Ioi (0 : ℝ) using hx₀
   have : V ×ˢ (Ioi (0 : ℝ) ↓∩ U) ∈ 𝓝 (y, x) :=
     prod_mem_nhds (hV.mem_nhds hyV) (hU.preimage_val.mem_nhds hxU)
   replace := image_mem_map (m := Subtype.val ∘ (homeomorphSphereProd E r hr₀).symm) this
   rw [← Filter.map_map, (homeomorphSphereProd _ r hr₀).symm.map_nhds_eq,
-    map_nhds_subtype_val, IsOpen.nhdsWithin_eq, homeomorphSphereProd_symm_apply_coe] at this
+    map_nhds_subtypeVal, IsOpen.nhdsWithin_eq, homeomorphSphereProd_symm_apply_coe] at this
   · filter_upwards [this]
     rintro _ ⟨⟨a, b⟩, ⟨ha, hb⟩, rfl⟩
     rw [Function.comp_apply, homeomorphSphereProd_symm_apply_coe]
     apply Set.smul_mem_smul
     exacts [hb, mem_image_of_mem _ ha]
   · exact isOpen_compl_singleton
-  · simp [x.2.out.ne', ne_zero_of_mem_sphere, hr₀.ne']
+  · simp [x.property.out.ne', ne_zero_of_mem_sphere, hr₀.ne']

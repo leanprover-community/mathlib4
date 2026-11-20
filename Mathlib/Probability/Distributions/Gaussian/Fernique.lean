@@ -27,7 +27,6 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 ## References
 
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
-
 -/
 
 public section

@@ -489,7 +489,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           rw [iSup_apply, ← @Real.iSup_const_zero s]
           congr!
           rename_i _ _ _ i
-          exact map_zero i.1
+          exact map_zero i.val
         add_le' := fun x y => by
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
@@ -503,19 +503,19 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, ?_⟩ i)
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, ?_⟩ i)
           <;> rw [mem_upperBounds, forall_mem_range]
-          <;> exact fun j => hq (mem_image_of_mem _ j.2) _
+          <;> exact fun j => hq (mem_image_of_mem _ j.property) _
         neg' := fun x => by
           simp only [iSup_apply]
           congr! 2
           rename_i _ _ _ i
-          exact i.1.neg' _
+          exact i.val.neg' _
         smul' := fun a x => by
           simp only [iSup_apply]
           rw [← smul_eq_mul,
             Real.smul_iSup_of_nonneg (norm_nonneg a) fun i : s => (i : Seminorm 𝕜 E) x]
           congr!
           rename_i _ _ _ i
-          exact i.1.smul' a x }
+          exact i.val.smul' a x }
     else ⊥
 
 protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
@@ -530,7 +530,8 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]
       rcases H with ⟨q, hq⟩
       exact
-        le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
+        le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.property) x⟩
+          ⟨p, hp⟩⟩⟩
 
 protected theorem bddAbove_range_iff {ι : Sort*} {p : ι → Seminorm 𝕜 E} :
     BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by
@@ -564,8 +565,8 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs�
   refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> have : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
-    exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
-  · exact ciSup_le fun q => hp q.2 x
+    exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.property x⟩ ⟨p, hp⟩
+  · exact ciSup_le fun q => hp q.property x
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -673,14 +674,14 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, ih]
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, ih]
 
 @[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
@@ -1181,8 +1182,8 @@ theorem continuous_finsetSum [TopologicalSpace E]
 /-- The supremum over a finite set of continuous seminorms is continuous. -/
 theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
-    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
-  exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
+    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) :=
+  continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by

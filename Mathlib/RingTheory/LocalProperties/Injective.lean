@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
-
 # Being injective is a local property
 
 ## Main Results
@@ -22,7 +21,6 @@ import Mathlib.RingTheory.LocalProperties.Exactness
 
 * `Module.injective_of_localization_maximal` : For module `M` over Noetherian ring `R`,
   being injective can be checked at localization at maximal ideals.
-
 -/
 
 universe u v
@@ -46,7 +44,7 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   obtain ⟨I, rfl⟩ : ∃ I, .localized' Rₛ S (Algebra.linearMap R Rₛ) I = Iₛ :=
     ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_under S]⟩
   have : FinitePresentation R I := finitePresentation_of_finite R I
-  obtain ⟨⟨g', a⟩, e : a.1 • g = _⟩ := surj S (mapExtendScalars S (I.toLocalized' _ _ _) f Rₛ) g
+  obtain ⟨⟨g', a⟩, e : a.val • g = _⟩ := surj S (mapExtendScalars S (I.toLocalized' _ _ _) f Rₛ) g
   obtain ⟨g', rfl⟩ := MB I g'
   refine ⟨IsLocalization.mk' Rₛ 1 a • mapExtendScalars S (Algebra.linearMap _ _) f _ g', ?_⟩
   apply ((Module.End.isUnit_iff _).mp ((IsLocalization.map_units Rₛ a).map
@@ -111,7 +109,6 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 include f in
 /--

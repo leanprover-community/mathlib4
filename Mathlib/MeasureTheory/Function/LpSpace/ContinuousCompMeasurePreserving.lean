@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`
 
@@ -50,11 +53,11 @@ and a measure-preserving continuous function `f : C(X, Y)`
 is continuous in both variables. -/
 theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     Continuous fun gf : Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν} ↦
-      compMeasurePreserving gf.2.1 gf.2.2 gf.1 := by
+      compMeasurePreserving gf.2.val gf.2.property gf.1 := by
   have hp₀ : p ≠ 0 := (one_pos.trans_le Fact.out).ne'
   refine continuous_prod_of_dense_continuous_lipschitzWith _ 1
     (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦
-      (isometry_compMeasurePreserving f.2).lipschitzWith
+      (isometry_compMeasurePreserving f.property).lipschitzWith
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
   induction f using Lp.simpleFunc.induction hp₀ hp with
@@ -62,7 +65,7 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   | @indicatorConst c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
-    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2
+    apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtypeVal _ f.property
       hs.nullMeasurableSet hνs.ne
     exact .of_forall Subtype.property
 

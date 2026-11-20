@@ -11,7 +11,6 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 
 /-!
 # Algebra structure on monoid algebras
-
 -/
 
 @[expose] public noncomputable section
@@ -74,12 +73,11 @@ end NonUnitalNonAssocAlgebra
 section Algebra
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/
 @[to_additive (dont_translate := R A)
-/-- The instance `Algebra R R[M]` whenever we have `Algebra R R`.
+/-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/]
 instance algebra : Algebra R A[M] where
@@ -118,7 +116,7 @@ variable (R M) in
 /-- The trivial monoid algebra is the base ring. -/]
 def uniqueAlgEquiv [Subsingleton M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
-  commutes' r := by simp
+  map_smul' _ _ := by simp
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
@@ -149,10 +147,9 @@ variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/]
 def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
   toRingEquiv := curryRingEquiv
-  commutes' r := by
+  map_smul' _ r := by
     ext
-    simp [curryRingEquiv, curryAddEquiv, algebraMap, algebraMap, Algebra.algebraMap,
-      singleOneRingHom, singleAddHom, curryAddEquiv, ← ofCoeff_single]
+    simp [curryRingEquiv, curryAddEquiv, curryAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
@@ -299,9 +296,8 @@ variable (R A) in
 @[to_additive (dont_translate := A)
 /-- If `e : M ≃+ N` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
-def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
-  toRingEquiv := mapDomainRingEquiv A e
-  commutes' _ := by ext; simp
+def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] :=
+  .ofCommutes (mapDomainRingEquiv A e) fun _ ↦ by ext; simp
 
 @[to_additive (attr := simp)]
 lemma coeff_domCongr (e : M ≃* N) (f : A[M]) (n : N) :
@@ -387,7 +383,7 @@ alias mapRangeRingHom_comp_algebraMap := mapRingHom_comp_algebraMap
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
-@[to_additive
+@[to_additive (dont_translate := R)
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
 noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
@@ -426,12 +422,12 @@ lemma mapRangeAlgHom_comp (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
-@[to_additive (attr := simps apply)
+@[to_additive (dont_translate := R) (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
 noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
-  __ := mapAlgHom M e
-  invFun := mapAlgHom M (e.symm : B →ₐ[R] A)
+  __ := mapAlgHom M e.toAlgHom
+  invFun := mapAlgHom M e.symm.toAlgHom
   left_inv _ := by aesop
   right_inv _ := by aesop
 
@@ -658,6 +654,45 @@ def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
 
 end lift
 
+section comapDomAlgAut
+
+variable {G : Type*} [Group G] [AddMonoid M] [DistribMulAction G M] [CommSemiring R]
+
+variable (R M G) in
+/-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
+by `R`-algebra automorphisms, through the exponents. -/
+def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
+  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
+
+theorem comapDomAlgAut_apply (g : G) :
+    comapDomAlgAut R M G g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
+  rfl
+
+/-- The action of `G` on `R[M]` through the exponents, `(g • x).coeff m = x.coeff (g⁻¹ • m)`.
+
+This is not an instance: for `M = R` it would conflict with actions on the coefficients. -/
+@[instance_reducible]
+def comapMulSemiringAction : MulSemiringAction G R[M] :=
+  .compHom _ (comapDomAlgAut R M G)
+
+attribute [local instance] comapMulSemiringAction
+
+theorem comapSMul_def (g : G) (x : R[M]) : g • x = comapDomAlgAut R M G g x :=
+  rfl
+
+@[simp]
+theorem coeff_comapSMul (g : G) (x : R[M]) (m : M) : (g • x).coeff m = x.coeff (g⁻¹ • m) := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+@[simp]
+theorem comapSMul_single (g : G) (m : M) (r : R) : g • single m r = single (g • m) r := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+theorem comapSMulCommClass : SMulCommClass G R R[M] where
+  smul_comm g r x := by simp [comapSMul_def]
+
+end comapDomAlgAut
+
 variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
 
 variable (R M) in
@@ -681,7 +716,7 @@ variable (R A M) in
 @[simps!]
 def toMultiplicativeAlgEquiv : AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
   toRingEquiv := toMultiplicative A M
-  commutes' r := by ext; simp
+  map_smul' _ r := by ext; simp
 
 @[simp]
 lemma toMultiplicativeAlgEquiv_single (m : M) (a : A) :
@@ -696,9 +731,8 @@ variable (R A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 @[simps!]
-def toAdditiveAlgEquiv : MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
-  toRingEquiv := toAdditive A M
-  commutes' r := by simp [toAdditive]
+def toAdditiveAlgEquiv : MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) :=
+  .ofCommutes (toAdditive A M) fun r ↦ by simp [toAdditive]
 
 @[simp]
 lemma toAdditiveAlgEquiv_single (m : M) (a : A) :

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
