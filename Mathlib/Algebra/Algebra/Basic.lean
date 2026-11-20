@@ -127,7 +127,7 @@ variable {S : Type*} [Semiring S] [Algebra R S]
 
 theorem mem_algebraMapSubmonoid_of_mem {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
-  Set.mem_image_of_mem (algebraMap R S) x.2
+  Set.mem_image_of_mem (algebraMap R S) x.property
 
 @[simp]
 lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=
@@ -186,7 +186,7 @@ instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
     map_mul' _ _ := rfl
     map_zero' := rfl
     map_add' _ _ := rfl }
-  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  commutes' r x := (Subring.mem_center_iff.1 r.property x).symm
   smul_def' _ _ := rfl
 
 end Ring

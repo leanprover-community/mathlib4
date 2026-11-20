@@ -422,7 +422,7 @@ theorem dependsOn_lmarginalPartialTraj [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
     exact hf fun i hi ↦ hxy i (Iic_subset_Iic.2 hba hi)
   rw [lmarginalPartialTraj_eq_lintegral_map mf, lmarginalPartialTraj_eq_lintegral_map mf]
   congrm ∫⁻ z : _, ?_ ∂(partialTraj κ a b).map _ (fun i ↦ ?_)
-  · exact hxy i.1 i.2
+  · exact hxy i.val i.property
   · refine hf.updateFinset _ ?_
     rwa [← coe_sdiff, Iic_sdiff_Ioc_self_of_le hab]
 

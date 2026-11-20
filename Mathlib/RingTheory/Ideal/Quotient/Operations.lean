@@ -377,8 +377,13 @@ instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I 
 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
-def Quotient.mkₐ (I : Ideal A) [I.IsTwoSided] : A →ₐ[R₁] A ⧸ I :=
-  ⟨⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
+def Quotient.mkₐ (I : Ideal A) [I.IsTwoSided] : A →ₐ[R₁] A ⧸ I where
+  toFun a := Submodule.Quotient.mk a
+  map_one' := rfl
+  map_zero' := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
 
 theorem Quotient.algHom_ext {I : Ideal A} [I.IsTwoSided]
     {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
@@ -1003,8 +1008,9 @@ section AlgebraQuotient
 variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
-def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
-  AlgHom.mk (quotLeftToQuotSup I J) fun _ => rfl
+def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J where
+  __ := quotLeftToQuotSup I J
+  commutes' _ := rfl
 
 @[simp]
 theorem quotLeftToQuotSupₐ_toRingHom :
@@ -1017,8 +1023,9 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
 
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
-def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
-  AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
+def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J where
+  __ := quotQuotToQuotSup I J
+  commutes' _ := rfl
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
@@ -1032,8 +1039,9 @@ theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQ
 
 /-- The composition of the algebra homomorphisms `A → (A / I)` and `(A / I) → (A / I) / J'`,
   where `J'` is the projection `J` in `A / I`. -/
-def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
-  AlgHom.mk (quotQuotMk I J) fun _ => rfl
+def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) where
+  __ := quotQuotMk I J
+  commutes' _ := rfl
 
 @[simp]
 theorem quotQuotMkₐ_toRingHom :
@@ -1046,8 +1054,9 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
 
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
   where `J'` is the projection `J` in `A / I`. -/
-def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
-  AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl
+def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) where
+  __ := liftSupQuotQuotMk I J
+  commutes' _ := rfl
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :

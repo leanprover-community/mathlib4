@@ -55,10 +55,10 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
       let σ := d.sectionsMk (hf.isoBot.hom ≫ g)
       let c : Cocone hf.F :=
         { pt := Z
-          ι.app j := σ.1 (op j)
+          ι.app j := σ.val (op j)
           ι.naturality _ _ f := by
             dsimp
-            simpa only [Category.comp_id] using! σ.2 f.op }
+            simpa only [Category.comp_id] using! σ.property f.op }
       exact ⟨hf.isColimit.desc c, by
         simp only [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
           d.sectionsMk_val_op_bot, Iso.inv_hom_id_assoc]⟩

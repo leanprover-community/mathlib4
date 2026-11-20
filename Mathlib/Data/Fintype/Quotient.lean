@@ -106,7 +106,7 @@ def finChoice (q : ∀ i, Quotient (S i)) :
   let e := Equiv.subtypeQuotientEquivQuotientSubtype (fun l : List ι ↦ ∀ i, i ∈ l)
     (fun s : Multiset ι ↦ ∀ i, i ∈ s) (fun i ↦ Iff.rfl) (fun _ _ ↦ Iff.rfl) ⟨_, Finset.mem_univ⟩
   refine e.liftOn
-    (fun l ↦ (listChoice fun i _ ↦ q i).map (fun a i ↦ a i (l.2 i)) ?_) ?_
+    (fun l ↦ (listChoice fun i _ ↦ q i).map (fun a i ↦ a i (l.property i)) ?_) ?_
   · exact fun _ _ h i ↦ h i _
   intro _ _ _
   refine ind_fintype_pi (fun a ↦ ?_) q

@@ -37,12 +37,13 @@ theorem surj_pi_of_finite {M N F ι : Type*} [Finite ι]
     [∀ i, CommMonoid (M i)] [∀ i, CommMonoid (N i)] (S : Π i, Submonoid (M i))
     {f : Π i, M i → N i} (hf : ∀ i, IsLocalizationMap (S i) (f i)) :
     IsLocalizationMap (Submonoid.pi .univ S) (Pi.map f) where
-  map_units m := Pi.isUnit_iff.mpr fun i ↦ (hf i).map_units ⟨_, m.2 i ⟨⟩⟩
+  map_units m := Pi.isUnit_iff.mpr fun i ↦ (hf i).map_units ⟨_, m.property i ⟨⟩⟩
   surj z := by
     choose x hx using fun i ↦ (hf i).surj
-    exact ⟨⟨fun i ↦ (x i (z i)).1, ⟨_, fun i _ ↦ (x i (z i)).2.2⟩⟩, funext fun i ↦ hx i (z i)⟩
+    exact ⟨⟨fun i ↦ (x i (z i)).1, ⟨_, fun i _ ↦ (x i (z i)).2.property⟩⟩,
+      funext fun i ↦ hx i (z i)⟩
   exists_of_eq {x y} eq := by
     choose c hc using fun i ↦ (hf i).exists_of_eq congr($eq i)
-    exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
+    exact ⟨⟨_, fun i _ ↦ (c i).property⟩, funext hc⟩
 
 end Submonoid.IsLocalizationMap

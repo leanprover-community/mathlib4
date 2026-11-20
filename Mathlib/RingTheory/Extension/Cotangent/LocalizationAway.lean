@@ -201,7 +201,7 @@ def cotangentCompLocalizationAwayEquiv :
       T ⊗[S] P.toExtension.Cotangent × (Generators.localizationAway T g).toExtension.Cotangent :=
   ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
-    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).1
+    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).val
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma cotangentCompLocalizationAwayEquiv_symm_inr :
@@ -218,7 +218,7 @@ lemma cotangentCompLocalizationAwayEquiv_symm_comp_inl :
   ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
     ⟨cotangentCompAwaySec g P x,
-      map_comp_cotangentCompAwaySec g P hx⟩).2.left.symm
+      map_comp_cotangentCompAwaySec g P hx⟩).property.left.symm
 
 @[simp]
 lemma cotangentCompLocalizationAwayEquiv_symm_inl (a : T ⊗[S] P.toExtension.Cotangent) :
@@ -232,7 +232,7 @@ lemma snd_comp_cotangentCompLocalizationAwayEquiv :
       Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom :=
   ((Cotangent.exact (localizationAway T g) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
-    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).2.right.symm
+    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).property.right.symm
 
 @[simp]
 lemma snd_cotangentCompLocalizationAwayEquiv
