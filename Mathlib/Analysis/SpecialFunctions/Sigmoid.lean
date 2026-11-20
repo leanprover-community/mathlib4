@@ -283,7 +283,7 @@ noncomputable def OrderEmbedding.sigmoid : ℝ ↪o I :=
 
 lemma Topology.isEmbedding_sigmoid : IsEmbedding unitInterval.sigmoid :=
   OrderEmbedding.sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
-    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.2.1 b.2.2)
+    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.property.1 b.property.2)
 
 lemma measurableEmbedding_sigmoid : MeasurableEmbedding unitInterval.sigmoid :=
   Topology.isEmbedding_sigmoid.measurableEmbedding <| unitInterval.range_sigmoid ▸ measurableSet_Ioo

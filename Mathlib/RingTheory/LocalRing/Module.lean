@@ -264,14 +264,14 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     rw [show v n = _ from hay n]
     exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
   let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
-  have a_eq i : a i j = a' i.1 := by simp_rw [a', dite_eq_left i.2]
+  have a_eq i : a i j = a' i.val := by simp_rw [a', dite_eq_left i.property]
   have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
     convert hfa j
     simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
   let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
   specialize ih (v + (c · • v n)) ?_ ?_
-  · convert! (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
+  · convert! (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.val) ?_).mpr h
     · ext; simp [tmul_add]; rfl
     simp_rw [Function.comp_def, c, ite_eq_left, neg_zero, zero_mul, map_zero]
   · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
@@ -388,7 +388,7 @@ variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
-    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.asIdeal) ((R ⧸ P.asIdeal) ⊗[R] M) = n) :
     Nonempty (Basis (Fin n) R M) := by
   let := @Quotient.field
   /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
@@ -415,7 +415,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 
 @[stacks 02M9] theorem free_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
-    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.asIdeal) ((R ⧸ P.asIdeal) ⊗[R] M) = n) :
     Free R M :=
   have ⟨b⟩ := nonempty_basis_of_flat_of_finrank_eq R M n rk
   .of_basis b

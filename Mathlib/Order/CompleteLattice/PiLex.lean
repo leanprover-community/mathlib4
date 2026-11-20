@@ -26,7 +26,7 @@ namespace Pi
 namespace Lex
 
 private def inf [WellFoundedLT ι] (s : Set (Πₗ i, α i)) (i : ι) : α i :=
-  ⨅ e : {e ∈ s | ∀ j < i, e j = inf s j}, e.1 i
+  ⨅ e : {e ∈ s | ∀ j < i, e j = inf s j}, e.val i
 termination_by wellFounded_lt.wrap i
 
 variable [WellFoundedLT ι]
@@ -36,7 +36,7 @@ instance : InfSet (Πₗ i, α i) where
   sInf s := toLex (inf s)
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
-    sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
+    sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.val i := by
   -- This still works without excluding `iInf_of_isEmpty`, but very slowly
   simp [sInf, inf, -iInf_of_isEmpty]
 
@@ -68,7 +68,7 @@ instance : SupSet (Πₗ i, α i) where
   sSup s := sInf (α := Πₗ i, (α i)ᵒᵈ) s
 
 theorem sSup_apply (s : Set (Πₗ i, α i)) (i : ι) :
-    sSup s i = ⨆ e : {e ∈ s | ∀ j < i, e j = sSup s j}, e.1 i :=
+    sSup s i = ⨆ e : {e ∈ s | ∀ j < i, e j = sSup s j}, e.val i :=
   sInf_apply (α := fun i ↦ (α i)ᵒᵈ) ..
 
 theorem le_sSup_apply {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
@@ -112,7 +112,7 @@ instance : InfSet (Colex ((i : ι) → α i)) where
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sInf_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
-    sInf s i = ⨅ e : {e ∈ s | ∀ j > i, e j = sInf s j}, e.1 i :=
+    sInf s i = ⨅ e : {e ∈ s | ∀ j > i, e j = sInf s j}, e.val i :=
   Lex.sInf_apply (ι := ιᵒᵈ) s i
 
 set_option backward.isDefEq.respectTransparency false in
@@ -134,7 +134,7 @@ instance : SupSet (Colex ((i : ι) → α i)) where
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sSup_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
-    sSup s i = ⨆ e : {e ∈ s | ∀ j > i, e j = sSup s j}, e.1 i :=
+    sSup s i = ⨆ e : {e ∈ s | ∀ j > i, e j = sSup s j}, e.val i :=
   Lex.sSup_apply (ι := ιᵒᵈ) s i
 
 set_option backward.isDefEq.respectTransparency false in

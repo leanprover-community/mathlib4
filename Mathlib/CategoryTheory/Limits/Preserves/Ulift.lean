@@ -45,7 +45,8 @@ noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
       preserves := fun {c} hc => by
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
-        obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
+        obtain ⟨x, hx₁, hx₂⟩ :=
+          (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).property
         exact ⟨⟨x⟩, fun i => ULift.ext (hx₁ i),
           fun y hy => ULift.ext (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
