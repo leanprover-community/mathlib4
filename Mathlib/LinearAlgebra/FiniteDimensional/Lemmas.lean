@@ -198,33 +198,56 @@ namespace Function.Exact
 
 open LinearMap
 
-variable {K : Type*} [DivisionRing K] {A B C D E : Type*} [AddCommGroup A] [Module K A]
-  [AddCommGroup B] [Module K B] [AddCommGroup C] [Module K C] [AddCommGroup D] [Module K D]
-  [AddCommGroup E] [Module K E] {f : A →ₗ[K] B} {g : B →ₗ[K] C} {h : C →ₗ[K] D} {j : D →ₗ[K] E}
+variable {R : Type*} [Ring R] {A B C D E : Type*} [AddCommGroup A] [Module R A]
+  [AddCommGroup B] [Module R B] [AddCommGroup C] [Module R C] [AddCommGroup D] [Module R D]
+  [AddCommGroup E] [Module R E] {f : A →ₗ[R] B} {g : B →ₗ[R] C} {h : C →ₗ[R] D} {j : D →ₗ[R] E}
 
-/-- In an exact sequence `A → B → C` of vector spaces,
-`dim B = rank (A → B) + rank (B → C)`. -/
-theorem finrank_range_add_finrank_range [Module.Finite K B] (hfg : Exact f g) :
-    finrank K (range f) + finrank K (range g) = finrank K B := by
-  rw [← g.finrank_range_add_finrank_ker, hfg.linearMap_ker_eq, add_comm]
+/-- In an exact sequence `A → B → C` with `B` finite,
+`rank (A → B) + rank (B → C) ≤ rank B`. -/
+theorem finrank_range_add_finrank_range_le [StrongRankCondition R] [Module.Finite R B]
+    (hfg : Exact f g) : finrank R (range f) + finrank R (range g) ≤ finrank R B := by
+  have := Module.finrank_quotient_add_finrank_le (ker g)
+  rwa [g.quotKerEquivRange.finrank_eq, hfg.linearMap_ker_eq, add_comm] at this
 
-/-- In an exact sequence `A → B → C → D → E` of vector spaces,
+/-- In an exact sequence `A → B → C` with `B` finite and `range (A → B)`, `range (B → C)` free,
+`rank B = rank (A → B) + rank (B → C)`. This applies to all finite-dimensional vector spaces. -/
+theorem finrank_range_add_finrank_range [StrongRankCondition R] [Module.Finite R B]
+    [Module.Free R (range f)] [Module.Free R (range g)] (hfg : Exact f g) :
+    finrank R (range f) + finrank R (range g) = finrank R B := by
+  have hex : Exact (range f).subtype g.rangeRestrict :=
+    LinearMap.exact_iff.2 (by rw [ker_rangeRestrict, range_subtype, hfg.linearMap_ker_eq])
+  obtain ⟨l, hl⟩ := g.rangeRestrict.exists_rightInverse_of_surjective g.range_rangeRestrict
+  let e := (hex.splitSurjectiveEquiv (range f).injective_subtype ⟨l, hl⟩).1
+  have : Module.Finite R (range f) :=
+    .of_surjective (fst R _ _ ∘ₗ e.toLinearMap) (Prod.fst_surjective.comp e.surjective)
+  rw [e.finrank_eq, Module.finrank_prod]
+
+/-- In an exact sequence `A → B → C → D → E` with `ker (D → E)` projective,
 `C ≃ coker (A → B) × ker (D → E)`. -/
-noncomputable def linearEquivQuotientRangeProdKer (hfg : Exact f g) (hgh : Exact g h)
-    (hhj : Exact h j) : C ≃ₗ[K] (B ⧸ range f) × ker j :=
-  have hq := (ker h).exists_isCompl.choose_spec
-  (Submodule.prodEquivOfIsCompl _ _ hq).symm ≪≫ₗ
-    ((LinearEquiv.ofEq _ _ hgh.linearMap_ker_eq ≪≫ₗ g.quotKerEquivRange.symm ≪≫ₗ
+noncomputable def linearEquivQuotientRangeProdKer [Module.Projective R (ker j)]
+    (hfg : Exact f g) (hgh : Exact g h) (hhj : Exact h j) : C ≃ₗ[R] (B ⧸ range f) × ker j :=
+  have hex : Exact (ker h).subtype h.rangeRestrict :=
+    LinearMap.exact_iff.2 (by rw [ker_rangeRestrict, range_subtype])
+  have : Module.Projective R (range h) := .of_equiv (LinearEquiv.ofEq _ _ hhj.linearMap_ker_eq)
+  have hs := h.rangeRestrict.exists_rightInverse_of_surjective h.range_rangeRestrict
+  (hex.splitSurjectiveEquiv (ker h).injective_subtype ⟨hs.choose, hs.choose_spec⟩).1 ≪≫ₗ
+    (LinearEquiv.ofEq _ _ hgh.linearMap_ker_eq ≪≫ₗ g.quotKerEquivRange.symm ≪≫ₗ
       Submodule.quotEquivOfEq _ _ hfg.linearMap_ker_eq).prodCongr
-    ((Submodule.quotientEquivOfIsCompl _ _ hq).symm ≪≫ₗ h.quotKerEquivRange ≪≫ₗ
-      LinearEquiv.ofEq _ _ hhj.linearMap_ker_eq.symm))
+    (LinearEquiv.ofEq _ _ hhj.linearMap_ker_eq.symm)
 
-/-- In an exact sequence `A → B → C → D → E` of vector spaces,
-`dim C = dim coker (A → B) + dim ker (D → E)`. -/
-theorem finrank_eq_finrank_quotient_range_add_finrank_ker [Module.Finite K B] [Module.Finite K D]
+/-- In an exact sequence `A → B → C → D → E` with `C` finite and `coker (A → B)`,
+`ker (D → E)` free, `rank C = rank coker (A → B) + rank ker (D → E)`. This applies to all
+finite-dimensional vector spaces. -/
+theorem finrank_eq_finrank_quotient_range_add_finrank_ker [StrongRankCondition R]
+    [Module.Finite R C] [Module.Free R (B ⧸ range f)] [Module.Free R (ker j)]
     (hfg : Exact f g) (hgh : Exact g h) (hhj : Exact h j) :
-    finrank K C = finrank K (B ⧸ range f) + finrank K (ker j) := by
-  rw [(hfg.linearEquivQuotientRangeProdKer hgh hhj).finrank_eq, Module.finrank_prod]
+    finrank R C = finrank R (B ⧸ range f) + finrank R (ker j) := by
+  let e := hfg.linearEquivQuotientRangeProdKer hgh hhj
+  have : Module.Finite R (B ⧸ range f) :=
+    .of_surjective (fst R _ _ ∘ₗ e.toLinearMap) (Prod.fst_surjective.comp e.surjective)
+  have : Module.Finite R (ker j) :=
+    .of_surjective (snd R _ _ ∘ₗ e.toLinearMap) (Prod.snd_surjective.comp e.surjective)
+  rw [e.finrank_eq, Module.finrank_prod]
 
 end Function.Exact
 
