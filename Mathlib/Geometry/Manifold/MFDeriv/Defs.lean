@@ -8,6 +8,8 @@ module
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
 /-!
 # The derivative of functions between manifolds
 
@@ -208,13 +210,13 @@ def UniqueMDiffOn (s : Set M) :=
   ∀ x ∈ s, UniqueMDiffWithinAt I s x
 
 variable (I I') in
-/-- `MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
+/-- {lean}`MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
 has a derivative at the point `x` within the set `s`.
-This is a generalization of `DifferentiableWithinAt` to manifolds.
+This is a generalization of {name}`DifferentiableWithinAt` to manifolds.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
+and in particular by coincidence {lean}`writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
@@ -237,14 +239,14 @@ theorem MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt
   mdifferentiableWithinAt_iff' .. |>.1 hf |>.2
 
 variable (I I') in
-/-- `MDifferentiableAt I I' f x` indicates that the function `f` between manifolds
-has a derivative at the point `x`.
-This is a generalization of `DifferentiableAt` to manifolds.
+/-- {lean}`MDifferentiableAt I I' f x` indicates that the function {lean}`f` between manifolds
+has a derivative at the point {lean}`x`.
+This is a generalization of {name}`DifferentiableAt` to manifolds.
 
-We require continuity in the definition, as otherwise points close to `x` could be sent by
-`f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
-this would not mean anything relevant. -/
+We require continuity in the definition, as otherwise points close to {lean}`x` could be sent by
+{lean}`f` outside of the chart domain around {lean}`f x`. Then the chart could do anything to the
+image points, and in particular by coincidence {lean}`writtenInExtChartAt I I' x f` could be
+differentiable, while this would not mean anything relevant. -/
 def MDifferentiableAt (f : M → M') (x : M) :=
   LiftPropAt (DifferentiableWithinAtProp I I') f x
 
@@ -265,16 +267,16 @@ theorem MDifferentiableAt.differentiableWithinAt_writtenInExtChartAt {f : M → 
   mdifferentiableAt_iff .. |>.1 hf |>.2
 
 variable (I I') in
-/-- `MDifferentiableOn I I' f s` indicates that the function `f` between manifolds
-has a derivative within `s` at all points of `s`.
-This is a generalization of `DifferentiableOn` to manifolds. -/
+/-- {lean}`MDifferentiableOn I I' f s` indicates that the function {lean}`f` between manifolds
+has a derivative within {lean}`s` at all points of {lean}`s`.
+This is a generalization of {name}`DifferentiableOn` to manifolds. -/
 def MDifferentiableOn (f : M → M') (s : Set M) :=
   ∀ x ∈ s, MDifferentiableWithinAt I I' f s x
 
 variable (I I') in
-/-- `MDifferentiable I I' f` indicates that the function `f` between manifolds
+/-- {lean}`MDifferentiable I I' f` indicates that the function {lean}`f` between manifolds
 has a derivative everywhere.
-This is a generalization of `Differentiable` to manifolds. -/
+This is a generalization of {name}`Differentiable` to manifolds. -/
 def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 
@@ -284,16 +286,16 @@ def OpenPartialHomeomorph.MDifferentiable (f : OpenPartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 
 variable (I I') in
-/-- `HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
+/-- {lean}`HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
 has, at the point `x` and within the set `s`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
-This is a generalization of `HasFDerivWithinAt` to manifolds (as indicated by the prefix `m`).
+This is a generalization of {name}`HasFDerivWithinAt` to manifolds (as indicated by the prefix `m`).
 The order of arguments is changed as the type of the derivative `f'` depends on the choice of `x`.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
+and in particular by coincidence {lean}`writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
@@ -303,13 +305,13 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 
 variable (I I') in
-/-- `HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
+/-- {lean}`HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
+and in particular by coincidence {lean}`writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
@@ -319,7 +321,7 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
 
 open scoped Classical in
 variable (I I') in
-/-- `mfderivWithin I I' f s x`, given a function `f` between two manifolds,
+/-- {lean}`mfderivWithin I I' f s x`, given a function `f` between two manifolds,
 is the derivative of `f` at `x` within `s`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
@@ -331,8 +333,9 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
 
 open scoped Classical in
 variable (I I') in
-/-- `mfderiv I I' f x`, given a function `f` between two manifolds, is the derivative of `f` at `x`,
-as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
+/-- {lean}`mfderiv I I' f x`, given a function {lean}`f` between two manifolds, is the derivative of
+{lean}`f` at {lean}`x`, as a continuous linear map from the tangent space at {lean}`x` to the
+tangent space at {lean}`f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
     ((tangentSpaceCastModel I' (f x)).symm) ∘L
@@ -341,14 +344,14 @@ def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I'
   else 0
 
 variable (I I') in
-/-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
+/-- {lean}`tangentMapWithin I I' f s` is the derivative of {lean}`f : M → M'` within a set `s`,
 as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.proj, mfderivWithin I I' f s p.proj p.snd⟩
 
 variable (I I') in
-/-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
-`TM` and `TM'`. -/
+/-- {lean}`tangentMap I I' f` is the derivative of {lean}`f : M → M'` as a map between the tangent
+bundles `TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.proj, mfderiv I I' f p.proj p.snd⟩
 
