@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Full subcategories of Galois categories
 

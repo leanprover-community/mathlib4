@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from the category of the ordered set `ℕ`
 

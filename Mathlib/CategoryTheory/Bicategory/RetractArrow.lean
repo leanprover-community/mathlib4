@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Retracts of 1-morphisms in bicategories
 
