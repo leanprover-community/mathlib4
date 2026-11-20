@@ -110,8 +110,6 @@ theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mu
 
 end
 
-section Residuation
-
 namespace AddQuantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
@@ -204,10 +202,6 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
 
 end Quantale
 
-end Residuation
-
-section Zero
-
 namespace Quantale
 
 variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
@@ -224,10 +218,6 @@ theorem mul_bot : x * ⊥ = ⊥ := by
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
 
 end Quantale
-
-end Zero
-
-section Twosidedness
 
 namespace AddQuantale
 
@@ -284,5 +274,3 @@ and strict right-sided. -/
 def IsStrictMulTwosided (x : α) := IsStrictMulLeftsided x ∧ IsStrictMulRightsided x
 
 end Quantale
-
-end Twosidedness
