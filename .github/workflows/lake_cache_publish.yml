@@ -1,0 +1,264 @@
+name: Publish Lake cache
+
+# Publishes Lake's cache for every master commit that "continuous integration"
+# built, to the bucket that https://lakecache.mathlib.org serves.
+# `lake exe cache lake put` and `lake exe cache lake get` (`Cache/Lake.lean`)
+# define the layout:
+#   revisions/mathlib4/<name>/<toolchain-slug>/<mathlib-sha>.jsonl
+#   artifacts/mathlib4/<name>/<toolchain-slug>/<content-hash>.art
+# `<name>` is mathlib or a package of its manifest.
+#
+# The `stage` job runs Mathlib code and holds no credential. It hydrates the
+# build from the legacy cache, which the triggering run published for the same
+# commit, so Lake only packs the modules into its artifact cache and compiles
+# nothing. A warm start from the nearest published ancestor limits the packing
+# to the modules that changed. The `publish` job uploads the staged set with a
+# short-lived credential from the cache broker.
+#
+# Required repository configuration:
+#   Environment `lake-cache-upload-master`: its deployment branch policy admits
+#     only master. The broker grants its OIDC token the bucket's
+#     `artifacts/mathlib4/` and `revisions/mathlib4/` prefixes.
+#   Secret MATHLIB_LAKE_CACHE_R2_PUT_URL: the bucket's S3 URL,
+#     `https://<account>.r2.cloudflarestorage.com/<bucket>`.
+#   Variable MATHLIB_CACHE_BROKER_URL: the cache broker, as for `upload_cache`.
+
+on:
+  workflow_run:
+    workflows: ["continuous integration"]
+    branches: [master]
+    types: [completed]
+  workflow_dispatch:
+
+# No concurrency group: every master commit gets its own revision files, and
+# concurrent runs write disjoint revision files and identical artifacts.
+
+permissions:
+  contents: read
+
+env:
+  BUILT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+  MATHLIB_LAKE_CACHE_GET_URL: https://lakecache.mathlib.org
+
+jobs:
+  stage:
+    name: Stage Lake cache
+    # `workflow_run` matches the triggering workflow by name and branch name
+    # only, which doesn't identify it. Only act on runs for pushes to this
+    # repository.
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name == 'workflow_dispatch'
+      || (github.event.workflow_run.conclusion == 'success'
+          && github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: pr
+    timeout-minutes: 90
+    # This job runs Mathlib code, so it gets no credential and no OIDC token.
+    # The `publish` job reads its result as data.
+    permissions:
+      contents: read
+    env:
+      LAKE_CACHE_DIR: .lake/cache
+      LAKE_NO_CACHE: true
+      # Let every package in the workspace write Lake's artifact cache, so
+      # the checkout stays unpatched.
+      LAKE_ARTIFACT_CACHE: true
+    defaults:
+      run:
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw mathlib/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env LAKE_ARTIFACT_CACHE -- bash -euxo pipefail {0}
+    steps:
+      # For a tag push, `head_branch` is the tag name, so also check that the
+      # commit is on the master branch.
+      - name: Check that the built commit is on master
+        shell: bash -euo pipefail {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          master_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/master" --jq .commit.sha)"
+          status="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${BUILT_SHA}...${master_sha}?per_page=1" --jq .status)"
+          if [[ "${status}" != "identical" && "${status}" != "ahead" ]]; then
+            echo "::error::${BUILT_SHA} is not on master (compare status: ${status})."
+            exit 1
+          fi
+
+      # The history reaches the warm start's ancestor.
+      - name: Checkout the built commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.BUILT_SHA }}
+          fetch-depth: 100
+          path: mathlib
+          persist-credentials: false
+
+      - name: Create empty directories (landrun prerequisites)
+        shell: bash -euo pipefail {0}
+        run: |
+          mkdir -p mathlib/.lake/ "$HOME/.cache/mathlib/" lake-cache-staging
+
+      - name: install elan
+        shell: bash -euo pipefail {0}
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: build the cache tool
+        shell: bash -euo pipefail {0}
+        run: |
+          cd mathlib
+          lake build cache
+          echo "CACHE_BIN=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
+      - name: Hydrate the build from the legacy cache
+        shell: bash -euo pipefail {0}
+        run: |
+          cd mathlib
+          lake env "$CACHE_BIN" get
+          # The dependency names, for the landrun steps below, which have no `jq`.
+          jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json > .lake/lake-deps.txt
+
+      # The nearest first-parent ancestor with a published revision file of
+      # mathlib. A toolchain's first commit has none and packs every module.
+      - name: Warm start from the nearest published ancestor
+        shell: bash -euo pipefail {0}
+        run: |
+          cd mathlib
+          slug="$(printf %s "$(cat lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
+          for sha in $(git rev-list --first-parent --max-count=99 HEAD~1); do
+            if curl -fsI "$MATHLIB_LAKE_CACHE_GET_URL/revisions/mathlib4/mathlib/$slug/$sha.jsonl" >/dev/null 2>&1; then
+              lake env "$CACHE_BIN" lake get --rev="$sha" \
+                || echo "::warning::warm start from ${sha:0:12} failed; Lake packs every module"
+              exit 0
+            fi
+          done
+          echo "::notice::no published ancestor on $slug; Lake packs every module"
+
+      # `-o` records mathlib's mappings. Hydrated modules are up to date, so
+      # Lake only saves their outputs to its artifact cache.
+      - name: Record mathlib's mappings
+        run: |
+          cd mathlib
+          lake build Mathlib -o .lake/lake-outputs/mathlib.jsonl 2>&1 | tee .lake/lake-build.log
+          echo "Built: $(grep -cE '\] Built ' .lake/lake-build.log || true)"
+
+      # `--package` makes `-o` record a dependency's mappings, under mathlib's
+      # pins. The targets are the dependency's default modules, which include
+      # modules mathlib does not import. Building them as modules links no
+      # executable.
+      - name: Record the dependencies' mappings
+        run: |
+          cd mathlib
+          while read -r name; do
+            mods="$(lake query "@$name:defaultModules" | sed 's/^/+/')"
+            lake build $mods --package="$name" -o ".lake/lake-outputs/$name.jsonl"
+          done < .lake/lake-deps.txt
+
+      # One directory per package, the input layout of `cache lake put`.
+      - name: Stage the packages
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw mathlib/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
+        run: |
+          cd mathlib
+          for outputs in .lake/lake-outputs/*.jsonl; do
+            name="$(basename "$outputs" .jsonl)"
+            lake cache stage "$outputs" "../lake-cache-staging/$name"
+          done
+          du -sh ../lake-cache-staging
+
+      # The staging directory is uploaded as is, so it must hold only regular
+      # files.
+      - name: Check the staging contents
+        shell: bash -euo pipefail {0}
+        run: |
+          other=$(find lake-cache-staging -mindepth 1 ! -type f ! -type d)
+          if [ -n "${other}" ]; then
+            echo "::error::lake-cache-staging contains entries that are not regular files:"
+            echo "${other}"
+            exit 1
+          fi
+
+      - name: Upload the staging directory
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lake-cache-staging
+          path: lake-cache-staging/
+          # The `.ltar` files are already zstd-compressed.
+          compression-level: 0
+          retention-days: 3
+          if-no-files-found: error
+
+  publish:
+    name: Publish Lake cache
+    needs: stage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Pins the OIDC `sub` claim to `...:environment:lake-cache-upload-master`,
+    # which the broker grants the bucket's write prefixes.
+    environment:
+      name: lake-cache-upload-master
+      deployment: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download the staging directory
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: lake-cache-staging
+          path: ${{ runner.temp }}/lake-cache-staging
+
+      # The cache tool of the built commit, which is on master.
+      - name: Checkout the built commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.BUILT_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          reinstall-transient-toolchain: true
+
+      # `cache lake put` uploads with curl 8.20 or later.
+      - name: Install curl
+        env:
+          PINNED_CURL_RELEASE: v8.23.0
+          PINNED_CURL_SHA256: 83a56256434a3d3f6edbdad2cbdb1f23a44fe8fd52968d18ab57763fdc0afba0
+        run: |
+          dir="$RUNNER_TEMP/curl-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o curl \
+            "https://github.com/leanprover-community/static-curl/releases/download/${PINNED_CURL_RELEASE}/curl-x86_64-linux-static"
+          echo "${PINNED_CURL_SHA256}  curl" | sha256sum -c -
+          chmod u+x curl
+          echo "$dir" >> "$GITHUB_PATH"
+          ./curl --version
+
+      - name: build the cache tool
+        run: |
+          lake build cache
+          echo "CACHE_BIN=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
+      - name: Mint R2 credentials
+        id: mint-r2
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          audience: mathlib-cache-broker
+
+      - name: Upload the staged packages
+        env:
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          # R2 signs every request in the region `auto`.
+          MATHLIB_CACHE_S3_REGION: auto
+          MATHLIB_LAKE_CACHE_PUT_URL: ${{ secrets.MATHLIB_LAKE_CACHE_R2_PUT_URL }}
+        run: |
+          lake env "$CACHE_BIN" lake put "$RUNNER_TEMP/lake-cache-staging"
