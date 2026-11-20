@@ -143,6 +143,13 @@ instance : CoeHead (𝓞 K) K := ⟨val⟩
 
 lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 
+/-- The coercion to `K` commutes with the action of a group acting on `K`.
+See `coe_smul` for the action of `𝓞 K` on `𝓞 L`. -/
+@[simp, norm_cast]
+theorem coe_smul' {G : Type*} [Group G] [MulSemiringAction G K] (g : G) (x : 𝓞 K) :
+    ((g • x : 𝓞 K) : K) = g • (x : K) :=
+  rfl
+
 @[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
 
@@ -351,20 +358,29 @@ def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ
 
 section extension
 
-variable (K L : Type*) [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 instance : IsScalarTower (𝓞 K) (𝓞 L) L :=
   IsScalarTower.of_algebraMap_eq' rfl
 
+/-- The coercion to `L` commutes with the action of `𝓞 K` on `𝓞 L`.
+See `coe_smul'` for the action of a group acting on `L`. -/
+@[simp, norm_cast]
+theorem coe_smul (x : 𝓞 K) (y : 𝓞 L) : ((x • y : 𝓞 L) : L) = x • (y : L) :=
+  algebraMap.coe_smul x y L
+
+instance {G : Type*} [Group G] [MulSemiringAction G L] [SMulCommClass G K L] :
+    SMulCommClass G (𝓞 K) L :=
+  ⟨fun g x y ↦ by simp [← algebraMap_smul K, smul_comm]⟩
+
 instance {G : Type*} [Group G] [MulSemiringAction G L] [SMulCommClass G K L] :
     SMulCommClass G (𝓞 K) (𝓞 L) :=
-  ⟨fun _ _ _ ↦ by
-    simp_rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap, Algebra.smul_def,
-      algebraMap.smul', map_mul, smul_mul', ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply (𝓞 K) K L, smul_algebraMap, algebraMap.smul']⟩
+  ⟨fun _ _ _ ↦ by simp [RingOfIntegers.ext_iff, smul_comm]⟩
 
 instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
   IsIntegralClosure.tower_top (R := ℤ)
+
+variable (K L)
 
 /-- The ring of integers of `L` is isomorphic to any integral closure of `𝓞 K` in `L` -/
 protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) R] [Algebra R L]
