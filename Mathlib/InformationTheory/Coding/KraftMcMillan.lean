@@ -12,6 +12,9 @@ public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.SpecificLimits.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kraft-McMillan Inequality
 
@@ -32,7 +35,7 @@ distinct, and the count is bounded by the number of strings of each length.
 
 ## References
 
-* [B. McMillan, *Two inequalities implied by unique decipherability*][mcmillan1956]
+* {cite "mcmillan1956"}[B. McMillan, *Two inequalities implied by unique decipherability*]
 -/
 
 namespace InformationTheory
