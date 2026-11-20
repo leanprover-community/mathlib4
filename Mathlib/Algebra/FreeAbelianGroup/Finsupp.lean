@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Module.End
 public import Mathlib.GroupTheory.FreeAbelianGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphism between `FreeAddCommGroup X` and `X →₀ ℤ`
 
@@ -17,9 +20,9 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAddCommG
 
 ## Main declarations
 
-- `FreeAddCommGroup.equivFinsupp`: group isomorphism between `FreeAddCommGroup X` and `X →₀ ℤ`
-- `FreeAddCommGroup.coeff`: the multiplicity of `x : X` in `a : FreeAddCommGroup X`
-- `FreeAddCommGroup.support`: the finset of `x : X` that occur in `a : FreeAddCommGroup X`
+* `FreeAddCommGroup.equivFinsupp`: group isomorphism between `FreeAddCommGroup X` and `X →₀ ℤ`
+* `FreeAddCommGroup.coeff`: the multiplicity of `x : X` in `a : FreeAddCommGroup X`
+* `FreeAddCommGroup.support`: the finset of `x : X` that occur in `a : FreeAddCommGroup X`
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Upto
 public import Mathlib.Data.Part
 public import Mathlib.Data.Stream.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed point
 
@@ -55,13 +58,14 @@ def fixAux {p : ℕ → Prop} (i : Nat.Upto p) (g : ∀ j : Nat.Upto p, i < j �
     ∀ a, Part (β a) :=
   f fun x : α => (assert ¬p i.val) fun h : ¬p i.val => g (i.succ h) (Nat.lt_succ_self _) x
 
-/-- The least fixed point of `f`.
+/--
+The least fixed point of `f`.
 
 If `f` is a continuous function (according to complete partial orders),
 it satisfies the equations:
 
-  1. `fix f = f (fix f)`          (is a fixed point)
-  2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
+1. `fix f = f (fix f)`          (is a fixed point)
+2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
 protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>

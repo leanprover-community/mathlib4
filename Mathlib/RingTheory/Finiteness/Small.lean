@@ -8,7 +8,12 @@ module
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
-/-! # Smallness properties of modules and algebras -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smallness properties of modules and algebras
+-/
 
 public section
 

@@ -10,12 +10,15 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Nat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The natural numbers form a semiring
 
 This file contains the commutative semiring instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section

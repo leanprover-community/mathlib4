@@ -9,7 +9,12 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
 
-/-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# C⋆-algebraic facts about `a⁺` and `a⁻`.
+-/
 
 public section
 

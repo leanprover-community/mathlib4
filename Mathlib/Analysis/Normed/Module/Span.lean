@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The span of a single vector
 

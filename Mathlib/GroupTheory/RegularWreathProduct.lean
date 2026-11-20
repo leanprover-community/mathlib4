@@ -10,6 +10,9 @@ public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.GroupTheory.Sylow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular wreath product
 
@@ -24,14 +27,15 @@ operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂
 * `inl` : The canonical map `Q →* D ≀ᵣ Q`.
 * `toPerm` : The homomorphism from `D ≀ᵣ Q` to `Equiv.Perm (Λ × Q)`, where `Λ` is a `D`-set.
 * `IteratedWreathProduct G n` : The iterated wreath product of a group `G` `n` times.
-* `Sylow.mulEquivIteratedWreathProduct` : The isomorphism between the Sylow `p`-subgroup of `Perm
-  p^n` and the iterated wreath product of the cyclic group of order `p` `n` times.
+* `Sylow.mulEquivIteratedWreathProduct` : The isomorphism between the Sylow `p`-subgroup of
+  `Perm p^n` and the iterated wreath product of the cyclic group of order `p` `n` times.
 
 ## Notation
 
 This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`.
 
 ## Tags
+
 group, regular wreath product, sylow p-subgroup
 -/
 

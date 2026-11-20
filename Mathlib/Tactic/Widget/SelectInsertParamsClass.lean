@@ -9,7 +9,11 @@ public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Widget.InteractiveGoal
 public import Mathlib.Init
 
-/-! # SelectInsertParamsClass
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# SelectInsertParamsClass
 
 Defines the basic class of parameters for a select and insert widget.
 

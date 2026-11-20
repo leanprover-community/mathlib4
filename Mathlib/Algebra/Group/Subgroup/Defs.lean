@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups
 
@@ -23,24 +26,17 @@ Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and 
 
 Notation used here:
 
-- `G N` are `Group`s
-
-- `A` is an `AddGroup`
-
-- `H K` are `Subgroup`s of `G` or `AddSubgroup`s of `A`
-
-- `x` is an element of type `G` or type `A`
-
-- `f g : N →* G` are group homomorphisms
-
-- `s k` are sets of elements of type `G`
+* `G N` are `Group`s
+* `A` is an `AddGroup`
+* `H K` are `Subgroup`s of `G` or `AddSubgroup`s of `A`
+* `x` is an element of type `G` or type `A`
+* `f g : N →* G` are group homomorphisms
+* `s k` are sets of elements of type `G`
 
 Definitions in the file:
 
 * `Subgroup G` : the type of subgroups of a group `G`
-
 * `AddSubgroup A` : the type of subgroups of an additive group `A`
-
 * `Subgroup.subtype` : the natural group homomorphism from a subgroup of group `G` to `G`
 
 ## Implementation notes
@@ -49,6 +45,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 

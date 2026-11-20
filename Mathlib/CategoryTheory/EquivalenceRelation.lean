@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence relations
 
@@ -21,7 +24,7 @@ In general, kernel pairs in any category are internal equivalence relations.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/congruence>
+* [https://ncatlab.org/nlab/show/congruence](https://ncatlab.org/nlab/show/congruence)
 -/
 
 @[expose] public section
@@ -291,8 +294,10 @@ class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) 
     Nonempty (UniversallyEffectiveEquivalenceRelation p₁ p₂)
 
 variable (C) in
-/-- A category in which every equivalence relation is universally effective. This is condition (c)
-in Giraud's characterisation of Grothendieck toposes, [SGA4, IV, 1.1.2][sga-4-tome-1]. -/
+/--
+A category in which every equivalence relation is universally effective. This is condition (c)
+in Giraud's characterisation of Grothendieck toposes, \[SGA4, IV, 1.1.2\]\[sga-4-tome-1\].
+-/
 class IsUniversallyEffectiveEquivalenceRelationCategory : Prop where
   /-- Every equivalence relation `p₁, p₂ : R ⟶ A` is universally effective. -/
   isUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)

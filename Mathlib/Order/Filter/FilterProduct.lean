@@ -10,11 +10,14 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Order.Filter.Ring
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultraproducts
 
 If `φ` is an ultrafilter, then the space of germs of functions `f : α → β` at `φ` is called
-the *ultraproduct*. In this file we prove properties of ultraproducts that rely on `φ` being an
+the _ultraproduct_. In this file we prove properties of ultraproducts that rely on `φ` being an
 ultrafilter. Definitions and properties that work for any filter should go to `Order.Filter.Germ`.
 
 ## Tags

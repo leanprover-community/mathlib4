@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Limits.Constructions.WidePullbackOfTerminal
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extradegeneracy for the Cech object
 

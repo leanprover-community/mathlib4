@@ -10,6 +10,9 @@ public meta import Lean.Meta.Tactic.TryThis
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linting against numeric projections
 
@@ -22,7 +25,7 @@ downstream).
 
 ## TODO
 
-- Should we necessarily see through type defs? Maybe we should insist that the typedefs themselves
+* Should we necessarily see through type defs? Maybe we should insist that the typedefs themselves
   are tagged instead.
 -/
 

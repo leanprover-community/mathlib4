@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lists from functions
 
@@ -17,8 +20,8 @@ of length `n`.
 
 The main statements pertain to lists generated using `List.ofFn`
 
-- `List.get?_ofFn`, which tells us the nth element of such a list
-- `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
+* `List.get?_ofFn`, which tells us the nth element of such a list
+* `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
 
@@ -154,9 +157,11 @@ def equivSigmaTuple : List α ≃ Σ n, Fin n → α where
   right_inv := fun ⟨_, f⟩ =>
     Fin.sigma_eq_of_eq_comp_cast length_ofFn <| funext fun i => get_ofFn f i
 
-/-- A recursor for lists that expands a list into a function mapping to its elements.
+/--
+A recursor for lists that expands a list into a function mapping to its elements.
 
-This can be used with `induction l using List.ofFnRec`. -/
+This can be used with `induction l using List.ofFnRec`.
+-/
 @[elab_as_elim]
 def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
   cast congr(C $l.ofFn_get) <|

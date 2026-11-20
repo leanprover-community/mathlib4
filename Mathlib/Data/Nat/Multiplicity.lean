@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Choose.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Natural number multiplicity
 
@@ -90,10 +93,12 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
   _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_isUnit n
 
-/-- **Legendre's Theorem**
+/--
+*Legendre's Theorem*
 
 The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
-over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
+over the finset `Ico 1 b` where `b` is any bound greater than `log p n`.
+-/
 theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
     ∀ {n b : ℕ}, log p n < b → emultiplicity p n ! = (∑ i ∈ Ico 1 b, n / p ^ i : ℕ)
   | 0, b, _ => by simp [Ico, hp.emultiplicity_one]

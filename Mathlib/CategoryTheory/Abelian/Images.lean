@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The abelian image and coimage.
 
@@ -93,11 +96,13 @@ section Comparison
 
 variable [HasCokernel f] [HasKernel f] [HasKernel (cokernel.π f)] [HasCokernel (kernel.ι f)]
 
-/-- The canonical map from the abelian coimage to the abelian image.
+/--
+The canonical map from the abelian coimage to the abelian image.
 In any abelian category this is an isomorphism.
 
 Conversely, any additive category with kernels and cokernels and
-in which this is always an isomorphism, is abelian. -/
+in which this is always an isomorphism, is abelian.
+-/
 @[stacks 0107]
 def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
   cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) (by ext; simp)

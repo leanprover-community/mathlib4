@@ -8,13 +8,17 @@ module
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for calculating the degree of univariate polynomials
 
 ## Main results
-- `degree_mul` : The degree of the product is the sum of degrees
-- `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
-    The leading coefficient of a sum is determined by the leading coefficients and degrees
+
+* `degree_mul` : The degree of the product is the sum of degrees
+* `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
+  The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
 @[expose] public section

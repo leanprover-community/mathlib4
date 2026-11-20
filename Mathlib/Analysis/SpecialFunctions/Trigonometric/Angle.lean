@@ -12,6 +12,9 @@ public import Mathlib.Topology.Instances.Sign
 
 import Mathlib.Algebra.Order.Ring.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The type of angles
 

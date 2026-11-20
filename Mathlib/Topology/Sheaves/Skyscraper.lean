@@ -10,6 +10,9 @@ public import Mathlib.Topology.Sheaves.Stalks
 
 import Mathlib.Topology.Sheaves.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skyscraper (pre)sheaves
 

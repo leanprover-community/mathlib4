@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Algebra.Star.Basic
 
-/-! # Transfer star (algebraic) structures across `Equiv`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Transfer star (algebraic) structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
@@ -22,18 +26,24 @@ namespace Equiv
 variable (e : R ≃ S)
 
 -- See note [instance transfer via equivalence]
-/-- Transfer `Star` across an `Equiv`. See note [reducible non-instances].
+/--
+Transfer `Star` across an `Equiv`. See note \[reducible non-instances\].
 
-For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`. -/
+For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`.
+-/
 protected abbrev star [Star S] : Star R where
   star r := e.invFun (star (e.toFun r))
 
-/-- Transfer `InvolutiveStar` across an `Equiv`. See note [reducible non-instances]. -/
+/--
+Transfer `InvolutiveStar` across an `Equiv`. See note \[reducible non-instances\].
+-/
 protected abbrev involutiveStar [InvolutiveStar S] : InvolutiveStar R :=
   let _ := e.star
   e.injective.involutiveStar _ fun _ ↦ e.apply_symm_apply _
 
-/-- Transfer `StarMul` across an `Equiv`. See note [reducible non-instances]. -/
+/--
+Transfer `StarMul` across an `Equiv`. See note \[reducible non-instances\].
+-/
 protected abbrev starMul [Mul S] [StarMul S] :
     letI := e.mul
     StarMul R := by
@@ -41,7 +51,9 @@ protected abbrev starMul [Mul S] [StarMul S] :
   let := e.mul
   apply e.injective.starMul <;> (intros; exact e.apply_symm_apply _)
 
-/-- Transfer `StarAddMonoid` across an `Equiv`. See note [reducible non-instances]. -/
+/--
+Transfer `StarAddMonoid` across an `Equiv`. See note \[reducible non-instances\].
+-/
 protected abbrev starAddMonoid [AddMonoid S] [StarAddMonoid S] :
     letI := e.addMonoid
     StarAddMonoid R := by
@@ -49,7 +61,9 @@ protected abbrev starAddMonoid [AddMonoid S] [StarAddMonoid S] :
   let := e.addMonoid
   apply e.injective.starAddMonoid <;> (intros; exact e.apply_symm_apply _)
 
-/-- Transfer `StarRing` across an `Equiv`. See note [reducible non-instances]. -/
+/--
+Transfer `StarRing` across an `Equiv`. See note \[reducible non-instances\].
+-/
 protected abbrev starRing [NonUnitalNonAssocSemiring S] [StarRing S] :
     letI := e.nonUnitalNonAssocSemiring
     StarRing R := by

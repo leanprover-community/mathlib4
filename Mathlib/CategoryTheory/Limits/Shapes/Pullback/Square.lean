@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Square
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative squares that are pushout or pullback squares
 

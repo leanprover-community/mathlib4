@@ -10,10 +10,13 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 import Mathlib.Combinatorics.Pigeonhole
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conservative systems
 
-In this file we define `f : α → α` to be a *conservative* system w.r.t. a measure `μ` if `f` is
+In this file we define `f : α → α` to be a _conservative_ system w.r.t. a measure `μ` if `f` is
 non-singular (`MeasureTheory.QuasiMeasurePreserving`) and for every measurable set `s` of
 positive measure at least one point `x ∈ s` returns back to `s` after some number of iterations of
 `f`. There are several properties that look like they are stronger than this one but actually follow
@@ -22,7 +25,6 @@ from it:
 * `MeasureTheory.Conservative.frequently_measure_inter_ne_zero`,
   `MeasureTheory.Conservative.exists_gt_measure_inter_ne_zero`: if `μ s ≠ 0`, then for infinitely
   many `n`, the measure of `s ∩ f^[n] ⁻¹' s` is positive.
-
 * `MeasureTheory.Conservative.measure_mem_forall_ge_image_notMem_eq_zero`,
   `MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem`: a.e. every point of `s` visits `s`
   infinitely many times (Poincaré recurrence theorem).
@@ -51,9 +53,11 @@ variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Me
 
 open Measure
 
-/-- We say that a non-singular (`MeasureTheory.QuasiMeasurePreserving`) self-map is
-*conservative* if for any measurable set `s` of positive measure there exists `x ∈ s` such that `x`
-returns back to `s` under some iteration of `f`. -/
+/--
+We say that a non-singular (`MeasureTheory.QuasiMeasurePreserving`) self-map is
+_conservative_ if for any measurable set `s` of positive measure there exists `x ∈ s` such that `x`
+returns back to `s` under some iteration of `f`.
+-/
 structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMeasurePreserving f μ μ where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/

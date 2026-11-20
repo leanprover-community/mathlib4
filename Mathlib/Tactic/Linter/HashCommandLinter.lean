@@ -11,10 +11,14 @@ public meta import Lean.Parser.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `#`-command linter
 
-The `#`-command linter produces a warning when a command starting with `#` is used *and*
+The `#`-command linter produces a warning when a command starting with `#` is used _and_
+
 * either the command emits no message;
 * or `warningAsError` is set to `true`.
 
@@ -60,14 +64,16 @@ partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
 abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
-/-- Checks that no command beginning with `#` is present in 'Mathlib',
+/--
+Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
 
 If `warningAsError` is `true`, then the linter logs an info (rather than a warning).
 This means that CI will eventually fail on `#`-commands, but does not stop it from continuing.
 
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
-logs a warning only for the `#`-commands that do not already emit a message. -/
+logs a warning only for the `#`-commands that do not already emit a message.
+-/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   if getLinterValue linter.hashCommand (← getLinterOptions) &&
     ((← get).messages.reportedPlusUnreported.isEmpty || warningAsError.get (← getOptions))

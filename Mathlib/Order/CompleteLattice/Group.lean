@@ -10,7 +10,12 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
-/-! # Complete lattices and groups -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Complete lattices and groups
+-/
 
 public section
 

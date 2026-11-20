@@ -11,6 +11,9 @@ public import Mathlib.Data.Rat.Squarefree
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.RingTheory.Localization.NumDen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic algebras over `ℚ`
 

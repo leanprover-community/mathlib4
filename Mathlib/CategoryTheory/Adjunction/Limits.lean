@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Creates
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions and limits
 
@@ -48,7 +51,8 @@ section PreservationColimits
 
 variable {J : Type u} [Category.{v} J] (K : J ⥤ C)
 
-/-- The right adjoint of `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
+/--
+The right adjoint of `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
 -/
@@ -58,7 +62,8 @@ def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
 
 attribute [local simp] functorialityRightAdjoint
 
-/-- The unit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
+/--
+The unit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
 -/
@@ -67,7 +72,8 @@ def functorialityUnit :
     𝟭 (Cocone K) ⟶ Cocone.functoriality _ F ⋙ functorialityRightAdjoint adj K where
   app c := { hom := adj.unit.app c.pt }
 
-/-- The counit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
+/--
+The counit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
 -/
@@ -158,7 +164,8 @@ section PreservationLimits
 
 variable {J : Type u} [Category.{v} J] (K : J ⥤ D)
 
-/-- The left adjoint of `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
+/--
+The left adjoint of `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
 -/
@@ -168,7 +175,8 @@ def functorialityLeftAdjoint : Cone (K ⋙ G) ⥤ Cone K :=
 
 attribute [local simp] functorialityLeftAdjoint
 
-/-- The unit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
+/--
+The unit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
 -/
@@ -177,7 +185,8 @@ def functorialityUnit' :
     𝟭 (Cone (K ⋙ G)) ⟶ functorialityLeftAdjoint adj K ⋙ Cone.functoriality _ G where
   app c := { hom := adj.unit.app c.pt }
 
-/-- The counit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
+/--
+The counit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
 -/

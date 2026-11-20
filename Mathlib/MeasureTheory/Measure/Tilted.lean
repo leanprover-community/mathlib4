@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponentially tilted measures
 

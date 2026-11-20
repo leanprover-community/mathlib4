@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `κ`-presentable objects form a dense subcategory
 

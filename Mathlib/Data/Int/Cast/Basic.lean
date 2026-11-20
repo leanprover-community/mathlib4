@@ -9,10 +9,13 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Data.Nat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of integers (additional theorems)
 
-This file proves additional properties about the *canonical* homomorphism from
+This file proves additional properties about the _canonical_ homomorphism from
 the integers into an additive group with a one (`Int.cast`).
 
 There is also `Mathlib.Data.Int.Cast.Lemmas`,

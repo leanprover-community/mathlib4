@@ -7,6 +7,10 @@ module
 
 public import Mathlib.GroupTheory.SemidirectProduct
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Group Extensions
 
@@ -200,8 +204,12 @@ def symm : S'.Equiv S where
   inl_comm := by rw [MulEquiv.symm_comp_eq, ← equiv.inl_comm]
   rightHom_comm := by rw [MulEquiv.comp_symm_eq, ← equiv.rightHom_comm]
 
-/-- See Note [custom simps projection]. -/
-@[to_additive /-- See Note [custom simps projection]. -/]
+/--
+See Note \[custom simps projection\].
+-/
+@[to_additive /--
+              See Note \[custom simps projection\].
+              -/]
 def Simps.symm_apply : E' → E := equiv.symm
 
 @[to_additive (attr := simp)]

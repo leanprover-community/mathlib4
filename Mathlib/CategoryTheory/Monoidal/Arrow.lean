@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.
 

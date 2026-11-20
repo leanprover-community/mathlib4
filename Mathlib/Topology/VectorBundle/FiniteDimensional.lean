@@ -8,7 +8,12 @@ module
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Topology.VectorBundle.Basic
 
-/-! # Finite-rank vector bundles -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Finite-rank vector bundles
+-/
 
 public section
 

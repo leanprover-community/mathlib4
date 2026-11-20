@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras of matrices
 
@@ -17,9 +20,9 @@ primary value stems from their utility when constructing the classical Lie algeb
 
 ## Main definitions
 
-  * `lieEquivMatrix'`
-  * `Matrix.lieConj`
-  * `Matrix.reindexLieEquiv`
+* `lieEquivMatrix'`
+* `Matrix.lieConj`
+* `Matrix.reindexLieEquiv`
 
 ## Tags
 

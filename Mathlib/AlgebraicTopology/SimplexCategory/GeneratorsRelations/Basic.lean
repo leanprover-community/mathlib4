@@ -8,7 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
-/-! # Presentation of the simplex category by generators and relations.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
 morphisms `δ i : [n] ⟶ [n + 1]` and `σ i : [n + 1] ⟶ [n]` and subject to the
@@ -234,12 +238,16 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   apply CategoryTheory.Quotient.sound
   exact FreeSimplexQuiver.homRel.σ_comp_σ H
 
-/-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
+/--
+A version of δ\_comp\_δ with indices in ℕ satisfying relevant inequalities.
+-/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
     δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by lia⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by lia⟩ :=
   δ_comp_δ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
-/-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
+/--
+A version of σ\_comp\_σ with indices in ℕ satisfying relevant inequalities.
+-/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
     σ ⟨i, by lia⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by lia⟩ ≫ σ ⟨i, hi⟩ :=
   σ_comp_σ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)

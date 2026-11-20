@@ -12,11 +12,16 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian categories with enough injectives have injective resolutions
 
 ## Main results
+
 When the underlying category is abelian:
+
 * `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
   `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a cochain map
   `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `I.ι` intertwines the descent and
@@ -26,7 +31,6 @@ When the underlying category is abelian:
   object are homotopy equivalent.
 * `CategoryTheory.injectiveResolutions`: If every object admits an injective resolution, we can
   construct a functor `injectiveResolutions C : C ⥤ HomotopyCategory C`.
-
 * `CategoryTheory.exact_f_d`: `f` and `Injective.d f` are exact.
 * `CategoryTheory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.

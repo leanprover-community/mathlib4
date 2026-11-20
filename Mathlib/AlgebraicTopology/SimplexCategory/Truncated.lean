@@ -8,7 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Final
 
-/-! # Properties of the truncated simplex category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of the truncated simplex category
 
 We prove that for `n > 0`, the inclusion functor from the `n`-truncated simplex category to the
 untruncated simplex category, and the inclusion functor from the `n`-truncated to the `m`-truncated

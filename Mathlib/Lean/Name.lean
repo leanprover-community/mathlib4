@@ -9,6 +9,9 @@ public import Mathlib.Init
 
 import Lean.Meta.Match.MatcherInfo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional functions on `Lean.Name`.
 
@@ -143,9 +146,11 @@ def lastComponentAsString : Name → String
   | .num _ n => toString n
   | .anonymous => ""
 
-/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`,
+/--
+`nm.splitAt n` splits a name `nm` in two parts, such that the _second_ part has depth `n`,
 i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
-Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``.
+-/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents nm1.reverse, .fromComponents nm2.reverse)

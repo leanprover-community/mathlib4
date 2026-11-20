@@ -12,6 +12,9 @@ public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex and real exponential
 

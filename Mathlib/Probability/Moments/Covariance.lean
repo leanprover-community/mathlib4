@@ -10,6 +10,9 @@ public import Mathlib.Probability.Notation
 
 import Mathlib.Probability.Independence.Integration
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covariance
 

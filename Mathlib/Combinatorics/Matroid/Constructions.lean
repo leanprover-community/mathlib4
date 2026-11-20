@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some constructions of matroids
 

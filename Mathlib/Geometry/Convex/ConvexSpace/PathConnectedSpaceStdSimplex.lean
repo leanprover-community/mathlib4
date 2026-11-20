@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Topology.Connected.PathConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard simplex is path-connected
 -/

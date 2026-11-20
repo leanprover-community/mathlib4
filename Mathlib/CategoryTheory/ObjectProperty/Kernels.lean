@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are (co)kernels of morphisms
 

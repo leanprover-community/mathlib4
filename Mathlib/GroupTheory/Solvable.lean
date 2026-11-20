@@ -12,6 +12,9 @@ public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Data.Fin.VecNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Solvable Groups
 
@@ -22,7 +25,7 @@ the derived series of a group.
 ## Main definitions
 
 * `derivedSeries G n` : the `n`th term in the derived series of `G`, defined by iterating
-    `general_commutator` starting with the top subgroup
+  `general_commutator` starting with the top subgroup
 * `IsSolvable G` : the group `G` is solvable
 -/
 

@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Data.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coercing sets to types.
 
@@ -16,7 +19,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 ## Main definitions
 
-- `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
+* `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
 -/
 
 @[expose] public section
@@ -27,7 +30,8 @@ universe u v w
 
 variable {α : Type u}
 
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`.
+/--
+Given the set `s`, `Elem s` is the `Type` of element of `s`.
 
 It is currently an abbreviation so that instance coming from `Subtype` are available.
 If you're interested in making it a `def`, as it probably should be,

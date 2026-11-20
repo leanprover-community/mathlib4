@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Trace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The trace and norm maps for finite fields
 
@@ -15,14 +18,15 @@ We state several lemmas about the trace and norm maps for finite fields.
 
 ## Main Results
 
-- `trace_to_zmod_nondegenerate`: the trace map from a finite field of characteristic `p` to
+* `trace_to_zmod_nondegenerate`: the trace map from a finite field of characteristic `p` to
   `ZMod p` is nondegenerate.
-- `algebraMap_trace_eq_sum_pow`: an explicit formula for the trace map:
+* `algebraMap_trace_eq_sum_pow`: an explicit formula for the trace map:
   `trace[L/K](x) = ∑ i < [L:K], x ^ ((#K) ^ i)`.
-- `algebraMap_norm_eq_prod_pow`: an explicit formula for the norm map:
+* `algebraMap_norm_eq_prod_pow`: an explicit formula for the norm map:
   `norm[L/K](x) = ∏ i < [L:K], x ^ ((#K) ^ i)`.
 
 ## Tags
+
 finite field, trace, norm
 -/
 

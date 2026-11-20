@@ -9,6 +9,9 @@ public import Mathlib.Data.DFinsupp.Module
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps on modules and ideals
 
@@ -428,13 +431,15 @@ theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
+/--
+Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
 in the individual semirings, in an order-preserving way.
 
 (Note that this is not in general true for infinite direct products:
 If infinitely many of the `Rᵢ` are nontrivial, then there exists an ideal of `Πᵢ Rᵢ` that
 is not of the form `Πᵢ Iᵢ`, namely the ideal of finitely supported elements of `Πᵢ Rᵢ`
-(it is also not a principal ideal).) -/
+(it is also not a principal ideal).)
+-/
 @[simps!] def piOrderIso [Finite ι] : Ideal (Π i, R i) ≃o Π i, Ideal (R i) := .symm
   { toFun := pi
     invFun I i := I.map (Pi.evalRingHom R i)
@@ -1195,7 +1200,8 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
     (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
   f.toAddMonoidHom.liftOfRightInverse_comp_apply f_inv hf ⟨g.toAddMonoidHom, hg⟩ a
 
-/-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
+/--
+`liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
 * such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
 * where `f : A →+* B` has a right inverse `f_inv` (`hf`),

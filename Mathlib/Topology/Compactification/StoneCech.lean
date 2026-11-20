@@ -8,7 +8,11 @@ module
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.DenseEmbedding
 
-/-! # Stone-Čech compactification
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Stone-Čech compactification
 
 Construction of the Stone-Čech compactification using ultrafilters.
 

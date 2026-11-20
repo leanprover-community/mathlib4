@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.FinEnum
 public import Mathlib.Logic.Equiv.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # FinEnum instance for Option
 
@@ -15,6 +18,7 @@ Provides a recursor for FinEnum types like `Fintype.truncRecEmptyOption`, but ca
 non-truncated data.
 
 ## TODO
+
 * recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
 
@@ -35,7 +39,8 @@ instance instFinEnumOptionLast (α : Type u) [FinEnum α] : FinEnum (Option α) 
   insertNone α (Fin.last _)
 
 open Fin.NatCast in -- TODO: refactor the proof to avoid needing this.
-/-- A recursor principle for finite-and-enumerable types, analogous to `Nat.rec`.
+/--
+A recursor principle for finite-and-enumerable types, analogous to `Nat.rec`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
 by `Fin`s of equal cardinality.
 In contrast to the `Fintype` case, data can be transported along such an `Equiv`.

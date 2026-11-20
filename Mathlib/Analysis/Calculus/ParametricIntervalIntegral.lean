@@ -8,11 +8,15 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals. In the real case, we also show that parametric integrals of Cⁿ functions are Cⁿ. -/
+integrals. In the real case, we also show that parametric integrals of Cⁿ functions are Cⁿ.
+-/
 
 universe u
 

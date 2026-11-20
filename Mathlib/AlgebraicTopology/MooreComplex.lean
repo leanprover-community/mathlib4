@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Moore complex
 
@@ -146,7 +149,8 @@ open NormalizedMooreComplex
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (C) in
-/-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
+/--
+The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is the intersection of
 the kernels of `X.δ i : X.obj n ⟶ X.obj (n-1)`, for `i = 1, ..., n`.

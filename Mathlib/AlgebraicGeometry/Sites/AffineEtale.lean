@@ -12,6 +12,9 @@ public import Mathlib.AlgebraicGeometry.Sites.Affine
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine étale site
 
@@ -24,9 +27,9 @@ dense, which allows to show that if `S : Scheme.{u}`, then we can sheafify
 
 ## Main results
 
-- `AlgebraicGeometry.Scheme.AffineEtale.sheafEquiv`: The category of sheaves on the
+* `AlgebraicGeometry.Scheme.AffineEtale.sheafEquiv`: The category of sheaves on the
   small affine étale site is equivalent to the category of schemes on the small étale site.
-- `AlgebraicGeometry.Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology`: The category of
+* `AlgebraicGeometry.Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology`: The category of
   sheaves on the étale site with values in a Grothendieck abelian category is Grothendieck abelian.
 -/
 

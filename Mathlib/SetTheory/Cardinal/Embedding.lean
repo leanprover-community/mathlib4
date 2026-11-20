@@ -10,7 +10,11 @@ public import Mathlib.SetTheory.Cardinal.NatCard
 
 import Mathlib.Data.Set.Finite.Range
 
-/-! # Existence of embeddings from finite types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Existence of embeddings from finite types
 
 Let `s : Set α` be a finite set.
 
@@ -18,16 +22,13 @@ Let `s : Set α` be a finite set.
   If `s.ncard + n ≤ ENat.card α`,
   then there exists an embedding `Fin n ↪ α`
   whose range is disjoint from `s`.
-
 * `Fin.Embedding.exists_embedding_disjoint_range_of_add_le_Nat_card`
   If `α` is finite and `s.ncard + n ≤ Nat.card α`,
   then there exists an embedding `Fin n ↪ α`
   whose range is disjoint from `s`.
-
 * `Fin.Embedding.restrictSurjective_of_add_le_ENatCard`
   If `m + n ≤ ENat.card α`, then the restriction map
   from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
-
 * `Fin.Embedding.restrictSurjective_of_add_le_natCard`
   If `α` is finite and `m + n ≤ Nat.card α`, then the restriction
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.

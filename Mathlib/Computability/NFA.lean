@@ -8,6 +8,9 @@ module
 public import Mathlib.Computability.DFA
 public import Mathlib.Data.Fintype.Powerset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nondeterministic Finite Automata
 
@@ -258,14 +261,16 @@ theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S �
 theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
 
 variable (M) in
-/-- `M.Path` represents a concrete path through the NFA from a start state to an end state
+/--
+`M.Path` represents a concrete path through the NFA from a start state to an end state
 for a particular word.
 
 Note that due to the non-deterministic nature of the automata, there can be more than one `Path`
 for a given word.
 
 Also note that this is `Type` and not a `Prop`, so that we can speak about the properties
-of a particular `Path`, such as the set of states visited along the way (defined as `Path.supp`). -/
+of a particular `Path`, such as the set of states visited along the way (defined as `Path.supp`).
+-/
 inductive Path : σ → σ → List α → Type (max u v)
   | nil (s : σ) : Path s s []
   | cons (t s u : σ) (a : α) (x : List α) :

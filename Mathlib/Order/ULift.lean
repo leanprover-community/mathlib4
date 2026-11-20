@@ -8,7 +8,11 @@ module
 public import Mathlib.Logic.Function.ULift
 public import Mathlib.Order.Basic
 
-/-! # Ordered structures on `ULift.{v} α`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Ordered structures on `ULift.{v} α`
 
 Once these basic instances are setup, the instances of more complex typeclasses should live next to
 the corresponding `Prod` instances.

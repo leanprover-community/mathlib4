@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.ProductMeasure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of an infinite family of random variables
 
@@ -17,6 +20,7 @@ variables, relying on `Measure.infinitePi`.
 ## Implementation note
 
 There are several possible measurability assumptions:
+
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
@@ -152,12 +156,14 @@ section dependent
 
 variable {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
 
-/-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
+/--
+Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
 Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
 Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent.
 Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
 
-This is a dependent version of `iIndepFun_uncurry'`. -/
+This is a dependent version of `iIndepFun_uncurry'`.
+-/
 lemma iIndepFun_uncurry {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
     (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P) (h2 : ∀ i, iIndepFun (X i) P) :
     iIndepFun (fun (p : (i : ι) × (κ i)) ω ↦ X p.1 p.2 ω) P := by
@@ -206,12 +212,14 @@ section nondependent
 
 variable {κ : Type*} {𝓧 : ι → κ → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
 
-/-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
+/--
+Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
 Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
 Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent.
 Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
 
-This is a non-dependent version of `iIndepFun_uncurry`. -/
+This is a non-dependent version of `iIndepFun_uncurry`.
+-/
 lemma iIndepFun_uncurry' {X : (i : ι) → (j : κ) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
     (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P) (h2 : ∀ i, iIndepFun (X i) P) :
     iIndepFun (fun (p : ι × κ) ω ↦ X p.1 p.2 ω) P :=

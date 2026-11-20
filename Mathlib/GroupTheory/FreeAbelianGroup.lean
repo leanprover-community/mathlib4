@@ -10,6 +10,9 @@ public import Mathlib.Control.Basic
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free abelian groups
 
@@ -32,15 +35,11 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [CommGroup A]`
 * `FreeCommGroup α` : the free abelian group on a type `α`. As an abelian
   group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
   many elements get mapped to zero, however this is not how it is implemented.
-
 * `lift f : FreeCommGroup α →+ A` : the group homomorphism induced by the
   map `f : α → A`.
-
 * `map (f : α → β) : FreeCommGroup α →* FreeCommGroup β` : functoriality of
   `FreeCommGroup`.
-
 * `instance [Monoid α] : Semigroup (FreeCommGroup α)`
-
 * `instance [CommMonoid α] : CommRing (FreeCommGroup α)`
 
 ## Implementation details

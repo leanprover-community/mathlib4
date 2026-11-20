@@ -11,25 +11,25 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex Bodies
 
 The file contains the definitions of several convex bodies lying in the mixed space `ℝ^r₁ × ℂ^r₂`
 associated to a number field of signature `K` and proves several existence theorems by applying
-*Minkowski Convex Body Theorem* to those.
+_Minkowski Convex Body Theorem_ to those.
 
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
   infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
-
 * `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
-
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
   Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
   nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
-
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
   of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
   `convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic

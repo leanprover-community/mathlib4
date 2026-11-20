@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Hessenberg.Charpoly
 public import Mathlib.Tactic.Hessenberg.Charpoly  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Hessenberg.Similarity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coefficient lists of characteristic polynomials from Hessenberg certificates
 
@@ -19,10 +22,10 @@ polynomial with these coefficients.
 
 ## Main definitions
 
-- `charpolyCoeffList`: computes the coefficient list of the characteristic polynomial of a matrix
+* `charpolyCoeffList`: computes the coefficient list of the characteristic polynomial of a matrix
   literal with a proof that `Matrix.charpoly` is the polynomial with these coefficients.
-- `CoeffListResult`: the coefficient list literal of a matrix literal, with its proof.
-- `inferCharpolyRing`: checks that the characteristic polynomial computation can be performed on
+* `CoeffListResult`: the coefficient list literal of a matrix literal, with its proof.
+* `inferCharpolyRing`: checks that the characteristic polynomial computation can be performed on
   `S`.
 -/
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.TypeTags.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality for maps on `Finsupp`
 
@@ -47,12 +50,14 @@ theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
   rintro _ ⟨x, y, rfl⟩
   apply H
 
-/-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
+/--
+If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
 then they are equal.
 
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
-verify `f (single a 1) = g (single a 1)`. -/
+verify `f (single a 1) = g (single a 1)`.
+-/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=

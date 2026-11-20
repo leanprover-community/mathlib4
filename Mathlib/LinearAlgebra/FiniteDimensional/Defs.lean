@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional vector spaces
 
@@ -19,27 +22,27 @@ alternative definitions.
 Assume `V` is a vector space over a division ring `K`. There are (at least) three equivalent
 definitions of finite-dimensionality of `V`:
 
-- it admits a finite basis.
-- it is finitely generated.
-- it is Noetherian, i.e., every subspace is finitely generated.
+* it admits a finite basis.
+* it is finitely generated.
+* it is Noetherian, i.e., every subspace is finitely generated.
 
 We introduce a typeclass `FiniteDimensional K V` capturing this property. For ease of transfer of
 proof, it is defined using the second point of view, i.e., as `Module.Finite`. However, we prove
 that all these points of view are equivalent, with the following lemmas
 (in the namespace `FiniteDimensional`):
 
-- `Module.finBasis` and `Module.finBasisOfFinrankEq`
+* `Module.finBasis` and `Module.finBasisOfFinrankEq`
   are bases for finite-dimensional vector spaces, where the index type
   is `Fin` (in `Mathlib/LinearAlgebra/Dimension/Free.lean`)
-- `fintypeBasisIndex` states that a finite-dimensional
+* `fintypeBasisIndex` states that a finite-dimensional
   vector space has a finite basis
-- `Module.Basis.finiteDimensional_of_finite` states that the existence of a basis indexed by a
+* `Module.Basis.finiteDimensional_of_finite` states that the existence of a basis indexed by a
   finite type implies finite-dimensionality
-- `of_finite_basis` states that the existence of a basis indexed by a
+* `of_finite_basis` states that the existence of a basis indexed by a
   finite set implies finite-dimensionality
-- `of_finrank_pos` states that a nonzero `finrank` (implying non-infinite dimension)
+* `of_finrank_pos` states that a nonzero `finrank` (implying non-infinite dimension)
   implies finite-dimensionality
-- `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
+* `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
   it is Noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
 
 We make use of `finrank`, the dimension of a finite-dimensional space, returning a `Nat`, as
@@ -49,8 +52,9 @@ For basic results that do not need the `FiniteDimensional` class, import
 `Mathlib/LinearAlgebra/Dimension/Finrank.lean`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
-- submodules (`FiniteDimensional.finiteDimensional_submodule`)
-- linear equivs, in `LinearEquiv.finiteDimensional`
+
+* submodules (`FiniteDimensional.finiteDimensional_submodule`)
+* linear equivs, in `LinearEquiv.finiteDimensional`
 
 ## Implementation notes
 
@@ -124,7 +128,8 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
   haveI := hs.fintype
   h.finiteDimensional_of_finite
 
-/-- A subspace of a finite-dimensional space is also finite-dimensional.
+/--
+A subspace of a finite-dimensional space is also finite-dimensional.
 
 This is a shortcut instance to simplify inference in the presence of `[FiniteDimensional K V]`.
 -/
@@ -144,7 +149,8 @@ theorem of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) :
     FiniteDimensional K V :=
   Module.finite_of_finrank_eq_succ hn
 
-/-- We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`.
+/--
+We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`.
 Use `have : FiniteDimensional K V := .of_fact_finrank_eq_succ` when needed.
 
 This is not an instance because `n` cannot be inferred.

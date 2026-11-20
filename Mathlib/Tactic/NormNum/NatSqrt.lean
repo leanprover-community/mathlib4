@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Tactic.NormNum
 
-/-! # `norm_num` extension for `Nat.sqrt`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extension for `Nat.sqrt`
 
 This module defines a `norm_num` extension for `Nat.sqrt`.
 -/

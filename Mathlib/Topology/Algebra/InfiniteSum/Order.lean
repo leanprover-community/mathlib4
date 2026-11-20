@@ -14,6 +14,9 @@ public import Mathlib.Topology.Order.MonotoneConvergence
 
 import Mathlib.Topology.Algebra.Order.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sum or product in an order
 
@@ -624,10 +627,12 @@ namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- Positivity extension for infinite sums.
+/--
+Positivity extension for infinite sums.
 
 This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
-requires more assumptions. -/
+requires more assumptions.
+-/
 @[positivity tsum _]
 meta def evalTsum : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do

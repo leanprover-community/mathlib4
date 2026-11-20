@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras with non-degenerate invariant bilinear forms are semisimple
 
 In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it is invariant under the Lie bracket
+Here a form is _invariant_ if it is invariant under the Lie bracket
 in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 
 ## Main results
@@ -29,7 +32,7 @@ in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ 
 
 ## References
 
-We follow the short and excellent paper [dieudonne1953].
+We follow the short and excellent paper \[dieudonne1953\].
 -/
 
 @[expose] public section
@@ -48,7 +51,7 @@ variable (Φ : LinearMap.BilinForm R M) (hΦ_nondeg : Φ.Nondegenerate)
 
 variable (L) in
 /--
-A bilinear form on a Lie module `M` of a Lie algebra `L` is *invariant* if
+A bilinear form on a Lie module `M` of a Lie algebra `L` is _invariant_ if
 for all `x : L` and `y z : M` the condition `Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆` holds.
 -/
 def _root_.LinearMap.BilinForm.lieInvariant : Prop :=
@@ -189,7 +192,7 @@ open LieSubmodule in
 A finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
+Here a form is _invariant_ if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 -/
 theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   refine ⟨?_, ?_, hL⟩

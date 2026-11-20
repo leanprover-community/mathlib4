@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
-/-! # Decomposition of tensor product
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Decomposition of tensor product
 
 In this file, we describe the properties of decomposition under tensor product. Suppose `ℳ` is a
 decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `N`, the `R`-module

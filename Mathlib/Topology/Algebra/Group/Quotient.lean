@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.Topology.Algebra.Group.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the quotient group
 
@@ -89,21 +92,25 @@ theorem discreteTopology_iff :
       isOpen_coinduced]
   rfl
 
-/-- The quotient of a topological group `G` by a closed subgroup `N` is T1.
+/--
+The quotient of a topological group `G` by a closed subgroup `N` is T1.
 
 When `G` is normal, this implies (because `G ⧸ N` is a topological group) that the quotient is T3
 (see `QuotientGroup.instT3Space`).
 
 Back to the general case, we will show later that the quotient is in fact T2
-since `N` acts on `G` properly. -/
+since `N` acts on `G` properly.
+-/
 @[to_additive
-/-- The quotient of a topological additive group `G` by a closed subgroup `N` is T1.
+/--
+The quotient of a topological additive group `G` by a closed subgroup `N` is T1.
 
 When `G` is normal, this implies (because `G ⧸ N` is a topological additive group) that the
 quotient is T3 (see `QuotientAddGroup.instT3Space`).
 
 Back to the general case, we will show later that the quotient is in fact T2
-since `N` acts on `G` properly. -/]
+since `N` acts on `G` properly.
+-/]
 instance instT1Space [hN : IsClosed (N : Set G)] :
     T1Space (G ⧸ N) :=
   t1Space_iff.mpr hN

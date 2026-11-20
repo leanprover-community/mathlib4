@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Order.Group.Cone
 public import Mathlib.Algebra.Order.Star.Basic
 
-/-! # The star order on `Unitization R A`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The star order on `Unitization R A`
 
 Suppose `A` is a non-unital star-ordered star-`R`-algebra and that `R` is also star-ordered with
 `star r * r = 0 → r = 0`, then `Unitization R A` is star-ordered. In particular, the additive

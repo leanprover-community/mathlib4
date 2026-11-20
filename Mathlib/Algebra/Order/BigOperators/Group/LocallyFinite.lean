@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Disjointed
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators indexed by intervals
 
@@ -152,8 +155,10 @@ end LocallyFiniteOrderTopBot
 end LinearOrder
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
-to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
+/--
+Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
+to `∏_{i ∈ s₀} gᵢ` \* `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`.
+-/
 @[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
 equal to `∑_{i ∈ s₀} gᵢ` + `∑_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`.-/]
 lemma prod_eq_prod_range_sdiff

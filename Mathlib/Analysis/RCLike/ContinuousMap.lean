@@ -11,10 +11,15 @@ public import Mathlib.Topology.ContinuousMap.Ordered
 
 import Mathlib.Topology.ContinuousMap.Units
 
-/-! # Mapping `C(X, ℝ)` to `C(X, 𝕜)` and back
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Mapping `C(X, ℝ)` to `C(X, 𝕜)` and back
 
 This file contains the definitions for `ContinuousMap.realToRCLike` and
-`ContinuousMap.rclikeToReal`, which map `C(X, ℝ)` to `C(X, 𝕜)` and back for any `RCLike 𝕜`. -/
+`ContinuousMap.rclikeToReal`, which map `C(X, ℝ)` to `C(X, 𝕜)` and back for any `RCLike 𝕜`.
+-/
 
 @[expose] public section
 

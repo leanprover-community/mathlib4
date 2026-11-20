@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Positivity
 
 import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hasse derivative of polynomials
 

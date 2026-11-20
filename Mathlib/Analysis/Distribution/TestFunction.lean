@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuously differentiable functions with compact support
 
@@ -17,9 +20,9 @@ with compact support contained in some open set `Ω`. More explicitly, given nor
 and `F`, an open set `Ω : Opens E` and `n : ℕ∞`, we are interested in the space `𝓓^{n}(Ω, F)` of
 maps `f : E → F` such that:
 
-- `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
-- `f` has compact support: `HasCompactSupport f`.
-- the support of `f` is inside the open set `Ω`: `tsupport f ⊆ Ω`.
+* `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
+* `f` has compact support: `HasCompactSupport f`.
+* the support of `f` is inside the open set `Ω`: `tsupport f ⊆ Ω`.
 
 This exists as a bundled type to equip it with the canonical LF topology induced by the inclusions
 `𝓓_{K}^{n}(Ω, F) → 𝓓^{n}(Ω, F)` (see `ContDiffMapSupportedIn`). The dual space is then the space of
@@ -27,23 +30,23 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Main definitions
 
-- `TestFunction Ω F n`: the type of bundled `n`-times continuously differentiable
+* `TestFunction Ω F n`: the type of bundled `n`-times continuously differentiable
   functions `E → F` with compact support contained in `Ω`.
-- `TestFunction.topologicalSpace`: the canonical LF topology on `𝓓^{n}(Ω, F)`. It is the
+* `TestFunction.topologicalSpace`: the canonical LF topology on `𝓓^{n}(Ω, F)`. It is the
   locally convex inductive limit of the topologies on each `𝓓_{K}^{n}(Ω, F)`.
 
 ## Main statements
 
-- `TestFunction.continuous_iff_continuous_comp`: a linear map from `𝓓^{n}(E, F)`
+* `TestFunction.continuous_iff_continuous_comp`: a linear map from `𝓓^{n}(E, F)`
   to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
   continuous for each compact set `K`. We will later translate this concretely in terms
   of seminorms.
 
 ## Notation
 
-- `𝓓^{n}(Ω, F)`: the space of bundled `n`-times continuously differentiable functions `E → F`
+* `𝓓^{n}(Ω, F)`: the space of bundled `n`-times continuously differentiable functions `E → F`
   with compact support contained in `Ω`.
-- `𝓓(Ω, F)`: the space of bundled smooth (infinitely differentiable) functions `E → F`
+* `𝓓(Ω, F)`: the space of bundled smooth (infinitely differentiable) functions `E → F`
   with compact support contained in `Ω`, i.e. `𝓓^{⊤}(Ω, F)`.
 
 ## Tags
@@ -139,7 +142,9 @@ protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
 
-/-- See note [custom simps projection]. -/
+/--
+See note \[custom simps projection\].
+-/
 def Simps.coe (f : 𝓓^{n}(Ω, F)) : E → F := f
 
 initialize_simps_projections TestFunction (toFun → coe, as_prefix coe)
@@ -250,27 +255,31 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
 
 variable (Ω F n) in
-/-- The "original topology" on `𝓓^{n}(Ω, F)`, defined as the supremum over all compacts `K ⊆ Ω` of
+/--
+The "original topology" on `𝓓^{n}(Ω, F)`, defined as the supremum over all compacts `K ⊆ Ω` of
 the topology on `𝓓^{n}_{K}(E, F)`. In other words, this topology makes `𝓓^{n}(Ω, F)` the inductive
-limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
+limit of the `𝓓^{n}_{K}(E, F)`s *in the category of topological spaces*.
 
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
-topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
+topology which is coarser than this original topology. See `TestFunction.topologicalSpace`.
+-/
 @[instance_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
 
 variable (Ω F n) in
-/-- The canonical LF topology on `𝓓^{n}(Ω, F)`. This makes `𝓓^{n}(Ω, F)` the inductive
-limit of the `𝓓^{n}_{K}(E, F)`s **in the category of locally convex topological vector spaces**
+/--
+The canonical LF topology on `𝓓^{n}(Ω, F)`. This makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s *in the category of locally convex topological vector spaces*
 (over ℝ). See `TestFunction.continuous_iff_continuous_comp` for the corresponding universal
 property.
 
-More concretely, this is defined as the infimum of *all* locally convex topologies which are
+More concretely, this is defined as the infimum of _all_ locally convex topologies which are
 coarser than the "original topology" `TestFunction.originalTop`, which corresponds to taking
-the inductive limit in the category of topological spaces. -/
+the inductive limit in the category of topological spaces.
+-/
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
   sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
     @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
@@ -458,14 +467,16 @@ section Monotone
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
 variable (𝕜) in
-/-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
+/--
+If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
 
 This is in fact a topological embedding when `n₁ = n₂` and `Ω₁ ⊆ Ω₂` (not in Mathlib as of
 March 2026).
 
 The parameters `n₁, n₂, Ω₁, Ω₂` are implicit as they can often be inferred from context, or
-specified by a type ascription. -/
+specified by a type ascription.
+-/
 noncomputable def monoCLM :
     𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F) :=
   open scoped Classical in
@@ -552,13 +563,15 @@ section LineDerivCLM
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
 variable (𝕜) in
-/-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/--
+`lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative along the vector `v`, which is an element of `𝓓^{k}_{K}(E, F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
 The parameters `n` and `k` are implicit as they can often be inferred from context, or
 specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
-notation typeclass. -/
+notation typeclass.
+-/
 noncomputable def lineDerivCLM (v : E) :
     𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F) :=
   -- Cannot use `ContinuousLinearMap.apply` here because we are mixing `ℝ` and `𝕜`
@@ -679,10 +692,12 @@ protected theorem integrable_smul {f : E → F} {μ : Measure E}
     Integrable (fun x ↦ φ x • f x) μ :=
   φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
 
-/-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
+/--
+A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
-- `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
-- `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
+
+* `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
+* `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
   contained in `Ω`)
 
 For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` with respect to the Lebesgue
@@ -701,9 +716,11 @@ protected theorem integrable {μ : Measure E}
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 
 -- TODO: semilinearize
-/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
-and a function `φ : E → F₂` which is locally `μ`-integrable, this is the *continuous* `𝕜`-linear map
-`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
+/--
+Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is locally `μ`-integrable, this is the _continuous_ `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. Otherwise, this is the zero map.
+-/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}(Ω, F₁) →L[𝕜] F₃ := open scoped Classical in
   TestFunction.limitCLM 𝕜
@@ -757,8 +774,10 @@ variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
 
 open ContinuousLinearMap Finset
 
-/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_(E, F₁),
-where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
+/--
+The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^\{n\}\_(E, F₁),
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function.
+-/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
   letI T : 𝓓^{n}(Ω, F₁) → 𝓓^{n}(Ω, F₃) :=

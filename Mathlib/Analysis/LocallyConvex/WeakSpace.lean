@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
-/-! # Closures of convex sets in locally convex spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Closures of convex sets in locally convex spaces
 
 This file contains the standard result that if `E` is a vector space with two locally convex
 topologies, then the closure of a convex set is the same in either topology, provided they have the
@@ -30,13 +34,15 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (𝕜) in
-/-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
+/--
+If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
 the closure of `s` and the weak closure of `s` coincide. More precisely, the topological closure
 commutes with `toWeakSpace 𝕜 E`.
 
 This holds more generally for any linear equivalence `e : E ≃ₗ[𝕜] F` between locally convex spaces
 such that precomposition with `e` and `e.symm` preserves continuity of linear functionals. See
-`LinearEquiv.image_closure_of_convex`. -/
+`LinearEquiv.image_closure_of_convex`.
+-/
 theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     (toWeakSpace 𝕜 E) '' (closure s) = closure (toWeakSpace 𝕜 E '' s) := by
   refine le_antisymm (map_continuous <| toWeakSpaceCLM 𝕜 E).continuousOn.image_closure
@@ -79,11 +85,13 @@ theorem LinearMap.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E
       toLinearMap := e.dualMap f
       cont := by dsimp; fun_prop } : StrongDual 𝕜 E)
 
-/-- If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
+/--
+If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
 precomposition) an isomorphism between their continuous duals, then `e` commutes with the closure
 on convex sets.
 
-The hypotheses hold automatically for `e := toWeakSpace 𝕜 E`, see `Convex.toWeakSpace_closure`. -/
+The hypotheses hold automatically for `e := toWeakSpace 𝕜 E`, see `Convex.toWeakSpace_closure`.
+-/
 theorem LinearEquiv.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E ≃ₗ[𝕜] F)
     (he₁ : ∀ f : StrongDual 𝕜 F, Continuous (e.dualMap f))
     (he₂ : ∀ f : StrongDual 𝕜 E, Continuous (e.symm.dualMap f)) :
@@ -93,11 +101,13 @@ theorem LinearEquiv.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e :
   simpa [Set.image_image]
     using (e.symm : F →ₗ[𝕜] E).image_closure_of_convex (hs.linear_image (e : E →ₗ[𝕜] F)) he₂
 
-/-- If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
+/--
+If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
 precomposition) an isomorphism between their continuous duals, then `e` commutes with the closure
 on convex sets.
 
-The hypotheses hold automatically for `e := toWeakSpace 𝕜 E`, see `Convex.toWeakSpace_closure`. -/
+The hypotheses hold automatically for `e := toWeakSpace 𝕜 E`, see `Convex.toWeakSpace_closure`.
+-/
 theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e : E ≃ₗ[𝕜] F)
     (e_dual : StrongDual 𝕜 F ≃ StrongDual 𝕜 E)
     (he : ∀ f : StrongDual 𝕜 F, (e_dual f : E →ₗ[𝕜] 𝕜) = e.dualMap f) :

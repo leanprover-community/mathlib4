@@ -8,11 +8,14 @@ module
 public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Option.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences for `Option α`
 
-
 We define
+
 * `Equiv.optionCongr`: the `Option α ≃ Option β` constructed from `e : α ≃ β` by sending `none` to
   `none`, and applying `e` elsewhere.
 * `Equiv.removeNone`: the `α ≃ β` constructed from `Option α ≃ Option β` by removing `none` from

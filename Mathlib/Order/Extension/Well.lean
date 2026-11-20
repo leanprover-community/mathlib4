@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Rank
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extend a well-founded order to a well-order
 
@@ -16,7 +19,8 @@ well-founded order.
 ## Proof idea
 
 We can map our order into two well-orders:
-* the first map respects the order but isn't necessarily injective. Namely, this is the *rank*
+
+* the first map respects the order but isn't necessarily injective. Namely, this is the _rank_
   function `WellFounded.rank : α → Ordinal`.
 * the second map is injective but doesn't necessarily respect the order. This is an arbitrary
   embedding into `Cardinal` given by `embeddingToCardinal`.
@@ -45,7 +49,8 @@ namespace WellFounded
 
 variable {α : Type u} (r : α → α → Prop) [WellFounded r]
 
-/-- An arbitrary well order on `α` that extends `r`.
+/--
+An arbitrary well order on `α` that extends `r`.
 
 The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
 necessarily injective but respects the order `r`; the other map is the identity (with an arbitrarily

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Iterated derivatives of compositions
 
@@ -14,17 +17,18 @@ In this file we specialize Faà di Bruno's formula to one-dimensional domain
 to deduce formulae for `iteratedDerivWithin k (g ∘ f) s x` for `k = 2` and `k = 3`.
 
 We use
-- `vcomp` for lemmas about the composition of `g : E → F` with `f : 𝕜 → E`;
-- `scomp` for lemmas about the composition of `g : 𝕜 → E` with `f : 𝕜 → 𝕜`;
-- `comp` for lemmas about the composition of `g : 𝕜 → 𝕜` with `f : 𝕜 → 𝕜`.
+
+* `vcomp` for lemmas about the composition of `g : E → F` with `f : 𝕜 → E`;
+* `scomp` for lemmas about the composition of `g : 𝕜 → E` with `f : 𝕜 → 𝕜`;
+* `comp` for lemmas about the composition of `g : 𝕜 → 𝕜` with `f : 𝕜 → 𝕜`.
 
 ## TODO
 
-- What `UniqueDiffOn` assumptions can be discarded?
-- In case of dimension 1 (and, more generally, in case of symmetric iterated derivatives),
+* What `UniqueDiffOn` assumptions can be discarded?
+* In case of dimension 1 (and, more generally, in case of symmetric iterated derivatives),
   some terms are equal.
   Add versions of Faà di Bruno's formula that take the symmetries into account.
-- Can we generalize `scomp`/`comp` to `f : 𝕜 → 𝕜'`,
+* Can we generalize `scomp`/`comp` to `f : 𝕜 → 𝕜'`,
   where `𝕜'` is a normed algebra over `𝕜`? E.g., `𝕜 = ℝ`, `𝕜' = ℂ`.
 
 Before starting to work on these TODOs, please contact Yury Kudryashov

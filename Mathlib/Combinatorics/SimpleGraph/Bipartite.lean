@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bipartite graphs
 
@@ -21,36 +24,29 @@ This file proves results about bipartite simple graphs, including several double
   that `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`.
 
   Note that in this implementation, if `G.IsBipartiteWith s t`, `s ∪ t` need not cover the vertices
-  of `G`, instead `s ∪ t` is only required to cover the *support* of `G`, that is, the vertices
+  of `G`, instead `s ∪ t` is only required to cover the _support_ of `G`, that is, the vertices
   that form edges in `G`. This definition is equivalent to the expected definition. If `s` and `t`
   do not cover all the vertices, one recovers a covering of all the vertices by unioning the
   missing vertices `(s ∪ t)ᶜ` to either `s` or `t`.
-
 * `SimpleGraph.IsBipartite`: Predicate for a simple graph to be bipartite.
   `G.IsBipartite` is defined as an abbreviation for `G.Colorable 2`.
-
 * `SimpleGraph.isBipartite_iff_exists_isBipartiteWith` is the proof that `G.IsBipartite` iff
   `G.IsBipartiteWith s t`.
-
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
   in `t`.
-
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges` is the proof that if
   `G.IsBipartiteWith s t`, then sum of the degrees of the vertices in `s` is equal to the number of
   edges in `G`.
 
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
-
 * `SimpleGraph.completeBipartiteGraph_isContained_iff` is the proof that simple graphs contain a
   copy of a `completeBipartiteGraph α β` iff there exists a "left" subset of `card α` vertices and
   a "right" subset of `card β` vertices such that every vertex in the "left" subset is adjacent to
   every vertex in the "right" subset.
-
 * `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
   that connect a vertex in the set `s` to a vertex in the set `t`.
-
 * `SimpleGraph.bipartiteDoubleCover`; the simple graph `G.bipartiteDoubleCover` has two vertices
   `inl v` and `inr v` for each vertex `v` in `G` such that `inl v` (`inr v`) is adjacent to `inr w`
   (`inl w`) iff `v` is adjacent to `w` in `G`.
@@ -230,10 +226,12 @@ theorem isBipartiteWith_degree_le' (h : G.IsBipartiteWith s t) (hw : w ∈ t) : 
 
 end
 
-/-- If `G.IsBipartiteWith s t`, then the sum of the degrees of vertices in `s` is equal to the sum
+/--
+If `G.IsBipartiteWith s t`, then the sum of the degrees of vertices in `s` is equal to the sum
 of the degrees of vertices in `t`.
 
-See `Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow`. -/
+See `Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow`.
+-/
 theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = ∑ w ∈ t, G.degree w := by
   classical
@@ -262,10 +260,12 @@ lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsB
   intro v _ hv
   rwa [Set.mem_toFinset, ← degree_eq_zero_iff_notMem_support] at hv
 
-/-- The degree-sum formula for bipartite graphs, summing over the "left" part.
+/--
+The degree-sum formula for bipartite graphs, summing over the "left" part.
 
 See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
-`SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right". -/
+`SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
+-/
 theorem isBipartiteWith_sum_degrees_eq_card_edges (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
   classical
@@ -273,10 +273,12 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges (h : G.IsBipartiteWith s t) :
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartiteWith_sum_degrees_eq h
 
-/-- The degree-sum formula for bipartite graphs, summing over the "right" part.
+/--
+The degree-sum formula for bipartite graphs, summing over the "right" part.
 
 See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
-`SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges` for the version from the "left". -/
+`SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges` for the version from the "left".
+-/
 theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartiteWith_sum_degrees_eq_card_edges h.symm
 

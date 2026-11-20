@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves for the regular topology
 
@@ -22,7 +25,6 @@ This file characterises sheaves for the regular topology.
 * `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
   regular topology are precisely the presheaves satisfying an equaliser condition with respect to
   effective epimorphisms.
-
 * `isSheaf_of_projective`: In a preregular category in which every object is projective, every
   presheaf is a sheaf for the regular topology.
 -/
@@ -37,7 +39,9 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 open Opposite Presieve CategoryTheory.Functor
 
-/-- A presieve is *regular* if it consists of a single effective epimorphism. -/
+/--
+A presieve is _regular_ if it consists of a single effective epimorphism.
+-/
 class Presieve.regular {X : C} (R : Presieve X) : Prop where
   /-- `R` consists of a single epimorphism. -/
   single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)

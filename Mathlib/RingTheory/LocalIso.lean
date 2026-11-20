@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.RingHom.OpenImmersion
 
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local isomorphisms
 
@@ -17,7 +20,7 @@ it is a standard open immersion.
 
 ## Main declarations
 
-- `Algebra.IsLocalIso`: The class of algebras that are locally standard open immersions.
+* `Algebra.IsLocalIso`: The class of algebras that are locally standard open immersions.
 
 We show that local isomorphisms are local, stable under composition and base change.
 

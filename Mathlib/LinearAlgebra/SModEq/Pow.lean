@@ -11,7 +11,12 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 import Mathlib.Algebra.Ring.GeomSum
 
-/-! # Lemmas about SModEq related to powers -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Lemmas about SModEq related to powers
+-/
 
 public section
 

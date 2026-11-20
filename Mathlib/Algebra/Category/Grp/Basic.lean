@@ -10,10 +10,14 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.Data.Int.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
 
 We introduce the bundled categories:
+
 * `GrpCat`
 * `AddGrpCat`
 * `CommGrpCat`

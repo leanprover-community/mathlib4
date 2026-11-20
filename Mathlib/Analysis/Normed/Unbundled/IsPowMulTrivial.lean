@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triviality of power-multiplicative algebra norms
 

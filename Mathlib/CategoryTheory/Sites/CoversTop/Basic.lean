@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
-/-! # Objects which cover the terminal object
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Objects which cover the terminal object
 
 In this file, given a site `(C, J)`, we introduce the notion of a family
 of objects `Y : I → C` which "cover the final object": this means

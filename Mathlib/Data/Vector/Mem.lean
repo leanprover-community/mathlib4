@@ -7,14 +7,17 @@ module
 
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about membership of elements in vectors
 
 This file contains theorems for membership in a `v.toList` for a vector `v`.
 Having the length available in the type allows some of the lemmas to be
-  simpler and more general than the original version for lists.
+simpler and more general than the original version for lists.
 In particular we can avoid some assumptions about types being `Inhabited`,
-  and make more general statements about `head` and `tail`.
+and make more general statements about `head` and `tail`.
 -/
 
 public section

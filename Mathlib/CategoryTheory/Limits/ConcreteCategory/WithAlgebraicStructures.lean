@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits in ModuleCat
 
@@ -15,11 +18,11 @@ Let `C` be a concrete category and `F : J ⥤ C` a filtered diagram in `C`. We d
 about `colimit F` when objects and morphisms in `C` have some algebraic structures.
 
 ## Main results
-- `CategoryTheory.Limits.Concrete.colimit_rep_eq_zero`: Let `C` be a category where its objects have
+
+* `CategoryTheory.Limits.Concrete.colimit_rep_eq_zero`: Let `C` be a category where its objects have
   zero elements and morphisms preserve zero. If `x : Fⱼ` is mapped to `0` in the colimit, then
   there exists a `i ⟶ j` such that `x` restricted to `i` is already `0`.
-
-- `CategoryTheory.Limits.Concrete.colimit_no_zero_smul_divisor`: Let `C` be a category where its
+* `CategoryTheory.Limits.Concrete.colimit_no_zero_smul_divisor`: Let `C` be a category where its
   objects are `R`-modules and morphisms `R`-linear maps. Let `r : R` be an element without zero
   smul divisors for all small sections, i.e. there exists some `j : J` such that for all `j ⟶ i`
   and `x : Fᵢ` we have `r • x = 0` implies `x = 0`, then if `r • x = 0` for `x : colimit F`, then

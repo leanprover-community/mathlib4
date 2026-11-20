@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Condensed.Light.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in categories of light condensed objects
 

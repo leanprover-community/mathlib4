@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # API for compositions of two arrows
 

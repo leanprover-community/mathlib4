@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.Topology.Algebra.Module.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of (Non-archimedean) local fields
 
@@ -27,19 +30,21 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 This implies the following typeclasses via `inferInstance`
-- `IsValuativeTopology K`
-- `LocallyCompactSpace K`
-- `IsTopologicalDivisionRing K`
-- `ValuativeRel.IsNontrivial K`
-- `ValuativeRel.IsRankLeOne K`
-- `ValuativeRel.IsDiscrete K`
-- `IsDiscreteValuationRing 𝒪[K]`
-- `Finite 𝓀[K]`
+
+* `IsValuativeTopology K`
+* `LocallyCompactSpace K`
+* `IsTopologicalDivisionRing K`
+* `ValuativeRel.IsNontrivial K`
+* `ValuativeRel.IsRankLeOne K`
+* `ValuativeRel.IsDiscrete K`
+* `IsDiscreteValuationRing 𝒪[K]`
+* `Finite 𝓀[K]`
 
 Assuming we have a compatible `UniformSpace K` instance
 (e.g. via `IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`) then
-- `CompleteSpace K`
-- `CompleteSpace 𝒪[K]`
+
+* `CompleteSpace K`
+* `CompleteSpace 𝒪[K]`
 -/
 class IsNonarchimedeanLocalField
     (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] : Prop extends

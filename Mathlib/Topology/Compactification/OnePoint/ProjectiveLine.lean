@@ -11,6 +11,9 @@ public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 import Mathlib.Algebra.QuadraticDiscriminant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One-point compactification and projectivization
 
@@ -19,7 +22,6 @@ We construct a set-theoretic equivalence between
 
 TODO: Add the extension of this equivalence to a homeomorphism in the case `K = ℝ`,
 where `OnePoint ℝ` gets the topology of one-point compactification.
-
 
 ## Main definitions and results
 
@@ -152,11 +154,13 @@ namespace Matrix.GeneralLinearGroup
 
 variable {K : Type*} [Field K] [DecidableEq K]
 
-/-- The roots of `g.fixpointPolynomial` are the fixed points of `g ∈ GL(2, K)` acting on the finite
+/--
+The roots of `g.fixpointPolynomial` are the fixed points of `g ∈ GL(2, K)` acting on the finite
 part of `OnePoint K`.
 
 See also `gl_smul_eq_self_iff_quadratic` for a similar lemma
-about the fixed points of the action of `GL(2, ℝ)` on the upper half-plane. -/
+about the fixed points of the action of `GL(2, ℝ)` on the upper half-plane.
+-/
 lemma fixpointPolynomial_aeval_eq_zero_iff {c : K} {g : GL (Fin 2) K} :
     g.fixpointPolynomial.aeval c = 0 ↔ g • (c : OnePoint K) = c := by
   simp only [fixpointPolynomial, map_sub, map_mul, map_add, aeval_X_pow, aeval_C, aeval_X,

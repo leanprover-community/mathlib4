@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Discrete.StructuredArrow
 public import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of connected categories using initial/final functors
 

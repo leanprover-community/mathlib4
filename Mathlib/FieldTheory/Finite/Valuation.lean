@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Valuation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuations on an algebra over a finite field.
 -/

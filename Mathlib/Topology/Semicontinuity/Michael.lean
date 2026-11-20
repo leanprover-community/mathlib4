@@ -11,6 +11,9 @@ public import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Michael's selection theorem
 
@@ -19,10 +22,10 @@ convex closed nonempty values admits a continuous selection.
 
 ## Main results
 
-- `HasOpenLowerSections.exists_continuous_selection`: A correspondence with open lower sections and
+* `HasOpenLowerSections.exists_continuous_selection`: A correspondence with open lower sections and
   convex, nonempty values admits a continuous selection. A key ingredient to the proof of Michael's
   selection theorem. This holds in any topological vector space over ℝ.
-- `LowerHemicontinuous.exists_continuous_selection`: Michael's selection theorem that a lower
+* `LowerHemicontinuous.exists_continuous_selection`: Michael's selection theorem that a lower
   hemicontinuous function from a paracompact space to a Fréchet space which takes convex, closed,
   nonempty values admits a continuous selection.
 -/

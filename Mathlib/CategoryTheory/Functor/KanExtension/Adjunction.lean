@@ -9,7 +9,11 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 
-/-! # The Kan extension functor
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The Kan extension functor
 
 Given a functor `L : C ⥤ D`, we define the left Kan extension functor
 `L.lan : (C ⥤ H) ⥤ (D ⥤ H)` which sends a functor `F : C ⥤ H` to its

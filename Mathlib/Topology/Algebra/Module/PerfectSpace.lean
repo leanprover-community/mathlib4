@@ -8,7 +8,12 @@ module
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Perfect
 
-/-! # Vector spaces over nontrivially normed fields are perfect spaces -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Vector spaces over nontrivially normed fields are perfect spaces
+-/
 
 public section
 

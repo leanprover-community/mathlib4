@@ -10,12 +10,16 @@ public import Mathlib.Tactic.GCongr.Core
 
 meta import Mathlib.Tactic.GCongr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The generalized rewriting tactic
 
 This module defines the core of the `grw`/`grewrite` tactic.
 
 This file provides two implementations of the tactic:
+
 1. The simple implementation uses `kabstract` to determine where to rewrite,
    and then calls `MVarId.gcongr` to prove that the rewrite is valid.
    This is used by `nth_grw` and `grw +useKAbstract`.
@@ -104,11 +108,13 @@ section singlePass
 
 initialize registerTraceClass `Meta.grewrite
 
-/-- The congruence loop keeps track of its progress using 3 states.
-- Each rewrite starts off as `noMatch`.
-- As soon as a rewrite has successfully been applied with `GRewriteLemma.apply`,
+/--
+The congruence loop keeps track of its progress using 3 states.
+
+* Each rewrite starts off as `noMatch`.
+* As soon as a rewrite has successfully been applied with `GRewriteLemma.apply`,
   this switches to `matched`. In this state we continue trying to rewrite.
-- When the rewrite lemma is not valid anymore in the local context, i.e. if the lemma depends on a
+* When the rewrite lemma is not valid anymore in the local context, i.e. if the lemma depends on a
   free variable that is not in scope anymore, then we switch to `matchedOutOfScope`.
   In this state we stop trying to rewrite.
 -/
@@ -212,9 +218,11 @@ def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
 
 mutual
 
-/-- Recursively call `grewriteCore` to process a subgoal of a `gcongr` lemma.
+/--
+Recursively call `grewriteCore` to process a subgoal of a `gcongr` lemma.
 
-Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
+Returns whether we have done a rewrite in this subgoal, in which case it has been closed.
+-/
 partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config : Config) :
     GRewriteM Bool := do
   let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
@@ -231,10 +239,12 @@ partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config 
   else
     return false
 
-/-- Update the local contexts of the metavariables to include the variables introduced by the
+/--
+Update the local contexts of the metavariables to include the variables introduced by the
 `gcongr` lemma. This is a bit of a hack.
 
-Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
+Returns whether we have done a rewrite in this subgoal, in which case it has been closed.
+-/
 partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
     (config : Config) : GRewriteM Bool := do
   -- If the local context was not changed, we don't need to modify the local contexts.
@@ -267,11 +277,13 @@ partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
   else
     processGCongrHypothesisAux goal forward config
 
-/-- Apply the `gcongr` lemma to the goal. The main subgoals are visited for rewriting in,
+/--
+Apply the `gcongr` lemma to the goal. The main subgoals are visited for rewriting in,
 and otherwise closed `by rfl`. If at least one rewrite has happened, we commit to this lemma,
 and we try to discharge the side goals.
 
-Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
+Returns whether we have done a rewrite in this subgoal, in which case it has been closed.
+-/
 partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bool)
     (config : Config) : GRewriteM Bool :=
   withTraceNode `Meta.grewrite (fun _ ↦
@@ -307,14 +319,16 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
       dischargeSide mvarId
   return true
 
-/-- The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
+/--
+The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
 relation `relName`/`rel?`, using the `GRewriteLemma` stored in `GRewriteM`.
 If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[gcongr]` lemmas.
 
 `rel?` should be an expression with head symbol `relName`,
 unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 
-Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
+Returns the new expression and a proof that it is related to `e`, if a rewrite was found.
+-/
 partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forward : Bool)
     (config : Config) : GRewriteM (Option (Expr × Expr)) :=
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \

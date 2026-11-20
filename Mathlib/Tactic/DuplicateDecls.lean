@@ -9,6 +9,9 @@ public meta import ImportGraph.Lean.Environment  -- shake: keep (Environment.get
 public meta import Lean.Meta.CompletionName
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A tool for finding duplicate declarations
 
@@ -21,6 +24,7 @@ For theorems, it is completely redundant to have multiple of the same type.
 For instances, we typically also don't want to have multiple of the same type.
 
 To use it, simply run the following command in a file that does not use the module system:
+
 ```
 open Lean Mathlib.Tactic.DuplicateDecls
 run_meta do logInfo m!"{← lintDuplicateDeclarations .theorems}"
@@ -60,11 +64,13 @@ partial def eraseUnivs (e : Expr) : Expr :=
   | .proj _ _ s => e.updateProj! (eraseUnivs s)
   | e => e
 
-/-- Sort the hypotheses in `e` into a normalized order by sorting their types.
+/--
+Sort the hypotheses in `e` into a normalized order by sorting their types.
 Also replace universe levels with a default value.
 
 TODO: When there are multiple variables of the same type, their order will not be changed.
-This is a limitation of the current approach. -/
+This is a limitation of the current approach.
+-/
 def sortBinders (e : Expr) : MetaM Expr := do
   (if e.isLambda then lambdaTelescope else forallTelescope) e fun fvars e ↦ do
   let n := fvars.size
@@ -151,7 +157,9 @@ def duplicateDeclarations (cfg : Target) : CoreM (Array (Array Name)) := MetaM.r
 def libraryNumber (module : Name) : Nat :=
   #[`Init, `Std, `Lean, `Batteries, `Mathlib].idxOf module.getRoot
 
-/-- Structure used for sorting imported modules:
+/--
+Structure used for sorting imported modules:
+
 1. The number given by `libraryNumber`.
 2. The name of the module as a string.
 -/

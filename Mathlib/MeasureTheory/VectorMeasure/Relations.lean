@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between vector measures
 
@@ -122,13 +125,15 @@ theorem ennrealToMeasure {μ : VectorMeasure α ℝ≥0∞} :
 
 end AbsolutelyContinuous
 
-/-- Two vector measures `v` and `w` are said to be mutually singular if there exists a measurable
+/--
+Two vector measures `v` and `w` are said to be mutually singular if there exists a measurable
 set `s`, such that for all `t ⊆ s`, `v t = 0` and for all `t ⊆ sᶜ`, `w t = 0`.
 
 We note that we do not require the measurability of `t` in the definition since this makes it easier
 to use. This is equivalent to the definition which requires measurability. To prove
 `MutuallySingular` with the measurability condition, use
-`MeasureTheory.VectorMeasure.MutuallySingular.mk`. -/
+`MeasureTheory.VectorMeasure.MutuallySingular.mk`.
+-/
 def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ (∀ t ⊆ s, v t = 0) ∧ ∀ t ⊆ sᶜ, w t = 0
 

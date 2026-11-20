@@ -8,7 +8,12 @@ module
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
-/-! # Results on the cardinality of finitely supported functions and multisets. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Results on the cardinality of finitely supported functions and multisets.
+-/
 
 public section
 

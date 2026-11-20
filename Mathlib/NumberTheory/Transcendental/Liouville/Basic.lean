@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Liouville's theorem
 
@@ -76,7 +79,8 @@ open Polynomial Metric Set Real RingHom
 
 open scoped Polynomial
 
-/-- Let `Z, N` be types, let `R` be a metric space, let `α : R` be a point and let
+/--
+Let `Z, N` be types, let `R` be a metric space, let `α : R` be a point and let
 `j : Z → N → R` be a function.  We aim to estimate how close we can get to `α`, while staying
 in the image of `j`.  The points `j z a` of `R` in the image of `j` come with a "cost" equal to
 `d a`.  As we get closer to `α` while staying in the image of `j`, we are interested in bounding

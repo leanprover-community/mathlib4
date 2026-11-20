@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Even
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hyperoperation sequence
 
@@ -20,7 +23,7 @@ This file defines the Hyperoperation sequence.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Hyperoperation>
+* [https://en.wikipedia.org/wiki/Hyperoperation](https://en.wikipedia.org/wiki/Hyperoperation)
 
 ## Tags
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associator for actions of bifunctors on homological complexes
 

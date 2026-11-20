@@ -10,6 +10,9 @@ public import Mathlib.Order.Interval.Finset.Basic
 
 import Mathlib.Data.Finset.Grade
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals of finsets as finsets
 
@@ -35,7 +38,8 @@ namespace Finset
 
 section Decidable
 
-/-- `LocallyFiniteOrder` instance for `Finset α`.
+/--
+`LocallyFiniteOrder` instance for `Finset α`.
 
 We provide an optimized definition for `Finset.Icc (s : Finset α) t`,
 then define the other intervals based on `Icc`.

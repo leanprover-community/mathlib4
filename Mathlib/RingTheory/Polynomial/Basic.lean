@@ -10,10 +10,14 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Noetherian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
 
 ## Main results
+
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:

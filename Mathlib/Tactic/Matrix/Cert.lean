@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Certificates for list-based matrix literals
 
@@ -19,10 +22,10 @@ proofs about the lists of their rows.
 
 ## Main definitions
 
-- `certifyProductEq`: certify that the product of two matrix literals equals a third, given the
+* `certifyProductEq`: certify that the product of two matrix literals equals a third, given the
   expansion of the product by `MulExpand`.
-- `certifyRowsEq`: certify the equality of two row literals from the equations of their entries.
-- `certifyOfArray`: certifies that the row-major array of a matrix literal is equal to the array of
+* `certifyRowsEq`: certify the equality of two row literals from the equations of their entries.
+* `certifyOfArray`: certifies that the row-major array of a matrix literal is equal to the array of
   the matrix's entries.
 -/
 

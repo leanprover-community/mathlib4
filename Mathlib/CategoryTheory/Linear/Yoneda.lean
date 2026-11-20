@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding for `R`-linear categories
 

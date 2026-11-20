@@ -7,7 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
-/-! # Bases of modules and the Orzech property
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Bases of modules and the Orzech property
 
 It is shown in this file that any spanning set of a module over a ring satisfying the Orzech
 property of cardinality not exceeding the rank of the module must be linearly independent,

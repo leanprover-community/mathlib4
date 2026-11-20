@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.CompStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental groupoid of a Kan complex
 
@@ -19,7 +22,6 @@ can be represented by a single edge (see `SSet.FundamentalGroupoid.homMk_surject
 and commutative triangles in the fundamental groupoid of `X` all arise from
 `Edge.CompStruct` structures (i.e. `2`-simplices of `X`), see
 `SSet.FundamentalGroupoid.homMk_comp_iff`.
-
 -/
 
 @[expose] public section

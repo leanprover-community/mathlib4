@@ -8,15 +8,20 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Von Neumann Mean Ergodic Theorem in a Hilbert Space
 
 In this file we prove the von Neumann Mean Ergodic Theorem for an operator in a Hilbert space.
 It says that for a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
 the Birkhoff averages
+
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
+
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
@@ -28,16 +33,19 @@ open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
-/-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
+/--
+*Von Neumann Mean Ergodic Theorem*, a version for a normed space.
 
 Let `f : E → E` be a contracting linear self-map of a normed space.
 Let `S` be the subspace of fixed points of `f`.
 Let `g : E → S` be a continuous linear projection, `g|_S=id`.
 If the range of `f - id` is dense in the kernel of `g`,
 then for each `x`, the Birkhoff averages
+
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
+
 converge to `g x` as `N → ∞`.
 
 Usually, this fact is not formulated as a separate lemma.
@@ -79,13 +87,17 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 set_option backward.isDefEq.respectTransparency false in
-/-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
+/--
+*Von Neumann Mean Ergodic Theorem* for an operator in a Hilbert space.
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages
+
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
-converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
+
+converge to the orthogonal projection of `x` to the subspace of fixed points of `f`.
+-/
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop

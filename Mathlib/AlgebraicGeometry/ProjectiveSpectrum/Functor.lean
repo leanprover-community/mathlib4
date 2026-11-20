@@ -9,7 +9,12 @@ module
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Maps
 
-/-! # Functoriality of Proj -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functoriality of Proj
+-/
 
 @[expose] public section
 
@@ -179,6 +184,7 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
 
 /--
 The following square commutes:
+
 ```
 Proj ℬ      ⟶        Proj 𝒜
   ^                    ^

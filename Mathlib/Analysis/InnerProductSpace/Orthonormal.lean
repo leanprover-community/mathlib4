@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.LocalRing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthonormal sets
 
@@ -16,9 +19,9 @@ This file defines orthonormal sets in inner product spaces.
 
 ## Main results
 
-- We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
+* We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
   maximal orthonormal set, `exists_maximal_orthonormal`.
-- Bessel's inequality, `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set
+* Bessel's inequality, `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set
   `v` and a vector `x`, the sum of the norm-squares of the inner products `⟪v i, x⟫` is no more
   than the norm-square of `x`.
 

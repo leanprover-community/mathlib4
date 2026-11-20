@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-linear maps close to affine maps
 
@@ -31,9 +34,8 @@ exists.
 We define this auxiliary notion to split the proof of the inverse function theorem into small
 lemmas. This approach makes it possible
 
-- to prove a lower estimate on the size of the domain of the inverse function;
-
-- to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
+* to prove a lower estimate on the size of the domain of the inverse function;
+* to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
   function `f : E × F → G` with estimates on `f x y₁ - f x y₂` but not on `f x₁ y - f x₂ y`.
 
 ## Notation
@@ -62,12 +64,14 @@ open Filter Metric Set
 
 open ContinuousLinearMap (id)
 
-/-- We say that `f` approximates a continuous linear map `f'` on `s` with constant `c`,
+/--
+We say that `f` approximates a continuous linear map `f'` on `s` with constant `c`,
 if `‖f x - f y - f' (x - y)‖ ≤ c * ‖x - y‖` whenever `x, y ∈ s`.
 
 This predicate is defined to facilitate the splitting of the inverse function theorem into small
 lemmas. Some of these lemmas can be useful, e.g., to prove that the inverse function is defined
-on a specific set. -/
+on a specific set.
+-/
 def ApproximatesLinearOn (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (c : ℝ≥0) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, ‖f x - f y - f' (x - y)‖ ≤ c * ‖x - y‖
 
@@ -348,11 +352,13 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     refine ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono ?_
     exact fun R h y hy => h hy
 
-/-- A map approximating a linear equivalence on a set defines a partial equivalence on this set.
+/--
+A map approximating a linear equivalence on a set defines a partial equivalence on this set.
 Should not be used outside of this file, because it is superseded by `toOpenPartialHomeomorph`
 below.
 
-This is a first step towards the inverse function. -/
+This is a first step towards the inverse function.
+-/
 def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : PartialEquiv E F :=
   (hf.injOn hc).toPartialEquiv _ _

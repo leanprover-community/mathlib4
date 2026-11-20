@@ -8,10 +8,14 @@ module
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances related to the discrete topology
 
 We prove that the discrete topology is
+
 * first-countable,
 * second-countable for an encodable type,
 * equal to the order topology in linear orders which are also `PredOrder` and `SuccOrder`,

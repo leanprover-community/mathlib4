@@ -7,11 +7,15 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas regarding the prime spectrum of tensor products
 
 ## Main result
-- `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
+
+* `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
   If `R →+* T` is surjective on stalks (see `Mathlib/RingTheory/SurjectiveOnStalks.lean`),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the Cartesian product with the product topology).

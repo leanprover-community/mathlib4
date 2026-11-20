@@ -11,6 +11,9 @@ public import Mathlib.Topology.Defs.Induced
 
 import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Gδ` sets
 
@@ -20,22 +23,20 @@ In this file we define `Gδ` sets and prove their basic properties.
 
 * `IsGδ`: a set `s` is a `Gδ` set if it can be represented as an intersection
   of countably many open sets;
-
-* `residual`: the σ-filter of residual sets. A set `s` is called *residual* if it includes a
+* `residual`: the σ-filter of residual sets. A set `s` is called _residual_ if it includes a
   countable intersection of dense open sets.
-
-* `IsNowhereDense`: a set is called *nowhere dense* iff its closure has empty interior
-* `IsMeagre`: a set `s` is called *meagre* iff its complement is residual
+* `IsNowhereDense`: a set is called _nowhere dense_ iff its closure has empty interior
+* `IsMeagre`: a set `s` is called _meagre_ iff its complement is residual
 
 ## Main results
 
 We prove that finite or countable intersections of Gδ sets are Gδ sets.
 
-- `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
+* `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
   its complement is open and dense
-- `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+* `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
   union of nowhere dense sets
-- subsets of meagre sets are meagre; countable unions of meagre sets are meagre
+* subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 See `Mathlib/Topology/GDelta/MetrizableSpace.lean` for the proof that
 continuity set of a function from a topological space to a metrizable space is a Gδ set.
@@ -168,7 +169,9 @@ section residual
 
 variable [TopologicalSpace X]
 
-/-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
+/--
+A set `s` is called _residual_ if it includes a countable intersection of dense open sets.
+-/
 @[wikidata Q97623888]
 def residual (X : Type*) [TopologicalSpace X] : Filter X :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }

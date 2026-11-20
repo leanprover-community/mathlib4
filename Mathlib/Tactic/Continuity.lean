@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Tactic.Continuity.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity
 
-We define the `continuity` tactic using `aesop`. -/
+We define the `continuity` tactic using `aesop`.
+-/
 
 public meta section
 

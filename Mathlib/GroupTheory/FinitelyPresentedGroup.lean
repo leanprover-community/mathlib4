@@ -9,22 +9,28 @@ module
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.Schreier
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely Presented Groups
 
 This file defines finitely presented groups.
 
 ## Main definitions
+
 * `Subgroup.IsFinitelyNormallyGenerated N`: says that the subgroup `N` is the normal closure of a
   finite set.
 * `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
+
 * `Subgroup.IsFinitelyNormallyGenerated.map`: Being the normal closure of a finite set is preserved
-under surjective homomorphism.
+  under surjective homomorphism.
 * `IsFinitelyPresented.equiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
+
 finitely presented group, finitely generated normal closure
 -/
 

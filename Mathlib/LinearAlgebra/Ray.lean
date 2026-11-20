@@ -14,6 +14,9 @@ public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rays in modules
 
@@ -23,7 +26,6 @@ This file defines rays in modules.
 
 * `SameRay`: two vectors belong to the same ray if they are proportional with a nonnegative
   coefficient.
-
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
   common positive multiple.
 -/

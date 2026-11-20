@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Leibniz constructions associated to monoidal categories.
 
@@ -16,6 +19,7 @@ In a monoidal category with pushouts, the pushout-product is the Leibniz functor
 tensor product. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y`
 to the canonical map from the pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following
 diagram:
+
 ```
   A ⊗ X --> B ⊗ X
      |          |
@@ -28,6 +32,7 @@ the internal hom. This is the bifunctor of arrow categories that sends `f : A �
 `g : X ⟶ Y` to the canonical map from `B ⟹ X` to the pullback of
 `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the
 following diagram:
+
 ```
   B ⟹ X --> A ⟹ X
      |          |
@@ -56,9 +61,11 @@ namespace MonoidalCategory
 
 namespace Arrow
 
-/-- The Leibniz functor associated to the tensor product on a monoidal category. This is the
+/--
+The Leibniz functor associated to the tensor product on a monoidal category. This is the
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from the
 pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagram:
+
 ```
   A ⊗ X --> B ⊗ X
      |          |
@@ -70,10 +77,12 @@ noncomputable
 abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] :
     Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
 
-/-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
+/--
+The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
 `B ⟹ X` to the pullback of `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and
 `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the following diagram:
+
 ```
   B ⟹ X --> A ⟹ X
      |          |

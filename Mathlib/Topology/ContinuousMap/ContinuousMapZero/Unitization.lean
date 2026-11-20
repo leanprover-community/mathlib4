@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C(X, R)` is the unitization of `C(X, R)₀`
 
@@ -17,7 +20,7 @@ with inverse given by `fun f ↦ (f 0, fun x ↦ f x - f 0)`.
 
 ## Main declarations
 
-+ `ContinuousMapZero.unitizationStarAlgEquiv`: the star algebra isomorphism
+* `ContinuousMapZero.unitizationStarAlgEquiv`: the star algebra isomorphism
   `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)`
 -/
 
@@ -31,11 +34,13 @@ variable {X R : Type*} [TopologicalSpace X] [Zero X] [TopologicalSpace R]
 variable [CommRing R] [IsTopologicalRing R] [StarRing R] [ContinuousStar R]
 
 variable (X R) in
-/-- The canonical star algebra isomorphism `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)` which sends
+/--
+The canonical star algebra isomorphism `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)` which sends
 `(r, f)` to the function `fun x ↦ r + f x` whose inverse sends `g` to `(g 0, fun x ↦ g x - g 0)`.
 
 This is the map obtained by lifting the coercion `C(X, R)₀ → C(X, R)` to the unitization
-(see `ContinuousMapZero.toStarAlgHom_unitizationStarAlgEquiv`). -/
+(see `ContinuousMapZero.toStarAlgHom_unitizationStarAlgEquiv`).
+-/
 def unitizationStarAlgEquiv : Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R) where
   __ := starLift (toContinuousMapHom (X := X) (R := R))
   toFun := starLift _

@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral domains
 
@@ -135,10 +138,12 @@ theorem isCyclic_of_injective_ringHom [Finite G] (f : G →* R) (hf : Injective 
     intro n hn
     exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 
-/-- The unit group of a finite integral domain is cyclic.
+/--
+The unit group of a finite integral domain is cyclic.
 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
-`Finite Rˣ` rather than deducing it from `Finite R`. -/
+`Finite Rˣ` rather than deducing it from `Finite R`.
+-/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
   isCyclic_of_injective_ringHom (Units.coeHom R) Units.val_injective
 

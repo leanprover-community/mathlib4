@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Nat.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Elementwise monoid structure of additive submonoids
 
@@ -22,6 +25,7 @@ and when `R = A` it is definitionally equal to the multiplication on `AddSubmono
 These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
+
 * `AddSubmonoid.one`
 * `AddSubmonoid.mul`
 * `AddSubmonoid.mulOneClass`
@@ -210,9 +214,11 @@ end NonUnitalNonAssocSemiring
 section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R]
 
-/-- `AddSubmonoid.neg` distributes over multiplication.
+/--
+`AddSubmonoid.neg` distributes over multiplication.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) where
   neg_mul x y := by

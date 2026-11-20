@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ExactSequence
 
 import Mathlib.CategoryTheory.Abelian.Refinements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The four and five lemmas
 
@@ -24,11 +27,12 @@ A' --f'-> B' --g'-> C' --h'-> D' --i'-> E'
 ```
 
 We show:
-- the "mono" version of the four lemma: if `α` is an epimorphism and `β` and `δ` are monomorphisms,
+
+* the "mono" version of the four lemma: if `α` is an epimorphism and `β` and `δ` are monomorphisms,
   then `γ` is a monomorphism,
-- the "epi" version of the four lemma: if `β` and `δ` are epimorphisms and `ε` is a monomorphism,
+* the "epi" version of the four lemma: if `β` and `δ` are epimorphisms and `ε` is a monomorphism,
   then `γ` is an epimorphism,
-- the five lemma: if `α`, `β`, `δ` and `ε` are isomorphisms, then `γ` is an isomorphism.
+* the five lemma: if `α`, `β`, `δ` and `ε` are isomorphisms, then `γ` is an isomorphism.
 
 ## Implementation details
 

@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Order.CompactlyGenerated.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators for Boolean algebras
 
 In this file, we provide an alternative constructor for Boolean algebras.
 
-A set of *Boolean generators* in a compactly generated complete lattice is a subset `S` such that
+A set of _Boolean generators_ in a compactly generated complete lattice is a subset `S` such that
 
 * the elements of `S` are all atoms, and
 * the set `S` satisfies an atomicity condition:
@@ -42,7 +45,7 @@ variable {α : Type*} [CompleteLattice α]
 /--
 An alternative constructor for Boolean algebras.
 
-A set of *Boolean generators* in a compactly generated complete lattice is a subset `S` such that
+A set of _Boolean generators_ in a compactly generated complete lattice is a subset `S` such that
 
 * the elements of `S` are all atoms, and
 * the set `S` satisfies an atomicity condition:

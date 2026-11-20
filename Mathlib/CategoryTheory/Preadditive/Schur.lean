@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schur's lemma
 
@@ -101,7 +104,8 @@ variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
-/-- An auxiliary lemma for Schur's lemma.
+/--
+An auxiliary lemma for Schur's lemma.
 
 If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible,
 then `X ⟶ X` is 1-dimensional.
@@ -151,7 +155,8 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
 
 -- There is a symmetric argument that uses `[FiniteDimensional 𝕜 (Y ⟶ Y)]` instead,
 -- but we don't bother proving that here.
-/-- **Schur's lemma** for `𝕜`-linear categories:
+/--
+*Schur's lemma* for `𝕜`-linear categories:
 if hom spaces are finite dimensional, then the hom space between simples is at most 1-dimensional.
 
 See `finrank_hom_simple_simple_eq_one_iff` and `finrank_hom_simple_simple_eq_zero_iff` below

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Subadditive
 
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gelfand radius in a normed ring
 
@@ -39,10 +42,12 @@ section SeminormedRing
 
 variable [NormedField 𝕜] [SeminormedRing A] [SeminormedRing B] [NormedAlgebra 𝕜 A]
 
-/-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
+/--
+The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
 We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`.
 
-This definition is not exposed. Use `tendsto_gelfandRadius` instead. -/
+This definition is not exposed. Use `tendsto_gelfandRadius` instead.
+-/
 noncomputable def gelfandRadius (a : A) : ℝ :=
   atTop.limUnder fun k : ℕ+ ↦ ‖a ^ (k : ℕ)‖ ^ (k : ℝ)⁻¹
 

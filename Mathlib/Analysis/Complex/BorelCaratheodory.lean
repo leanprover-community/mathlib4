@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Analysis.Complex.Schwarz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel-Carathéodory theorem
 
@@ -79,10 +82,12 @@ end SchwarzTransform
 
 section BorelCaratheodory
 
-/-- **Borel-Carathéodory theorem** for functions vanishing at the origin.
+/--
+*Borel-Carathéodory theorem* for functions vanishing at the origin.
 
 If `f` is analytic on the open ball `‖z‖ < R`, satisfies `(f z).re ≤ M` for all such `z`,
-and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖z‖ < R`. -/
+and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖z‖ < R`.
+-/
 public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
@@ -102,10 +107,12 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
     _ ≤ 2 * M * (‖z‖ / R / (1 - ‖z‖ / R)) := by gcongr; simpa [div_lt_one hR]
     _ = 2 * M * ‖z‖ / (R - ‖z‖) := by field_simp
 
-/-- **Borel-Carathéodory theorem**.
+/--
+*Borel-Carathéodory theorem*.
 
 If `f` is analytic on the open ball `‖z‖ < R` and satisfies `(f z).re ≤ M` for all such `z`,
-then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)` for all `‖z‖ < R`. -/
+then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)` for all `‖z‖ < R`.
+-/
 public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R) :
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by

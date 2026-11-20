@@ -8,11 +8,15 @@ module
 public import Mathlib.MeasureTheory.OuterMeasure.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Outer Measures
 
 An outer measure is a function `μ : Set α → ℝ≥0∞`, from the powerset of a type to the extended
 nonnegative real numbers that satisfies the following conditions:
+
 1. `μ ∅ = 0`;
 2. `μ` is monotone;
 3. `μ` is countably subadditive. This means that the outer measure of a countable union is at most
@@ -22,7 +26,7 @@ Note that we do not need `α` to be measurable to define an outer measure.
 
 ## References
 
-<https://en.wikipedia.org/wiki/Outer_measure>
+[https://en.wikipedia.org/wiki/Outer\_measure](https://en.wikipedia.org/wiki/Outer_measure)
 
 ## Tags
 
@@ -204,8 +208,10 @@ theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => 
 theorem ext {μ₁ μ₂ : OuterMeasure α} (h : ∀ s, μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   DFunLike.ext _ _ h
 
-/-- A version of `MeasureTheory.OuterMeasure.ext` that assumes `μ₁ s = μ₂ s` on all *nonempty*
-sets `s`, and gets `μ₁ ∅ = μ₂ ∅` from `MeasureTheory.OuterMeasure.empty'`. -/
+/--
+A version of `MeasureTheory.OuterMeasure.ext` that assumes `μ₁ s = μ₂ s` on all _nonempty_
+sets `s`, and gets `μ₁ ∅ = μ₂ ∅` from `MeasureTheory.OuterMeasure.empty'`.
+-/
 theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.Nonempty → μ₁ s = μ₂ s) :
     μ₁ = μ₂ :=
   ext fun s => s.eq_empty_or_nonempty.elim (fun he => by simp [he]) (h s)
