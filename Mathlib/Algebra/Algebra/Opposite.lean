@@ -133,6 +133,9 @@ end AlgHom
 namespace AlgEquiv
 variable {R A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
