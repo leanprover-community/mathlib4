@@ -53,17 +53,14 @@ variable (R) in
 /-- An equivalence `e : α ≃ β` gives an algebra equivalence `α ≃ₐ[R] β`
 where the `R`-algebra structure on `α` is
 the one obtained by transporting an `R`-algebra structure on `β` back along `e`. -/
-def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
-    let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
-    exact α ≃ₐ[R] β := by
+def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] :
+    let := Equiv.semiring e
+    let := Equiv.algebra R e
+    α ≃ₐ[R] β := by
   intros
-  exact
-    { Equiv.ringEquiv e with
-      commutes' := fun r => by
-        apply e.symm.injective
-        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
-          symm_apply_apply, algebraMap_def] }
+  exact .ofCommutes (Equiv.ringEquiv e) fun r => by
+    apply e.symm.injective
+    simp only [ringEquiv_apply, symm_apply_apply, algebraMap_def]
 
 @[simp]
 theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
