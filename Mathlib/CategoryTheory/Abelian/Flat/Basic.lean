@@ -40,7 +40,7 @@ both finite limits and finite colimits. -/
 def Monoidal.flat : ObjectProperty A :=
   fun X ↦ exactFunctor _ _ (tensorLeft X) ∧ exactFunctor _ _ (tensorRight X)
 
-lemma Monoidal.flat_eq_min :
+lemma Monoidal.flat_eq_inf :
     flat (A := A) =
       (exactFunctor A A).inverseImage (curriedTensor A) ⊓
       (exactFunctor A A).inverseImage (curriedTensor A).flip := rfl
