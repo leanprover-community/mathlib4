@@ -494,11 +494,15 @@ def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeCommGroup α ≃* FreeCom
   right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, MonoidHom.id_apply]
   map_mul' := map_mul _
 
-@[to_additive]
+/-- The free commutative group on a subsingleton is isomorphic to the free group on it. -/
+@[to_additive
+/-- The free additive commutative group on a subsingleton is isomorphic to the free additive
+group on it. -/]
 def mulEquivFreeGroupOfSubsingleton (T : Type*) [Subsingleton T] :
     FreeCommGroup T ≃* FreeGroup T :=
   (lift FreeGroup.of).toMulEquiv (FreeGroup.lift of) (by ext; simp) (by ext; simp)
 
+/-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
 def uniqueEquiv (T : Type*) [Unique T] : FreeCommGroup T ≃* Multiplicative ℤ :=
   (mulEquivFreeGroupOfSubsingleton T).trans FreeGroup.mulEquivIntOfUnique
 
