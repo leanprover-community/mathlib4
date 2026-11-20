@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 module
 
 public import Mathlib.Order.Heyting.Basic
-public import Aesop
+
+import Aesop
 
 /-!
 # (Generalized) Boolean algebras

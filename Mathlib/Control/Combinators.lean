@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-import Mathlib.Init
 public import Mathlib.Init
 
 /-!

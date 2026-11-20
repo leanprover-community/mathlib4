@@ -9,8 +9,6 @@ public meta import Qq
 public import Mathlib.Init
 
 meta import Qq.Typ
-public import Lean.Meta.Tactic.FVarSubst
-public import Qq
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`

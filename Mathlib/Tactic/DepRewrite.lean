@@ -13,9 +13,8 @@ public meta import Lean.Elab.Tactic.Simp
 meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
-import Mathlib.Init
-public import Lean.Elab.ConfigEval
 public import Mathlib.Init
+public import Lean.Elab.ConfigEval
 
 /-! ## Dependent rewrite tactic -/
 

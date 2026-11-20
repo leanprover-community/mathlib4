@@ -10,7 +10,6 @@ public meta import Batteries.Lean.Meta.UnusedNames
 public meta import Lean.Elab.Tactic.RCases
 
 import Mathlib.Tactic.TypeStar
-public import Mathlib.Init
 
 /-!
 # lift tactic

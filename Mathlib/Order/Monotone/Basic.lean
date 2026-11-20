@@ -14,7 +14,6 @@ public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Monotonicity

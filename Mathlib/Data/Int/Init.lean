@@ -10,8 +10,6 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.DepRewrite
 
 import Batteries.Logic
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the integers

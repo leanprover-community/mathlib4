@@ -10,7 +10,6 @@ public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
 
 meta import Mathlib.Tactic.GRewrite.Core
-public import Lean.Elab.ConfigEval
 
 /-!
 # The generalized rewriting tactic
