@@ -450,9 +450,8 @@ followed by the functorial map on continuous cohomology. -/
 @[reassoc]
 lemma resMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     resMap φ f n = (resNatTrans k φ n).app X ≫ (HₜFunct k H n).map f := by
-  rw [resNatTrans_app]
-  exact (congrArg (HomologicalComplex.homologyMap · n) (cochainsResMap_eq φ f)).trans
-    (HomologicalComplex.homologyMap_comp _ _ _)
+  rw [resNatTrans_app, resMap, cochainsResMap_eq]
+  simp [HomologicalComplex.homologyMap_comp]
 
 /-- The component of `resNatTrans` is the special case of `resMap` where the coefficient map is
 the identity. -/
@@ -466,5 +465,16 @@ identity of `G`. -/
 lemma resMap_id_left (f : X ⟶ X') (n : ℕ) :
     resMap (ContinuousMonoidHom.id G) f n = (HₜFunct k G n).map f := by
   simp [resMap, cochainsResMap_id_left, continuousCohomologyFunctor]
+
+@[deprecated (since := "2026-11-19")] alias cocyclesMap := cocyclesResMap
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_id := cocyclesResMap_id
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp := cocyclesResMap_comp
+@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp_assoc := cocyclesResMap_comp_assoc
+@[deprecated (since := "2026-11-19")] alias map := resMap
+@[deprecated (since := "2026-11-19")] alias π_map := π_resMap
+@[deprecated (since := "2026-11-19")] alias π_map_assoc := π_resMap_assoc
+@[deprecated (since := "2026-11-19")] alias map_id := resMap_id
+@[deprecated (since := "2026-11-19")] alias map_comp := resMap_comp
+@[deprecated (since := "2026-11-19")] alias map_comp_assoc := resMap_comp_assoc
 
 end ContinuousCohomology
