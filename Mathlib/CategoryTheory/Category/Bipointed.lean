@@ -90,7 +90,7 @@ instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
 
 instance hasForget : ConcreteCategory Bipointed HomSubtype where
   hom f := ⟨f.toFun, ⟨f.map_fst, f.map_snd⟩⟩
-  ofHom f := ⟨f.1, f.2.1, f.2.2⟩
+  ofHom f := ⟨f.val, f.property.1, f.property.2⟩
 
 /-- Swaps the pointed elements of a bipointed type. `Prod.swap` as a functor. -/
 @[simps]

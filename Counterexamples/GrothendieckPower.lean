@@ -417,7 +417,7 @@ private theorem law_lambda_generic {S : Type*} [CommRing S]
     {a b u₁ v₁ u₂ v₂ : S}
     (ha : a ^ 3 = 0) (hb : b ^ 3 = 0) (hab : a ^ 2 * b + 2 = 0)
     (hv₁ : v₁ ^ 2 = a ^ 2 * v₁)
-    (hv₂ : v₂ ^ 2 = a ^ 2 * v₂) (hu₂ : u₂ ^ 2 = a * b * u₂ - b ^ 2 * v₂) :
+    (_hv₂ : v₂ ^ 2 = a ^ 2 * v₂) (hu₂ : u₂ ^ 2 = a * b * u₂ - b ^ 2 * v₂) :
     letI l₁ := (1 + a * u₁) * (1 + b * v₁)
     letI l₂ := (1 + a * u₂) * (1 + b * v₂)
     letI dv := v₁ * l₂ + v₂

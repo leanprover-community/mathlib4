@@ -543,8 +543,8 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
       α ≫ pullback.snd _ _ = (F.map fi).isoOpensRange.hom ≫
         (F.obj i).homOfLE (le_iSup_of_le ⟨l, _, fk⟩ le_rfl) ∧
       α z = x := by
-  obtain ⟨k₁, y₁, hy₁⟩ := mem_iSup.mp ((pullback.fst (C := Scheme) _ _) x).2
-  obtain ⟨k₂, y₂, hy₂⟩ := mem_iSup.mp ((pullback.snd (C := Scheme) _ _) x).2
+  obtain ⟨k₁, y₁, hy₁⟩ := mem_iSup.mp ((pullback.fst (C := Scheme) _ _) x).property
+  obtain ⟨k₂, y₂, hy₂⟩ := mem_iSup.mp ((pullback.snd (C := Scheme) _ _) x).property
   obtain ⟨l, hli, hlk, z, rfl, rfl⟩ :=
     (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1 y₁ y₂
       (by simpa [hy₁, hy₂] using congr($(pullback.condition (f := (V F i j).ι)) x))
@@ -831,7 +831,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   refine ?_ ∘ ((glueData F).ι_eq_iff _ _ _ _).mp
   dsimp +instances only [GlueData.Rel]
   rintro ⟨x, rfl, rfl⟩
-  obtain ⟨⟨k, ki, kj⟩, y, hy : F.map ki y = (glueData F).f i j x⟩ := mem_iSup.mp x.2
+  obtain ⟨⟨k, ki, kj⟩, y, hy : F.map ki y = (glueData F).f i j x⟩ := mem_iSup.mp x.property
   refine ⟨k, ki, kj, y, hy, ?_⟩
   obtain ⟨k, rfl⟩ := (equivShrink J).symm.surjective k
   apply ((glueData F).ι _).isOpenEmbedding.injective

@@ -524,7 +524,7 @@ theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
   let : LinearOrder α := LinearOrder.lift' f hf
   have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
   have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
-    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.property⟩, fun _ ↦ by grind⟩
   rw [← card_type (· < ·), ← card_type (· < ·)]
   refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
   obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
@@ -903,7 +903,7 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
-  uniq a := Subtype.ext <| lt_one_iff.1 a.2
+  uniq a := Subtype.ext <| lt_one_iff.1 a.property
 
 @[simp]
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
@@ -978,20 +978,21 @@ open Ordinal
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. -/
 @[no_expose]
 def ord (c : Cardinal) : Ordinal :=
-  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
+  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property) <| by
   rintro α β ⟨f⟩
   refine congr_arg sInf <| ext fun o ↦ ⟨?_, ?_⟩ <;>
     rintro ⟨⟨r, hr⟩, rfl⟩ <;>
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
-theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_iInf (α : Type u) :
+    ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.val r.property :=
   (rfl)
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
-  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
-  ⟨r.1, r.2, wo.symm⟩
+  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.val r.property
+  ⟨r.val, r.property, wo.symm⟩
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :

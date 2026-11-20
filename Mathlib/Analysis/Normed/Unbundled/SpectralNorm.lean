@@ -260,15 +260,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
       have hn' (n : ℕ) (hn : n < p.natDegree) : f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
-        by_cases hn0 : n = 0
-        · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (succ_le_iff.mpr h_deg),
-            ← Nat.sub_zero p.natDegree, ← hn0]
-          exact (mul_le_of_le_one_right (norm_nonneg _) hf_pm.map_one_le_one).trans_lt (hn_lt n hn)
-        · have : p.natDegree = p.natDegree - n + n := by rw [Nat.sub_add_cancel (le_of_lt hn)]
-          rw [map_smul_eq_mul, hf_pm _ (succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
-            hf_pm _ (succ_le_iff.mpr h_deg), this, pow_add]
-          gcongr
-          exact hn_lt n hn
+        grw [map_smul_eq_mul, hf_pm.map_pow, hf_pm.map_pow, hn_lt n hn, ← pow_add,
+          Nat.sub_add_cancel hn.le]
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by

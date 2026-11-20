@@ -143,7 +143,7 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
   exists_cfc_of_predicate a ha := by
     have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp
         (continuousFunctionalCalculus a).toStarAlgHom) :=
-      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+      isometry_subtypeVal.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_id => congrm $(continuousFunctionalCalculus_map_id a).val
     case hom_map_spectrum =>
@@ -160,7 +160,7 @@ lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
     cfcHom ha =
       (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a).toStarAlgHom := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
-  · exact continuous_subtype_val.comp
+  · exact continuous_subtypeVal.comp
       (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
   · simp [continuousFunctionalCalculus_map_id a]
 
@@ -168,7 +168,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
     rw [cfcHom_eq_of_isStarNormal]
-    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    exact isometry_subtypeVal.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
 
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
@@ -231,7 +231,7 @@ lemma SpectrumRestricts.nnReal_iff_nnNorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjo
   have : IsSelfAdjoint (algebraMap ℝ A t - a) := IsSelfAdjoint.algebraMap A (.all (t : ℝ)) |>.sub ha
   rw [← ENNReal.coe_le_coe, ← IsSelfAdjoint.spectralRadius_eq_nnNorm,
     ← SpectrumRestricts.spectralRadius_eq (f := Complex.reCLM)] at ht ⊢
-  · exact SpectrumRestricts.nnreal_iff_spectralRadius_le ht
+  · exact SpectrumRestricts.nnReal_iff_spectralRadius_le ht
   all_goals
     try apply IsSelfAdjoint.spectrumRestricts
     assumption
@@ -314,8 +314,8 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     · exact .smul (star_trivial _) <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
     · exact .neg <| .star_mul_self c
     · rw [← Nat.cast_smul_eq_nsmul ℝ]
-      refine (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
-        (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by simp
+      refine (ℜ c).property.sq_spectrumRestricts.nnreal_add ((ℜ c).property.pow 2)
+        ((ℑ c).property.pow 2) (ℑ c).property.sq_spectrumRestricts |>.smul_of_nonneg <| by simp
   -- therefore `- (star c * c) = 0` and so `a⁻ ^ 3 = 0`. By properties of the continuous functional
   -- calculus, `fun x ↦ x⁻ ^ 3` is zero on the spectrum of `a`, `0 ≤ x` for `x ∈ spectrum ℝ a`.
   rw [h_c_spec₁.mul_comm.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,

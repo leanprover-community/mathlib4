@@ -725,20 +725,20 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
 @[simps]
 def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
-  toFun x := ⟨x.1 ^ a,
+  toFun x := ⟨x.val ^ a,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : a.Coprime n := by
       simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
-  invFun x := ⟨x.1 ^ b,
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.val ^ b,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : b.Coprime n := by
       simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
   left_inv x := by ext; simp [← pow_mul,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
   right_inv x := by ext; simp [← pow_mul, mul_comm b,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/

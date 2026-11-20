@@ -158,7 +158,7 @@ section SetCoe
 
 variable {α : Type u}
 
-instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
+instance (s : Set α) : CoeTC s α := ⟨fun x => x.val⟩
 
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
@@ -176,16 +176,16 @@ theorem SetCoe.exists {s : Set α} {p : s → Prop} :
   Subtype.exists
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
-  (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
+    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.val x.property :=
+  (@SetCoe.exists _ _ fun x => p x.val x.property).symm
 
 theorem SetCoe.forall' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.1 x.2 :=
-  (@SetCoe.forall _ _ fun x => p x.1 x.2).symm
+    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.val x.property :=
+  (@SetCoe.forall _ _ fun x => p x.val x.property).symm
 
 @[simp]
 theorem set_coe_cast :
-    ∀ {s t : Set α} (H' : s = t) (H : ↥s = ↥t) (x : s), cast H x = ⟨x.1, H' ▸ x.2⟩
+    ∀ {s t : Set α} (H' : s = t) (H : ↥s = ↥t) (x : s), cast H x = ⟨x.val, H' ▸ x.property⟩
   | _, _, rfl, _, _ => rfl
 
 theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
@@ -560,7 +560,7 @@ theorem exists_mem_const {p : Prop} [Nonempty s] : (∃ x ∈ s, p) ↔ p :=
   (nonempty_coe_sort.mp ‹_›).exists_const
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
-  ⟨fun x => x.2⟩
+  ⟨fun x => x.property⟩
 
 @[simp]
 theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
@@ -938,7 +938,6 @@ theorem mem_sep (xs : x ∈ s) (px : p x) : x ∈ { x ∈ s | p x } :=
 theorem sep_mem_eq : { x ∈ s | x ∈ t } = s ∩ t :=
   rfl
 
-@[simp]
 theorem mem_sep_iff : x ∈ { x ∈ s | p x } ↔ x ∈ s ∧ p x :=
   Iff.rfl
 

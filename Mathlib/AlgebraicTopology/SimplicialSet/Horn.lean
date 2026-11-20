@@ -45,7 +45,7 @@ lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ} (x : 
 
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
-      ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
+      ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.val}ᶜ := by
   ext m j
   simp [stdSimplex.face_obj, horn, Set.eq_univ_iff_forall]
   rfl
@@ -62,7 +62,7 @@ lemma mem_horn_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) (i : Fin (n + 1
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
   rw [horn_eq_iSup]
-  exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.1}ᶜ) ⟨i, h⟩
+  exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.val}ᶜ) ⟨i, h⟩
 
 @[simp]
 lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :

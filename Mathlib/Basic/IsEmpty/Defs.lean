@@ -40,7 +40,7 @@ instance : IsEmpty False :=
   ⟨id⟩
 
 instance Fin.isEmpty : IsEmpty (Fin 0) :=
-  ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
+  ⟨fun n ↦ Nat.not_lt_zero n.val n.isLt⟩
 
 instance Fin.isEmpty' : IsEmpty (Fin Nat.zero) :=
   Fin.isEmpty
@@ -81,11 +81,11 @@ instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕ β) 
 
 /-- Subtypes of an empty type are empty. -/
 instance [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ IsEmpty.false x.1⟩
+  ⟨fun x ↦ IsEmpty.false x.val⟩
 
 /-- Subtypes by an all-false predicate are empty. -/
 theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ hp _ x.2⟩
+  ⟨fun x ↦ hp _ x.property⟩
 
 /-- Subtypes by `False` are empty. -/
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=

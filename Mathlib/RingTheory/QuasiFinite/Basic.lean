@@ -218,10 +218,10 @@ lemma of_isLocalization (M : Submonoid S) [IsLocalization M T] [QuasiFinite R S]
       ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
     rintro _ ⟨p, s, rfl⟩
     obtain ⟨s, t, rfl⟩ := IsLocalization.exists_mk'_eq M s
-    use s • p / algebraMap _ _ t.1
+    use s • p / algebraMap _ _ t.val
     apply ((IsLocalization.map_units T t).map
       Algebra.TensorProduct.includeRight).mul_left_injective
-    by_cases ht : algebraMap _ P.ResidueField t.1 = 0
+    by_cases ht : algebraMap _ P.ResidueField t.val = 0
     · simp [ht]
     trans (s • p) ⊗ₜ[S] 1
     · simp [div_mul_cancel₀ _ ht]
@@ -373,9 +373,12 @@ lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
     (hq : p = q.comap Algebra.TensorProduct.includeRight.toRingHom) :
     QuasiFiniteAt A q := by
   let f : A ⊗[R] Localization.AtPrime p →ₐ[A] Localization.AtPrime q :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨Localization.localRingHom _ _ _ hq, by
-      simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
-        IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)]⟩ fun _ _ ↦ .all _ _
+    Algebra.TensorProduct.lift (Algebra.ofId _ _)
+      { Localization.localRingHom _ _ _ hq with
+        commutes' _ := by
+          simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
+            IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)] }
+      fun _ _ ↦ .all _ _
   let g : A ⊗[R] S →ₐ[A] A ⊗[R] Localization.AtPrime p :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   have : f.comp g = IsScalarTower.toAlgHom _ _ _ := by ext; simp [f, g]
@@ -393,7 +396,9 @@ lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFinite
     (hq : p = q.comap f.toRingHom) :
     QuasiFiniteAt R q := by
   subst hq
-  refine .of_surjective_algHom ⟨Localization.localRingHom _ q f.toRingHom rfl, ?_⟩ (hf q ‹_›)
+  refine .of_surjective_algHom
+    { Localization.localRingHom _ q f.toRingHom rfl with commutes' := ?_ }
+    (hf q ‹_›)
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]
 
@@ -509,13 +514,13 @@ lemma QuasiFiniteAt.of_isOpen_singleton
   have hf : Function.Surjective f := by
     intro x
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl x
-    suffices IsUnit (algebraMap _ (Localization.Away e) s.1) by
+    suffices IsUnit (algebraMap _ (Localization.Away e) s.val) by
       refine ⟨algebraMap _ _ x * this.unit⁻¹, (this.map f).mul_right_cancel ?_⟩
       simp only [← map_mul, mul_assoc, IsUnit.val_inv_mul]
       simp
     by_contra H
     obtain ⟨M, hM, H⟩ :=
-      Ideal.exists_le_maximal (.span {algebraMap _ (Localization.Away e) s.1}) (by simpa)
+      Ideal.exists_le_maximal (.span {algebraMap _ (Localization.Away e) s.val}) (by simpa)
     have := Subsingleton.elim ((IsLocalRing.closedPoint _).comap f.toRingHom) ⟨M, inferInstance⟩
     have := congr(($this).asIdeal).ge (H (Ideal.mem_span_singleton_self _))
     simp [IsLocalRing.closedPoint, IsLocalization.AtPrime.isUnit_to_map_iff _ p.asIdeal] at this
@@ -533,7 +538,7 @@ lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
   let e := PrimeSpectrum.preimageHomeomorphFiber _ S ⟨p, inferInstance⟩
   let qF : PrimeSpectrum (p.Fiber S) := e ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩
   have : Algebra.QuasiFiniteAt p.ResidueField qF.asIdeal := .baseChange q _
-    congr($(e.symm_apply_apply ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).1.asIdeal).symm
+    congr($(e.symm_apply_apply ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).val.asIdeal).symm
   obtain ⟨r, hr, hrq⟩ := Algebra.QuasiFiniteAt.exists_basicOpen_eq_singleton
     (R := p.ResidueField) qF.asIdeal
   obtain ⟨s, hs, x, hsx⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ r
@@ -547,7 +552,7 @@ lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
     · simpa [IsScalarTower.algebraMap_apply R S q.ResidueField, q.over_def p] using hs
   refine ⟨x, this, fun q' _ hq' _ ↦ not_not.mp fun hxq' ↦ hq' ?_⟩
   congrm $(e.injective (a₁ := ⟨⟨q', ‹_›⟩, PrimeSpectrum.ext (q'.over_def p).symm⟩)
-   (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.asIdeal
+   (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).val.asIdeal
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, PrimeSpectrum.preimageHomeomorphFiber,
     PrimeSpectrum.preimageOrderIsoFiber, Homeomorph.homeomorph_mk_coe, Set.mem_compl_iff,
     PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe, e]
@@ -569,7 +574,7 @@ lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
       p.Fiber S →ₐ[p.ResidueField] q.ResidueField) := by
   let q' : Ideal (p.Fiber S) := (PrimeSpectrum.primesOverOrderIsoFiber R S p ⟨q, ‹_›, ‹_›⟩).asIdeal
   have hq' : q = q'.comap Algebra.TensorProduct.includeRight.toRingHom :=
-    congr($((PrimeSpectrum.primesOverOrderIsoFiber R S p).symm_apply_apply ⟨q, ‹_›, ‹_›⟩).1).symm
+    congr($((PrimeSpectrum.primesOverOrderIsoFiber R S p).symm_apply_apply ⟨q, ‹_›, ‹_›⟩).val).symm
   have : Algebra.QuasiFiniteAt p.ResidueField q' := .baseChange q _ hq'
   have : q'.IsMaximal := (PrimeSpectrum.isClosed_singleton_iff_isMaximal _).mp
     (QuasiFiniteAt.isClopen_singleton (R := p.ResidueField) _).isClosed

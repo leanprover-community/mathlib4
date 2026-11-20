@@ -269,7 +269,7 @@ variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.toFun, w.genWeightSpace_ne_bot'⟩
-  invFun w := ⟨w.1, w.2⟩
+  invFun w := ⟨w.val, w.property⟩
   left_inv w := by simp
   right_inv w := by simp
 

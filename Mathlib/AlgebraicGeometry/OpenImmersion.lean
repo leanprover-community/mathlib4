@@ -312,7 +312,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
   toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
   invFun U := f ⁻¹ᵁ U
   left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.injective)
-  right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
+  right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.property))
 
 namespace Scheme
 
@@ -354,7 +354,7 @@ theorem exists_affine_mem_range_and_range_subset
     ∃ R, ∃ (f : Spec R ⟶ X), IsOpenImmersion f ∧ x ∈ Set.range f ∧ Set.range f ⊆ U := by
   obtain ⟨⟨V, hxV⟩, R, ⟨e⟩⟩ := X.local_affine x
   have : e.hom.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.base ≫ V.inclusion')).obj U :=
-    show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
+    show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).val ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
   let f : Spec ↧(Localization.Away r) ⟶ X :=
@@ -362,7 +362,7 @@ theorem exists_affine_mem_range_and_range_subset
   refine ⟨↧(Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
-  exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
+  exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).val)⟩, Set.image_subset_iff.mpr hr'⟩
 
 end Scheme
 

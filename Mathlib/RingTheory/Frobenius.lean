@@ -244,12 +244,12 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
 
 variable (S G) in
 lemma exists_primesOver_isConj (P : Ideal R)
-    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
-    ∃ σ : Ideal.primesOver P S → G, (∀ Q, IsArithFrobAt R (σ Q) Q.1) ∧
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.val)) :
+    ∃ σ : Ideal.primesOver P S → G, (∀ Q, IsArithFrobAt R (σ Q) Q.val) ∧
       (∀ Q₁ Q₂, IsConj (σ Q₁) (σ Q₂)) := by
   obtain ⟨⟨Q, hQ₁, hQ₂⟩, hQ₃⟩ := hP
-  have (Q' : Ideal.primesOver P S) : ∃ σ : G, Q'.1 = σ • Q :=
-    Algebra.IsInvariant.exists_smul_of_under_eq R S G _ _ (hQ₂.over.symm.trans Q'.2.2.over)
+  have (Q' : Ideal.primesOver P S) : ∃ σ : G, Q'.val = σ • Q :=
+    Algebra.IsInvariant.exists_smul_of_under_eq R S G _ _ (hQ₂.over.symm.trans Q'.property.2.over)
   choose τ hτ using this
   obtain ⟨σ, hσ⟩ := exists_of_isInvariant R G Q
   refine ⟨fun Q' ↦ τ Q' * σ * (τ Q')⁻¹, fun Q' ↦ hτ Q' ▸ hσ.conj (τ Q'), fun Q₁ Q₂ ↦

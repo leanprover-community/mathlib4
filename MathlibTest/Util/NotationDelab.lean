@@ -113,9 +113,10 @@ notation +delab "MyUnit'0" => (0 : MyUnit')
 /-- info: 0 : ℕ -/
 #guard_msgs in #check 0
 
-notation +delab "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
-/-- info: %[1, 2, 3] : List ℕ -/
-#guard_msgs in #check %[1, 2, 3]
+-- `%[...]` is core's auxiliary syntax for long list literals, so pick a free token here.
+notation +delab "%%[" (x", "* => foldr (a b => a :: b) []) "]" => x
+/-- info: %%[1, 2, 3] : List ℕ -/
+#guard_msgs in #check %%[1, 2, 3]
 
 def foo (a : Nat) (f : Nat → Nat) := a + f a
 def bar (a b : Nat) := a * b

@@ -165,35 +165,37 @@ variable [Preorder α] {a b c d : α}
 
 instance PosMulMono.to_covariantClass_nonneg_mul_le [PosMulMono α] :
     CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·) where
-  elim a _b _c hbc := PosMulMono.mul_le_mul_of_nonneg_left a.2 hbc
+  elim a _b _c hbc := PosMulMono.mul_le_mul_of_nonneg_left a.property hbc
 
 instance MulPosMono.to_covariantClass_nonneg_mul_le [MulPosMono α] :
     CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·) where
-  elim a _b _c hbc := MulPosMono.mul_le_mul_of_nonneg_right a.2 hbc
+  elim a _b _c hbc := MulPosMono.mul_le_mul_of_nonneg_right a.property hbc
 
 instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) where
-  elim a _b _c hbc := PosMulMono.mul_le_mul_of_nonneg_left a.2.le hbc
+  elim a _b _c hbc := PosMulMono.mul_le_mul_of_nonneg_left a.property.le hbc
 
 instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
     CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) where
-  elim a _b _c hbc := MulPosMono.mul_le_mul_of_nonneg_right a.2.le hbc
+  elim a _b _c hbc := MulPosMono.mul_le_mul_of_nonneg_right a.property.le hbc
 
 instance PosMulStrictMono.to_covariantClass_pos_mul_le [PosMulStrictMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· < ·) where
-  elim a _b _c hbc := PosMulStrictMono.mul_lt_mul_of_pos_left a.2 hbc
+  elim a _b _c hbc := PosMulStrictMono.mul_lt_mul_of_pos_left a.property hbc
 
 instance MulPosStrictMono.to_covariantClass_pos_mul_le [MulPosStrictMono α] :
     CovariantClass α>0 α (fun x y => y * x) (· < ·) where
-  elim a _b _c hbc := MulPosStrictMono.mul_lt_mul_of_pos_right a.2 hbc
+  elim a _b _c hbc := MulPosStrictMono.mul_lt_mul_of_pos_right a.property hbc
 
 instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
-  ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
+  ⟨fun a _ _ bc =>
+    @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
 
 instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
-  ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
+  ⟨fun a _ _ bc =>
+    @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.property.le⟩ _ _ bc⟩
 
 instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
     PosMulMono α where mul_le_mul_of_nonneg_left _ _ _ _ := ‹MulLeftMono α›.elim _
@@ -452,11 +454,11 @@ theorem MulPosReflectLT.toMulPosMono [MulPosReflectLT α] : MulPosMono α where
 
 theorem PosMulMono.toPosMulReflectLT [PosMulMono α] : PosMulReflectLT α where
   elim := (covariant_le_iff_contravariant_lt _ _ _).1
-    fun a _b _c hbc ↦ mul_le_mul_of_nonneg_left hbc a.2
+    fun a _b _c hbc ↦ mul_le_mul_of_nonneg_left hbc a.property
 
 theorem MulPosMono.toMulPosReflectLT [MulPosMono α] : MulPosReflectLT α where
   elim := (covariant_le_iff_contravariant_lt _ _ _).1
-    fun a _b _c hbc ↦ mul_le_mul_of_nonneg_right hbc a.2
+    fun a _b _c hbc ↦ mul_le_mul_of_nonneg_right hbc a.property
 
 /-! TODO: Currently, only one in four of the above are made instances; we could consider making
   both directions of `covariant_le_iff_contravariant_lt` and `covariant_lt_iff_contravariant_le`
