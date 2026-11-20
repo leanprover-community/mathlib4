@@ -146,6 +146,7 @@ protected theorem sub_mem {x y : L} : x ∈ L' → y ∈ L' → (x - y : L) ∈ 
 protected theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
   SMulMemClass.smul_mem _ h
 
+@[membership .]
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
 
@@ -563,7 +564,7 @@ def inclusion : K →ₗ⁅R⁆ K' :=
 theorem coe_inclusion (x : K) : (inclusion h x : L) = x :=
   rfl
 
-theorem inclusion_apply (x : K) : inclusion h x = ⟨x.1, h x.2⟩ :=
+theorem inclusion_apply (x : K) : inclusion h x = ⟨x.val, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by

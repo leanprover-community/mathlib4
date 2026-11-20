@@ -174,6 +174,13 @@ theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
     OrderDual.instSemilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext fun _ _ => Iff.rfl
 
+set_option linter.translate.warnInvalid false in
+variable (α) in
+/-- In a (semi)lattice, `a ≤ b` can be decided by checking if `a ⊔ b = b`. -/
+@[to_dual /-- In a (semi)lattice, `a ≤ b` can be decided by checking if `b ⊓ a = a`. -/]
+abbrev SemilatticeSup.decidableLEOfDecidableEq [DecidableEq α] : DecidableLE α :=
+  fun _ _ => decidable_of_iff _ sup_eq_right
+
 end SemilatticeSup
 
 /-!
@@ -643,7 +650,7 @@ See note [reducible non-instances]. -/]
 protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } where
-  sup x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
+  sup x y := ⟨x.val ⊔ y.val, Psup x.property y.property⟩
   le_sup_left _ _ := le_sup_left
   le_sup_right _ _ := le_sup_right
   sup_le _ _ _ h1 h2 := sup_le h1 h2

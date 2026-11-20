@@ -46,17 +46,17 @@ variable {x : X} {U V W : OpenNhds x}
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
   inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
 
-theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.1 ≤ V.1 := Iff.rfl
+theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.val ≤ V.val := Iff.rfl
 
 instance (x : X) : Lattice (OpenNhds x) :=
-  { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
-    le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
-    inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
-    inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
-    sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
-    le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
-    le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
+  { inf := fun U V => ⟨U.val ⊓ V.val, ⟨U.property, V.property⟩⟩
+    le_inf := fun U V W => @le_inf _ _ U.val.carrier V.val.carrier W.val.carrier
+    inf_le_left := fun U V => @inf_le_left _ _ U.val.carrier V.val.carrier
+    inf_le_right := fun U V => @inf_le_right _ _ U.val.carrier V.val.carrier
+    sup := fun U V => ⟨U.val ⊔ V.val, Set.mem_union_left V.val.carrier U.property⟩
+    sup_le := fun U V W => @sup_le _ _ U.val.carrier V.val.carrier W.val.carrier
+    le_sup_left := fun U V => @le_sup_left _ _ U.val.carrier V.val.carrier
+    le_sup_right := fun U V => @le_sup_right _ _ U.val.carrier V.val.carrier }
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : OrderTop (OpenNhds x) where
@@ -69,19 +69,19 @@ instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
 @[macro_inline]
-instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
+instance opensNhds.instFunLike : FunLike (U ⟶ V) U.val V.val where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 @[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
 
-@[simp] lemma val_apply (f : U ⟶ V) (y : U.1) : (f y : X) = y := rfl
+@[simp] lemma val_apply (f : U ⟶ V) (y : U.val) : (f y : X) = y := rfl
 
 @[simp, norm_cast] lemma coe_id (f : U ⟶ U) : ⇑f = id := rfl
 
-lemma id_apply (f : U ⟶ U) (y : U.1) : f y = y := rfl
+lemma id_apply (f : U ⟶ U) (y : U.val) : f y = y := rfl
 
-@[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U.1) : (f ≫ g) x = g (f x) := rfl
+@[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U.val) : (f ≫ g) x = g (f x) := rfl
 
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets. -/
 def infLELeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
@@ -100,12 +100,12 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.1.inclusion' :=
-  U.1.isOpenEmbedding
+theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.val.inclusion' :=
+  U.val.isOpenEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
-  obj U := ⟨(Opens.map f).obj U.1, U.2⟩
+  obj U := ⟨(Opens.map f).obj U.val, U.property⟩
   map i := (Opens.map f).map i
 
 @[simp]
@@ -153,7 +153,7 @@ variable {f}
 /-- An open map `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`. -/
 @[simps]
 def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
-  obj U := ⟨h.functor.obj U.1, ⟨x, U.2, rfl⟩⟩
+  obj U := ⟨h.functor.obj U.val, ⟨x, U.property, rfl⟩⟩
   map i := h.functor.map i
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
@@ -195,7 +195,7 @@ variable {f}
 @[simps]
 def functorNhds (h : IsInducing f) (x : X) :
     OpenNhds x ⥤ OpenNhds (f x) where
-  obj U := ⟨h.functor.obj U.1, (h.mem_functorObj_iff U.1).mpr U.2⟩
+  obj U := ⟨h.functor.obj U.val, (h.mem_functorObj_iff U.val).mpr U.property⟩
   map := h.functor.map
 
 /--
@@ -203,7 +203,7 @@ An inducing map `f : X ⟶ Y` induces an adjunction between `OpenNhds (f x)` and
 -/
 def adjunctionNhds (h : IsInducing f) (x : X) :
     OpenNhds.map f x ⊣ h.functorNhds x where
-  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
-  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
+  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.val).le }
+  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.val).le }
 
 end Topology.IsInducing

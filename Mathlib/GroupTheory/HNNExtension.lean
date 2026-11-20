@@ -133,7 +133,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
     hom_ext (by ext; simp [f]) (by simp [f])
   change motive (MonoidHom.id _ x)
   rw [← hf]
-  exact (f x).2
+  exact (f x).property
 
 variable (A B φ)
 
