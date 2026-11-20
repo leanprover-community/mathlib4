@@ -305,6 +305,8 @@ instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
+@[simp] lemma coe_toRingEquiv (f : A ≃⋆+* B) : ⇑f.toRingEquiv = f := rfl
+
 section
 
 variable {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]
@@ -461,6 +463,12 @@ theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
 
 theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarRingEquiv.ofBijective f hf) a = f a :=
+  rfl
+
+lemma ofBijective_coe (e : A ≃⋆+* B) : StarRingEquiv.ofBijective e e.bijective = e := by ext; rfl
+
+@[simp]
+lemma toRingEquiv_ofBijective (f : F) (hf) : (ofBijective f hf).toRingEquiv = .ofBijective f hf :=
   rfl
 
 end Bijective

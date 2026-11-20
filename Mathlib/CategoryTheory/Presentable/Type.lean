@@ -70,7 +70,7 @@ instance [Fact κ.IsRegular] :
     (fun ι A hι ↦ ⟨⟨⋃ (i : ι), (A i).val,
       hasCardinalLT_iUnion _
         (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun i ↦ (A i).prop)⟩,
-      le_iSup (fun i ↦ (A i).1)⟩)
+      le_iSup (fun i ↦ (A i).val)⟩)
 
 instance [Fact κ.IsRegular] :
     IsFiltered (HasCardinalLT.Set X κ) :=

@@ -270,11 +270,12 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
     WithConv (S →ₐ[R] T) ≃*
       ((Spec ↧T).asOver (Spec ↧R) ⟶ (Spec ↧S).asOver (Spec ↧R)) where
   toFun f := (Spec.map (CommRingCat.ofHom f.ofConv.toRingHom)).asOver _
-  invFun f := ⟨(Spec.preimage f.left).hom, by
-    suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
-      CommRingCat.ofHom (algebraMap R T) from fun r ↦ congr($this r)
-    apply Spec.map_injective
-    simpa [-comp_over] using! f.w⟩
+  invFun f := ⟨{ (Spec.preimage f.left).hom with
+    commutes' := by
+      suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
+        CommRingCat.ofHom (algebraMap R T) from fun r ↦ congr($this r)
+      apply Spec.map_injective
+      simpa [-comp_over] using! f.w }⟩
   left_inv f := by
     apply WithConv.ofConv_injective
     apply AlgHom.toRingHom_injective

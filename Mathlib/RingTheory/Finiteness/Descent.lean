@@ -66,7 +66,7 @@ lemma Ideal.FG.of_FG_map_of_faithfullyFlat [Module.FaithfullyFlat R S] {I : Idea
         have : f (s ⊗ₜ[R] x) = s • f (1 ⊗ₜ x) := by simp [f]
         rw [this]
         apply Ideal.mul_mem_left
-        simpa [f, Algebra.smul_def] using Ideal.mem_map_of_mem _ x.2
+        simpa [f, Algebra.smul_def] using Ideal.mem_map_of_mem _ x.property
   let e : S ⊗[R] I ≃ₗ[S] I.map (algebraMap R S) := .ofInjective _ hf ≪≫ₗ .ofEq _ _ this.symm
   have : Module.Finite S (S ⊗[R] ↥I) := by
     rwa [Module.Finite.equiv_iff e, Module.Finite.iff_fg]
@@ -80,7 +80,7 @@ lemma FiniteType.of_finiteType_tensorProduct_of_faithfullyFlat
     [Module.FaithfullyFlat R T] [Algebra.FiniteType T (T ⊗[R] S)] :
     Algebra.FiniteType R S := by
   obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := T) (A := T ⊗[R] S)
-  have (x : s) := TensorProduct.exists_sum_tmul_eq x.1
+  have (x : s) := TensorProduct.exists_sum_tmul_eq x.val
   choose k t m h using this
   let f : MvPolynomial (Σ x : s, Fin (k x)) R →ₐ[R] S := MvPolynomial.aeval (fun ⟨x, i⟩ ↦ m x i)
   apply Algebra.FiniteType.of_surjective f
@@ -102,7 +102,8 @@ lemma FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat
   rw [Algebra.FiniteType.iff_quotient_mvPolynomial''] at this
   obtain ⟨n, f, hf⟩ := this
   have : Module.FaithfullyFlat (MvPolynomial (Fin n) R) (T ⊗[R] MvPolynomial (Fin n) R) :=
-    .of_linearEquiv _ _ (Algebra.TensorProduct.commRight _ _ _).symm.toLinearEquiv
+    .of_linearEquiv (MvPolynomial (Fin n) R) (MvPolynomial (Fin n) R ⊗[R] T)
+      (Algebra.TensorProduct.commRight R (MvPolynomial (Fin n) R) T).symm.toLinearEquiv
   let fT := Algebra.TensorProduct.map (.id T T) f
   refine .of_surjective hf (.of_FG_map_of_faithfullyFlat (S := T ⊗[R] MvPolynomial (Fin n) R) ?_)
   have : (RingHom.ker f.toRingHom).map

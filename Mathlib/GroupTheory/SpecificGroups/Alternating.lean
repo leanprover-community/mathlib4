@@ -380,7 +380,7 @@ theorem ofSubtype_inj {s : Finset α} {g h : alternatingGroup s} :
   ofSubtype_injective.eq_iff
 
 theorem coe_ofSubtype (s : Finset α) (k : alternatingGroup s) :
-    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.1 := by
+    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.val := by
   rfl
 
 theorem map_ofSubtype (s : Finset α) :

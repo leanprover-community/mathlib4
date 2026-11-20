@@ -104,8 +104,6 @@ instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) 
   coe p := p.toSubmodule
   coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
 
-instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ)
-
 @[ext]
 theorem HomogeneousSubmodule.ext
     {I J : HomogeneousSubmodule 𝒜 ℳ} (h : I.toSubmodule = J.toSubmodule) : I = J :=
@@ -120,7 +118,7 @@ theorem HomogeneousSubmodule.ext' {I J : HomogeneousSubmodule 𝒜 ℳ}
   ext
   rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
   apply forall_congr'
-  exact fun i ↦ h i _ (decompose ℳ _ i).2
+  exact fun i ↦ h i _ (decompose ℳ _ i).property
 
 @[simp]
 theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :

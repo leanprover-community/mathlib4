@@ -228,13 +228,13 @@ protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit
   z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
-      simp_rw [(lift₂Aux ..).2 _ (hx.trans hji) (hyk.trans hki),
-        (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
+      simp_rw [(lift₂Aux ..).property _ (hx.trans hji) (hyk.trans hki),
+        (lift₂Aux ..).property _ (hyj.trans hji) (hz.trans hki),
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
 theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
     DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
-  (lift₂Aux _ _ _ compat _ _).2 ..
+  (lift₂Aux _ _ _ compat _ _).property ..
 
 theorem lift₂_def (i x y) : DirectLimit.lift₂ f₁ f₂ ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ih i x y := by
   rw [lift₂_def₂ _ _ _ _ _ _ i le_rfl le_rfl, map_self', map_self']
@@ -280,14 +280,14 @@ section proj
 
 /-- The inverse limit of an inverse system of types. -/
 def limit (i : ι) : Set (∀ l : Iio i, F l) :=
-  {F | ∀ ⦃j k⦄ (h : j.1 ≤ k.1), f h (F k) = F j}
+  {F | ∀ ⦃j k⦄ (h : j.val ≤ k.val), f h (F k) = F j}
 
 /-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
 abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 
 /-- The projection from a Pi type to the Pi type over an initial segment of its indexing type. -/
-abbrev piLTProj (f : piLT X j) : piLT X i := fun l ↦ f ⟨l, l.2.trans_le h⟩
+abbrev piLTProj (f : piLT X j) : piLT X i := fun l ↦ f ⟨l, l.property.trans_le h⟩
 
 theorem piLTProj_intro {l : Iio j} {f : piLT X j} (hl : l < i) :
     f l = piLTProj h f ⟨l, hl⟩ := rfl
@@ -303,16 +303,16 @@ variable {ι : Type*} [LinearOrder ι] {X : ι → Type*} {i : ι} (hi : IsSuccP
 /-- If `i` is a limit in a well-ordered type indexing a family of types,
 then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
 @[simps apply] noncomputable def piLTLim : piLT X i ≃ limit (piLTProj (X := X)) i where
-  toFun f := ⟨fun j ↦ piLTProj j.2.le f, fun _ _ _ ↦ rfl⟩
-  invFun f l := let k := hi.mid l.2; f.1 ⟨k, k.2.2⟩ ⟨l, k.2.1⟩
+  toFun f := ⟨fun j ↦ piLTProj j.property.le f, fun _ _ _ ↦ rfl⟩
+  invFun f l := let k := hi.mid l.property; f.val ⟨k, k.property.2⟩ ⟨l, k.property.1⟩
   right_inv f := by
     ext j l
-    set k := hi.mid (l.2.trans j.2)
-    obtain le | le := le_total j ⟨k, k.2.2⟩
-    exacts [congr($(f.2 le) l), congr($(f.2 le) ⟨l, _⟩).symm]
+    set k := hi.mid (l.property.trans j.property)
+    obtain le | le := le_total j ⟨k, k.property.2⟩
+    exacts [congr($(f.property le) l), congr($(f.property le) ⟨l, _⟩).symm]
 
-theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.1 < k.1) :
-    (piLTLim (X := X) hi).symm f l = f.1 k ⟨l, hl⟩ := by
+theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.val < k.val) :
+    (piLTLim (X := X) hi).symm f l = f.val k ⟨l, hl⟩ := by
   conv_rhs => rw [← (piLTLim hi).right_inv f]
   rfl
 
@@ -326,9 +326,9 @@ variable [PartialOrder ι] [DecidableEq ι]
 
 /-- Splitting off the `X i` factor from the Pi type over `{j | j ≤ i}`. -/
 def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
-  toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
-  invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
-  left_inv f := by ext j; exacts [dite_eq_right j.2.ne, dite_eq_left rfl]
+  toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.property.lt_of_ne h⟩
+  invFun f := (fun j ↦ f ⟨j, j.property.le⟩, f ⟨i, le_rfl⟩)
+  left_inv f := by ext j; exacts [dite_eq_right j.property.ne, dite_eq_left rfl]
   right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
@@ -351,7 +351,7 @@ variable (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F i⁺ ≃ F i × X i) (
 /-- Extend a family of bijections to `piLT` by one step. -/
 def piEquivSucc : ∀ j : Iic i⁺, F j ≃ piLT X j :=
   piSplitLE (X := fun i ↦ F i ≃ piLT X i)
-  (fun j ↦ equiv ⟨j, (lt_succ_iff_of_not_isMax hi).mp j.2⟩,
+  (fun j ↦ equiv ⟨j, (lt_succ_iff_of_not_isMax hi).mp j.property⟩,
     e.trans <| ((equiv ⟨i, le_rfl⟩).prodCongr <| Equiv.refl _).trans <| piSplitLE.trans <|
       Equiv.piCongrSet <| Set.ext fun _ ↦ (lt_succ_iff_of_not_isMax hi).symm)
 
@@ -361,7 +361,6 @@ theorem piEquivSucc_self {x} :
 
 variable {equiv e}
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_succ i) x)
     (nat : IsNatEquiv f equiv) : IsNatEquiv f (piEquivSucc equiv e hi) := fun j k hj hk h x ↦ by
   have lt_succ {j} := (lt_succ_iff_of_not_isMax (b := j) hi).mpr
@@ -371,7 +370,7 @@ theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_suc
     · funext l
       rw [piEquivSucc, piSplitLE_lt (lt_succ hk),
         ← InverseSystem.map_map (f := f) hk (le_succ i), ← H, piLTProj, nat le_rfl]
-      simp [piSplitLE_lt (l.2.trans_le hk)]
+      simp [piSplitLE_lt (l.property.trans_le hk)]
   · rw [piEquivSucc, piSplitLE_lt (h.trans_lt <| lt_succ hj), nat hj, piSplitLE_lt (lt_succ hj)]
 
 end Succ
@@ -383,9 +382,10 @@ variable {equiv : ∀ j : Iio i, F j ≃ piLT X j} (nat : IsNatEquiv f equiv)
 /-- A natural family of bijections below a limit ordinal
 induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
-  toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
-  invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
+  toFun t := ⟨fun l ↦ equiv l (t.val l),
+    fun _ _ h ↦ Eq.symm <| by simp_rw [← t.property h]; apply nat⟩
+  invFun t := ⟨fun l ↦ (equiv l).symm (t.val l),
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.property h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 
@@ -397,14 +397,15 @@ noncomputable def piEquivLim : ∀ j : Iic i, F j ≃ piLT X j :=
     (equiv, equivLim.trans <| (invLimEquiv nat).trans (piLTLim hi).symm)
 
 variable {equivLim}
-theorem isNatEquiv_piEquivLim [InverseSystem f] (H : ∀ x l, (equivLim x).1 l = f l.2.le x) :
+theorem isNatEquiv_piEquivLim [InverseSystem f]
+    (H : ∀ x l, (equivLim x).val l = f l.property.le x) :
     IsNatEquiv f (piEquivLim nat equivLim hi) := fun j k hj hk h t ↦ by
   obtain rfl | hj := hj.eq_or_lt
   · obtain rfl | hk := hk.eq_or_lt
     · simp [InverseSystem.map_self]
     · funext l
       simp_rw [piEquivLim, piSplitLE_lt hk, piSplitLE_eq, Equiv.trans_apply]
-      rw [piLTProj, piLTLim_symm_apply hi ⟨k, hk⟩ (by exact l.2), invLimEquiv_apply_coe, H]
+      rw [piLTProj, piLTLim_symm_apply hi ⟨k, hk⟩ (by exact l.property), invLimEquiv_apply_coe, H]
   · rw [piEquivLim, piSplitLE_lt (h.trans_lt hj), piSplitLE_lt hj]; apply nat
 
 end Lim
@@ -428,7 +429,7 @@ variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]
 /-- Restrict a partial family of bijections to a smaller set. -/
 @[simps] def PEquivOn.restrict (e : PEquivOn f equivSucc t) (h : s ⊆ t) :
     PEquivOn f equivSucc s where
-  equiv i := e.equiv ⟨i, h i.2⟩
+  equiv i := e.equiv ⟨i, h i.property⟩
   nat _ _ _ _ := e.nat _ _
   compat _ := e.compat _
 
@@ -436,8 +437,8 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
   obtain ⟨e₁, nat₁, compat₁⟩ := e₁
   obtain ⟨e₂, nat₂, compat₂⟩ := e₂
   ext1; ext1 i; dsimp only
-  refine SuccOrder.prelimitRecOn i.1 (motive := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
-    (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.2
+  refine SuccOrder.prelimitRecOn i.val (motive := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
+    (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.property
   · ext x ⟨j, hj⟩
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt
     · exact (compat₁ _ nmax x).trans (compat₂ _ nmax x).symm
@@ -445,7 +446,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
     rw [piLTProj_intro (f := e₁ _ x) (le_succ i) (by exact hj),
         ← nat₁ _ hi (by exact le_succ i), ih, nat₂ _ hi (by exact le_succ i)]
   · ext x j
-    have ⟨k, hjk, hki⟩ := lim.mid j.2
+    have ⟨k, hjk, hki⟩ := lim.mid j.property
     have hk : k ∈ s := hs hki.le hi
     rw [piLTProj_intro (f := e₁ _ x) hki.le hjk, piLTProj_intro (f := e₂ _ x) hki.le hjk,
       ← nat₁ _ hk, ← nat₂ _ hk, ih _ hki]
@@ -457,7 +458,6 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
        (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
@@ -478,13 +478,13 @@ noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
     ⟨fun j ↦ ((e j).restrict fun _ h ↦ le_of_lt h).equiv, fun _ _ h ↦ funext fun _ ↦
       pEquivOn_apply_eq ((IsLowerSet.Iio _).inter <| .Iio _)⟩
   nat j k hj hk h := by
-    rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, lt_of_le_of_lt h (hi.mid _).2.1]
+    rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, lt_of_le_of_lt h (hi.mid _).property.1]
   compat hj := have k := hi.mid hj
-    by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (by exact k.2.1)]; apply (e _).compat
+    by rw [piLTLim_symm_apply hi ⟨_, k.property.2⟩ (by exact k.property.1)]; apply (e _).compat
 
 /-- Extend `pEquivOnGlue` by one step, obtaining a partial family over a right-closed interval. -/
 noncomputable def pEquivOnLim [InverseSystem f]
-    (equivLim : F i ≃ limit f i) (H : ∀ x l, (equivLim x).1 l = f l.2.le x) :
+    (equivLim : F i ≃ limit f i) (H : ∀ x l, (equivLim x).val l = f l.property.le x) :
     PEquivOn f equivSucc (Iic i) where
   equiv := piEquivLim (pEquivOnGlue hi e).nat equivLim hi
   nat := isNatEquiv_piEquivLim (pEquivOnGlue hi e).nat hi H
@@ -496,13 +496,15 @@ end Unique
 
 variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
   (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
-  (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
+  (equivLim : ∀ i, IsSuccPrelimit i →
+    {e : F i ≃ limit f i // ∀ x l, (e x).val l = f l.property.le x})
 
 private noncomputable def globalEquivAux (i : ι) :
-    PEquivOn f (fun i hi ↦ (equivSucc i hi).1) (Iic i) :=
+    PEquivOn f (fun i hi ↦ (equivSucc i hi).val) (Iic i) :=
   SuccOrder.prelimitRecOn i
-    (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).2)
-    fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
+    (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).property)
+    fun i hi e ↦
+      pEquivOnLim hi (fun j ↦ e j j.property) (equivLim i hi).val (equivLim i hi).property
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
 @[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
@@ -515,7 +517,7 @@ theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
   exact pEquivOn_apply_eq ((IsLowerSet.Iic _).inter <| .Iic _)
 
 theorem globalEquiv_compatibility ⦃i⦄ (hi : ¬IsMax i) (x) :
-    globalEquiv equivSucc equivLim i⁺ x ⟨i, lt_succ_of_not_isMax hi⟩ = ((equivSucc i hi).1 x).2 :=
+    globalEquiv equivSucc equivLim i⁺ x ⟨i, lt_succ_of_not_isMax hi⟩ = ((equivSucc i hi).val x).2 :=
   (globalEquivAux equivSucc equivLim i⁺).compat le_rfl hi x
 
 end InverseSystem

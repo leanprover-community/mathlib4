@@ -55,11 +55,7 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
     have d_count : d.Countable :=
       (((c_count.image _).union (c'_count.image _)).union (by simp)).union (by simp)
     have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by
-      #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
-      The new canonicalizer using `isDefEq` less,
-      and so does not unify as many of the conditions that `grind` wants to case split on.
-      Alternatively `ext; simp; grind` work here. -/
-      grind (splits := 12)
+      grind
     rw [this]
     exact (d_count.image _).union (d_count.image _)
   -- We should check the easy direction that all the elements in our generating set are open.
@@ -229,13 +225,13 @@ lemma continuousOn_untopA [Nonempty ι] : ContinuousOn untopA { a : WithTop ι |
 
 @[to_dual]
 lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
-    Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
-  have : Nonempty ι := ⟨untop a.1 a.2⟩
+    Tendsto (fun x ↦ untop x.val x.property) (𝓝 a) (𝓝 (untop a.val a.property)) := by
+  have : Nonempty ι := ⟨untop a.val a.property⟩
   simp only [← untopA_eq_untop, ne_eq, coe_ofPred, mem_ofPred_eq]
-  exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
+  exact (tendsto_untopA a.property).comp <| tendsto_subtype_rng.mp tendsto_id
 
 @[to_dual]
-lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ untop x.1 x.2) :=
+lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ untop x.val x.property) :=
   continuous_iff_continuousAt.mpr tendsto_untop
 
 end ContinuousUnTop
