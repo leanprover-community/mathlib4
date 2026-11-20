@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite order elements in normed rings.
 

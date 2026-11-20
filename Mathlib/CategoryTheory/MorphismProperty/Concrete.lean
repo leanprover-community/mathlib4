@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphism properties defined in concrete categories
 

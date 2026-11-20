@@ -12,6 +12,9 @@ public import Mathlib.Topology.Category.FinTopCat
 
 import Mathlib.CategoryTheory.Galois.Examples
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Galois category of finite sets with a continuous action of a topological group
 

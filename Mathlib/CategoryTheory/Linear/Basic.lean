@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear categories
 
