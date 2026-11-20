@@ -379,8 +379,7 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
 instance NormedAlgebra.subsingleton_real {𝕜} [NormedRing 𝕜] :
     Subsingleton (NormedAlgebra ℝ 𝕜) where
   allEq P Q := by
-    have cont (S : NormedAlgebra ℝ 𝕜) : Continuous (@algebraMap ℝ 𝕜 _ _ S.toAlgebra) := by
-      let := S
+    have cont (_ : NormedAlgebra ℝ 𝕜) : Continuous (@algebraMap ℝ 𝕜 _ _ S.toAlgebra) := by
       rw [Algebra.algebraMap_eq_smul_one']
       fun_prop
     suffices P.toAlgebra = Q.toAlgebra by cases P; cases Q; congr
