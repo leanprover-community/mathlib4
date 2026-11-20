@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.Subcategory
 # Flat objects
 
 If `A` is a monoidal category, we introduce a property of objects
-`ObjectProperty.flat : ObjectProperty A` which is satisfied by
+`ObjectProperty.Monoidal.flat : ObjectProperty A` which is satisfied by
 objects `X : A` such that both functors `tensorLeft X : A ⥤ A` and
 `tensorRight X : A ⥤ A` are exact (i.e. preserve both finite limits
 and finite colimits).
