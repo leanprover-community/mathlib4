@@ -110,8 +110,8 @@ lemma orthogonal_disjoint
   apply hΦ_nondeg.1
   intro z
   rw [hΦ_inv, neg_eq_zero]
-  have hyz : ⁅(x : L), z⁆ ∈ I := lie_mem_left _ _ _ _ _ x.2
-  exact contra hyz y y.2
+  have hyz : ⁅(x : L), z⁆ ∈ I := lie_mem_left _ _ _ _ _ x.property
+  exact contra hyz y y.property
 
 end ring
 
@@ -207,7 +207,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).eq_bot]
   apply lie_le_inf
-  exact lie_mem_lie x.2 hz
+  exact lie_mem_lie x.property hz
 
 end field
 

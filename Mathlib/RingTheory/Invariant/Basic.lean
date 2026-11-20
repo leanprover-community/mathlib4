@@ -61,11 +61,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
-    simpa [mul_smul] using! congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
+    simpa [mul_smul] using! congr(g • $(x.property ⟨_, ‹H.Normal›.conj_mem' _ h.property g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
-    simpa [mul_smul] using! congr(a • $(c.2 ⟨b, hb⟩)))
-  one_smul b := Subtype.ext (one_smul G b.1)
+    simpa [mul_smul] using! congr(a • $(c.property ⟨b, hb⟩)))
+  one_smul b := Subtype.ext (one_smul G b.val)
   mul_smul := Quotient.ind₂ fun _ _ _ ↦ Subtype.ext (mul_smul _ _ _)
   smul_zero := Quotient.ind fun _ ↦ Subtype.ext (smul_zero _)
   smul_add := Quotient.ind fun _ _ _ ↦ Subtype.ext (smul_add _ _ _)
@@ -78,12 +78,12 @@ instance (H : Subgroup G) [H.Normal] :
 
 instance (H : Subgroup G) [H.Normal] :
     SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
-  smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
+  smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.val)
 
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
     Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
   isInvariant x hx := by
-    obtain ⟨y, hy⟩ := Algebra.IsInvariant.isInvariant (A := A) (G := G) x.1
+    obtain ⟨y, hy⟩ := Algebra.IsInvariant.isInvariant (A := A) (G := G) x.val
       (fun g ↦ congr($(hx g).val))
     exact ⟨y, Subtype.ext hy⟩
 
@@ -174,6 +174,12 @@ theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : 
   have : R.IsPrime := h.1
   obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
   exact ⟨g, hg.symm⟩
+
+variable {A B} in
+theorem mem_map_under {b : B} (hb : ∀ g : G, g • b = b) {I : Ideal B} (hbI : b ∈ I) :
+    b ∈ (I.under A).map (algebraMap A B) := by
+  obtain ⟨a, rfl⟩ := isInvariant (A := A) b hb
+  exact Ideal.mem_map_of_mem (algebraMap A B) hbI
 
 end Algebra.IsInvariant
 
@@ -359,7 +365,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
   let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
+    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.property))
   exact ⟨g, by rw [AlgEquiv.ext_iff] at hg ⊢; assumption⟩
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
@@ -492,7 +498,7 @@ variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S]
 theorem map_stabilizer_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
     (hf : ∀ g x, algebraMap R S (f g • x) = g • algebraMap R S x) :
     (stabilizer G q).map f = stabilizer G' p := by
-  replace hf_ker (h : H) : f h = 1 := hf_ker h.2
+  replace hf_ker (h : H) : f h = 1 := hf_ker h.property
   have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
   apply le_antisymm
   · rintro - ⟨g, hg, rfl⟩
@@ -513,7 +519,7 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
     (hf : ∀ g x, algebraMap R S (f g • x) = g • algebraMap R S x) :
     (q.inertia G).map f = p.inertia G' := by
   have h_stab := (map_stabilizer_of_surjective f H p q hf_surj hf_ker hf).ge
-  replace hf_ker (h : H) : f h = 1 := hf_ker h.2
+  replace hf_ker (h : H) : f h = 1 := hf_ker h.property
   have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
   apply le_antisymm
   · rintro - ⟨g, hg, rfl⟩ x
@@ -529,7 +535,7 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
         rw [Submodule.mem_toAddSubgroup, over_def q p, mem_under, map_sub, hf, ← Quotient.eq] at hg
         simpa }
     obtain ⟨g', hg'⟩ := Quotient.stabilizerHom_surjective H p q φ
-    let v : stabilizer G q := ⟨g', g'.2⟩⁻¹ * g
+    let v : stabilizer G q := ⟨g', g'.property⟩⁻¹ * g
     refine ⟨v, ?_, by simp [v, hf_ker]⟩
     rw [SetLike.mem_coe, coe_mem_inertia, ← Quotient.ker_stabilizerHom q (q.under ℤ) G,
       MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]

@@ -41,7 +41,7 @@ theorem oreDiv_one_surjective_of_finite_left [Finite S] :
   · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
-  refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
+  refine ⟨s ^ j, (s ^ (j + 1)).val, ?_, ?_⟩
   · change s ^ j • x = s ^ (j + 1) • s ^ (i - (j + 1)) • x
     rw [← mul_smul, ← pow_add, Nat.add_sub_cancel' hlt, heq]
   · simp_rw [SubmonoidClass.coe_pow, OneMemClass.coe_one, mul_one, pow_succ]
@@ -55,7 +55,7 @@ theorem oreDiv_one_surjective_of_finite_right [Finite X] :
   · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
-  refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
+  refine ⟨s ^ j, (s ^ (j + 1)).val, ?_, ?_⟩
   · change s ^ j • x = s ^ (j + 1) • s ^ (i - (j + 1)) • x
     rw [← mul_smul, ← pow_add, Nat.add_sub_cancel' hlt, heq]
   · simp_rw [SubmonoidClass.coe_pow, OneMemClass.coe_one, mul_one, pow_succ]
@@ -93,7 +93,7 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
     rwa [lift_umax.{v, u}, lift_id'] at this
   have key (x : X) (s s' : S) (h : s • x = s' • x) (hc : Commute s s') : x /ₒ s = x /ₒ s' := by
     rw [oreDiv_eq_iff]
-    exact ⟨s, s'.1, h, mod_cast hc⟩
+    exact ⟨s, s'.val, h, mod_cast hc⟩
   let i (x : X × S) := x.1 /ₒ x.2
   have hsurj : Surjective i := Quotient.mk''_surjective
   have hi := rightInverse_surjInv hsurj
