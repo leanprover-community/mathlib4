@@ -5,12 +5,22 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Prod.Lex.Basic
 
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the order on a binary product of `Fin` types
+
+## Main definitions
+
+* `finProdFinOrderIso`: `finProdFinEquiv` as an order isomorphism
+  `Fin m ×ₗ Fin n ≃o Fin (m * n)` for the lexicographic order.
+* `natProdFinOrderIso`: `natProdFinEquiv` as an order isomorphism `ℕ ×ₗ Fin n ≃o ℕ`
+  for the lexicographic order.
 -/
 
 namespace Fin
@@ -52,3 +62,24 @@ public lemma prod_exists_lt_lt_of_le_of_le
     lia
 
 end Fin
+
+/-- `finProdFinEquiv` as an order isomorphism, for the lexicographic order on
+`Fin m × Fin n`. -/
+@[expose, simps! apply]
+public def finProdFinOrderIso {m n : ℕ} : Fin m ×ₗ Fin n ≃o Fin (m * n) where
+  toEquiv := ofLex.trans finProdFinEquiv
+  map_rel_iff' := Fin.mkDivMod_le_mkDivMod_iff.trans Prod.Lex.toLex_le_toLex.symm
+
+@[simp]
+public lemma finProdFinOrderIso_symm_apply {m n : ℕ} (k : Fin (m * n)) :
+    finProdFinOrderIso.symm k = toLex (k.divNat, k.modNat) := rfl
+
+/-- `natProdFinEquiv` as an order isomorphism, for the lexicographic order on `ℕ × Fin n`. -/
+@[expose, simps! apply]
+public def natProdFinOrderIso (n : ℕ) [NeZero n] : ℕ ×ₗ Fin n ≃o ℕ where
+  toEquiv := ofLex.trans (natProdFinEquiv n)
+  map_rel_iff' := Nat.mkDivMod_le_mkDivMod_iff.trans Prod.Lex.toLex_le_toLex.symm
+
+@[simp]
+public lemma natProdFinOrderIso_symm_apply (n : ℕ) [NeZero n] (k : ℕ) :
+    (natProdFinOrderIso n).symm k = toLex (k / n, Fin.ofNat n k) := rfl
