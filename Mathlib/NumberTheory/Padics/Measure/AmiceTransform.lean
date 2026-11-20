@@ -228,8 +228,7 @@ The Amice transform `D(Multiplicative ℤ_[p], ℤ_[p]) → ℤ_[p][X]`, as an i
 normed ring, as in `amiceTransformEquiv`.)
 -/
 def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] PowerSeries ℤ_[p] :=
-  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_one amiceTransformₐ)
-    (map_mul amiceTransformₐ)
+  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_mul amiceTransformₐ)
 
 end multiplicative
 
