@@ -224,7 +224,7 @@ end EqOn
 
 section FunLike
 
-variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+variable {F α ι : Type*} {β : α → Type*} [DFunLike F α β] [∀ a, CommMonoid (β a)] [CommMonoid F]
   [IsOneApply F] [IsMulApply F]
 
 @[to_additive (attr := simp, grind =)]
@@ -235,7 +235,7 @@ theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) 
   | insert i s his h => simp [his, h]
 
 @[to_additive (attr := norm_cast)]
-theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := by
   ext; simp
 
 end FunLike
