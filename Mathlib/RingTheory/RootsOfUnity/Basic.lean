@@ -299,6 +299,19 @@ theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ) [ExpChar R p] 
     ζ ^ (p ^ k * m) = 1 ↔ ζ ∈ rootsOfUnity m R := by
   rw [← mem_rootsOfUnity, mem_rootsOfUnity_prime_pow_mul_iff]
 
+variable {R} in
+/-- In a reduced commutative ring of exponential characteristic `p ≠ 1`, that is, of prime
+characteristic `p`, the order of a unit of finite order is not divisible by `p`. -/
+theorem ExpChar.not_dvd_orderOf (p : ℕ) [ExpChar R p] (hp : p ≠ 1) (u : Rˣ)
+    (hu : IsOfFinOrder u) : ¬ p ∣ orderOf u := by
+  refine fun ⟨m, hm⟩ ↦ hp ?_
+  rsuffices ⟨c, hc⟩ : m * p ∣ m
+  · rw [mul_assoc, left_eq_mul₀ (by grind [orderOf_ne_zero_iff])] at hc
+    exact Nat.eq_one_of_mul_eq_one_right hc
+  rw [mul_comm, ← hm, ← orderOf_units, orderOf_dvd_iff_pow_eq_one,
+    ← ExpChar.pow_prime_pow_mul_eq_one_iff p 1, pow_one, ← orderOf_dvd_iff_pow_eq_one,
+    orderOf_units, hm]
+
 end Reduced
 
 end rootsOfUnity
