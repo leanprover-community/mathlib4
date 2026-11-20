@@ -63,6 +63,15 @@ instance {X Y : C} (f : X ⟶ Y) [IsSplitMono f] : IsCardinalPure κ f where
   exists_of_commSq {X' Y' t l r _ _} sq :=
     ⟨r ≫ retraction f, by simp [sq.w_assoc]⟩
 
+variable {κ} in
+lemma IsCardinalPure.of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ')
+    {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ' f] :
+    IsCardinalPure κ f where
+  exists_of_commSq {X' Y' _ _ _ _ _} sq := by
+    have : IsCardinalPresentable X' κ' := .of_le h
+    have : IsCardinalPresentable Y' κ' := .of_le h
+    exact IsCardinalPure.exists_of_commSq κ' sq
+
 instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsCardinalPure κ f] [IsCardinalPure κ g] :
     IsCardinalPure κ (f ≫ g) where
   exists_of_commSq {X' Y' t l r _ _} sq := by
@@ -78,11 +87,22 @@ instance : (isCardinalPure C κ).RespectsIso where
   precomp _ _ _ _ := inferInstance
   postcomp _ _ _ _ := inferInstance
 
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    IsCardinalPure κ f :=
+  (isCardinalPure C κ).of_isIso f
+
 lemma IsCardinalPure.of_postcomp
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsCardinalPure κ (f ≫ g)] :
     IsCardinalPure κ f where
   exists_of_commSq {X' Y' t l r _ _} sq :=
     exists_of_commSq κ (show CommSq t l (r ≫ g) (f ≫ g) from ⟨by simp [sq.w_assoc]⟩)
+
+lemma IsCardinalPure.of_fac
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) [IsCardinalPure κ fg]
+    (hfg : f ≫ g = fg := by cat_disch) :
+    IsCardinalPure κ f := by
+  subst hfg
+  exact .of_postcomp κ f g
 
 instance : (isCardinalPure C κ).HasOfPostcompProperty (⊤ : MorphismProperty C) where
   of_postcomp f g _ _ := IsCardinalPure.of_postcomp κ f g

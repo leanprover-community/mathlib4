@@ -1236,4 +1236,32 @@ instance {C₀ C : Type*} [Category* C₀] [Category* C]
       (CostructuredArrow.costructuredArrowToOverEquivalence F Y)]
     infer_instance
 
+namespace ObjectProperty
+
+variable {C : Type*} [Category* C]
+
+@[simp]
+lemma final_ι_op_iff (P : ObjectProperty C) : P.op.ι.Final ↔ P.ι.Initial :=
+  ⟨fun _ ↦ Functor.initial_of_natIso
+    (show P.opEquivalence.inverse.rightOp ⋙ P.op.ι.leftOp ≅ P.ι from Iso.refl _),
+  fun _ ↦ Functor.final_of_natIso
+    (show P.opEquivalence.functor ⋙ P.ι.op ≅ P.op.ι from Iso.refl _)⟩
+
+@[simp]
+lemma initial_ι_op_iff (P : ObjectProperty C) : P.op.ι.Initial ↔ P.ι.Final :=
+  ⟨fun _ ↦ Functor.final_of_natIso
+    (show P.opEquivalence.inverse.rightOp ⋙ P.op.ι.leftOp ≅ P.ι from Iso.refl _),
+  fun _ ↦ Functor.initial_of_natIso
+    (show P.opEquivalence.functor ⋙ P.ι.op ≅ P.op.ι from Iso.refl _)⟩
+
+@[simp]
+lemma final_ι_unop_iff (P : ObjectProperty Cᵒᵖ) : P.unop.ι.Final ↔ P.ι.Initial :=
+  P.unop.initial_ι_op_iff.symm
+
+@[simp]
+lemma initial_ι_unop_iff (P : ObjectProperty Cᵒᵖ) : P.unop.ι.Initial ↔ P.ι.Final :=
+  P.unop.final_ι_op_iff.symm
+
+end ObjectProperty
+
 end CategoryTheory
