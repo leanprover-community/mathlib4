@@ -180,7 +180,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
       simp only [eval_finsetSum, eval_smul, smul_eq_mul]
       rw [← Finset.sum_coe_sort]
       have h_le (i : p.support) : (i : ℕ) ≤ n :=
-        le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) hn.le
+        le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.property) hn.le
       have h (i : p.support) : eval ↑n (preHilbertPoly F d ↑i) = (n + d - ↑i).choose d := by
         rw [preHilbertPoly_eq_choose_add_sub _ _ (Nat.le_add_right_of_le (h_le i)),
           Nat.sub_add_comm (h_le i)]

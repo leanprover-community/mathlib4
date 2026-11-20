@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 
 /-!
-
 # Dot Product and Cross Product on Projective Spaces
 
 This file defines the dot product and cross product on projective spaces.
@@ -21,7 +20,6 @@ This file defines the dot product and cross product on projective spaces.
 - `Projectivization.cross v w` for `v w : ℙ F (Fin 3 → F)` is defined as the cross product of
   `v` and `w` provided that `v ≠ w`. If `v = w`, then the cross product would be zero, so we
   instead define `cross v v = v`.
-
 -/
 
 @[expose] public section
@@ -36,7 +34,7 @@ section DotProduct
 
 /-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ F (m → F) → ℙ F (m → F) → Prop :=
-  Quotient.lift₂ (fun v w ↦ v.1 ⬝ᵥ w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
+  Quotient.lift₂ (fun v w ↦ v.val ⬝ᵥ w.val = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
     simp_rw [← h1, ← h2, dotProduct_smul, smul_dotProduct, smul_smul,
       smul_eq_zero_iff_eq])
 
@@ -71,7 +69,8 @@ variable [DecidableEq F]
 
 /-- Cross product on the projective plane. -/
 def cross : ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) :=
-  Quotient.map₂ (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
+  Quotient.map₂
+    (fun v w ↦ if h : crossProduct v.val w.val = 0 then v else ⟨crossProduct v.val w.val, h⟩)
     (fun _ _ ⟨a, ha⟩ _ _ ⟨b, hb⟩ ↦ by
       simp_rw [← ha, ← hb, LinearMap.map_smul_of_tower, LinearMap.smul_apply, smul_smul,
         mul_comm b a, smul_eq_zero_iff_eq]

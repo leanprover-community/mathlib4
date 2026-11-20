@@ -17,7 +17,6 @@ See also `Matrix.GeneralLinearGroup`
 ## Main definitions
 
 * `LinearMap.GeneralLinearGroup`
-
 -/
 
 @[expose] public section

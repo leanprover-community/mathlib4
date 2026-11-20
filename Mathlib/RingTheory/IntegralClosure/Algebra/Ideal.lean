@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
-
 # Integrality over ideals
 
 ## Main results
@@ -20,7 +19,6 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 ## Note
 We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficient lives in `Iⁿ`.
 This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
-
 -/
 
 public section
@@ -53,7 +51,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
   · use 0; simp [Monic, Subsingleton.elim (α := R) 0 1]
   obtain ⟨p, hp, e⟩ := hx
   let q : R[X] := ∑ i ∈ Finset.range (p.natDegree + 1),
-    C ((p.coeff i).1.coeff (p.natDegree - i)) * X ^ i
+    C ((p.coeff i).val.coeff (p.natDegree - i)) * X ^ i
   have hq : q.natDegree = p.natDegree := by
     refine natDegree_eq_of_le_of_coeff_ne_zero (natDegree_sum_le_of_forall_le _ _ ?_) ?_
     · exact fun i hi ↦ (natDegree_C_mul_X_pow_le _ _).trans (by simpa [Nat.lt_succ_iff] using! hi)
@@ -68,7 +66,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', ite_eq_left hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
-    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
+    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).property]
 
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :

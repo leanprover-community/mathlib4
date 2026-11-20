@@ -93,7 +93,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
     rintro _ ⟨x, hx, rfl⟩
     induction w using TensorProduct.inductionOn with
     | tmul b c =>
-      simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x hx]
+      simp [Subalgebra.mem_centralizer_iff _ |>.1 b.property x hx]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
 
 /--

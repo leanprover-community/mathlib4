@@ -39,7 +39,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 public section
@@ -162,7 +161,7 @@ theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
   rw [LinearIndepOn, LinearIndepOn]
   convert Iff.rfl using 2
   ext x
-  exact h.symm x.2
+  exact h.symm x.property
 
 theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn v w s) :
     LinearIndepOn R w s :=
@@ -316,7 +315,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
-    ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
+    ⟨fun x => ⟨x.val, h x.property⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp_def]

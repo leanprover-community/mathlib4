@@ -66,11 +66,11 @@ theorem biInter_mono {s s' : Set α} {t t' : α → Set β} (hs : s ⊆ s') (h :
   (biInter_subset_biInter_left hs).trans <| iInter₂_mono h
 
 theorem biUnion_eq_iUnion (s : Set α) (t : ∀ x ∈ s, Set β) :
-    ⋃ x ∈ s, t x ‹_› = ⋃ x : s, t x x.2 :=
+    ⋃ x ∈ s, t x ‹_› = ⋃ x : s, t x x.property :=
   iSup_subtype'
 
 theorem biInter_eq_iInter (s : Set α) (t : ∀ x ∈ s, Set β) :
-    ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.2 :=
+    ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.property :=
   iInf_subtype'
 
 @[simp] lemma biUnion_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋃ a ∈ s, t = t :=
@@ -267,7 +267,7 @@ theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
 
 @[simp]
 theorem nonempty_sUnion {S : Set (Set α)} : (⋃₀ S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 theorem Nonempty.of_sUnion {s : Set (Set α)} (h : (⋃₀ s).Nonempty) : s.Nonempty :=
   let ⟨s, hs, _⟩ := nonempty_sUnion.1 h
@@ -345,8 +345,8 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
   simp only [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
+    ⋂ j, f j = ∅ := by
+  grw [iInter_subset _ i, h]
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
@@ -364,7 +364,7 @@ theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b
 -- classical
 @[simp]
 theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, ∀ i, x ∈ f i := by
-  simp [nonempty_iff_ne_empty, iInter_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty, iInter_eq_empty_iff]
 
 -- classical
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
@@ -374,7 +374,7 @@ theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
 -- classical
 @[simp]
 theorem nonempty_sInter {c : Set (Set α)} : (⋂₀ c).Nonempty ↔ ∃ a, ∀ b ∈ c, a ∈ b := by
-  simp [nonempty_iff_ne_empty, sInter_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty, sInter_eq_empty_iff]
 
 -- classical
 theorem compl_sUnion (S : Set (Set α)) : (⋃₀ S)ᶜ = ⋂₀ (compl '' S) :=
@@ -488,7 +488,7 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
     refine ⟨_, hs, ?_⟩
-    exact (f ⟨s, hs⟩ y).2
+    exact (f ⟨s, hs⟩ y).property
   · rintro ⟨s, hs, hx⟩
     obtain ⟨y, hy⟩ := hf ⟨s, hs⟩ ⟨x, hx⟩
     refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
@@ -498,7 +498,7 @@ theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
     (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : β, range (fun x : ι => (f x y).val) = ⋃ x, C x := by
   ext x; rw [mem_iUnion, mem_iUnion]; constructor
   · rintro ⟨y, i, rfl⟩
-    exact ⟨i, (f i y).2⟩
+    exact ⟨i, (f i y).property⟩
   · rintro ⟨i, hx⟩
     obtain ⟨y, hy⟩ := hf i ⟨x, hx⟩
     exact ⟨y, i, congr_arg Subtype.val hy⟩
@@ -636,7 +636,7 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.val i.property)
 end Directed
 
 end Set

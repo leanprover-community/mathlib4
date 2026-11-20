@@ -147,7 +147,7 @@ attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
     @Lean.Internal.coeM Set s α _ _ t = Subtype.val '' t := by
-  change ⋃ (x ∈ t), {x.1} = _
+  change ⋃ (x ∈ t), {x.val} = _
   ext
   simp
 

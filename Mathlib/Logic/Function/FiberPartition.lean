@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Insert
 
 /-!
-
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
 to work with and construct terms of this type.
 
@@ -35,9 +34,10 @@ namespace Fiber
 Any `a : Fiber f` is of the form `f ⁻¹' {x}` for some `x` in the image of `f`. We define `a.image`
 as an arbitrary such `x`.
 -/
-noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.2.choose.1
+noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.property.choose.val
 
-lemma eq_fiber_image (f : Y → Z) (a : Fiber f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
+lemma eq_fiber_image (f : Y → Z) (a : Fiber f) : a.val = f ⁻¹' {a.image} :=
+  a.property.choose_spec.symm
 
 /--
 Given `y : Y`, `Fiber.mk f y` is the fiber of `f` that `y` belongs to, as an element of `Fiber f`.
@@ -47,8 +47,8 @@ def mk (f : Y → Z) (y : Y) : Fiber f := ⟨f ⁻¹' {f y}, by simp⟩
 /-- `y : Y` as a term of the type `Fiber.mk f y` -/
 def mkSelf (f : Y → Z) (y : Y) : (mk f y).val := ⟨y, rfl⟩
 
-lemma map_eq_image (f : Y → Z) (a : Fiber f) (x : a.1) : f x = a.image := by
-  have := a.2.choose_spec
+lemma map_eq_image (f : Y → Z) (a : Fiber f) (x : a.val) : f x = a.image := by
+  have := a.property.choose_spec
   rw [← Set.mem_singleton_iff, ← Set.mem_preimage]
   convert! x.prop
 
@@ -59,10 +59,10 @@ lemma mem_iff_eq_image (f : Y → Z) (y : Y) (a : Fiber f) : y ∈ a.val ↔ f y
   ⟨fun h ↦ a.map_eq_image _ ⟨y, h⟩, fun h ↦ by rw [a.eq_fiber_image]; exact h⟩
 
 /-- An arbitrary element of `a : Fiber f`. -/
-noncomputable def preimage (f : Y → Z) (a : Fiber f) : Y := a.2.choose.2.choose
+noncomputable def preimage (f : Y → Z) (a : Fiber f) : Y := a.property.choose.property.choose
 
 lemma map_preimage_eq_image (f : Y → Z) (a : Fiber f) : f a.preimage = a.image :=
-  a.2.choose.2.choose_spec
+  a.property.choose.property.choose_spec
 
 lemma fiber_nonempty (f : Y → Z) (a : Fiber f) : Set.Nonempty a.val := by
   refine ⟨preimage f a, ?_⟩

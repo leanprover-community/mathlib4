@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Algebra.FiveLemma
 
 /-!
-
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that if `S` is a flat `R`-algebra, taking kernels commutes with base change
@@ -31,7 +30,6 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 * `IsBaseChange.of_left_exact` : If `S` is flat over `R`, `f₁` and `g₁` are injective,
   `i₂` and `i₃` is base change by `S`, then `i₁` is base change by `S`.
-
 -/
 
 public section

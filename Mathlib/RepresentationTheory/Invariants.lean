@@ -201,10 +201,10 @@ variable (X Y) in
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
+  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.property g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.isIntertwining' g⟩
 
 end Rep
 
@@ -260,6 +260,7 @@ instance : (invariantsFunctor k G).Linear k where
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
+@[implicit_reducible, simps]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
@@ -271,7 +272,8 @@ the functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
   unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
-  counit := { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.2 g).symm⟩ }
+  counit :=
+    { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.property g).symm⟩ }
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom

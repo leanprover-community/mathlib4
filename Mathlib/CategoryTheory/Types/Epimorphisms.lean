@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 In this file, we show that in the category `Type u`, epimorphisms
 are stable under base change.
-
 -/
 
 public section
