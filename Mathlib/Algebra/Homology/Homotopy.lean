@@ -445,14 +445,14 @@ variable {P Q : ChainComplex V ℕ}
 theorem prevD_chainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (j : ℕ) :
     prevD j f = f j (j + 1) ≫ Q.d _ _ := by
   simp only [prevD, AddMonoidHom.mk'_apply]
-  have : (ComplexShape.down ℕ).prev j = j + 1 := ChainComplex.prev ℕ j
+  have : (ComplexShape.down ℕ).prev j = j + 1 := ChainComplex.prev j
   congr 2
 
 -- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_succ_chainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (i : ℕ) :
     dNext (i + 1) f = P.d _ _ ≫ f i (i + 1) := by
   simp only [dNext, AddMonoidHom.mk'_apply]
-  have : (ComplexShape.down ℕ).next (i + 1) = i := ChainComplex.next_nat_succ _
+  have : (ComplexShape.down ℕ).next (i + 1) = i := ChainComplex.next_add_one _
   congr 2
 
 -- This is not a simp lemma; the LHS already simplifies.
@@ -561,14 +561,14 @@ variable {P Q : CochainComplex V ℕ}
 theorem dNext_cochainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (j : ℕ) :
     dNext j f = P.d _ _ ≫ f (j + 1) j := by
   simp only [dNext, AddMonoidHom.mk'_apply]
-  have : (ComplexShape.up ℕ).next j = j + 1 := CochainComplex.next ℕ j
+  have : (ComplexShape.up ℕ).next j = j + 1 := CochainComplex.next j
   congr 2
 
 -- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_succ_cochainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (i : ℕ) :
     prevD (i + 1) f = f (i + 1) _ ≫ Q.d i (i + 1) := by
   simp only [prevD, AddMonoidHom.mk'_apply]
-  have : (ComplexShape.up ℕ).prev (i + 1) = i := CochainComplex.prev_nat_succ i
+  have : (ComplexShape.up ℕ).prev (i + 1) = i := CochainComplex.prev_add_one i
   congr 2
 
 -- This is not a simp lemma; the LHS already simplifies.

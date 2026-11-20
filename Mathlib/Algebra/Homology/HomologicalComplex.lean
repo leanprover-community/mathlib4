@@ -207,6 +207,8 @@ structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
   comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
 
+to_dual_for Hom.mk := ⟨f, fun i j h ↦ (comm' j i h).symm⟩
+
 @[reassoc (attr := simp)]
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
     f.f i ≫ B.d i j = A.d i j ≫ f.f j := by
@@ -214,8 +216,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · exact f.comm' i j hij
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
-to_dual_for Hom.comm := (Hom.comm f j i).symm
-to_dual_for Hom.mk := ⟨f, fun i j h ↦ (comm' j i h).symm⟩
+to_dual_for Hom.comm := by simp
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
   ⟨{ f := fun _ => 0 }⟩
@@ -274,10 +275,11 @@ lemma ext_of_iso {C₁ C₂ : HomologicalComplex V c} (e : C₁ ≅ C₂) (h₁ 
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
+@[to_dual self]
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
 
-@[simp]
+@[simp, to_dual self]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
   rfl
 
@@ -405,17 +407,19 @@ def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
 def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
   eqToIso <| by rw [xNext, ComplexShape.next, dite_eq_right]; rintro ⟨j, hj⟩; grind [c.next_eq' hj]
 
+to_dual_name_hint From To
+
 /-- The differential mapping out of `C.X i`, or zero if there isn't one. -/
-@[to_dual dTo /-- The differential mapping into `C.X j`, or zero if there isn't one. -/]
+@[to_dual /-- The differential mapping into `C.X j`, or zero if there isn't one. -/]
 abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
   C.d i (c.next i)
 
-@[to_dual dTo_eq]
+@[to_dual]
 theorem dFrom_eq {i j : ι} (r : c.Rel i j) : C.dFrom i = C.d i j ≫ (C.xNextIso r).inv := by
   obtain rfl := c.next_eq' r
   exact (Category.comp_id _).symm
 
-@[to_dual dTo_eq_zero]
+@[to_dual]
 theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 := by
   simp [h]
 
@@ -432,6 +436,7 @@ theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
 theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
   C.d_comp_d _ _ _
 
+-- TODO: use `to_dual`
 theorem kernel_from_eq_kernel [HasKernels V] {i j : ι} (r : c.Rel i j) :
     kernelSubobject (C.dFrom i) = kernelSubobject (C.d i j) := by
   rw [C.dFrom_eq r]
@@ -499,50 +504,39 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
-@[reassoc, elementwise]
+@[to_dual (attr := reassoc, elementwise)]
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
-attribute [simp] comm_from_apply
-
-@[reassoc, elementwise]
-theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
-  f.comm _ _
-
-attribute [simp] comm_to_apply
+attribute [simp] comm_from_apply comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
 -/
+@[to_dual (attr := simps!)
+/-- A morphism of chain complexes
+induces a morphism of arrows of the differentials into each object.
+-/]
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
   Arrow.homMk _ _ (f.comm_from i)
 
-/-- A morphism of chain complexes
-induces a morphism of arrows of the differentials into each object.
--/
-@[to_dual existing (attr := simps!) sqFrom]
-def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
-  Arrow.homMk _ _ (f.comm_to j)
-
-@[to_dual (attr := simp) sqFrom_id]
-theorem sqTo_id (C₁ : HomologicalComplex V c) (i : ι) : sqTo (𝟙 C₁) i = 𝟙 _ :=
+@[to_dual (attr := simp)]
+theorem sqFrom_id (C₁ : HomologicalComplex V c) (i : ι) : sqFrom (𝟙 C₁) i = 𝟙 _ :=
   rfl
 
-@[to_dual (attr := simp) sqFrom_comp]
-theorem sqTo_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
-    sqTo (f ≫ g) i = sqTo f i ≫ sqTo g i :=
+@[to_dual (attr := simp)]
+theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
+    sqFrom (f ≫ g) i = sqFrom f i ≫ sqFrom g i :=
   rfl
 
 instance (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : IsIso (f.f j) :=
   inferInstanceAs (IsIso ((eval _ _ j).map f))
 
+@[to_dual]
 instance (f : C₁ ⟶ C₂) [IsSplitEpi f] (j : ι) : IsSplitEpi (f.f j) :=
   inferInstanceAs (IsSplitEpi ((eval _ _ j).map f))
 
-instance (f : C₁ ⟶ C₂) [IsSplitMono f] (j : ι) : IsSplitMono (f.f j) :=
-  inferInstanceAs (IsSplitMono ((eval _ _ j).map f))
-
-@[push ←, simp]
+@[push ←, simp, to_dual self (reorder := C₁ C₂)]
 lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : (inv f).f j = inv (f.f j) := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← comp_f]
@@ -631,6 +625,14 @@ def mkAux : ℕ → ShortComplex V
   | 0 => ShortComplex.mk _ _ s
   | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 
+variable (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
+  (succ : ∀ (S : ShortComplex V), Σ' (X₄ : V) (d₂ : S.X₃ ⟶ X₄), S.g ≫ d₂ = 0) in
+/-- Auxiliary definition for `mk`. -/
+@[to_dual existing]
+def _root_.CochainComplex.mkAux : ℕ → ShortComplex V
+  | 0 => ShortComplex.mk _ _ s
+  | n + 1 => ShortComplex.mk _ _ (succ (CochainComplex.mkAux n)).2.2
+
 /-- An inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first two differentials,
@@ -639,41 +641,52 @@ and returns the next object, its differential, and the fact it composes appropri
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
-@[implicit_reducible]
+@[to_dual (attr := implicit_reducible)
+/-- An inductive constructor for `ℕ`-indexed cochain complexes.
+
+You provide explicitly the first two differentials,
+then a function which takes two differentials and the fact they compose to zero,
+and returns the next object, its differential, and the fact it composes appropriately to zero.
+
+See also `mk'`, which only sees the previous differential in the inductive step.
+-/]
 def mk : ChainComplex V ℕ :=
   of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
     fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_X_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 1 = X₁ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) mk_d_0_1]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [ite_eq_left rfl, Category.id_comp]
 
-@[simp]
+@[to_dual (attr := simp) mk_d_1_2]
 theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
   rw [ite_eq_left rfl, Category.id_comp]
 
+@[to_dual]
 lemma mk_congr_succ_X₃ {S S' : ShortComplex V} (h : S = S') :
     (succ S).1 = (succ S').1 := by rw [h]
 
+@[to_dual]
 lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
     (succ S).2.1 = eqToHom (by subst h; rfl) ≫ (succ S').2.1 ≫ eqToHom (by subst h; rfl) := by
   subst h
   simp
 
+@[to_dual]
 lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
@@ -682,6 +695,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
+@[to_dual]
 def mkXIso (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3) ≅
       (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).1 :=
@@ -690,6 +704,7 @@ def mkXIso (n : ℕ) :
       (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
     rfl)
 
+@[to_dual]
 lemma mk_d (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
       (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
@@ -708,6 +723,13 @@ You provide explicitly the first differential,
 then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
+@[to_dual
+/-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
+
+You provide explicitly the first differential,
+then a function which takes a differential,
+and returns the next object, its differential, and the fact it composes appropriately to zero.
+-/]
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
     (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0) :
     ChainComplex V ℕ :=
@@ -715,22 +737,23 @@ def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
 
 variable (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
   rfl
 
 
-@[simp]
+@[to_dual (attr := simp) mk'_d_0_1]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [ite_eq_left rfl, Category.id_comp]
 
 /-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
 the inductive construction. -/
+@[to_dual]
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
   obtain _ | n := n
@@ -739,11 +762,13 @@ def mk'XIso (n : ℕ) :
     rw [id_comp]
   · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n
 
+@[to_dual]
 lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
     (succ' f).2.1 = eqToHom (by rw [h]) ≫ (succ' g).2.1 := by
   subst h
   simp
 
+@[to_dual]
 lemma mk'_d (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
       (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
@@ -782,6 +807,27 @@ def mkHomAux :
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
 
+variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.X 1)
+  (one_zero_comm : P.d 0 1 ≫ one = zero ≫ Q.d 0 1)
+  (succ : ∀ (n : ℕ) (p : Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+      P.d n (n + 1) ≫ f' = f ≫ Q.d n (n + 1)),
+    Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), P.d (n + 1) (n + 2) ≫ f'' = p.2.1 ≫ Q.d (n + 1) (n + 2))
+  in
+/-- An auxiliary construction for `mkHom`.
+
+Here we build by induction a family of commutative squares,
+but don't require at the type level that these successive commutative squares actually agree.
+They do in fact agree, and we then capture that at the type level (i.e. by constructing a chain map)
+in `mkHom`.
+-/
+@[to_dual existing]
+def _root_.CochainComplex.mkHomAux :
+    ∀ n,
+      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+        P.d n (n + 1) ≫ f' = f ≫ Q.d n (n + 1)
+  | 0 => ⟨zero, one, one_zero_comm⟩
+  | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
+
 /-- A constructor for chain maps between `ℕ`-indexed chain complexes,
 working by induction on commutative squares.
 
@@ -791,21 +837,31 @@ and then give a construction of each component,
 and the fact that it forms a commutative square with the previous component,
 using as an inductive hypothesis the data (and commutativity) of the previous two components.
 -/
+@[to_dual (reorder := P Q)
+/-- A constructor for chain maps between `ℕ`-indexed cochain complexes,
+working by induction on commutative squares.
+
+You need to provide the components of the chain map in degrees 0 and 1,
+show that these form a commutative square,
+and then give a construction of each component,
+and the fact that it forms a commutative square with the previous component,
+using as an inductive hypothesis the data (and commutativity) of the previous two components.
+-/]
 def mkHom : P ⟶ Q where
   f n := (mkHomAux P Q zero one one_zero_comm succ n).1
   comm' n m := by
     rintro (rfl : m + 1 = n)
     exact (mkHomAux P Q zero one one_zero_comm succ m).2.2
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mkHom_f_0 : (mkHom P Q zero one one_zero_comm succ).f 0 = zero :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mkHom_f_1 : (mkHom P Q zero one one_zero_comm succ).f 1 = one :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) mkHom_f_succ_succ]
 theorem mkHom_f_succ_succ (n : ℕ) :
     (mkHom P Q zero one one_zero_comm succ).f (n + 2) =
       (succ n
@@ -820,138 +876,8 @@ end ChainComplex
 
 namespace CochainComplex
 
-
-section Mk
-
-variable {V}
-variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
-  (succ : ∀ (S : ShortComplex V), Σ' (X₄ : V) (d₂ : S.X₃ ⟶ X₄), S.g ≫ d₂ = 0)
-
-/-- Auxiliary definition for `mk`. -/
-def mkAux : ℕ → ShortComplex V
-  | 0 => ShortComplex.mk _ _ s
-  | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
-
-/-- An inductive constructor for `ℕ`-indexed cochain complexes.
-
-You provide explicitly the first two differentials,
-then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropriately to zero.
-
-See also `mk'`, which only sees the previous differential in the inductive step.
--/
-def mk : CochainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
-
-@[simp]
-theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
-  rfl
-
-@[simp]
-theorem mk_X_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 1 = X₁ :=
-  rfl
-
-@[simp]
-theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
-  rfl
-
-@[simp]
-theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 0 1 = d₀ := by
-  change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [ite_eq_left rfl, Category.comp_id]
-
-@[simp]
-theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
-  change ite (2 = 1 + 1) (d₁ ≫ 𝟙 X₂) 0 = d₁
-  rw [ite_eq_left rfl, Category.comp_id]
-
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
-/-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
-
-You provide explicitly the first differential,
-then a function which takes a differential,
-and returns the next object, its differential, and the fact it composes appropriately to zero.
--/
-def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀ : Σ X₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
-    (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
-    CochainComplex V ℕ :=
-  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)
-
-variable (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0)
-
-@[simp]
-theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
-  rfl
-
-@[simp]
-theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
-  rfl
-
-@[simp]
-theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
-  change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [ite_eq_left rfl, Category.comp_id]
-
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
-end Mk
-
-section MkHom
-
-variable {V}
-variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.X 1)
-  (one_zero_comm : zero ≫ Q.d 0 1 = P.d 0 1 ≫ one)
-  (succ : ∀ (n : ℕ) (p : Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
-          f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'),
-      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
-
-/-- An auxiliary construction for `mkHom`.
-
-Here we build by induction a family of commutative squares,
-but don't require at the type level that these successive commutative squares actually agree.
-They do in fact agree, and we then capture that at the type level (i.e. by constructing a chain map)
-in `mkHom`.
--/
-def mkHomAux :
-    ∀ n,
-      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
-        f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'
-  | 0 => ⟨zero, one, one_zero_comm⟩
-  | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
-
-/-- A constructor for chain maps between `ℕ`-indexed cochain complexes,
-working by induction on commutative squares.
-
-You need to provide the components of the chain map in degrees 0 and 1,
-show that these form a commutative square,
-and then give a construction of each component,
-and the fact that it forms a commutative square with the previous component,
-using as an inductive hypothesis the data (and commutativity) of the previous two components.
--/
-def mkHom : P ⟶ Q where
-  f n := (mkHomAux P Q zero one one_zero_comm succ n).1
-  comm' n m := by
-    rintro (rfl : n + 1 = m)
-    exact (mkHomAux P Q zero one one_zero_comm succ n).2.2
-
-@[simp]
-theorem mkHom_f_0 : (mkHom P Q zero one one_zero_comm succ).f 0 = zero :=
-  rfl
-
-@[simp]
-theorem mkHom_f_1 : (mkHom P Q zero one one_zero_comm succ).f 1 = one :=
-  rfl
-
-@[simp]
-theorem mkHom_f_succ_succ (n : ℕ) :
-    (mkHom P Q zero one one_zero_comm succ).f (n + 2) =
-      (succ n
-          ⟨(mkHom P Q zero one one_zero_comm succ).f n,
-            (mkHom P Q zero one one_zero_comm succ).f (n + 1),
-            (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
-  dsimp [mkHom, mkHomAux]
-
-end MkHom
+@[deprecated (since := "2026-11-20")] alias mk_d_1_0 := mk_d_0_1
+@[deprecated (since := "2026-11-20")] alias mk_d_2_0 := mk_d_1_2
+@[deprecated (since := "2026-11-20")] alias mk'_d_1_0 := mk'_d_0_1
 
 end CochainComplex

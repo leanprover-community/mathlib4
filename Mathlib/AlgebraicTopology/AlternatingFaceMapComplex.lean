@@ -329,7 +329,6 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
     refine Finset.sum_congr rfl fun x _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
-    symm
     apply f.naturality
 
 end AlternatingCofaceMapComplex
