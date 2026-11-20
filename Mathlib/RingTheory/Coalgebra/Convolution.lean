@@ -122,7 +122,7 @@ lemma convMul_comp_coalgHom_distrib [AddCommMonoid B] [Module R B] [CoalgebraStr
     (f g : WithConv (C →ₗ[R] A)) (h : B →ₗc[R] C) :
     (f * g).ofConv.comp h.toLinearMap =
       (toConv (f.ofConv.comp h.toLinearMap) * toConv (g.ofConv.comp h.toLinearMap)).ofConv := by
-  simp [convMul_def, map_comp, comp_assoc]
+  simp [convMul_def, map_comp, comp_assoc, CoalgHom.toLinearMap_eq_ofClass]
 
 /-- Non-unital convolution semiring structure on linear maps from a coalgebra to a
 non-unital algebra. -/
@@ -169,7 +169,7 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 @[simp]
 lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
     (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ h.toLinearMap = (1 : WithConv (B →ₗ[R] A)).ofConv := by
-  ext; simp
+  ext; simp [CoalgHom.toLinearMap_eq_ofClass]
 
 variable [Semiring B] [Algebra R B]
 
@@ -270,7 +270,7 @@ def convPrecomp (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithCo
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
   map_zero' := WithConv.ext (by ext; simp)
   map_add' f g := WithConv.ext (by ext; simp)
-  commutes' r := WithConv.ext (by ext; simp)
+  commutes' r := WithConv.ext (by ext; simp [CoalgHom.toLinearMap_eq_ofClass])
 
 lemma convPrecomp_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
     Function.Injective (convPrecomp h (A := A)) := fun _ _ e ↦

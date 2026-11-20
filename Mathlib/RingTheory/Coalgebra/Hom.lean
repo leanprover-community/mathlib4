@@ -148,10 +148,9 @@ theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = (.ofClass 
 @[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
 @[simp]
-theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(LinearMap.ofClass f) = f :=
-  rfl
+theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑f.toLinearMap = f := rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
+@[deprecated (since := "2026-11-20")] alias coe_linearMapOfClass := LinearMap.coe_ofClass
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
@@ -169,7 +168,7 @@ theorem coe_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ �
 theorem linearMapOfClass_injective :
     Function.Injective (fun (f : A →ₗc[R] B) ↦ LinearMap.ofClass f) :=
   fun φ₁ φ₂ H => coe_injective <|
-    show ((LinearMap.ofClass φ₁) : A → B) = ((LinearMap.ofClass φ₂) : A → B) from congr_arg _ H
+    show (φ₁.toLinearMap : A → B) = (φ₂.toLinearMap : A → B) from congr_arg _ H
 
 @[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
 
@@ -227,7 +226,7 @@ theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toLinearMap : .ofClass (CoalgHom.id R A) = LinearMap.id := rfl
+theorem id_toLinearMap : (CoalgHom.id R A).toLinearMap = LinearMap.id := rfl
 
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
