@@ -17,7 +17,7 @@ See `Mathlib/GroupTheory/Perm/Support/Finset.lean` for `Equiv.Perm.support`, the
 of points moved by a permutation of a `Fintype`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Function
 

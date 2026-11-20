@@ -19,7 +19,7 @@ In the following, `f g : Equiv.Perm α`, where `α` is a `Fintype` with decidabl
   (Equivalently, `f.support` has at least 2 elements.)
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function
 

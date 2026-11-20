@@ -12,7 +12,7 @@ public import Mathlib.GroupTheory.Perm.Support.Finset.Basic
 # Support of a non-commutative product of permutations
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function
 

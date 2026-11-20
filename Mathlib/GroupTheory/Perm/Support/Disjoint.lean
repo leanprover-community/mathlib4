@@ -17,7 +17,7 @@ public import Mathlib.GroupTheory.Perm.Support.Basic
   either by `f`, or by `g`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Function
 
@@ -29,7 +29,7 @@ section Disjoint
 
 /-- Two permutations `f` and `g` are `Disjoint` if their supports are disjoint, i.e.,
 every element is fixed either by `f`, or by `g`. -/
-def Disjoint (f g : Perm α) :=
+@[expose] def Disjoint (f g : Perm α) :=
   ∀ x, f x = x ∨ g x = x
 
 variable {f g h : Perm α}

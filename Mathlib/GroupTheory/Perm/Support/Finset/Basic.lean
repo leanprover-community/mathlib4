@@ -19,7 +19,7 @@ In the following, `f g : Equiv.Perm α`, where `α` is a `Fintype` with decidabl
   Two permutations `f` and `g` are `Disjoint` iff their `support`s are disjoint.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function
 
@@ -32,7 +32,7 @@ section support
 variable [DecidableEq α] [Fintype α] {f g : Perm α}
 
 /-- The `Finset` of nonfixed points of a permutation. -/
-def support (f : Perm α) : Finset α := {x | f x ≠ x}
+@[expose] def support (f : Perm α) : Finset α := {x | f x ≠ x}
 
 @[simp]
 theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
