@@ -130,7 +130,7 @@ variable [SemilatticeSup α] [OrderBot α] [Finite α]
 
 @[to_dual (attr := simp)]
 lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
-    supIrredLowerSet.symm s = (s.1 : Set α).toFinset.sup id := by
+    supIrredLowerSet.symm s = (s.val : Set α).toFinset.sup id := by
   classical
   obtain ⟨s, hs⟩ := s
   obtain ⟨a, rfl⟩ := supIrred_iff_of_finite.1 hs
@@ -160,7 +160,7 @@ noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a 
         ext a
         dsimp
         refine ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
-        · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
+        · obtain ⟨i, hi, ha⟩ := a.property.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · exact le_sup (Set.mem_toFinset.2 ha) }
     (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst

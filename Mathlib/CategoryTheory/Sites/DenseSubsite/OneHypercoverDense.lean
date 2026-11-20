@@ -327,7 +327,7 @@ variable {S} (s : Multifork (S.index G))
 
 /-- Auxiliary definition for `lift`. -/
 private noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data X).X i))) :=
-  hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩
+  hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.property)⟩
     (fun ⟨W₀, a, ha⟩ ↦ s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩) (by
       rintro ⟨W₀, a, ha⟩ ⟨Z₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
       exact s.condition
@@ -350,7 +350,7 @@ private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
     dsimp at i₁ i₂ j ⊢
     refine Presheaf.IsSheaf.hom_ext
       hG₀ ⟨_, cover_lift F J₀ _
-        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.2)⟩ _ _ ?_
+        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.property)⟩ _ _ ?_
     rintro ⟨W₀, a, ha⟩
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp]
@@ -383,7 +383,7 @@ private lemma fac (a : S.Arrow) :
         dsimp at i j c fac₁ ⊢
         have he : S (F.map e ≫ (data X).f j) := by
           rw [fac₂, assoc, fac₁]
-          simpa only [assoc] using S.1.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
+          simpa only [assoc] using S.val.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
         simp only [assoc, ← Functor.map_comp, ← op_comp, ← fac₁]
         conv_lhs => simp only [op_comp, Functor.map_comp, assoc, lift_map_assoc]
         rw [← Functor.map_comp, ← op_comp, ← fac₂, liftAux_fac _ _ _ he]
@@ -400,7 +400,7 @@ private lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
     (h : ∀ (a : S.Arrow), f₁ ≫ G.map a.f.op = f₂ ≫ G.map a.f.op) : f₁ = f₂ :=
   Multifork.IsLimit.hom_ext (hG X) (fun i ↦ by
     refine Presheaf.IsSheaf.hom_ext hG₀
-      ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩ _ _ ?_
+      ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.property)⟩ _ _ ?_
     rintro ⟨X₀, a, ha⟩
     dsimp
     simp only [assoc, ← Functor.map_comp]

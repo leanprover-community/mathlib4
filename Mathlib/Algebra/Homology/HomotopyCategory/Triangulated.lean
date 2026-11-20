@@ -99,7 +99,7 @@ this is the `homotopyInvHomId` field of the homotopy equivalence
 `mappingConeCompHomotopyEquiv f g` between `mappingCone g` and the mapping cone of
 the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
-  (Cochain.equivHomotopy _ _).symm ⟨-((snd _).comp ((fst (f ≫ g)).1.comp
+  (Cochain.equivHomotopy _ _).symm ⟨-((snd _).comp ((fst (f ≫ g)).val.comp
     ((inl f).comp (inl _) (by decide)) (show 1 + (-2) = -1 by decide)) (zero_add (-1))), by
       rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
         Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,

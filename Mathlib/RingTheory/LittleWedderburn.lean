@@ -60,7 +60,7 @@ def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
-    mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
+    mul_comm := fun x y ↦ Subtype.ext <| hD hR x.property y.property }
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
@@ -112,7 +112,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   -- therefore `|Zxˣ| = q ^ d - 1`, where `d` is the dimension of `D` as a vector space over `Z`.
   -- We therefore get that `|x| = (q ^ n - 1) / (q ^ d - 1)`, and as `d` is a strict divisor of `n`,
   -- we do have that `Φₙ(q) | (q ^ n - 1) / (q ^ d - 1)`; extending this over the whole sum
-  -- gives us the desired contradiction..
+  -- gives us the desired contradiction.
   rw [Set.toFinset_card, ConjClasses.card_carrier, ← card_congr
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
@@ -137,7 +137,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   obtain ⟨b, -, hb⟩ := IsConcreteLE.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
-  exact hb b.2
+  exact hb b.property
 
 end InductionHyp
 

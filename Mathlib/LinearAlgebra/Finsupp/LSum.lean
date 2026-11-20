@@ -319,14 +319,14 @@ variable [SMulCommClass R S S]
 there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
 def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
-    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
+    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).val • N.subtype
 
 theorem mulLeftMap_apply {M N : Submodule R S} {ι : Type*} (m : ι → M) (n : ι →₀ N) :
-    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
+    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).val * n.val := rfl
 
 @[simp]
 theorem mulLeftMap_apply_single {M N : Submodule R S} {ι : Type*} (m : ι → M) (i : ι) (n : N) :
-    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
+    mulLeftMap N m (Finsupp.single i n) = (m i).val * n.val := by
   simp [mulLeftMap]
 
 end
@@ -337,19 +337,19 @@ variable [IsScalarTower R S S]
 there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
 def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
-    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
+    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).val • M.subtype
 
 theorem mulRightMap_apply {M N : Submodule R S} {ι : Type*} (n : ι → N) (m : ι →₀ M) :
-    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
+    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.val * (n i).val := rfl
 
 @[simp]
 theorem mulRightMap_apply_single {M N : Submodule R S} {ι : Type*} (n : ι → N) (i : ι) (m : M) :
-    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
+    mulRightMap M n (Finsupp.single i m) = m.val * (n i).val := by
   simp [mulRightMap]
 
 theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
     {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M)
-    (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
+    (hc : ∀ (i : ι) (n : N), Commute (m i).val n.val) : mulLeftMap N m = mulRightMap N m := by
   ext i n; simp [(hc i n).eq]
 
 theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]

@@ -387,7 +387,7 @@ instance essentiallySmall {C : Type u} [Category.{v} C]
   obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_small_le' (⊤ : ObjectProperty C)
   refine ⟨fun x ↦ P x.obj, ?_, fun y _ ↦ ?_⟩
   · exact small_of_surjective.{w} (α := Σ (Z : Subtype P), F.obj Z.val)
-      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.2⟩)
+      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.property⟩)
       (fun ⟨x, hx⟩ ↦ ⟨⟨⟨x.obj, hx⟩, x.val⟩, rfl⟩)
   · obtain ⟨Z, hZ, ⟨e⟩⟩ := hP y.obj (by simp)
     exact ⟨F.elementsMk Z (F.map e.hom y.val), hZ, ⟨isoMk e rfl⟩⟩

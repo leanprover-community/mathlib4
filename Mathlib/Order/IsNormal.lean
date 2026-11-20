@@ -121,11 +121,11 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
 
 /-- Restrict a normal function `α → β` to a normal function `Iio a → Iio (f a)`. -/
 theorem to_Iio (hf : IsNormal f) (a : α) :
-    IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
+    IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.val, hf.strictMono x.property⟩ := by
   rw [isNormal_iff]
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦
     hf.mem_lowerBounds_upperBounds_of_isSuccLimit (hb.subtypeVal (.Iio _)) ?_⟩
-  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.property⟩ hd
 
 theorem of_dirSupClosed_range [WellFoundedLT β]
     (hf : StrictMono f) (hf' : DirSupClosed (.range f)) : IsNormal f := by

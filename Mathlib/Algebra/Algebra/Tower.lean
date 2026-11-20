@@ -208,7 +208,7 @@ variable {R}
 @[simps! apply symm_apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
     (A →ₐ[R] B) ≃ (A →ₐ[S] B) where
-  toFun f := { f with commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply] }
+  toFun f := { f.toRingHom with commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply] }
   invFun := restrictScalars R
 
 @[simp]

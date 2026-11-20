@@ -738,7 +738,8 @@ variable {E : Type*} [NormedAddCommGroup E]
 set_option backward.isDefEq.respectTransparency false in
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
-  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
+  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ :=
+    norm_tsum_le_tsum_norm (.of_norm (by simpa using f.property.summable))
   _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
@@ -751,10 +752,11 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
     { toFun f := ∑' i, f i
       map_add' f g := by
         rw [← Summable.tsum_add]
-        exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
+        exacts [rfl, .of_norm (by simpa using f.property.summable),
+          .of_norm (by simpa using g.property.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
-        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable)) }
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.property.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
 end Sum
@@ -1071,7 +1073,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 @[simps repr_apply]
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
-    { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
+    { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.property
       invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩
       map_add' _ _ := Finsupp.ext fun _ ↦ rfl
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
