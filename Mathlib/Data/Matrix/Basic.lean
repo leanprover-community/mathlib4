@@ -744,7 +744,8 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
 
 See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite of `α`,
 given that its multiplication is commutative. -/
-@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+@[simps!] def mopMatrix {α : Type*} [AddCommMonoid α] [Mul α] [SMul R α] :
+    Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
   map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 

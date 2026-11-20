@@ -265,15 +265,13 @@ end Algebra
 
 section StarAlgebra
 
-variable [Semiring R] [Fintype n] [Fintype m] [Fintype o] [NonUnitalNonAssocSemiring A] [Module R A]
-  [Star A]
+variable [Fintype n] [Fintype m] [Fintype o] [AddCommMonoid A] [Mul A] [SMul R A] [Star A]
 
 /-- For square matrices with coefficients in a (non-unital, non-associative) semiring `A` with a
 star operation and an `R`-module structure, the natural map that reindexes a matrix's rows and
 columns with equivalent types, `Matrix.reindex`, is an equivalence of ⋆-algebras. -/
 def reindexStarAlgEquiv (e : m ≃ n) : Matrix m m A ≃⋆ₐ[R] Matrix n n A where
-  __ := reindexRingEquiv A e
-  __ := reindexLinearEquiv R A e e
+  __ := reindexAlgEquiv R A e
   map_star' _ := rfl
 
 @[simp]
