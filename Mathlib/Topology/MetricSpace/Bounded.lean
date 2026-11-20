@@ -454,9 +454,11 @@ theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist
 
 /-- The emetric diameter of a closed ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
 theorem ediam_closedBall_le {r : ℝ} : ediam (closedBall x r) ≤ 2 * ENNReal.ofReal r := by
-  by_cases! hr : 0 ≤ r
-  · grw [← closedEBall_ofReal hr, ediam_closedEBall_le]
-  · simp [hr]
+  grw [closedBall_subset_closedEBall, ediam_closedEBall_le]
+
+/-- The emetric diameter of an open ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
+theorem ediam_ball_le {r : ℝ} : ediam (ball x r) ≤ 2 * ENNReal.ofReal r := by
+  grw [ball_subset_closedBall, ediam_closedBall_le]
 
 /-- If the distance between any two points in a set is bounded by some non-negative constant,
 this constant bounds the diameter. -/
