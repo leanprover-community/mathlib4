@@ -110,8 +110,8 @@ def runAndDetectProgress2 (goal : MVarId) (tacs : TacticM Unit) : TacticM (Bool 
       -- They are compatible, so now we can check that the goals are equivalent
       guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
   catch _ =>
-    return (true, l,)
-  return (false, [goal])
+    return (true, l)
+  return (false, l)
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made.
 Return the resulting goal(s) after running `tacs`. -/
@@ -125,7 +125,7 @@ Return the resulting goal(s) after running `tacs`. -/
 def runAndFailIfProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
   match ← runAndDetectProgress2 goal tacs with
   | (true, _) => throwError "progress made on\n{goal}"
-  | (false, _) => return [goal]
+  | (false, new) => return new
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the main goal
 or the local context at reducible transparency. -/
