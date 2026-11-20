@@ -145,7 +145,7 @@ lemma _root_.TopRep.resolutionXRes_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (i
     ext; rfl
 
 /-- The maps `resolutionXRes X φ` commute with the differentials of the resolutions. -/
-lemma resolutionXRes_comp_d (φ : H →ₜ* G) (i : ℕ) :
+lemma _root_.TopRep.resolutionXRes_comp_d (φ : H →ₜ* G) (i : ℕ) :
     resolutionXRes X φ i ≫ d _ i =
       (resFunctor (φ : H →* G)).map (d X i) ≫ resolutionXRes X φ (i + 1) := by
   induction i with
@@ -160,7 +160,7 @@ lemma resolutionXRes_comp_d (φ : H →ₜ* G) (i : ℕ) :
     rw [ih, ← coind₁ResMap_comp_coind₁ι_restrict]
 
 /-- The maps `resolutionXRes X φ` are natural in `X`. -/
-lemma resolutionXRes_naturality (φ : H →ₜ* G) (f : X ⟶ X') (i : ℕ) :
+lemma _root_.TopRep.resolutionXRes_naturality (φ : H →ₜ* G) (f : X ⟶ X') (i : ℕ) :
     (resFunctor (φ : H →* G)).map (resolutionMap f i) ≫ resolutionXRes X' φ i =
       resolutionXRes X φ i ≫ resolutionMap ((resFunctor (φ : H →* G)).map f) i := by
   induction i with
