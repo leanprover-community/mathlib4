@@ -20,7 +20,7 @@ section Lemmas
 
 @[simp] theorem toRat_one : toRat 1 = 1 := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := by
   rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := Rat)]
   exact toRat_natCast n

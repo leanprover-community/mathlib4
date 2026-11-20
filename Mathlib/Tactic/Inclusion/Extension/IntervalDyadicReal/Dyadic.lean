@@ -42,11 +42,6 @@ def toRatRingHom : Dyadic →+* ℚ where
   map_add' := toRat_add
   map_mul' := toRat_mul
 
-@[simp, norm_cast]
-theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) :=
-  map_ofNat toRatRingHom n
-
 /-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
 @[simps]
 def toRatOrderEmbedding : Dyadic ↪o ℚ where
