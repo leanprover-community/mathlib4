@@ -141,6 +141,7 @@ theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
 theorem _root_.Commute.apply_apply {f g : Perm α} (h : Commute f g) {x : α} : f (g x) = g (f x) :=
   Equiv.congr_fun h x
 
+@[simp 1001]
 theorem _root_.Set.mem_image_perm {f : Perm α} {S : Set α} {x} :
     x ∈ f '' S ↔ f⁻¹ x ∈ S := by simp [Set.mem_image, f.eq_inv_iff_eq.symm]
 
