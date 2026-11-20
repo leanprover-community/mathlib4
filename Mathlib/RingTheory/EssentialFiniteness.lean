@@ -281,7 +281,7 @@ lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
     (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
   algebraize [f, g₁.comp f]
   ext x
-  congrm $(Algebra.EssFiniteType.algHom_ext T
-   ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+  congrm $(Algebra.EssFiniteType.algHom_ext T { g₁ with commutes' _ := rfl }
+    { g₂ with commutes' := DFunLike.congr_fun h₁.symm } h₂) x
 
 end RingHom
