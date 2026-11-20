@@ -112,7 +112,6 @@ def checkLongDeclarations : Linter where
         m!"This command contains {lines} lines of code, exceeding the limit of {limit}. \
           Consider extracting helper definitions or lemmas."
 
--- Register the callback when this module is imported; its option controls whether it runs.
 initialize addLinter checkLongDeclarations
 
 end Mathlib.Linter.LongDeclaration
