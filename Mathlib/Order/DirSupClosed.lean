@@ -207,6 +207,16 @@ protected theorem DirSupInaccOn.iInter {ι : Sort*} [Finite ι] {s : ι → Set 
     (h : ∀ i, DirSupInaccOn D (s i)) : DirSupInaccOn D (⋂ i, s i) :=
   .sInter hD (Set.finite_range s) (by simpa)
 
+protected theorem DirSupClosedOn.iUnion₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (hD : IsLowerSet D) (h : ∀ i j, DirSupClosedOn D (s i j)) :
+    DirSupClosedOn D (⋃ (i) (j), s i j) :=
+  .iUnion hD (.iUnion hD <| h ·)
+
+protected theorem DirSupInaccOn.iInter₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (hD : IsLowerSet D) (h : ∀ i j, DirSupInaccOn D (s i j)) :
+    DirSupInaccOn D (⋂ (i) (j), s i j) :=
+  .iInter hD (.iInter hD <| h ·)
+
 protected theorem DirSupClosed.sUnion {s : Set (Set α)} (hs : s.Finite)
     (h : ∀ t ∈ s, DirSupClosed t) : DirSupClosed (⋃₀ s) :=
   dirSupClosedOn_univ.mp <| .sUnion isLowerSet_univ hs (h · · |>.dirSupClosedOn)
@@ -222,6 +232,14 @@ protected theorem DirSupClosed.iUnion {ι : Sort*} [Finite ι] {s : ι → Set �
 protected theorem DirSupInacc.iInter {ι : Sort*} [Finite ι] {s : ι → Set α}
     (h : ∀ i, DirSupInacc (s i)) : DirSupInacc (⋂ i, s i) :=
   .sInter (Set.finite_range s) (by simpa)
+
+protected theorem DirSupClosed.iUnion₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (h : ∀ i j, DirSupClosed (s i j)) : DirSupClosed (⋃ (i) (j), s i j) :=
+  .iUnion (.iUnion <| h ·)
+
+protected theorem DirSupInacc.iInter₂ {ι : Sort*} {κ : ι → Sort*} [Finite ι] [∀ i, Finite (κ i)]
+    {s : ∀ i, κ i → Set α} (h : ∀ i j, DirSupInacc (s i j)) : DirSupInacc (⋂ (i) (j), s i j) :=
+  .iInter (.iInter <| h ·)
 
 theorem DirSupInaccOn.of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
