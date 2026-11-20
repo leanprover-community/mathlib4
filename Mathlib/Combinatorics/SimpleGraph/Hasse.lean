@@ -179,6 +179,7 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
 
 /-- An embedding of the path graph in a larger path graph. -/
+@[simps! toEmbedding]
 protected def Embedding.pathGraph (m n : ℕ) (h : m ≤ n) : pathGraph m ↪g pathGraph n :=
   .hasse (Fin.castLEOrderEmb h) <| by
     simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
@@ -187,11 +188,6 @@ protected def Embedding.pathGraph (m n : ℕ) (h : m ≤ n) : pathGraph m ↪g p
 @[simp]
 theorem Embedding.coe_pathGraph {m n : ℕ} (h : m ≤ n) :
     ⇑(Embedding.pathGraph m n h) = Fin.castLE h :=
-  rfl
-
-@[simp]
-theorem Embedding.pathGraph_toEmbedding {m n : ℕ} (h : m ≤ n) :
-    (Embedding.pathGraph m n h).toEmbedding = Fin.castLEEmb h :=
   rfl
 
 theorem pathGraph_isContained_iff {m n : ℕ} : pathGraph m ⊑ pathGraph n ↔ m ≤ n where
