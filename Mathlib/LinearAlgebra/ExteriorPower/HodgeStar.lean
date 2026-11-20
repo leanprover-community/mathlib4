@@ -20,11 +20,12 @@ This file contains a definition of the Hodge star on exterior powers.
  * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
    positive orientation.
  * `exteriorPower.discr_mul_exteriorPower_hodgeStar_hodgeStar`: the Hodge star preserves the
-   bilinear form on exterior powers up to multiplication by its discriminant.
+   bilinear form on exterior powers up to multiplication by `B.discr vol`.
 
 ## TODO
 
-* Prove `B.discr vol • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`
+* For symmetric `B`, prove
+  `B.discr vol • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`.
 * Develop further theory in the common case `B.discr vol = 1`.
 -/
 
@@ -56,17 +57,16 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     letI star := hodgeStar B hB vol hkl
     B.discr vol * B.exteriorPower l (star x) (star y) = B.exteriorPower k x y := by
   nontriviality R
+  rw [exteriorPower_hodgeStar_eq_wedgePairing]
+  suffices B.discr vol • (wedgePairing vol hkl).compl₂ (hodgeStar B hB vol hkl).toLinearMap =
+      B.exteriorPower k from LinearMap.congr_fun₂ this x y
   let b := finBasis R M
   let c := b.dualBasis.map (LinearEquiv.ofBijective B hB).symm
   have hdual n := B.exteriorPower_apply_basis_exteriorPower n b c (by simp [c])
   have hvol : B.discr vol * (vol b.topVector * vol c.topVector) = 1 := by
     rw [mul_comm (vol b.topVector), B.discr_mul_vol_mul_vol]
-    let s : Set.powersetCard (Fin (finrank R M)) (finrank R M) := ⟨Finset.univ, by simp⟩
-    simp only [← Basis.topVector_eq_exteriorPower _ s, hdual, Basis.dualBasis_apply_self,
-      ↓reduceIte]
-  rw [exteriorPower_hodgeStar_eq_wedgePairing]
-  suffices B.discr vol • (wedgePairing vol hkl).compl₂ (hodgeStar B hB vol hkl).toLinearMap =
-      B.exteriorPower k from congr($this x y)
+    simp only [← Basis.topVector_eq_exteriorPower _ ⟨Finset.univ, Finset.card_fin _⟩, hdual,
+      Basis.dualBasis_apply_self, ↓reduceIte]
   rw [wedgePairing_eq_apply_topVector_smul vol hkl c]
   refine LinearMap.ext_basis (c.exteriorPower k) (b.exteriorPower k) fun I J ↦ ?_
   simp +contextual [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply,

@@ -58,18 +58,19 @@ open Module
 variable (vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R)
 
 /-- The discriminant of a bilinear form with respect to a volume form. -/
-public def discr := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)
+public def discr : R := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)
 
 public lemma discr_def :
     B.discr vol = B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) := by
   rfl
 
-/-- The discriminant relates the form on the top exterior power to the product of volumes. -/
+/-- On the top exterior power, the pairing is the discriminant times the product of the volumes. -/
 @[simp] public lemma discr_mul_vol_mul_vol (x y : ⋀[R]^(finrank R M) M) :
     B.discr vol * (vol x * vol y) = B.exteriorPower (finrank R M) x y := by
   calc
     _ = B.exteriorPower _ (vol x • vol.symm 1) (vol y • vol.symm 1) := by
-      simp [discr_def, mul_comm, mul_left_comm, mul_assoc]
+      rw [discr_def, LinearMap.map_smul₂, map_smul]
+      exact mul_rotate' ..
     _ = _ := by simp [← map_smul]
 
 end Discriminant
