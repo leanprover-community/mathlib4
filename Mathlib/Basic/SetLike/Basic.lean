@@ -225,10 +225,10 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
 
 export IsMemLE (le_iff_mem_imp_mem)
 
-@[deprecated (since := "2026-09-18")] alias IsConcreteLE := IsMemLE
+@[deprecated (since := "2026-11-20")] alias IsConcreteLE := IsMemLE
 
 @[deprecated (since := "2026-09-01")] alias SetLike.le_def := le_iff_mem_imp_mem
-@[deprecated (since := "2026-09-18")] alias IsConcreteLE.le_iff := le_iff_mem_imp_mem
+@[deprecated (since := "2026-11-20")] alias IsConcreteLE.le_iff := le_iff_mem_imp_mem
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
@@ -295,11 +295,11 @@ alias SetLike.lt_iff_le_and_exists := lt_iff_le_and_exists_mem_notMem
 @[deprecated (since := "2026-09-01")]
 alias SetLike.exists_of_lt := exists_mem_notMem_of_lt
 
-@[deprecated (since := "2026-09-18")]
+@[deprecated (since := "2026-11-20")]
 alias IsConcreteLE.not_le_iff_exists := not_le_iff_exists_mem_notMem
-@[deprecated (since := "2026-09-18")]
+@[deprecated (since := "2026-11-20")]
 alias IsConcreteLE.lt_iff_le_and_exists := lt_iff_le_and_exists_mem_notMem
-@[deprecated (since := "2026-09-18")]
+@[deprecated (since := "2026-11-20")]
 alias IsConcreteLE.exists_of_lt := exists_mem_notMem_of_lt
 
 namespace SetLike
