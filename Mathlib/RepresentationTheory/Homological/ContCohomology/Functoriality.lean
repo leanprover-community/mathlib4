@@ -121,9 +121,9 @@ abbrev _root_.TopRep.resolutionXRes (φ : H →ₜ* G) :
   | 0 => 𝟙 _
   | i + 1 => ofHom (coind₁ResMap φ (resolutionXRes φ i).hom)
 
-lemma resolutionXRes_zero (φ : H →ₜ* G) : X.resolutionXRes φ 0 = 𝟙 _ := rfl
+lemma _root_.TopRep.resolutionXRes_zero (φ : H →ₜ* G) : X.resolutionXRes φ 0 = 𝟙 _ := rfl
 
-lemma resolutionXRes_succ (φ : H →ₜ* G) (i : ℕ) :
+lemma _root_.TopRep.resolutionXRes_succ (φ : H →ₜ* G) (i : ℕ) :
     resolutionXRes X φ (i + 1) = ofHom (coind₁ResMap φ (resolutionXRes _ φ i).hom) := rfl
 
 @[simp]
@@ -303,9 +303,9 @@ def cochainsResMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     rw [homogeneousCochains.d_eq, homogeneousCochains.d_eq, ← invariantsResMap_comp,
       resolutionResMap_comp_d, invariantsResMap_map_comp]
 
-@[deprecated (since := "2026-07-27")] alias cochainsMap := cochainsResMap
-@[deprecated (since := "2026-07-27")] alias cochainsMap_f := cochainsResMap_f
-@[deprecated (since := "2026-07-27")] alias cochainsMap_f_hom := cochainsResMap_f_hom
+@[deprecated (since := "2026-11-20")] alias cochainsMap := cochainsResMap
+@[deprecated (since := "2026-11-20")] alias cochainsMap_f := cochainsResMap_f
+@[deprecated (since := "2026-11-20")] alias cochainsMap_f_hom := cochainsResMap_f_hom
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -316,7 +316,7 @@ lemma cochainsResMap_id (X : TopRep k G) :
   ext v
   rfl
 
-@[deprecated (since := "2026-07-27")] alias cochainsMap_id := cochainsResMap_id
+@[deprecated (since := "2026-11-20")] alias cochainsMap_id := cochainsResMap_id
 
 @[reassoc]
 lemma cochainsResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y) (g : res ψ Y ⟶ Z) :
@@ -325,8 +325,8 @@ lemma cochainsResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X �
   ext i v x
   congrm($(resolutionResMap_comp φ ψ f g (i + 1)).hom v x)
 
-@[deprecated (since := "2026-07-27")] alias cochainsMap_comp := cochainsResMap_comp
-@[deprecated (since := "2026-07-27")] alias cochainsMap_comp_assoc := cochainsResMap_comp_assoc
+@[deprecated (since := "2026-11-20")] alias cochainsMap_comp := cochainsResMap_comp
+@[deprecated (since := "2026-11-20")] alias cochainsMap_comp_assoc := cochainsResMap_comp_assoc
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/
@@ -466,15 +466,15 @@ lemma resMap_id_left (f : X ⟶ X') (n : ℕ) :
     resMap (ContinuousMonoidHom.id G) f n = (HₜFunct k G n).map f := by
   simp [resMap, cochainsResMap_id_left, continuousCohomologyFunctor]
 
-@[deprecated (since := "2026-11-19")] alias cocyclesMap := cocyclesResMap
-@[deprecated (since := "2026-11-19")] alias cocyclesMap_id := cocyclesResMap_id
-@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp := cocyclesResMap_comp
-@[deprecated (since := "2026-11-19")] alias cocyclesMap_comp_assoc := cocyclesResMap_comp_assoc
-@[deprecated (since := "2026-11-19")] alias map := resMap
-@[deprecated (since := "2026-11-19")] alias π_map := π_resMap
-@[deprecated (since := "2026-11-19")] alias π_map_assoc := π_resMap_assoc
-@[deprecated (since := "2026-11-19")] alias map_id := resMap_id
-@[deprecated (since := "2026-11-19")] alias map_comp := resMap_comp
-@[deprecated (since := "2026-11-19")] alias map_comp_assoc := resMap_comp_assoc
+@[deprecated (since := "2026-11-20")] alias cocyclesMap := cocyclesResMap
+@[deprecated (since := "2026-11-20")] alias cocyclesMap_id := cocyclesResMap_id
+@[deprecated (since := "2026-11-20")] alias cocyclesMap_comp := cocyclesResMap_comp
+@[deprecated (since := "2026-11-20")] alias cocyclesMap_comp_assoc := cocyclesResMap_comp_assoc
+@[deprecated (since := "2026-11-20")] alias map := resMap
+@[deprecated (since := "2026-11-20")] alias π_map := π_resMap
+@[deprecated (since := "2026-11-20")] alias π_map_assoc := π_resMap_assoc
+@[deprecated (since := "2026-11-20")] alias map_id := resMap_id
+@[deprecated (since := "2026-11-20")] alias map_comp := resMap_comp
+@[deprecated (since := "2026-11-20")] alias map_comp_assoc := resMap_comp_assoc
 
 end ContinuousCohomology
