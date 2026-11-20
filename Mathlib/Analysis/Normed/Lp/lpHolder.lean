@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 import Mathlib.Tactic.Positivity.Finset
 
@@ -304,5 +305,22 @@ lemma norm_dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     · exact ContinuousLinearMap.norm_postcomp_le _ |>.trans norm_tsumCLM_le
     · exact norm_holderL_le 1 B hBK
   _ = K := one_mul _
+
+variable (ι 𝕜 p q) in
+/-- The map from `ℓ^p(ι, 𝕜)` to `StrongDual 𝕜 ℓ^q(ι, 𝕜)` when `p` and `q` are Hölder conjugate,
+given by `fun f g ↦ ∑' i, f i * g i`. -/
+noncomputable def scalarDualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q] :
+    ℓ^p(ι, 𝕜) →L[𝕜] StrongDual 𝕜 ℓ^q(ι, 𝕜) :=
+  dualPairing p q (fun _ ↦ ContinuousLinearMap.mul 𝕜 𝕜) (K := 1)
+    fun _ ↦ ContinuousLinearMap.opNorm_mul_le 𝕜 𝕜
+
+lemma scalarDualPairing_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
+    (f : ℓ^p(ι, 𝕜)) (g : ℓ^q(ι, 𝕜)) :
+    scalarDualPairing ι 𝕜 p q f g = ∑' i, f i * g i :=
+  rfl
+
+lemma norm_scalarDualPairing_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q] :
+    ‖scalarDualPairing ι 𝕜 p q‖ ≤ 1 :=
+  norm_dualPairing ..
 
 end lp

@@ -263,3 +263,121 @@ noncomputable def lp.tendstoZero.mapCLM (T : ∀ i, E i →L[𝕜] F i)
     fun x ↦ lp.mapCLM_mem_tendstoZero T hK hTK x.val x.property)
 
 end NontriviallyNormedField
+
+section Dual
+
+open scoped tendstoZero lp
+
+variable [RCLike 𝕜]
+
+namespace lp.tendstoZero
+
+variable (ι 𝕜) in
+/-- The natural continuous linear map from `ℓ¹(ι, 𝕜)` into the (strong) dual of `c₀(ι, 𝕜)`
+given by `fun x y ↦ ∑' i, y i * x i`. The order of the factors is reversed because this is
+implemented via the `lp.scalarDualPairing` of `ℓ^∞` with `ℓ¹`, precomposed with the inclusion of
+`c₀(ι, 𝕜)` into `ℓ^∞(ι, 𝕜)`. -/
+noncomputable def lpOneToStrongDual :
+    ℓ¹(ι, 𝕜) →L[𝕜] StrongDual 𝕜 c₀(ι, 𝕜) :=
+  .flip <| lp.scalarDualPairing ι 𝕜 ∞ 1 ∘L (subtypeₗᵢ 𝕜 _).toContinuousLinearMap
+
+lemma lpOneToStrongDual_apply_apply (x : ℓ¹(ι, 𝕜)) (y : c₀(ι, 𝕜)) :
+    lpOneToStrongDual ι 𝕜 x y = ∑' i, (y : ℓ^∞(ι, 𝕜)) i * x i :=
+  rfl
+
+lemma norm_lpOneToStrongDual_apply_le (x : ℓ¹(ι, 𝕜)) :
+    ‖lpOneToStrongDual ι 𝕜 x‖ ≤ ‖x‖ := by
+  refine (lpOneToStrongDual ι 𝕜 x).opNorm_le_bound (by positivity) fun φ ↦ ?_
+  rw [mul_comm, ← one_mul ‖φ‖]
+  apply lp.scalarDualPairing ι 𝕜 ∞ 1 |>.le_opNorm₂ .. |>.trans
+  gcongr
+  · exact lp.norm_scalarDualPairing_le
+  · exact le_rfl
+
+lemma norm_lpOneToStrongDual_le : ‖lpOneToStrongDual ι 𝕜‖ ≤ 1 :=
+  lpOneToStrongDual ι 𝕜 |>.opNorm_le_bound (by positivity) fun x ↦ by
+    simpa only [one_mul] using norm_lpOneToStrongDual_apply_le x
+
+open ComplexOrder in
+lemma sum_strongDual_eval_single_le_norm [DecidableEq ι]
+    (φ : StrongDual 𝕜 c₀(ι, 𝕜)) (s : Finset ι) :
+    ∑ i ∈ s, ‖φ (single i 1)‖ ≤ ‖φ‖ := by
+  rw [← RCLike.ofReal_le_ofReal (K := 𝕜), RCLike.ofReal_sum]
+  have (c : 𝕜) : (‖c‖ : 𝕜) = (‖c‖ * c⁻¹) • c := by
+    obtain (rfl | hc) := eq_or_ne c 0
+    · simp
+    · simp [hc]
+  have h₁ : (∑ x ∈ s, ‖φ (single x 1)‖ : 𝕜) =
+      φ (∑ x ∈ s, (‖φ (single x 1)‖ * (φ (single x 1))⁻¹) • single x 1) := by
+    refine .trans ?_ (map_sum φ _ s).symm
+    exact s.sum_congr rfl fun x _ ↦ by rw [map_smul, ← this]
+  have := RCLike.norm_of_nonneg' (K := 𝕜) (h₁ ▸ s.sum_nonneg (by simp))
+  rw [h₁, ← this, RCLike.ofReal_le_ofReal, ← mul_one ‖φ‖]
+  refine φ.le_opNorm_of_le ?_
+  simp only [AddSubgroup.coe_norm, AddSubgroup.val_finsetSum, coe_smul, coe_single]
+  refine lp.norm_le_of_forall_le (by positivity) fun i ↦ ?_
+  rw [lp.coeFn_sum, Finset.sum_apply]
+  simp only [lp.coeFn_smul, Pi.smul_apply, lp.coeFn_single, Pi.single_apply, smul_eq_mul]
+  by_cases! hi : i ∈ s
+  · rw [s.sum_eq_single_of_mem i hi fun b _ hb ↦ by simp [hb.symm]]
+    obtain (h | h) := eq_or_ne (φ (single i 1)) 0
+    all_goals simp [h]
+  · rw [s.sum_eq_zero]
+    · simp
+    · intro j hj
+      have hij : i ≠ j := fun h ↦ hi (h ▸ hj)
+      simp [hij]
+
+lemma strongDual_eval_single_memℓp_one [DecidableEq ι]
+    (φ : StrongDual 𝕜 c₀(ι, 𝕜)) :
+    Memℓp (fun i ↦ φ (single i 1)) 1 :=
+  memℓp_gen' <| by simpa only [ENNReal.toReal_one, Real.rpow_one]
+    using sum_strongDual_eval_single_le_norm φ
+
+/-- The map from the (strong) dual of `c₀(ι, 𝕜)` to `ℓ¹(ι, 𝕜)` given by
+`fun φ i ↦ φ (single i 1)`. This is the inverse of `lp.tendstoZero.lpOneToStrongDual`. -/
+@[simps]
+noncomputable def strongDualTolpOne [DecidableEq ι]
+    (φ : StrongDual 𝕜 c₀(ι, 𝕜)) : ℓ¹(ι, 𝕜) :=
+  ⟨fun i ↦ φ (single i 1), strongDual_eval_single_memℓp_one φ⟩
+
+lemma norm_strongDualTolpOne_apply_le [DecidableEq ι]
+    (φ : StrongDual 𝕜 c₀(ι, 𝕜)) : ‖strongDualTolpOne φ‖ ≤ ‖φ‖ :=
+  lp.norm_le_of_forall_sum_le (by simp) (by positivity) <| by
+    simpa using sum_strongDual_eval_single_le_norm φ
+
+variable (ι 𝕜) in
+/-- The (inverse) maps `lp.tendstoZero.lpOneToStrongDual` and `lp.tendstoZero.strongDualTolpOne`
+bundled into a linear equivalence. See `lp.tendstoZero.lpOneToStrongDualₗᵢ` for the linear isometry
+equivalence. -/
+@[simps!]
+noncomputable def lpOneToStrongDualLinearEquiv [DecidableEq ι] :
+    ℓ¹(ι, 𝕜) ≃ₗ[𝕜] StrongDual 𝕜 c₀(ι, 𝕜) :=
+  { (lpOneToStrongDual ι 𝕜).toLinearMap with
+    invFun := strongDualTolpOne
+    left_inv x := by
+      ext i
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
+        strongDualTolpOne_coe, lpOneToStrongDual_apply_apply]
+      rw [tsum_eq_single i (fun j hj ↦ by simp [hj])]
+      simp
+    right_inv φ := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+      ext x
+      simp only [lpOneToStrongDual_apply_apply, strongDualTolpOne_coe]
+      simp_rw [← smul_eq_mul, ← map_smul, smul_single, smul_eq_mul, mul_one]
+      exact φ.hasSum (hasSum_single x) |>.tsum_eq }
+
+variable (ι 𝕜) in
+/-- The linear isometry equivalence between `ℓ¹(ι, 𝕜)` and the (strong) dual of `c₀(ι, 𝕜)`.
+In the forward direction, this is given by `fun x y ↦ ∑' i, y i * x i`, and in the
+backward direction by `fun φ i ↦ φ (single i 1)`. -/
+@[simps!]
+noncomputable def lpOneToStrongDualₗᵢ [DecidableEq ι] :
+    ℓ¹(ι, 𝕜) ≃ₗᵢ[𝕜] StrongDual 𝕜 c₀(ι, 𝕜) :=
+  .ofBounds (lpOneToStrongDualLinearEquiv ι 𝕜) norm_lpOneToStrongDual_apply_le
+    norm_strongDualTolpOne_apply_le
+
+end lp.tendstoZero
+
+end Dual
