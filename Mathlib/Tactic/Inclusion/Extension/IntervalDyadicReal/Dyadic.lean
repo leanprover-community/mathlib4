@@ -6,7 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Dyadic.Basic
+public import Mathlib.Data.Dyadic.Rat
 public import Mathlib.Data.Rat.Cast.Order
 
 set_option doc.verso true
@@ -25,22 +25,6 @@ namespace Inclusion.IntervalDyadicReal
 
 open Dyadic
 namespace Dyadic
-
-/-- Coercion from dyadic rationals to rational numbers as a ring homomorphism. -/
-@[simps]
-def toRatRingHom : Dyadic →+* ℚ where
-  toFun := toRat
-  map_zero' := toRat_zero
-  map_one' := toRat_one
-  map_add' := toRat_add
-  map_mul' := toRat_mul
-
-/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
-@[simps]
-def toRatOrderEmbedding : Dyadic ↪o ℚ where
-  toFun := toRat
-  inj' := fun _ _ ↦ toRat_inj.mp
-  map_rel_iff' := toRat_le_toRat_iff
 
 @[simp]
 theorem ofOdd_pos {n k : ℤ} {hn : n % 2 = 1} : 0 < ofOdd n k hn ↔ 0 < n := by
