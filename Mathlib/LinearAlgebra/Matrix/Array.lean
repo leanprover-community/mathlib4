@@ -73,8 +73,7 @@ theorem toArray_ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
 lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
     ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
   ext i j
-  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
-  simp [ofArray, hA, this]
+  simp [ofArray, hA, ← Nat.mkDivMod_def, Nat.mkDivMod_lt_mul_of_lt i.isLt j]
 
 end Matrix
 

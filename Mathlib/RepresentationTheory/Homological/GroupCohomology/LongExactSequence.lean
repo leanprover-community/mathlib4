@@ -147,7 +147,7 @@ theorem δ₀_apply
     -- Then `x` is a 1-cocycle and `δ z = x` in `H¹(X₁)`.
     δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = H1π X.X₁ ⟨x, mem_cocycles₁_of_comp_eq_d₀₁ hX hx⟩ := by
   simpa [H0Iso, H1π, ← cocyclesMk₁_eq X.X₁, ← cocyclesMk₀_eq z] using!
-    δ_apply hX rfl ((cochainsIso₀ X.X₃).inv z.1) (by
+    δ_apply hX rfl ((cochainsIso₀ X.X₃).inv z.val) (by
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₀₁_comp_inv]; simp)
       ((cochainsIso₀ X.X₂).inv y)
     (by ext; simp [← hy, cochainsIso₀]) ((cochainsIso₁ X.X₁).inv x) <| by

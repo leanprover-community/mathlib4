@@ -140,7 +140,7 @@ lemma isConservative_pointSmallEtale
     simp only [Functor.id_obj, pointSmallEtaleFiberObjToPreimage_coe, Etale.forget_obj_left] at hx'
     subst hx'
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
-    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).1, rfl⟩)
+    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).val, rfl⟩)
 
 lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale

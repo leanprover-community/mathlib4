@@ -101,17 +101,18 @@ lemma fg_top_iff :
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
       .comp _ (Algebra.adjoin F (s : Set E)) _
     rw [hs] at this
-    exact .of_surjective IntermediateField.topEquiv.toAlgHom IntermediateField.topEquiv.surjective
+    exact .of_surjective (IntermediateField.topEquiv (F := F) (E := E)).toAlgHom
+      IntermediateField.topEquiv.surjective
   · intro _
     use Algebra.EssFiniteType.finset F E
     refine top_le_iff.mp fun x _ ↦ ?_
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq (Algebra.EssFiniteType.submonoid F E) x
-    have hs : s.1.1 ≠ 0 := (IsLocalization.map_units E s).ne_zero
+    have hs : s.val.val ≠ 0 := (IsLocalization.map_units E s).ne_zero
     have H : IsLocalization.mk' E x s = x / s := by
       simp [IsLocalization.mk'_eq_iff_eq_mul, hs]
     rw [H]
-    exact div_mem (IntermediateField.algebra_adjoin_le_adjoin _ _ x.2)
-      (IntermediateField.algebra_adjoin_le_adjoin _ _ s.1.2)
+    exact div_mem (IntermediateField.algebra_adjoin_le_adjoin _ _ x.property)
+      (IntermediateField.algebra_adjoin_le_adjoin _ _ s.val.property)
 
 variable (F E) in
 lemma fg_top [Algebra.EssFiniteType F E] : (⊤ : IntermediateField F E).FG := by

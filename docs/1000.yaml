@@ -1696,7 +1696,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
-  decl: tsum_sq_fourierCoeff
+  decl: AddCircle.tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems
@@ -1930,6 +1930,9 @@ Q1893717:
 
 Q1896455:
   title: Varignon's theorem
+  decl: midpoint_midpoint_midpoint_rotate
+  authors: Daniel Liao
+  date: 2026
 
 Q1899432:
   title: Grothendieck–Hirzebruch–Riemann–Roch theorem

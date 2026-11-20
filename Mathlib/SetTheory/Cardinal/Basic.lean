@@ -751,12 +751,12 @@ theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆
   apply mk_iUnion_le
 
 theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
-    #(⋃ x ∈ s, A x) ≤ #s * ⨆ x : s, #(A x.1) := by
+    #(⋃ x ∈ s, A x) ≤ #s * ⨆ x : s, #(A x.val) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 
 theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : Set ι) :
-    lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.1) := by
+    lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.val) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le_lift
 
@@ -873,13 +873,13 @@ theorem mk_union_le_aleph0 {α} {P Q : Set α} :
   simp only [le_aleph0_iff_subtype_countable, ofPred_mem_eq, Set.union_def,
     ← countable_union]
 
-theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=
+theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.val } :=
   mk_congr (Equiv.Set.sep s t)
 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
+  use Subtype.coind (fun x => f x.val) fun x => mem_preimage.mp x.property
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)

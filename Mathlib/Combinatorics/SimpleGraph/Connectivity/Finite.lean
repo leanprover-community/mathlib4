@@ -124,7 +124,7 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
   refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
   simp only [Subtype.mk.injEq, f] at fcc'
   exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
-    ((fcc' ▸ (aux c.1 c.2).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)
-      ((aux c'.1 c'.2).choose_spec.2 (ConnectedComponent.nonempty_supp _).some_mem))
+    ((fcc' ▸ (aux c.val c.property).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)
+      ((aux c'.val c'.property).choose_spec.2 (ConnectedComponent.nonempty_supp _).some_mem))
 
 end SimpleGraph

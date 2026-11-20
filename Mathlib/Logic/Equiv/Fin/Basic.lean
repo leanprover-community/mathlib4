@@ -171,7 +171,7 @@ theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
   rfl
 
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
-    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
+    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.val (Fin.val_lt_last x.property) := by
   rw [← Option.some_inj]
   simp [finSuccAboveEquiv]
 
@@ -187,7 +187,7 @@ def finSuccEquivLast : Fin (n + 1) ≃ Option (Fin n) :=
 
 @[simp]
 theorem finSuccEquivLast_castSucc (i : Fin n) : finSuccEquivLast (Fin.castSucc i) = some i :=
-  finSuccEquiv'_below i.2
+  finSuccEquiv'_below i.isLt
 
 @[simp]
 theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
@@ -196,7 +196,7 @@ theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
 @[simp]
 theorem finSuccEquivLast_symm_some (i : Fin n) :
     finSuccEquivLast.symm (some i) = Fin.castSucc i :=
-  finSuccEquiv'_symm_some_below i.2
+  finSuccEquiv'_symm_some_below i.isLt
 
 @[simp] theorem finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
   finSuccEquiv'_symm_none _
@@ -216,7 +216,7 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 
 @[simp] lemma Equiv.coe_embeddingFinSucc_symm {n : ℕ} {ι : Type*}
     (f : Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :
-    ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
+    ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.val f.1 := by
   ext i
   exact Fin.cases rfl (fun j ↦ rfl) i
 
@@ -331,17 +331,17 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   toFun := Function.uncurry Fin.mkDivMod
   invFun := Function.prod Fin.divNat Fin.modNat
   left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
-  right_inv := Fin.divNat_mkDivMod_modNat
+  right_inv := Fin.mkDivMod_divNat_modNat
 
 /-- Equivalence between `ℕ × Fin n` and `ℕ` for nonzero `n`, sending `(q, r)` to the natural number
 `n * q + r` with quotient `q` and remainder `r` modulo `n`.
 This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divModEquiv`. -/
 @[simps]
 def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
-  toFun := Function.uncurry n.mkDivFin
+  toFun := Function.uncurry (Nat.mkDivMod · ·)
   invFun := Function.prod (· / n) (Fin.ofNat n)
-  left_inv _ := Prod.ext (Nat.div_mkDivFin _ _) (Nat.cast_mkDivFin _ _)
-  right_inv := Nat.mkDivFin_div_cast
+  left_inv _ := Prod.ext (Nat.div_mkDivMod _ _) (Nat.cast_mkDivMod _ _)
+  right_inv k := Nat.mkDivMod_div_cast k
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is the inverse of `natProdFinEquiv`, and is like `finProdFinEquiv.symm` but with `m` infinite.

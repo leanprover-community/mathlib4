@@ -102,7 +102,7 @@ theorem IsEquipartition.card_small_parts_eq_mod (hP : P.IsEquipartition) :
 /-- There exists an enumeration of an equipartition's parts where
 larger parts map to smaller numbers and vice versa. -/
 theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
-    ∃ f : P.parts ≃ Fin #P.parts, ∀ t, #t.1 = #s / #P.parts + 1 ↔ f t < #s % #P.parts := by
+    ∃ f : P.parts ≃ Fin #P.parts, ∀ t, #t.val = #s / #P.parts + 1 ↔ f t < #s % #P.parts := by
   let el := {p ∈ P.parts | #p = #s / #P.parts + 1}.equivFin
   let es := {p ∈ P.parts | #p = #s / #P.parts}.equivFin
   simp_rw [mem_filter, hP.card_large_parts_eq_mod] at el
@@ -112,9 +112,9 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
     apply (Equiv.refl _).subtypeEquiv
     simp only [Equiv.refl_apply, and_congr_right_iff]
     exact fun _ ha ↦ by rw [hP.card_part_eq_average_iff ha, ne_eq]
-  replace el : { x : P.parts // #x.1 = #s / #P.parts + 1 } ≃
+  replace el : { x : P.parts // #x.val = #s / #P.parts + 1 } ≃
       Fin (#s % #P.parts) := (Equiv.Set.sep ..).symm.trans el
-  replace es : { x : P.parts // ¬#x.1 = #s / #P.parts + 1 } ≃
+  replace es : { x : P.parts // ¬#x.val = #s / #P.parts + 1 } ≃
       Fin (#P.parts - #s % #P.parts) := (Equiv.Set.sep ..).symm.trans (sneg.trans es)
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
@@ -129,19 +129,19 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   obtain ⟨f, hf⟩ := P.exists_enumeration
   obtain ⟨g, hg⟩ := hP.exists_partsEquiv
   simp_rw [hf]
-  let z a : Fin #s := ⟨(#P.parts).mkDivFin (f a).2 (g (f a).1), by
+  let z a : Fin #s := ⟨Nat.mkDivMod (f a).2 (g (f a).1), by
     have : NeZero #P.parts := ⟨(g (f a).1).pos.ne'⟩
-    refine (Nat.mkDivFin_lt_mkDivFin_iff.mpr ?_).trans_eq (Nat.mkDivFin_div_cast #s)
+    refine (Nat.mkDivMod_lt_mkDivMod_iff.mpr ?_).trans_eq (Nat.mkDivMod_div_cast #s)
     rw [Fin.lt_def, Fin.val_natCast, ← hg]
     have := (f a).2.isLt
-    have := hP.card_part_le_average_add_one (f a).1.2
+    have := hP.card_part_le_average_add_one (f a).1.property
     lia⟩
   have hz : z.Injective := fun a b h => by
-    obtain ⟨h₁, h₂⟩ := Nat.mkDivFin_inj.mp (congrArg Fin.val h)
+    obtain ⟨h₁, h₂⟩ := Nat.mkDivMod_inj.mp (congrArg Fin.val h)
     rw [g.apply_eq_iff_eq] at h₂
     exact f.injective <| Sigma.ext h₂ <| (Fin.heq_ext_iff (h₂ ▸ rfl)).mpr h₁
   refine ⟨.ofBijective z ((bijective_iff_injective_and_card z).mpr ⟨hz, by simp⟩), fun a b => ?_⟩
-  simp_rw [Equiv.ofBijective_apply, z, Nat.mod_mkDivFin, Fin.val_inj, g.apply_eq_iff_eq]
+  simp_rw [Equiv.ofBijective_apply, z, Nat.mod_mkDivMod, Fin.val_inj, g.apply_eq_iff_eq]
 
 /-! ### Discrete and indiscrete finpartitions -/
 

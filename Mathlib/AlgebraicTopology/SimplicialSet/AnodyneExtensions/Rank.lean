@@ -70,7 +70,7 @@ simplices of the same dimension to a strict inequality. -/
 structure WeakRankFunction where
   /-- the (weak) rank function -/
   rank : P.II → α
-  lt {x y : P.II} : P.AncestralRel x y → x.1.dim = y.1.dim → rank x < rank y
+  lt {x y : P.II} : P.AncestralRel x y → x.val.dim = y.val.dim → rank x < rank y
 
 namespace WeakRankFunction
 
@@ -84,7 +84,7 @@ lemma wf_ancestralRel : WellFounded P.AncestralRel := by
   refine ⟨fun ⟨g, hg⟩ ↦ ?_⟩
   obtain ⟨n₀, hn₀⟩ :=
     (wellFoundedGT_iff_monotone_chain_condition (α := ℕᵒᵈ)).1
-      inferInstance ⟨fun n ↦ (g n).1.dim,
+      inferInstance ⟨fun n ↦ (g n).val.dim,
         monotone_nat_of_le_succ (fun n ↦ (hg n).dim_le)⟩
   dsimp at hn₀
   refine not_strictAnti_of_wellFoundedLT (fun n ↦ f.rank (g (n₀ + n)))
