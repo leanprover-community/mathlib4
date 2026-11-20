@@ -454,8 +454,8 @@ theorem exists_disjoint_covering_ae
   construction easier. -/
   let S := {F : Set ι // F.Finite ∧ F ⊆ t ∧ F.PairwiseDisjoint B}
   -- The main step: one can enlarge a finite disjoint subfamily to cover most of `s n`.
-  have step : ∀ (F : S) (n : ℕ), ∃ G : S, F.1 ⊆ G.1 ∧
-      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ G.1, B a) < (n : ℝ≥0∞)⁻¹ := by
+  have step : ∀ (F : S) (n : ℕ), ∃ G : S, F.val ⊆ G.val ∧
+      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ G.val, B a) < (n : ℝ≥0∞)⁻¹ := by
     rintro ⟨F, hFfin, hFt, hFdisj⟩ n
     set K := ⋃ a ∈ F, B a
     have hK : IsClosed K := hFfin.isClosed_biUnion fun a ha ↦ h't a (hFt ha)
@@ -484,10 +484,10 @@ theorem exists_disjoint_covering_ae
       ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I)).2 _
         (ENNReal.inv_pos.2 (ENNReal.natCast_ne_top n))).exists
     refine ⟨⟨F ∪ (↑) '' (w : Set u), hFfin.union ((w.finite_toSet).image _),
-      union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.2), ?_⟩, subset_union_left, ?_⟩
-    · refine hFdisj.union (u_disj.subset (by rintro - ⟨a, -, rfl⟩; exact a.2)) ?_
+      union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.property), ?_⟩, subset_union_left, ?_⟩
+    · refine hFdisj.union (u_disj.subset (by rintro - ⟨a, -, rfl⟩; exact a.property)) ?_
       rintro a ha - ⟨b, -, rfl⟩ -
-      exact ((ut' b.2).2.2.mono_right (subset_biUnion_of_mem ha)).symm
+      exact ((ut' b.property).2.2.mono_right (subset_biUnion_of_mem ha)).symm
     -- the points of `s n` that are not covered are either not covered by `u` (a null set),
     -- or covered by an element of `u` outside of `w`.
     have M : {x ∈ s | C x ≤ n} \ ⋃ a ∈ F ∪ (↑) '' (w : Set u), B a ⊆
@@ -514,15 +514,15 @@ theorem exists_disjoint_covering_ae
   let F : ℕ → S := fun n ↦ Nat.rec ⟨∅, finite_empty, empty_subset _, pairwiseDisjoint_empty⟩
     (fun n Fn ↦ G Fn n) n
   have F_succ (n : ℕ) : F (n + 1) = G (F n) n := rfl
-  have F_mono : Monotone fun n ↦ (F n).1 :=
+  have F_mono : Monotone fun n ↦ (F n).val :=
     monotone_nat_of_le_succ fun n ↦ by rw [F_succ]; exact hFG _ _
-  refine ⟨⋃ n, (F n).1, iUnion_subset fun n ↦ (F n).2.2.1,
-    countable_iUnion fun n ↦ (F n).2.1.countable,
-    (pairwiseDisjoint_iUnion F_mono.directed_le).2 fun n ↦ (F n).2.2.2, ?_⟩
+  refine ⟨⋃ n, (F n).val, iUnion_subset fun n ↦ (F n).property.2.1,
+    countable_iUnion fun n ↦ (F n).property.1.countable,
+    (pairwiseDisjoint_iUnion F_mono.directed_le).2 fun n ↦ (F n).property.2.2, ?_⟩
   rw [← toFinite_apply_eq_zero_iff]
   -- it suffices to show that each `s n` is almost everywhere covered
-  have : s \ ⋃ a ∈ ⋃ n, (F n).1, B a ⊆
-      ⋃ n : ℕ, {x ∈ s | C x ≤ n} \ ⋃ a ∈ ⋃ n, (F n).1, B a := by
+  have : s \ ⋃ a ∈ ⋃ n, (F n).val, B a ⊆
+      ⋃ n : ℕ, {x ∈ s | C x ≤ n} \ ⋃ a ∈ ⋃ n, (F n).val, B a := by
     intro x ⟨hxs, hx⟩
     obtain ⟨n, hn⟩ := exists_nat_ge (C x)
     exact mem_iUnion.2 ⟨n, ⟨hxs, by exact_mod_cast hn⟩, hx⟩
@@ -533,7 +533,7 @@ theorem exists_disjoint_covering_ae
   refine le_trans (measure_mono ?_) (hG (F m) m).le
   refine sdiff_subset_sdiff (fun x hx ↦ ⟨hx.1, hx.2.trans (by exact_mod_cast hm)⟩) ?_
   rw [← F_succ]
-  exact biUnion_subset_biUnion_left (subset_iUnion (fun n ↦ (F n).1) (m + 1))
+  exact biUnion_subset_biUnion_left (subset_iUnion (fun n ↦ (F n).val) (m + 1))
 
 /-- The measurable **Vitali covering theorem**, filter version.
 
