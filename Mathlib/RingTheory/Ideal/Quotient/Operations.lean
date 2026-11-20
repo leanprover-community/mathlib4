@@ -733,8 +733,8 @@ def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
 @[simp]
 lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
-      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
-        AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
+      (by simp only [coe_coe, ← AlgEquiv.coe_toAlgHom, hIJ, map_map, ← AlgHom.coe_comp,
+        AlgEquiv.symm_comp, AlgHom.coe_id, ← coe_id, map_id]) :=
   rfl
 
 @[simp]
@@ -819,7 +819,7 @@ lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal 
 noncomputable def quotientKerEquivRange
     {R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
     (f : A →ₐ[R] B) :
-    (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
+    (A ⧸ RingHom.ker f.toRingHom) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
