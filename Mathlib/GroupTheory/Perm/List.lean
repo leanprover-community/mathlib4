@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
-we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
+we prove that `Equiv.Perm.supportFinset (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.
 
 When there are duplicate elements in `l`, how and in what arrangement with respect to the other
@@ -47,7 +47,7 @@ open Equiv Equiv.Perm
 
 /-- A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
-we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
+we prove that `Equiv.Perm.supportFinset (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.
 -/
 def formPerm : Equiv.Perm α :=
@@ -84,20 +84,25 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
     { x | (zipWith Equiv.swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := fun _ h ↦ by
   simpa using mem_or_mem_of_zipWith_swap_prod_ne h
 
-theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
-    (zipWith Equiv.swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
+theorem zipWith_swap_prod_supportFinset [Fintype α] (l l' : List α) :
+    (zipWith Equiv.swap l l').prod.supportFinset ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
   have hx' : x ∈ { x | (zipWith Equiv.swap l l').prod x ≠ x } := by simpa using hx
   simpa using zipWith_swap_prod_support' _ _ hx'
+
+@[deprecated (since := "2026-11-16")] alias zipWith_swap_prod_support :=
+    zipWith_swap_prod_supportFinset
 
 theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
   refine (zipWith_swap_prod_support' l l.tail).trans ?_
   simpa [Finset.subset_iff] using! tail_subset l
 
-theorem support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := by
+theorem supportFinset_formPerm_le [Fintype α] : supportFinset (formPerm l) ≤ l.toFinset := by
   intro x hx
   have hx' : x ∈ { x | formPerm l x ≠ x } := by simpa using hx
   simpa using support_formPerm_le' _ hx'
+
+@[deprecated (since := "2026-11-16")] alias support_formPerm_le := supportFinset_formPerm_le
 
 variable {l} {x : α}
 
@@ -211,9 +216,13 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
       rw [← length_eq_one_iff, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 
-theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
-    support (formPerm l) = l.toFinset := by
-  rw [← Finset.coe_inj, coe_support_eq_set_support, support_formPerm_of_nodup' _ h h']
+theorem supportFinset_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l)
+    (h' : ∀ x : α, l ≠ [x]) :
+    supportFinset (formPerm l) = l.toFinset := by
+  rw [← Finset.coe_inj, coe_supportFinset_eq_support, support_formPerm_of_nodup' _ h h']
+
+@[deprecated (since := "2026-11-16")] alias support_formPerm_of_nodup :=
+    supportFinset_formPerm_of_nodup
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
   have h' : Nodup (l.rotate 1) := by simpa using h

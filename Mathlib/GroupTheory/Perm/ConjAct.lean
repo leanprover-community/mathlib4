@@ -15,7 +15,8 @@ We prove some lemmas related to the conjugation action of `Perm α` on `Perm α`
 
 Let `α` be a decidable fintype.
 
-* `support_conj_eq_smul_support` relates the support of `MulAut.conj k g` with that of `g`.
+* `supportFinset_conj_eq_smul_supportFinset` relates the support of `MulAut.conj k g`
+  with that of `g`.
 
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
   and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
@@ -32,17 +33,22 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 /-- `a : α` belongs to the support of `MulAut.conj k g` iff
   `k⁻¹ a` belongs to the support of `g` -/
-theorem mem_conj_support (k g : Perm α) (a : α) :
-    a ∈ (MulAut.conj k g).support ↔ k⁻¹ a ∈ g.support := by
+theorem mem_conj_supportFinset (k g : Perm α) (a : α) :
+    a ∈ (MulAut.conj k g).supportFinset ↔ k⁻¹ a ∈ g.supportFinset := by
   simp
 
-theorem support_conj_eq_smul_support (k g : Perm α) :
-    (MulAut.conj k g).support = k • g.support := by
+@[deprecated (since := "2026-11-16")] alias mem_conj_support := mem_conj_supportFinset
+
+theorem supportFinset_conj_eq_smul_supportFinset (k g : Perm α) :
+    (MulAut.conj k g).supportFinset = k • g.supportFinset := by
   ext
-  rw [mem_conj_support, ← Perm.smul_def, Finset.inv_smul_mem_iff]
+  rw [mem_conj_supportFinset, ← Perm.smul_def, Finset.inv_smul_mem_iff]
+
+@[deprecated (since := "2026-11-16")] alias support_conj_eq_smul_support :=
+    supportFinset_conj_eq_smul_supportFinset
 
 @[deprecated (since := "2026-09-21")] alias support_toConjAct_eq_smul_support :=
-  support_conj_eq_smul_support
+  supportFinset_conj_eq_smul_supportFinset
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
     (MulAut.conj k g).cycleFactorsFinset =
@@ -65,7 +71,7 @@ theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
     MulAut.conj g • (ofSubtype (p := (· ∈ s))).range = (ofSubtype (p := (· ∈ g • s))).range := by
   have : Fintype α := Fintype.ofFinite α
   simp_rw [← eq_inv_smul_iff, Subgroup.ext_iff, Subgroup.mem_inv_pointwise_smul_iff,
-    mem_range_ofSubtype_iff, MulAut.smul_def, support_conj_eq_smul_support]
+    mem_range_ofSubtype_iff, MulAut.smul_def, supportFinset_conj_eq_smul_supportFinset]
   simp
 
 end Equiv.Perm

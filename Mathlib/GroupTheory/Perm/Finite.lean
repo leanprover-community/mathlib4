@@ -39,20 +39,22 @@ section Conjugation
 
 variable [DecidableEq α] [Fintype α] {σ τ : Perm α}
 
-theorem isConj_of_support_equiv
-    (f : { x // x ∈ (σ.support : Set α) } ≃ { x // x ∈ (τ.support : Set α) })
-    (hf : ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
-      (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
+theorem isConj_of_supportFinset_equiv
+    (f : { x // x ∈ (σ.supportFinset : Set α) } ≃ { x // x ∈ (τ.supportFinset : Set α) })
+    (hf : ∀ (x : α) (hx : x ∈ (σ.supportFinset : Set α)),
+      (f ⟨σ x, apply_mem_supportFinset.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
     IsConj σ τ := by
   refine isConj_iff.2 ⟨Equiv.extendSubtype f, ?_⟩
   rw [mul_inv_eq_iff_eq_mul]
   ext x
   simp only [Perm.mul_apply]
-  by_cases hx : x ∈ σ.support
+  by_cases hx : x ∈ σ.supportFinset
   · rw [Equiv.extendSubtype_apply_of_mem, Equiv.extendSubtype_apply_of_mem]
     · exact hf x (Finset.mem_coe.2 hx)
-  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
-      Classical.not_not.1 ((not_congr mem_support).mp hx)]
+  · rwa [Classical.not_not.1 ((not_congr mem_supportFinset).1 (Equiv.extendSubtype_not_mem f _ _)),
+      Classical.not_not.1 ((not_congr mem_supportFinset).mp hx)]
+
+@[deprecated (since := "2026-11-16")] alias isConj_of_support_equiv := isConj_of_supportFinset_equiv
 
 end Conjugation
 
@@ -166,23 +168,23 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
   cases nonempty_fintype α
   obtain ⟨f, rfl⟩ := isConj_iff.1 hc1
   obtain ⟨g, rfl⟩ := isConj_iff.1 hc2
-  have hd1' := coe_inj.2 hd1.support_mul
-  have hd2' := coe_inj.2 hd2.support_mul
+  have hd1' := coe_inj.2 hd1.supportFinset_mul
+  have hd2' := coe_inj.2 hd2.supportFinset_mul
   rw [coe_union] at *
-  have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
-  have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
-  refine isConj_of_support_equiv ?_ ?_
+  have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_supportFinset.1 hd1)
+  have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_supportFinset.1 hd2)
+  refine isConj_of_supportFinset_equiv ?_ ?_
   · refine ((Set.equivOfEq hd1').trans (Equiv.Set.union hd1'')).trans <|
       (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
         ((Set.equivOfEq hd2').trans (Equiv.Set.union hd2'')).symm <;>
-      simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
+      simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, supportFinset_conj, coe_map,
         apply_eq_iff_eq]
   intro x hx
   simp only [trans_apply, symm_trans_apply, Set.equivOfEq_apply, Set.equivOfEq_symm_apply,
     Equiv.sumCongr_apply]
   rw [hd1', Set.mem_union] at hx
   rcases hx with hxσ | hxτ
-  · rw [mem_coe, mem_support] at hxσ
+  · rw [mem_coe, mem_supportFinset] at hxσ
     rw [Set.union_apply_left, Set.union_apply_left]
     · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
         Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq, coe_inv]
@@ -190,10 +192,10 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       · rw [mul_apply, mul_apply, coe_inv] at h
         rw [h, symm_apply_apply, (hd1 x).resolve_left hxσ]
       · rwa [mul_apply, mul_apply, coe_inv, symm_apply_apply, apply_eq_iff_eq]
-    · rwa [Subtype.coe_mk, mem_coe, mem_support]
+    · rwa [Subtype.coe_mk, mem_coe, mem_supportFinset]
     · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
-        apply_mem_support, mem_support]
-  · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
+        apply_mem_supportFinset, mem_supportFinset]
+  · rw [mem_coe, ← apply_mem_supportFinset, mem_supportFinset] at hxτ
     rw [Set.union_apply_right, Set.union_apply_right]
     · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
         Set.union_symm_apply_right, Subtype.coe_mk]
@@ -201,9 +203,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       · rw [mul_apply, mul_apply, coe_inv] at h
         rw [coe_inv, coe_inv, symm_apply_apply, h, (hd1 (τ x)).resolve_right hxτ]
       · rwa [mul_apply, mul_apply, coe_inv, symm_apply_apply, apply_eq_iff_eq]
-    · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
+    · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_supportFinset, mem_supportFinset]
     · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
-        mem_coe, mem_support]
+        mem_coe, mem_supportFinset]
 
 theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
@@ -227,66 +229,85 @@ section Fintype
 
 variable [Fintype α]
 
-theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
-    (σ ^ n).support = σ.support := by
+theorem supportFinset_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
+    (σ ^ n).supportFinset = σ.supportFinset := by
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
-    le_antisymm (support_pow_le σ n)
-      (le_trans (ge_of_eq congr(support $hm)) (support_pow_le (σ ^ n) m))
+    le_antisymm (supportFinset_pow_subset σ n)
+      (le_trans (ge_of_eq congr(supportFinset $hm)) (supportFinset_pow_subset (σ ^ n) m))
 
-lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
-    _root_.Disjoint x.ofSubtype.support σ.support := by
+@[deprecated (since := "2026-11-16")] alias support_pow_coprime := supportFinset_pow_coprime
+
+lemma ofSubtype_supportFinset_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
+    _root_.Disjoint x.ofSubtype.supportFinset σ.supportFinset := by
   rw [Finset.disjoint_iff_ne]
   rintro a ha b hb rfl
-  rw [mem_support] at ha hb
+  rw [mem_supportFinset] at ha hb
   exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
+
+@[deprecated (since := "2026-11-16")] alias ofSubtype_support_disjoint :=
+    ofSubtype_supportFinset_disjoint
 
 open Subgroup
 
-lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
-    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
+lemma disjoint_of_disjoint_supportFinset {H K : Subgroup (Perm α)}
+    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.supportFinset b.supportFinset) :
     _root_.Disjoint H K := by
   rw [disjoint_iff_inf_le]
   intro x ⟨hx1, hx2⟩
   specialize h x hx1 x hx2
-  rwa [disjoint_self, Finset.bot_eq_empty, support_eq_empty_iff] at h
+  rwa [disjoint_self, Finset.bot_eq_empty, supportFinset_eq_empty_iff] at h
 
-lemma support_closure_subset_union (S : Set (Perm α)) :
-    ∀ a ∈ closure S, (a.support : Set α) ⊆ ⋃ b ∈ S, b.support := by
+@[deprecated (since := "2026-11-16")] alias disjoint_of_disjoint_support :=
+    disjoint_of_disjoint_supportFinset
+
+lemma supportFinset_closure_subset_union (S : Set (Perm α)) :
+    ∀ a ∈ closure S, (a.supportFinset : Set α) ⊆ ⋃ b ∈ S, b.supportFinset := by
   apply closure_induction
   · exact fun x hx ↦ Set.subset_iUnion₂_of_subset x hx subset_rfl
   · simp
   · intro a b ha hb hc hd
-    refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
+    refine (Finset.coe_subset.mpr (supportFinset_mul_subset a b)).trans ?_
     rw [Finset.coe_union, Set.union_subset_iff]
     exact ⟨hc, hd⟩
-  · simp only [support_inv, imp_self, implies_true]
+  · simp only [supportFinset_inv, imp_self, implies_true]
 
-lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
-    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
-    ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
+@[deprecated (since := "2026-11-16")] alias support_closure_subset_union :=
+    supportFinset_closure_subset_union
+
+lemma disjoint_supportFinset_closure_of_disjoint_supportFinset {S T : Set (Perm α)}
+    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.supportFinset b.supportFinset) :
+    ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.supportFinset b.supportFinset := by
   intro a ha b hb
-  have key1 := support_closure_subset_union S a ha
-  have key2 := support_closure_subset_union T b hb
+  have key1 := supportFinset_closure_subset_union S a ha
+  have key2 := supportFinset_closure_subset_union T b hb
   have key := Set.disjoint_of_subset key1 key2
   simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
   exact key h
 
-lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
-    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
+@[deprecated (since := "2026-11-16")] alias disjoint_support_closure_of_disjoint_support :=
+    disjoint_supportFinset_closure_of_disjoint_supportFinset
+
+lemma disjoint_closure_of_disjoint_supportFinset {S T : Set (Perm α)}
+    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.supportFinset b.supportFinset) :
     _root_.Disjoint (closure S) (closure T) := by
-  apply disjoint_of_disjoint_support
-  apply disjoint_support_closure_of_disjoint_support
+  apply disjoint_of_disjoint_supportFinset
+  apply disjoint_supportFinset_closure_of_disjoint_supportFinset
   exact h
 
+@[deprecated (since := "2026-11-16")] alias disjoint_closure_of_disjoint_support :=
+    disjoint_closure_of_disjoint_supportFinset
+
 theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
-    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ Set.ofPred p := by
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.supportFinset : Set α) ⊆ Set.ofPred p :=
+        by
   constructor
   · rintro ⟨k, rfl⟩ x
-    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_ofPred_eq]
+    simp only [Finset.mem_coe, mem_supportFinset_ofSubtype, Set.mem_ofPred_eq]
     exact fun ⟨hx, _⟩ ↦ hx
   · intro hg
-    refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩
+    refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦
+        hg (mem_supportFinset.mpr hx)⟩
     by_cases hx : g x = x
     · rw [hx]
     · refine iff_of_true (hg ?_) (hg ?_) <;> simpa

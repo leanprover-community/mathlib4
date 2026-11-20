@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.End
 This file contains results about the set of points moved by a permutation that do not need any
 finiteness assumptions.
 
-See `Mathlib/GroupTheory/Perm/Support/Finset.lean` for `Equiv.Perm.support`, the `Finset`
+See `Mathlib/GroupTheory/Perm/Support/Finset.lean` for `Equiv.Perm.supportFinset`, the `Finset`
 of points moved by a permutation of a `Fintype`.
 -/
 
