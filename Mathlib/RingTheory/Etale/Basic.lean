@@ -263,12 +263,6 @@ instance (S : Type*) [CommRing S] :
   algebraize [RingHom.fst R S]
   exact Algebra.Etale.of_isLocalizationAway (1, 0)
 
-instance (S : Type*) [CommRing S] :
-    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
-    Algebra.Etale (R × S) S := by
-  algebraize [RingHom.snd R S]
-  exact Algebra.Etale.of_isLocalizationAway (0, 1)
-
 end Etale
 
 end Algebra

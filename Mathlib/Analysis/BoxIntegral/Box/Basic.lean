@@ -127,10 +127,10 @@ theorem upper_mem : I.upper ∈ I :=
 theorem exists_mem : ∃ x, x ∈ I :=
   ⟨_, I.upper_mem⟩
 
+@[simp]
 theorem nonempty_coe : Set.Nonempty (I : Set (ι → ℝ)) :=
   I.exists_mem
 
-@[simp]
 theorem coe_ne_empty : (I : Set (ι → ℝ)) ≠ ∅ :=
   I.nonempty_coe.ne_empty
 
@@ -263,7 +263,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
     simp
   | (I : Box ι) => by
     unfold Option.isSome
-    simp [I.nonempty_coe]
+    simp
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by

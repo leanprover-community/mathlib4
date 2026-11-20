@@ -66,7 +66,8 @@ theorem ContDiffAt.contDiffPointwiseHolderAt {n : WithTop ℕ∞} (h : ContDiffA
     (iteratedFDeriv ℝ k f · - iteratedFDeriv ℝ k f a) =O[𝓝 a] (· - a) :=
       (h.differentiableAt_iteratedFDeriv hk).isBigO_sub
     _ =O[𝓝 a] (‖· - a‖ ^ (α : ℝ)) :=
-      .of_norm_left <| .comp_tendsto (.id_rpow_of_le_one α.2.2) <| tendsto_norm_sub_self_nhdsGE a
+      .of_norm_left <| .comp_tendsto (.id_rpow_of_le_one α.property.2) <|
+        tendsto_norm_sub_self_nhdsGE a
 
 namespace ContDiffPointwiseHolderAt
 
@@ -100,7 +101,7 @@ theorem of_exponent_le (hf : ContDiffPointwiseHolderAt k α f a) (hle : β ≤ �
   contDiffAt := hf.contDiffAt
   isBigO := hf.isBigO.trans <| by
     refine .comp_tendsto (.rpow_rpow_nhdsGE_zero_of_le_of_imp hle fun hα ↦ ?_) ?_
-    · exact le_antisymm (le_trans (mod_cast hle) hα.le) β.2.1
+    · exact le_antisymm (le_trans (mod_cast hle) hα.le) β.property.1
     · exact tendsto_norm_sub_self_nhdsGE a
 
 theorem of_order_lt (hf : ContDiffPointwiseHolderAt k α f a) (hlt : l < k) :
@@ -119,7 +120,7 @@ theorem of_order_le (hf : ContDiffPointwiseHolderAt k α f a) (hl : l ≤ k) :
 i.e., it is $C^k$ on this neighborhood and $D^k f$ is Hölder continuous on it,
 then the function is $C^{k+(α)}$ at `a`. -/
 theorem of_contDiffOn_holderOnWith {s : Set E} {C : ℝ≥0} (hf : ContDiffOn ℝ k f s) (hs : s ∈ 𝓝 a)
-    (hd : HolderOnWith C ⟨α, α.2.1⟩ (iteratedFDeriv ℝ k f) s) :
+    (hd : HolderOnWith C ⟨α, α.property.1⟩ (iteratedFDeriv ℝ k f) s) :
     ContDiffPointwiseHolderAt k α f a where
   contDiffAt := hf.contDiffAt hs
   isBigO := .of_bound C <| mem_of_superset hs fun x hx ↦ by
@@ -174,7 +175,7 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
           |>.norm.isBoundedUnder_le
       · by_cases hfd : DifferentiableAt ℝ f a
         · refine ((hg.of_order_le hi).isBigO.comp_tendsto hf.continuousAt).trans ?_
-          refine .rpow α.2.1 (.of_forall fun _ ↦ norm_nonneg _) <| .norm_norm ?_
+          refine .rpow α.property.1 (.of_forall fun _ ↦ norm_nonneg _) <| .norm_norm ?_
           exact hfd.isBigO_sub
         · obtain rfl : k = 0 := by
             contrapose! hfd
