@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Star.Rat
 
+import Mathlib.Algebra.HierarchyDesign
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
