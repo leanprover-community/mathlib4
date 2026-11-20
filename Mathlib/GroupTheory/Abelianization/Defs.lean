@@ -340,9 +340,7 @@ theorem quotient (hf : IsAbelianization f) {N : Subgroup G} [N.Normal]
 @[to_additive]
 theorem hom_ext (hf : IsAbelianization f) {M : Type*} [Monoid M] {φ ψ : A →* M}
     (h : φ.comp f = ψ.comp f) : φ = ψ :=
-  MonoidHom.ext fun a ↦ by
-    obtain ⟨x, rfl⟩ := hf.surjective a
-    exact DFunLike.congr_fun h x
+  (MonoidHom.cancel_right hf.surjective).mp h
 
 section lift
 
@@ -413,14 +411,6 @@ theorem map_id (hf : IsAbelianization f) : hf.map hf (MonoidHom.id G) = MonoidHo
   hf.hom_ext <| by ext; simp
 
 @[to_additive (attr := simp)]
-theorem map_map {I C : Type*} [Group I] [Group C] {k : I →* C}
-    (hf : IsAbelianization f) (hg : IsAbelianization g) (hk : IsAbelianization k)
-    (φ : G →* H) (ψ : H →* I) (x : A) :
-    hg.map hk ψ (hf.map hg φ x) = hf.map hk (ψ.comp φ) x := by
-  obtain ⟨x, rfl⟩ := hf.surjective x
-  simp
-
-@[to_additive (attr := simp)]
 theorem map_comp (hf : IsAbelianization f) (hg : IsAbelianization g) (φ : G →* H) :
     (hf.map hg φ).comp f = g.comp φ :=
   MonoidHom.ext (hf.map_apply_apply hg φ)
@@ -430,7 +420,14 @@ theorem map_comp_map {I C : Type*} [Group I] [Group C] {k : I →* C}
     (hf : IsAbelianization f) (hg : IsAbelianization g) (hk : IsAbelianization k)
     (φ : G →* H) (ψ : H →* I) :
     (hg.map hk ψ).comp (hf.map hg φ) = hf.map hk (ψ.comp φ) :=
-  MonoidHom.ext (hf.map_map hg hk φ ψ)
+  hf.hom_ext <| MonoidHom.ext fun x ↦ by simp
+
+@[to_additive (attr := simp)]
+theorem map_map {I C : Type*} [Group I] [Group C] {k : I →* C}
+    (hf : IsAbelianization f) (hg : IsAbelianization g) (hk : IsAbelianization k)
+    (φ : G →* H) (ψ : H →* I) (x : A) :
+    hg.map hk ψ (hf.map hg φ x) = hf.map hk (ψ.comp φ) x :=
+  DFunLike.congr_fun (hf.map_comp_map hg hk φ ψ) x
 
 end map
 
