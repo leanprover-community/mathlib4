@@ -83,8 +83,7 @@ theorem sign_discr :
 modulo `4`. -/
 theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 := by
   rsuffices ⟨m, c, h⟩ : ∃ m c, discr K = m ^ 2 + 4 * c
-  · rw [h, Int.add_mul_emod_self_left, Int.sq_emod_four]
-    exact Int.emod_two_eq m
+  · grind [Int.sq_emod_four]
   let E := AlgebraicClosure ℚ
   let e : Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] E) :=
     Fintype.equivOfCardEq <| by
@@ -108,21 +107,19 @@ theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 := 
       ← Matrix.permanent_permute_rows (e.trans ((AlgEquiv.refl.arrowCongr g).trans e.symm))]
     congr with _ _
     simp [Algebra.embeddingsMatrixReindex]
-  obtain ⟨c, hc⟩ : ∃ c, 4 * algebraMap ℤ (𝓞 E) c = M.det ^ 2 - M.permanent ^ 2 := by
-    obtain ⟨x, hx⟩ := dvd_sub_pow_of_dvd_sub M.two_dvd_det_sub_permanent 1
-    simp only [pow_one, Nat.cast_ofNat, Nat.reduceAdd, show (2 : 𝓞 E) ^ 2 = 4 by norm_num] at hx
-    simp_rw [hx, mul_right_inj' (by norm_num : (4 : 𝓞 E) ≠ 0), ← RingOfIntegers.eq_iff,
-      RingOfIntegers.coe_eq_algebraMap, ← IsScalarTower.algebraMap_apply,
-      ← RingHom.mem_range, ← SetLike.mem_coe, RingHom.coe_range,
-      ← IsIntegralClosure.mem_range_algebraMap ℤ (B := ℚ) (RingOfIntegers.isIntegral_coe x)]
-    refine ⟨algebraMap ℤ ℚ (discr K - m ^ 2) / 4, ?_⟩
-    rw [map_div₀, map_sub, map_sub, ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply ℤ (𝓞 E) E, hM₁, map_pow _ m,
-      IsScalarTower.algebraMap_apply ℤ (𝓞 E) E, hm, ← map_pow, ← map_sub, hx, map_mul, map_ofNat,
-      map_ofNat, mul_div_cancel_left₀ _ (by norm_num)]
+  obtain ⟨x, hx⟩ := dvd_sub_pow_of_dvd_sub M.two_dvd_det_sub_permanent 1
+  obtain ⟨c, hc⟩ : ∃ c : ℤ, (c : ℚ) = (discr K - m ^ 2) / 4 := by
+    have := congr_arg (algebraMap (𝓞 E) E) hx
+    simp only [pow_one, ← hM₁, algebraMap_int_eq, eq_intCast, ← hm, map_sub, map_intCast, map_pow,
+      Nat.cast_ofNat, Nat.reduceAdd, map_mul, map_ofNat, show (2 : E) ^ 2 = 4 by norm_num] at this
+    refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+    rw [← isIntegral_algHom_iff (IsScalarTower.toAlgHom ℤ ℚ E) (algebraMap ℚ E).injective,
+      IsScalarTower.toAlgHom_apply, map_div₀, map_sub, eq_ratCast, eq_ratCast, Rat.cast_pow,
+      Rat.cast_intCast, Rat.cast_intCast, this, map_ofNat, mul_div_cancel_left₀ _ (by norm_num)]
+    exact RingOfIntegers.isIntegral_coe x
   refine ⟨m, c, ?_⟩
-  apply FaithfulSMul.algebraMap_injective ℤ (𝓞 E)
-  rw [hM₁, map_add, map_pow, hm, ← sub_eq_iff_eq_add', ← hc, map_mul, map_ofNat]
+  qify
+  grind
 
 section rootDiscr
 
