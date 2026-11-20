@@ -51,7 +51,6 @@ from the residue field to the Henselian ring.
 
 The following gist contains some code sketches in that direction.
 https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
-
 -/
 
 public section

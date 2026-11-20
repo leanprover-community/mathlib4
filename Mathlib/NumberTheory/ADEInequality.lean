@@ -34,7 +34,6 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 * `ADEInequality.E7`, the multiset `{2,3,4}`
 * `ADEInequality.E8`, the multiset `{2,3,5}`
 * `ADEInequality.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
-
 -/
 
 @[expose] public section

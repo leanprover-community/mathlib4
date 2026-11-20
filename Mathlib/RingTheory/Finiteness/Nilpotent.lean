@@ -12,7 +12,6 @@ import Mathlib.Data.Fintype.Order
 
 /-!
 # Nilpotent maps on finite modules
-
 -/
 
 public section

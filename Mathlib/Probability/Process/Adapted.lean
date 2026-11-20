@@ -35,7 +35,6 @@ of `Measurable`:
 ## Tags
 
 adapted, progressively measurable
-
 -/
 
 @[expose] public section

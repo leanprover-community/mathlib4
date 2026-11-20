@@ -19,7 +19,6 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
-
 -/
 
 @[expose] public section
@@ -209,7 +208,7 @@ variable {R}
 @[simps! apply symm_apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
     (A →ₐ[R] B) ≃ (A →ₐ[S] B) where
-  toFun f := { f with commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply] }
+  toFun f := { f.toRingHom with commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply] }
   invFun := restrictScalars R
 
 @[simp]
@@ -364,7 +363,7 @@ def orderIsoOfAlgebraMapSurjective
     [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
   toFun N := N.restrictScalars R
-  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.smul_mem'⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_rel_iff' := .rfl

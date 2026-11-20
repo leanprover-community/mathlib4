@@ -32,7 +32,6 @@ To prove something for an arbitrary integrable function, a useful theorem is
 ## Tags
 
 integrable
-
 -/
 
 @[expose] public section
@@ -614,7 +613,7 @@ theorem Integrable.essSup_smul {R : Type*} [NormedRing R] [Module R β] [IsBound
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
       simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm_of_pos (p := ∞) (q := 1) zero_lt_one
-    _ < ∞ := ENNReal.mul_lt_top hg'.lt_top hf
+    _ < ∞ := by finiteness
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 scalar-valued function by a vector-value function with finite essential supremum is integrable. -/
@@ -627,7 +626,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
       simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm_of_pos (p := 1) (q := ∞) zero_lt_one
-    _ < ∞ := ENNReal.mul_lt_top hf hg'.lt_top
+    _ < ∞ := by finiteness
 
 theorem integrable_eNorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     Integrable (‖f ·‖ₑ) μ ↔ Integrable f μ := by
@@ -689,11 +688,7 @@ theorem Integrable.measure_eNorm_ge_lt_top {E : Type*} [TopologicalSpace E] [Con
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
   refine meas_ge_le_mul_pow_eLpNorm_eNorm μ one_ne_zero one_ne_top hε.ne' (by simp [hε'])
     |>.trans_lt ?_
-  apply ENNReal.mul_lt_top
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
-      using hε
-  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using
-      (memLp_one_iff_integrable.2 hf).eLpNorm_lt_top
+  finiteness [(memLp_one_iff_integrable.2 hf).eLpNorm_lt_top]
 
 @[deprecated (since := "2026-11-06")]
 alias Integrable.measure_enorm_ge_lt_top := Integrable.measure_eNorm_ge_lt_top
@@ -906,7 +901,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     rcases eq_or_ne (f x) 0 with (hx | hx)
     · simp only [hx, zero_smul, add_zero]
     · rw [h'' _, Pi.add_apply, smul_add]
-      simpa only [Ne, ENNReal.coe_eq_zero] using hx
+      simpa
   map_smul' := by
     intro r u
     ext1
@@ -919,7 +914,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     rcases eq_or_ne (f x) 0 with (hx | hx)
     · simp only [hx, zero_smul, smul_zero]
     · rw [h _, smul_comm, Pi.smul_apply]
-      simpa only [Ne, ENNReal.coe_eq_zero] using hx
+      simpa
   norm_map' := by
     intro u
     change ‖(memL1_smul_of_L1_withDensity f_meas u).toLp (fun x => f x • u x)‖ = ‖u‖
@@ -958,14 +953,12 @@ theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEM
 
 lemma integrable_toReal_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     Integrable (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
-  rw [Integrable, hasFiniteIntegral_toReal_iff hf_ne_top]
-  simp only [hf.ennreal_toReal.aestronglyMeasurable, ne_eq, true_and]
+  simp [Integrable, hasFiniteIntegral_toReal_iff hf_ne_top, hf.ennreal_toReal.aestronglyMeasurable]
 
 lemma lintegral_ofReal_ne_top_iff_integrable {f : α → ℝ}
     (hfm : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) :
     ∫⁻ a, ENNReal.ofReal (f a) ∂μ ≠ ∞ ↔ Integrable f μ := by
-  rw [Integrable, hasFiniteIntegral_iff_ofReal hf]
-  simp [hfm]
+  simp [Integrable, hasFiniteIntegral_iff_ofReal hf, hfm]
 
 end ENNReal
 

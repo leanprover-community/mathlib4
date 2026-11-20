@@ -20,7 +20,6 @@ import Mathlib.Topology.MetricSpace.Pseudo.Basic
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
 * `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
-
 -/
 
 public section
@@ -141,8 +140,8 @@ lemma ProperSpace.of_isClosed {X : Type*} [PseudoMetricSpace X] [ProperSpace X]
     {s : Set X} (hs : IsClosed s) :
     ProperSpace s :=
   ⟨fun x r ↦ Topology.IsEmbedding.subtypeVal.isCompact_iff.mpr
-    ((isCompact_closedBall x.1 r).of_isClosed_subset
-    (hs.isClosedMap_subtype_val _ isClosed_closedBall) (Set.image_subset_iff.mpr subset_rfl))⟩
+    ((isCompact_closedBall x.val r).of_isClosed_subset
+    (hs.isClosedMap_subtypeVal _ isClosed_closedBall) (Set.image_subset_iff.mpr subset_rfl))⟩
 
 end ProperSpace
 

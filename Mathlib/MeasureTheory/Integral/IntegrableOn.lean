@@ -17,7 +17,6 @@ Next we define a predicate `IntegrableAtFilter (f : α → E) (l : Filter α) (�
 saying that `f` is integrable at some set `s ∈ l` and prove that a measurable function is integrable
 at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` and `μ` is finite
 at `l`.
-
 -/
 
 @[expose] public section
@@ -313,7 +312,7 @@ theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace
 
 theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → ε) (μ.comap (↑)) := by
-  rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
+  rw [← (MeasurableEmbedding.subtypeVal hs).integrableOn_range_iff_comap, Subtype.range_val]
 
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → ε} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
