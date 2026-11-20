@@ -997,7 +997,7 @@ theorem IsConfluent.of_reflGen_reflTransGen
       | refl => exact ⟨b, hea, hcb⟩
       | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
-@[deprecated IsConfluent.of_reflGen_reflTransGen +typeChanged (since := "2026-09-08")]
+@[deprecated IsConfluent.of_reflGen_reflTransGen +typeChanged (since := "2026-11-12")]
 theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d)
     (hab : ReflTransGen r a b) (hac : ReflTransGen r a c) : Join (ReflTransGen r) b c :=
   (IsConfluent.of_reflGen_reflTransGen h).join_of_rel_of_rel hab hac
