@@ -110,7 +110,7 @@ lemma hasDynkinType_of_leaf {u v : ι} (huv : u ≠ v) (hu : M u v ≠ 0)
     (hstep : ∀ u' a b, IsBond a b → (addLeaf K u' a b).IsFiniteCartan →
       (addLeaf K u' a b).HasDynkinType) :
     M.HasDynkinType := by
-  have hne (j : Fin k) : (e.symm j : ι) ≠ v := (e.symm j).2
+  have hne (j : Fin k) : (e.symm j : ι) ≠ v := (e.symm j).property
   let E : ι ≃ Fin (k + 1) :=
     { toFun i := if h : i = v then Fin.last k else (e ⟨i, h⟩).castSucc
       invFun := Fin.lastCases v fun j ↦ e.symm j
