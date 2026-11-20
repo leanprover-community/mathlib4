@@ -8,8 +8,6 @@ module
 public import Lean.HeadIndex
 public import Lean.Meta.Check
 public import Lean.Meta.ExprLens
-
-import Mathlib.Init
 public import Mathlib.Init
 
 /-!

@@ -7,8 +7,6 @@ module
 
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
-
-import Mathlib.Init
 public import Mathlib.Init
 
 set_option doc.verso true

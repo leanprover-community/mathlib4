@@ -9,12 +9,12 @@ public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Lean.Server.Utils
 public meta import Mathlib.Data.String.Defs
 public import Batteries.Tactic.PermuteGoals
+public import Lean.Data.Html.Syntax
+public import Lean.Server.Utils
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.SimpRw
-public import Lean.Data.Html.Syntax
-public import Lean.Server.Utils
 public import ProofWidgets.Component.MakeEditLink
 public import ProofWidgets.Component.RefreshComponent
 

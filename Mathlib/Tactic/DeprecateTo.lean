@@ -7,11 +7,8 @@ module
 
 public meta import Mathlib.Lean.Name
 public meta import Std.Time.Format
-
-import Mathlib.Init
 public import Lean.Meta.TryThis
 public import Mathlib.Init
-public import Mathlib.Tactic.Lemma
 
 /-!
 # `#deprecate to` -- a deprecation tool
