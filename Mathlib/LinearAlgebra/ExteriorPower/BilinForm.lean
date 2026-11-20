@@ -50,4 +50,21 @@ public lemma exteriorPower_apply_basis_exteriorPower {ι : Type*} [LinearOrder �
   simpa [LinearMap.BilinForm.exteriorPower, Function.comp_def, hc] using
     pairingDual_apply_dualBasis_exteriorPower n b s
 
+section Discriminant
+
+open Module
+
+variable (vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R)
+
+/-- The discriminant of a bilinear form with respect to a volume form. -/
+public def discr := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)
+
+public lemma discr_def :
+    B.discr vol = B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) := by
+  rfl
+
+-- TODO More API here, extracted from your other lemma
+
+end Discriminant
+
 end LinearMap.BilinForm

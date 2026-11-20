@@ -54,12 +54,10 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
 
-/-- The Hodge star preserves the bilinear form on exterior powers, up to the scalar `Δ`, the
-self-pairing of the volume element. -/
-@[simp↓] public lemma mul_exteriorPower_hodgeStar_hodgeStar (x y : ⋀[R]^k M) :
-    let Δ := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)
-    Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
-      B.exteriorPower k x y := by
+/-- Up to multiplication by the discriminant, the Hodge star preserves the bilinear form. -/
+@[simp] public lemma discr_mul_exteriorPower_hodgeStar_hodgeStar (x y : ⋀[R]^k M) :
+    letI star := hodgeStar B hB vol hkl
+    B.discr vol * B.exteriorPower l (star x) (star y) = B.exteriorPower k x y := by
   intro Δ
   nontriviality R
   let b := finBasis R M
