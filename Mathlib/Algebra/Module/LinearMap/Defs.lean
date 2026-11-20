@@ -621,14 +621,18 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
 @[simp]
-theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : (LinearMap.ofClass f : M → M₂) = f :=
+theorem coe_linearMapOfClass (f : M →ₑ+[σ.toMonoidHom] M₂) : (LinearMap.ofClass f : M → M₂) = f :=
   rfl
 
-theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
+@[deprecated (since := "2026-11-20")] alias coe_toLinearMap := coe_linearMapOfClass
+
+theorem linearMapOfClass_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
     (h : LinearMap.ofClass f = .ofClass g) :
     f = g := by
   ext m
   congrm $h m
+
+@[deprecated (since := "2026-11-20")] alias toLinearMap_injective := linearMapOfClass_injective
 
 end DistribMulActionHom
 
