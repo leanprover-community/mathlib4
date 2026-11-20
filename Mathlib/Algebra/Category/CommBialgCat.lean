@@ -103,7 +103,7 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 
 lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by
-  simp [CoalgHom.toLinearMap_eq_ofClass]
+  simp
 
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
 

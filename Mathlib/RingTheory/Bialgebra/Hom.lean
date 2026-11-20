@@ -170,7 +170,7 @@ def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
   __ := f
   map_zero' := f.map_zero
   commutes' := by
-    simp [Algebra.algebraMap_eq_smul_one]
+    simp [Algebra.algebraMap_eq_smul_one, toCoalgHom_apply]
 
 instance : Coe (A →ₐc[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
 
