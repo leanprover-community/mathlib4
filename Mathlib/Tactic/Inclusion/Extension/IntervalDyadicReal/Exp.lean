@@ -174,7 +174,7 @@ theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     Real.exp x ∈ exp I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
   have h0 : (0 : Dyadic) ≤ Real.exp x := by simpa using (Real.exp_pos x).le
-  have h0I := Interval.mem_map_singleton (0 : Dyadic) ((↑) : Dyadic → ℝ)
+  have h0I := Interval.mem_map_singleton (β := ℝ) (0 : Dyadic) (↑)
   rw [mem_iff_mem_map]
   rcases I with ⟨_ | l, _ | u⟩ <;> simp only [exp]
   · exact Interval.mem_Ici_of_le h0 h0I

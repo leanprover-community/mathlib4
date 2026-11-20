@@ -6,7 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Dyadic.Rat
+public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
 set_option doc.verso true

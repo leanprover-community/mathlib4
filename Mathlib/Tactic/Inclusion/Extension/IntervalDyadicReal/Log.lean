@@ -312,7 +312,7 @@ def logPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
 theorem logPoint_mem (x : Dyadic) (prec : ℕ) : Real.log x ∈ logPoint x prec := by
   rw [mem_iff_mem_map, logPoint]
   split_ifs with hx
-  · convert Interval.mem_map_singleton (0 : Dyadic) ((↑) : Dyadic → ℝ)
+  · convert Interval.mem_map_singleton (0 : Dyadic) _
     rcases hx with rfl | rfl | rfl <;> simp
   · obtain ⟨hl, hu⟩ := lowerLog_spec x prec
     exact Interval.mem_map_Icc _ hl (by simpa using hu)
