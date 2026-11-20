@@ -117,27 +117,17 @@ private lemma uniformContinuous_algebraMap : UniformContinuous (algebraMap ℚ �
 abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
   __ := (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
     Rat.isUniformEmbedding_coe_real.isUniformInducing Rat.denseRange_cast
-    (uniformContinuous_algebraMap 𝔸)).toAlgebra' fun r x ↦ by
-      let ue := Rat.isUniformEmbedding_coe_real.isUniformInducing
-      have : Continuous (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
-        ue Rat.denseRange_cast (uniformContinuous_algebraMap 𝔸)) :=
-        (uniformContinuous_uniformly_extend ue Rat.denseRange_cast
-          (uniformContinuous_algebraMap 𝔸)).continuous
-      refine (Rat.denseRange_cast (𝕜 := ℝ)).induction_on r ?_ fun a ↦ ?_
-      · exact isClosed_eq (by fun_prop) (by fun_prop)
-      · change (ue.isDenseInducing Rat.denseRange_cast).extend (algebraMap ℚ 𝔸) a * x =
-          x * (ue.isDenseInducing Rat.denseRange_cast).extend (algebraMap ℚ 𝔸) a
-        rw [(ue.isDenseInducing Rat.denseRange_cast).extend_eq (by fun_prop), Algebra.commutes']
+    (uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap ℚ 𝔸))).toAlgebra'
+    fun r x ↦ by
+      refine Rat.denseRange_cast.induction_on r (isClosed_eq (by fun_prop) (by fun_prop)) ?_
+      intro a
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, Algebra.commutes]
   norm_smul_le r x := by
-    let ue := Rat.isUniformEmbedding_coe_real.isUniformInducing
-    have : Continuous (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
-      ue Rat.denseRange_cast (uniformContinuous_algebraMap 𝔸)) :=
-      (uniformContinuous_uniformly_extend ue Rat.denseRange_cast
-        (uniformContinuous_algebraMap 𝔸)).continuous
-    refine (Rat.denseRange_cast (𝕜 := ℝ)).induction_on r ?_ fun a ↦ ?_
-    · simpa [Algebra.smul_def, algebraMap] using isClosed_le (by fun_prop) (by fun_prop)
-    · change ‖(ue.isDenseInducing Rat.denseRange_cast).extend (algebraMap ℚ 𝔸) a * x‖ ≤ _
-      rw [(ue.isDenseInducing Rat.denseRange_cast).extend_eq (by fun_prop), ← Algebra.smul_def]
+    refine Rat.denseRange_cast.induction_on r ?_ fun a ↦ ?_
+    · exact isClosed_le ((IsDenseInducing.continuous_extendRingHom ..).mul continuous_const).norm
+        (by fun_prop)
+    · change ‖IsDenseInducing.extendRingHom _ _ _ (a : ℝ) * x‖ ≤ _
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, ← Algebra.smul_def]
       exact norm_smul_le a x
 
 /-- A complete normed `ℚ`-algebra carries a unique `NormedAlgebra ℝ` structure. -/
