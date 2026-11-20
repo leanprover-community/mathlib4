@@ -218,8 +218,8 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
   refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
   · exact (ramificationIdxIn_ne_zero (stabilizer G P)).pos
   · exact (inertiaDegIn_ne_zero (stabilizer G P)).pos
-  · exact ramificationIdxIn_above_le 𝓟 B G (stabilizer G P)
-  · exact inertiaDegIn_above_le 𝓟 B G (stabilizer G P)
+  · exact ramificationIdxIn_above_le p 𝓟 B G (stabilizer G P)
+  · exact inertiaDegIn_above_le p 𝓟 B G (stabilizer G P)
   · have := 𝓟.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn B (stabilizer G P)
     rw [primesOver_eq_singleton G P, Set.ncard_singleton, one_mul] at this
     rw [this, IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, finrank_top G P R p]
@@ -492,6 +492,7 @@ variable [IsGalois K L] [IsDedekindDomain A] [IsDedekindDomain B] [Module.Finite
 
 omit [P.LiesOver p] hD in
 include K L D P in
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-14")]
 private lemma instances :
     Module.Finite 𝓞D B ∧ Module.IsTorsionFree 𝓞D B ∧ FaithfulSMul 𝓞D B ∧
       Module.IsTorsionFree A 𝓞D ∧ IsGaloisGroup Gal(L/K) A B ∧
