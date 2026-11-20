@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.GroupTheory.Perm.Support.Finset.Card
+public import Mathlib.GroupTheory.Perm.Support.Finset.Basic
 public import Mathlib.Logic.Equiv.Fintype
 
 set_option doc.verso true
@@ -143,7 +143,7 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
       apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
     rfl
 
-nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
+nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Perm.Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
   haveI h : ∀ n : ℕ, (σ * τ) ^ n = 1 ↔ σ ^ n = 1 ∧ τ ^ n = 1 := fun n => by
     rw [hστ.commute.mul_pow, Disjoint.mul_eq_one_iff (hστ.pow_disjoint_pow n n)]
@@ -153,17 +153,17 @@ nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
       (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
 
 theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
-    {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
-  intro b
+    {σ τ : Perm α} (h : σ.Disjoint τ) : (σ.extendDomain f).Disjoint (τ.extendDomain f) := by
+  refine disjoint_iff_forall_apply_eq_or_apply_eq.mpr fun b => ?_
   by_cases pb : p b
-  · refine (h (f.symm ⟨b, pb⟩)).imp ?_ ?_ <;>
+  · refine (h.apply_eq_or_apply_eq (f.symm ⟨b, pb⟩)).imp ?_ ?_ <;>
       · intro h
         rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
-    (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
+    (hc2 : IsConj τ ρ) (hd1 : σ.Disjoint τ) (hd2 : π.Disjoint ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
   cases nonempty_fintype α
   obtain ⟨f, rfl⟩ := isConj_iff.1 hc1
@@ -188,23 +188,24 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     rw [Set.union_apply_left, Set.union_apply_left]
     · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
         Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq, coe_inv]
-      have h := (hd2 (f x)).resolve_left ?_
+      have h := (hd2.apply_eq_or_apply_eq (f x)).resolve_left ?_
       · rw [mul_apply, mul_apply, coe_inv] at h
-        rw [h, symm_apply_apply, (hd1 x).resolve_left hxσ]
+        rw [h, symm_apply_apply, (hd1.apply_eq_or_apply_eq x).resolve_left hxσ]
       · rwa [mul_apply, mul_apply, coe_inv, symm_apply_apply, apply_eq_iff_eq]
     · rwa [Subtype.coe_mk, mem_coe, mem_supportFinset]
-    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
+    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1.apply_eq_or_apply_eq x).resolve_left hxσ, mem_coe,
         apply_mem_supportFinset, mem_supportFinset]
   · rw [mem_coe, ← apply_mem_supportFinset, mem_supportFinset] at hxτ
     rw [Set.union_apply_right, Set.union_apply_right]
     · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
         Set.union_symm_apply_right, Subtype.coe_mk]
-      have h := (hd2 (g (τ x))).resolve_right ?_
+      have h := (hd2.apply_eq_or_apply_eq (g (τ x))).resolve_right ?_
       · rw [mul_apply, mul_apply, coe_inv] at h
-        rw [coe_inv, coe_inv, symm_apply_apply, h, (hd1 (τ x)).resolve_right hxτ]
+        rw [coe_inv, coe_inv, symm_apply_apply, h,
+          (hd1.apply_eq_or_apply_eq (τ x)).resolve_right hxτ]
       · rwa [mul_apply, mul_apply, coe_inv, symm_apply_apply, apply_eq_iff_eq]
     · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_supportFinset, mem_supportFinset]
-    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
+    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1.apply_eq_or_apply_eq (τ x)).resolve_right hxτ,
         mem_coe, mem_supportFinset]
 
 theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
@@ -218,8 +219,8 @@ variable [DecidableEq α]
 
 lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
     (u : Perm (Function.fixedPoints g)) :
-    Disjoint (ofSubtype u) g := by
-  rw [disjoint_iff_eq_or_eq]
+    Perm.Disjoint (ofSubtype u) g := by
+  rw [disjoint_iff_forall_apply_eq_or_apply_eq]
   intro x
   by_cases hx : x ∈ Function.fixedPoints g
   · right; exact hx

@@ -237,7 +237,7 @@ theorem injective : Function.Injective a := by
   intro c d h
   rw [← Subtype.coe_inj]
   apply g.cycleFactorsFinset_pairwise_disjoint.eq c.prop d.prop
-  simp only [Disjoint, not_forall, not_or]
+  simp only [Perm.disjoint_iff_forall_apply_eq_or_apply_eq, not_forall, not_or]
   use a c
   conv_rhs => rw [h]
   simp only [← Perm.mem_supportFinset, a.mem_supportFinset_self c, a.mem_supportFinset_self d,
@@ -314,9 +314,9 @@ theorem ofPermHomFun_apply_mem_supportFinset_cycle_iff {x : α} {c : g.cycleFact
     rw [zpow_apply_mem_supportFinset_of_mem_cycleFactorsFinset_iff]
     by_cases h : c = d
     · simp only [h, hd, mem_supportFinset_self]
-    · have H : Disjoint c.val d.val :=
+    · have H : Perm.Disjoint c.val d.val :=
         cycleFactorsFinset_pairwise_disjoint g c.prop d.prop (Subtype.coe_ne_coe.mpr h)
-      have H' : Disjoint ((τ : Perm g.cycleFactorsFinset) c : Perm α)
+      have H' : Perm.Disjoint ((τ : Perm g.cycleFactorsFinset) c : Perm α)
         ((τ : Perm g.cycleFactorsFinset) d : Perm α) :=
         cycleFactorsFinset_pairwise_disjoint g ((τ : Perm g.cycleFactorsFinset) c).prop
           ((τ : Perm g.cycleFactorsFinset) d).prop (by

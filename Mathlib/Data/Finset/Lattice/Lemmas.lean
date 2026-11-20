@@ -50,6 +50,12 @@ theorem union_empty (s : Finset α) : s ∪ ∅ = s := by simp
 
 theorem empty_union (s : Finset α) : ∅ ∪ s = s := by simp
 
+/-- Push the coercion `Finset α → Set α` through a `foldr` of unions. -/
+theorem coe_foldr_union_map {ι : Type*} (l : List ι) (s : ι → Finset α) :
+    (((l.map s).foldr (· ∪ ·) ∅ : Finset α) : Set α) =
+      (l.map fun i ↦ (s i : Set α)).foldr (· ∪ ·) ∅ := by
+  induction l <;> simp_all
+
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
   h.mono subset_union_left

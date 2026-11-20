@@ -55,7 +55,7 @@ theorem cycleType_def (σ : Perm α) :
   rfl
 
 theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm α, f ∈ s → f.IsCycle)
-    (h2 : (s : Set (Perm α)).Pairwise Disjoint)
+    (h2 : (s : Set (Perm α)).Pairwise Perm.Disjoint)
     (h0 : s.noncommProd id (h2.imp fun _ _ => Disjoint.commute) = σ) :
     σ.cycleType = s.val.map (Finset.card ∘ supportFinset) := by
   rw [cycleType_def]
@@ -64,7 +64,7 @@ theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm �
   exact ⟨h1, h2, h0⟩
 
 theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
-    (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) :
+    (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Perm.Disjoint) :
     σ.cycleType = l.map (Finset.card ∘ supportFinset) := by
   have hl : l.Nodup := nodup_of_pairwise_disjoint_cycles h1 h2
   rw [cycleType_eq' l.toFinset]
@@ -110,7 +110,7 @@ theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
 
 theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {#σ.supportFinset} :=
   cycleType_eq [σ] (mul_one σ) (fun _τ hτ => congr(IsCycle $(List.mem_singleton.mp hτ)).mpr hσ)
-    (List.pairwise_singleton Disjoint σ)
+    (List.pairwise_singleton Perm.Disjoint σ)
 
 theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 ↔ σ.IsCycle := by
   rw [card_eq_one]
@@ -118,7 +118,7 @@ theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 �
     cycleFactorsFinset_eq_singleton_iff]
   grind
 
-theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
+theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Perm.Disjoint σ τ) :
     (σ * τ).cycleType = σ.cycleType + τ.cycleType := by
   rw [cycleType_def, cycleType_def, cycleType_def, h.cycleFactorsFinset_mul_eq_union, ←
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
@@ -238,7 +238,7 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 
 theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
+    (hs : Set.Pairwise s fun i j ↦ Perm.Disjoint (k i) (k j))
     (hs' : Set.Pairwise s fun i j ↦ Commute (k i) (k j) :=
       hs.imp (fun _ _ ↦ Perm.Disjoint.commute)) :
     (s.noncommProd k hs').cycleType = s.sum fun i ↦ (k i).cycleType := by
@@ -246,7 +246,7 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
   induction s using Finset.induction_on with
   | empty => simp
   | insert i s hi hrec =>
-    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
+    have hs' : (s : Set ι).Pairwise fun i j ↦ Perm.Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Disjoint.cycleType_mul, hrec hs']
@@ -312,7 +312,7 @@ theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtyp
   cycleType_extendDomain (Equiv.refl (Subtype p))
 
 theorem mem_cycleType_iff {n : ℕ} {σ : Perm α} :
-    n ∈ cycleType σ ↔ ∃ c τ, σ = c * τ ∧ Disjoint c τ ∧ IsCycle c ∧ c.supportFinset.card = n := by
+    n ∈ cycleType σ ↔ ∃ c τ, σ = c * τ ∧ c.Disjoint τ ∧ IsCycle c ∧ c.supportFinset.card = n := by
   constructor
   · intro h
     obtain ⟨l, rfl, hlc, hld⟩ := truncCycleFactors σ

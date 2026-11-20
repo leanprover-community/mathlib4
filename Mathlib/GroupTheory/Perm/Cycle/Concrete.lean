@@ -53,7 +53,7 @@ variable [DecidableEq α] {l l' : List α}
 
 theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.length)
     (hn' : 2 ≤ l'.length) : Perm.Disjoint (formPerm l) (formPerm l') ↔ l.Disjoint l' := by
-  rw [disjoint_iff_eq_or_eq, List.Disjoint]
+  rw [disjoint_iff_forall_apply_eq_or_apply_eq, List.Disjoint]
   constructor
   · rintro h x hx hx'
     specialize h x

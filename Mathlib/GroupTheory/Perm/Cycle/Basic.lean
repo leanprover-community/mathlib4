@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.Perm.Finite
 public import Mathlib.GroupTheory.Perm.List
 public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.GroupTheory.Perm.Support.Card
 
 /-!
 # Cycles of a permutation
@@ -484,7 +485,7 @@ theorem IsCycle.of_zpow {n : ℤ} (h1 : IsCycle (f ^ n))
     exact (inv_inv (f ^ _) ▸ h1.inv).of_pow h2
 
 theorem nodup_of_pairwise_disjoint_cycles {l : List (Perm β)} (h1 : ∀ f ∈ l, IsCycle f)
-    (h2 : l.Pairwise Disjoint) : l.Nodup :=
+    (h2 : l.Pairwise Perm.Disjoint) : l.Nodup :=
   nodup_of_pairwise_disjoint (fun h => (h1 1 h).ne_one rfl) h2
 
 /-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.supportFinset), f x = g x`, here

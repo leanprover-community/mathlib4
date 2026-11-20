@@ -5,9 +5,11 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.GroupTheory.Perm.Support.Finset.Card
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Support.Finset.Basic
 
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Card
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -219,7 +221,8 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 theorem supportFinset_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l)
     (h' : ∀ x : α, l ≠ [x]) :
     supportFinset (formPerm l) = l.toFinset := by
-  rw [← Finset.coe_inj, coe_supportFinset_eq_support, support_formPerm_of_nodup' _ h h']
+  rw [← Finset.coe_inj, coe_supportFinset_eq_support, ← support_formPerm_of_nodup' _ h h']
+  ext; simp
 
 @[deprecated (since := "2026-11-16")] alias support_formPerm_of_nodup :=
     supportFinset_formPerm_of_nodup
@@ -365,10 +368,8 @@ theorem form_perm_zpow_apply_mem_imp_mem (l : List α) (x : α) (hx : x ∈ l) (
     (formPerm l ^ n) x ∈ l := by
   by_cases h : (l.formPerm ^ n) x = x
   · simpa [h] using hx
-  · have h : x ∈ { x | (l.formPerm ^ n) x ≠ x } := h
-    rw [← set_support_apply_mem] at h
-    replace h := set_support_zpow_subset _ _ h
-    simpa using support_formPerm_le' _ h
+  · have h' := support_zpow_subset n (apply_mem_support.mpr (mem_support.mpr h))
+    simpa using support_formPerm_le' _ (mem_support.mp h')
 
 theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length l = 1 := by
   ext x
@@ -378,8 +379,8 @@ theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length
   · have : x ∉ { x | (l.formPerm ^ l.length) x ≠ x } := by
       intro H
       refine hx ?_
-      replace H := set_support_zpow_subset l.formPerm l.length H
-      simpa using support_formPerm_le' _ H
+      replace H := support_pow_subset (f := l.formPerm) l.length (mem_support.mpr H)
+      simpa using support_formPerm_le' _ (mem_support.mp H)
     simpa using this
 
 end FormPerm
