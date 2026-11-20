@@ -40,18 +40,18 @@ noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
   toFun x := .ofAdd (Ring.ord R x).toNat
   map_one' := by simp [OneMemClass.coe_one, isUnit_one, ord_of_isUnit]
-  map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.2) (ord_ne_top y.2)]
+  map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.property) (ord_ne_top y.property)]
 
 @[simp]
 lemma ordMonoidHom_eq_ord (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
-  (ENat.natCast_toNat (ord_ne_top x.2))
+  (ENat.natCast_toNat (ord_ne_top x.property))
 
 @[simp]
 lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
     .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
   simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
     OneHom.coe_mk, toAdd_ofAdd]
-  rw [← ENat.natCast_lift (ord R x.1) (ord_lt_top x.2), ENat.recTopCoe_natCast,
+  rw [← ENat.natCast_lift (ord R x.val) (ord_lt_top x.property), ENat.recTopCoe_natCast,
     ENat.natCast_lift, ENat.lift_eq_toNat_of_lt_top]
 
 /--
