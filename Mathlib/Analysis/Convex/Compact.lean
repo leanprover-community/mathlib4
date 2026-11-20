@@ -64,7 +64,7 @@ theorem Set.convexHull_eq_range_sum_smul (K : Set E) [FiniteDimensional 𝕜 (ve
     let e : ↥(t : Set E) ↪ Fin (finrank 𝕜 (vectorSpan 𝕜 K) + 1) :=
       (Fintype.equivFin _).toEmbedding.trans (Fin.castLEEmb hcard)
     obtain ⟨w, hw⟩ := (convexHull_eq_range_iConvexComb (t : Set E)).subset hxt
-    let z : ↥(t : Set E) → K := fun i ↦ ⟨i, htK i.2⟩
+    let z : ↥(t : Set E) → K := fun i ↦ ⟨i, htK i.property⟩
     -- get arbitrary padding element `k ∈ K`
     obtain ⟨k, hk⟩ : K.Nonempty := convexHull_nonempty_iff.mp ⟨x, hx⟩
     -- fill with `0` for weights (by `w.map e`) and `k` for points (by `Function.extend`)
@@ -72,7 +72,7 @@ theorem Set.convexHull_eq_range_sum_smul (K : Set E) [FiniteDimensional 𝕜 (ve
     simpa only [← StdSimplex.affineMapMk_apply_eq_sum_of_fintype, StdSimplex.affineMapMk_apply,
       iConvexComb_map, e.injective.extend_apply] using hw
   · exact (convex_convexHull 𝕜 K).sum_mem (fun i _ ↦ w.weights_nonneg i) w.total_of_fintype
-      fun i _ ↦ subset_convexHull 𝕜 K (z i).2
+      fun i _ ↦ subset_convexHull 𝕜 K (z i).property
 
 variable (𝕜) [TopologicalSpace 𝕜] [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
