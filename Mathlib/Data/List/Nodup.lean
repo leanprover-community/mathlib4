@@ -73,7 +73,7 @@ theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort l
 protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
 
 theorem nodup_iff_injective_getElem {l : List α} :
-    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
+    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.val]) :=
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
       obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
@@ -229,6 +229,10 @@ protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   grind
+
+@[simp]
+theorem nodup_attachWith {P : α → Prop} {h : ∀ x ∈ l, P x} : (l.attachWith P h).Nodup ↔ l.Nodup :=
+  ⟨(attachWith_map_subtype_val h ▸ ·.map Subtype.val_injective), .pmap <| by simp⟩
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using! Pairwise.filter p

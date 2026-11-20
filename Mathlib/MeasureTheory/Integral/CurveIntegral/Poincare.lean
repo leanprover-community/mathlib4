@@ -152,7 +152,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       apply intervalIntegral.integral_congr
       rw [uIcc_of_le zero_le_one]
       intro t ht
-      simp [Path.extend, hf (s, t), Prod.le_def, s.2.1, s.2.2, ht.1, ht.2, Function.comp_def, hψ]
+      simp [Path.extend, hf (s, t), Prod.le_def, s.property.1, s.property.2, ht.1, ht.2,
+        Function.comp_def, hψ]
     have hf₀ : ∫ t in 0..1, f (0, t) = ∫ᶜ x in γ₁, ω x := by
       simpa [curveIntegral_def, curveIntegralFun_def, Path.extend] using hfi 0
     have hf₁ : ∫ t in 0..1, f (1, t) = curveIntegral ω γ₂ := by
@@ -163,7 +164,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       rw [uIcc_of_le zero_le_one]
       intro s hs
       simp only [hs, Path.extend_apply, φ.evalAt_apply]
-      simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.2.1, t.2.2, Function.comp_def, hψ]
+      simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.property.1, t.property.2, Function.comp_def, hψ]
     rw [← hf₀, ← hf₁, hgi, hgi]
     linear_combination (norm := {dsimp; abel}) -this
   -- Write a formula for the derivative of `η`.
@@ -397,7 +398,7 @@ theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableO
   let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
-    exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
+    exact (StrongDual.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
       |>.comp_hasDerivWithinAt a (hf a ha).hasDerivWithinAt |>.restrictScalars ℝ
   · rintro a ha x - y -
     simpa using smul_comm ..

@@ -47,8 +47,11 @@ open ENNReal
 
 /-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖·‖₊ : ℝ≥0∞`
 for convenience. -/
-theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
+theorem banach_steinhaus_iSup_nnNorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_tfae g).out 9 3]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using! ENNReal.iSup_coe_lt_top.1 (h x)
+
+@[deprecated (since := "2026-10-31")]
+alias banach_steinhaus_iSup_nnnorm := banach_steinhaus_iSup_nnNorm

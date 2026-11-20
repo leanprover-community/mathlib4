@@ -33,7 +33,6 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
-
 -/
 
 @[expose] public section
@@ -196,8 +195,8 @@ theorem definable_iff_finitely_definable :
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
-    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
-        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.val
+        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.property), ?_⟩
     ext
     simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
@@ -346,20 +345,20 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 
 instance instSup : Max (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
+  ⟨fun s t => ⟨s ∪ t, s.property.union t.property⟩⟩
 
 instance instInf : Min (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
+  ⟨fun s t => ⟨s ∩ t, s.property.inter t.property⟩⟩
 
 instance instCompl : Compl (L.DefinableSet A α) :=
-  ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
+  ⟨fun s => ⟨sᶜ, s.property.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
+  ⟨fun s t => ⟨s \ t, s.property.sdiff t.property⟩⟩
 
 -- Why does it complain that `s ⇨ t` is noncomputable?
 noncomputable instance instHImp : HImp (L.DefinableSet A α) where
-  himp s t := ⟨s ⇨ t, s.2.himp t.2⟩
+  himp s t := ⟨s ⇨ t, s.property.himp t.property⟩
 
 instance instInhabited : Inhabited (L.DefinableSet A α) :=
   ⟨⊥⟩

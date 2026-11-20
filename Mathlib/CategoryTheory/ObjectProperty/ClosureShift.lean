@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 
 In this file, we collect facts relating being stable under shifts with
 closure properties of object properties.
-
 -/
 
 public section

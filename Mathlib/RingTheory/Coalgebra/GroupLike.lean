@@ -86,8 +86,8 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
 /-- Identity equivalence between `GroupLike R A` and `{a : A // IsGroupLikeElem R a}`. -/
 @[simps]
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
-  toFun a := ⟨a.1, a.2⟩
-  invFun a := ⟨a.1, a.2⟩
+  toFun a := ⟨a.val, a.isGroupLikeElem_val⟩
+  invFun a := ⟨a.val, a.property⟩
   left_inv _ := rfl
   right_inv _ := rfl
 

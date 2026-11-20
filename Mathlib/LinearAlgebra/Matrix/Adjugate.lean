@@ -81,8 +81,8 @@ theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b => cramerMap A b i :=
 
 theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
   constructor <;> intros <;> ext i
-  · apply (cramerMap_is_linear A i).1
-  · apply (cramerMap_is_linear A i).2
+  · apply (cramerMap_is_linear A i).map_add
+  · apply (cramerMap_is_linear A i).map_smul
 
 /-- `cramer A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
   and thus `cramer A b` is the vector output by Cramer's rule on `A` and `b`.

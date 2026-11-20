@@ -300,7 +300,7 @@ protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ 
   rcases hν with ⟨t, ht, hνt⟩
   use s ×ˢ t, Filter.prod_mem_prod hs ht
   grw [prod_prod_le]
-  exact ENNReal.mul_lt_top hμs hνt
+  finiteness
 
 instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}
@@ -469,7 +469,7 @@ theorem prod_apply₀ {s : Set (α × β)} (hs : NullMeasurableSet s (μ.prod ν
 omit hν in
 @[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
-  refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  refine ⟨measurable_fst.aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, zero_mul]
@@ -477,7 +477,7 @@ theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν
 omit hν in
 @[fun_prop]
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
-  refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  refine ⟨measurable_snd.aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, mul_zero]
@@ -514,8 +514,10 @@ lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
 lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (hs : μ s ≠ 0) : NullMeasurableSet t ν := by
   rcases h with ⟨u, hum, hu⟩
-  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) :=
-    ((frequently_ae_iff.2 hs).and_eventually (ae_ae_eq_curry_of_prod hu)).exists
+  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) := by
+    simp_rw [eventuallyEqSet_iff']
+    exact ((frequently_ae_iff.2 hs).and_eventually
+      (ae_ae_eq_curry_of_prod (eventuallyEqSet_iff'.1 hu))).exists
   refine ⟨Prod.mk x ⁻¹' u, measurable_prodMk_left hum, ?_⟩
   rwa [mk_preimage_prod_right hxs] at hx
 
@@ -902,7 +904,8 @@ thus the choice of a name.
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prodMk hgm
+  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) :=
+    (hf.measurable.comp measurable_fst).prodMk hgm
   use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
@@ -926,7 +929,7 @@ then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
 protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
-  have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
+  have : Measurable (uncurry fun _ : α => g) := hg.measurable.comp measurable_snd
   hf.skew_product this <| ae_of_all _ fun _ => hg.map_eq
 
 end MeasurePreserving
@@ -934,22 +937,23 @@ end MeasurePreserving
 namespace QuasiMeasurePreserving
 
 theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ}
-    (hf : Measurable f) [SFinite ν]
+    (hf : AEMeasurable f (μ.prod ν)) [SFinite ν]
     (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y => f (x, y)) ν τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
-  refine ⟨hf, ?_⟩
-  refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [map_apply hf hs, Measure.prod_apply (hf hs)]; simp_rw [preimage_preimage]
+  refine ⟨hf, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  rw [map_apply_of_aemeasurable hf hs, Measure.prod_apply₀ (hf.nullMeasurableSet_preimage hs)]
+  simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
 
 theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-    {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ} (hf : Measurable f)
-    [SFinite μ] [SFinite ν]
+    {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ}
+    (hf : AEMeasurable f (μ.prod ν)) [SFinite μ] [SFinite ν]
     (h2f : ∀ᵐ y ∂ν, QuasiMeasurePreserving (fun x => f (x, y)) μ τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   rw [← prod_swap]
-  convert!
-    (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
+  exact
+    (QuasiMeasurePreserving.prod_of_right
+      (hf.comp_quasiMeasurePreserving measurePreserving_swap.quasiMeasurePreserving) h2f).comp
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
@@ -968,8 +972,8 @@ protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure 
     [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
-  refine ⟨by fun_prop, ?_⟩
-  rw [← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  refine ⟨hf.aemeasurable.prodMap hg.aemeasurable, ?_⟩
+  rw [← map_prod_map_of_aemeasurable _ _ hf.aemeasurable hg.aemeasurable]
   exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
 
 end QuasiMeasurePreserving

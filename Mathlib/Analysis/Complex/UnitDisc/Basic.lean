@@ -71,7 +71,7 @@ theorem isEmbedding_coe : Topology.IsEmbedding ((↑) : 𝔻 → ℂ) := .subtyp
 theorem continuous_coe : Continuous ((↑) : 𝔻 → ℂ) := isEmbedding_coe.continuous
 
 theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
-  mem_ball_zero_iff.1 z.2
+  mem_ball_zero_iff.1 z.property
 
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
   z.norm_lt_one.ne
@@ -284,7 +284,7 @@ theorem isEmbedding_coe : Topology.IsEmbedding ((↑) : 𝕔𝔻 → ℂ) := .su
 theorem continuous_coe : Continuous ((↑) : 𝕔𝔻 → ℂ) := isEmbedding_coe.continuous
 
 theorem norm_le_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ≤ 1 :=
-  mem_closedBall_zero_iff.1 z.2
+  mem_closedBall_zero_iff.1 z.property
 
 theorem sq_norm_lt_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ^ 2 ≤ 1 := by
   rw [sq_le_one_iff_abs_le_one, abs_norm]
@@ -413,9 +413,6 @@ theorem coe_closedBall_smul (z : 𝕔𝔻) (w : 𝔻) : ↑(z • w) = (z * w : 
 @[simp, norm_cast]
 theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
-
-instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
-  SMulCommClass.symm _ _ _
 
 instance : Pow 𝕔𝔻 ℕ where
   pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩

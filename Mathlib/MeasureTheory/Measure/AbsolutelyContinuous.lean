@@ -29,7 +29,6 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
 
 * `μ ≪ ν`: `MeasureTheory.Measure.AbsolutelyContinuous μ ν`. That is: `μ` is absolutely continuous
   with respect to `ν`
-
 -/
 
 @[expose] public section

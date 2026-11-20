@@ -60,7 +60,7 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (ClosedSubgroup G) G where
-  coe U := U.1
+  coe U := U.toSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G)
