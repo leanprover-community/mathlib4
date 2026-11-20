@@ -95,7 +95,7 @@ is commutative up to homotopy. -/
 noncomputable def mapOfHomotopy :
     mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _) +
-    ((Cochain.equivHomotopy _ _) H).1.comp (Cochain.ofHom (inr φ₂)) (add_zero _))
+    ((Cochain.equivHomotopy _ _) H).val.comp (Cochain.ofHom (inr φ₂)) (add_zero _))
     (b ≫ inr φ₂) (by simp)
 
 @[map (attr := reassoc)]
@@ -303,10 +303,10 @@ noncomputable def shiftTriangleIso (n : ℤ) :
     dsimp
     simp only [triangle, Triangle.mk_mor₃, Cocycle.homOf_f, Cocycle.rightShift_coe,
       Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
-      (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
+      (fst φ).val.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
         (by lia), shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
       assoc, Iso.inv_hom_id, comp_id, smul_neg, Units.smul_def, shiftIso, Int.reduceNeg,
-      (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
+      (fst (φ⟦n⟧')).val.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
       HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.comp_neg, lift_f_fst_v,
       Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v']
 

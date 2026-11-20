@@ -227,13 +227,14 @@ abbrev HomSubtype (X Y : DifferentialObject S C) :=
 @[macro_inline]
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
-  coe f := f.1
+  coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where
   hom f := ⟨ConcreteCategory.hom (C := C) f.f, by simp [ConcreteCategory.ofHom_hom]⟩
-  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by simpa [ConcreteCategory.hom_ofHom] using f.2⟩
+  ofHom f := ⟨ConcreteCategory.ofHom (C := C) f, by
+    simpa [ConcreteCategory.hom_ofHom] using f.property⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)

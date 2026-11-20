@@ -760,22 +760,22 @@ open Metric
 
 @[simp]
 theorem preimage_eball (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
+    Subtype.val ⁻¹' (eball a.val r) = eball a r :=
   rfl
 
 @[simp]
 theorem preimage_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
+    Subtype.val ⁻¹' (closedEBall a.val r) = closedEBall a r :=
   rfl
 
 @[simp]
 theorem image_eball (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
+    Subtype.val '' (eball a r) = eball a.val r ∩ {a | p a} := by
   rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
 
 @[simp]
 theorem image_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
+    Subtype.val '' (closedEBall a r) = closedEBall a.val r ∩ {a | p a} := by
   rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
 
 end Subtype

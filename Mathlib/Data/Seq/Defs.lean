@@ -114,10 +114,10 @@ instance : Inhabited (Seq α) :=
 
 /-- Prepend an element to a sequence -/
 def cons (a : α) (s : Seq α) : Seq α :=
-  ⟨some a::s.1, by
+  ⟨some a::s.val, by
     rintro (n | _) h
     · contradiction
-    · exact s.2 h⟩
+    · exact s.property h⟩
 
 @[simp]
 theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
@@ -177,7 +177,7 @@ def head (s : Seq α) : Option α :=
 
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
 def tail (s : Seq α) : Seq α :=
-  ⟨s.1.tail, fun n' => by
+  ⟨s.val.tail, fun n' => by
     obtain ⟨f, al⟩ := s
     exact al n'⟩
 
@@ -362,7 +362,7 @@ def IsBisimulation :=
 more like an induction principles. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.ext
-  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
+  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.val = x ∧ s'.val = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
     intro t₁ t₂ e
     exact
@@ -427,7 +427,7 @@ theorem coinduction :
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
   | _, _, hh, ht =>
-    Subtype.ext (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
+    Subtype.ext (Stream'.coinduction hh fun β fr => ht β fun s => fr s.val)
 
 theorem coinduction2 (s) (f g : Seq α → Seq β)
     (H :
@@ -508,7 +508,7 @@ theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
 
 /-- member definition for `Seq` -/
 protected def Mem (s : Seq α) (a : α) :=
-  some a ∈ s.1
+  some a ∈ s.val
 
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
@@ -518,7 +518,7 @@ theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x �
 
 theorem mem_iff_exists_get? {s : Seq α} {x : α} : x ∈ s ↔ ∃ i, some x = s.get? i where
   mp h := by
-    change (some x ∈ s.1) at h
+    change (some x ∈ s.val) at h
     rwa [Stream'.mem_iff_exists_get_eq] at h
   mpr h := get?_mem h.choose_spec.symm
 
@@ -713,7 +713,7 @@ def splitAt : ℕ → Seq α → List α × Seq α
 /-- Combine two sequences with a function -/
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
   ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
-    Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
+    Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.property s₂.property⟩
 
 /-- Pair two sequences into a sequence of pairs -/
 def zip : Seq α → Seq β → Seq (α × β) :=

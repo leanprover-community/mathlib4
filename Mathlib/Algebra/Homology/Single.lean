@@ -219,9 +219,9 @@ are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
   toFun φ := ⟨φ.f 0, by rw [← φ.comm 1 0, HomologicalComplex.single_obj_d, comp_zero]⟩
-  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomToSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv f := by simp
 
@@ -284,9 +284,9 @@ are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
 noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
   toFun φ := ⟨φ.f 0, by rw [φ.comm 0 1, HomologicalComplex.single_obj_d, zero_comp]⟩
-  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomFromSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv := by cat_disch
 

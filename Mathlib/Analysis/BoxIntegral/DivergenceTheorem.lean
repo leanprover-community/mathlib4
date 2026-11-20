@@ -164,7 +164,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
   set fI : ℝ → Box (Fin n) → E := fun y J =>
     integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
-    (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
+    (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.property) volume).toBoxAdditive
   set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)

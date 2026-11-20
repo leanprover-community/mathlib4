@@ -51,10 +51,10 @@ variable {p : E → X}
 theorem mem_iff {h : E ≃ₜ E} : h ∈ deck p ↔ p ∘ h = p := Iff.rfl
 
 @[simp]
-theorem comp_eq (h : deck p) : p ∘ (h : E ≃ₜ E) = p := h.2
+theorem comp_eq (h : deck p) : p ∘ (h : E ≃ₜ E) = p := h.property
 
 theorem proj_smul (h : deck p) (e : E) : p (h • e) = p e :=
-  congr($(h.2) e)
+  congr($(h.property) e)
 
 instance : ContinuousConstSMul (deck p) E :=
   ⟨fun h ↦ (h : E ≃ₜ E).continuous⟩

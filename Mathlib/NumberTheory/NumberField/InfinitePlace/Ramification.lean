@@ -43,8 +43,8 @@ variable {k : Type*} [Field k] {K : Type*} [Field K] {F : Type*} [Field F]
 
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
-  ⟨w.1.comp f.injective, w.embedding.comp f,
-    by { ext x; change _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
+  ⟨w.val.comp f.injective, w.embedding.comp f,
+    by { ext x; change _ = w.val (f x); rw [← w.property.choose_spec]; rfl }⟩
 
 @[simp]
 lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl
@@ -63,7 +63,7 @@ lemma comp_of_comap_eq {v : InfinitePlace k} {w : InfinitePlace K} {f : k →+* 
   simp [← h]
 
 lemma coe_mk_comp {ψ : K →+* ℂ} {f : k →+* K}
-    (h : Function.Injective f) : (mk (ψ.comp f)).1 = (mk ψ).1.comp h := rfl
+    (h : Function.Injective f) : (mk (ψ.comp f)).val = (mk ψ).val.comp h := rfl
 
 lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
@@ -599,12 +599,12 @@ variable (w : InfinitePlace L) (v : InfinitePlace K) [w.LiesOver v]
 namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
-    AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
+    AbsoluteValue.LiesOver (mk ψ).val (mk φ).val where
   under_eq := by simp [under_def, ← LiesOver.over ψ φ, ← coe_mk_comp]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.under_eq w.1 v.1) _
+  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.under_eq w.val v.val) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
@@ -661,7 +661,7 @@ variable {L} {v} {w : InfinitePlace L}
 
 theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ unramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).1 (mk v.embedding).1⟩,
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).val (mk v.embedding).val⟩,
     h.2.mk_isUnramified⟩
 
 theorem liesOver_embedding_of_mem_ramifiedPlacesOver (hw : w ∈ ramifiedPlacesOver L v) :
@@ -675,7 +675,8 @@ theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver
 
 theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ ramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).val (mk v.embedding).val⟩,
+    h.2.mk_isRamified⟩
 
 variable (w)
 
@@ -774,7 +775,7 @@ theorem unramifiedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L
   apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simpa using ⟨by aesop⟩)
     AlgHom.toRingHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_ofPred, coe_filter, mem_univ, true_and, Set.mem_ofPred_eq] at hψ
-  exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
+  exact ⟨{ ψ with commutes' _ := by simp [RingHom.algebraMap_toAlgebra, ← hψ.over] }, by simp⟩
 
 @[deprecated (since := "2026-10-05")]
 alias unramifedPlacesOver_ncard_add_eq_finrank := unramifiedPlacesOver_ncard_add_eq_finrank

@@ -242,7 +242,7 @@ def mk' {x : A} (hx : v.IsUniformizer x) : v.Uniformizer where
 @[simp]
 instance : Coe v.Uniformizer v.integer := ⟨fun π ↦ π.val⟩
 
-theorem ne_zero (π : Uniformizer v) : π.val.1 ≠ 0 := π.valuation_gt_one.ne_zero
+theorem ne_zero (π : Uniformizer v) : π.val.val ≠ 0 := π.valuation_gt_one.ne_zero
 
 end Uniformizer
 
@@ -321,13 +321,13 @@ theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v �
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by
   have hval : v ((π₁ : K)⁻¹ * π₂) = 1 := by
     simp [IsUniformizer.iff.mp h1, IsUniformizer.iff.mp h2]
-  set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
+  set p : v.integer := ⟨(π₁.val : K)⁻¹ * π₂.val, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
   use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑) : K₀ → K) using Subtype.val_injective
   simp [hp, ← mul_assoc, mul_inv_cancel₀ h1.ne_zero]
 
 theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
-    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.val ^ n).1 * u.val := by
+    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.val ^ n).val * u.val := by
   have hr₀ : v r ≠ 0 := by rw [ne_eq, zero_iff, Subring.coe_eq_zero_iff]; exact hr
   set vr : Γˣ := Units.mk0 (v r) hr₀ with hvr_def
   have hvr : vr ∈ v.valueGroup := by
@@ -343,12 +343,12 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   have hm₀ : 0 ≤ m := by
     rw [← zpow_le_one_iff_right_of_lt_one₀ π.valuation_gt_one.val_pos
       π.valuation_gt_one.val_lt_one, hm']
-    exact r.2
+    exact r.property
   obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
   use n
-  have hpow : v (π.val.1 ^ (-m) * r) = 1 := by
+  have hpow : v (π.val.val ^ (-m) * r) = 1 := by
     rw [map_mul, map_zpow₀, ← hm', zpow_neg, hm', inv_mul_cancel₀ hr₀]
-  set a : K₀ := ⟨π.val.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
+  set a : K₀ := ⟨π.val.val ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 := by
     simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or, ha]
     refine ⟨?_, hr⟩
