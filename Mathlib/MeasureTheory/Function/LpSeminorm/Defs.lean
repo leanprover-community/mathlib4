@@ -246,6 +246,11 @@ theorem inhmgELpNorm_exponent_zero {f : α → ε} (hf : AEStronglyMeasurable f 
     inhmgELpNorm f 0 μ = μ (Function.support fun x ↦ ‖f x‖ₑ) := by
   simp [inhmgELpNorm, hf]
 
+@[simp]
+theorem inhmgELpNorm_exponent_top {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    inhmgELpNorm f ∞ μ = eLpNormEssSup f μ := by
+  simp [inhmgELpNorm, hf]
+
 theorem _root_.Function.support_eNorm {α ε : Type*}
     [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} :
     Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
