@@ -331,7 +331,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   toFun p := p.1.mkDivMod p.2
   invFun k := (k.divNat, k.modNat)
   left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
-  right_inv := Fin.mkDivMod_divNat_modNat
+  right_inv k := Fin.mkDivMod_divNat_modNat k
 
 /-- Equivalence between `ℕ × Fin n` and `ℕ` for nonzero `n`, sending `(q, r)` to the natural number
 `n * q + r` with quotient `q` and remainder `r` modulo `n`.
