@@ -228,12 +228,12 @@ variable {M F F' α : Type*} {β : α → Type*} [DFunLike F α β] [FunLike F' 
 section Coercion
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_one [One F] [∀ a, One (β a)] [IsOneApply F] : ↑(1 : F) = (1 : ∀ a, β a) := by
+theorem coe_one [One F] [∀ a, One (β a)] [IsOneApply F] : ⇑(1 : F) = 1 := by
   ext; simp
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one_iff [One F] [∀ a, One (β a)] [IsOneApply F] {f : F} :
-    (f : ∀ a, β a) = 1 ↔ f = 1 := by
+    ⇑f = 1 ↔ f = 1 := by
   constructor
   · intro h
     simp [DFunLike.ext_iff, h]
@@ -242,22 +242,22 @@ theorem coe_one_iff [One F] [∀ a, One (β a)] [IsOneApply F] {f : F} :
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul [Mul F] [∀ a, Mul (β a)] [IsMulApply F] (f g : F) :
-    ↑(f * g) = (f : ∀ a, β a) * g := by
+    ⇑(f * g) = ⇑f * g := by
   ext; simp
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div [Div F] [∀ a, Div (β a)] [IsDivApply F] (f g : F) :
-    ↑(f / g) = (f : ∀ a, β a) / g := by
+    ⇑(f / g) = ⇑f / g := by
   ext; simp
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv F] [∀ a, Inv (β a)] [IsInvApply F] (f : F) :
-    ↑(f⁻¹) = (f : ∀ a, β a)⁻¹ := by
+    ⇑(f⁻¹) = (⇑f)⁻¹ := by
   ext; simp
 
 @[to_additive (attr := simp, norm_cast, to_additive) (reorder := f n) coe_smul]
 theorem coe_pow [Pow F M] [∀ a, Pow (β a) M] [IsPowApply M F] (f : F) (n : M) :
-    ↑(f ^ n) = (f : ∀ a, β a) ^ n := by
+    ⇑(f ^ n) = ⇑f ^ n := by
   ext; simp
 
 @[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
@@ -281,12 +281,12 @@ theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) =
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
 theorem coe_natCast [NatCast F] [∀ a, NatCast (β a)] [IsNatCastApply F] (n : Nat) :
-  ((n : F) : ∀ a, β a) = n := by
+  ⇑(n : F) = n := by
   funext x; simp
 
 @[norm_cast]
 theorem coe_intCast [IntCast F] [∀ a, IntCast (β a)] [IsIntCastApply F] (n : Int) :
-  ((n : F) : ∀ a, β a) = n := by
+  ⇑(n : F) = n := by
   funext x; simp
 
 @[norm_cast]
