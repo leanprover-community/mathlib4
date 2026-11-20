@@ -55,7 +55,7 @@ def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
 
 /-- `M₁(A)` is equivalent to `A` as an `R`-algebra. -/
 @[simps!]
-def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
+def uniqueAlgEquiv [NonUnitalNonAssocSemiring A] [SMul R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
   map_smul' r := by aesop
 

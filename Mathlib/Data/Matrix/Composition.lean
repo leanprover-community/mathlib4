@@ -176,7 +176,7 @@ end LinearMap
 
 section Algebra
 
-variable (K : Type*) [CommSemiring K] [Semiring R] [Fintype I] [Fintype J] [Algebra K R]
+variable (K : Type*) [AddCommMonoid R] [Mul R] [Fintype I] [Fintype J] [SMul K R]
 
 /-- `Matrix.comp` as `AlgEquiv` -/
 def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R where
@@ -192,12 +192,13 @@ theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
 
 @[simp]
-theorem isUnit_comp_iff [DecidableEq I] [DecidableEq J]
+theorem isUnit_comp_iff {R : Type*} [Semiring R] [DecidableEq I] [DecidableEq J]
     {M : Matrix I I (Matrix J J R)} : IsUnit (comp _ _ _ _ _ M) ↔ IsUnit M :=
   isUnit_map_iff (compAlgEquiv _ _ _ ℕ) M
 
 @[simp]
-theorem isUnit_comp_symm_iff [DecidableEq I] [DecidableEq J] {M : Matrix (I × J) (I × J) R} :
+theorem isUnit_comp_symm_iff {R : Type*} [Semiring R]
+    [DecidableEq I] [DecidableEq J] {M : Matrix (I × J) (I × J) R} :
     IsUnit (comp _ _ _ _ _ |>.symm M) ↔ IsUnit M :=
   isUnit_map_iff (compAlgEquiv _ _ _ ℕ).symm M
 

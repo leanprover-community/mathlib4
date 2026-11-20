@@ -203,7 +203,7 @@ end Semiring
 
 section Algebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [Semiring A] [Algebra R A]
+variable [Fintype n] [Fintype m] [AddCommMonoid A] [Mul A] [SMul R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
 map that reindexes a matrix's rows and columns with equivalent types,
@@ -230,7 +230,8 @@ theorem toRingEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = rein
   rfl
 
 @[simp]
-theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
+theorem toLinearEquiv_reindexAlgEquiv {A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
@@ -251,7 +252,7 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.ref
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindexAlgEquiv_trans_reindexAlgEquiv [Fintype o] (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
