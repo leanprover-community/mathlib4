@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally open morphism
 

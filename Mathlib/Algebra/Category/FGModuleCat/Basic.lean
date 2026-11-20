@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Coevaluation
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated modules over a ring
 

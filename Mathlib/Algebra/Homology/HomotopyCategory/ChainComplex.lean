@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.Embedding.Splitting
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy equivalences between chain complexes
 

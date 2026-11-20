@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Data.Finset.SMulAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar multiplication by (additive) monoid rings on formal functions.
 
