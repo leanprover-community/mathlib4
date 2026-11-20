@@ -52,7 +52,7 @@ in `αˣ`. -/
 @[to_additive /-- The class of an additive unit `u` is trivial in `AddUnits.ModNSMul α n` exactly
 when `u` is an `n`-th multiple in `AddUnits α`. -/]
 lemma mk_eq_one_iff {u : αˣ} : (u : ModPow α n) = 1 ↔ ∃ w : αˣ, u = w ^ n := by
-  simp [eq_comm (b := _ ^ n)]
+  simp [eq_comm (a := u)]
 
 /-- The class of a unit `u` is trivial in `Units.ModPow α n` exactly when `u` is an `n`-th power
 in `α`. -/
@@ -138,21 +138,21 @@ lemma congr_mk (e : α ≃* β) (n : ℕ) (u : αˣ) :
   rfl
 
 @[to_additive]
-lemma coe_congr_eq_coe_map (φ : α ≃* β) (n : ℕ) : ⇑(congr φ n) = ⇑(map φ n) :=
-  funext fun m ↦ QuotientGroup.induction_on m fun _ ↦ rfl
+lemma congr_apply_eq_map (φ : α ≃* β) (n : ℕ) (x : ModPow α n) : congr φ n x = map φ n x :=
+  rfl
 
 /-- The map on units modulo `n`-th powers induced by a bijective homomorphism is bijective. -/
 @[to_additive /-- The map on additive units modulo `n`-th multiples induced by a bijective
 homomorphism is bijective. -/]
 lemma bijective_map {φ : α →* β} (hφ : Function.Bijective φ) (n : ℕ) :
     Function.Bijective (map φ n) :=
-  coe_congr_eq_coe_map (.ofBijective φ hφ) n ▸ (congr (MulEquiv.ofBijective φ hφ) n).bijective
+  (congr (MulEquiv.ofBijective φ hφ) n).bijective
 
 /-- Taking units modulo `n`-th powers commutes with products. -/
 @[to_additive /-- Taking additive units modulo `n`-th multiples commutes with products. -/]
 noncomputable def piEquiv {ι : Type*} (M : ι → Type*) [∀ i, CommMonoid (M i)] (n : ℕ) :
     ModPow ((i : ι) → M i) n ≃* ((i : ι) → ModPow (M i) n) :=
-  (QuotientGroup.congr _ _ _ ((MulEquiv.piUnits (M := M)).map_range_powMonoidHom n)).trans <|
+  (QuotientGroup.congr _ _ _ (MulEquiv.piUnits.map_range_powMonoidHom n)).trans <|
     mulEquivPiModRangePowMonoidHom (fun i ↦ (M i)ˣ) n
 
 @[to_additive (attr := simp)]
