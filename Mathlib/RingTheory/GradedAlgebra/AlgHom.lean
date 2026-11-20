@@ -99,8 +99,8 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 @[simp] theorem coe_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A → B) = f := rfl
 
 @[simp, norm_cast]
-theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
   rfl
 
 @[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
