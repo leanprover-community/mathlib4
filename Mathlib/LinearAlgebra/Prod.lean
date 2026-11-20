@@ -557,7 +557,7 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  toFun x := x.1.1
+  toFun x := x.val.1
   invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -577,7 +577,7 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  toFun x := x.1.2
+  toFun x := x.val.2
   invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -589,16 +589,14 @@ theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = �
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
   aesop
 
-theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
-  rw [eq_top_iff]
-  rintro ⟨m, n⟩ -
-  rw [show (m, n) = (m, 0) + (0, n) by simp]
-  apply Submodule.add_mem (Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂)
-  · exact Submodule.mem_sup_left (Submodule.mem_comap.mpr (by simp))
-  · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
+theorem isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (Submodule.snd R M M₂) := by
+  simpa [range_inl, range_inr] using! isCompl_range_inl_inr
 
-theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  aesop
+theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
+  (isCompl_fst_snd R M M₂).sup_eq_top
+
+theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ :=
+  (isCompl_fst_snd R M M₂).inf_eq_bot
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by

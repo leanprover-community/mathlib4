@@ -102,7 +102,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
     · ext p
       simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, Set.mem_singleton_iff,
         Set.mem_empty_iff_false, iff_false, not_and]
-      exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.2.symm)
+      exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.property.symm)
   · rw [MeasurableSpace.map_def]
     obtain hni | hin := lt_or_ge n i
     · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A) = ∅)]
@@ -110,7 +110,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
       · ext p
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_empty_iff_false,
           iff_false, not_and]
-        rw [p.1.2]
+        rw [p.1.property]
         grind
     · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A)
           = {⟨n + 1, rfl⟩} ×ˢ A)]
@@ -119,7 +119,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_singleton_iff,
           and_congr_left_iff]
         intro hp2
-        rw [p.1.2]
+        rw [p.1.property]
         exact ⟨fun _ ↦ by aesop, fun _ ↦ lt_add_one_iff.2 hin⟩
 
 lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι]
@@ -150,7 +150,7 @@ lemma measurable_inclusion_predictable [LinearOrder ι] [OrderBot ι] [Measurabl
     obtain hji | hij := le_total j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
+      exact (measurable_subtypeVal measurableSet_Ioc).prod (𝓕.mono hji _ hA)
     · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 end

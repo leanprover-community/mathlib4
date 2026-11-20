@@ -156,7 +156,7 @@ alias IsSuccLimit.lt_iff_exists_lt := IsSuccLimit.lt_iff_nonempty_Ioo
 
 @[to_dual]
 theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
-  not_isMin_iff.1 h.1
+  not_isMin_iff.1 h.not_isMin
 
 @[to_dual]
 theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.Iio a) := by
@@ -189,9 +189,9 @@ theorem IsSuccLimit.ne_zero [Zero α] [IsBotZeroClass α] (h : IsSuccLimit a) : 
 
 @[to_dual]
 theorem IsSuccPrelimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
-    (ha : IsSuccPrelimit a) : IsSuccPrelimit a.1 := by
+    (ha : IsSuccPrelimit a) : IsSuccPrelimit a.val := by
   intro b hb
-  have := ha ⟨b, hs hb.le a.2⟩
+  have := ha ⟨b, hs hb.le a.property⟩
   rw [not_covBy_iff] at this
   · obtain ⟨c, hc, hc'⟩ := this
     exact hb.2 hc hc'
@@ -199,9 +199,9 @@ theorem IsSuccPrelimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
 
 @[to_dual]
 theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
-    (ha : IsSuccLimit a) : IsSuccLimit a.1 := by
+    (ha : IsSuccLimit a) : IsSuccLimit a.val := by
   refine ⟨?_, ha.isSuccPrelimit.subtypeVal hs⟩
-  have := ha.1
+  have := ha.not_isMin
   rw [not_isMin_iff] at ⊢ this
   obtain ⟨b, hb⟩ := this
   exact ⟨b, hb⟩
