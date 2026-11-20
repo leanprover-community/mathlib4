@@ -15,7 +15,8 @@ This module defines the `insertDocstringOf` command: into a verso doc-string, wr
 declaration `foo` in the current environment, as a separate paragraph.
 If `foo` does not exist or has no doc-string, it throws an error.
 
-This can be used, for example, in custom elaborators to provide custom notation.
+This can be used, for example, in custom elaborators or custom notation, to make the elaborator
+or notation doc-string also explain the main notation.
 -/
 
 open Lean Doc Elab

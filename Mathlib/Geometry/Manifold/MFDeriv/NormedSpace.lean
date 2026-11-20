@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
-import Mathlib.Util.BetterVersoDocstrings
+
+import Mathlib.Util.IncludeDocstring
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces

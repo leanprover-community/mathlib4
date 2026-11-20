@@ -6,11 +6,11 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Util.BetterVersoDocstrings
+
+import Mathlib.Util.IncludeDocstring
+
 import all Mathlib.Geometry.Manifold.ContMDiff.Defs -- doc-string of ContMDiff etc.
 import all Mathlib.Geometry.Manifold.MFDeriv.Defs -- doc-string of mfderiv etc.
-
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Elaborators for differential geometry

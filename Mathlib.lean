@@ -8704,7 +8704,6 @@ public import Mathlib.Util.AssertNoSorry
 public import Mathlib.Util.AtLocation
 public import Mathlib.Util.AtomM
 public import Mathlib.Util.AtomM.Recurse
-public import Mathlib.Util.BetterVersoDocstrings
 public import Mathlib.Util.CodeActions
 public import Mathlib.Util.CodeActions.BinderPlicity
 public import Mathlib.Util.CompileInductive
@@ -8716,6 +8715,7 @@ public import Mathlib.Util.ElabWithoutMVars
 public import Mathlib.Util.Export
 public import Mathlib.Util.FormatTable
 public import Mathlib.Util.GetAllModules
+public import Mathlib.Util.IncludeDocstring
 public import Mathlib.Util.LongNames
 public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions

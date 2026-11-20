@@ -41,7 +41,9 @@ and
 -/
 theorem aux : bar = 2 := by simp [bar]
 
--- TODO: why is this a parsing error?
+-- TODO: why is this a parsing error? can this be fixed?
+/-- error: unexpected newline; expected '![', '$$', '$', '*', '[', '[^', '_', '`' or '{' -/
+#guard_msgs in
 /-- {insertDocstringOf bar}
 and
 {insertDocstringOf foo}
