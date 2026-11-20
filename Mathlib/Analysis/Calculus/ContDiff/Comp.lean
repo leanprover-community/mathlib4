@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
+import Mathlib.Algebra.CharP.Defs
+
 /-!
 # Higher differentiability of composition
 

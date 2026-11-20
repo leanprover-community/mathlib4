@@ -6,8 +6,10 @@ Authors: Gareth Ma
 module
 
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.IsPrimePow
 
+import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!

@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.ExtremalEpi
 public import Mathlib.CategoryTheory.Generator.Basic
 
+import Mathlib.CategoryTheory.Limits.EssentiallySmall
+
 /-!
 # Strong generators
 

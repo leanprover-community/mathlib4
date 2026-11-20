@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 

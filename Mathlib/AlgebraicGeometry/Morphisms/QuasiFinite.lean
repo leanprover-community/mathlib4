@@ -11,6 +11,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 
+import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!

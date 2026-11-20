@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.Perm
-public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Basic
 
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # The Katona circle method

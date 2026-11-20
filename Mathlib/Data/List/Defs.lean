@@ -6,10 +6,11 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Batteries.Data.List.Basic
-public import Batteries.Logic
 public import Mathlib.Basic.SProd
 public import Mathlib.Control.Functor
 public import Mathlib.Data.Nat.Notation
+
+import Batteries.Logic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

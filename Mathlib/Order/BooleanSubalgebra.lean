@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.Sublattice
 
+import Mathlib.Data.Set.Lattice.Image
+
 /-!
 # Boolean subalgebras
 

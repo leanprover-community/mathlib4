@@ -5,10 +5,10 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
 
 /-!
 # Long exact sequence in group cohomology

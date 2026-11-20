@@ -6,7 +6,10 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 /-!
 # Extending intermediate fields to a larger extension

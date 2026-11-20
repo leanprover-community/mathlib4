@@ -6,12 +6,13 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
 /-!
 # Cusp form submodule and IsCuspForm predicate

@@ -6,7 +6,8 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.Set.Image
+
+import Mathlib.Data.Set.Image
 
 /-!
 # Discrete categories

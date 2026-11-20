@@ -6,10 +6,10 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.Logic.Small.Set
 

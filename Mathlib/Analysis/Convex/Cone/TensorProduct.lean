@@ -5,10 +5,13 @@ Authors: Bjørn Solheim
 -/
 module
 
-public import Mathlib.Analysis.Convex.Cone.Dual
+public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
+import Mathlib.Algebra.Notation.Lemmas
+import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Topology.Algebra.Module.TopDualPairing
 
 /-!

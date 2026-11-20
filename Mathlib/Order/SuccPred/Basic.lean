@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Cover
-public import Mathlib.Order.Iterate
+
+import Mathlib.Order.Iterate
 
 /-!
 # Successor and predecessor

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.GroupTheory.Finiteness
 
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

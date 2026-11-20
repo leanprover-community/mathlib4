@@ -5,8 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Pi
+
+import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # Lattice operations on finsets of functions

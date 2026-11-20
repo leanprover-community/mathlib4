@@ -6,8 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.List.Basic
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.RelClasses
+
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Lexicographic ordering of lists.

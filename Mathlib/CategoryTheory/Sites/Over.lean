@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
+import Mathlib.CategoryTheory.Sites.Coverage
+
 /-! # Localization
 
 In this file, given a Grothendieck topology `J` on a category `C` and `X : C`, we construct

@@ -5,7 +5,9 @@ Authors: Eric Wieser, Gaëtan Serré
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

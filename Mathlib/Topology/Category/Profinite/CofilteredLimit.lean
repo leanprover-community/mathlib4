@@ -5,10 +5,11 @@ Authors: Adam Topaz
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.Category.TopCat.Limits.Konig
 import Mathlib.Topology.DiscreteQuotient
 
 /-!

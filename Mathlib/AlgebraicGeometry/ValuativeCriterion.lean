@@ -6,10 +6,11 @@ Authors: Andrew Yang, Qi Ge, Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.Valuation.LocalSubring
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.RingTheory.RingHom.Injective
+import Mathlib.RingTheory.Valuation.LocalSubring
 
 /-!
 # Valuative criterion

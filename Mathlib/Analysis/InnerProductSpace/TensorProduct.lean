@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.Positive
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Inner product space structure on tensor product spaces

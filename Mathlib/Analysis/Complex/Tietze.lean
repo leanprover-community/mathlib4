@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Topology.TietzeExtension
 
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 
 /-!

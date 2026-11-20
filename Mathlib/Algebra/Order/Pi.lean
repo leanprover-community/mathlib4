@@ -5,10 +5,11 @@ Authors: Simon Hudon, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Notation.Lemmas
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Pi
+
+import Mathlib.Algebra.Notation.Lemmas
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

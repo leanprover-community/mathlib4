@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+import Mathlib.Algebra.Homology.Additive
 
 /-!
 # Idempotent completeness and homological complexes

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.SelfInv
 
+import Mathlib.Algebra.Group.Commute.Defs
+
 /-!
 # Torsion-free monoids and groups
 

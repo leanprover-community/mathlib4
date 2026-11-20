@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 
+import Mathlib.Topology.Algebra.Group.Units
+
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
 

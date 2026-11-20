@@ -5,9 +5,12 @@ Authors: Dylan MacKenzie
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.BigOperators.Intervals
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

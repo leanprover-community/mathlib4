@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 public import Mathlib.Topology.UniformSpace.Closeds
 
+import Mathlib.Topology.MetricSpace.Lipschitz
+
 /-!
 # Closed subsets
 

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Martingale.Basic
 
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+
 /-!
 # Optional sampling theorem
 

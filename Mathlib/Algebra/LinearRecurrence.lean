@@ -5,9 +5,13 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Defs
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Basic
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+import Mathlib.Algebra.Polynomial.Degree.Operations
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Linear recurrence

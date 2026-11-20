@@ -5,9 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
+import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.MeasureTheory.Covering.LiminfLimsup
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem

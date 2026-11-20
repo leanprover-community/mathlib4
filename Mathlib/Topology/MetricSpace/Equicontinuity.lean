@@ -5,8 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.UniformSpace.Equicontinuity
+
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Equicontinuity in metric spaces

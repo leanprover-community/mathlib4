@@ -5,7 +5,9 @@ Authors: Oliver Nash, Jon Bannon
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-! # Exactness of sequences
 

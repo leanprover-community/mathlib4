@@ -6,12 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Bernstein polynomials

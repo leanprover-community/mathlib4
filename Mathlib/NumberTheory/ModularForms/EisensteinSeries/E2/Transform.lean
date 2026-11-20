@@ -6,9 +6,12 @@ Authors: Chris Birkbeck
 
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
 
 import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
+import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
 # Slash action on E2

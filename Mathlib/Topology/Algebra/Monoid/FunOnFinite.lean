@@ -6,7 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Topology.Constructions
+
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Continuity of the functoriality of `X → M` when `X` is finite

@@ -5,12 +5,13 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.FieldSimp
 

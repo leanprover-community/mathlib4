@@ -5,11 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-public import Mathlib.Topology.Order.IsLocallyClosed
 
+import Mathlib.Algebra.BigOperators.Module
 import Mathlib.MeasureTheory.Function.Floor
+import Mathlib.MeasureTheory.Integral.Asymptotics
+import Mathlib.Topology.Order.IsLocallyClosed
 
 /-!
 # Abel's summation formula

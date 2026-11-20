@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Rat
-public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Order.Nat
+
+import Mathlib.Algebra.Group.Commute.Basic
 
 /-!
 # Casts for Rational Numbers

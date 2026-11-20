@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
-public import Mathlib.Topology.Instances.Rat
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+
+import Mathlib.Topology.Instances.Rat
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

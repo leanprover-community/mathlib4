@@ -5,10 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.SmoothNumbers
 
 import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Analysis.PSeries
 
 /-!
 # The sum of the reciprocals of the primes diverges

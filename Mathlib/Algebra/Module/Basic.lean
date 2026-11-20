@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Algebra.Ring.Invertible
+
+import Mathlib.Algebra.Ring.Invertible
 
 /-!
 # Further basic results about modules.

@@ -9,9 +9,10 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 
+import Mathlib.Data.Set.Sigma
+import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.WithTopology
 
 /-!

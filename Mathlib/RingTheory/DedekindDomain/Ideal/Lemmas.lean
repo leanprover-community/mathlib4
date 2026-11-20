@@ -5,9 +5,11 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-public import Mathlib.RingTheory.Spectrum.Maximal.Localization
+public import Mathlib.RingTheory.Localization.AsSubring
+
+import Mathlib.RingTheory.ChainOfDivisors
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 /-!
 # Dedekind domains and ideals

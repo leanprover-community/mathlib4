@@ -5,15 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Localization.Free
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.Topology.LocallyConstant.Basic
 
+import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.LocalProperties.Projective
+import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-!
 # The free locus of a module

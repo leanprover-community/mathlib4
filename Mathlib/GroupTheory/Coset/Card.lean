@@ -5,8 +5,11 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.GroupTheory.Coset.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.

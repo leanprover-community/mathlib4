@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Compactness.NhdsKer
 
+import Mathlib.Topology.Compactness.Compact
+
 /-!
 # Alexandrov-discrete topological spaces
 

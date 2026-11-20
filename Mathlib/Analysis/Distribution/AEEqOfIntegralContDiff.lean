@@ -6,7 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
-public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Functions which vanish as distributions vanish as functions

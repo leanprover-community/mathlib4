@@ -5,9 +5,12 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Floor.Defs
 
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Floor.Ring
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!

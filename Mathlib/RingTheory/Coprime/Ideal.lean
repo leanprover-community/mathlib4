@@ -5,10 +5,11 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Ideal.Operations
 
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Ideal.Operations
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

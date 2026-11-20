@@ -9,6 +9,8 @@ public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 
+import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Substitutions in power series

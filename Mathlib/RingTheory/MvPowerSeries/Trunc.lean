@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.Finsupp.Interval
-public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Order
+
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Formal (multivariate) power series - Truncation

@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.ToFun
+
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Theory of filters on sets

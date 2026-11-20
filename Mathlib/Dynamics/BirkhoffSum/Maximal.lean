@@ -5,11 +5,14 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Integrable
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Dynamics.BirkhoffSum.Integrable
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!

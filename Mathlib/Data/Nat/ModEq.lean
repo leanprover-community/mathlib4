@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.GCD.Basic
 
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!

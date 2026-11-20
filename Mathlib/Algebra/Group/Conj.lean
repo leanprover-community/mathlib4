@@ -6,7 +6,8 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Algebra.Group.Semiconj.Units
+
+import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Conjugacy of group elements

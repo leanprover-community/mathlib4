@@ -5,9 +5,11 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.GroupTheory.FreeAbelianGroup
 
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Types.Coproducts
 

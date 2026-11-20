@@ -7,6 +7,10 @@ module
 
 public import Mathlib.NumberTheory.Bernoulli
 
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Data.Nat.Choose.Cast
+
 /-!
 # Bernoulli polynomials
 

@@ -6,9 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 
 /-!
 # Evaluation of specific improper integrals

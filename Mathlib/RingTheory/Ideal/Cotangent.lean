@@ -11,9 +11,10 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Nakayama
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`

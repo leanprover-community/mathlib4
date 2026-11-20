@@ -5,8 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Ordinal.Principal
+
+import Mathlib.Logic.Small.List
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Ordinal arithmetic with cardinals

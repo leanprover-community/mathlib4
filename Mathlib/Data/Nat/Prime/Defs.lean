@@ -5,11 +5,12 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Prime.Defs
-public import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Order.Basic
+
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # Prime numbers

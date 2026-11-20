@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.Invariant.Defs
 public import Mathlib.RingTheory.Unramified.Locus
 
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.Invariant.Basic
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!

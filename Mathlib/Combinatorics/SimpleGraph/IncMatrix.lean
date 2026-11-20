@@ -8,6 +8,8 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.Matrix.Mul
 
+import Mathlib.Algebra.BigOperators.Ring.Finset
+
 /-!
 # Incidence matrix of a simple graph
 

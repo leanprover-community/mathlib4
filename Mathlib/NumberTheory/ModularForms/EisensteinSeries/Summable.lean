@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
-public import Mathlib.Order.Interval.Finset.Box
+
+import Mathlib.Order.Interval.Finset.Box
 
 /-!
 # Summability of Eisenstein series

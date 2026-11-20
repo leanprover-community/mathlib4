@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 
+import Mathlib.RingTheory.Flat.TorsionFree
+
 /-!
 # The adele ring of a number field
 

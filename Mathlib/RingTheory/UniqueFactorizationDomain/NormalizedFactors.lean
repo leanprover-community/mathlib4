@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+
+import Mathlib.Algebra.Order.Monoid.Multiset
 
 /-!
 # Unique factorization and normalization

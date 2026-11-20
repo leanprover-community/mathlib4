@@ -5,10 +5,12 @@ Authors: Aaron Liu
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Order.Filter.Ultrafilter.Basic
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.SetTheory.Cardinal.Defs
 
+import Mathlib.Order.Filter.Ultrafilter.Basic
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
 set_option doc.verso true

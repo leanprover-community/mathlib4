@@ -7,8 +7,10 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
+public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
-public import Mathlib.SetTheory.Cardinal.Regular
+
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Dieudonné measure

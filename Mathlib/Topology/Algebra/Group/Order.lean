@@ -5,9 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.ContinuousDiv
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Group.Defs
 
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Topology.Algebra.Group.ContinuousDiv
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

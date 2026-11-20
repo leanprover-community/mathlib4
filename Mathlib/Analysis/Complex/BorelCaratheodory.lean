@@ -6,7 +6,10 @@ Authors: Maksym Radziwill
 
 module
 
-public import Mathlib.Analysis.Complex.Schwarz
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.Complex.Schwarz
 
 /-!
 # Borel-Carathéodory theorem

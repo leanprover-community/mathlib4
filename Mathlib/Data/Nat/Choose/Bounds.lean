@@ -6,9 +6,11 @@ Authors: Yaël Dillies, Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Choose.Basic
+
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Inequalities for binomial coefficients

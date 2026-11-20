@@ -5,11 +5,13 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Analysis.Normed.Field.Dense
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.

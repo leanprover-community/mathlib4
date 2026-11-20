@@ -8,6 +8,8 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
 
+import Mathlib.RingTheory.LocalProperties.Submodule
+
 /-!
 # Ideal sheaves on schemes
 

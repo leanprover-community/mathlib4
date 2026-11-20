@@ -5,14 +5,19 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.NumberTheory.Height.Northcott
-public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.NumberTheory.Height.Basic
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.Algebraic.Denominator
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
 import Mathlib.NumberTheory.Height.MvPolynomial
+import Mathlib.NumberTheory.Height.Northcott
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+import Mathlib.NumberTheory.NumberField.ProductFormula
+import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # Heights over number fields

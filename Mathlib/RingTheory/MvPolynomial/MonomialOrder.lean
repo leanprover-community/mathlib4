@@ -9,6 +9,8 @@ public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
+import Mathlib.Algebra.Regular.Pow
+
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
 We consider a type `σ` of indeterminates and a commutative semiring `R`

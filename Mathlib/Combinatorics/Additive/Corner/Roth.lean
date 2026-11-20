@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Additive.Corner.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # The corners theorem and Roth's theorem

@@ -5,9 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Measure.Content
-public import Mathlib.Topology.Algebra.Group.Compact
+
+import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure

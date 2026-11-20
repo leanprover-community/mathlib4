@@ -5,10 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-public import Mathlib.Algebra.Homology.Refinements
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
+import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+import Mathlib.Algebra.Homology.Refinements
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
 /-!
 # The mapping cone of a monomorphism, up to a quasi-isomorphism

@@ -5,7 +5,10 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
+
+import Mathlib.Analysis.Normed.Group.Uniform
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

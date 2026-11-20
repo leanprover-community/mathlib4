@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+
+import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Guitart exact squares and quotient categories

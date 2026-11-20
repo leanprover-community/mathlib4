@@ -5,11 +5,13 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
-public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.NumberTheory.ModularForms.Bounds
+public import Mathlib.NumberTheory.ModularForms.NormTrace
 
 import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+import Mathlib.NumberTheory.ModularForms.Bounds
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Ring
 
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Data.Finset.Powerset
 
 /-!
 # The Plünnecke-Ruzsa inequality

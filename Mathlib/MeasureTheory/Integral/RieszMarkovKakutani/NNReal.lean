@@ -5,7 +5,11 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.MeasureTheory.Integral.CompactlySupported
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`

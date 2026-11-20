@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures

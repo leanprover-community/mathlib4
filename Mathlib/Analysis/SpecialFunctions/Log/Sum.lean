@@ -5,9 +5,11 @@ Authors: Terence Tao
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SumIntegralComparisons
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Stirling
+import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!
 # Bounds on the partial sums of the logarithm

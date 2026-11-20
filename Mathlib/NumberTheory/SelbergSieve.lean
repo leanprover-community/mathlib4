@@ -8,6 +8,7 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Tactic.FieldSimp
 
 /-!

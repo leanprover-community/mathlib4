@@ -5,11 +5,12 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.RingTheory.Ideal.Defs
 
+import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
 
+import Mathlib.CategoryTheory.Abelian.Refinements
+
 /-!
 # The homology of the differentials of a spectral object
 

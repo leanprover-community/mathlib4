@@ -6,7 +6,10 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Goursat
-public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Goursat's lemma for submodules

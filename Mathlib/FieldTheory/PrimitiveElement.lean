@@ -6,7 +6,9 @@ Authors: Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.SplittingField.Construction
+
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Primitive Element Theorem

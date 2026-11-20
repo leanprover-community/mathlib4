@@ -6,10 +6,10 @@ Authors: Benjamin Davidson
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 

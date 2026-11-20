@@ -5,8 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Lattice.Fold
+
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Basic.NNReal.Basic
 
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
 /-!
 # Properties of big operators extended non-negative real numbers
 

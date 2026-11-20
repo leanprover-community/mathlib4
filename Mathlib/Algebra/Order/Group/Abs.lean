@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Absolute values in ordered groups

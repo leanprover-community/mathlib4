@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Topology.MetricSpace.Thickening
+
+import Mathlib.Analysis.Normed.Group.Pointwise
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

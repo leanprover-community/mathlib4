@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection
 
+import Mathlib.Algebra.CharP.Quotient
 import Mathlib.LinearAlgebra.SModEq.Pow
 
 /-! # Teichmüller map

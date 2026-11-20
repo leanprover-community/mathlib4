@@ -5,8 +5,10 @@ Authors: Chris Hughes, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Polynomial.Content
+
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 

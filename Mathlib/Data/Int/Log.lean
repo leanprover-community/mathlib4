@@ -6,8 +6,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Data.Nat.Log
+
+import Mathlib.Algebra.Order.Floor.Semiring
 
 /-!
 # Integer logarithms in a field with respect to a natural base

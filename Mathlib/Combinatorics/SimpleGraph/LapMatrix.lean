@@ -5,13 +5,14 @@ Authors: Adrian Wüthrich
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Order.Star.Real
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Tactic.Positivity.Finset
 
 /-!

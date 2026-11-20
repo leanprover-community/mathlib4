@@ -6,11 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Data.Nat.Cast.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

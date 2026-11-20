@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Taylor expansions of polynomials

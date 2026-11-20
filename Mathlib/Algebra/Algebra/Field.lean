@@ -6,7 +6,9 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Algebra.Field.Defs
+
+import Mathlib.Data.Rat.Cast.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

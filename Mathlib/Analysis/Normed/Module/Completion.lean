@@ -6,9 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Group.Completion
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 public import Mathlib.Topology.Algebra.UniformField
+
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

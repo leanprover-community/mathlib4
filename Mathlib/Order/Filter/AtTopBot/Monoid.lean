@@ -6,9 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Monoid.OrderDual
-public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Order.Filter.AtTopBot.Tendsto
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

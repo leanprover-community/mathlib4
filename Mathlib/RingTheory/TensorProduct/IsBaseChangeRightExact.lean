@@ -5,10 +5,11 @@ Authors: Jingting Wang, Nailin Guan
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.IsTensorProduct
 
 import Mathlib.Algebra.FiveLemma
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Lemmas about `IsBaseChange` under exact sequences

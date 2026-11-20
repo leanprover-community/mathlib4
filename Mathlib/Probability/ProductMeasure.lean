@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
+import Mathlib.MeasureTheory.Function.FactorsThrough
+
 /-!
 # Infinite product of probability measures
 

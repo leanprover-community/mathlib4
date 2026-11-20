@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Topology.Algebra.Monoid
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

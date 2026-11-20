@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 
+import Mathlib.CategoryTheory.Adjunction.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Subobject.Comma

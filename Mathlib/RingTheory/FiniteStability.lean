@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Finiteness.Ideal
 
 /-!
 # Stability of finiteness conditions in commutative algebra

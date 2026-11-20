@@ -5,7 +5,9 @@ Authors: Anne Baanen, Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-! # Bases of modules and the Orzech property
 

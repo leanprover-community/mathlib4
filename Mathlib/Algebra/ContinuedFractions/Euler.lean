@@ -5,7 +5,10 @@ Authors: Emlis
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.ContinuedFractions.Basic
+
+import Mathlib.Algebra.ContinuedFractions.Determinant
 
 /-!
 # Euler continued fraction

@@ -8,16 +8,18 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.Norm.Defs
-public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
 
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
 import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.TensorProduct.Nontrivial
 
 /-!
 # Linearly disjoint subalgebras

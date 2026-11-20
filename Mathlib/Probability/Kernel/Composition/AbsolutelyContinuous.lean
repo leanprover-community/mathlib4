@@ -6,7 +6,8 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-public import Mathlib.Probability.Kernel.RadonNikodym
+
+import Mathlib.Probability.Kernel.RadonNikodym
 
 /-!
 # Absolute continuity of the composition of measures and kernels

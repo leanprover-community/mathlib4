@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Data.Set.Card
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Dimension of modules and vector spaces

@@ -5,7 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Eval
+
+import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Algebraic Independence

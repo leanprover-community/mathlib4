@@ -6,7 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Cardinality of a module

@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Multiset.Fold
 
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.RingTheory.Flat.TorsionFree
+
+import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # The Product Formula for number fields

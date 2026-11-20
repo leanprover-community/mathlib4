@@ -5,8 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
+
+import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

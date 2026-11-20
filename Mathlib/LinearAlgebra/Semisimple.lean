@@ -6,9 +6,10 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.FieldTheory.Perfect
-public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 

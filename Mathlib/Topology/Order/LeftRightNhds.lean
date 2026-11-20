@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`

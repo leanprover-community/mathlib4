@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.Order.Category.PartOrdEmb
 
+import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.Order.Hom.WithTopBot
 
 /-!

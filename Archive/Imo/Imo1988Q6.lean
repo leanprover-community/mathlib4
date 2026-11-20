@@ -12,6 +12,10 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.WLOG
 
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Data.Nat.Set
+
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
 

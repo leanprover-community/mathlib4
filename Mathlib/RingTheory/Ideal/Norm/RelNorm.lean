@@ -6,9 +6,9 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.DedekindDomain.Factorization
 
 import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.Ideal.Int
 import Mathlib.RingTheory.NormalClosure

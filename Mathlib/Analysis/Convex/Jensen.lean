@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Function
 
+import Mathlib.Algebra.Module.BigOperators
+
 /-!
 # Jensen's inequality and maximum principle for convex functions
 

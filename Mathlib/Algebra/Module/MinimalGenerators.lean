@@ -5,8 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRankOperations
+public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Regular.RegularSequence
+
+import Mathlib.Algebra.Module.SpanRankOperations
 
 /-!
 # Equivalence between two set of minimal generators over local ring

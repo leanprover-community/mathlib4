@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.LocalRing.Basic
+
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets

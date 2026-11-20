@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+
+import Mathlib.Analysis.InnerProductSpace.Continuous
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

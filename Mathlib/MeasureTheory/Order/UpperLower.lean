@@ -5,9 +5,11 @@ Authors: Yaël Dillies, Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
 /-!
 # Order-connected sets are null-measurable

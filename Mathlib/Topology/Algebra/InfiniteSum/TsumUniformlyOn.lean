@@ -6,9 +6,10 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!

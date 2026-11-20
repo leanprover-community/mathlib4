@@ -5,8 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Data.Int.Notation
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Nat.Sqrt
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,11 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
-public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
-public import Mathlib.RingTheory.Smooth.Field
+
+import Mathlib.AlgebraicGeometry.FunctionField
+import Mathlib.AlgebraicGeometry.Noetherian
+import Mathlib.RingTheory.Smooth.Field
 
 /-!
 # Smooth morphisms

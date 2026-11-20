@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.BigOperators.Expect
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Basic.Real.Pointwise
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Basic results on nonnegative real numbers

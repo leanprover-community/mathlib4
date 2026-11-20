@@ -5,8 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Yoneda
+
+import Mathlib.CategoryTheory.Limits.Filtered
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

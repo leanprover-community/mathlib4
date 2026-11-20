@@ -5,10 +5,12 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 
+import Mathlib.Algebra.Lie.Semisimple.Lemmas
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Order.Star.Int
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!

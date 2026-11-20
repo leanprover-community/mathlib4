@@ -6,10 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Slope
 
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Slope
 
 /-!
 # Line derivatives

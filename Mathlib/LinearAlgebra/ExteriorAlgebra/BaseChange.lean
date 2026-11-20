@@ -5,8 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+
+import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 # Base change of exterior algebra

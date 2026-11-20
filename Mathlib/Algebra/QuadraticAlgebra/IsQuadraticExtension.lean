@@ -5,8 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.QuadraticAlgebra.Basic
+public import Mathlib.Algebra.QuadraticAlgebra.Defs
 
+import Mathlib.Algebra.QuadraticAlgebra.Basic
 import Mathlib.LinearAlgebra.Unimodular
 import Mathlib.RingTheory.Trace.Basic
 

@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+
+import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # The full subcategory of injective objects

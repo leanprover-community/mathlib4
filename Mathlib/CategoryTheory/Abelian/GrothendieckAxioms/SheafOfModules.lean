@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.PresheafOfModules
+
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 
 /-!
 # The category of sheaves of modules is Grothendieck abelian

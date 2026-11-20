@@ -5,9 +5,10 @@ Authors: Michal Staromiejski
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 set_option doc.verso true

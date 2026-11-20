@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Order.SuccPred.Nat
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Pseudo-metric spaces

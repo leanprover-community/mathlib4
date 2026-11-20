@@ -9,6 +9,7 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.UniformSpace.HeineCantor
 
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Abel
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.CompleteSeparated

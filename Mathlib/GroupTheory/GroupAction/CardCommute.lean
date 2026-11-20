@@ -6,9 +6,10 @@ Authors: Chris Hughes, Thomas Browning
 module
 
 public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 import Mathlib.GroupTheory.Coset.Card
+import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Properties of group actions involving quotient groups

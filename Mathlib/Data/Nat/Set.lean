@@ -5,7 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Set.Operations
+
+import Mathlib.Data.Set.Image
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

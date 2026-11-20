@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 import Mathlib.Data.Set.Function
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Images of intervals under `(+ d)`

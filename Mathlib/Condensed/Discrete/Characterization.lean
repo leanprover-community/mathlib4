@@ -5,8 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Condensed.Discrete.Colimit
 public import Mathlib.Condensed.Discrete.Module
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.AsLimit
+
+import Mathlib.Condensed.Discrete.Colimit
 
 /-!
 # Characterizing discrete condensed sets and `R`-modules.

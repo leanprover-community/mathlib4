@@ -5,8 +5,10 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.LinearAlgebra.Ray
+
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Rays in a real normed vector space

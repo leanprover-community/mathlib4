@@ -5,11 +5,12 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Bilinear
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Finiteness.Bilinear
 
 /-!
 # Finiteness of the tensor product of (sub)modules

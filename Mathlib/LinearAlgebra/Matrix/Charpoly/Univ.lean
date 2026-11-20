@@ -5,8 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 /-!
 # The universal characteristic polynomial

@@ -6,8 +6,9 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.RingTheory.LocalRing.Basic
 
 /-!

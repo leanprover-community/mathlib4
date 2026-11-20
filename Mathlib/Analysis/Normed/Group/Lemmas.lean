@@ -5,8 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Further lemmas about normed groups

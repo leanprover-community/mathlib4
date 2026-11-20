@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!

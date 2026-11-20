@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Order.AbsoluteValue.Int
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
+import Mathlib.Algebra.Order.AbsoluteValue.Int
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!

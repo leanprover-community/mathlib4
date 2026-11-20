@@ -7,10 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
-public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
+import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
 # Continuous functors between sites.

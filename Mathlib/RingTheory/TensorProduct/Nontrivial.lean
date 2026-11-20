@@ -5,9 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!

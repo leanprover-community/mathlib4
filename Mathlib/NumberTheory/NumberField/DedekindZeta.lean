@@ -5,10 +5,13 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.SumCoeff
-public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
+public import Mathlib.NumberTheory.LSeries.Basic
+public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.NumberTheory.LSeries.SumCoeff
+import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!
 # The Dedekind zeta function of a number field

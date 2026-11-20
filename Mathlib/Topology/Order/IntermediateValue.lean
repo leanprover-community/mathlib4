@@ -6,10 +6,10 @@ Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 module
 
 public import Mathlib.Topology.Connected.TotallyDisconnected
-public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.Monotone
 
 import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Intermediate Value Theorem

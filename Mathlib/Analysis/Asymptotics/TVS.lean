@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Convex.EGauge
 
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Tactic.Peel
 
 /-!

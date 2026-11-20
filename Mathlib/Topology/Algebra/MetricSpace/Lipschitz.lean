@@ -5,9 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

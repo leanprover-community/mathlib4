@@ -5,8 +5,11 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

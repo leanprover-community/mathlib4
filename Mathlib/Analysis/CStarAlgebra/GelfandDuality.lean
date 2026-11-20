@@ -5,15 +5,15 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Orthogonal
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
-public import Mathlib.Analysis.CStarAlgebra.Fuglede
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Basic
 public import Mathlib.Topology.ContinuousMap.Ideals
-public import Mathlib.Topology.ContinuousMap.Units
 
+import Mathlib.Algebra.Star.Orthogonal
+import Mathlib.Analysis.CStarAlgebra.Fuglede
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Gelfand Duality

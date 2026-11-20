@@ -6,9 +6,9 @@ Authors: Pim Otte
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Set.Card
 
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.SetTheory.Cardinal.Arithmetic
 

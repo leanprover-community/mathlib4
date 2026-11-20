@@ -7,9 +7,10 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 public import Mathlib.MeasureTheory.Measure.AddContent
-public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+public import Mathlib.MeasureTheory.VectorMeasure.Defs
 
 import Mathlib.MeasureTheory.Measure.MeasuredSets
+import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

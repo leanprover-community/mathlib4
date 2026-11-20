@@ -5,8 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 set_option doc.verso true

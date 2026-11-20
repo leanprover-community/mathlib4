@@ -8,9 +8,9 @@ module
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.Height
-public import Mathlib.RingTheory.Localization.Submodule
 
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nakayama
 
 /-!

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+
 /-! # Presentable objects in discrete categories
 
 The purpose of this file is to show that a category with a single

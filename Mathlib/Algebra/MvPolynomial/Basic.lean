@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Tactic.Polynomial.Core
 
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Pow
 
 /-!
 # Multivariate polynomials

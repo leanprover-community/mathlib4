@@ -5,10 +5,11 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.Conformal
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.HasPrimitives
 
 set_option doc.verso true

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Fourier.AddCircle
 
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Integral.Pi
 
 set_option doc.verso true

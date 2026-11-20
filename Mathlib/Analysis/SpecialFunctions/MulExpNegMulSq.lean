@@ -5,9 +5,11 @@ Authors: Jakob Stiefel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!

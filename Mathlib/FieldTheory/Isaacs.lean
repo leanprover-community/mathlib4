@@ -5,8 +5,10 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
+import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.GroupTheory.CosetCover
 
 /-!

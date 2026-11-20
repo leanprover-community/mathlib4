@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.Meromorphic.Basic
 
+import Mathlib.Analysis.Asymptotics.Theta
+
 /-!
 # Orders of Meromorphic Functions
 

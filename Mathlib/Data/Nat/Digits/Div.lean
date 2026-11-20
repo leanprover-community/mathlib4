@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.List.Palindrome
 public import Mathlib.Data.Nat.Digits.Lemmas
 
+import Mathlib.Algebra.Ring.Divisibility.Basic
+
 /-!
 # Divisibility tests for natural numbers in terms of digits.
 

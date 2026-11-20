@@ -5,9 +5,11 @@ Authors: Riccardo Brasca, Emilie Uthaiwat
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
+public import Mathlib.RingTheory.Ideal.Prime
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 /-!
 # Kaplansky criterion for factoriality

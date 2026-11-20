@@ -5,10 +5,11 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.NumberTheory.Harmonic.Defs
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SumIntegralComparisons
 
 /-!
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.

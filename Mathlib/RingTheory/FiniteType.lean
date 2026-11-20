@@ -6,10 +6,12 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Noetherian.Orzech
+public import Mathlib.RingTheory.OrzechProperty
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra

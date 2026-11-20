@@ -6,7 +6,9 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Saturation
-public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.Defs
+
+import Mathlib.RingTheory.Localization.Basic
 
 /-! # Localization and submonoid saturation
 

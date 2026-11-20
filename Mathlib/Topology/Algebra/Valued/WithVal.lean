@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Algebra.CharZero.AddMonoidHom
+import Mathlib.Algebra.Order.Hom.Units
+import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
 # Ring topologised by a valuation

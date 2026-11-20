@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.Hull
 
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Join
 
 /-!
 # Stone's separation theorem

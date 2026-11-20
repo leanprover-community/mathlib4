@@ -5,8 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Adjunction
-public import Mathlib.CategoryTheory.Monad.Equalizer
+
+import Mathlib.CategoryTheory.Monad.Equalizer
 
 /-!
 # Adjoint lifting

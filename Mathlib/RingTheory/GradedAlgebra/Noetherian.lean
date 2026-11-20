@@ -6,7 +6,9 @@ Authors: Fangming Li
 module
 
 public import Mathlib.RingTheory.GradedAlgebra.Basic
-public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # The properties of a graded Noetherian ring.

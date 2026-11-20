@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Order.CompleteLattice.Finset
 
 /-!

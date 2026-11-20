@@ -5,8 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Order.SuccPred.ENat
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Order.SuccPred.ENat
 
 /-! # Order of multivariate power series
 

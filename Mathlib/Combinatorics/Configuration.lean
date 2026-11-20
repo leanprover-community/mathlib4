@@ -5,10 +5,11 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
+public import Mathlib.RingTheory.LocalRing.Basic
 
 import Mathlib.Combinatorics.Hall.Basic
+import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-!
 # Configurations of Points and lines

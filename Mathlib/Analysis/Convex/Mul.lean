@@ -5,8 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Monovary
 public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Order.Monotone.Monovary
+
+import Mathlib.Algebra.Order.Monovary
 
 /-!
 # Product of convex functions

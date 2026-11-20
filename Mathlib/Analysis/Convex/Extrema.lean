@@ -6,9 +6,12 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Order.LocalExtr
+
+import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,8 +5,10 @@ Authors: Floris van Doorn, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.Interval.Set.LinearOrder
+
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Extra lemmas about intervals

@@ -6,10 +6,12 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Tropical algebraic structures

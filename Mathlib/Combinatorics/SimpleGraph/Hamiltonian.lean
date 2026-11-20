@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
+import Mathlib.Data.List.Count
 
 /-!
 # Hamiltonian Graphs

@@ -5,8 +5,9 @@ Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.ProperSpace
 
+import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.Sequences
 
 /-!

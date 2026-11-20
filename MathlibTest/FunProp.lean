@@ -11,6 +11,8 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
+import Mathlib.Analysis.Meromorphic.Complex
+
 /-! # Main test file for fun_prop
 
 Use this file for `fun_prop` tests that depend on mathlib

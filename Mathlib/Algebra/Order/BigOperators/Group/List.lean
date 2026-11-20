@@ -5,9 +5,13 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Data.List.Forall2
+
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Data.List.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
 import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Order.Filter.AtTopBot.Tendsto
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

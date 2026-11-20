@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 
+import Mathlib.Data.Nat.GCD.BigOperators
+
 /-!
 # Miscellaneous arithmetic Functions
 

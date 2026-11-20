@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 
 import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
+import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 /-!
 # Dedekind eta function

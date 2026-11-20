@@ -6,7 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.UniformSpace.Ultra.Constructions
+public import Mathlib.Topology.UniformSpace.Ultra.Basic
+
+import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
 # Completions of ultrametric (nonarchimedean) uniform spaces

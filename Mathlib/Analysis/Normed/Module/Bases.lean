@@ -5,13 +5,16 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.NormNum.GCD
 

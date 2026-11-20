@@ -5,7 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Nat.Prime.Defs
+
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Fundamental discriminants

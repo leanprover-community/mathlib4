@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Irreducible
-public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Principal
 
 import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Birkhoff representation

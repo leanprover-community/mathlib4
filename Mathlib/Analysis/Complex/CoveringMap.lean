@@ -6,11 +6,13 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
 
+import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.GDelta.MetrizableSpace

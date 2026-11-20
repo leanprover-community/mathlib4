@@ -5,11 +5,14 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # The topological support of a function

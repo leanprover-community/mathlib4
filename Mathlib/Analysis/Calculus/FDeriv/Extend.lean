@@ -5,7 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+
+import Mathlib.Analysis.Calculus.MeanValue
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

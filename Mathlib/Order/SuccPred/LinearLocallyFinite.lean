@@ -5,14 +5,15 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Basic.Countable.Basic
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.SuccPred.Archimedean
 
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Iterate
 
 /-!
 # Linear locally finite orders

@@ -5,11 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 
 /-!

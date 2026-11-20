@@ -6,9 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Convergence of intervals

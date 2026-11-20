@@ -9,9 +9,11 @@ public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
 
 import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Tactic.AdaptationNote
 
 /-!

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Find

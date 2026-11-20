@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Notation
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Defs.Induced
 
+import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Topology.Constructions
 
 /-!

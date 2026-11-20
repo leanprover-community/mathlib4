@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 
+import Mathlib.Algebra.Order.Star.Int
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!

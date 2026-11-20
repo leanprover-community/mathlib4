@@ -7,6 +7,7 @@ module
 
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Shift

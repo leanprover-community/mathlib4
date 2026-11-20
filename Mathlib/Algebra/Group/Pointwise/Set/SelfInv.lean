@@ -5,7 +5,10 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Order.SetNotation
+
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
 # Self-inverse sets

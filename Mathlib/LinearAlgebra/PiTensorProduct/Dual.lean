@@ -7,7 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
+public import Mathlib.RingTheory.PiTensorProduct
+
+import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 /-!
 # Tensor products of dual spaces

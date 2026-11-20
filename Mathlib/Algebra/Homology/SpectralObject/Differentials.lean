@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 
+import Mathlib.CategoryTheory.Abelian.Refinements
+
 /-!
 # Differentials of a spectral object
 

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+
 /-!
 # Exterior powers
 

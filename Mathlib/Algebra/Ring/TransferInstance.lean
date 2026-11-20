@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.InjSurj
+
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

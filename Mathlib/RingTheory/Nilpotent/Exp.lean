@@ -5,11 +5,13 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Rat
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.Tactic.FieldSimp
 
 /-!

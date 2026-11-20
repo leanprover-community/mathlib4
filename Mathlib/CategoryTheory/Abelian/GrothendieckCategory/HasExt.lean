@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
 /-!
 # Ext in Grothendieck abelian categories

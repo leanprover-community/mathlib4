@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!

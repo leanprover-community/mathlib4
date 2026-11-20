@@ -8,7 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.SetNotation
+
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Pointwise star operation on sets

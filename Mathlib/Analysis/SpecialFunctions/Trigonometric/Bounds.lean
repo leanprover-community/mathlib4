@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 
 /-!

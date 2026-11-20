@@ -6,7 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Basic
-public import Mathlib.CategoryTheory.Limits.MorphismProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+
+import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 # (Co)limits in over categories

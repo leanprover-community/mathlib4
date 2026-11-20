@@ -5,8 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
 # Scheme-theoretically dominant morphisms

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Multiset.Powerset
 
+import Mathlib.Data.List.Zip
+
 /-!
 # The antidiagonal on a multiset.
 

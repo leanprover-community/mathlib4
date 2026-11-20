@@ -9,6 +9,8 @@ public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.Topology.Algebra.Group.Extension
 
 import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Haar measures on group extensions

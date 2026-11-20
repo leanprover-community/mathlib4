@@ -6,11 +6,12 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!
 # The Beta function, and further properties of the Gamma function

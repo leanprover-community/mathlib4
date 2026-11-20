@@ -5,11 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.Jacobian
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
 # Polar coordinates

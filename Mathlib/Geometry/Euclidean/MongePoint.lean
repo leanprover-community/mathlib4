@@ -8,6 +8,8 @@ module
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Circumcenter
 
+import Mathlib.Geometry.Euclidean.Basic
+
 /-!
 # Monge point and orthocenter
 

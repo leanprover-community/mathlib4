@@ -6,9 +6,11 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-public import Mathlib.NumberTheory.LSeries.Nonvanishing
+public import Mathlib.NumberTheory.LSeries.DirichletContinuation
 
 import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.NumberTheory.LSeries.Nonvanishing
+import Mathlib.NumberTheory.SumPrimeReciprocals
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression

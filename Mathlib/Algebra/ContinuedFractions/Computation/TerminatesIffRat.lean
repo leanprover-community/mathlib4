@@ -5,10 +5,11 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 public import Mathlib.Data.Rat.Floor
 
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 
 /-!
 # Termination of Continued Fraction Computations (`GenContFract.of`)

@@ -5,9 +5,10 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Normed.Operator.NNNorm
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

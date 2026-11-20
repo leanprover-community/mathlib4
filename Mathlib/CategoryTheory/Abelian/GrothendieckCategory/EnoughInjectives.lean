@@ -12,6 +12,7 @@ public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties

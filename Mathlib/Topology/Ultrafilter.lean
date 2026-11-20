@@ -6,7 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Order.Filter.Ultrafilter.Basic
-public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.Defs.Filter
+
+import Mathlib.Topology.Continuous
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 

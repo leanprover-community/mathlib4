@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Basic.Finite.Defs
 
 import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Set.Finite.Lattice
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,9 +6,11 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Polynomial.EraseLead
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

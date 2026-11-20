@@ -5,8 +5,11 @@ Authors: Winston Yin
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
+
+import Mathlib.Analysis.Calculus.ContDiff.Comp
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!
 # Implicit function theorem

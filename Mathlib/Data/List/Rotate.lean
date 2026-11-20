@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Quot
 
+import Mathlib.Data.List.Induction
 import Mathlib.Data.List.Nodup
 
 /-!

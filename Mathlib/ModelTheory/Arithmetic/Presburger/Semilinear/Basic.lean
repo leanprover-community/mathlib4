@@ -9,6 +9,7 @@ public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 
 import Mathlib.Algebra.Group.Submonoid.Finsupp
+import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Order.Group.Ideal
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Sub.Prod

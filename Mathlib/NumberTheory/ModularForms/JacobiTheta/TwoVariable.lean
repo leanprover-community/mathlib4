@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 
 import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 

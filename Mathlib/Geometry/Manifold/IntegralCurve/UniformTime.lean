@@ -5,7 +5,10 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+
+import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 /-!
 # Uniform time lemma for the global existence of integral curves

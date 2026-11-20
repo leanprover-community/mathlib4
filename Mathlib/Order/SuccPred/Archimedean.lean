@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.SuccPred.Basic
 
+import Mathlib.Order.Iterate
+
 /-!
 # Archimedean successor and predecessor
 

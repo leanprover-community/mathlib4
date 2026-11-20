@@ -6,8 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Action.Continuous
-public import Mathlib.CategoryTheory.Galois.EssSurj
+public import Mathlib.CategoryTheory.Galois.Action
+public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Category.FinTopCat
+
+import Mathlib.CategoryTheory.Galois.EssSurj
 
 /-!
 # Fiber functors induce an equivalence of categories

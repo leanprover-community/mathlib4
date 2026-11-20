@@ -5,8 +5,11 @@ Authors: Daniel Liao
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Euler's quadrilateral theorem

@@ -5,11 +5,12 @@ Authors: Bjørn Solheim
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

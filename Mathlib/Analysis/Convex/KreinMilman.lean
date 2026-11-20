@@ -5,9 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Exposed
-public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+import Mathlib.Analysis.Convex.Exposed
+import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # The Krein-Milman theorem

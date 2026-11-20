@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Kevin Buzzard, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Order.SuccPred.PartialSups
 public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.RingTheory.Finiteness.Finsupp
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 
 /-!
 # Noetherian rings and modules

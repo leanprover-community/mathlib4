@@ -5,9 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Data.Finset.Empty
 
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Set.Finite.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

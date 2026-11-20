@@ -5,9 +5,10 @@ Authors: Ziyan Wei, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Quotient
+public import Mathlib.Topology.Constructions
 
 import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Quotient
 
 /-!
 # Bourbaki Strict Maps

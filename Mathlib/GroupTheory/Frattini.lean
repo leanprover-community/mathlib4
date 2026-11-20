@@ -8,6 +8,8 @@ module
 public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.Order.Radical
 
+import Mathlib.Algebra.Group.Subgroup.Order
+
 /-!
 # The Frattini subgroup
 

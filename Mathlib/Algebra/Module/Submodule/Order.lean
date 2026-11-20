@@ -6,7 +6,9 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+
+import Mathlib.Algebra.Order.Monoid.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

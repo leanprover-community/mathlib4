@@ -5,8 +5,11 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.Data.Finset.Insert
-public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Order.SetNotation
+
+import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Constructions involving sets of sets.

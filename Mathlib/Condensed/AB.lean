@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Limits
+public import Mathlib.Topology.Category.Stonean.Limits
 
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
+import Mathlib.Condensed.Equivalence
 
 /-!
 # AB axioms in condensed modules

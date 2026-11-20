@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
-public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Order
 
 import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.NumberTheory.ModularForms.Identities
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!

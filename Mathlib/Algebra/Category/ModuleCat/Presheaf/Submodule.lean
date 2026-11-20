@@ -5,8 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 
 /-!
 # Submodules of presheaves of modules

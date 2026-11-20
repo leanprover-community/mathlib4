@@ -6,8 +6,10 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+
+import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Gershgorin's circle theorem

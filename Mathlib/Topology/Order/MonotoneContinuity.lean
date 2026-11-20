@@ -5,7 +5,9 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Continuity of monotone functions

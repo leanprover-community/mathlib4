@@ -6,11 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
-public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Normalization
 
+import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 import Mathlib.RingTheory.Etale.QuasiFinite
+import Mathlib.RingTheory.RingHom.FiniteType
 
 /-!
 # Zariski's Main Theorem

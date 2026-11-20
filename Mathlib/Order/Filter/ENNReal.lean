@@ -5,8 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.Topology.Order.LiminfLimsup
+
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Limsup and liminf of reals

@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Tactic.LinearCombination
 
 /-!

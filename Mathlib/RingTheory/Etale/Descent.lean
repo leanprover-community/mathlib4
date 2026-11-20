@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Finiteness.Descent
 public import Mathlib.RingTheory.RingHom.Etale
 
 import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+import Mathlib.RingTheory.Kaehler.TensorProduct
 
 /-!
 # Etale descends along faithfully flat ring maps

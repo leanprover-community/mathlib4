@@ -6,9 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.RingTheory.LocalRing.Basic
 
 set_option doc.verso true

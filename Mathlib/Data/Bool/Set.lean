@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Insert
+public import Mathlib.Data.Set.Operations
+
+import Mathlib.Data.Set.Insert
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

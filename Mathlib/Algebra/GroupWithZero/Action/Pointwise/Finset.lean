@@ -5,9 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 set_option doc.verso true

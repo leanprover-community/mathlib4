@@ -6,8 +6,9 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 public import Mathlib.Probability.Process.Adapted
+
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 
 /-!
 # Stopping times, stopped processes and stopped values

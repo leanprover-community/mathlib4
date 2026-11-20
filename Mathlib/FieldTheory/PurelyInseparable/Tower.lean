@@ -6,7 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.LinearDisjoint
-public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+
+import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 # Tower law for purely inseparable extensions

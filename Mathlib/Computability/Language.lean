@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Tactic.DeriveFintype
+
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages

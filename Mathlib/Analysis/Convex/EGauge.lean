@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
-public import Mathlib.GroupTheory.GroupAction.Pointwise
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+
+import Mathlib.Analysis.Normed.Module.Seminorm.Norm
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # The Minkowski functional, normed field version

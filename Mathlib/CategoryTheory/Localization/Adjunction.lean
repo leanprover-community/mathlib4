@@ -5,10 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Localization of adjunctions

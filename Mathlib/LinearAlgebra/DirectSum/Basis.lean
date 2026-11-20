@@ -6,7 +6,9 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Bases for direct sum of modules

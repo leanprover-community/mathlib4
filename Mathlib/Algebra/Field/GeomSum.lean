@@ -5,8 +5,10 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GeomSum
+
+import Mathlib.Algebra.Field.Basic
 
 /-!
 # Partial sums of geometric series in a field

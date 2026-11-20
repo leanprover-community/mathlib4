@@ -5,12 +5,13 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Data.Fintype.Prod
-public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Algebra.Ring.NonZeroDivisors
+import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 
 /-!
 # Localizations of commutative rings

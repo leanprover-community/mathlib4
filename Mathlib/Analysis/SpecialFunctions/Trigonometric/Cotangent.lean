@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.IntegerCompl
 public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
-public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
 import Mathlib.Analysis.Complex.LocallyUniformLimit
@@ -15,6 +14,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,8 +5,10 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+import Mathlib.Analysis.Analytic.Constructions
 
 /-!
 # Polynomials are analytic

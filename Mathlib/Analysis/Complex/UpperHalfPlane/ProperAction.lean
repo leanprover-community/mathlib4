@@ -8,7 +8,9 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.Algebra.Group.Matrix
-public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
+public import Mathlib.Topology.Algebra.ProperAction.Basic
+
+import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

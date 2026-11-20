@@ -5,10 +5,11 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 import Mathlib.Algebra.Group.FunLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-! # Applying an infinite sum of functions
 

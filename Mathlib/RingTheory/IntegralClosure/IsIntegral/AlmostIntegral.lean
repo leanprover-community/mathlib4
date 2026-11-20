@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Away
 
 /-! # Almost integral elements -/
 

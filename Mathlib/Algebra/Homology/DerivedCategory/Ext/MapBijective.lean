@@ -13,6 +13,7 @@ import Mathlib.Algebra.FiveLemma
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
 # Bijections Between Ext

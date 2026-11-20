@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 
 /-!

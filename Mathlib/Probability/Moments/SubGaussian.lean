@@ -6,7 +6,10 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Condexp
-public import Mathlib.Probability.Moments.Tilted
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.IntegrableExpMul
+
+import Mathlib.Probability.Moments.Tilted
 
 /-!
 # Sub-Gaussian random variables

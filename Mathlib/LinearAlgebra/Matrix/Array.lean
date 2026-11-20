@@ -5,8 +5,10 @@ Authors: Paul Cadman
 -/
 module
 
-public import Batteries.Data.Fin.Lemmas
+public import Batteries.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
+
+import Batteries.Data.Fin.Lemmas
 
 /-!
 # Array representation of matrices

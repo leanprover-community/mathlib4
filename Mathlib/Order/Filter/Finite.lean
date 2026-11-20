@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.Filter.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Results relating filters to finiteness

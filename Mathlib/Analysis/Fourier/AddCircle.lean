@@ -8,12 +8,13 @@ module
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
+import Mathlib.MeasureTheory.Group.Integral
 
 /-!
 # Fourier analysis on the additive circle

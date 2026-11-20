@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.CountablyGenerated
-public import Mathlib.Order.Filter.Prod
-public import Mathlib.Order.Filter.Ultrafilter.Defs
+
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Subsingleton filters

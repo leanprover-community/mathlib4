@@ -5,8 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.Integral
+
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # The meta properties of integral ring homomorphisms.

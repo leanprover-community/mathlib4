@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 
 import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length

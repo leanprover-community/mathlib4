@@ -5,8 +5,10 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.RingTheory.Finiteness.Basic
+
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Noetherian rings and modules

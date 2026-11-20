@@ -5,8 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
+import Mathlib.NumberTheory.Cyclotomic.Basic
 
 /-!
 # Instances for HasEnoughRootsOfUnity

@@ -5,8 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Convex.TotallyBounded
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+import Mathlib.Analysis.Convex.TotallyBounded
 
 /-!
 # Absolutely convex sets

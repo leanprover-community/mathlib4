@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.Limits.Types.CardinalFiltered
 
 /-! # Presentable objects

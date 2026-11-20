@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.WithTop
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Canonical
+
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.instOrderedCommSemiring` and

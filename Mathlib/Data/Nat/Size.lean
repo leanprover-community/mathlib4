@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Bits
 
+import Batteries.Logic
+
 /-! # Lemmas about `Nat.size` and `Nat.shiftLeft` -/
 
 public section

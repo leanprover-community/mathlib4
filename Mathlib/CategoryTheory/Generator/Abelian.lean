@@ -5,11 +5,13 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
+import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Limits.EssentiallySmall
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator

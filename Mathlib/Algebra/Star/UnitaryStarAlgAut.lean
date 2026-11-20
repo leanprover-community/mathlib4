@@ -5,10 +5,12 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Central.Basic
+public import Mathlib.Algebra.Central.Defs
 public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Unitary
+
+import Mathlib.Algebra.Central.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

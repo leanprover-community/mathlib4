@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Topology.VectorBundle.Hom
 
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!

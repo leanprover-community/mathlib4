@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Rat.Cast.Lemmas
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 
+import Mathlib.Data.Nat.Set
+
 /-!
 # Summable families of Hahn Series
 

@@ -6,10 +6,11 @@ Authors: Richard Hill, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
 
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 
 /-!
 # `TopModuleCat` is a `CategoryWithHomology`

@@ -5,7 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 /-!
 # Fibrant and cofibrant objects in a model category

@@ -9,7 +9,9 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element

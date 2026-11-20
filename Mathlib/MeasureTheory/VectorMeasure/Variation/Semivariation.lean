@@ -5,9 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 import Mathlib.Analysis.Normed.Module.HahnBanach
+import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # The semivariation of a vector measure

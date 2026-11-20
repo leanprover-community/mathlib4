@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.Sheafification
+
+import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Generators in the category of sheaves

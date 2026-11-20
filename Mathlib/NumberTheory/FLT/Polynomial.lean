@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 
+import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
 set_option doc.verso true

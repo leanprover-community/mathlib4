@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Fourier.LpSpace
 
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+
 /-! # Sobolev tempered distributions
 
 In this file we define Sobolev spaces on normed vector spaces via the Fourier transform.

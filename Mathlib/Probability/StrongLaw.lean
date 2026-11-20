@@ -5,12 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Probability.IdentDistrib
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Probability.Independence.Integrable
 
 /-!

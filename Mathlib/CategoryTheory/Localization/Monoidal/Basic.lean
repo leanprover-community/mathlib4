@@ -5,8 +5,10 @@ Authors: Joël Riou, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Quadrifunctor
+public import Mathlib.CategoryTheory.Localization.Trifunctor
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
+
+import Mathlib.CategoryTheory.Localization.Quadrifunctor
 
 /-!
 # Localization of monoidal categories

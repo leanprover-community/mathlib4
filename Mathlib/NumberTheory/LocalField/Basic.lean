@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
+import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.Topology.Algebra.Module.Compact
 

@@ -5,10 +5,12 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.Normed.Field.Basic
 
 import Mathlib.Algebra.Order.Field.GeomSum
+import Mathlib.Algebra.Polynomial.Monic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

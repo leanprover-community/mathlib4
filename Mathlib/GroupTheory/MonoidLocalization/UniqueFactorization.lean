@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
+import Mathlib.GroupTheory.MonoidLocalization.Divisibility
+
 /-! # Localization preserves unique factorization
 
 ## Main results

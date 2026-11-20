@@ -5,7 +5,10 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Separable
+
+import Mathlib.FieldTheory.Extension
 
 /-!
 # Conjugate roots

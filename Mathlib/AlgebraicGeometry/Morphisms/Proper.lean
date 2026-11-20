@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
+import Mathlib.RingTheory.RingHom.Integral
+
 /-!
 # Proper morphisms
 

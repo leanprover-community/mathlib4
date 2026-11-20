@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Support
 
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness

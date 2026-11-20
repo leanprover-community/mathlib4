@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Monad.Types
 public import Mathlib.Topology.Category.Profinite.Basic
 
+import Mathlib.CategoryTheory.Limits.Types.Limits
+
 /-!
 # Compacta and Compact Hausdorff Spaces
 

@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
 
+import Mathlib.Algebra.Order.Interval.Finset.Basic
+
 /-!
 # Sums of binomial coefficients
 

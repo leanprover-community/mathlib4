@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
 /-!
 # Description of the covering sieves of the coherent topology
 

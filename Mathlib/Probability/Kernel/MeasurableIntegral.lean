@@ -6,7 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Probability.Kernel.MeasurableLIntegral
+public import Mathlib.Probability.Kernel.Defs
+
+import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Measurability of the integral against a kernel

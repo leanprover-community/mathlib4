@@ -5,7 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Infinite
+public import Mathlib.FieldTheory.Galois.Basic
+
+import Mathlib.FieldTheory.Galois.GaloisClosure
+import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
 # Abelian extensions

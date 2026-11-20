@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Data.Nat.Choose.Cast
-public import Mathlib.Data.Nat.Choose.Vandermonde
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Tactic.Field
 
 /-!

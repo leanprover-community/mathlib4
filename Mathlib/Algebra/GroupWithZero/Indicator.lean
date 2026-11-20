@@ -5,11 +5,11 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Notation.Indicator
 
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Support
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

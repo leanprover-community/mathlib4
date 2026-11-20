@@ -8,9 +8,12 @@ module
 -- these `ModuleCat` instances are only used by the `example` below, which `shake` cannot see
 public import Mathlib.Algebra.Category.ModuleCat.AB  -- shake: keep
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits  -- shake: keep
-public import Mathlib.AlgebraicGeometry.Sites.Affine
 public import Mathlib.AlgebraicGeometry.Sites.Etale
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.OneHypercoverDense
+
+import Mathlib.AlgebraicGeometry.Sites.Affine
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
 /-!
 # Affine étale site

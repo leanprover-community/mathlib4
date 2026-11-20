@@ -5,11 +5,14 @@ Authors: Simon Hudon, Yaël Dillies, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
+
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # Natural number logarithms

@@ -5,8 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 
 /-!
 # `ZMod n` and quotient groups / rings

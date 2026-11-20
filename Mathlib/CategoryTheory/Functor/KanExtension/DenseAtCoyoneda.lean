@@ -5,7 +5,9 @@ Authors: Joël Riou, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+
+import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
 /-!
 # The co-Yoneda embedding is dense

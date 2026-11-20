@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Subring
 
 /-!

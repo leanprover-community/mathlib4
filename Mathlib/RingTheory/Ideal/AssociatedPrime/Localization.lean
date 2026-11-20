@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-public import Mathlib.RingTheory.Support
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+
+import Mathlib.RingTheory.Support
 
 /-!
 # Associated primes of localized module

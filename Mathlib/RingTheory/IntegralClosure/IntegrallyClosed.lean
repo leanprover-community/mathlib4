@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Localization.Integral
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
+
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Integrally closed rings

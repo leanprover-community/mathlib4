@@ -5,7 +5,10 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Cast of naturals into ordered fields

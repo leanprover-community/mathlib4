@@ -5,12 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
-public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 # Results about coefficients of polynomials being integral

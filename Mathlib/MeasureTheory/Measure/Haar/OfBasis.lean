@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
+import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
+
 /-!
 # Additive Haar measure constructed from a basis
 

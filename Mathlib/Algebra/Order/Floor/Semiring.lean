@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Order.Interval.Set.Defs
 
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semirings
 

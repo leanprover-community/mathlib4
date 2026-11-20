@@ -5,7 +5,10 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.Restrict
+public import Mathlib.Order.Interval.Set.Basic
+
+import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Projection of a line onto a closed interval

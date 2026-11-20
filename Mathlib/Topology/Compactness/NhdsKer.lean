@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Tactic.Peel
-public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.NhdsKer
+
+import Mathlib.Topology.Compactness.Compact
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

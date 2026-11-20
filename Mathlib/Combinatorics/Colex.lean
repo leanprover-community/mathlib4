@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Nat.BitIndices
 public import Mathlib.Order.UpperLower.Closure
 
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.SupClosed
 
 /-!

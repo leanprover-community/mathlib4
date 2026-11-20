@@ -5,8 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Prod
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Finite products of types

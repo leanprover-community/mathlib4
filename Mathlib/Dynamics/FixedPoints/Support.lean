@@ -5,8 +5,11 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Topology.Separation.Basic
+
+import Mathlib.Dynamics.FixedPoints.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

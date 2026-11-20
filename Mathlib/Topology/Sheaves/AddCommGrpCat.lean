@@ -6,9 +6,11 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.Topology.Sheaves.Abelian
+
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Topology.Sheaves.Limits
 
 /-!
 # Sheaves of abelian groups.

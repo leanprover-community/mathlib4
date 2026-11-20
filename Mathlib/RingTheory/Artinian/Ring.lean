@@ -6,10 +6,12 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 module
 
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Localization.Defs
 
 import Mathlib.Algebra.Field.Equiv
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Artinian rings

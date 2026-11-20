@@ -6,10 +6,10 @@ Authors: Joël Riou, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Projective dimension

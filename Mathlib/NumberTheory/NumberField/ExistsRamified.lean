@@ -5,10 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Unramified.Locus
 
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
+import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!

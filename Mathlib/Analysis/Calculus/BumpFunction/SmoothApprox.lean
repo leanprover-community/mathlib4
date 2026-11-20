@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 
 import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

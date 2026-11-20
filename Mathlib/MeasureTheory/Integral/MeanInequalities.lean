@@ -5,11 +5,14 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.Basic.Real.ConjExponents
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.MeanInequalities
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!

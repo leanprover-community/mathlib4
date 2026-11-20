@@ -5,9 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Subobject
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Subobject.WellPowered
 
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,8 +5,11 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Higher differentiability in finite dimensions.

@@ -6,7 +6,9 @@ Authors: Chris Hughes, Patrick Stevens
 module
 
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.Data.Nat.Prime.Defs
+
+import Mathlib.Data.Nat.Prime.Factorial
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

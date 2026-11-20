@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Sym.Card
+public import Mathlib.Data.Finset.Sym
+
+import Mathlib.Data.Set.Card
+import Mathlib.Data.Sym.Card
 
 /-!
 # Definitions for finite and locally finite graphs

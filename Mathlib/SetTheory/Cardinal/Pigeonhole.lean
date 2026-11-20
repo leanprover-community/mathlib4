@@ -5,7 +5,9 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+
+import Mathlib.SetTheory.Cardinal.Regular
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

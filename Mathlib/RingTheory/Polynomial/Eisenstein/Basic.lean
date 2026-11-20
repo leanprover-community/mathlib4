@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!

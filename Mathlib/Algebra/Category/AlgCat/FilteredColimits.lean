@@ -6,11 +6,12 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.Algebra.Category.Ring.FilteredColimits
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # Filtered colimits in the category of `R`-algebras

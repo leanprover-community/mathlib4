@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Span.Basic
 
+import Mathlib.Data.Fintype.BigOperators
+
 /-!
 # Basic results on bases
 

@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.OrderOfElement
+
+import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # Minimum order of an element

@@ -5,9 +5,11 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Nat.Prime.Defs
 
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Prime.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

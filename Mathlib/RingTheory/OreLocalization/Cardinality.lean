@@ -5,8 +5,10 @@ Authors: Jz Pan
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
-public import Mathlib.RingTheory.OreLocalization.Ring
+
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Cardinality of Ore localizations of rings

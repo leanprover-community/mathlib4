@@ -5,8 +5,10 @@ Authors: Xavier Généreux, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.RingTheory.Algebraic.Basic
 
 
 /-!

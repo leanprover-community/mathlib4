@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
 

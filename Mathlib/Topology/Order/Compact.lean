@@ -9,6 +9,8 @@ public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.Order.LocalExtr
 
+import Mathlib.Topology.Order.DenselyOrdered
+
 /-!
 # Compactness of a closed interval
 

@@ -6,7 +6,9 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
-public import Mathlib.Analysis.Meromorphic.RCLike
+
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
+import Mathlib.Analysis.Meromorphic.RCLike
 
 /-!
 # The First Main Theorem of Value Distribution Theory

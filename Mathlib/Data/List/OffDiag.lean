@@ -9,6 +9,7 @@ public import Mathlib.Data.Nat.Notation
 
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Enum
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
 

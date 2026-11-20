@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.NilpotentKer
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.Submodule

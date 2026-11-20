@@ -5,9 +5,10 @@ Authors: Anthony Fernandes, Marc Robin
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Oka
 public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Noetherian rings and prime ideals

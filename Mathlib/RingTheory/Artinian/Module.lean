@@ -5,14 +5,17 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Opposite
-public import Mathlib.Data.SetLike.Fintype
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Jacobson.Semiprimary
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Order.SuccPred.PartialSups
+import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Data.SetLike.Fintype
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Artinian rings and modules

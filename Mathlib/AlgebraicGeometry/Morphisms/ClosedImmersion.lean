@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.ResidueField
 
+import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.RingHom.Surjective
+
 /-!
 # Closed immersions of schemes
 

@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category

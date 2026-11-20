@@ -9,6 +9,7 @@ public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Tactic.Linarith
 
 /-!

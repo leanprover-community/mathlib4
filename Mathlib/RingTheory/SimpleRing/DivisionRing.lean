@@ -5,7 +5,10 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Simple
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Simple
 
 /-!
 # Simple modules over division rings

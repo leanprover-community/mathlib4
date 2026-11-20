@@ -6,7 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Finite and projective modules

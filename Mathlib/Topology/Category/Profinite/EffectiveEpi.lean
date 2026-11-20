@@ -5,10 +5,12 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 public import Mathlib.Topology.Category.Profinite.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
+
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 
 /-!
 # Effective epimorphisms in `Profinite`

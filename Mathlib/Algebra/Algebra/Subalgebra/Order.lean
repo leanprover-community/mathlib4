@@ -6,7 +6,9 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Ring.Subsemiring.Order
+public import Mathlib.Algebra.Order.Ring.Defs
+
+import Mathlib.Algebra.Ring.Subsemiring.Order
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

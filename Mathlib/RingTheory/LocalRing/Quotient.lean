@@ -6,12 +6,16 @@ Authors: Andrew Yang, Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Ideal.Quotient.Index
+public import Mathlib.RingTheory.Artinian.Defs
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Data.SetLike.Fintype
+import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.Ideal.Quotient.Index
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Nakayama
 

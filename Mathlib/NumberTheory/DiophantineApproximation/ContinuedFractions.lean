@@ -5,10 +5,11 @@ Authors: Michael Geißer, Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
+import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 
 /-!
 # Diophantine Approximation using continued fractions

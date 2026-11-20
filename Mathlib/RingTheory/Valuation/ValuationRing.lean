@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Bezout
-public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Valuation Rings

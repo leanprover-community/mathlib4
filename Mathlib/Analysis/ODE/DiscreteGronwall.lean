@@ -5,12 +5,13 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.Complex.Exponential
 
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Analysis.Complex.Order
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Data.EReal.Inv
 import Mathlib.Tactic.Positivity
 

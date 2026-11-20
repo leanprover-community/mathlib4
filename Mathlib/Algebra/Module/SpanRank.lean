@@ -5,8 +5,11 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Finiteness.Ideal
+
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Minimum Cardinality of generating set of a submodule

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
+import Mathlib.Algebra.Ring.NonZeroDivisors
+
 /-!
 # The field of rational functions
 

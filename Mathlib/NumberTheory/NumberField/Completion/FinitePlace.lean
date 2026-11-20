@@ -6,13 +6,15 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Ramification
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
+import Mathlib.RingTheory.DedekindDomain.AdicValuation.Ramification
 import Mathlib.RingTheory.Valuation.Archimedean
 
 /-!

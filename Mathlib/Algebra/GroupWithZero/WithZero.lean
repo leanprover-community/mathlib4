@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.GroupWithZero.Equiv
@@ -13,6 +13,8 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Util.CompileInductive
+
+import Mathlib.Algebra.Divisibility.Hom
 
 /-!
 # Adjoining a zero to a group

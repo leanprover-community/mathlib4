@@ -5,8 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.ModEq
+
+import Mathlib.Algebra.Field.Basic
 
 /-!
 # Congruence modulo multiples of an element in a (semi)field

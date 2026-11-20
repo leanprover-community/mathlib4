@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
+import Mathlib.Topology.UrysohnsLemma
+
 /-! # Properties of C⋆-algebra homomorphisms
 
 Here we collect properties of C⋆-algebra homomorphisms.

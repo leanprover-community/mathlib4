@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Summable
+public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
+import Mathlib.Algebra.Module.ZLattice.Summable
 import Mathlib.Analysis.Analytic.Binomial
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit

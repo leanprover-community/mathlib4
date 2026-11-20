@@ -5,14 +5,14 @@ Authors: Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Basic.Rel
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Sigma
 
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.OrderIsoNat
 

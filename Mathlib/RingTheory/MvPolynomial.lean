@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.RingTheory.MvPolynomial.Basic
+
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

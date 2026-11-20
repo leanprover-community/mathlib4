@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.PartialEquiv
 
+import Mathlib.Data.Finset.Order
+
 /-!
 # Fraïssé Classes and Fraïssé Limits
 

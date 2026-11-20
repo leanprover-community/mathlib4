@@ -5,8 +5,11 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

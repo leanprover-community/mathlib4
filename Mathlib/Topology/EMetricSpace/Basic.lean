@@ -6,14 +6,14 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Order.SuccPred.Nat
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Extended metric spaces

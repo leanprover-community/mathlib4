@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 
+import Mathlib.Data.Fintype.Lattice
+
 /-!
 # Block matrices and their determinant
 

@@ -6,11 +6,12 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Juny
 -/
 module
 
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.LocalRing.LocalSubring
-public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.RingTheory.Polynomial.Ideal
+import Mathlib.RingTheory.Valuation.Integral
 
 /-!
 # Valuation subrings are exactly the maximal local subrings

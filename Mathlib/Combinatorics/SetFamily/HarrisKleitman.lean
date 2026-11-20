@@ -5,11 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Harris-Kleitman inequality

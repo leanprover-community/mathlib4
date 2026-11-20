@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
+import Mathlib.RingTheory.Localization.Submodule
+
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
 

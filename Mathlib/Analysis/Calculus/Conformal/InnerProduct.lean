@@ -6,7 +6,9 @@ Authors: Yourong Zang
 module
 
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+public import Mathlib.Analysis.InnerProductSpace.Defs
+
+import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

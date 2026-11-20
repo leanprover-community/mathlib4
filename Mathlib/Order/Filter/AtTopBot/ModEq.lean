@@ -5,14 +5,18 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Nat.ModEq
-public import Mathlib.Order.Filter.AtTopBot.Monoid
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Monoid
+import Mathlib.Order.Nat
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

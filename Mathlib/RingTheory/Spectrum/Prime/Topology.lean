@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Order.Ring.Idempotent
-public import Mathlib.Order.Heyting.Hom
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
@@ -14,6 +13,8 @@ public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.KrullDimension
 public import Mathlib.Topology.Spectral.Basic
+
+import Mathlib.Order.Heyting.Hom
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring

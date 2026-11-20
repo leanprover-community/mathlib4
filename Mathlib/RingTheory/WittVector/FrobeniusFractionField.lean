@@ -6,7 +6,10 @@ Authors: Robert Y. Lewis, Heather Macbeth
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
+
+import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`

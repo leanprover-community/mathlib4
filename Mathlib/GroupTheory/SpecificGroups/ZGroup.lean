@@ -5,10 +5,11 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.GroupTheory.SemidirectProduct
 
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SchurZassenhaus
 

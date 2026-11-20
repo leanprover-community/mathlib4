@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+
+import Mathlib.MeasureTheory.Function.Holder
 
 /-!
 # Continuously differentiable functions supported in a given compact set

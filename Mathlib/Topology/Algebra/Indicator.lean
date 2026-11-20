@@ -6,8 +6,9 @@ Authors: PFR contributors
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Defs.Filter
 
+import Mathlib.Topology.Clopen
 import Mathlib.Topology.Piecewise
 
 set_option doc.verso true

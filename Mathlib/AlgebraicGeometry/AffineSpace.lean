@@ -6,8 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
-public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+
+import Mathlib.Algebra.MvPolynomial.Nilpotent
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
+import Mathlib.RingTheory.RingHom.Integral
 
 /-!
 # Affine space

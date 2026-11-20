@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Topology.Connected.LocallyPathConnected
 
 import Mathlib.Analysis.Complex.CoveringMap
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Topology.Homotopy.Lifting
 
 set_option doc.verso true

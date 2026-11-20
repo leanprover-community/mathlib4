@@ -6,10 +6,11 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 

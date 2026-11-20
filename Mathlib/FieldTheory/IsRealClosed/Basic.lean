@@ -5,10 +5,11 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Domain
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.Ring.Semireal.Defs
 
+import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Tactic.LinearCombination
 
 /-!

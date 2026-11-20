@@ -6,10 +6,12 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.LinearAlgebra.Pi
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.RingEquiv
+import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices

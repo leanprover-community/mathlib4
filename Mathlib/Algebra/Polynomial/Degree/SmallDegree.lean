@@ -5,8 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.Nat.WithBot
+
+import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Results on polynomials of specific small degrees

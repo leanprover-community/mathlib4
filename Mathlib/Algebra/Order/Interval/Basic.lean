@@ -5,12 +5,14 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Interval arithmetic

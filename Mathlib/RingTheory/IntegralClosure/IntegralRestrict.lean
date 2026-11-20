@@ -7,9 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
+
+import Mathlib.RingTheory.Localization.Finiteness
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Restriction of various maps between fields to integrally closed subrings.

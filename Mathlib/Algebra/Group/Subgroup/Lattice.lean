@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.Operations
 
+import Mathlib.Basic.Nontrivial.Basic
+
 /-!
 # Lattice structure of subgroups
 

@@ -6,7 +6,10 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+
+import Mathlib.Order.BoundedOrder.Lattice
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

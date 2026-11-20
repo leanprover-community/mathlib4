@@ -7,7 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
-public import Mathlib.Topology.Maps.Strict.Group
+public import Mathlib.Topology.Maps.Strict.Basic
+
+import Mathlib.Topology.Maps.Strict.Group
 
 /-!
 # Strict linear maps

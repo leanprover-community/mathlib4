@@ -5,12 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Batteries.Data.List.Basic
 public import Mathlib.Basic.SetLike.Basic
-public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Set
+
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Chains and flags

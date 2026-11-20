@@ -5,8 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+
+import Mathlib.Algebra.Module.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

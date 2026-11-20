@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+
+import Mathlib.Algebra.Group.Int.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

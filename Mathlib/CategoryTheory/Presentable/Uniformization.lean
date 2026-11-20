@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
-public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
+public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
+
+import Mathlib.CategoryTheory.Presentable.Directed
+import Mathlib.CategoryTheory.Presentable.Retracts
+import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 
 /-!
 # The uniformization theorem

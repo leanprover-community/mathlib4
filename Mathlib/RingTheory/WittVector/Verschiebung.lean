@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.WittVector.IsPoly
 
+import Mathlib.Algebra.MvPolynomial.Funext
+
 /-!
 # The Verschiebung operator
 

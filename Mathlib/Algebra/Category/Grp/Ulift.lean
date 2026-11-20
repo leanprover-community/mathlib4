@@ -5,9 +5,12 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.LargeColimits
+public import Mathlib.Algebra.Category.Grp.Colimits
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+import Mathlib.Algebra.Category.Grp.LargeColimits
+import Mathlib.Algebra.Module.CharacterModule
 
 /-!
 # Properties of the universe lift functor for groups

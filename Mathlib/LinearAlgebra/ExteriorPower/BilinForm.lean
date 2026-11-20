@@ -5,7 +5,9 @@ Authors: Oliver Nash, Kirill Kondrashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+
+import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # Bilinear forms on exterior powers

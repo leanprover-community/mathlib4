@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.RingTheory.Finiteness.Ideal
 
 /-!
 # Nilpotent ideals in Noetherian rings

@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.SuccPred.Archimedean
 
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Disjoint
 
 set_option doc.verso true

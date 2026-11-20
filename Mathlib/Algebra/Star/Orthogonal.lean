@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Star.BigOperators
 public import Mathlib.Algebra.Star.StarProjection
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Star-orthogonality

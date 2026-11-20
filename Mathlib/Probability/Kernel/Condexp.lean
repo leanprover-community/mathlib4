@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Probability.Kernel.CondDistrib
 
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+
 /-!
 # Kernel associated with a conditional expectation
 

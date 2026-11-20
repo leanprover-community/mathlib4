@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Factorization.Induction
 
 /-!
 # The von Mangoldt Function

@@ -5,11 +5,15 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Disjointed
-public import Mathlib.Algebra.Order.Ring.Prod
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Disjointed
 
+import Mathlib.Algebra.Order.Disjointed
+import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 

@@ -6,11 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.GlueData
-public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.Logic.Function.Coequalizer
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Opens
 
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 
 /-!
 # Gluing Topological spaces

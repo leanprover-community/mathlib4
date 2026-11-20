@@ -9,6 +9,8 @@ module
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
+import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+
 /-!
 # Summability of E2
 

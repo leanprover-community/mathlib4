@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
+import Mathlib.Data.DFinsupp.Small
+
 /-! # Smallness properties of modules and algebras -/
 
 public section

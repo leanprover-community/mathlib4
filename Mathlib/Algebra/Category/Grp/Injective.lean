@@ -5,11 +5,12 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.EuclideanDomain.Int
 
 /-!
 # Injective objects in the category of abelian groups

@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Nat
+
+import Mathlib.Algebra.Group.Nat.Units
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`

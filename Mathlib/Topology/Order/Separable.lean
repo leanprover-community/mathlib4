@@ -5,7 +5,9 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Topology.Order.T5
+public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Topology.Order.T5
 
 /-!
 # Hereditary separability of linear orders

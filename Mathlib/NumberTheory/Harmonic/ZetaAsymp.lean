@@ -5,11 +5,12 @@ Authors: David Loeffler, Terence Tao
 -/
 module
 
-public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 
 import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Normed.Module.Connected
+import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
 # Asymptotics of `ζ s` as `s → 1` or `s → 0`

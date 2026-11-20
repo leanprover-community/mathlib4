@@ -5,13 +5,15 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
 
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Order.Disjointed
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Disjoint covers of profinite spaces

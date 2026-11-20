@@ -10,6 +10,7 @@ public import Mathlib.Data.Fintype.Inv
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.FieldSimp
 
 /-!

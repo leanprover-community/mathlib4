@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Unramified.Field
 
+import Mathlib.RingTheory.Artinian.Ring
+
 /-!
 # Unramified algebras over local rings
 

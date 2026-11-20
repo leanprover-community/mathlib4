@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.List.GetD
 
+import Mathlib.Data.List.Induction
+
 /-!
 # Lists as finsupp
 

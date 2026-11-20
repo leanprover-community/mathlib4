@@ -6,8 +6,10 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Grp.Basic
-public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.CategoryTheory.Yoneda
+
+import Mathlib.Algebra.Group.Pi.Lemmas
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

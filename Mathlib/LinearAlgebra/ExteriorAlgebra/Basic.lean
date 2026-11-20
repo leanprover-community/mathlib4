@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.Order.Hom.PowersetCard
 
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+
 /-!
 # Exterior Algebras
 

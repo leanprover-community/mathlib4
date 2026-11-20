@@ -5,7 +5,10 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Nilpotent
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+
+import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Newton-Raphson method

@@ -5,8 +5,10 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.Probability.CDF
+
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-! # Pareto distributions over ℝ
 

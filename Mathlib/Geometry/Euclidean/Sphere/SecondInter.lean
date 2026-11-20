@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 import Mathlib.Analysis.Convex.StrictCombination
+import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Second intersection of a sphere and a line

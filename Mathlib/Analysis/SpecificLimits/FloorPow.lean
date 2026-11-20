@@ -5,9 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.Algebra.Order.Field.GeomSum
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Results on discretized exponentials
