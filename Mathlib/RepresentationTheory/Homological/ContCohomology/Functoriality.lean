@@ -27,7 +27,7 @@ representation `X` of `G`, a topological representation `Y` of `H`, and a morphi
 
 @[expose] public section
 
-universe u v w
+universe u v
 
 open CategoryTheory CategoryTheory.Functor
 
