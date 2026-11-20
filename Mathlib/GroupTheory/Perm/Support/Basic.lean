@@ -78,6 +78,9 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 
 @[deprecated (since := "2026-11-17")] alias set_support_apply_mem := apply_mem_support
 
+theorem apply_inv_mem_support {x : α} : f⁻¹ x ∈ f.support ↔ x ∈ f.support := by
+  rw [← apply_mem_support, ← mul_apply, mul_inv_cancel, one_apply]
+
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by simp
 
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by simp
@@ -142,6 +145,10 @@ theorem support_mul_subset (f g : Perm α) : (f * g).support ⊆ f.support ∪ g
 @[simp]
 theorem support_conj : (f * g * f⁻¹).support = f '' g.support := by
   grind [mul_apply, Set.mem_image_perm, f.eq_inv_iff_eq]
+
+@[simp]
+theorem support_conj_inv : (f⁻¹ * g * f).support = ⇑f⁻¹ '' g.support := by
+  simpa using f⁻¹.support_conj
 
 theorem support_permCongr : (f.permCongr g).support = f '' g.support := by simp
 

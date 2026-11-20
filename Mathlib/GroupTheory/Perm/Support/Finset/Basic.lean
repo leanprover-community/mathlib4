@@ -70,6 +70,10 @@ theorem supportFinset_inv (σ : Perm α) : supportFinset σ⁻¹ = σ.supportFin
 
 theorem apply_mem_supportFinset {x : α} : f x ∈ f.supportFinset ↔ x ∈ f.supportFinset := by simp
 
+theorem apply_inv_mem_supportFinset {x : α} :
+    f⁻¹ x ∈ f.supportFinset ↔ x ∈ f.supportFinset := by
+  simpa using f.apply_inv_mem_support
+
 @[simp]
 theorem supportFinset_eq_empty_iff : f.supportFinset = ∅ ↔ f = 1 := coe_inj.symm.trans <| by simp
 
@@ -239,7 +243,12 @@ section Conjugation
 
 @[simp]
 theorem supportFinset_conj : (f * g * f⁻¹).supportFinset = g.supportFinset.map f.toEmbedding := by
-  simp [← coe_inj, coe_supportFinset_eq_support]
+  simp [← coe_inj]
+
+@[simp]
+theorem supportFinset_conj_inv :
+    (f⁻¹ * g * f).supportFinset = g.supportFinset.map f⁻¹.toEmbedding := by
+  simp [← coe_inj]
 
 end Conjugation
 

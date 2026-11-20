@@ -119,6 +119,10 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
 
+@[simp] theorem inv_symm (f : Perm α) : f⁻¹.symm = f := rfl
+
+@[simp] theorem symm_inv (f : Perm α) : f.symm⁻¹ = f := rfl
+
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
@@ -137,7 +141,6 @@ theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
 theorem _root_.Commute.apply_apply {f g : Perm α} (h : Commute f g) {x : α} : f (g x) = g (f x) :=
   Equiv.congr_fun h x
 
-@[simp 1001]
 theorem _root_.Set.mem_image_perm {f : Perm α} {S : Set α} {x} :
     x ∈ f '' S ↔ f⁻¹ x ∈ S := by simp [Set.mem_image, f.eq_inv_iff_eq.symm]
 
