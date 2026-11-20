@@ -37,7 +37,7 @@ variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
 without density assumptions. -/
 def embeddingOfSubset : ℓ^∞(ℕ, ℝ) :=
-  ⟨fun n => dist a (x n) - dist (x 0) (x n), by
+  ⟨.ofFun fun n => dist a (x n) - dist (x 0) (x n), by
     apply memℓp_infty
     use dist a (x 0)
     rintro - ⟨n, rfl⟩
@@ -144,7 +144,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
       simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
-    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ ⟨swap g i, hf_extb i⟩
+    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ ⟨.ofFun (swap g i), hf_extb i⟩
     refine ⟨f_ext', ?_, ?_⟩
     · rw [LipschitzWith.coordinate]
       exact hgl
