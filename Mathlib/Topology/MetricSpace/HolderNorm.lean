@@ -29,7 +29,6 @@ for which `WithHolder C r f` is true.
 ## Tags
 
 Hölder norm, Hoelder norm, Holder norm
-
 -/
 
 @[expose] public section
@@ -172,8 +171,8 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
   let := PseudoEMetricSpace.toPseudoMetricSpace
-    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
-  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
+    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.property y.property)
+  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
   exact MemHolder.of_le hf hs
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,
@@ -300,7 +299,7 @@ lemma eHolderNorm_add_le :
 lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
-  · rw [nnnorm_eq_zero] at hc
+  · rw [nnNorm_eq_zero] at hc
     simp [hc]
   by_cases hf : MemHolder r f
   · refine le_antisymm ((hf.holderWith.smul c).eHolderNorm_le.trans ?_) <| mul_le_of_le_div' ?_
@@ -314,7 +313,7 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf
     rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top, MemHolder.smul_iff hc]
-    rw [nnnorm_eq_zero] at hc
+    rw [nnNorm_eq_zero] at hc
     intro h
     exact h.eHolderNorm_lt_top.ne hf
 

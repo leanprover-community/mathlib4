@@ -25,7 +25,6 @@ This file contains the definitions of the real and complex exponential function.
 * `Complex.exp`: The complex exponential function, defined via its Taylor series
 
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
-
 -/
 
 @[expose] public section
@@ -56,12 +55,14 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq (‖·‖) fun n => ∑ m ∈ range n,
 the complex exponential function -/
 @[pp_nodot]
 def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
-  ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
+  .mk (fun n => ∑ m ∈ range n, z ^ m / m.factorial) (isCauSeq_exp z)
 
 /-- The complex exponential function, defined via its Taylor series -/
-@[pp_nodot]
-irreducible_def exp (z : ℂ) : ℂ :=
+@[no_expose, pp_nodot]
+def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
+
+alias exp_def := exp.eq_def
 
 /-- scoped notation for the complex exponential function -/
 scoped notation "cexp" => Complex.exp
@@ -92,7 +93,6 @@ namespace Complex
 
 variable (x y : ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
@@ -105,10 +105,8 @@ theorem exp_zero : exp 0 = 1 := by
     | zero => simp
     | succ j ih =>
       rw [← ih (by simp)]
-      simp only [sum_range_succ, pow_succ]
-      simp
+      simp [sum_range_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_add : exp (x + y) = exp x * exp y := by
   have hj : ∀ j : ℕ, (∑ m ∈ range j, (x + y) ^ m / m.factorial) =
         ∑ i ∈ range j, ∑ k ∈ range (i + 1), x ^ k / k.factorial *
@@ -155,9 +153,19 @@ lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p)
   rw [← Complex.exp_nsmul]
   ring_nf
 
-theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
-  | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
-  | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
+lemma exp_mul_natCast (x : ℂ) (n : ℕ) : exp (x * n) = exp x ^ n := by
+  rw [← nsmul_eq_mul', exp_nsmul]
+
+lemma exp_natCast_mul (n : ℕ) (x : ℂ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_natCast]
+
+@[deprecated (since := "2026-11-12")] alias exp_nat_mul := exp_natCast_mul
+
+lemma exp_mul_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
+  exp_mul_natCast ..
+
+lemma exp_ofNat_mul (n : ℕ) (x : ℂ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
+  exp_natCast_mul ..
 
 @[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
@@ -169,20 +177,21 @@ theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
 theorem exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
 
-theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
-  cases n
-  · simp [exp_nat_mul]
-  · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
+lemma exp_mul_intCast (x : ℂ) : ∀ n : ℤ, exp (x * n) = exp x ^ n
+  | (n : ℕ) => by simp [exp_mul_natCast]
+  | .negSucc n => by rw [Int.cast_negSucc, zpow_negSucc, mul_neg, exp_neg, exp_mul_natCast]
+
+lemma exp_intCast_mul (n : ℤ) (x : ℂ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_intCast]
+
+@[deprecated (since := "2026-11-13")] alias exp_int_mul := exp_intCast_mul
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
   simp only [exp]
   rw [← lim_conj]
   congrm CauSeq.lim $(CauSeq.ext fun _ => ?_)
-  dsimp [exp', Function.comp_def, cauSeqConj]
-  rw [map_sum (starRingEnd _)]
-  refine sum_congr rfl fun n _ => ?_
-  rw [map_div₀, map_pow, ← ofReal_natCast, conj_ofReal]
+  simp [exp']
 
 @[simp]
 theorem ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
@@ -231,8 +240,25 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
-nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
-  ofReal_injective (by simp [exp_nat_mul])
+nonrec lemma exp_mul_natCast (x : ℝ) (n : ℕ) : exp (x * n) = exp x ^ n :=
+  ofReal_injective (by simp [exp_mul_natCast])
+
+lemma exp_natCast_mul (n : ℕ) (x : ℝ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_natCast]
+
+@[deprecated (since := "2026-11-12")] alias exp_nat_mul := exp_natCast_mul
+
+lemma exp_ofNat_mul (n : ℕ) (x : ℝ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
+  exp_natCast_mul ..
+
+lemma exp_mul_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
+  exp_mul_natCast ..
+
+lemma exp_mul_intCast (x : ℝ) (n : ℤ) : exp (x * n) = exp x ^ n :=
+  ofReal_injective (by simp [Complex.exp_mul_intCast])
+
+lemma exp_intCast_mul (n : ℤ) (x : ℝ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_intCast]
 
 @[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
@@ -248,12 +274,12 @@ open IsAbsoluteValue Nat
 
 theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i ∈ range n, x ^ i / i ! ≤ exp x :=
   calc
-    ∑ i ∈ range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ abs) := by
+    ∑ i ∈ range n, x ^ i / i ! ≤ lim (cauSeqRe (exp' x)) := by
       refine le_lim (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
-      simp only [exp', const_apply, re_sum]
+      simp only [const_apply, exp', cauSeqRe_apply, mk_apply, re_sum, div_natCast_re]
       norm_cast
       gcongr
-    _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
+    _ = exp x := by rw [exp, Complex.exp, lim_re]
 
 lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x :=
   calc
@@ -456,9 +482,9 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
 
 theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
     ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
-  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := mod_cast Complex.norm_real _
   _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
-  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (mod_cast hx)
   _ = ‖x‖ ^ 2 := by simp
 
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
@@ -533,12 +559,12 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
   have : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  exact_mod_cast Complex.norm_exp_sub_one_le (x := x) this
+  exact mod_cast Complex.norm_exp_sub_one_le (x := x) this
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
   rw [← sq_abs]
   have : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
+  exact mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
 For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
@@ -649,12 +675,40 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
       gcongr
       · exact sub_nonneg.2 <| div_le_one_of_le₀ ht' n.cast_nonneg
       · exact one_sub_le_exp_neg _
-    _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
+    _ = rexp (-t) := by rw [← Real.exp_natCast_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
+
+lemma one_add_div_pow_le_exp {m : ℕ} {x : ℝ} (hx : -m ≤ x) : (1 + x / m) ^ m ≤ exp x := by
+  simpa [neg_div, sub_neg_eq_add]
+    using Real.one_sub_div_pow_le_exp_neg (n := m) (t := -x) (neg_le.1 hx)
 
 lemma one_add_inv_pow_le_exp {n : ℕ} : (1 + (n : ℝ)⁻¹) ^ n ≤ exp 1 := by
   convert one_sub_div_pow_le_exp_neg (n := n) (t := -1) (by grind) using 1
   · field
   · simp
+
+/-- For `d ≤ m`, the number of subsets of size at most `d` of an `m`-element set,
+`∑ i ≤ d, m.choose i`, is at most `(exp 1 / d * m) ^ d`. -/
+lemma sum_choose_le_exp_pow {d m : ℕ} (hdm : d ≤ m) :
+    ∑ i ∈ .range (d + 1), (m.choose i : ℝ) ≤ (exp 1 / d * m) ^ d := by
+  obtain rfl | hd := d.eq_zero_or_pos
+  · simp
+  have hm : (0 : ℝ) < m := mod_cast hd.trans_le hdm
+  calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ)
+    _ = ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ i := by
+        congr! with i; simp [mul_assoc, ← mul_pow, hd.ne', hm.ne']
+    _ ≤ ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ d := by
+        gcongr with i hi
+        · exact (one_le_div₀ (mod_cast hd)).2 (mod_cast hdm)
+        · exact Finset.mem_range_succ_iff.1 hi
+    _ = (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
+        rw [← Finset.sum_mul, mul_comm]
+    _ ≤ (m / d : ℝ) ^ d * (1 + d / m : ℝ) ^ m := by
+        gcongr; grw [hdm, add_comm 1, add_pow]; congr! 1 with i; ring
+    _ ≤ (m / d : ℝ) ^ d * exp 1 ^ d := by
+        gcongr
+        simpa [← Real.exp_natCast_mul]
+          using one_add_div_pow_le_exp ((neg_nonpos.2 m.cast_nonneg).trans d.cast_nonneg)
+    _ = (exp 1 / d * m) ^ d := by ring
 
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
   rw [le_inv_mul_iff₀ hc]
@@ -664,7 +718,7 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
 
 lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
     exp x < (2 + x) / (2 - x) := by calc
-  _ = exp (x / 2) ^ 2 := by grind [Real.exp_nat_mul (x / 2) 2]
+  _ = exp (x / 2) ^ 2 := by grind [Real.exp_natCast_mul 2 (x / 2)]
   _ ≤ _ := by
     grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
     apply Real.exp_nonneg

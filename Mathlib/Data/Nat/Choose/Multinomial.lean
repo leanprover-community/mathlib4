@@ -11,6 +11,7 @@ public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
 /-!
 # Multinomial
 
@@ -49,7 +50,6 @@ we define it in terms of `Finsupp.multinomial`, via lists:
 If `m : Multiset ℕ` is the multiset associated with a list `l : List ℕ`,
 then `m.multinomial = l.toFinsupp.multinomial`.
 Then we prove its invariance under permutation.
-
 -/
 
 @[expose] public section
@@ -312,9 +312,9 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,
-          k.1.1.countPerms *
-            (k.1.1.map x).noncommProd
-              (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
+          k.val.val.countPerms *
+            (k.val.val.map x).noncommProd
+              (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.property) := by
   induction s using Finset.induction with
   | empty =>
     rw [sum_empty]
@@ -335,9 +335,9 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
-    rw [m.1.1.countPerms_filter_ne a]
-    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
-    simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
+    rw [m.val.val.countPerms_filter_ne a]
+    conv in m.val.val.map _ => rw [← m.val.val.filter_add_not (a = ·), Multiset.map_add]
+    simp_rw [Multiset.noncommProd_add, m.val.val.filter_eq, Multiset.map_replicate, m.val.property]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
     congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl

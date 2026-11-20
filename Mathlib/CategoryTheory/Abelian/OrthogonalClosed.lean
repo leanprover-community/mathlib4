@@ -5,8 +5,8 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 
 import Mathlib.Algebra.Homology.ShortComplex.Pullback

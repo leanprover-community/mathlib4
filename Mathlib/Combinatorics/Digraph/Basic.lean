@@ -5,8 +5,8 @@ Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
 module
 
-public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Digraphs

@@ -9,14 +9,12 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
-
 # Some results on the ranks of subalgebras
 
 This file contains some results on the ranks of subalgebras,
 which are corollaries of `rank_mul_rank`.
 Since their proof essentially depends on the fact that a non-trivial commutative ring
 satisfies the strong rank condition, we put them into a separate file.
-
 -/
 
 public section

@@ -141,9 +141,6 @@ theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
 
-@[deprecated (since := "2026-03-31")]
-alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
-
 /-!
 ### Set operations and omega limits
 -/
@@ -199,9 +196,6 @@ theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
 
-@[deprecated (since := "2026-03-31")]
-alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
-
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem
 
@@ -238,8 +232,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     intro u hu
     unfold w
     gcongr
-    refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)
-    all_goals exact Subset.rfl
+    exact iInter₂_subset_of_subset u hu Subset.rfl
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
     exact closure_mono (image2_subset inter_subset_right Subset.rfl)
@@ -353,7 +346,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
       (inter_subset_inter_left _
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
-    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_image2 _ _ _ hu hb.1, hb.2⟩
+    l₁.mono <| inter_subset_inter_left o <| omegaLimit_subset_closure_image2 _ _ _ hu
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)

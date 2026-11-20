@@ -77,7 +77,6 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 ## References
 
 [van der Waerden, *Free products of groups*][MR25465]
-
 -/
 
 @[expose] public section
