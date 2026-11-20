@@ -9,6 +9,9 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `bicategory` tactic
 

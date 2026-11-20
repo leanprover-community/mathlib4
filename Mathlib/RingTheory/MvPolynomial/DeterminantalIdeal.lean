@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinantal ideals of a generic matrix
 

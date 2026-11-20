@@ -8,6 +8,9 @@ module
 public meta import Lean.Meta.Native
 public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Core implementation of the `inclusion` tactic
 
