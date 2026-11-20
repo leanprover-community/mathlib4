@@ -71,6 +71,9 @@ alias toReal := _root_.Dyadic.toReal
 attribute [reducible, deprecated "Use the coercion `(d : ℝ)` instead." (since := "2026-11-06")]
   toReal
 
+@[simp, deprecated "Use the coercion to ℝ and `simp` instead." (since := "2026-11-20")]
+lemma toReal_zero : toReal 0 = 0 := by simp [toReal, _root_.Dyadic.toReal]
+
 alias toReal_natCast := _root_.Dyadic.toReal_natCast
 alias toReal_ofNat := _root_.Dyadic.toReal_ofNat
 alias toReal_intCast := _root_.Dyadic.toReal_intCast

@@ -73,7 +73,7 @@ variable (R) in
 /-- We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
 if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`. -/
 def ZariskisMainProperty (p : Ideal S) : Prop :=
-  ∃ r : integralClosure R S, r.1 ∉ p ∧ Function.Bijective
+  ∃ r : integralClosure R S, r.val ∉ p ∧ Function.Bijective
     (Localization.awayMap (integralClosure R S).val.toRingHom r)
 
 lemma zariskisMainProperty_iff {p : Ideal S} :
@@ -575,7 +575,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
     have : IsScalarTower R (MvPolynomial (Fin n) R) S := .of_algebraMap_eq fun r ↦
       (f.commutes r).symm.trans congr(f ($(MvPolynomial.finSuccEquiv_comp_C_eq_C n) r)).symm
     let f'' : (MvPolynomial (Fin n) R)[X] →ₐ[MvPolynomial (Fin n) R] S :=
-      ⟨f'.toRingHom, fun _ ↦ rfl⟩
+      { f'.toRingHom with commutes' _ := rfl }
     have : Algebra.WeaklyQuasiFiniteAt (MvPolynomial (Fin n) R) p :=
       .of_restrictScalars R _ _
     have := ZariskisMainProperty.of_algHom_polynomial p f''
@@ -670,7 +670,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     [Algebra.FiniteType R S] (p : Ideal S) (H : ZariskisMainProperty R p) :
     ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
-      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
+      r.val ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
   obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
   choose r hrp hr m hm using zariskisMainProperty_iff.mp H
   let t := insert r { r ^ m x * x | x ∈ s }
@@ -693,7 +693,7 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
         Subtype.ext_iff, IsLocalization.mk'_eq_iff_eq_mul, ← map_mul, ← map_pow,
         IsLocalization.eq_iff_exists (.powers r), Subalgebra.val]
     exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
-      m x, pow_mem r'.2 _, 1, rfl⟩
+      m x, pow_mem r'.property _, 1, rfl⟩
   intro x
   obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
     (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
@@ -707,7 +707,7 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
 lemma QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective
     [Algebra.FiniteType R S] (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p] :
     ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
-      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) :=
+      r.val ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) :=
   ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective _
     (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
@@ -718,10 +718,10 @@ lemma ZariskisMainProperty.quasiFiniteAt
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
   have : Algebra.QuasiFinite R (Localization.Away r) :=
     .trans _ S' _
-  have : Algebra.QuasiFinite R (Localization.Away r.1) :=
+  have : Algebra.QuasiFinite R (Localization.Away r.val) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
-  let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=
-    IsLocalization.Away.liftAlgHom r.1 (f := Algebra.ofId _ _) <|
+  let f : Localization.Away r.val →ₐ[S] Localization.AtPrime p :=
+    IsLocalization.Away.liftAlgHom r.val (f := Algebra.ofId _ _) <|
       IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩
   refine .of_forall_exists_mul_mem_range (f.restrictScalars R) fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
@@ -751,7 +751,7 @@ lemma QuasiFiniteAt.of_isOpen_singleton_fiber
   let e := PrimeSpectrum.preimageHomeomorphFiber R S p
   suffices Algebra.QuasiFiniteAt p.asIdeal.ResidueField (e ⟨q, rfl⟩).asIdeal from
     .of_quasiFiniteAt_residueField _ q.asIdeal (e ⟨q, rfl⟩).asIdeal
-      congr($(e.symm_apply_apply ⟨q, rfl⟩).1.asIdeal)
+      congr($(e.symm_apply_apply ⟨q, rfl⟩).val.asIdeal)
   refine .of_isOpen_singleton _ ?_
   rwa [← Set.image_singleton, e.isOpen_image]
 
@@ -765,6 +765,6 @@ lemma quasiFiniteAt_iff_isOpen_singleton_fiber
   rw [← e.isOpen_image, Set.image_singleton]
   suffices Algebra.QuasiFiniteAt p.asIdeal.ResidueField (e ⟨q, rfl⟩).asIdeal from
     (QuasiFiniteAt.isClopen_singleton (R := p.asIdeal.ResidueField) _).isOpen
-  exact .baseChange q.asIdeal _ congr($(e.symm_apply_apply ⟨q, rfl⟩).1.asIdeal).symm
+  exact .baseChange q.asIdeal _ congr($(e.symm_apply_apply ⟨q, rfl⟩).val.asIdeal).symm
 
 end Algebra

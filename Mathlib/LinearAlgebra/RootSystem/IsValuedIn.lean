@@ -197,7 +197,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     Dual S (P.corootSpan S) :=
   LinearMap.restrictScalarsRange (P.corootSpan S).subtype (Algebra.linearMap S R)
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
-    (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
+    (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.property i)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

@@ -104,7 +104,8 @@ attribute [grind ext] SimpleGraph.ext
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
-  toFun x := ⟨fun v w ↦ x.1 v w, ⟨fun v w ↦ by simp [x.2.1]⟩, ⟨fun v ↦ by simp [x.2.2]⟩⟩
+  toFun x := ⟨fun v w ↦ x.val v w, ⟨fun v w ↦ by simp [x.property.1]⟩,
+    ⟨fun v ↦ by simp [x.property.2]⟩⟩
   inj' := by
     rintro ⟨adj, _⟩ ⟨adj', _⟩
     simp only [mk.injEq, Subtype.mk.injEq]
@@ -572,7 +573,7 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
-  rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
+  simp [← Set.ne_empty_iff_nonempty]
 
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
@@ -785,7 +786,7 @@ theorem mk'_mem_incidenceSet_right_iff : s(a, b) ∈ G.incidenceSet b ↔ G.Adj 
   and_iff_left <| Sym2.mem_mk_right _ _
 
 theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
-  and_iff_right e.2
+  and_iff_right e.property
 
 theorem iUnion_incidenceSet : ⋃ v, G.incidenceSet v = G.edgeSet := by
   ext ⟨_, _⟩
@@ -1006,8 +1007,8 @@ theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
 vertex and the set of vertices adjacent to the vertex. -/
 @[simps]
 def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v where
-  toFun e := ⟨G.otherVertexOfIncident e.2, G.incidence_other_prop e.2⟩
-  invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
+  toFun e := ⟨G.otherVertexOfIncident e.property, G.incidence_other_prop e.property⟩
+  invFun w := ⟨s(v, w.val), G.mem_incidence_iff_neighbor.mpr w.property⟩
   left_inv x := by simp [otherVertexOfIncident]
   right_inv := fun ⟨w, hw⟩ => by
     simp only [Subtype.mk.injEq]
@@ -1060,7 +1061,7 @@ def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
   simp [neighborSet, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [Set.nonempty_iff_ne_empty]
+  simp [← Set.ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
   neighborSet_eq_empty

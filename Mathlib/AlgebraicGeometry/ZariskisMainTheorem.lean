@@ -47,7 +47,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     {x : X} {s : S} (h : f x = s) (hx : f.QuasiFiniteAt x) :
     ∃ (U : Scheme) (g : U ⟶ S), Etale g ∧ s ∈ Set.range g ∧
     ∃ (V W : (pullback f g).Opens) (v : V), IsCompl V W ∧ IsFinite (V.ι ≫ pullback.snd f g) ∧
-      pullback.fst f g v.1 = x := by
+      pullback.fst f g v.val = x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hUV : V ≤ f ⁻¹ᵁ U⟩ :=
@@ -119,7 +119,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     (x : X) (hx : f.QuasiFiniteAt x) :
     ∃ V, f.toNormalization x ∈ V ∧ IsIso (f.toNormalization ∣_ V) := by
   obtain ⟨T, fT, _, ⟨u, hu⟩, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
-  obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.1 ∈ U ∧
+  obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.val ∈ U ∧
       IsIso ((pullback.snd f fT).toNormalization ∣_ U) := by
     have hVW' : (W : Set ↑(pullback f fT)) = (↑V)ᶜ :=
       eq_compl_iff_isCompl.mpr (hVW.map TopologicalSpace.Opens.frameHom).symm
@@ -207,7 +207,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     ∃ U : f.normalization.Opens, IsIso (f.toNormalization ∣_ U) ∧
       (f.toNormalization ⁻¹ᵁ U).carrier = { x | f.QuasiFiniteAt x } := by
   choose V hxV hV using fun x : { x // f.QuasiFiniteAt x } ↦
-    f.exists_mem_and_isIso_morphismRestrict_toNormalization x x.2
+    f.exists_mem_and_isIso_morphismRestrict_toNormalization x x.property
   let 𝒰 := Opens.iSupOpenCover V
   have : IsIso (f.toNormalization ∣_ ⨆ x, V x) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _) 𝒰).mpr fun x ↦ ?_
@@ -415,7 +415,7 @@ lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
   · suffices LocallyQuasiFinite (f ∣_ V) from .of_isProper_of_locallyQuasiFinite _
     rw [← Scheme.Hom.quasiFiniteLocus_eq_top_iff]
     ext x
-    have : f.QuasiFiniteAt ((f ⁻¹ᵁ V).ι x) := by by_contra H; exact x.2 ⟨_, H, by simp⟩
+    have : f.QuasiFiniteAt ((f ⁻¹ᵁ V).ι x) := by by_contra H; exact x.property ⟨_, H, by simp⟩
     rw [← Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion, ← morphismRestrict_ι,
       Scheme.Hom.quasiFiniteAt_comp_iff] at this
     simpa

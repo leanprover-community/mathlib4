@@ -34,6 +34,21 @@ meta def mkRealIVar : InclusionExt :=
 theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map ((↑) : Dyadic → ℝ) :=
   Iff.rfl
 
+@[simp]
+theorem mem_mk_coe (x : ℝ) (a b : Dyadic) :
+    x ∈ (⟨a, b⟩ : Interval Dyadic) ↔ a ≤ x ∧ x ≤ b := by
+  simp [mem_iff_mem_map, Interval.map]
+
+@[simp]
+theorem mem_Iic_coe (x : ℝ) (b : Dyadic) :
+    x ∈ Interval.Iic (↑b : WithTop Dyadic) ↔ x ≤ b := by
+  simp [mem_iff_mem_map, Interval.Iic, Interval.map]
+
+@[simp]
+theorem mem_Ici_coe (x : ℝ) (a : Dyadic) :
+    x ∈ Interval.Ici (↑a : WithBot Dyadic) ↔ a ≤ x := by
+  simp [mem_iff_mem_map, Interval.Ici, Interval.map]
+
 section Constants
 
 @[inclusion_op interval_dyadic_real]
