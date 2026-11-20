@@ -470,11 +470,10 @@ theorem conjTranspose_list_prod [Semiring α] [StarRing α] [Fintype m] [Decidab
 variable (n α) in
 /-- `Matrix.conjTranspose` as a `StarAlgEquiv` to the opposite ring -/
 @[simps!]
-def conjTransposeAlgEquiv [Fintype n] [CommSemiring R] [StarRing R] [TrivialStar R] [Semiring α]
-    [StarRing α] [Algebra R α] [StarModule R α] : Matrix n n α ≃⋆ₐ[R] (Matrix n n α)ᵐᵒᵖ where
+def conjTransposeAlgEquiv [Fintype n] [Star R] [TrivialStar R] [NonUnitalNonAssocSemiring α]
+    [StarRing α] [SMul R α] [StarModule R α] :
+    Matrix n n α ≃⋆ₐ[R] (Matrix n n α)ᵐᵒᵖ where
   __ := conjTransposeRingEquiv n α
-  map_smul' r M := by
-    change conjTransposeRingEquiv n α (r • M) = r • conjTransposeRingEquiv n α M
-    simp
+  map_smul' r M := by simp
 
 end Matrix

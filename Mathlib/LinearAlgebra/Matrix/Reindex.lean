@@ -314,8 +314,8 @@ theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ 
 end StarAlgebra
 
 @[simp]
-theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] [Semiring A]
-    [Algebra R A] [Star A] (e : m ≃ n) :
+theorem toAlgEquiv_reindexStarAlgEquiv [Semiring R] [Fintype m] [Fintype n]
+    [NonUnitalNonAssocSemiring A] [Module R A] [Star A] (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
   rfl
 
