@@ -88,8 +88,7 @@ theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ 
 @[simp] theorem support_nonempty_iff : f.support.Nonempty ↔ f ≠ 1 := iff_not_comm.mpr <| by
   simp [Set.not_nonempty_iff_eq_empty]
 
-theorem support_ne_singleton {x} : f.support ≠ {x} := fun h => by
-  simpa using Set.ext_iff.1 h (f x)
+theorem support_ne_singleton {x} : f.support ≠ {x} := fun h => by simpa using Set.ext_iff.1 h (f x)
 
 theorem exists_pair_mem_support_ne (hf : f ≠ 1) : ∃ x ∈ f.support, ∃ y ∈ f.support, x ≠ y := by
   obtain ⟨x, hx⟩ := support_nonempty_iff.mpr hf
@@ -181,8 +180,7 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
 
 theorem mem_support_ofSubtype {p : α → Prop} [DecidablePred p] (x : α)
     (u : Perm (Subtype p)) :
-    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by
-  simp [support_ofSubtype]
+    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by simp [support_ofSubtype]
 
 theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g x)
     (k : ℕ) : ∀ x ∈ f.support ∩ g.support, (f ^ k) x = (g ^ k) x := by
@@ -199,33 +197,28 @@ theorem support_prod_subset (l : List (Perm α)) : l.prod.support ⊆
   | nil => simp
   | cons hd tl hl =>
     rw [List.prod_cons, List.map_cons, List.foldr_cons]
-    refine (support_mul_subset hd tl.prod).trans ?_
-    exact sup_le_sup le_rfl hl
+    exact (support_mul_subset hd tl.prod).trans <| sup_le_sup le_rfl hl
 
 theorem support_swap_mul_swap [DecidableEq α] {x y z : α} (h : List.Nodup [x, y, z]) :
-    support (swap x y * swap y z) = {x, y, z} := by ext; grind [mul_apply]
+    support (swap x y * swap y z) = {x, y, z} := by grind [mul_apply]
 
 theorem support_sdiff_subset_support_swap_mul [DecidableEq α] (f : Perm α) (x y : α) :
     f.support \ {x, y} ⊆ (swap x y * f).support := by grind [mul_apply]
 
 theorem support_swap_mul_subset [DecidableEq α] (f : Perm α) (x : α) :
-    (swap x (f x) * f).support ⊆ f.support \ {x} := by
-  intro y
-  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff, Set.mem_sdiff,
-    Set.mem_singleton_iff]
+    (swap x (f x) * f).support ⊆ f.support \ {x} := fun y => by
+  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff]
   grind
 
 theorem support_swap_mul_eq [DecidableEq α] (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by
   refine (support_swap_mul_subset f x).antisymm fun z hz => ?_
-  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff, Set.mem_sdiff,
-    Set.mem_singleton_iff] at *
+  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff]
   grind
 
 theorem mem_support_swap_mul_imp_mem_support_ne [DecidableEq α] {x y : α}
     (hy : y ∈ support (swap x (f x) * f)) :
-    y ∈ support f ∧ y ≠ x :=
-  support_swap_mul_subset f x hy
+    y ∈ support f ∧ y ≠ x := support_swap_mul_subset f x hy
 
 end Support
 
@@ -235,8 +228,7 @@ variable {β} {p : β → Prop} [DecidablePred p]
 
 @[simp]
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
-    support (g.extendDomain f) = Subtype.val ∘ f '' g.support := by
-  ext b
+    support (g.extendDomain f) = Subtype.val ∘ f '' g.support := Set.ext fun b => by
   by_cases pb : p b
   · simp only [mem_support, extendDomain_apply_subtype _ _ pb, ne_eq, Set.mem_image,
     Function.comp_apply]; grind
@@ -250,11 +242,11 @@ section SubtypePerm
 @[simp]
 theorem support_subtypePerm {s : Set α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = Subtype.val ⁻¹' f.support := by
-  ext; simp [Subtype.ext_iff]
+  simp [Set.ext_iff, Subtype.ext_iff]
 
 theorem image_val_support_subtypePerm {s : Set α} (f : Perm α) (h : ∀ x, f x ∈ s ↔ x ∈ s) :
     Subtype.val '' (f.subtypePerm h : Perm s).support = s ∩ f.support := by
-  rw [support_subtypePerm]; ext; simp [and_comm]
+  simp [Set.ext_iff, and_comm]
 
 end SubtypePerm
 
