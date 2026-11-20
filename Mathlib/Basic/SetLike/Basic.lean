@@ -230,8 +230,7 @@ export IsMemLE (le_iff_mem_imp_mem)
 @[deprecated (since := "2026-09-01")] alias SetLike.le_def := le_iff_mem_imp_mem
 @[deprecated (since := "2026-11-20")] alias IsConcreteLE.le_iff := le_iff_mem_imp_mem
 
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
+@[gcongr] alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
 
 grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 
