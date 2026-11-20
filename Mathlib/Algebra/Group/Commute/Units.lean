@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Semiconj.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about commuting pairs of elements involving units.
 -/

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.OreLocalization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of commutative monoids
 
@@ -20,6 +23,7 @@ we can generalize localizations to commutative monoids.
 We characterize the localization of a commutative monoid `M` at a submonoid `S` up to
 isomorphism; that is, a commutative monoid `N` is the localization of `M` at `S` iff we can find a
 monoid homomorphism `f : M →* N` satisfying 3 properties:
+
 1. For all `y ∈ S`, `f y` is a unit;
 2. For all `z : N`, there exists `(x, y) : M × S` such that `z * f y = f x`;
 3. For all `x, y : M` such that `f x = f y`, there exists `c ∈ S` such that `x * c = y * c`.
@@ -67,6 +71,7 @@ the `LocalizationMap.mk'` induced by any localization map.
   embedding.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/

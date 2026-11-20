@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Data.Set.Finite.Range
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Range of linear maps
 
@@ -25,6 +28,7 @@ Note that this also means that dot notation (i.e. `f.range` for a linear map `f`
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
 
 ## Tags
+
 linear algebra, vector space, module, range
 -/
 
@@ -52,8 +56,10 @@ variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 section
 
-/-- The range of a linear map `f : M → M₂` is a submodule of `M₂`.
-See Note [range copy pattern]. -/
+/--
+The range of a linear map `f : M → M₂` is a submodule of `M₂`.
+See Note \[range copy pattern\].
+-/
 def range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : Submodule R₂ M₂ :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 
@@ -149,9 +155,11 @@ lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
     iterateRange f (n + 1) = (iterateRange f n).map f := by
   simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
 
-/-- Restrict the codomain of a linear map `f` to `f.range`.
+/--
+Restrict the codomain of a linear map `f` to `f.range`.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 abbrev rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] LinearMap.range f :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 
@@ -212,9 +220,11 @@ theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
   le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
     range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
 
-/-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
+/--
+If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
 
-This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
+This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`.
+-/
 lemma range_eq_ker_of_leftInverse {M P} [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M}
     (h : LeftInverse g f) : f.range = ker ((f.comp g) - LinearMap.id) :=
@@ -356,9 +366,11 @@ theorem restrictScalars_comap [SMul R R₂] [Module R₂ M] [Module R M₂] [IsS
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M₂) :
     (M'.comap f).restrictScalars R = (M'.restrictScalars R).comap (f.restrictScalars R) := rfl
 
-/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
+/--
+If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
-See also `Submodule.mapIic`. -/
+See also `Submodule.mapIic`.
+-/
 def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q

@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Topology.Algebra.ConstMulAction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal action of a group
 
-In this file we define an action of a monoid `M` on a topological space `α` to be *minimal* if the
+In this file we define an action of a monoid `M` on a topological space `α` to be _minimal_ if the
 `M`-orbit of every point `x : α` is dense. We also provide an additive version of this definition
 and prove some basic facts about minimal actions.
 
@@ -28,14 +31,18 @@ public section
 
 open scoped Pointwise
 
-/-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
-of every point `x : α` is dense. -/
+/--
+An action of an additive monoid `M` on a topological space is called _minimal_ if the `M`-orbit
+of every point `x : α` is dense.
+-/
 class AddAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 
-/-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
-point `x : α` is dense. -/
+/--
+An action of a monoid `M` on a topological space is called _minimal_ if the `M`-orbit of every
+point `x : α` is dense.
+-/
 @[to_additive]
 class MulAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Prop where

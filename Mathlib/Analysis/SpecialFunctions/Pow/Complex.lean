@@ -8,7 +8,11 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
-/-! # Power function on `ℂ`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Power function on `ℂ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
@@ -146,19 +150,23 @@ lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     (x ^ ((ofNat(n) : ℂ)⁻¹)) ^ (ofNat(n) : ℕ) = x :=
   cpow_nat_inv_pow _ (NeZero.ne n)
 
-/-- A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
+/--
+A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
 
 The assumptions on the arguments are needed
-because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
+because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`.
+-/
 lemma cpow_int_mul' {x : ℂ} {n : ℤ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
     x ^ (n * y) = (x ^ n) ^ y := by
   rw [mul_comm] at hlt hle
   rw [cpow_mul, cpow_intCast] <;> simpa [log_im]
 
-/-- A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
+/--
+A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
 
 The assumptions on the arguments are needed
-because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
+because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`.
+-/
 lemma cpow_nat_mul' {x : ℂ} {n : ℕ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
     x ^ (n * y) = (x ^ n) ^ y :=
   cpow_int_mul' hlt hle y

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construct a tripartite graph from its triangles
 
@@ -14,17 +17,20 @@ This file contains the construction of a simple graph on `α ⊕ β ⊕ γ` from
 `(a, b, c)` (with `a` in the first component, `b` in the second, `c` in the third).
 
 We call
-* `t : Finset (α × β × γ)` the set of *triangle indices* (its elements are not triangles within the
+
+* `t : Finset (α × β × γ)` the set of _triangle indices_ (its elements are not triangles within the
   graph but instead index them).
-* *explicit* a triangle of the constructed graph coming from a triangle index.
-* *accidental* a triangle of the constructed graph not coming from a triangle index.
+* _explicit_ a triangle of the constructed graph coming from a triangle index.
+* _accidental_ a triangle of the constructed graph not coming from a triangle index.
 
 The two important properties of this construction are:
+
 * `SimpleGraph.TripartiteFromTriangles.ExplicitDisjoint`: Whether the explicit triangles are
   edge-disjoint.
 * `SimpleGraph.TripartiteFromTriangles.NoAccidental`: Whether all triangles are explicit.
 
 This construction shows up unrelatedly twice in the theory of Roth numbers:
+
 * The lower bound of the Ruzsa-Szemerédi problem: From a set `s` in a finite abelian group `G` of
   odd order, we construct a tripartite graph on `G ⊕ G ⊕ G`. The triangle indices are
   `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always
@@ -47,9 +53,11 @@ variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdere
 namespace SimpleGraph
 namespace TripartiteFromTriangles
 
-/-- The underlying relation of the tripartite-from-triangles graph.
+/--
+The underlying relation of the tripartite-from-triangles graph.
 
-Two vertices are related iff there exists a triangle index containing them both. -/
+Two vertices are related iff there exists a triangle index containing them both.
+-/
 @[mk_iff] inductive Rel (t : Finset (α × β × γ)) : α ⊕ β ⊕ γ → α ⊕ β ⊕ γ → Prop
 | in₀₁ ⦃a b c⦄ : (a, b, c) ∈ t → Rel t (in₀ a) (in₁ b)
 | in₁₀ ⦃a b c⦄ : (a, b, c) ∈ t → Rel t (in₁ b) (in₀ a)
@@ -129,11 +137,13 @@ class ExplicitDisjoint (t : Finset (α × β × γ)) : Prop where
   inj₁ : ∀ ⦃a b c b'⦄, (a, b, c) ∈ t → (a, b', c) ∈ t → b = b'
   inj₂ : ∀ ⦃a b c c'⦄, (a, b, c) ∈ t → (a, b, c') ∈ t → c = c'
 
-/-- Predicate on the triangle indices for there to be no accidental triangle.
+/--
+Predicate on the triangle indices for there to be no accidental triangle.
 
 Note that we cheat a bit, since the exact translation of this informal description would have
 `(a', b', c') ∈ t` as a conclusion rather than `a = a' ∨ b = b' ∨ c = c'`. Those conditions are
-equivalent when the explicit triangles are edge-disjoint (which is the case we care about). -/
+equivalent when the explicit triangles are edge-disjoint (which is the case we care about).
+-/
 class NoAccidental (t : Finset (α × β × γ)) : Prop where
   eq_or_eq_or_eq : ∀ ⦃a a' b b' c c'⦄, (a', b, c) ∈ t → (a, b', c) ∈ t → (a, b, c') ∈ t →
     a = a' ∨ b = b' ∨ c = c'

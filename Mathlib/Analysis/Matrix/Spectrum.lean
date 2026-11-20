@@ -12,14 +12,19 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
-/-! # Spectral theory of Hermitian matrices
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Spectral theory of Hermitian matrices
 
 This file proves the spectral theorem for matrices. The proof of the spectral theorem is based on
 the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`).
 
 ## Tags
 
-spectral theorem, diagonalization theorem -/
+spectral theorem, diagonalization theorem
+-/
 
 @[expose] public section
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.Ring.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The group of units of a complete normed ring
 
@@ -122,10 +125,11 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
     rwa [← dist_zero_right]⟩
 
 
-/-- The formula
-`Ring.inverse (x + t) =
-  (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
-holds for `t` sufficiently small. -/
+/--
+The formula
+`Ring.inverse (x + t) = (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
+holds for `t` sufficiently small.
+-/
 theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
     ∀ᶠ t in 𝓝 0, ((x : R) + t)⁻¹ʳ =
       (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * (x + t)⁻¹ʳ := by

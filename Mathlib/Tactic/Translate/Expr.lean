@@ -10,16 +10,19 @@ public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expression translation for the translation attribute.
 
 This file implements the translation of expressions, and all of the infrastructure that is
 needed for it.
 
-- `TranslateData` contains the information specific to the translation attribute
+* `TranslateData` contains the information specific to the translation attribute
   (`to_additive` or `to_dual`)
-- `shouldTranslate` implements the heuristic for whether or not to translate an expression.
-- `applyReplacementForall`/`applyReplacementLambda` implement the expression translation.
+* `shouldTranslate` implements the heuristic for whether or not to translate an expression.
+* `applyReplacementForall`/`applyReplacementLambda` implement the expression translation.
 -/
 
 meta section
@@ -62,14 +65,15 @@ public structure TranslationInfo where
 
 /-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
 public structure TranslateData where
-  /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
-  a given type should be translated. `dont_translate` can be used for types that are translated,
-  such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
-  `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
-  can be translated.
+  /--
+  The global `do_translate`/`dont_translate` attributes specify whether operations on
+a given type should be translated. `dont_translate` can be used for types that are translated,
+such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
+`do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
+can be translated.
 
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
-    translated thanks to this, you generally have to specify the translated name manually.
+translated thanks to this, you generally have to specify the translated name manually.
   -/
   dontTranslateAttr : NameMapExtension Unit
   /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
@@ -149,10 +153,13 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
       throwError "{e} is not a function of arity at least {n}"
     mkLambdaFVars xs (mkAppN e xs)
 
-/-- Monad used for expression translation.
-- The reader stores the free variables on which nothing should be translated.
-- The state stores the free variables on which something has been translated.
-- The cache caches the results on subexpressions. -/
+/--
+Monad used for expression translation.
+
+* The reader stores the free variables on which nothing should be translated.
+* The state stores the free variables on which something has been translated.
+* The cache caches the results on subexpressions.
+-/
 abbrev ReplacementM :=
   ReaderT (Array FVarId) <| MonadCacheT ExprStructEq Expr StateRefT (Std.HashSet FVarId) MetaM
 
@@ -212,6 +219,7 @@ partial def shouldTranslate (t : TranslateData) (e : Expr) :
 /--
 `applyReplacementFun e` replaces the expression `e` with its translation.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
+
 * The identifier occurs in an application with `relevantArg` argument `arg`; and
 * `shouldTranslate arg` is false.
 

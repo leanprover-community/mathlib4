@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of comonoids in a monoidal category.
 
@@ -21,6 +24,7 @@ An oplax monoidal functor takes comonoid objects to comonoid objects.
 That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 
 ## TODO
+
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
@@ -34,7 +38,8 @@ open CategoryTheory MonoidalCategory
 namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
-/-- A comonoid object internal to a monoidal category.
+/--
+A comonoid object internal to a monoidal category.
 
 When the monoidal category is preadditive, this is also sometimes called a "coalgebra object".
 -/
@@ -90,7 +95,8 @@ instance (f : M ≅ N) [IsComonHom f.hom] : IsComonHom f.inv where
 instance (f : M ⟶ N) [IsComonHom f] [IsIso f] : IsComonHom (inv f) where
 
 variable (C) in
-/-- A comonoid object internal to a monoidal category.
+/--
+A comonoid object internal to a monoidal category.
 
 When the monoidal category is preadditive, this is also sometimes called a "coalgebra object".
 -/
@@ -431,7 +437,8 @@ instance map.instIsComon_Hom
     dsimp
     rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul]
 
-/-- An oplax monoidal functor takes comonoid objects to comonoid objects.
+/--
+An oplax monoidal functor takes comonoid objects to comonoid objects.
 
 That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 -/

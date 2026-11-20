@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss norm for polynomials
 
@@ -26,6 +29,7 @@ series. This is a generalization of the Gauss norm defined in this file in case 
 nonnegative function with `v 0 = 0` and `c ≥ 0`.
 
 ## Main Definitions and Results
+
 * `Polynomial.gaussNorm` is the supremum of the set of all values of `v (p.coeff i) * c ^ i`
   for all `i` in the support of `p`, where `p` is a polynomial in `R[X]`, `v : R → ℝ` is a function
   and `c` is a real number.

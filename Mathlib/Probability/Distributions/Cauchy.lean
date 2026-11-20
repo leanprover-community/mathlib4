@@ -10,7 +10,11 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
-/-! # Cauchy Distribution over ℝ
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Cauchy Distribution over ℝ
 
 Define the Cauchy distribution with location parameter `x₀` and scale parameter `γ`.
 

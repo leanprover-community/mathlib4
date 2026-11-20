@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization of monic polynomials of given degree
 
@@ -16,7 +19,6 @@ This file contains two main results:
 * `Polynomial.IsMonicOfDegree.eq_mul_isMonicOfDegree_one_isMonicOfDegree`
   shows that a monic polynomial of positive degree over an algebraically closed field
   can be written as a monic polynomial of degree 1 times another monic factor.
-
 * `Polynomial.IsMonicOfDegree.eq_mul_isMonicOfDegree_two_isMonicOfDegree`
   shows that a monic polynomial of degree at least two over `ℝ` can be written as
   a monic polynomial of degree two times another monic factor.
@@ -39,10 +41,12 @@ lemma eq_isMonicOfDegree_one_mul_isMonicOfDegree {F : Type*} [Field F]
     ⟨natDegree_eq_of_degree_eq_some <| IsAlgClosed.degree_eq_one_of_irreducible F hf₁i, hf₁m⟩
   exact ⟨f₁, f₂, hf₁, hf₁.of_mul_left hf, hf₂⟩
 
-/-- If `f : ℝ[X]` is monic of positive degree, then `f = f₁ * f₂` with `f₁` monic
+/--
+If `f : ℝ[X]` is monic of positive degree, then `f = f₁ * f₂` with `f₁` monic
 of degree `1` or `2`.
 
-This relies on the fact that irreducible polynomials over `ℝ` have degree at most `2`. -/
+This relies on the fact that irreducible polynomials over `ℝ` have degree at most `2`.
+-/
 -- TODO: generalize to real closed fields when they are available.
 lemma eq_isMonicOfDegree_one_or_two_mul {f : ℝ[X]} {n : ℕ}
     (hf : IsMonicOfDegree f (n + 1)) :
@@ -55,10 +59,12 @@ lemma eq_isMonicOfDegree_one_or_two_mul {f : ℝ[X]} {n : ℕ}
     interval_cases m <;> tauto
   exact help hirr.natDegree_pos hirr.natDegree_le_two <| IsMonicOfDegree.mk rfl hm
 
-/-- If `f : ℝ[X]` is monic of degree `≥ 2`, then `f = f₁ * f₂` with `f₁` monic of degree `2`
+/--
+If `f : ℝ[X]` is monic of degree `≥ 2`, then `f = f₁ * f₂` with `f₁` monic of degree `2`
 and `f₂` monic of degree `f.natDegree - 2`.
 
-This relies on the fact that irreducible polynomials over `ℝ` have degree at most `2`. -/
+This relies on the fact that irreducible polynomials over `ℝ` have degree at most `2`.
+-/
 -- TODO: generalize to real closed fields when they are available.
 lemma eq_isMonicOfDegree_two_mul_isMonicOfDegree {f : ℝ[X]} {n : ℕ}
     (hf : IsMonicOfDegree f (n + 2)) :

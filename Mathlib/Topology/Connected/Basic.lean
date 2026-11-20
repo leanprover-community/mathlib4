@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.SuccPred.Relation
 public import Mathlib.Topology.Order.OrderClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connected subsets of topological spaces
 
@@ -32,7 +35,7 @@ In other words, the only difference is whether the empty space counts as connect
 There are good reasons to consider the empty space to be “too simple to be simple”
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
-https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
+https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship\_to\_biased\_definitions.
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dinatural transformations
 
@@ -14,14 +17,16 @@ Dinatural transformations are special kinds of transformations between
 functors `F G : Cᵒᵖ ⥤ C ⥤ D` which depend both covariantly and contravariantly
 on the same category (also known as difunctors).
 
-A dinatural transformation is a family of morphisms given only on *the diagonal* of the two
+A dinatural transformation is a family of morphisms given only on _the diagonal_ of the two
 functors, and is such that a certain naturality hexagon commutes.
 Note that dinatural transformations cannot be composed with each other (since the outer
 hexagon does not commute in general), but can still be "pre/post-composed" with
 ordinary natural transformations.
 
 ## References
-* <https://ncatlab.org/nlab/show/dinatural+transformation>
+
+* [
+  https://ncatlab.org/nlab/show/dinatural+transformation](https://ncatlab.org/nlab/show/dinatural+transformation)
 -/
 
 @[expose] public section

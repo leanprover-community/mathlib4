@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
-/-! # Calculus of fractions in the derived category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Calculus of fractions in the derived category
 
 We obtain various consequences of the calculus of left and right fractions
 for `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)` as lemmas about

@@ -11,7 +11,11 @@ public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Quotient.Pi
 
-/-! # Quotient of submodules of full rank in free finite modules over PIDs
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Quotient of submodules of full rank in free finite modules over PIDs
 
 ## Main results
 

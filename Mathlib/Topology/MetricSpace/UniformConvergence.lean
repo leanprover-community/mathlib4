@@ -8,7 +8,11 @@ module
 public import Mathlib.Order.CompleteLattice.Group
 public import Mathlib.Topology.ContinuousMap.Compact
 
-/-! # Metric structure on `α →ᵤ β` and `α →ᵤ[𝔖] β` for finite `𝔖`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Metric structure on `α →ᵤ β` and `α →ᵤ[𝔖] β` for finite `𝔖`
 
 When `β` is a (pseudo, extended) metric space it is a uniform space, and therefore we may
 consider the type `α →ᵤ β` of functions equipped with the topology of uniform convergence. The
@@ -17,7 +21,7 @@ and this induces the existing uniformity. Unless `β` is a bounded space, this w
 metric space (except in the trivial case where `α` is empty).
 
 When `𝔖 : Set (Set α)` is a collection of subsets, we may equip the space of functions with the
-(pseudo, extended) metric `fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)`. *However*, this only induces
+(pseudo, extended) metric `fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)`. _However_, this only induces
 the pre-existing uniformity on `α →ᵤ[𝔖] β` if `𝔖` is finite, and hence we only have an instance in
 that case. Nevertheless, this still covers the most important case, such as when `𝔖` is a singleton.
 
@@ -33,9 +37,9 @@ uniformity.
 There are a few advantages of equipping this space with this metric structure.
 
 1. A function `f : X → α →ᵤ β` is Lipschitz in this metric if and only if for every `a : α` it is
-  Lipschitz in the first variable with the same Lipschitz constant.
+   Lipschitz in the first variable with the same Lipschitz constant.
 2. It provides a natural setting in which one can talk about the metrics on `α →ᵇ β` or, when
-  `α` is compact, `C(α, β)`, relative to their underlying bare functions.
+   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
 
 public section

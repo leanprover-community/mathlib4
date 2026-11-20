@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The weak prime number theorem
 
@@ -28,9 +31,9 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
   (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`); this is the `q = 1` case of
   the previous result.
 * `Chebyshev.isEquivalent_theta_id`: the `θ`-form, `θ x ~ x`.
-* `Nat.isEquivalent_primeCounting`: **the prime number theorem** `π x ~ x / log x`, deduced
+* `Nat.isEquivalent_primeCounting`: *the prime number theorem* `π x ~ x / log x`, deduced
   from the `θ`-form by Abel summation (`Chebyshev.isLittleO_primeCounting_mul_log_sub_theta`).
-* `Nat.isEquivalent_card_prime_modEq`: **the prime number theorem in arithmetic progressions**:
+* `Nat.isEquivalent_card_prime_modEq`: *the prime number theorem in arithmetic progressions*:
   for `a` coprime to `q`, the number of primes `p ≤ x` with `p ≡ a [MOD q]` is asymptotic to
   `x / (φ q * log x)`.
 * `Nat.eventually_exists_prime_mem_Ioc`: for every `ε > 0` and every sufficiently large `x`, there
@@ -43,12 +46,11 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 ## Future directions
 
 * Versions of `Nat.eventually_exists_prime_mem_Ioc` and `Nat.eventually_exists_prime_mem_Ioc_sub`
-for arithmetic progressions
+  for arithmetic progressions
 * Showing that the nth prime is asymptotic to `n * log n`
 
 Note though that all the results here could eventually be superseded by other approaches to the
 prime number theorem with stronger error terms.
-
 -/
 
 public section

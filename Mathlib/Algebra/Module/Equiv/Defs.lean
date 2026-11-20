@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi)linear equivalences
 
@@ -76,14 +79,16 @@ notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
-/-- `SemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
+/--
+`SemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
 `M → M₂`.
 
 See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
+`f (c • x) = (σ c) • f x`.
+-/
 class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
@@ -256,14 +261,18 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     invFun := e.toEquiv.symm.invFun
     map_smul' r x := by rw [map_smulₛₗ] }
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply {R S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     {M M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
@@ -565,10 +574,12 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 
 end
 
-/-- `Equiv.cast (congrArg _ h)` as a linear equiv.
+/--
+`Equiv.cast (congrArg _ h)` as a linear equiv.
 
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
-to avoid having to deal with an equality of the algebraic structure itself. -/
+to avoid having to deal with an equality of the algebraic structure itself.
+-/
 @[simps!]
 protected def cast {ι : Type*} {M : ι → Type*}
     [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :

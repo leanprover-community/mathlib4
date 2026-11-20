@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Valuation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring of integers under a given valuation
 
@@ -47,8 +50,10 @@ variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZ
 variable (v : Valuation R Γ₀)
 variable (O : Type w) [CommRing O] [Algebra O R]
 
-/-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
-if f is injective, and its range is exactly `v.integer`. -/
+/--
+Given a valuation v : R → Γ₀ and a ring homomorphism O →+\* R, we say that O is the integers of v
+if f is injective, and its range is exactly `v.integer`.
+-/
 structure Integers : Prop where
   hom_inj : Function.Injective (algebraMap O R)
   map_le_one : ∀ x, v (algebraMap O R x) ≤ 1

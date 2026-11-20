@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 public import Mathlib.RingTheory.PowerSeries.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distinguished polynomial
 
@@ -24,7 +27,7 @@ variable {R : Type*} [CommRing R]
 
 /--
 Given an ideal `I` of a commutative ring `R`, we say that a polynomial `f : R[X]`
-is *Distinguished at `I`* if `f` is monic and `IsWeaklyEisensteinAt I`.
+is _Distinguished at `I`_ if `f` is monic and `IsWeaklyEisensteinAt I`.
 i.e. `f` is of the form `xⁿ + a₁xⁿ⁻¹ + ⋯ + aₙ` with `aᵢ ∈ I` for all `i`.
 -/
 structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop

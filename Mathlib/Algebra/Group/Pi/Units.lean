@@ -10,7 +10,12 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Util.Delaborators
 
-/-! # Units in pi types -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Units in pi types
+-/
 
 @[expose] public section
 

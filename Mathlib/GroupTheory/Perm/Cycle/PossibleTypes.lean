@@ -7,7 +7,11 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
-/-! # Possible cycle types of permutations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Possible cycle types of permutations
 
 * For `m : Multiset ℕ`, `Equiv.Perm.exists_with_cycleType_iff m`
   proves that there are permutations with cycleType `m` if and only if

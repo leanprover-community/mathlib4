@@ -16,6 +16,9 @@ public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Matrix.Swaps  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinants of matrix literals by echelon decomposition
 
@@ -24,10 +27,10 @@ through the certificate `Echelon.Decomposition A L σ pivot` of its echelon deco
 
 ## Main definitions
 
-- `proveEchelonDet`: proves `A.det = v` for a square matrix literal `A` from its echelon
+* `proveEchelonDet`: proves `A.det = v` for a square matrix literal `A` from its echelon
   decomposition.
-- `detValue`: computes the value of the determinant from the decomposition data.
-- `certifyDiagProd`: computes the product of the diagonal of a list-based matrix literal with its
+* `detValue`: computes the value of the determinant from the decomposition data.
+* `certifyDiagProd`: computes the product of the diagonal of a list-based matrix literal with its
   proof.
 
 ## Implementation notes

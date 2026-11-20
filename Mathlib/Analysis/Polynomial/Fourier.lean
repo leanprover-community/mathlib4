@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fourier Coefficients of Polynomials
 
@@ -17,16 +20,16 @@ coefficients match Fourier coefficients and prove Parseval's identity for polyno
 
 ## Main definitions
 
-- `Polynomial.toAddCircle`: Algebra map from `ℂ[X]` to `C(AddCircle (2 * π), ℂ)` that evaluates
+* `Polynomial.toAddCircle`: Algebra map from `ℂ[X]` to `C(AddCircle (2 * π), ℂ)` that evaluates
   polynomials on the unit circle.
 
 ## Main results
 
-- `Polynomial.fourierCoeff_toAddCircle`: The `n`-th Fourier coefficient of a polynomial
+* `Polynomial.fourierCoeff_toAddCircle`: The `n`-th Fourier coefficient of a polynomial
   equals its `n`-th coefficient when `n` is nonnegative, else 0.
-- `Polynomial.fourierCoeff_toAddCircle_natCast`: A variant of `Polynomial.fourierCoeff_toAddCircle`
+* `Polynomial.fourierCoeff_toAddCircle_natCast`: A variant of `Polynomial.fourierCoeff_toAddCircle`
   for `ℕ` arguments.
-- `Polynomial.sum_sq_norm_coeff_eq_circleAverage`: Parseval's identity that the sum of the squares
+* `Polynomial.sum_sq_norm_coeff_eq_circleAverage`: Parseval's identity that the sum of the squares
   of the norms of the coefficients of a polynomial equals the average over the circle of the norm
   square of the polynomial.
 -/

@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.CompactOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Second countable topology on `C(X, Y)`
 
 In this file we prove that `C(X, Y)` with compact-open topology has second countable topology, if
 
-- both `X` and `Y` have second countable topology;
-- `X` is a locally compact space;
+* both `X` and `Y` have second countable topology;
+* `X` is a locally compact space;
 -/
 
 public section

@@ -12,6 +12,9 @@ public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hecke L-Functions
 

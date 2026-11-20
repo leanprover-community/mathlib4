@@ -9,6 +9,9 @@ public meta import Lean.Elab.Command
 public meta import Lean.Meta.Sorry
 public meta import Mathlib.Lean.Name
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tracking uses of `sorry`
 
@@ -39,9 +42,11 @@ namespace Mathlib.PrintSorries
 structure State where
   /-- The set of already visited declarations. -/
   visited : NameSet := {}
-  /-- The set of `sorry` expressions that have been found.
-  Note that unlabeled sorries will only be reported in the *first* declaration that uses them,
-  even if a later definition independently has a direct use of `sorryAx`. -/
+  /--
+  The set of `sorry` expressions that have been found.
+Note that unlabeled sorries will only be reported in the _first_ declaration that uses them,
+even if a later definition independently has a direct use of `sorryAx`.
+  -/
   sorries : Std.HashSet Expr := {}
   /-- The uses of `sorry` that were found. -/
   sorryMsgs : Array MessageData := #[]
@@ -116,9 +121,9 @@ def collectSorries (constNames : Array Name) : MetaM (Array MessageData) := do
   pure s.sorryMsgs
 
 /--
-- `#print sorries` prints all sorries that the current module depends on.
-- `#print sorries id1 id2 ... idn` prints all sorries that the provided declarations depend on.
-- `#print sorries in CMD` prints all the sorries in declarations added by the command.
+* `#print sorries` prints all sorries that the current module depends on.
+* `#print sorries id1 id2 ... idn` prints all sorries that the provided declarations depend on.
+* `#print sorries in CMD` prints all the sorries in declarations added by the command.
 
 Displayed sorries are hoverable and support "go to definition".
 -/

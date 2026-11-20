@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Fin.VecNotation
 
-/-! # Function types of a given heterogeneous arity
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Function types of a given heterogeneous arity
 
 This provides `Function.FromTypes`, such that `FromTypes ![α, β] τ = α → β → τ`.
 Note that it is often preferable to use `((i : Fin n) → p i) → τ` in place of `FromTypes p τ`.

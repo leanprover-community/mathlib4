@@ -13,16 +13,16 @@ public import Mathlib.RingTheory.Binomial
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial Series
 
 This file introduces the binomial series:
-$$
-\sum_{k=0}^{\infty} \; \binom{a}{k} \; x^k = 1 + a x + \frac{a(a-1)}{2!} x^2 +
-  \frac{a(a-1)(a-2)}{3!} x^3 + \cdots
-$$
-where $a$ is an element of a normed field $\mathbb{K}$,
-and $x$ is an element of a normed algebra over $\mathbb{K}$.
+$$`  \sum_{k=0}^{\infty} \; \binom{a}{k} \; x^k = 1 + a x + \frac{a(a-1)}{2!} x^2 + \frac{a(a-1)(a-2)}{3!} x^3 + \cdots  `
+where $`a` is an element of a normed field $`\mathbb{K}`,
+and $`x` is an element of a normed algebra over $`\mathbb{K}`.
 
 ## Main Statements
 

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.OrdContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation in star-ordered rings
 
@@ -25,11 +28,11 @@ When `R` is additionally an `S`-module, then `x ↦ r * x * star r` is a positiv
 All of the main declarations are various bundlings of the stated map
 `fun r x ↦ r * x * star r : R → R → R`.
 
-+ `StarOrderedRing.conjOrderHom` : `R → (R →o R)`
-+ `StarOrderedRing.conjOrderHomMulHom` : `R →ₙ* (R →o R)`
-+ `StarOrderedRing.conjOrderHomMonoidHom` : `R →* (R →o R)`
-+ `StarOrderedRing.conjUnitsOrderIso` : `Rˣ →* (R ≃o R)`
-+ `StarOrderedRing.conjPositiveLinearMap` : `R → (R →ₚ[S] R)`
+* `StarOrderedRing.conjOrderHom` : `R → (R →o R)`
+* `StarOrderedRing.conjOrderHomMulHom` : `R →ₙ* (R →o R)`
+* `StarOrderedRing.conjOrderHomMonoidHom` : `R →* (R →o R)`
+* `StarOrderedRing.conjUnitsOrderIso` : `Rˣ →* (R ≃o R)`
+* `StarOrderedRing.conjPositiveLinearMap` : `R → (R →ₚ[S] R)`
 -/
 
 @[expose] public section

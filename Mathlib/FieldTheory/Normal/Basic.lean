@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.GroupTheory.Solvable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal field extensions
 

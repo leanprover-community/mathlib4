@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Subrepresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intertwining maps
 
@@ -208,9 +211,11 @@ lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 @[simp high] lemma id_apply (v : V) : id ρ v = v := rfl
 
 variable {ρ σ τ} in
-/-- Composition of intertwining maps.
+/--
+Composition of intertwining maps.
 
-A convenience variant of `IntertwiningMap.llcomp` for use in dot notation. -/
+A convenience variant of `IntertwiningMap.llcomp` for use in dot notation.
+-/
 def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ where
   __ := f.toLinearMap ∘ₗ g.toLinearMap
   isIntertwining' := by simp [LinearMap.comp_assoc, g.isIntertwining', f.isIntertwining_assoc]
@@ -525,7 +530,7 @@ instance-implicit arguments would otherwise receive.
 
 With no `CompatibleSMul` instance found, the rewrite does not fire and `simp` makes no progress.
 
-Potential fix: mark `asModule` implicit-reducible *at its definition site*. Then
+Potential fix: mark `asModule` implicit-reducible _at its definition site_. Then
 `respectTransparency false` becomes obsolete, and once it is removed, `instanceSearchTypes false`
 can go as well: `asModule` being implicit-reducible, the `instModuleAsModule._aux_1` constant
 becomes implicit-reducible as well. The reason for this is that `instModuleAsModule`'s definition

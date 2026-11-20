@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Fintype.Perm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`
 
@@ -21,7 +24,7 @@ It also provides decidable instances on membership in these subgroups, since
 The presence of these instances induces a `Fintype` instance on the `QuotientGroup.Quotient` of
 these subgroups.
 
-In particular, we prove **Cayley's theorem** in `Equiv.Perm.subgroupOfMulAction`:
+In particular, we prove *Cayley's theorem* in `Equiv.Perm.subgroupOfMulAction`:
 every group `G` is isomorphic to a subgroup of the symmetric group acting on `G`.
 -/
 

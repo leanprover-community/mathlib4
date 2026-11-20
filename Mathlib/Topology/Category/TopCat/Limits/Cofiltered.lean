@@ -8,11 +8,14 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofiltered limits in the category of topological spaces
 
-Given a *compatible* collection of topological bases for the factors in a cofiltered limit
-which contain `Set.univ` and are closed under intersections, the induced *naive* collection
+Given a _compatible_ collection of topological bases for the factors in a cofiltered limit
+which contain `Set.univ` and are closed under intersections, the induced _naive_ collection
 of sets in the limit is, in fact, a topological basis.
 -/
 
@@ -33,8 +36,9 @@ section CofilteredLimit
 
 variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
-/-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
-which contain `Set.univ` and are closed under intersections, the induced *naive* collection
+/--
+Given a _compatible_ collection of topological bases for the factors in a cofiltered limit
+which contain `Set.univ` and are closed under intersections, the induced _naive_ collection
 of sets in the limit is, in fact, a topological basis.
 -/
 theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Set (F.obj j)))

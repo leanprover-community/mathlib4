@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
 
@@ -21,6 +24,7 @@ Verifying the various axioms directly requires tedious rewriting.
 Using the `slice` tactic may make the proofs marginally more readable.
 
 More exciting, however, would be to make possible one of the following options:
+
 1. Integration with homotopy.io / globular to give "picture proofs".
 2. The monoidal coherence theorem, so we can ignore associators
    (after which most of these proofs are trivial).
@@ -43,7 +47,8 @@ open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
-/-- A half-braiding on `X : C` is a family of isomorphisms `X ⊗ U ≅ U ⊗ X`,
+/--
+A half-braiding on `X : C` is a family of isomorphisms `X ⊗ U ≅ U ⊗ X`,
 monoidally natural in `U : C`.
 
 Thinking of `C` as a 2-category with a single `0`-morphism, these are the same as natural

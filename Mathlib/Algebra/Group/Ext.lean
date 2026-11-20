@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality lemmas for monoid and group structures
 
@@ -24,6 +27,7 @@ To refer to the `*` operator of a particular instance `i`, we use
 former uses `HMul.hMul` which is the canonical spelling.
 
 ## Tags
+
 monoid, group, extensionality
 -/
 

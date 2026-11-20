@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 public import Mathlib.LinearAlgebra.Alternating.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying continuous alternating forms
 
@@ -28,13 +31,15 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
 namespace ContinuousAlternatingMap
 
-/-- Given a continuous alternating map `f` in `n+1` variables, split the first variable to obtain
+/--
+Given a continuous alternating map `f` in `n+1` variables, split the first variable to obtain
 a continuous linear map into continuous alternating maps in `n` variables,
 given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.
-It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
+It can be thought of as a map $`Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))`.
 
 This is `ContinuousMultilinearMap.curryLeft` for `AlternatingMap`. See also
-`ContinuousAlternatingMap.curryLeftLI`. -/
+`ContinuousAlternatingMap.curryLeftLI`.
+-/
 noncomputable def curryLeft (f : E [⋀^Fin (n + 1)]→L[𝕜] F) : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F :=
   AlternatingMap.mkContinuousLinear f.toAlternatingMap.curryLeft ‖f‖
     f.toContinuousMultilinearMap.norm_map_cons_le

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for the composition of a measure and a kernel
 
@@ -35,9 +38,11 @@ namespace MeasureTheory.Measure
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ : Measure α} {κ : Kernel α β}
 
-/-- Composition of a measure and a kernel.
+/--
+Composition of a measure and a kernel.
 
-Notation for `MeasureTheory.Measure.bind` -/
+Notation for `MeasureTheory.Measure.bind`
+-/
 scoped[ProbabilityTheory] notation:100 κ:101 " ∘ₘ " μ:100 => MeasureTheory.Measure.bind μ κ
 
 @[simp]

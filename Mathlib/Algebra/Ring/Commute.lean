@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Notation.Bracket
 public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semirings and rings
 

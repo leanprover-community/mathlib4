@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `L²` inner product space structure on products of inner product spaces
 
 The `L²` norm on product of two inner product spaces is compatible with an inner product
-$$
-\langle x, y\rangle = \langle x_1, y_1 \rangle + \langle x_2, y_2 \rangle.
-$$
+$$`  \langle x, y\rangle = \langle x_1, y_1 \rangle + \langle x_2, y_2 \rangle.  `
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 

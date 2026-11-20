@@ -8,7 +8,11 @@ module
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Module
 
-/-! # `module_nf` - a normalization tactic for module expressions.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `module_nf` - a normalization tactic for module expressions.
 
 `module_nf` rewrites every linear combination `a • x + ... + b • y` appearing at the targeted
 locations into a normal form, collecting the scalars of common terms and normalizing them with
@@ -22,6 +26,7 @@ scalar ring encountered, and subtraction requires a ring (see `match_scalars` fo
 on scalar types).
 
 Examples:
+
 ```
 example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (a + b) • x := by
@@ -116,10 +121,12 @@ open Qq Parser.Tactic Elab.Tactic Meta
 
 namespace Mathlib.Tactic.ModuleNF
 
-/-- Infer the scalar ring over which the scalar rings appearing in `es` should be normalized.
+/--
+Infer the scalar ring over which the scalar rings appearing in `es` should be normalized.
 
 This is similar to `Mathlib.Tactic.Algebra.inferBase` which infers a base using the ring / field
-structure of the ambient type. -/
+structure of the ambient type.
+-/
 def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   let rings := (← es.toList.mapM Algebra.collectScalarRings).flatten
   let rings ← rings.eraseDups.mapM getLevelQ'
@@ -127,10 +134,12 @@ def inferBase (es : Array Expr) : MetaM (Σ u : Level, Q(Type u)) := do
   | [] => return ⟨0, q(ℕ)⟩
   | r :: rs => rs.foldlM Algebra.pickLargerRing r
 
-/-- Infer a common base scalar ring across all locations targeted by `loc`.
+/--
+Infer a common base scalar ring across all locations targeted by `loc`.
 
 The locations read are exactly those that `transformAtNondepPropLocation` rewrites when the
-tactic runs, so the inferred ring reflects the rewrite set. -/
+tactic runs, so the inferred ring reflects the rewrite set.
+-/
 def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
   withMainContext do
     inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
@@ -159,10 +168,12 @@ def cleanupCtx : MetaM Simp.Context := do
 def cleanup (ctx : Simp.Context) (r : Simp.Result) : MetaM Simp.Result := do
   r.mkEqTrans (← Simp.main r.expr ctx (methods := Simp.mkDefaultMethodsCore {})).1
 
-/-- Run the `module_nf` rewrite on the expression `e`.
+/--
+Run the `module_nf` rewrite on the expression `e`.
 
 `s` is a reference to the `AtomM` state, shared between all locations visited by a single
-`module_nf` call. This ensures they normalize with a consistent atom ordering. -/
+`module_nf` call. This ensures they normalize with a consistent atom ordering.
+-/
 def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : Expr) :
     ReaderT Simp.Context MetaM Simp.Result := do
   let postCtx ← read
@@ -170,6 +181,8 @@ def moduleNFCore (s : IO.Ref AtomM.State) (base : Σ u : Level, Q(Type u)) (e : 
   AtomM.recurse s { red := .instances } (wellBehavedDischarge := true) (evalExpr base postCtx)
     (cleanup cleanCtx) e
 
+
+set_option doc.verso false
 /-- `module_nf` normalizes the goal, by rewriting every linear combination `a • x + ... + b • y`
 into a normal form, collecting the scalars of common terms and normalizing them with `ring_nf`. If
 the goal is an equality and the two sides have the same normal form, `module_nf` closes the goal.
@@ -203,6 +216,8 @@ example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
 -/
 syntax (name := moduleNF) "module_nf" (" with " term)? (location)? : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic
   | `(tactic| module_nf $[with $R:term]? $[$loc:location]?) => withMainContext do
     let loc := expandOptLocation (mkOptionalNode loc)

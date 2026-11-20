@@ -7,11 +7,14 @@ module
 
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures without atoms
 
-An *atom* of a measure `μ` is a measurable set `s` of positive measure such that every measurable
-subset of `s` has measure either `0` or `μ s`. A measure *has no atoms* if it has no atoms in this
+An _atom_ of a measure `μ` is a measurable set `s` of positive measure such that every measurable
+subset of `s` has measure either `0` or `μ s`. A measure _has no atoms_ if it has no atoms in this
 sense, or equivalently if every measurable set `s` with `0 < μ s` contains a measurable subset `t`
 with `0 < μ t < μ s`.
 
@@ -42,8 +45,10 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
 namespace Measure
 
-/-- An *atom* of a measure `μ` is a measurable set `s` of positive measure for which all
-measurable subsets have measure either `0` or `μ s`. -/
+/--
+An _atom_ of a measure `μ` is a measurable set `s` of positive measure for which all
+measurable subsets have measure either `0` or `μ s`.
+-/
 @[mk_iff]
 structure IsAtom (μ : Measure α) (s : Set α) : Prop where
   measurableSet : MeasurableSet s
@@ -85,10 +90,12 @@ end IsAtom
 
 end Measure
 
-/-- A measure `μ` *has no atoms* if there is no measurable set `s` of positive measure such that
+/--
+A measure `μ` _has no atoms_ if there is no measurable set `s` of positive measure such that
 every measurable subset of `s` has measure `0` or `μ s`. Equivalently (see
 `noAtoms_iff_forall_exists`), every measurable set `s` with `0 < μ s` contains a measurable `t`
-with `0 < μ t < μ s`. -/
+with `0 < μ t < μ s`.
+-/
 @[mk_iff]
 class NoAtoms (μ : Measure α) : Prop where
   not_isAtom : ∀ s, ¬μ.IsAtom s

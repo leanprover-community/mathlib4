@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Logic.Encodable.Basic
 
-/-! # The rationals are `Encodable`.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The rationals are `Encodable`.
 
 As a consequence we also get the instance `Countable ℚ`.
 

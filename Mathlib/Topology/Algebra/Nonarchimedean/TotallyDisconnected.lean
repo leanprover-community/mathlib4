@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Total separatedness of nonarchimedean groups
 
@@ -16,17 +19,17 @@ is implied by the fact that a nonarchimedean group is totally separated.
 
 ## Main results
 
-- `NonarchimedeanGroup.instTotallySeparated`:
+* `NonarchimedeanGroup.instTotallySeparated`:
   A nonarchimedean group is a totally separated topological space.
 
 ## Notation
 
-- `G` : Is a nonarchimedean group.
-- `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
+* `G` : Is a nonarchimedean group.
+* `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
 
 ## References
 
-See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
+See Proposition 2.3.9 and Problem 63 in \[F. Q. Gouvêa, _p-adic numbers_\]\[gouvea1997\].
 -/
 
 public section

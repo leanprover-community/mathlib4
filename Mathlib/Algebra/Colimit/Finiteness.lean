@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules as direct limits of finitely generated submodules
 
@@ -16,7 +19,6 @@ We show that every module is the direct limit of its finitely generated submodul
 ## Main definitions
 
 * `Module.fgSystem`: the directed system of finitely generated submodules of a module.
-
 * `Module.fgSystem.equiv`: the isomorphism between a module and the direct limit of its
   finitely generated submodules.
 -/

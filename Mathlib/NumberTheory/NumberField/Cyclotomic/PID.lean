@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
 
@@ -17,6 +20,7 @@ We prove that `ℤ [ζₚ]` is a PID for specific values of `p`. The result hold
 but the proof is more and more involved.
 
 ## Main results
+
 * `three_pid`: If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain.
 * `five_pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
 -/

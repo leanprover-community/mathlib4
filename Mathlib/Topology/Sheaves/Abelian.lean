@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.Skyscraper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves over Abelian categories
 

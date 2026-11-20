@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets in subtypes
 
@@ -21,13 +24,12 @@ This module also provides lemmas for `↓∩` and this coercion.
 
 Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in the subtype `↑A`.
 
-- `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
-- `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
+* `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
+* `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
 This notation, (together with the `↑` notation for `Set.CoeHead`)
 is defined in `Mathlib/Data/Set/Notation.lean` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
-
 
 ## Naming conventions
 

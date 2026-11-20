@@ -7,14 +7,17 @@ module
 
 public import Mathlib.Topology.MetricSpace.Cover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Delone sets
 
-A **Delone set** `D ⊆ X` in a metric space is a set which is both:
+A *Delone set* `D ⊆ X` in a metric space is a set which is both:
 
-* **Uniformly Discrete**: there exists `packingRadius > 0` such that distinct points of `D`
+* *Uniformly Discrete*: there exists `packingRadius > 0` such that distinct points of `D`
   are separated by a distance strictly greater than `packingRadius`;
-* **Relatively Dense**: there exists `coveringRadius > 0` such that every point of `X`
+* *Relatively Dense*: there exists `coveringRadius > 0` such that every point of `X`
   lies within distance `coveringRadius` of some point of `D`.
 
 The `DeloneSet` structure stores the set together with explicit radii witnessing
@@ -41,11 +44,11 @@ Delone sets appear in discrete geometry, crystallography, aperiodic order, and t
 
 ## Implementation notes
 
-* **Bundled Structure**: `DeloneSet` is bundled as a structure rather than a predicate
+* *Bundled Structure*: `DeloneSet` is bundled as a structure rather than a predicate
   (e.g., `IsDelone`). This facilitates dynamical systems constructions like hulls and patches by
   ensuring operations automatically preserve the required properties, eliminating the need to
   manually pass around proofs that the set remains Delone.
-* **Explicit Data**: Since radii are stored as explicit data, the map from `DeloneSet X` to `Set X`
+* *Explicit Data*: Since radii are stored as explicit data, the map from `DeloneSet X` to `Set X`
   is not injective. We provide a `Membership` instance and `mem_carrier` to allow the convenience
   of `∈` notation while ensuring radii remain bundled, computationally accessible, and tracked by
   extensionality.

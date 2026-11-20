@@ -21,6 +21,9 @@ public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
 import Mathlib.Order.CompleteLattice.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled non-unital subsemirings
 
@@ -133,8 +136,10 @@ open NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T] (f : R →ₙ+* S)
 
-/-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
-See note [range copy pattern]. -/
+/--
+The range of a non-unital ring homomorphism is a non-unital subsemiring.
+See note \[range copy pattern\].
+-/
 def srange : NonUnitalSubsemiring S :=
   ((⊤ : NonUnitalSubsemiring R).map (f : R →ₙ+* S)).copy (Set.range f) Set.image_univ.symm
 
@@ -238,9 +243,11 @@ instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
-/-- A point-free means of proving membership in the center, for a non-associative ring.
+/--
+A point-free means of proving membership in the center, for a non-associative ring.
 
-This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
+This can be helpful when working with types that have ext lemmas for `R →+ R`.
+-/
 lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
     a ∈ Set.center R ↔
       AddMonoidHom.mulLeft a = .mulRight a ∧
@@ -675,10 +682,12 @@ variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 
 open NonUnitalSubsemiringClass NonUnitalSubsemiring
 
-/-- Restriction of a non-unital ring homomorphism to its range interpreted as a
+/--
+Restriction of a non-unital ring homomorphism to its range interpreted as a
 non-unital subsemiring.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 def srangeRestrict (f : R →ₙ+* S) : R →ₙ+* srange f :=
   codRestrict f (srange f) (mem_srange_self f)
 

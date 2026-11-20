@@ -11,11 +11,14 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial sums of geometric series in a ring
 
-This file determines the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
-$\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
+This file determines the values of the geometric series $`\sum_{i=0}^{n-1} x^i` and
+$`\sum_{i=0}^{n-1} x^i y^{n-1-i}` and variants thereof.
 
 Several variants are recorded, generalising in particular to the case of a noncommutative ring in
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
@@ -73,7 +76,9 @@ lemma geom_sum₂_with_one (x : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * 1 ^ (n - 1 - i) = ∑ i ∈ range n, x ^ i :=
   sum_congr rfl fun i _ => by rw [one_pow, mul_one]
 
-/-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
+/--
+$`x^n-y^n = (x-y) \sum x^ky^{n-1-k}` reformulated without `-` signs.
+-/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
   let f : ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
@@ -133,7 +138,9 @@ end Semiring
 section CommSemiring
 variable [CommSemiring R]
 
-/-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
+/--
+$`x^n-y^n = (x-y) \sum x^ky^{n-1-k}` reformulated without `-` signs.
+-/
 lemma geom_sum₂_mul_add (x y : R) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n :=
   (Commute.all x y).geom_sum₂_mul_add n

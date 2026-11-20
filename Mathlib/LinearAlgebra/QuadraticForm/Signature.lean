@@ -8,6 +8,9 @@ module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Signature of a quadratic form
 
@@ -21,7 +24,7 @@ computed from any sum-of-squares representation.
 * `QuadraticForm.sigPos_of_equiv_weightedSumOfSquares`,
   `QuadraticForm.sigNeg_of_equiv_weightedSumOfSquares`: for any isomorphism from `Q` to a
   weighted sum of squares, `Q.sigPos` and `Q.sigNeg` are the number of positive and negative
-  weights. (This is the uniqueness part of **Sylvester's law of inertia**; the existence is
+  weights. (This is the uniqueness part of *Sylvester's law of inertia*; the existence is
   `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared` in file
   `Mathlib.LinearAlgebra.QuadraticForm.Real`.)
 

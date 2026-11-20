@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
@@ -27,8 +30,10 @@ section
 
 variable {n : ℕ} (m : ℕ) [CharP R m]
 
-/-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
-See note [reducible non-instances]. -/
+/--
+The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
+See note \[reducible non-instances\].
+-/
 abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R where
   algebraMap := ZMod.castHom h R
   smul := fun a r => cast a * r
@@ -41,9 +46,11 @@ abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R where
 
 end
 
-/-- The `ZMod p`-algebra structure on a ring of characteristic `p`. This is not an
+/--
+The `ZMod p`-algebra structure on a ring of characteristic `p`. This is not an
 instance since it creates a diamond with `Algebra.id`.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 

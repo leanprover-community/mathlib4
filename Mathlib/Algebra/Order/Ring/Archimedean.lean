@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 import Mathlib.Algebra.Order.Archimedean.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Archimedean classes of a linearly ordered ring
 

@@ -10,6 +10,9 @@ public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits of LocallyRingedSpace
 
@@ -147,7 +150,7 @@ theorem coequalizer_π_app_isLocalHom
   · apply isLocalHom_of_isIso
 
 /-!
-We roughly follow the construction given in [MR0302656]. Given a pair `f, g : X ⟶ Y` of morphisms
+We roughly follow the construction given in \[MR0302656\]. Given a pair `f, g : X ⟶ Y` of morphisms
 of locally ringed spaces, we want to show that the stalk map of
 `π = coequalizer.π f g` (as sheafed space homs) is a local ring hom. It then follows that
 `coequalizer f g` is indeed a locally ringed space, and `coequalizer.π f g` is a morphism of

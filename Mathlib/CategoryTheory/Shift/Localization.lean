@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Shift.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shift induced on a localized category
 

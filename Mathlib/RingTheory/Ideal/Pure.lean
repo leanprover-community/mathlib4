@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Idempotents
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pure ideals
 
@@ -21,11 +24,11 @@ some properties of such ideals.
 
 ## Main results and definitions
 
-- `Ideal.Pure`: An ideal `I` of `R` is pure if `R ⧸ I` is `R`-flat.
-- `Ideal.inf_eq_mul_of_pure`: If `I` is pure, `I ⊓ J = I * J` for every ideal `J`.
-- `Ideal.Pure.of_inf_eq_mul`: If for any f.g. ideal `J`, the equality `I ⊓ J = I * J` holds, then
+* `Ideal.Pure`: An ideal `I` of `R` is pure if `R ⧸ I` is `R`-flat.
+* `Ideal.inf_eq_mul_of_pure`: If `I` is pure, `I ⊓ J = I * J` for every ideal `J`.
+* `Ideal.Pure.of_inf_eq_mul`: If for any f.g. ideal `J`, the equality `I ⊓ J = I * J` holds, then
   `I` is pure.
-- `Ideal.zeroLocus_inj_of_pure`: If `I` and `J` are pure ideals such that `V(I) = V(J)`, then
+* `Ideal.zeroLocus_inj_of_pure`: If `I` and `J` are pure ideals such that `V(I) = V(J)`, then
   `I = J`.
 -/
 

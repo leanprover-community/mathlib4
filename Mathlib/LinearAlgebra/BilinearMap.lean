@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basics on bilinear maps
 
@@ -311,9 +314,11 @@ variable {Tₗ Tₗ' : Type*} [AddCommMonoid Tₗ] [AddCommMonoid Tₗ'] [Module
 
 variable (R)
 
-/-- Create a bilinear map from a function that is linear in each component.
+/--
+Create a bilinear map from a function that is linear in each component.
 
-This is a shorthand for `mk₂'` for the common case when `R = S`. -/
+This is a shorthand for `mk₂'` for the common case when `R = S`.
+-/
 def mk₂ (f : M → Nₗ → Pₗ) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
     (H2 : ∀ (c : R) (m n), f (c • m) n = c • f m n)
     (H3 : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
@@ -369,11 +374,13 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     subst h; rfl
 
 omit [Module R M] in
-/-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
+/--
+Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`.
 
 See `LinearMap.compr₂ₛₗ` for a version of this which does not support towers of scalars but which
-does support semi-linear maps. -/
+does support semi-linear maps.
+-/
 def compr₂ [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
@@ -453,11 +460,13 @@ theorem llcomp_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N)
 theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp _ M N P f g = f ∘ₛₗ g := rfl
 
 omit [Module R M] in
-/-- Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
+/--
+Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
 form a bilinear map `M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q`.
 
 See `LinearMap.compr₂` for a version of this definition, which does not support semi-linear maps but
-which does support towers of scalars. -/
+which does support towers of scalars.
+-/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
   llcomp _ N P Q g ∘ₛₗ f
 
@@ -647,11 +656,13 @@ variable
   {G : Type*} [AddCommMonoid G] [Module R G]
 
 -- TODO Also make a semi-linear version.
-/-- Bundled statement of bilinearity for a function.
+/--
+Bundled statement of bilinearity for a function.
 
 The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
 `IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a
-declaration. -/
+declaration.
+-/
 structure IsBilinearMap (f : E → F → G) : Prop where
   add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
   smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y

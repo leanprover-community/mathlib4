@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Presentable.Presheaf
 import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite simplicial sets are presentable
 

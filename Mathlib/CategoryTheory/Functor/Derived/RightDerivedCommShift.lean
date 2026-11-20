@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Shift.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The right derived functor commutes with the shift
 

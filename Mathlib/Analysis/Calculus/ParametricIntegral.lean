@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of integrals depending on parameters
 
@@ -22,7 +25,6 @@ to guarantee that `f` is continuous using the dominated convergence theorem. In 
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
 
-
 ## Main results
 
 As explained above, all results express the derivative of a parametric integral as the integral of
@@ -31,28 +33,27 @@ derivative, especially Fréchet derivatives vs elementary derivative of function
 variable.
 
 * `hasFDerivAt_integral_of_dominated_loc_of_lip`: this version assumes that
-  - `F x` is ae-measurable for x near `x₀`,
-  - `F x₀` is integrable,
-  - `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
-  - `fun x ↦ F x a` is locally Lipschitz near `x₀` for almost every `a`,
+
+  * `F x` is ae-measurable for x near `x₀`,
+  * `F x₀` is integrable,
+  * `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
+  * `fun x ↦ F x a` is locally Lipschitz near `x₀` for almost every `a`,
     with a Lipschitz bound which is integrable with respect to `a`.
 
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
   controlled by a fixed neighborhood `s` of `x₀`.
-
 * `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assumes `fun x ↦ F x a` has
   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
   from `x` near `x₀`.
-
 * `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H → α → E` is
   continuously differentiable in the first argument near `x₀` in the sense that:
-  - `F.uncurry : H × α → E` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
-  - `fun x ↦ F x a` is differentiable on `u` for each parameter `a ∈ k`,
-  - `fun (x, a) ↦ fderiv 𝕜 (fun y ↦ F y a) x` is continuous on `u ×ˢ k`.
+
+  * `F.uncurry : H × α → E` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
+  * `fun x ↦ F x a` is differentiable on `u` for each parameter `a ∈ k`,
+  * `fun (x, a) ↦ fderiv 𝕜 (fun y ↦ F y a) x` is continuous on `u ×ˢ k`.
 
   Here `k : Set α` is the domain of integration and is required to be compact, regarding some
   sufficiently compatible topology on `α`.
-
 * `ContDiffOn.parametric_integral` : If `f.uncurry : H × H' → E` is `Cⁿ` on `u ×ˢ k` for an open
   set `u` and a compact set `k`, then given any subset `s₀` of `k` the parametric
   integral `fun x ↦ ∫ a in s₀, f x a ∂μ` is `Cⁿ` on `u` too.
@@ -63,6 +64,7 @@ assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead
 `fderiv`.
 
 ## Tags
+
 integral, derivative
 -/
 

@@ -10,11 +10,15 @@ public import Mathlib.Topology.ContinuousMap.Periodic
 
 import Mathlib.Analysis.PSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson's summation formula
 
 We prove Poisson's summation formula `∑ (n : ℤ), f n = ∑ (n : ℤ), 𝓕 f n`, where `𝓕 f` is the
 Fourier transform of `f`, under the following hypotheses:
+
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
 * For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), ‖f(x + n)‖` is uniformly convergent on `K`.
@@ -23,7 +27,8 @@ Fourier transform of `f`, under the following hypotheses:
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
-`SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
+`SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function.
+-/
 
 public section
 
@@ -195,9 +200,11 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable {f : ℝ → ℂ} (h
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
 
-/-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
+/--
+*Poisson's summation formula*, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
-Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
+Weiss, _Introduction to Fourier analysis on Euclidean spaces_.)
+-/
 theorem Real.tsum_eq_tsum_fourier_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
     (hb : 1 < b) (hf : f =O[cocompact ℝ] (|·| ^ (-b)))
     (hFf : (𝓕 f) =O[cocompact ℝ] (|·| ^ (-b))) (x : ℝ) :

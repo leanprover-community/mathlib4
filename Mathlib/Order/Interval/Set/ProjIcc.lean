@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projection of a line onto a closed interval
 
@@ -235,8 +238,10 @@ theorem IicExtend_coe (f : Iic b → β) (x : Iic b) : IicExtend f x = f x :=
 theorem IccExtend_val (f : Icc a b → β) (x : Icc a b) : IccExtend h f x = f x :=
   congr(f $(projIcc_val h x))
 
-/-- If `f : α → β` is a constant both on $(-∞, a]$ and on $[b, +∞)$, then the extension of this
-function from $[a, b]$ to the whole line is equal to the original function. -/
+/--
+If `f : α → β` is a constant both on $`(-∞, a]` and on $`[b, +∞)`, then the extension of this
+function from $`[a, b]` to the whole line is equal to the original function.
+-/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x

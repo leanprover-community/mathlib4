@@ -9,7 +9,12 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Basic.NNReal.Star
 
-/-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `ℝ` and `ℝ≥0` are \*-ordered rings.
+-/
 
 public section
 

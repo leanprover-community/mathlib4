@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right Homology of short complexes
 

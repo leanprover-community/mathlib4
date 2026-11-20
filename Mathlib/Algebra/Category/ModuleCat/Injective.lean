@@ -9,8 +9,11 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Injective objects in the category of $R$-modules
+# Injective objects in the category of $`R`-modules
 -/
 
 public section

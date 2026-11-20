@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
 
@@ -254,11 +257,13 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
 open scoped Classical in
-/-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
+/--
+Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
 
 Though we only use the values of `πi` on the boxes of `π`, we require `πi` to be a globally defined
-function. -/
+function.
+-/
 @[simps]
 def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
   boxes := π.boxes.biUnion fun J => (πi J).boxes

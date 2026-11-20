@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.PurelyInseparable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally injective morphism
 

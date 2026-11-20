@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.GradedObject.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The left and right unitors
 

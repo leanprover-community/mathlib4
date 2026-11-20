@@ -10,10 +10,14 @@ public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
 
 We introduce the bundled categories:
+
 * `MagmaCat`
 * `AddMagmaCat`
 * `Semigrp`

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Biproducts in the idempotent completion of a preadditive category
 

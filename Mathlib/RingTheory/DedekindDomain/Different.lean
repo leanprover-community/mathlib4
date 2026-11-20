@@ -13,27 +13,33 @@ public import Mathlib.RingTheory.Trace.Quotient
 
 import Mathlib.RingTheory.Finiteness.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The different ideal
 
 ## Main definition
-- `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
-- `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
-- `differentIdeal`: The different ideal of an extension of integral domains.
+
+* `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
+* `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
+* `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## Main results
-- `conductor_mul_differentIdeal`:
+
+* `conductor_mul_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
-    with `f` being the minimal polynomial of `x`.
-- `aeval_derivative_mem_differentIdeal`:
+  with `f` being the minimal polynomial of `x`.
+* `aeval_derivative_mem_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `f'(x) ∈ 𝔇`
-    with `f` being the minimal polynomial of `x`.
-- `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
+  with `f` being the minimal polynomial of `x`.
+* `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
   (in the sense of `Algebra.IsUnramifiedAt`).
-- `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
+* `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
-- Show properties of the different ideal
+
+* Show properties of the different ideal
 -/
 
 @[expose] public section

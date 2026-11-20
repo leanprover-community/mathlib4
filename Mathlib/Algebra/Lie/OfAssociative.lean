@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras of associative algebras
 
@@ -66,16 +69,19 @@ section AssociativeModule
 
 variable {M : Type w} [AddCommGroup M] [Module A M]
 
-/-- We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
+/--
+We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
 bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
+
 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-  (and thus `⁅a, b⁆ = a * b`)
+   (and thus `⁅a, b⁆ = a * b`)
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul
@@ -106,11 +112,13 @@ section AssociativeRepresentation
 
 variable {M : Type w} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
 
-/-- A representation of an associative algebra `A` is also a representation of `A`, regarded as a
+/--
+A representation of an associative algebra `A` is also a representation of `A`, regarded as a
 Lie algebra via the ring commutator.
 
 See the comment at `LieRingModule.ofAssociativeModule` for why the possibility `M = A` means
-this cannot be a global instance. -/
+this cannot be a global instance.
+-/
 theorem LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
   lie_smul := smul_algebra_smul_comm
@@ -179,9 +187,11 @@ variable (R : Type u) (L : Type v) (M : Type w)
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M] [LieModule R L M]
 
-/-- A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
+/--
+A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
 
-See also `LieModule.toModuleHom`. -/
+See also `LieModule.toModuleHom`.
+-/
 @[simps]
 def LieModule.toEnd : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
@@ -219,7 +229,9 @@ open Function
 
 namespace LieModule
 
-/-- A Lie module is *faithful* if the associated map `L → End M` is injective. -/
+/--
+A Lie module is _faithful_ if the associated map `L → End M` is injective.
+-/
 @[mk_iff]
 class IsFaithful : Prop where
   injective_toEnd : Injective <| toEnd R L M

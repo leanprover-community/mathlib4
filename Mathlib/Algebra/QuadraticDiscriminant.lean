@@ -11,6 +11,9 @@ import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Tactic.Field
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic discriminants and roots of a quadratic
 
@@ -18,16 +21,16 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 
 ## Main definition
 
-- `discrim a b c`: the discriminant of a quadratic `a * (x * x) + b * x + c` is `b * b - 4 * a * c`.
+* `discrim a b c`: the discriminant of a quadratic `a * (x * x) + b * x + c` is `b * b - 4 * a * c`.
 
 ## Main statements
 
-- `quadratic_eq_zero_iff`: roots of a quadratic can be written as
+* `quadratic_eq_zero_iff`: roots of a quadratic can be written as
   `(-b + s) / (2 * a)` or `(-b - s) / (2 * a)`, where `s` is a square root of the discriminant.
-- `quadratic_ne_zero_of_discrim_ne_sq`: if the discriminant has no square root,
+* `quadratic_ne_zero_of_discrim_ne_sq`: if the discriminant has no square root,
   then the corresponding quadratic has no root.
-- `discrim_le_zero`: if a quadratic is always non-negative, then its discriminant is non-positive.
-- `discrim_le_zero_of_nonpos`, `discrim_lt_zero`, `discrim_lt_zero_of_neg`: versions of this
+* `discrim_le_zero`: if a quadratic is always non-negative, then its discriminant is non-positive.
+* `discrim_le_zero_of_nonpos`, `discrim_lt_zero`, `discrim_lt_zero_of_neg`: versions of this
   statement with other inequalities.
 
 ## Tags

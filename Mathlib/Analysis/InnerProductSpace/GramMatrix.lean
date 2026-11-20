@@ -10,7 +10,11 @@ public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Analysis.Matrix.Order
 
-/-! # Gram Matrices
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Gram Matrices
 
 This file defines Gram matrices and proves their positive semidefiniteness.
 Results require `RCLike 𝕜`.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Subsemigroup.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of monoids
 
@@ -61,10 +64,12 @@ instance {M α : Type*} [Monoid M] [MulAction M α] :
 
 variable {M N} [MulOneClass N]
 
-/-- The center of a multiplication with unit is commutative and associative.
+/--
+The center of a multiplication with unit is commutative and associative.
 
 This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
-field. -/
+field.
+-/
 @[to_additive /-- The center of an addition with zero is commutative and associative. -/]
 abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }

@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.FixedPoints
 public import Mathlib.Order.Zorn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
 
@@ -18,6 +21,7 @@ cardinals (see `min_injective`) and the totality of their order (see `total`).
 ## Notes
 
 Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`:
+
 * `schroeder_bernstein` states that, given injections `α → β` and `β → α`, one can get a
   bijection `α → β`. This corresponds to the antisymmetry of the order.
 * The order is also well-founded: any nonempty set of cardinals has a minimal element.

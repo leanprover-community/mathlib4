@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.RingHom.Finite
 
 import Mathlib.RingTheory.Finiteness.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite morphisms of schemes
 

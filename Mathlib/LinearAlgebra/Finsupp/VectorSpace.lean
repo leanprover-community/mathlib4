@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear structures on function with finite support `ι →₀ M`
 
@@ -33,9 +36,11 @@ namespace DFinsupp
 variable {ι : Type*} {R : Type*} {M : ι → Type*}
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-/-- The direct sum of free modules is free.
+/--
+The direct sum of free modules is free.
 
-Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
+Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq.
+-/
 noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σ i, η i) R (Π₀ i, M i) :=
   .ofRepr

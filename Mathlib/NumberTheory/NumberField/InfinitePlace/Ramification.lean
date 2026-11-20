@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification of infinite places of a number field
 

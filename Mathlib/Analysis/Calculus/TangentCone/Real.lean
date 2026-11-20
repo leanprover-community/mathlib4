@@ -10,14 +10,17 @@ public import Mathlib.Analysis.Convex.Topology
 
 import Mathlib.Analysis.Normed.Field.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique differentiability property in real normed spaces
 
 In this file we prove that
 
-- `uniqueDiffOn_convex`: a convex set with nonempty interior in a real normed space
+* `uniqueDiffOn_convex`: a convex set with nonempty interior in a real normed space
   has the unique differentiability property;
-- `uniqueDiffOn_Ioc` etc: intervals on the real line have the unique differentiability property.
+* `uniqueDiffOn_Ioc` etc: intervals on the real line have the unique differentiability property.
 -/
 
 public section

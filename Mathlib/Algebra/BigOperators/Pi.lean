@@ -14,6 +14,9 @@ public import Mathlib.Algebra.Ring.Pi
 
 import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators for Pi Types
 
@@ -121,11 +124,15 @@ theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (�
   rw [← Finset.univ_prod_mulSingle k, map_prod, map_prod]
   simp only [H]
 
-/-- This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
-note [partially-applied ext lemmas]. -/
+/--
+This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
+note \[partially-applied ext lemmas\].
+-/
 @[to_additive (attr := ext)
-      /-- This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
-      explained in note [partially-applied ext lemmas]. -/]
+      /--
+      This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
+explained in note \[partially-applied ext lemmas\].
+      -/]
 theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
     (H : ∀ i, g.comp (MonoidHom.mulSingle M i) = h.comp (MonoidHom.mulSingle M i)) : g = h :=
   g.functions_ext N h fun i => DFunLike.congr_fun (H i)

@@ -10,17 +10,20 @@ public import Mathlib.Algebra.Ring.Fin
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More operations on modules and ideals related to quotients
 
 ## Main results:
 
-- `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
-- `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+* `RingHom.quotientKerEquivRange` : the *first isomorphism theorem* for commutative rings.
+* `RingHom.quotientKerEquivRangeS` : the *first isomorphism theorem*
   for a morphism from a commutative ring to a semiring.
-- `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
+* `AlgHom.quotientKerEquivRange` : the *first isomorphism theorem*
   for a morphism of algebras (over a commutative semiring)
-- `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
+* `Ideal.quotientInfRingEquivPiQuotient`: the *Chinese Remainder Theorem*, version for coprime
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
 -/
@@ -33,7 +36,8 @@ namespace RingHom
 
 variable {R : Type u} {S : Type v} [Ring R] [Semiring S] (f : R →+* S)
 
-/-- The induced map from the quotient by the kernel to the codomain.
+/--
+The induced map from the quotient by the kernel to the codomain.
 
 This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInverse`) /
 is surjective (`quotientKerEquivOfSurjective`).
@@ -517,7 +521,8 @@ theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.k
   obtain ⟨a, rfl⟩ := Quotient.mkₐ_surjective R₁ _ x
   exact _root_.map_smul f _ _
 
-/-- The induced algebras morphism from the quotient by the kernel to the codomain.
+/--
+The induced algebras morphism from the quotient by the kernel to the codomain.
 
 This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightInverse`) /
 is surjective (`quotientKerAlgEquivOfSurjective`).

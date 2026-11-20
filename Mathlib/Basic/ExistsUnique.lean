@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ExistsUnique`
 
@@ -53,7 +56,7 @@ macro "∃!" xs:explicitBinders ", " b:term : term => do
 
 /--
 Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing for `Exists`.
-However, it does *not* merge binders.
+However, it does _not_ merge binders.
 -/
 @[app_unexpander ExistsUnique] meta def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
@@ -148,7 +151,9 @@ theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
   simp only [existsUnique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
 
-/-- This invokes the two `Decidable` arguments $O(n)$ times. -/
+/--
+This invokes the two `Decidable` arguments $`O(n)` times.
+-/
 instance List.decidableBExistsUnique {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p] :
     (l : List α) → Decidable (∃! x, x ∈ l ∧ p x)
   | [] => .isFalse <| by simp

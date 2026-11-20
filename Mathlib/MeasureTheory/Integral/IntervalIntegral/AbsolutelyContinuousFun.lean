@@ -10,19 +10,24 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions
 
 This file proves that:
+
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
-  `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
+  `uIcc a b`, then _Fundamental Theorem of Calculus_ holds for `f'` on `a..b`, i.e.
   `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
 * `AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul`:
-  *Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
+  _Integration by Parts_ holds for absolutely continuous functions, i.e. if `f` and `g` are
   absolutely continuous on `uIcc a b`, then
   `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
+
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
@@ -222,8 +227,10 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
     (fun s hs ↦ hu₁ s hs |>.left) hu₂ hu₃ hu₄
   linarith
 
-/-- *Fundamental Theorem of Calculus* for absolutely continuous functions: if `f` is absolutely
-continuous on `uIcc a b`, then `∫ (x : ℝ) in a..b, deriv f x = f b - f a`. -/
+/--
+_Fundamental Theorem of Calculus_ for absolutely continuous functions: if `f` is absolutely
+continuous on `uIcc a b`, then `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
+-/
 theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∫ (x : ℝ) in a..b, deriv f x = f b - f a := by
@@ -255,7 +262,9 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 
-/-- *Integration by parts* for absolutely continuous functions. -/
+/--
+_Integration by parts_ for absolutely continuous functions.
+-/
 theorem AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     ∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x := by

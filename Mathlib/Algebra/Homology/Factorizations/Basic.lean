@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic definitions for factorization lemmas
 
@@ -20,6 +23,7 @@ abelian category `C` that has enough injectives, this is the class of
 fibrations for a model category structure on the bounded below
 category of cochain complexes in `C`. In this folder, we intend to prove two factorization
 lemmas in the category of bounded below cochain complexes (TODO):
+
 * CM5a: any morphism `K ⟶ L` can be factored as `K ⟶ K' ⟶ L` where `i : K ⟶ K'` is a
   trivial cofibration (a mono that is also a quasi-isomorphism) and `p : K' ⟶ L` is a fibration.
 * CM5b: any morphism `K ⟶ L` can be factored as `K ⟶ L' ⟶ L` where `i : K ⟶ L'` is a

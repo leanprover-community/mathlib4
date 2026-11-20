@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cohomology of `HomComplex` and morphisms in the derived category
 

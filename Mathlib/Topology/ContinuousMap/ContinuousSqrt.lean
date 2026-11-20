@@ -9,11 +9,16 @@ public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Topology.ContinuousMap.StarOrdered
 
-/-! # Instances of `ContinuousSqrt`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Instances of `ContinuousSqrt`
 
 This provides the instances of `ContinuousSqrt` for `ℝ`, `ℝ≥0`, and `ℂ`, thereby yielding instances
 of `StarOrderedRing C(α, R)` and `StarOrderedRing C(α, R)₀` for any topological space `α` and `R`
-among `ℝ≥0`, `ℝ`, and `ℂ`. -/
+among `ℝ≥0`, `ℝ`, and `ℂ`.
+-/
 
 public section
 

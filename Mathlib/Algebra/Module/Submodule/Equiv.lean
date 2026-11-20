@@ -8,7 +8,12 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Range
 
-/-! # Linear equivalences involving submodules -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Linear equivalences involving submodules
+-/
 
 @[expose] public section
 
@@ -70,10 +75,12 @@ theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂}
     (x : q) : ↑((e.ofSubmodules p q h).symm x) = e.symm x :=
   rfl
 
-/-- A linear equivalence of two modules restricts to a linear equivalence from the preimage of any
+/--
+A linear equivalence of two modules restricts to a linear equivalence from the preimage of any
 submodule to that submodule.
 
-This is `LinearEquiv.ofSubmodule` but with `comap` on the left instead of `map` on the right. -/
+This is `LinearEquiv.ofSubmodule` but with `comap` on the left instead of `map` on the right.
+-/
 def ofSubmodule' [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃ₛₗ[σ₁₂] U :=
   (f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.symm)).symm
@@ -132,11 +139,13 @@ theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
 
 variable {f g}
 
-/-- A linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
+/--
+A linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
 equivalence between `M` and `f.range`.
 
 This is a computable alternative to `LinearEquiv.ofInjective`, and a bidirectional version of
-`LinearMap.rangeRestrict`. -/
+`LinearMap.rangeRestrict`.
+-/
 def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {g : M₂ → M}
     (h : Function.LeftInverse g f) : M ≃ₛₗ[σ₁₂] (LinearMap.range f) :=
   { LinearMap.rangeRestrict f with

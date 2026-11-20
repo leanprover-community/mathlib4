@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Rat.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division (semi)rings and (semi)fields
 
@@ -58,61 +61,75 @@ universe u
 
 variable {K : Type*}
 
-/-- The default definition of the coercion `ℚ≥0 → K` for a division semiring `K`.
+/--
+The default definition of the coercion `ℚ≥0 → K` for a division semiring `K`.
 
 `↑q : K` is defined as `(q.num : K) / (q.den : K)`.
 
 Do not use this directly (instances of `DivisionSemiring` are allowed to override that default for
-better definitional properties). Instead, use the coercion. -/
+better definitional properties). Instead, use the coercion.
+-/
 def NNRat.castRec [NatCast K] [Div K] (q : ℚ≥0) : K := q.num / q.den
 
-/-- The default definition of the coercion `ℚ → K` for a division ring `K`.
+/--
+The default definition of the coercion `ℚ → K` for a division ring `K`.
 
 `↑q : K` is defined as `(q.num : K) / (q.den : K)`.
 
 Do not use this directly (instances of `DivisionRing` are allowed to override that default for
-better definitional properties). Instead, use the coercion. -/
+better definitional properties). Instead, use the coercion.
+-/
 def Rat.castRec [NatCast K] [IntCast K] [Div K] (q : ℚ) : K := q.num / q.den
 
-/-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements.
+/--
+A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements.
 
 An instance of `DivisionSemiring K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
 Those two fields are needed to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance since we
 need to control the specific definitions for some special cases of `K` (in particular `K = ℚ≥0`
-itself). See also note [forgetful inheritance].
+itself). See also note \[forgetful inheritance\].
 
 If the division semiring has positive characteristic `p`, our division by zero convention forces
-`nnratCast (1 / p) = 1 / 0 = 0`. -/
+`nnratCast (1 / p) = 1 / 0 = 0`.
+-/
 class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCast K where
   protected nnratCast := NNRat.castRec
-  /-- However `NNRat.cast` is defined, it must be propositionally equal to `a / b`.
+  /--
+  However `NNRat.cast` is defined, it must be propositionally equal to `a / b`.
 
-  Do not use this lemma directly. Use `NNRat.cast_def` instead. -/
+  Do not use this lemma directly. Use `NNRat.cast_def` instead.
+  -/
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : K) = q.num / q.den := by intros; rfl
-  /-- Scalar multiplication by a nonnegative rational number.
+  /--
+  Scalar multiplication by a nonnegative rational number.
 
   Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
-  `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
+`nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
 
-  Do not use directly. Instead use the `•` notation. -/
+  Do not use directly. Instead use the `•` notation.
+  -/
   protected nnqsmul : ℚ≥0 → K → K
-  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
+  /--
+  However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
-  Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
+  Do not use this lemma directly. Use `NNRat.smul_def` instead.
+  -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
 
 attribute [instance 500] DivisionSemiring.toSemiring
 
-/-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
+/--
+A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
 An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
 Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need
 to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself).
-See also note [forgetful inheritance]. Similarly, there are maps `nnratCast ℚ≥0 → K` and
+See also note \[forgetful inheritance\]. Similarly, there are maps `nnratCast ℚ≥0 → K` and
 `nnqsmul : ℚ≥0 → K → K` to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance.
 
 If the division ring has positive characteristic `p`, our division by zero convention forces
-`ratCast (1 / p) = 1 / 0 = 0`. -/
+`ratCast (1 / p) = 1 / 0 = 0`.
+-/
 class DivisionRing (K : Type*)
   extends Ring K, DivInvMonoid K, Nontrivial K, NNRatCast K, RatCast K where
   /-- For a nonzero `a`, `a⁻¹` is a right multiplicative inverse. -/
@@ -120,62 +137,78 @@ class DivisionRing (K : Type*)
   /-- The inverse of `0` is `0` by convention. -/
   protected inv_zero : (0 : K)⁻¹ = 0
   protected nnratCast := NNRat.castRec
-  /-- However `NNRat.cast` is defined, it must be equal to `a / b`.
+  /--
+  However `NNRat.cast` is defined, it must be equal to `a / b`.
 
-  Do not use this lemma directly. Use `NNRat.cast_def` instead. -/
+  Do not use this lemma directly. Use `NNRat.cast_def` instead.
+  -/
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : K) = q.num / q.den := by intros; rfl
-  /-- Scalar multiplication by a nonnegative rational number.
+  /--
+  Scalar multiplication by a nonnegative rational number.
 
   Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
-  `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
+`nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
 
-  Do not use directly. Instead use the `•` notation. -/
+  Do not use directly. Instead use the `•` notation.
+  -/
   protected nnqsmul : ℚ≥0 → K → K
-  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
+  /--
+  However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
-  Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
+  Do not use this lemma directly. Use `NNRat.smul_def` instead.
+  -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
   protected ratCast := Rat.castRec
-  /-- However `Rat.cast q` is defined, it must be propositionally equal to `q.num / q.den`.
+  /--
+  However `Rat.cast q` is defined, it must be propositionally equal to `q.num / q.den`.
 
-  Do not use this lemma directly. Use `Rat.cast_def` instead. -/
+  Do not use this lemma directly. Use `Rat.cast_def` instead.
+  -/
   protected ratCast_def (q : ℚ) : (Rat.cast q : K) = q.num / q.den := by intros; rfl
-  /-- Scalar multiplication by a rational number.
+  /--
+  Scalar multiplication by a rational number.
 
   Unless there is a risk of a `Module ℚ _` instance diamond, write `qsmul := _`. This will set
-  `qsmul` to `(Rat.cast · * ·)` thanks to unification in the default proof of `qsmul_def`.
+`qsmul` to `(Rat.cast · * ·)` thanks to unification in the default proof of `qsmul_def`.
 
-  Do not use directly. Instead use the `•` notation. -/
+  Do not use directly. Instead use the `•` notation.
+  -/
   protected qsmul : ℚ → K → K
-  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
+  /--
+  However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
-  Do not use this lemma directly. Use `Rat.cast_def` instead. -/
+  Do not use this lemma directly. Use `Rat.cast_def` instead.
+  -/
   protected qsmul_def (a : ℚ) (x : K) : qsmul a x = Rat.cast a * x := by intros; rfl
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing K] : DivisionSemiring K :=
   { ‹DivisionRing K› with }
 
-/-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements.
+/--
+A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements.
 
 An instance of `Semifield K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
 Those two fields are needed to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance since we
 need to control the specific definitions for some special cases of `K` (in particular `K = ℚ≥0`
-itself). See also note [forgetful inheritance].
+itself). See also note \[forgetful inheritance\].
 
 If the semifield has positive characteristic `p`, our division by zero convention forces
-`nnratCast (1 / p) = 1 / 0 = 0`. -/
+`nnratCast (1 / p) = 1 / 0 = 0`.
+-/
 class Semifield (K : Type*) extends CommSemiring K, DivisionSemiring K, CommGroupWithZero K
 
-/-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
+/--
+A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
 Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need
 to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself).
-See also note [forgetful inheritance].
+See also note \[forgetful inheritance\].
 
 If the field has positive characteristic `p`, our division by zero convention forces
-`ratCast (1 / p) = 1 / 0 = 0`. -/
+`ratCast (1 / p) = 1 / 0 = 0`.
+-/
 @[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 

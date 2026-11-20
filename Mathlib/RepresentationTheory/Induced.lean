@@ -7,11 +7,14 @@ module
 
 public import Mathlib.RepresentationTheory.Coinvariants
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced representations
 
 Given a commutative ring `k`, a group homomorphism `φ : G →* H`, and a `k`-linear
-`G`-representation `A`, this file introduces the induced representation $Ind_G^H(A)$ of `A` as
+`G`-representation `A`, this file introduces the induced representation $`Ind_G^H(A)` of `A` as
 an `H`-representation.
 
 By `ind φ A` we mean the `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.

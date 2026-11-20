@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Saturation
 public import Mathlib.RingTheory.Localization.Basic
 
-/-! # Localization and submonoid saturation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Localization and submonoid saturation
 
 In this file we show that `A` is a localization of `R` on the submonoid `S` if and only if it is so
 on the saturation of `S`.

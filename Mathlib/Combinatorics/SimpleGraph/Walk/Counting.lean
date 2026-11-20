@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counting walks of a given length
 
 ## Main definitions
-- `walkLengthTwoEquivCommonNeighbors`: bijective correspondence between walks of length two
+
+* `walkLengthTwoEquivCommonNeighbors`: bijective correspondence between walks of length two
   from `u` to `v` and common neighbours of `u` and `v`. Note that `u` and `v` may be the same.
-- `finsetWalkLength`: the `Finset` of length-`n` walks from `u` to `v`.
+* `finsetWalkLength`: the `Finset` of length-`n` walks from `u` to `v`.
   This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
   can also be useful as a recursive description of this set when `V` is finite.
 
@@ -80,12 +84,14 @@ section LocallyFinite
 variable [DecidableEq V] [LocallyFinite G]
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The `Finset` of length-`n` walks from `u` to `v`.
+/--
+The `Finset` of length-`n` walks from `u` to `v`.
 This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
 can also be useful as a recursive description of this set when `V` is finite.
 
 See `SimpleGraph.coe_finsetWalkLength_eq` for the relationship between this `Finset` and
-the set of length-`n` walks. -/
+the set of length-`n` walks.
+-/
 def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   match n with
   | 0 =>

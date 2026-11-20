@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Solvable Lie algebras
 
@@ -18,15 +21,15 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 ## Main definitions
 
-  * `LieAlgebra.derivedSeriesOfIdeal`
-  * `LieAlgebra.derivedSeries`
-  * `LieAlgebra.IsSolvable`
-  * `LieAlgebra.isSolvableAdd`
-  * `LieAlgebra.radical`
-  * `LieAlgebra.radicalIsSolvable`
-  * `LieAlgebra.derivedLengthOfIdeal`
-  * `LieAlgebra.derivedLength`
-  * `LieAlgebra.derivedAbelianOfIdeal`
+* `LieAlgebra.derivedSeriesOfIdeal`
+* `LieAlgebra.derivedSeries`
+* `LieAlgebra.IsSolvable`
+* `LieAlgebra.isSolvableAdd`
+* `LieAlgebra.radical`
+* `LieAlgebra.radicalIsSolvable`
+* `LieAlgebra.derivedLengthOfIdeal`
+* `LieAlgebra.derivedLength`
+* `LieAlgebra.derivedAbelianOfIdeal`
 
 ## Tags
 
@@ -44,14 +47,16 @@ variable (I J : LieIdeal R L) {f : L' →ₗ⁅R⁆ L}
 
 namespace LieAlgebra
 
-/-- A generalisation of the derived series of a Lie algebra, whose zeroth term is a specified ideal.
+/--
+A generalisation of the derived series of a Lie algebra, whose zeroth term is a specified ideal.
 
 It can be more convenient to work with this generalisation when considering the derived series of
 an ideal since it provides a type-theoretic expression of the fact that the terms of the ideal's
 derived series are also ideals of the enclosing algebra.
 
 See also `LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_comap` and
-`LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_map` below. -/
+`LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_map` below.
+-/
 def derivedSeriesOfIdeal (k : ℕ) : LieIdeal R L → LieIdeal R L :=
   (fun I => ⁅I, I⁆)^[k]
 
@@ -390,16 +395,20 @@ instance [IsSolvable L] : IsSolvable (⊤ : LieSubalgebra R L) := by
   have h : IsSolvable (⊤ : LieSubalgebra R L) := inferInstance
   exact le_sSup h
 
-/-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
+/--
+Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
 
-For a non-solvable ideal, the value is 0. -/
+For a non-solvable ideal, the value is 0.
+-/
 noncomputable def derivedLengthOfIdeal (I : LieIdeal R L) : ℕ :=
   sInf { k | derivedSeriesOfIdeal R L k I = ⊥ }
 
-/-- The derived length of a Lie algebra is the derived length of its 'top' Lie ideal.
+/--
+The derived length of a Lie algebra is the derived length of its 'top' Lie ideal.
 
-See also `LieAlgebra.derivedLength_eq_derivedLengthOfIdeal`. -/
+See also `LieAlgebra.derivedLength_eq_derivedLengthOfIdeal`.
+-/
 noncomputable abbrev derivedLength : ℕ :=
   derivedLengthOfIdeal R L ⊤
 
@@ -425,10 +434,12 @@ theorem derivedLength_eq_derivedLengthOfIdeal (I : LieIdeal R L) :
 
 variable {R L}
 
-/-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
+/--
+Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 `k-1`th term in the derived series (and is therefore an Abelian ideal contained in `I`).
 
-For a non-solvable ideal, this is the zero ideal, `⊥`. -/
+For a non-solvable ideal, this is the zero ideal, `⊥`.
+-/
 noncomputable def derivedAbelianOfIdeal (I : LieIdeal R L) : LieIdeal R L :=
   match derivedLengthOfIdeal R L I with
   | 0 => ⊥

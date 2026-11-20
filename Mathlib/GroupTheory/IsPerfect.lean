@@ -7,18 +7,22 @@ module
 
 public import Mathlib.GroupTheory.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perfect groups
 
 A group `G` is perfect if it equals its commutator subgroup, that is `⁅G, G⁆ = G`.
 
 Among the basic results, we show that
+
 * a nontrivial perfect group is not solvable (`IsPerfect.not_isSolvable`);
 * an abelian perfect group is trivial (`IsPerfect.subsingleton_of_isMulCommutative`).
 
 ## Main Definition
 
-* `Group.IsPerfect`: a group `G` is *perfect* if it equals its own commutator,
+* `Group.IsPerfect`: a group `G` is _perfect_ if it equals its own commutator,
   that is `⁅⊤, ⊤⁆ = ⊤`, where `⊤` is the full subgroup `G`.
 
 ## Main Theorems

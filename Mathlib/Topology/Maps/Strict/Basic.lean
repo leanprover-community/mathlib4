@@ -9,13 +9,16 @@ public import Mathlib.Topology.Homeomorph.Quotient
 
 import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bourbaki Strict Maps
 
 This file defines Bourbaki strict maps (`Topology.IsStrictMap`) and proves some of their
 basic properties.
 
-A map `f : X → Y` between topological spaces is called *strict* in the sense of Bourbaki
+A map `f : X → Y` between topological spaces is called _strict_ in the sense of Bourbaki
 if the natural corestriction to its image (i.e., `Set.rangeFactorization f`) is a quotient map.
 Equivalently, these are precisely the maps for which the first isomorphism
 theorem yields a homeomorphism: the canonical bijection `X ⧸ ker f ≃ range f`
@@ -23,12 +26,14 @@ is a homeomorphism if and only if `f` is strict. This provides a natural
 generalization of quotient maps to non-surjective maps.
 
 Many important classes of maps are automatically continuous strict maps, including:
-- continuous open maps (`IsOpenMap.isStrictMap`);
-- continuous closed maps (`IsClosedMap.isStrictMap`).
+
+* continuous open maps (`IsOpenMap.isStrictMap`);
+* continuous closed maps (`IsClosedMap.isStrictMap`).
 
 ## Equivalent characterizations
 
 We provide several equivalent ways to characterize a strict map `f`:
+
 * `Topology.isStrictMap_iff_isHomeomorph_quotientKerEquivRange`: `f` is strict if and only if
   the canonical bijection `Quotient (Setoid.ker f) ≃ Set.range f` is a homeomorphism.
 * `Topology.isStrictMap_iff_isEmbedding_kerLift`: `f` is strict if and only if

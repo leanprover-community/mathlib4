@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Star
 
-/-! # Topological properties of the unitary (sub)group
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Topological properties of the unitary (sub)group
 
 * In a topological star monoid `R`, `unitary R` is a topological group
 * In a topological star monoid `R` which is T1, `unitary R` is closed as a subset of `R`.

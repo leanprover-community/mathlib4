@@ -10,6 +10,9 @@ public import Mathlib.Data.List.Lattice
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals in ℕ
 
@@ -17,11 +20,12 @@ This file defines intervals of naturals. `List.Ico m n` is the list of integers 
 and strictly less than `n`.
 
 ## TODO
-- Define `Ioo` and `Icc`, state basic lemmas about them.
-- Also do the versions for integers?
-- One could generalise even further, defining 'locally finite partial orders', for which
+
+* Define `Ioo` and `Icc`, state basic lemmas about them.
+* Also do the versions for integers?
+* One could generalise even further, defining 'locally finite partial orders', for which
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
-- Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
+* Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
 
 @[expose] public section
@@ -31,7 +35,8 @@ open Nat
 
 namespace List
 
-/-- `Ico n m` is the list of natural numbers `n ≤ x < m`.
+/--
+`Ico n m` is the list of natural numbers `n ≤ x < m`.
 (Ico stands for "interval, closed-open".)
 
 See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
@@ -189,7 +194,9 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
   exact filter_congr fun _ _ => by
     simpa using Nat.lt_succ_iff.symm
 
-/-- For any natural numbers n, a, and b, one of the following holds:
+/--
+For any natural numbers n, a, and b, one of the following holds:
+
 1. n < a
 2. n ≥ b
 3. n ∈ Ico a b

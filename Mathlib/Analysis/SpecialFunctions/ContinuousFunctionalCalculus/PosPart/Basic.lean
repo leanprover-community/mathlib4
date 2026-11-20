@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
-/-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
 This file defines the positive and negative parts of a selfadjoint element in a C⋆-algebra via
 the continuous functional calculus and develops the basic API, including the uniqueness of the

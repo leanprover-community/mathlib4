@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of binomial coefficients
 
@@ -128,14 +131,16 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
       rw [← insert_right_Ico (by lia), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
         choose_succ_succ' (n + 1)]
 
-/-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
+/--
+*Zhu Shijie's identity* aka hockey-stick identity, version with `range`.
 Summing `(i + k).choose k` for `i ∈ [0, n]` gives `(n + k + 1).choose (k + 1)`.
 
 Combinatorial interpretation: `(i + k).choose k` is the number of decompositions of `[0, i)` in
 `k + 1` (possibly empty) intervals (this follows from a stars and bars description). In particular,
 `(n + k + 1).choose (k + 1)` corresponds to decomposing `[0, n)` into `k + 2` intervals.
 By putting away the last interval (of some length `n - i`),
-we have to decompose the remaining interval `[0, i)` into `k + 1` intervals, hence the sum. -/
+we have to decompose the remaining interval `[0, i)` into `k + 1` intervals, hence the sum.
+-/
 lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]

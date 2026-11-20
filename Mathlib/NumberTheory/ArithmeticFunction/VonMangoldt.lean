@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
 import Mathlib.Data.Nat.Cast.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The von Mangoldt Function
 
@@ -20,7 +23,7 @@ In this file we define the von Mangoldt function: the function on natural number
 
 The main definition for this file is
 
-- `ArithmeticFunction.vonMangoldt`: The von Mangoldt function `Λ`.
+* `ArithmeticFunction.vonMangoldt`: The von Mangoldt function `Λ`.
 
 We then prove the classical summation property of the von Mangoldt function in
 `ArithmeticFunction.vonMangoldt_sum`, that `∑ i ∈ n.divisors, Λ i = Real.log n`, and use this

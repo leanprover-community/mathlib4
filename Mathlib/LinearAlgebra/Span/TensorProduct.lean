@@ -17,6 +17,9 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The interaction of linear span and tensor product for mixed scalars.
 -/
@@ -35,10 +38,12 @@ variable [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
   (p : Submodule R M)
 
-/-- If `A` is an `R`-algebra and `p` is an `R`-submodule of an `A`-module `M`, this is the natural
+/--
+If `A` is an `R`-algebra and `p` is an `R`-submodule of an `A`-module `M`, this is the natural
 surjection `A ⊗[R] p → span A p`.
 
-See also `Submodule.tensorEquivSpan`. -/
+See also `Submodule.tensorEquivSpan`.
+-/
 def tensorToSpan : A ⊗[R] p →ₗ[A] span A (p : Set M) :=
   AlgebraTensorModule.lift
     { toFun a := a • p.inclusionSpan A

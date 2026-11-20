@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Spectral.Prespectral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral spaces
 
@@ -16,12 +19,12 @@ subsets form an open basis. Prime spectra of commutative semirings are spectral 
 
 ## Main Results
 
-- `SpectralSpace` : Predicate for a topological space to be spectral.
-- `Topology.IsOpenEmbedding.spectralSpace` : a compact open subspace of a spectral space is spectral
+* `SpectralSpace` : Predicate for a topological space to be spectral.
+* `Topology.IsOpenEmbedding.spectralSpace` : a compact open subspace of a spectral space is spectral
 
 ## References
 
-See [stacks-project], tag 08YF for details.
+See \[stacks-project\], tag 08YF for details.
 -/
 
 public section

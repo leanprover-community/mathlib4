@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
 
@@ -23,9 +26,8 @@ For more details, see the documentation attached to the `syntax` declaration.
 
 ## Main definitions
 
-- The `@[elementwise]` attribute.
-
-- The `elementwise_of% h` term elaborator.
+* The `@[elementwise]` attribute.
+* The `elementwise_of% h` term elaborator.
 
 ## Implementation
 
@@ -157,6 +159,8 @@ private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
         w
     loop 1
 
+
+set_option doc.verso false
 /-- The `elementwise` attribute can be added to a lemma proving an equation of morphisms, and it
 creates a new lemma for a `ConcreteCategory` giving an equation with those morphisms applied
 to some value.
@@ -197,6 +201,8 @@ If `simp` is added first, the generated lemma will also have the `simp` attribut
 -/
 syntax (name := elementwise) "elementwise" " nosimp"? optAttrArg : attr
 
+
+set_option doc.verso true
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
@@ -220,6 +226,8 @@ initialize registerBuiltinAttribute {
       pure (newValue, newLevels)
   | _ => throwUnsupportedSyntax }
 
+
+set_option doc.verso false
 /--
 `elementwise_of% h`, where `h` is a proof of an equation `f = g` between
 morphisms `X ⟶ Y` in a concrete category (possibly after a `∀` binder),
@@ -247,4 +255,6 @@ elab "elementwise_of% " t:term : term => do
   let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
 
+
+set_option doc.verso true
 end Mathlib.Tactic.Elementwise

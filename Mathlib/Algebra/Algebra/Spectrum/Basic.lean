@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.Tactic.NoncommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectrum of an element in an algebra
 
@@ -58,25 +61,31 @@ variable [CommSemiring R] [Ring A] [Algebra R A]
 local notation "↑ₐ" => algebraMap R A
 
 -- definition and basic properties
-/-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
+/--
+Given a commutative ring `R` and an `R`-algebra `A`, the _resolvent set_ of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
-algebra `A`. -/
+algebra `A`.
+-/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 
-/-- Given a commutative ring `R` and an `R`-algebra `A`, the *spectrum* of `a : A`
+/--
+Given a commutative ring `R` and an `R`-algebra `A`, the _spectrum_ of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
-The spectrum is simply the complement of the resolvent set. -/
+The spectrum is simply the complement of the resolvent set.
+-/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
 variable {R}
 
-/-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
-    a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
-    `r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
+/--
+Given an `a : A` where `A` is an `R`-algebra, the _resolvent_ is
+a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
+`r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`.
+-/
 noncomputable def resolvent (a : A) (r : R) : A := (↑ₐ r - a)⁻¹ʳ
 
 /-- The unit `1 - r⁻¹ • a` constructed from `r • 1 - a` when the latter is a unit. -/

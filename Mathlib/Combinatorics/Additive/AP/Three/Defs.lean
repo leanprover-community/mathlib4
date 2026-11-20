@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Finset.Fin
 
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
 
@@ -40,7 +43,7 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 
 ## References
 
-* [Wikipedia, *Salem-Spencer set*](https://en.wikipedia.org/wiki/Salem–Spencer_set)
+* [Wikipedia, _Salem-Spencer set_](https://en.wikipedia.org/wiki/Salem–Spencer_set)
 
 ## Tags
 
@@ -66,10 +69,12 @@ variable [Monoid α] [Monoid β] (s t : Set α)
 
 /-- A set is **3GP-free** if it does not contain any non-trivial geometric progression of length
 three. -/
-@[to_additive /-- A set is **3AP-free** if it does not contain any non-trivial arithmetic
+@[to_additive /--
+              A set is *3AP-free* if it does not contain any non-trivial arithmetic
 progression of length three.
 
-This is also sometimes called a **non-averaging set** or **Salem-Spencer set**. -/]
+              This is also sometimes called a *non-averaging set* or *Salem-Spencer set*.
+              -/]
 def ThreeGPFree : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b
 
 /-- Whether a given finset is 3GP-free is decidable. -/
@@ -256,10 +261,13 @@ section Monoid
 variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α)
 
 /-- The multiplicative Roth number of a finset is the cardinality of its biggest 3GP-free subset. -/
-@[to_additive /-- The additive Roth number of a finset is the cardinality of its biggest 3AP-free
+@[to_additive /--
+              The additive Roth number of a finset is the cardinality of its biggest 3AP-free
 subset.
 
-The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `rothNumberNat`. -/]
+              The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see
+`rothNumberNat`.
+              -/]
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu

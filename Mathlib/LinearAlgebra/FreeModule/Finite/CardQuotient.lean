@@ -10,7 +10,11 @@ public import Mathlib.Data.Int.NatAbs
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
-/-! # Cardinal of quotient of free finite `ℤ`-modules by submodules of full rank
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Cardinal of quotient of free finite `ℤ`-modules by submodules of full rank
 
 ## Main results
 

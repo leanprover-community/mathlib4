@@ -11,6 +11,9 @@ public import Mathlib.Order.Filter.AtTopBot.Monoid
 
 import Mathlib.Order.Filter.AtTopBot.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence to ±infinity in ordered commutative groups
 -/
@@ -136,13 +139,21 @@ section LinearOrderedCommGroup
 
 variable [CommGroup G] [LinearOrder G]
 
-/-- $\lim_{x\to+\infty}|x|_m=+\infty$ -/
-@[to_additive /-- $\lim_{x\to+\infty}|x|=+\infty$ -/]
+/--
+$`\lim_{x\to+\infty}|x|_m=+\infty`
+-/
+@[to_additive /--
+              $`\lim_{x\to+\infty}|x|=+\infty`
+              -/]
 theorem tendsto_mabs_atTop_atTop : Tendsto (mabs : G → G) atTop atTop :=
   tendsto_atTop_mono le_mabs_self tendsto_id
 
-/-- $\lim_{x\to\infty^{-1}|x|_m=+\infty$ -/
-@[to_additive /-- $\lim_{x\to-\infty}|x|=+\infty$ -/]
+/--
+$`\lim_{x\to\infty^{-1}|x|_m=+\infty`
+-/
+@[to_additive /--
+              $`\lim_{x\to-\infty}|x|=+\infty`
+              -/]
 theorem tendsto_mabs_atBot_atTop [IsOrderedMonoid G] : Tendsto (mabs : G → G) atBot atTop :=
   tendsto_atTop_mono inv_le_mabs tendsto_inv_atBot_atTop
 

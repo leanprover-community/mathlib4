@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Dynamics.Minimal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topologically transitive monoid actions
 
 In this file we define an action of a monoid `M` on a topological space `α` to be
-*topologically transitive* if for any pair of nonempty open sets `U` and `V` in `α` there exists an
+_topologically transitive_ if for any pair of nonempty open sets `U` and `V` in `α` there exists an
 `m : M` such that `(m • U) ∩ V` is nonempty. We also provide an additive version of this definition
 and prove basic facts about topologically transitive actions.
 
@@ -25,17 +28,21 @@ public section
 
 open scoped Pointwise
 
-/-- An action of an additive monoid `M` on a topological space `α` is called
-*topologically transitive* if for any pair of nonempty open sets `U` and `V` in `α` there exists an
-`m : M` such that `(m +ᵥ U) ∩ V` is nonempty. -/
+/--
+An action of an additive monoid `M` on a topological space `α` is called
+_topologically transitive_ if for any pair of nonempty open sets `U` and `V` in `α` there exists an
+`m : M` such that `(m +ᵥ U) ∩ V` is nonempty.
+-/
 class AddAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
     [AddAction M α] : Prop where
   exists_vadd_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m +ᵥ U) ∩ V).Nonempty
 
-/-- An action of a monoid `M` on a topological space `α` is called *topologically transitive* if for
+/--
+An action of a monoid `M` on a topological space `α` is called _topologically transitive_ if for
 any pair of nonempty open sets `U` and `V` in `α` there exists an `m : M` such that `(m • U) ∩ V` is
-nonempty. -/
+nonempty.
+-/
 @[to_additive]
 class MulAction.IsTopologicallyTransitive (M α : Type*) [Monoid M] [TopologicalSpace α]
     [MulAction M α] : Prop where

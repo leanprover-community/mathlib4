@@ -13,6 +13,9 @@ public import Mathlib.Analysis.Complex.Basic
 import Mathlib.Algebra.Algebra.TransferInstance
 import Mathlib.Data.Nat.Choose.Cast
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponential in a Banach algebra
 
@@ -33,32 +36,32 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 
 ### General case
 
-- `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero,
+* `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero,
   then given two commuting elements `x` and `y` in the disk of convergence, we have
   `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`
-- `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative,
+* `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative,
   then given two elements `x` and `y` in the disk of convergence, we have
   `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`
-- `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring,
+* `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring,
   then given an element `x` in the disk of convergence,
   we have `NormedSpace.exp (-x) = (NormedSpace.exp x)⁻¹`.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
-- `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `NormedSpace.exp`
+* `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `NormedSpace.exp`
   has infinite radius of convergence
-- `NormedSpace.exp_add_of_commute` : given two commuting elements `x` and `y`, we have
+* `NormedSpace.exp_add_of_commute` : given two commuting elements `x` and `y`, we have
   `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`
-- `NormedSpace.exp_add` : if `𝔸` is commutative, then we have
+* `NormedSpace.exp_add` : if `𝔸` is commutative, then we have
   `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)` for any `x` and `y`
-- `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have
+* `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have
   `NormedSpace.exp (-x) = (NormedSpace.exp x)⁻¹`.
-- `NormedSpace.exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute`
+* `NormedSpace.exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute`
   for `Finset.sum`.
-- `NormedSpace.exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
-- `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to
+* `NormedSpace.exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
+* `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to
   repeated multiplication in the codomain.
-- `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to
+* `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to
   repeated multiplication in the codomain.
 
 ### Notes
@@ -67,6 +70,7 @@ We put nearly all the statements in this file in the `NormedSpace` namespace,
 to avoid collisions with the `Real` or `Complex` namespaces.
 
 As of 2023-11-16 due to bad instances in Mathlib
+
 ```
 import Mathlib
 
@@ -75,6 +79,7 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
+
 This is because `exp x` tries the `NormedSpace.exp 𝕂 : 𝔸 → 𝔸` function previously defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
@@ -115,16 +120,18 @@ theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ 
 variable {𝕂 𝔸}
 
 open scoped Classical in
-/-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map. It is defined as the sum of the
+/--
+`NormedSpace.exp : 𝔸 → 𝔸` is the exponential map. It is defined as the sum of the
 `FormalMultilinearSeries` `expSeries ℚ 𝔸`.
 
 If `𝔸` can't be equipped with a `ℚ`-algebra structure, we use the junk value `1`. For details on why
 this approach is taken, see the module documentation for
 `Mathlib/Analysis/Normed/Algebra/Exponential.lean`.
 
-Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
+Note that when `𝔸 = Matrix n n 𝕂`, this is the *Matrix Exponential*; see
 `Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean` for lemmas
-specific to that case. -/
+specific to that case.
+-/
 @[no_expose] noncomputable def exp (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some

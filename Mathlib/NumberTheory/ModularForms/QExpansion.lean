@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # q-expansions of functions on the upper half plane
 
@@ -395,11 +398,13 @@ protected theorem tendsto_atImInfty [ModularFormClass F Γ k] (hh : 0 < h)
   tendsto_atImInfty_of_hasSum_qExpansion hh
     (hasSum_qExpansion hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f))
 
-/-- Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
+/--
+Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
 practice (not specifying the growth rate precisely).
 
 Note that the `Fact` hypothesis is automatically synthesized for arithmetic subgroups.
-The discreteness hypothesis may be unnecessary, but it is satisfied in the cases of interest. -/
+The discreteness hypothesis may be unnecessary, but it is satisfied in the cases of interest.
+-/
 theorem exp_decay_sub_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] [Fact (IsCusp OnePoint.infty Γ)] :
     ∃ c > 0, (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] (fun τ ↦ Real.exp (-c * τ.im)) := by

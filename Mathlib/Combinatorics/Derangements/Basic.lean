@@ -10,12 +10,16 @@ public import Mathlib.GroupTheory.Perm.Option
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derangements on types
 
 In this file we define `derangements α`, the set of derangements on a type `α`.
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
+
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
   `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
@@ -72,9 +76,12 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
         simp_rw [exists_prop, ← forall_and, ← iff_iff_implies_and_implies]
 
 universe u
-/-- The set of permutations that fix either `a` or nothing is equivalent to the sum of:
-- derangements on `α`
-- derangements on `α` minus `a`. -/
+/--
+The set of permutations that fix either `a` or nothing is equivalent to the sum of:
+
+* derangements on `α`
+* derangements on `α` minus `a`.
+-/
 def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
     { f : Perm α // fixedPoints f ⊆ {a} } ≃ (derangements ({a}ᶜ : Set α)) ⊕ (derangements α) :=
   calc

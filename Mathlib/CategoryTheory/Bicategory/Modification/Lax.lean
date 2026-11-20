@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modifications between transformations of lax functors
 
@@ -28,7 +31,6 @@ Given two lax functors `F` and `G`, we define:
   between `F` and `G`, where composition is given by vertical composition. Note that this is a
   scoped instance in the `Lax.LaxTrans` namespace, so you need to run
   `open scoped Lax.LaxTrans` to access it.
-
 * `OplaxTrans.Modification η θ`: modifications between oplax transformations `η` and `θ`
   between `F` and `G`.
 * `OplaxTrans.homCategory F G`: the category structure on the oplax transformations
@@ -100,9 +102,11 @@ structure Hom where
   /-- The underlying modification of lax transformations. -/
   as : Modification η θ
 
-/-- Category structure on the lax natural transformations between lax functors.
+/--
+Category structure on the lax natural transformations between lax functors.
 
-Note that this is a scoped instance in the `Lax.LaxTrans` namespace. -/
+Note that this is a scoped instance in the `Lax.LaxTrans` namespace.
+-/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Hom
@@ -187,9 +191,11 @@ structure Hom where
   /-- The underlying modification of oplax transformations. -/
   as : Modification η θ
 
-/-- Category structure on the oplax natural transformations between lax functors.
+/--
+Category structure on the oplax natural transformations between lax functors.
 
-Note that this is a scoped instance in the `Lax.OplaxTrans` namespace. -/
+Note that this is a scoped instance in the `Lax.OplaxTrans` namespace.
+-/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Hom

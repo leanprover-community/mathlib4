@@ -7,7 +7,11 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
 
-/-! # Maximal subgroups of the symmetric groups
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Maximal subgroups of the symmetric groups
 
 * `Equiv.Perm.isCoatom_stabilizer`:
   if neither `s : Set α` nor its complementary subset is empty,
@@ -15,21 +19,20 @@ public import Mathlib.GroupTheory.GroupAction.Jordan
   then `MulAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
 
-  This is the *intransitive case* of the O'Nan-Scott classification.
+  This is the _intransitive case_ of the O'Nan-Scott classification.
 
 ## TODO
 
-  * Application to primitivity of the action
-    of `Equiv.Perm α` on finite combinations of `α`.
-
-  * Formalize the other cases of the classification.
-    The next one should be the *imprimitive case*.
+* Application to primitivity of the action
+  of `Equiv.Perm α` on finite combinations of `α`.
+* Formalize the other cases of the classification.
+  The next one should be the _imprimitive case_.
 
 ## References
 
-The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
-*A classification of the maximal subgroups of the finite
-alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
+The argument is taken from \[M. Liebeck, C. Praeger, J. Saxl,
+_A classification of the maximal subgroups of the finite
+alternating and symmetric groups_, 1987\]\[LiebeckPraegerSaxl-1987\].
 -/
 
 public section
@@ -385,10 +388,12 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
     grind
 
-/-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
+/--
+`MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
 
-This is the intransitive case of the O'Nan–Scott classification. -/
+This is the intransitive case of the O'Nan–Scott classification.
+-/
 theorem isCoatom_stabilizer {s : Set α}
     (hs_nonempty : s.Nonempty) (hsc_nonempty : sᶜ.Nonempty)
     (hα : Nat.card α ≠ 2 * s.ncard) :

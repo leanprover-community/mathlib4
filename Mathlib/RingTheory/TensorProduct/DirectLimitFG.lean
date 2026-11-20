@@ -9,7 +9,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Adjoin.FG
 
-/-! # Tensor products and finitely generated submodules
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tensor products and finitely generated submodules
 
 Various results about how tensor products of arbitrary modules are direct limits of
 tensor products of finitely-generated modules.
@@ -17,28 +21,21 @@ tensor products of finitely-generated modules.
 ## Main definitions
 
 * `Submodule.FG.directedSystem`, the directed system of finitely generated submodules of a module.
-
 * `Submodule.FG.directLimit` proves that a module is the direct limit
   of its finitely generated submodules, with respect to the inclusion maps
-
 * `DirectedSystem.rTensor`, the directed system deduced from a directed system of modules
   by applying `rTensor`.
-
 * `Submodule.FG.rTensor.directSystem`, the directed system of
   modules `P ⊗[R] N`, for all finitely generated
   submodules `P`, with respect to the maps deduced from the inclusions
-
 * `Submodule.FG.rTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
   of the modules `P ⊗[R] N`, where `P` ranges over all finitely generated submodules of `M`,
   as a linear equivalence.
-
 * `DirectedSystem.lTensor`, the directed system deduced from a directed system of modules
   by applying `lTensor`.
-
 * `Submodule.FG.lTensor.directSystem`, the directed system of
   modules `M ⊗[R] Q`, for all finitely generated
   submodules `Q`, with respect to the maps deduced from the inclusions
-
 * `Submodule.FG.lTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
   of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
   as a linear equivalence.

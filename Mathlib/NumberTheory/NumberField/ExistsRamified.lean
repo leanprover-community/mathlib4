@@ -11,6 +11,9 @@ import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.RingTheory.Unramified.Dedekind
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Every number field has a ramified prime over `ℚ`
 
