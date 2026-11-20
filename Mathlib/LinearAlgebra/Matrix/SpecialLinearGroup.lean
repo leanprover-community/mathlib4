@@ -797,33 +797,31 @@ lemma diagonal_neZero (D : ι → F) (hD : det (diagonal D) = 1) (j : ι) :
     Finset.prod_insert (by grind), h, zero_mul] at hD
   exact zero_ne_one hD
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma diagonal_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise (Function.onFun Commute fun i ↦
       if hi : i ≠ i₀ then diagonal2n hi (D i) (diagonal_neZero D hD i) else 1) := by
-  intro i1 hi1 i2 hi2 hi12
-  ext i j
-  simp [apply_dite, diagonal2n_coe]
-  split_ifs <;> simp [diagonal_apply]; grind
+  intro _ hi1 _ hi2 _
+  rw [Finset.mem_coe, Finset.mem_filter_univ] at hi1 hi2
+  ext
+  simp [hi1, hi2, diagonal2n_coe, diagonal_mul_diagonal, mul_comm,
+    -diagonal_mul, -mul_diagonal]
 
 @[deprecated (since := "2026-09-06")] alias diag_commute := diagonal_commute
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma diagonal_eq_diagonal2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
-    (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
-      Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
+    .mk (diagonal D) hD = Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
       diagonal2n hi (D i) (diagonal_neZero D hD i) else 1) (diagonal_commute i₀ D hD) := by
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
-  simp only [coeMonoidHom_apply, ne_eq, apply_dite]
+  simp only [coeMonoidHom_apply, coe_mk, ne_eq, apply_dite]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
       (dite_eq_left (Finset.mem_filter.1 hi).2 :
         _ = (diagonal2n (Finset.mem_filter.1 hi).2 _ _).val))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
-  rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
-  rw [diagonal_decompose i₀ D hD]
+  rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod,
+    diagonal_decompose i₀ D hD]
 
 @[deprecated (since := "2026-09-06")] alias diag_eq_diag2n_prod := diagonal_eq_diagonal2n_prod
 
@@ -847,7 +845,7 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
-  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P ⟨diagonal D, hD⟩ := by
+  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P (.mk (diagonal D) hD) := by
     rw [diagonal_eq_diagonal2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiagonal2n]
