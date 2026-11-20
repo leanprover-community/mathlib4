@@ -106,12 +106,6 @@ section Real
 
 variable (𝔸 : Type*) [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸]
 
-private lemma uniformContinuous_algebraMap : UniformContinuous (algebraMap ℚ 𝔸) := by
-  have h : ⇑(algebraMap ℚ 𝔸) =
-    (ContinuousLinearMap.smulRight (ContinuousLinearMap.id ℚ ℚ) (1 : 𝔸)) := by
-    ext; simp [Algebra.algebraMap_eq_smul_one]
-  exact h ▸ (ContinuousLinearMap.smulRight ..).uniformContinuous
-
 /-- Extend normed algebras over `ℚ` to normed algebras over `ℝ` on Banach algebras. -/
 @[no_expose]
 abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
@@ -133,19 +127,6 @@ abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
 /-- A complete normed `ℚ`-algebra carries a unique `NormedAlgebra ℝ` structure. -/
 noncomputable instance [CompleteSpace 𝔸] : Unique (NormedAlgebra ℝ 𝔸) where
   default := normedAlgebraReal 𝔸
-  uniq h := by
-    have : Continuous (algebraMap ℝ 𝔸) := by fun_prop
-    let ue := Rat.isUniformEmbedding_coe_real.isUniformInducing
-    have : Continuous (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
-      ue Rat.denseRange_cast (uniformContinuous_algebraMap 𝔸)) :=
-      (uniformContinuous_uniformly_extend ue Rat.denseRange_cast
-        (uniformContinuous_algebraMap 𝔸)).continuous
-    rcases h with @⟨P, hP⟩
-    congr; ext r x
-    rw [Algebra.smul_def, @Algebra.smul_def _ _ _ _ (normedAlgebraReal 𝔸).toAlgebra]
-    refine (Rat.denseRange_cast (𝕜 := ℝ)).induction_on r ?_ fun a ↦ ?_
-    · exact isClosed_eq (by fun_prop) (by simp only [algebraMap]; fun_prop)
-    · rw [← eq_ratCast (algebraMap ℚ ℝ), ← IsScalarTower.rat.algebraMap_apply,
-        ← @(@IsScalarTower.rat _ _ _ _ (normedAlgebraReal 𝔸).toModule ..).algebraMap_apply]
+  uniq _ := Subsingleton.elim _ _
 
 end Real
