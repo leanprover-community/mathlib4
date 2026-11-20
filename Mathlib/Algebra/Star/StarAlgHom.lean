@@ -370,8 +370,8 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 
 -- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
@@ -381,8 +381,8 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) :
   rfl
 
 @[simp]
-theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
+theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : A →⋆ₐ[R] B) = f := by
   ext
   rfl
 

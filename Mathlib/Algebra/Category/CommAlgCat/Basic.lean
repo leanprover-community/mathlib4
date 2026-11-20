@@ -150,7 +150,7 @@ variable (A B) in
 def homEquivCommRingCat :
     (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ ↧B // f.hom.comp (algebraMap R A) = algebraMap R B} where
   toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
-  invFun f := CommAlgCat.ofHom ⟨f.val.hom, fun r ↦ congr($f.prop r)⟩
+  invFun f := CommAlgCat.ofHom { f.val.hom with commutes' r := congr($f.prop r) }
   left_inv _ := rfl
   right_inv _ := rfl
 

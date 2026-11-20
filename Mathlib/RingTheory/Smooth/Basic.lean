@@ -406,7 +406,8 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective _ _ I hI (f.comp (IsScalarTower.toAlgHom R A B))
   let := f'.toRingHom.toAlgebra
-  obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI { f with commutes' := AlgHom.congr_fun e.symm }
+  obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI
+    { f.toRingHom with commutes' := AlgHom.congr_fun e.symm }
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
 
@@ -416,7 +417,7 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallySmooth R B] :
   algebraize [(algebraMap A C).comp (algebraMap R A)]
   obtain ⟨g, hg⟩ := Algebra.FormallySmooth.comp_surjective _ _ I hI (f.restrictScalars R)
   suffices g.comp (IsScalarTower.toAlgHom R A B) = IsScalarTower.toAlgHom R A C from
-    ⟨{ __ := g, commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
+    ⟨{ g.toRingHom with commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
   apply Algebra.FormallyUnramified.comp_injective _ hI
   rw [← AlgHom.comp_assoc, hg]
   exact AlgHom.ext f.commutes
@@ -501,7 +502,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   let := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   let : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
+    refine { (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R)).toRingHom with commutes' := ?_ }
     intro r
     change
       (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)
