@@ -120,14 +120,14 @@ end Arbitrary
 /-- Principal ordinals under any operation are unbounded. -/
 theorem isCofinal_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     IsCofinal { o | IsPrincipal op o } := by
-  refine fun o ↦ ⟨nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1) o, ?_, le_nfp ..⟩
-  intro a b ha hb
+  refine fun o ↦ ⟨nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.val.1 y.val.2 + 1) o,
+    fun a b ha hb ↦ ?_, le_nfp ..⟩
   rw [lt_nfp_iff] at *
   obtain ⟨m, ha⟩ := ha
   obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1)^[m] o)
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1)^[n] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.val.1 y.val.2 + 1)^[m] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.val.1 y.val.2 + 1)^[n] o)
   · use n + 1
     rw [Function.iterate_succ', ← add_one_le_iff]
     exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ _ ↦ _) ⟨_, Set.mk_mem_prod (ha.trans_le h) hb⟩
