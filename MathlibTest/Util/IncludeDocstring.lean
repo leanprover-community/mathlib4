@@ -31,6 +31,9 @@ def foo' : Nat := 0
 /-- Another definition with a doc-string, whose name even references itself: {name}`bar` -/
 def bar : Nat := 2
 
+@[inherit_doc bar]
+def bar' : Nat := 3
+
 /-- {insertDocstringOf bar} -/
 example : foo = 1 := by simp [foo]
 
@@ -41,6 +44,11 @@ and
 -/
 theorem aux : bar = 2 := by simp [bar]
 
+/-- {insertDocstringOf bar'} -/
+theorem aux' : bar = 2 := by simp [bar]
+
+-- TODO: include tests for recommended_spelling and tactic_alt!
+
 -- TODO: why is this a parsing error? can this be fixed?
 /-- error: unexpected newline; expected '![', '$$', '$', '*', '[', '[^', '_', '`' or '{' -/
 #guard_msgs in
@@ -48,4 +56,4 @@ theorem aux : bar = 2 := by simp [bar]
 and
 {insertDocstringOf foo}
 -/
-theorem aux' : bar = 2 := by simp [bar]
+theorem aux'' : bar = 2 := by simp [bar]

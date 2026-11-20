@@ -7,6 +7,7 @@ module
 
 public meta import Lean.DocString
 public meta import Lean.Elab.DocString
+meta import Lean.Parser.Term.Doc
 
 /-! # Verso code to include one docstring in another
 
@@ -23,16 +24,45 @@ open Lean Doc Elab
 
 public section
 
-open Doc in
+open Doc Parser in
 /-- Writing `{insertDocstringOf foo}` inside a verso doc-string inserts the doc-string of
 declaration `foo` in the current environment, as a separate paragraph.
 If `foo` does not exist or has no doc-string, it throws an error.
 -/
-@[doc_command] meta def _root_.insertDocstringOf (n : Ident) :
+@[doc_command] meta def insertDocstringOf (n : Ident) :
     DocM <| Block ElabInline ElabBlock := do
   let doc ← realizeGlobalConstNoOverloadWithInfo n
-  let some docStr ← findInternalDocString? (← getEnv) doc
+  let env ← getEnv
+  let some docStr ← findInternalDocString? env doc
     | throwError "No doc-string for `{.ofConstName doc}`"
-  match docStr with
-  | .inl t => return .para #[.text t]
-  | .inr v => return .concat v.text
+  let body : Block ElabInline ElabBlock := match docStr with
+    | .inl t => .para #[.text t]
+    | .inr v => .concat (v.text ++ v.subsections.flatMap Part.content)
+  -- Copy over any `recommended_spellings` information.
+  let spellings : Array (Block ElabInline ElabBlock) :=
+    (Term.Doc.getRecommendedSpellingsForName env doc).map fun s ↦
+      let info := match s.additionalInformation? with
+        | some i => #[.text s!" ({i.trimAscii})"]
+        | none => #[]
+      .para (#[.text "The recommended spelling of ", .code s.notation,
+              .text " in identifiers is ", .code s.recommendedSpelling] ++ info ++ #[.text "."])
+  -- Copy over information in the `tactic_alt` and `tactic_extra` attributes.
+  let mut tacticExtras : Array (Block ElabInline ElabBlock) := #[]
+  if let some canonical := Tactic.Doc.alternativeOfTactic env doc then
+    tacticExtras := tacticExtras.push <|
+      .para #[.text "This is an alternative form of the tactic ", .code canonical.toString,
+              .text "."]
+  let alts ← Tactic.Doc.aliases doc
+  unless alts.isEmpty do
+    let names := alts.toArray.qsort (·.toString < ·.toString)
+    let inlines : Array (Inline ElabInline) :=
+      names.foldl (init := #[]) fun acc a ↦
+        (if acc.isEmpty then acc else acc.push (.text ", ")).push (.code a.toString)
+    tacticExtras := tacticExtras.push <|
+      .para (#[.text "Alternative forms of this tactic: "] ++ inlines)
+  let exts := Tactic.Doc.getTacticExtensions env doc
+  unless exts.isEmpty do
+    tacticExtras := tacticExtras.push <| .para #[.bold #[.text "Extensions:"]]
+    tacticExtras := tacticExtras.push <|
+      .ul (exts.map fun e ↦ { contents := #[.para #[.text e]] })
+  return .concat (#[body] ++ spellings)
