@@ -31,7 +31,7 @@ meta def mkRealIVar : InclusionExt :=
     (Interval.mkBinarySplitCover q(binarySplit))
 
 @[grind =]
-theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map (↑) :=
+theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map (β := ℝ) (↑) :=
   Iff.rfl
 
 @[simp]
@@ -171,8 +171,8 @@ def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
 
 theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
     x ∈ roundOut I prec ↔
-      (∀ J : Dyadic, I.lb = J → (J.roundDown prec : ℝ) ≤ x) ∧
-      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec : ℝ)) := by
+      (∀ J : Dyadic, I.lb = J → J.roundDown prec ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ J.roundUp prec) := by
   rw [mem_iff_mem_map, Interval.mem_map_iff]
   simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
 

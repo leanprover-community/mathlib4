@@ -18,7 +18,7 @@ namespace Dyadic
 
 section Lemmas
 
-@[simp] theorem toRat_one : toRat 1 = 1 := rfl
+@[simp, norm_cast] theorem toRat_one : toRat 1 = 1 := rfl
 
 @[simp, norm_cast]
 theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := by
