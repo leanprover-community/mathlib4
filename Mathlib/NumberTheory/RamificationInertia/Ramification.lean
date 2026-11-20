@@ -35,7 +35,6 @@ We will try to relax the above hypotheses as much as possible.
 ## Notation
 
 In this file, `e` stands for the ramification index of `P` over `p`, leaving `p` and `P` implicit.
-
 -/
 
 @[expose] public section

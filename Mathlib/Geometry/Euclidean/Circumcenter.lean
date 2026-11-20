@@ -26,7 +26,6 @@ the circumcenter.
 ## References
 
 * https://en.wikipedia.org/wiki/Circumscribed_circle
-
 -/
 
 @[expose] public section

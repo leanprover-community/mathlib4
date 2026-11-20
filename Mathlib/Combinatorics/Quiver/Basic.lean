@@ -13,7 +13,6 @@ public import Mathlib.Basic.Opposite
 This module defines quivers. A quiver on a type `V` of vertices assigns to every
 pair `a b : V` of vertices a type `a ⟶ b` of arrows from `a` to `b`. This
 is a generalization of `Digraph V`, which can be thought of as "a proposition `a ⟶ b` of arrows".
-
 -/
 
 @[expose] public section

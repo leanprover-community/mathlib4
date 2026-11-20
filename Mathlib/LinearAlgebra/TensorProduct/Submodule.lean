@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
-
 # Some results on tensor product of submodules
 
 ## Linear maps induced by multiplication for submodules
@@ -34,7 +33,6 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
   `R →ₗ[R] (1 : Submodule R S)` is not defined directly in mathlib yet.
 
 There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
-
 -/
 
 @[expose] public section
@@ -63,7 +61,7 @@ variable (M N : Submodule R S)
 def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).domRestrict₁₂ M N)
 
 @[simp]
-theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
+theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.val * n.val := rfl
 
 theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
     mulMap (M.map (f : S →ₗ[R] T)) (N.map (f : S →ₗ[R] T)) ∘ₗ
@@ -90,7 +88,7 @@ theorem mulMap_op :
     TensorProduct.comm R M N).toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
+theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.val n.val) :
     mulMap N M = mulMap M N ∘ₗ TensorProduct.comm R N M := by
   refine TensorProduct.ext' fun n m ↦ ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
@@ -118,7 +116,7 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | tmul a b => exact mul_mem_mul a.2 b.2
+  | tmul a b => exact mul_mem_mul a.property b.property
   | add a b ha hb => rw [map_add]; exact add_mem ha hb
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map
@@ -129,7 +127,7 @@ def mulMap' : M ⊗[R] N →ₗ[R] ↥(M * N) :=
 
 variable {M N} in
 @[simp]
-theorem val_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
+theorem val_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.val * n.val := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
   simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
@@ -164,7 +162,7 @@ def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
   LinearEquiv.ofLinearMap N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
     (by ext; simp) <| TensorProduct.ext' fun r n ↦ by
   change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
-  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
+  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.property
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h, lTensorOne'_tmul, ← TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
@@ -216,7 +214,7 @@ def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=
   LinearEquiv.ofLinearMap M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
     TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) <| TensorProduct.ext' fun n r ↦ by
   change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
-  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
+  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.property
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h, rTensorOne'_tmul, TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
@@ -242,7 +240,7 @@ theorem mulMap_one_right_eq :
 theorem comm_trans_lTensorOne :
     (TensorProduct.comm R _ _).trans M.lTensorOne = M.rTensorOne := by
   refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun m r ↦ ?_
-  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
+  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.property
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h]; simp
 
@@ -250,7 +248,7 @@ theorem comm_trans_lTensorOne :
 theorem comm_trans_rTensorOne :
     (TensorProduct.comm R _ _).trans M.rTensorOne = M.lTensorOne := by
   refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun r m ↦ ?_
-  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
+  obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.property
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h]; simp
 

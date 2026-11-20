@@ -13,7 +13,6 @@ public import Mathlib.Init
 
 /-!
 # Generally useful tactics.
-
 -/
 
 public meta section
@@ -83,31 +82,6 @@ def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
   let pats := pats.toArray
   let pats := (n - pats.size).repeat (·.push (Unhygienic.run `(rintroPat| _))) pats
   return (← RCases.rintro pats none g |>.run', remaining)
-
-/-- Introduce variables, giving them names from a specified list. -/
-@[deprecated MVarId.rintroWithPats +typeChanged (since := "2026-04-17")]
-def MVarId.introsWithBinderIdents
-    (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
-    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
-  let type ← g.getType
-  let type ← Lean.instantiateMVars type
-  let n := getIntrosSize type
-  let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
-  if n == 0 then
-    return (ids, #[], g)
-  let mut ids := ids
-  let mut names := #[]
-  for _ in [0:n] do
-    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
-    ids := ids.tail
-  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
-    match stx.raw with
-    | `(binderIdent| $n:ident) => n.getId
-    | _ => `_
-  g.withContext do
-    for n in names, fvar in xs do
-      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
-  return (ids, xs, g)
 
 end Lean
 
