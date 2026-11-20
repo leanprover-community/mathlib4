@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 import Mathlib.Data.Fintype.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-groups
 

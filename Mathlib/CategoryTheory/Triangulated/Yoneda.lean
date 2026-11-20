@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda functors are homological
 

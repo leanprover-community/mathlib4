@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.LinearAlgebra.CrossProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm of cross-products
 

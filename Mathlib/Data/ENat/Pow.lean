@@ -10,6 +10,9 @@ public import Mathlib.Order.SuccPred.ENat
 
 import Mathlib.Data.Nat.Cast.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Powers of extended natural numbers
 

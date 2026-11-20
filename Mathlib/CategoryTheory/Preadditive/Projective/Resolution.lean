@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective resolutions
 
