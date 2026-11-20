@@ -16,20 +16,29 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
-* `Group.Abelianization`: defines the abelianization of a group `G` as the quotient of a group by
-  its commutator subgroup.
+* `Group.Abelianization`: the abelianization of a group `G`, defined as the quotient of `G` by its
+  commutator subgroup.
+* `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
+  abelianizations.
+* `Group.Abelianization.quotientMulEquiv`: the abelianization of a quotient `G ⧸ N` is isomorphic
+  to the quotient of the abelianization of `G` by the image of `N`.
+* `MulEquiv.abelianizationCongr`: isomorphic groups have isomorphic abelianizations.
 * `Group.IsAbelianization f`: `f : G →* A` exhibits `A` as an abelianization of `G`, i.e. `f` is
   surjective with kernel the commutator subgroup of `G`. This allows reasoning about
   abelianizations up to isomorphism, rather than only about `Abelianization G`.
-* `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
-  abelianizations.
-* `Group.Abelianization.quotientMulEquiv`: The abelianization of a quotient `G ⧸ N` is isomorphic
-  to the quotient of the abelianization of `G` by the image of `N`.
-* `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
 * `Group.IsAbelianization.mulEquiv`: an abelianization `A` of `G` is isomorphic to
   `Abelianization G`.
 * `Group.IsAbelianization.lift`: the universal property of an abelianization: homomorphisms from
   `G` to an abelian group factor uniquely through it.
+* `Group.IsAbelianization.map`: a homomorphism between groups induces one between any of their
+  abelianizations.
+
+## Main results
+
+* `Group.IsAbelianization.of_ker_le`: a surjection onto an abelian group whose kernel is contained
+  in the commutator subgroup is an abelianization.
+* `Group.IsAbelianization.quotient`: an abelianization of `G` induces an abelianization of
+  `G ⧸ N`.
 -/
 
 @[expose] public section
