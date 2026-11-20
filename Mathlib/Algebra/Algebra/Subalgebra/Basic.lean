@@ -647,8 +647,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring)
+    fun r => by ext; exact e.commutes r
 
 end AlgEquiv
 
@@ -740,7 +740,6 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.property⟩
   invFun x := ⟨x, h.symm ▸ x.property⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :
