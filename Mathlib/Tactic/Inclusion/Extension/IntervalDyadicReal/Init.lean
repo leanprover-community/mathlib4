@@ -6,8 +6,6 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
-public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 
@@ -45,7 +43,7 @@ instance instToSetIntervalDyadicReal : ToSet (Interval Dyadic) ℝ where
 
 instance : Univ (Interval Dyadic) ℝ where
   univ := Interval.univ Dyadic
-  mem_univ := Interval.mem_map_univ ((↑) : Dyadic → ℝ)
+  mem_univ := Interval.mem_map_univ castOrderEmbedding
 
 instance : Refine (Interval Dyadic) ℝ where
   refine := Interval.inter

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
-import Mathlib.Data.Rat.Cast.Lemmas
-
 /-!
 # Basic inclusion extensions for interval_dyadic_real
 
@@ -53,7 +51,7 @@ section Constants
 
 @[inclusion_op interval_dyadic_real]
 theorem natCast_mem (n : ℕ) : (n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
-  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (n : Dyadic) ((↑) : Dyadic → ℝ)
+  simp [mem_iff_mem_map, Interval.map, Interval.singleton]
 
 @[inclusion_op interval_dyadic_real]
 theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
@@ -61,7 +59,7 @@ theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : 
   exact natCast_mem n
 
 theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
-  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) ((↑) : Dyadic → ℝ)
+  simp [mem_iff_mem_map, Interval.map, Interval.singleton]
 
 end Constants
 

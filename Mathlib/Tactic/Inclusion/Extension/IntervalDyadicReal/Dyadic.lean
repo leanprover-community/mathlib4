@@ -5,16 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.Data.Rat.Cast.Order
-public import Mathlib.Order.Hom.Basic
-
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Tactic.NormNum.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
