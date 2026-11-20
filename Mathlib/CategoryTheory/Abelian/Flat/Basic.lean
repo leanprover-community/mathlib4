@@ -54,11 +54,11 @@ protected lemma tensorRight {X : A} (hX : flat X) :
     exactFunctor _ _ (tensorRight X) := hX.2
 
 instance : (flat (A := A)).IsClosedUnderIsomorphisms := by
-  rw [flat_eq_min]
+  rw [flat_eq_inf]
   infer_instance
 
 instance : (flat (A := A)).IsStableUnderRetracts := by
-  rw [flat_eq_min]
+  rw [flat_eq_inf]
   infer_instance
 
 instance : (flat (A := A)).IsMonoidal where
