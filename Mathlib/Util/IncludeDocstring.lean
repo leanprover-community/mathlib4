@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2026 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:  David Thrane Christiansen, Michael Rothgang
+Authors: David Thrane Christiansen, Michael Rothgang
 -/
 module
 
 public meta import Lean.DocString
 public meta import Lean.Elab.DocString
+public import Mathlib.Init
+
 meta import Lean.Parser.Term.Doc
 
 /-! # Verso code to include one docstring in another
