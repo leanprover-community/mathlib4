@@ -162,10 +162,10 @@ namespace InvMemClass
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
 instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, inv_mem a.property⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
+theorem coe_inv (x : H) : (x⁻¹).val = x.val⁻¹ :=
   rfl
 
 end InvMemClass
@@ -189,15 +189,15 @@ theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
 instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
-  ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/]
 instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
-  ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.val ^ n, zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
+theorem coe_div (x y : H) : (x / y).val = x.val / y.val :=
   rfl
 
 variable (H)
@@ -497,22 +497,22 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an inverse. -/]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, H.inv_mem a.property⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a subtraction. -/]
 instance div : Div H :=
-  ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, H.div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/]
 protected instance npow : Pow H ℕ :=
-  ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.pow_mem a.property n⟩⟩
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/]
 instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
@@ -577,7 +577,7 @@ theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.property⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=

@@ -180,8 +180,10 @@ instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MulAction p.Gal (r
 lemma galAction_isPretransitive [Fact ((p.map (algebraMap F E)).Splits)] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
   refine ⟨fun x y ↦ ?_⟩
-  have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm x).2).2
-  have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm y).2).2
+  have hx :=
+    minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm x).property).2
+  have hy :=
+    minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm y).property).2
   obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
   exact ⟨g, (rootsEquivRootsAux p E).eq_symm_apply.mp (Subtype.ext hg)⟩
 

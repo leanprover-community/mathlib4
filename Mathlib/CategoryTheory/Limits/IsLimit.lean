@@ -485,8 +485,8 @@ def homIso' (h : IsLimit t) (W : C) :
     { hom := ↾fun π =>
         ⟨fun j => π.app j, fun f => by convert! ← (π.naturality f).symm; apply id_comp⟩
       inv := ↾fun p =>
-        { app := fun j => p.1 j
-          naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
+        { app := fun j => p.val j
+          naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.property f).symm } }
 
 /-- If `G : C → D` is a faithful functor which sends t to a limit cone,
 then it suffices to check that the induced maps for the image of t

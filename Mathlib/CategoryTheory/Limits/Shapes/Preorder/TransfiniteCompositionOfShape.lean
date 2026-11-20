@@ -118,7 +118,7 @@ noncomputable def iic (j : J) :
   F := (Set.initialSegIic j).monotone.functor ⋙ c.F
   isoBot := Iso.refl _
   incl :=
-    { app i := c.F.map (homOfLE i.2)
+    { app i := c.F.map (homOfLE i.property)
       naturality i i' φ := by
         dsimp
         rw [← Functor.map_comp, Category.comp_id]

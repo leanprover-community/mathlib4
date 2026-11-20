@@ -76,12 +76,12 @@ theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     imp_iff_not_or]
 
 lemma reesAlgebra.monomial_coeff_mem {I : Ideal R} (f : reesAlgebra I) (i : ℕ) :
-    (monomial i) (f.1.coeff i) ∈ reesAlgebra I :=
-  reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp f.2 i)
+    (monomial i) (f.val.coeff i) ∈ reesAlgebra I :=
+  reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp f.property i)
 
 lemma reesAlgebra.as_sum_support {I : Ideal R} (f : reesAlgebra I) :
-    f = ∑ i ∈ f.1.support, ⟨monomial i (f.1.coeff i), reesAlgebra.monomial_coeff_mem f i⟩ :=
-  SetCoe.ext (by simpa using f.1.as_sum_support)
+    f = ∑ i ∈ f.val.support, ⟨monomial i (f.val.coeff i), reesAlgebra.monomial_coeff_mem f i⟩ :=
+  SetCoe.ext (by simpa using f.val.as_sum_support)
 
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
@@ -143,12 +143,12 @@ lemma isNoetherianRing_reesAlgebra_quotient [IsNoetherianRing (R ⧸ I)] (fg : I
      (Algebra.TensorProduct.quotIdealMapEquivQuotTensor (reesAlgebra I) I).symm.toRingEquiv
 
 lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
-    f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
+    f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.val.coeff n ∈ I ^ (n + 1) := by
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
   · rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map] at h
     induction h using Submodule.smul_induction_on' with
     | smul r hr m hm =>
-      simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
+      simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.property n)
     | add x hx y hy memx memy => simpa using add_mem memx memy
   · rw [reesAlgebra.as_sum_support f]
     apply sum_mem (fun i hi ↦ ?_)

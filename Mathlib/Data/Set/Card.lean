@@ -504,7 +504,7 @@ theorem le_encard_iff_exists_fin_injective (s : Set α) (n : ℕ) :
     obtain ⟨t, hts, hte⟩ := exists_subset_encard_eq h
     let := (finite_of_encard_eq_coe hte).fintype
     let e := Fintype.equivFinOfCardEq <| ENat.natCast_inj.mp <| (coe_fintypeCard t).trans hte
-    exact ⟨Subtype.val ∘ e.symm, fun i ↦ hts (e.symm i).2,
+    exact ⟨Subtype.val ∘ e.symm, fun i ↦ hts (e.symm i).property,
       (Equiv.injective_comp e.symm Subtype.val).mpr Subtype.val_injective⟩
   · rintro ⟨f, hf, hfi⟩
     simpa only [ENat.card_eq_coe_fintype_card, Fintype.card_fin,
@@ -931,7 +931,7 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
     (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
     s.ncard = t.ncard := by
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, h₁ _ _⟩
   have hbij : f'.Bijective := by
     constructor
     · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
@@ -981,7 +981,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   intro b hb
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, hf _ _⟩
   have finj : f'.Injective := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [f', Subtype.mk.injEq] at hxy ⊢
@@ -1002,7 +1002,7 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) (hs : s.Finite := by toFinite_tac) :
     a₁ = a₂ := by
   classical
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, hf _ _⟩
   have hsurj : f'.Surjective := by
     rintro ⟨y, hy⟩
     obtain ⟨a, ha, rfl⟩ := hsurj y hy

@@ -187,7 +187,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   choose c hc using hdvd
   cases nonempty_fintype ι
   let y' : O := ∑ i, c i • b'M i
-  have y'M : y' ∈ M := M.sum_mem fun i _ ↦ M.smul_mem (c i) (b'M i).2
+  have y'M : y' ∈ M := M.sum_mem fun i _ ↦ M.smul_mem (c i) (b'M i).property
   have mk_y' : (⟨y', y'M⟩ : M) = ∑ i, c i • b'M i :=
     Subtype.ext
       (show y' = M.subtype _ by
@@ -411,7 +411,7 @@ lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
-      Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
+      Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).property⟩ := by
     ext; change _ = N.subtype _; simp [map_finsuppSum]
   classical
   simp_rw [hm, map_smul, map_finsuppSum, map_smul, Subtype.coe_eta, repr_self,

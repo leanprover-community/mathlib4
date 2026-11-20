@@ -121,14 +121,14 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
   have : ∀ i, x' i ∈ f := fun i => hx'.symm ▸ (iInf_le (fun i => 𝓟 (x' i)) i) (mem_principal_self _)
   let x : ℕ → { i : ι' // p i } := fun n =>
     Nat.recOn n (hs.index _ <| this 0) fun n xn =>
-      hs.index _ <| inter_mem (this <| n + 1) (hs.mem_of_mem xn.2)
-  have x_anti : Antitone fun i => s (x i).1 :=
+      hs.index _ <| inter_mem (this <| n + 1) (hs.mem_of_mem xn.property)
+  have x_anti : Antitone fun i => s (x i).val :=
     antitone_nat_of_succ_le fun i => (hs.set_index_subset _).trans inter_subset_right
-  have x_subset : ∀ i, s (x i).1 ⊆ x' i := by
+  have x_subset : ∀ i, s (x i).val ⊆ x' i := by
     rintro (_ | i)
     exacts [hs.set_index_subset _, (hs.set_index_subset _).trans inter_subset_left]
-  refine ⟨fun i => (x i).1, fun i => (x i).2, ?_⟩
-  have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
+  refine ⟨fun i => (x i).val, fun i => (x i).property, ?_⟩
+  have : (⨅ i, 𝓟 (s (x i).val)).HasAntitoneBasis fun i => s (x i).val := .iInf_principal x_anti
   convert this
   exact
     le_antisymm (le_iInf fun i => le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)
