@@ -62,7 +62,7 @@ def addSourceLines (fileMap : FileMap) (range : Syntax.Range)
   -- A range ending at the start of a line does not include that line.
   let stop := last.line + if last.column == 0 then 0 else 1
   let mut lines := lines
-  for line in [first:stop] do
+  for line in first...stop do
     lines := lines.insert line
   return lines
 
