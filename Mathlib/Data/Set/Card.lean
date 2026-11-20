@@ -1037,6 +1037,24 @@ lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
     simp
   grind [ncard_coe_finset, ncard_preimage_of_injective_subset_range, Finset.card_powersetCard]
 
+/-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` containing `t ⊆ s` is
+`(s.ncard - t.ncard).choose (n - t.ncard)`. See also `Finset.card_filter_powersetCard_subset`. -/
+lemma ncard_subsuperset_ncard (hs : s.Finite) (ht : t ⊆ s) {n : ℕ} (hn : t.ncard ≤ n) :
+    {u ⊆ s | t ⊆ u ∧ u.ncard = n}.ncard = (s.ncard - t.ncard).choose (n - t.ncard) := by
+  lift t to Finset α using hs.subset ht
+  lift s to Finset α using hs
+  classical
+  have h₁ : {u ⊆ (s : Set α) | (t : Set α) ⊆ u ∧ u.ncard = n} ⊆ range ((↑) : Finset α → Set α) := by
+    intro u hu
+    rw [Finset.mem_range_coe_iff]
+    exact s.finite_toSet.subset hu.1
+  have h₂ : (↑) ⁻¹' {u ⊆ (s : Set α) | (t : Set α) ⊆ u ∧ u.ncard = n} =
+      ((s.powersetCard n).filter (t ⊆ ·) : Set (Finset α)) := by
+    ext u
+    grind [SetLike.coe_subset_coe, ncard_coe_finset]
+  grind [ncard_coe_finset, SetLike.coe_subset_coe, ncard_preimage_of_injective_subset_range,
+    Finset.card_filter_powersetCard_subset]
+
 section Lattice
 
 theorem ncard_union_add_ncard_inter (s t : Set α) (hs : s.Finite := by toFinite_tac)
