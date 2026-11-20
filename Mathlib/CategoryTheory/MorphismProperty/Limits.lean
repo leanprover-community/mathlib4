@@ -103,6 +103,18 @@ lemma map_pushouts_le (F : C ⥤ D) [PreservesColimitsOfShape WalkingSpan F] :
   intro _ _ _ hf
   exact P.map_pushouts hf F
 
+lemma map_pullbacks {X Y : C} {f : X ⟶ Y}
+    (hf : P.pullbacks f) (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    (P.map F).pullbacks (F.map f) := by
+  obtain ⟨_, _, l, _, _, hl, sq⟩ := hf
+  exact ⟨_, _, _, _, _, P.map_mem_map F l hl, sq.map F⟩
+
+lemma map_pullbacks_le (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    P.pullbacks.map F ≤ (P.map F).pullbacks := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact P.map_pullbacks hf F
+
 /-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
 lemma isomorphisms_le_pushouts
@@ -471,6 +483,29 @@ lemma limitsOfShape_limMap {X Y : J ⥤ C}
     W.limitsOfShape J (limMap f) :=
   ⟨_, _, _, _, limit.isLimit X, _, _, hf⟩
 
+variable {J} in
+lemma map_limitsOfShape {X Y : C} {f : X ⟶ Y} (hf : W.limitsOfShape J f) (F : C ⥤ D)
+    [PreservesLimitsOfShape J F] :
+    (W.map F).limitsOfShape J (F.map f) := by
+  obtain ⟨_, _, c₁, c₂, hc₁, hc₂, φ, hφ⟩ := hf
+  let hc₂' := isLimitOfPreserves F hc₂
+  have : F.map (hc₂.lift { pt := _, π := c₁.π ≫ φ }) =
+    hc₂'.lift { pt := _, π := (F.mapCone c₁).π ≫ Functor.whiskerRight φ F } :=
+      hc₂'.hom_ext (fun j ↦ by
+        rw [IsLimit.fac]
+        dsimp
+        rw [← F.map_comp, IsLimit.fac, NatTrans.comp_app, Functor.map_comp])
+  rw [this]
+  exact ⟨_, _, _, _, isLimitOfPreserves F hc₁, _, _,
+    fun j ↦ W.map_mem_map F (φ.app j) (hφ j)⟩
+
+lemma map_limitsOfShape_le (F : C ⥤ D)
+    (J : Type*) [Category* J] [PreservesLimitsOfShape J F] :
+    (W.limitsOfShape J).map F ≤ (W.map F).limitsOfShape J := by
+  rintro X Y f ⟨_, _, g, hg, ⟨e⟩⟩
+  rw [← ((W.map F).limitsOfShape J).arrow_mk_iso_iff e]
+  exact W.map_limitsOfShape hg F
+
 /-- The property that a morphism property `W` is stable under limits
 indexed by a category `J`. -/
 class IsStableUnderLimitsOfShape : Prop where
@@ -498,6 +533,15 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasLimit X] [HasLimit Y] (hf : W.functorCategory _ f) :
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
+
+instance (W : MorphismProperty D) [W.RespectsIso] [W.IsStableUnderLimitsOfShape J]
+    (F : C ⥤ D) [PreservesLimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderLimitsOfShape J := by
+  rw [isStableUnderLimitsOfShape_iff_limitsOfShape_le]
+  intro X Y f hf
+  have hW := W.map_inverseImage_le F
+  rw [W.isoClosure_eq_self] at hW
+  exact W.limitsOfShape_le _ (limitsOfShape_monotone hW J _ (map_limitsOfShape _ hf F))
 
 end LimitsOfShape
 
