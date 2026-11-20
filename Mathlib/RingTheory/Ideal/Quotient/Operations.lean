@@ -420,7 +420,7 @@ theorem Quotient.mkₐ_surjective (I : Ideal A) [I.IsTwoSided] :
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
 theorem Quotient.mkₐ_ker (I : Ideal A) [I.IsTwoSided] :
-    RingHom.ker (Quotient.mkₐ R₁ I : A →+* A ⧸ I) = I :=
+    RingHom.ker (Quotient.mkₐ R₁ I).toRingHom = I :=
   Ideal.mk_ker
 
 lemma Quotient.mk_bijective_iff_eq_bot (I : Ideal A) [I.IsTwoSided] :
@@ -522,12 +522,12 @@ theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.k
 This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightInverse`) /
 is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
-def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f.toRingHom) →ₐ[R₁] B :=
+def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ f.toRingHom.ker →ₐ[R₁] B :=
   AlgHom.mk' (RingHom.kerLift (f : A →+* B)) fun _ _ => KerLift.map_smul f _ _
 
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
-    kerLiftAlg f (Quotient.mk (RingHom.ker f.toRingHom) a) = f a := by
+    kerLiftAlg f (Quotient.mk f.toRingHom.ker a) = f a := by
   rfl
 
 @[simp]
@@ -549,7 +549,7 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps! -isSimp apply]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
-    (A ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R₁] B :=
+    (A ⧸ f.toRingHom.ker) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
 @[simp]
@@ -636,21 +636,19 @@ lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
 section quotientEquiv
 
 variable (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
-    (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S))
+    (f : R ≃+* S) (hIJ : J = I.map f.toRingHom)
 
 /-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv : R ⧸ I ≃+* S ⧸ J where
-  __ := quotientMap J f (hIJ ▸ le_comap_map)
-  invFun := quotientMap I f.symm (hIJ ▸ (map_comap_of_equiv f).le)
+  __ := quotientMap J f.toRingHom (hIJ ▸ le_comap_map)
+  invFun := quotientMap I f.symm.toRingHom (hIJ ▸ (map_comap_of_equiv f).le)
   left_inv := by
     rintro ⟨r⟩
-    simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
-      quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.symm_apply_apply]
+    simp [Submodule.Quotient.quot_mk_eq_mk]
   right_inv := by
     rintro ⟨s⟩
-    simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
-      quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.apply_symm_apply]
+    simp [Submodule.Quotient.quot_mk_eq_mk]
 
 -- Not `@[simp]` since `simp` proves it.
 theorem quotientEquiv_mk (x : R) :
@@ -725,20 +723,20 @@ set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
 where `J = f(I)`. -/
-def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map f.toRingHom) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' r := by simp }
 
 @[simp]
-lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map f.toRingHom) :
     (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
-      (by simp only [coe_coe, ← AlgEquiv.coe_toAlgHom, hIJ, map_map, ← AlgHom.coe_comp,
-        AlgEquiv.symm_comp, AlgHom.coe_id, ← coe_id, map_id]) :=
+      (by simp only [hIJ, map_map, AlgEquiv.symm_toRingEquiv,
+        RingEquiv.symm_toRingHom_comp_toRingHom, map_id]) :=
   rfl
 
 @[simp]
-lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) (x : A) :
+lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map f) (x : A) :
     Ideal.quotientEquivAlg I J f hIJ x = f x :=
   rfl
 
@@ -819,7 +817,7 @@ lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal 
 noncomputable def quotientKerEquivRange
     {R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
     (f : A →ₐ[R] B) :
-    (A ⧸ RingHom.ker f.toRingHom) ≃ₐ[R] f.range :=
+    (A ⧸ f.toRingHom.ker) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
@@ -1017,12 +1015,12 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
 
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
-def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
+def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom →ₐ[R] A ⧸ I ⊔ J :=
   AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
-    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I) J →+* _) =
+    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I).toRingHom J →+* _) =
       quotQuotToQuotSup I J :=
   rfl
 
@@ -1032,12 +1030,12 @@ theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQ
 
 /-- The composition of the algebra homomorphisms `A → (A / I)` and `(A / I) → (A / I) / J'`,
   where `J'` is the projection `J` in `A / I`. -/
-def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
+def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom :=
   AlgHom.mk (quotQuotMk I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotMkₐ_toRingHom :
-    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = quotQuotMk I J :=
+    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) = quotQuotMk I J :=
   rfl
 
 @[simp]
@@ -1046,12 +1044,14 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
 
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
   where `J'` is the projection `J` in `A / I`. -/
-def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
+def liftSupQuotQuotMkₐ (I J : Ideal A) :
+    A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom :=
   AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :
-    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = liftSupQuotQuotMk I J :=
+    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
+      liftSupQuotQuotMk I J :=
   rfl
 
 @[simp]
@@ -1060,12 +1060,13 @@ theorem coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuot
 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
 `I ≤ J`, this is the Third Isomorphism Theorem (see `DoubleQuot.quotQuotEquivQuotOfLE`). -/
-def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ I ⊔ J :=
+def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom) ≃ₐ[R] A ⧸ I ⊔ J :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivQuotSup I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_toRingEquiv :
-    (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _) = quotQuotEquivQuotSup I J :=
+    (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _) =
+      quotQuotEquivQuotSup I J :=
   rfl
 
 @[simp]
@@ -1074,7 +1075,7 @@ theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQ
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
-    ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
+    ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
       (quotQuotEquivQuotSup I J).symm :=
   rfl
 
@@ -1086,12 +1087,14 @@ theorem coe_quotQuotEquivQuotSupₐ_symm :
 /-- The natural algebra isomorphism `(A / I) / J' → (A / J) / I'`,
   where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
 def quotQuotEquivCommₐ :
-    ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J) :=
+    ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom) ≃ₐ[R]
+      (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J).toRingHom :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivComm I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivCommₐ_toRingEquiv :
-    (quotQuotEquivCommₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _ ⧸ I.map (Quotient.mkₐ R J)) =
+    (quotQuotEquivCommₐ R I J :
+      _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _ ⧸ I.map (Quotient.mkₐ R J).toRingHom) =
       quotQuotEquivComm I J :=
   rfl
 
@@ -1112,12 +1115,14 @@ variable {I J}
 
 /-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
     that does not assume an inclusion of ideals. -/
-def quotQuotEquivQuotOfLEₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
+def quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
+    ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I).toRingHom) ≃ₐ[R] A ⧸ J :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivQuotOfLE h) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivQuotOfLEₐ_toRingEquiv (h : I ≤ J) :
-    (quotQuotEquivQuotOfLEₐ R h : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _) = quotQuotEquivQuotOfLE h :=
+    (quotQuotEquivQuotOfLEₐ R h : _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _) =
+      quotQuotEquivQuotOfLE h :=
   rfl
 
 @[simp]
@@ -1127,7 +1132,7 @@ theorem coe_quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
 
 @[simp]
 theorem quotQuotEquivQuotOfLEₐ_symm_toRingEquiv (h : I ≤ J) :
-    ((quotQuotEquivQuotOfLEₐ R h).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
+    ((quotQuotEquivQuotOfLEₐ R h).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
       (quotQuotEquivQuotOfLE h).symm :=
   rfl
 

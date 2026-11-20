@@ -183,7 +183,8 @@ theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem toRingHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
+theorem toRingHom_injective : Function.Injective (toRingHom : (A →ₐ[R] B) → A →+* B) :=
+  fun φ₁ φ₂ H =>
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
@@ -218,7 +219,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, 
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+theorem comp_algebraMap : φ.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
@@ -402,6 +403,10 @@ theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
 @[simp]
 theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+  RingHom.ext fun _ => rfl
+
+@[simp]
+theorem toRingHom_toAlgHom : (toAlgHom R S A).toRingHom = algebraMap S A :=
   RingHom.ext fun _ => rfl
 
 @[simp]

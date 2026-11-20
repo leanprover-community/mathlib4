@@ -147,7 +147,7 @@ variable (R)
 
 @[simp]
 theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
-    (f : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+    f.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext (AlgHom.map_algebraMap f)
 
 -- conflicts with IsScalarTower.Subalgebra

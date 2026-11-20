@@ -32,7 +32,7 @@ variable {A B C σ τ ω ι : Type*}
 /-- Map a homogeneous ideal along a graded ring homomorphism. The underlying ideal is
 (definitionally) equal to `Ideal.map`. -/
 def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
-  __ := I.toIdeal.map f
+  __ := I.toIdeal.map f.toRingHom
   is_homogeneous' i b hb := by
     rw [Ideal.map] at hb
     induction hb using Submodule.span_induction generalizing i with
@@ -40,7 +40,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
     | add => simp [*, Ideal.add_mem]
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
-      rw [← f.map_directSumDecompose]
+      rw [GradedRingHom.coe_toRingHom, ← f.map_directSumDecompose]
       exact Ideal.mem_map_of_mem _ (I.is_homogeneous' _ ha)
     | smul a₁ a₂ ha₂ ih =>
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]

@@ -121,7 +121,7 @@ then so is `B`. -/
 theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f)
     (hker : (RingHom.ker f.toRingHom).FG)
     [FinitePresentation R A] : FinitePresentation R B :=
-  letI : FinitePresentation R (A ⧸ RingHom.ker f) := FinitePresentation.quotient hker
+  letI : FinitePresentation R (A ⧸ f.toRingHom.ker) := FinitePresentation.quotient hker
   equiv (Ideal.quotientKerAlgEquivOfSurjective hf)
 
 theorem iff :
@@ -233,17 +233,18 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g
-    let I := RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X))
+    let I := (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).toRingHom.ker
     change Ideal.span s₀ = I
     have leI : Ideal.span ((MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g) ≤
-      RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
+      (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).toRingHom.ker := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
       rw [SetLike.mem_coe, RingHom.mem_ker]
-      · rw [MvPolynomial.aeval_map_algebraMap (R := R) (A := A), ← aeval_unique]
+      · rw [AlgHom.coe_toRingHom, MvPolynomial.aeval_map_algebraMap (R := R) (A := A),
+          ← aeval_unique]
         have := Ideal.subset_span hx
         rwa [hs] at this
-      · rw [map_sub, MvPolynomial.aeval_map_algebraMap, ← aeval_unique,
+      · rw [map_sub, AlgHom.coe_toRingHom, MvPolynomial.aeval_map_algebraMap, ← aeval_unique,
           MvPolynomial.aeval_C, ht', Subtype.coe_mk, sub_self]
     apply leI.antisymm
     intro x hx
@@ -278,8 +279,8 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         · exact Set.mem_range_self _
         · refine add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
-    rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
-      from leI hq, add_zero] at hx
+    rw [map_add, AlgHom.coe_toRingHom, aeval_map_algebraMap, ← aeval_unique,
+      show MvPolynomial.aeval (f ∘ X) q = 0 from leI hq, add_zero] at hx
     suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
       refine add_mem ?_ hq
       rw [hs] at this
@@ -355,8 +356,8 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
     refine add_mem ?_ hy
-    simp only [RXn, RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
-      show f y = 0 from leI hy, add_zero, hh'] at hx
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, RingHom.mem_ker, map_add, hh',
+      show f y = 0 from leI hy, add_zero, RXn] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this
       rwa [hs]

@@ -340,7 +340,7 @@ set_option backward.isDefEq.respectTransparency false in
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
     (comapQuotientEquivOfSurj c (f : N →+* M) f.surjective hcd).symm ⟦f x⟧ = ↑x := by
   convert! RingEquiv.symm_apply_apply _ _
-  rw [comapQuotientEquivOfSurj_mk, RingEquiv.coe_toRingHom]
+  rw [comapQuotientEquivOfSurj_mk]
   rfl
 
 /-- The **second isomorphism theorem for semirings**. -/
@@ -508,7 +508,7 @@ theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
 /-- `liftₐ` as an equivalence. -/
 @[simps]
 def liftₐEquiv (c : RingCon M) :
-    { f : M →ₐ[R] P // c ≤ ker (f : M →+* P)} ≃ (c.Quotient →ₐ[R] P) where
+    { f : M →ₐ[R] P // c ≤ ker f.toRingHom} ≃ (c.Quotient →ₐ[R] P) where
   toFun f := liftₐ c f.1 f.2
   invFun F := ⟨F.comp (c.mkₐ R), fun x y h => congr(F $(Quotient.sound h))⟩
 

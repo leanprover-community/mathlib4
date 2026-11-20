@@ -213,7 +213,7 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
+theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S.map f := by
   rfl
 
 @[to_additive (attr := simp)]
