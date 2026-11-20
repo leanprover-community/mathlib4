@@ -198,6 +198,21 @@ theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, IsUniformInducing.id]
 
+@[simp]
+theorem comp_uniformContinuous_iff (h : α ≃ᵤ β) {f : γ → α} :
+    UniformContinuous (h ∘ f) ↔ UniformContinuous f :=
+  h.isUniformInducing.uniformContinuous_iff.symm
+
+@[simp]
+theorem comp_uniformContinuous_iff' (h : α ≃ᵤ β) {f : β → γ} :
+    UniformContinuous (f ∘ h) ↔ UniformContinuous f :=
+  ⟨fun hf ↦ by simpa [Function.comp_assoc, self_comp_symm] using hf.comp h.uniformContinuous_symm,
+    fun hf ↦ hf.comp h.uniformContinuous⟩
+
+theorem comp_uniformContinuousOn_iff (h : α ≃ᵤ β) (f : γ → α) (s : Set γ) :
+    UniformContinuousOn (h ∘ f) s ↔ UniformContinuousOn f s :=
+  h.isUniformInducing.uniformContinuousOn_iff.symm
+
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace
 
@@ -213,13 +228,13 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
   uniformContinuous_invFun := by
     rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
-    exact uniformContinuous_subtype_val
+    exact uniformContinuous_subtypeVal
   toEquiv := Equiv.ofInjective f hf.injective
 
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
-  uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
-  uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
+  uniformContinuous_toFun := uniformContinuous_subtypeVal.subtype_mk _
+  uniformContinuous_invFun := uniformContinuous_subtypeVal.subtype_mk _
   toEquiv := Set.equivOfEq h
 
 /-- Product of two uniform isomorphisms. -/
@@ -394,9 +409,9 @@ def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/
 def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
-  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   uniformContinuous_invFun :=
-    (e.symm.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+    (e.symm.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   toEquiv := e.toEquiv.image s
 
 /-- A uniform isomorphism `e : α ≃ᵤ β` lifts to subtypes `{ a : α // p a } ≃ᵤ { b : β // q b }`

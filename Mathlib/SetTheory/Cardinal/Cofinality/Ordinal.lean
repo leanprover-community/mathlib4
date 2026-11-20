@@ -141,7 +141,7 @@ theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
   have ht := hs.trans (isCofinal_setOfPred_imp_lt r)
   refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
   rw [← hs', hr', type_le_iff']
-  refine ⟨.ofMonotone (fun x ↦ ⟨x.1, ?_⟩) fun x y hxy ↦ ?_⟩
+  refine ⟨.ofMonotone (fun x ↦ ⟨x.val, ?_⟩) fun x y hxy ↦ ?_⟩
   · grind
   · apply (trichotomous_of r _ _).resolve_right
     rintro (_ | hxy')
@@ -224,15 +224,14 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
     exact (hf.strictMono (lt_succ a)).ne_zero
   | limit a ha => rw [cof_map_of_isNormal hf ha]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
   let f := OrderIso.ofRelIsoLT (enum (α := s) (· < ·))
   have : Small.{u} (Iio (typeLT s)) := by
-    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, hs _ (f x).2⟩) fun _ ↦ ?_
+    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, hs _ (f x).property⟩) fun _ ↦ ?_
     simp [Subtype.val_inj]
-  have : range (fun i ↦ (f i).1 + 1) = (· + 1) '' s := by
-    convert! range_comp (· + 1) (fun i ↦ (f i).1)
+  have : range (fun i ↦ (f i).val + 1) = (· + 1) '' s := by
+    convert! range_comp (· + 1) (fun i ↦ (f i).val)
     rw [range_comp', f.range_eq]
     simp
   rw [← this, sSup_range]
@@ -415,7 +414,7 @@ theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof 
     exact (isSuccLimit_ord hc).isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
-  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
+  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.val hα)
   rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]
 
 theorem lt_cof_ord_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by

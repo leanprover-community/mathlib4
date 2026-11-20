@@ -196,24 +196,24 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
       apply J₁.arrow_intersect f N S hf (J₁.pullback_stable _ hS)
   · intro x hx
     rw [Presieve.compatible_iff_sieveCompatible] at hx
-    let M := Sieve.bind S fun Y f hf => (x f hf).1
-    have : ∀ ⦃Y⦄ (f : Y ⟶ X) (hf : S f), M.pullback f = (x f hf).1 := by
+    let M := Sieve.bind S fun Y f hf => (x f hf).val
+    have : ∀ ⦃Y⦄ (f : Y ⟶ X) (hf : S f), M.pullback f = (x f hf).val := by
       intro Y f hf
       apply le_antisymm
-      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1.1 _, c⟩
+      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').val.arrows _, c⟩
         rw [Sieve.mem_iff_pullback_eq_top,
-          ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr($(hx f u hf).val)]
+          ← show (x (u ≫ f) _).val = (x f hf).val.pullback u from congr($(hx f u hf).val)]
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`
-        rw [show (x (g ≫ f') _).1 = _ from congr($(hx f' g hf').val)]
+        rw [show (x (g ≫ f') _).val = _ from congr($(hx f' g hf').val)]
         apply Sieve.pullback_eq_top_of_mem _ hg
-      · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
+      · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).val
     refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
     intro Y f hf
     dsimp
     ext1
     dsimp
     rw [← J₁.pullback_close, this _ hf]
-    apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
+    apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).property) (J₁.le_close _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
