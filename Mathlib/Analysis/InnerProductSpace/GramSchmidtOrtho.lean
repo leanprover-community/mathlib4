@@ -51,7 +51,7 @@ and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).starProjection (f n)
 termination_by n
-decreasing_by exact mem_Iio.1 i.2
+decreasing_by exact mem_Iio.1 i.property
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :

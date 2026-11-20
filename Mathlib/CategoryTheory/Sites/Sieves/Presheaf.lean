@@ -47,19 +47,19 @@ variable {S : Sieve X}
 @[simps obj map]
 def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
   obj Y := { g : Y.unop ⟶ X // S g }
-  map f := ↾fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
+  map f := ↾fun g ↦ ⟨f.unop ≫ g.val, downward_closed _ g.property _⟩
 
 /-- If a sieve S is contained in a sieve T, then we have a morphism of presheaves on their induced
 presheaves.
 -/
 @[simps]
 def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where
-  app _ := ↾fun f ↦ ⟨f.1, h _ f.2⟩
+  app _ := ↾fun f ↦ ⟨f.val, h _ f.property⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
 def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where
-  app _ := ↾fun f ↦ f.1
+  app _ := ↾fun f ↦ f.val
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Any component `f : Y ⟶ X` of the sieve `S` induces a natural transformation from `yoneda.obj Y`
@@ -114,7 +114,7 @@ abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
 @[simps]
 def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
     Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
-  app _ := ↾fun f ↦ ⟨f.down.1, h _ f.down.2⟩
+  app _ := ↾fun f ↦ ⟨f.down.val, h _ f.down.property⟩
 
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
@@ -122,7 +122,6 @@ def uliftFunctorInclusion (S : Sieve X) :
     S.uliftFunctor ⟶ uliftYoneda.{w}.obj X :=
   Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `Sieve.toFunctor` with universe lifting. -/
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :

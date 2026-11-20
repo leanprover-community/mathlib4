@@ -24,7 +24,6 @@ and is closed under subobjects, quotients and extensions.
 ## References
 
 * [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
-
 -/
 
 public section

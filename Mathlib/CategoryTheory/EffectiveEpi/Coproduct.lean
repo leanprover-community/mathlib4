@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Tactic.ApplyFun
 
 /-!
-
 # Effective epimorphic families and coproducts
 
 This file proves that an effective epimorphic family induces an effective epi from the coproduct if

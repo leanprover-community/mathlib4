@@ -22,7 +22,6 @@ action of `C` on `D`, composing
 `CategoryTheory.MonoidalCategory.MonoidalOpposite.mopFunctor (D ⥤ D)` is
 monoidal, and conversely one can define a left action of `C` on `D` from a monoidal
 functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
-
 -/
 
 @[expose] public section

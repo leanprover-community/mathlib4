@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
-
 # The nerve of a category
 
 This file provides the definition of the nerve of a category `C`,
@@ -19,7 +18,6 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
-
 -/
 
 @[expose] public section

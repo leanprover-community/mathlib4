@@ -5,9 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Function.SimpleFuncDense
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+
+import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -38,7 +39,6 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -716,7 +716,7 @@ theorem _root_.stronglyMeasurable_iff_measurable_separable {m : MeasurableSpace 
   refine ⟨fun H ↦ ⟨H.measurable, H.isSeparable_range⟩, fun ⟨Hm, Hsep⟩  ↦ ?_⟩
   have := Hsep.secondCountableTopology
   have Hm' : StronglyMeasurable (rangeFactorization f) := Hm.subtype_mk.stronglyMeasurable
-  exact continuous_subtype_val.comp_stronglyMeasurable Hm'
+  exact continuous_subtypeVal.comp_stronglyMeasurable Hm'
 
 /-- A continuous function is strongly measurable when either the source space or the target space
 is second-countable. -/
@@ -730,6 +730,18 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
     refine ⟨hf.measurable, ?_⟩
     exact isSeparable_range hf
   · exact hf.measurable.stronglyMeasurable
+
+/-- A right-continuous function on a second-countable linear order is strongly measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is strongly
+measurable. -/]
+theorem _root_.IsRightContinuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpace α]
+    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} (hf : IsRightContinuous f) :
+    StronglyMeasurable f := by
+  borelize β
+  have := hf.separableSpace_range
+  rw [stronglyMeasurable_iff_measurable_separable]
+  exact ⟨hf.measurable, .of_subtype _⟩
 
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
 @[to_additive /-- A continuous function whose support is contained in a compact set is strongly
@@ -887,15 +899,15 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   nontriviality β; inhabit β
   suffices Function.extend Subtype.val (fun x : s ↦ f x)
       (Function.extend (↑) (fun x : t ↦ f x) fun _ ↦ default) = f from
-    this ▸ (MeasurableEmbedding.subtype_coe hs).stronglyMeasurable_extend hc <|
-      (MeasurableEmbedding.subtype_coe ht).stronglyMeasurable_extend hd stronglyMeasurable_const
+    this ▸ (MeasurableEmbedding.subtypeVal hs).stronglyMeasurable_extend hc <|
+      (MeasurableEmbedding.subtypeVal ht).stronglyMeasurable_extend hd stronglyMeasurable_const
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs
     simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
-    exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2
+    exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.property
 
 theorem _root_.stronglyMeasurable_of_restrict_of_restrict_compl {_ : MeasurableSpace α}
     [TopologicalSpace β] {f : α → β} {s : Set α} (hs : MeasurableSet s)
@@ -976,19 +988,23 @@ protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommG
   continuous_norm.comp_stronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
-  continuous_nnnorm.comp_stronglyMeasurable hf
+  continuous_nnNorm.comp_stronglyMeasurable hf
 
-/-- The `enorm` of a strongly measurable function is measurable.
+@[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
-Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma proves measurability,
+/-- The `eNorm` of a strongly measurable function is measurable.
+
+Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop]
-protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (continuous_enorm.comp_stronglyMeasurable hf).measurable
+  (continuous_eNorm.comp_stronglyMeasurable hf).measurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := StronglyMeasurable.eNorm
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
@@ -1069,7 +1085,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
     exact ⟨s ∩ u, hs u (hs_m.inter hu), by simp⟩
   refine stronglyMeasurable_of_restrict_of_restrict_compl hs_m₂ ?_ ?_
   · exact (hf.comp_measurable (comap_measurable _)).mono h_sub
-  · exact stronglyMeasurable_const' fun x y ↦ by simp [hf_zero _ x.2, hf_zero _ y.2]
+  · exact stronglyMeasurable_const' fun x y ↦ by simp [hf_zero _ x.property, hf_zero _ y.property]
 
 /-- If a function `f` is strongly measurable w.r.t. a sub-σ-algebra `m` and the measure is σ-finite
 on `m`, then there exists spanning measurable sets with finite measure on which `f` has bounded
@@ -1080,10 +1096,10 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
   obtain ⟨s, hs, hs_univ⟩ :=
-    @exists_spanning_measurableSet_le _ m _ hf.nnnorm.measurable (μ.trim hm) _
+    @exists_spanning_measurableSet_le _ m _ hf.nnNorm.measurable (μ.trim hm) _
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
-  have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
-  rw [← coe_nnnorm]
+  have hx_nnNorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
+  rw [← coe_nnNorm]
   norm_cast
 
 end StronglyMeasurable

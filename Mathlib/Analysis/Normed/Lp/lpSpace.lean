@@ -53,7 +53,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 * More versions of Hölder's inequality (for example: the case `p = 1`, `q = ∞`; a version for normed
   rings which has `‖∑' i, f i * g i‖` rather than `∑' i, ‖f i‖ * g i‖` on the RHS; a version for
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
-
 -/
 
 @[expose] public section
@@ -66,7 +65,6 @@ variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
 
 /-!
 ### `Memℓp` predicate
-
 -/
 
 
@@ -310,12 +308,12 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · apply memℓp_gen
     dsimp only [Pi.smul_apply]
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
-    simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
+    simp_rw [← coe_nnNorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢
     refine NNReal.summable_of_le ?_ this
     intro i
     gcongr
-    apply nnnorm_smul_le
+    apply nnNorm_smul_le
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
   hf.const_smul c
@@ -713,20 +711,20 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     exact norm_le_of_forall_le (by positivity)
       fun i ↦ norm_smul_le c (f i) |>.trans <| hfc.1 ⟨i, rfl⟩
   · let inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
-    have coe_nnnorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
+    have coe_nnNorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
     suffices ‖c • f‖₊ ^ p.toReal ≤ (‖c‖₊ * ‖f‖₊) ^ p.toReal by
       rwa [NNReal.rpow_le_rpow_iff hp] at this
     clear_value inst
     rw [NNReal.mul_rpow]
     have hLHS := lp.hasSum_norm hp (c • f)
     have hRHS := (lp.hasSum_norm hp f).mul_left (‖c‖ ^ p.toReal)
-    simp_rw [← coe_nnnorm, ← _root_.coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
+    simp_rw [← coe_nnNorm, ← _root_.coe_nnNorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
     rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
-    apply nnnorm_smul_le
+    apply nnNorm_smul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
   IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'
@@ -740,7 +738,8 @@ variable {E : Type*} [NormedAddCommGroup E]
 set_option backward.isDefEq.respectTransparency false in
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
-  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
+  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ :=
+    norm_tsum_le_tsum_norm (.of_norm (by simpa using f.property.summable))
   _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
@@ -753,10 +752,11 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
     { toFun f := ∑' i, f i
       map_add' f g := by
         rw [← Summable.tsum_add]
-        exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
+        exacts [rfl, .of_norm (by simpa using f.property.summable),
+          .of_norm (by simpa using g.property.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
-        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable)) }
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.property.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
 end Sum
@@ -1073,7 +1073,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 @[simps repr_apply]
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
-    { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
+    { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.property
       invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩
       map_add' _ _ := Finsupp.ext fun _ ↦ rfl
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl

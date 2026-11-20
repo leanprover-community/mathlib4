@@ -186,10 +186,6 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 
 instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe : e.toAlgHom = e :=
-  rfl
-
 theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
@@ -569,6 +565,7 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
   cases x; ext; simp
 
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
+@[simps! toEquiv]
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
   { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
 
@@ -931,6 +928,7 @@ def AlgHom.ulift (f : S →ₐ[R] T) :
     ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
   __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
   commutes' _ := by simp
+  map_smul' _ _ := by simp
 
 @[simp]
 lemma AlgHom.down_ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
