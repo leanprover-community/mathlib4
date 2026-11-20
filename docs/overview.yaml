@@ -385,7 +385,7 @@ Analysis:
     Fourier transform as an integral: 'Real.fourier_eq'
     inversion formula: 'Continuous.fourierInv_fourier_eq'
     Riemann-Lebesgue lemma: 'tendsto_integral_exp_inner_smul_cocompact'
-    Parseval formula for Fourier series: 'tsum_sq_fourierCoeff'
+    Parseval formula for Fourier series: 'AddCircle.tsum_sq_fourierCoeff'
 
 Probability Theory:
   Definitions in probability theory:

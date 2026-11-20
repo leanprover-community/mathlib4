@@ -61,7 +61,7 @@ variable (R A)
 @[simps!]
 def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
@@ -139,12 +139,10 @@ set_option backward.isDefEq.respectTransparency.types false in
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
-  toFun f :=
-    { RingEquiv.op f.toRingEquiv with
-      commutes' := fun r => MulOpposite.unop_injective <| f.commutes r }
-  invFun f :=
-    { RingEquiv.unop f.toRingEquiv with
-      commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
+  toFun f := .ofCommutes (RingEquiv.op f.toRingEquiv)
+    fun r => MulOpposite.unop_injective <| f.commutes r
+  invFun f := .ofCommutes (RingEquiv.unop f.toRingEquiv)
+    fun r => MulOpposite.op_injective <| f.commutes r
 
 theorem toAlgHom_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=
@@ -176,15 +174,15 @@ variable (R S)
 
 /-- The canonical algebra isomorphism from `Aᵐᵒᵖ` to `Module.End A A` induced by the right
 multiplication. -/
-@[simps!] def moduleEndSelf : Aᵐᵒᵖ ≃ₐ[R] Module.End A A where
-  __ := RingEquiv.moduleEndSelf A
-  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
+@[simps!] def moduleEndSelf : Aᵐᵒᵖ ≃ₐ[R] Module.End A A :=
+  .ofCommutes (RingEquiv.moduleEndSelf A)
+    fun _ ↦ by ext; simp [Algebra.algebraMap_eq_smul_one]
 
 /-- The canonical algebra isomorphism from `A` to `Module.End Aᵐᵒᵖ A` induced by the left
 multiplication. -/
-@[simps!] def moduleEndSelfOp : A ≃ₐ[R] Module.End Aᵐᵒᵖ A where
-  __ := RingEquiv.moduleEndSelfOp A
-  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
+@[simps!] def moduleEndSelfOp : A ≃ₐ[R] Module.End Aᵐᵒᵖ A :=
+  .ofCommutes (RingEquiv.moduleEndSelfOp A)
+    fun _ ↦ by ext; simp [Algebra.algebraMap_eq_smul_one]
 
 end AlgEquiv
 
@@ -197,9 +195,8 @@ namespace AlgEquiv
 
 /-- A commutative algebra is isomorphic to its opposite. -/
 @[simps!]
-def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
-  __ := RingEquiv.toOpposite A
-  commutes' _r := rfl
+def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ :=
+  .ofCommutes (RingEquiv.toOpposite A) fun _ ↦ rfl
 
 @[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
 @[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
