@@ -9,6 +9,7 @@ public import Mathlib.Data.List.Iterate
 public import Mathlib.Data.Set.Pairwise.List
 public import Mathlib.GroupTheory.NoncommPiCoprod
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.Perm.Support.NoncommProd
 public import Mathlib.Tactic.Group
 
 /-!
