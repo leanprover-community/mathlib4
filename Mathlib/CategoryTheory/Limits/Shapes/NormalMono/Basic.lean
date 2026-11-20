@@ -128,7 +128,7 @@ def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [← reassoc_of% this, hf.w, comp_zero]
   isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isLimit
     · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
     · exact Fork.ext (Arrow.leftFunc.mapIso e)
 
@@ -252,7 +252,7 @@ def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [Category.assoc, this, reassoc_of% hf.w, zero_comp]
   isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isColimit
     · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
     · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
 
@@ -266,10 +266,10 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _
       (fun g' w' =>
-        (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
+        (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).val.op)
       (fun g' w' =>
         congrArg Quiver.Hom.op
-          (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).2)
+          (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).property)
       (by
         rintro Z' g' w' m' rfl
         apply Quiver.Hom.unop_inj
@@ -285,10 +285,11 @@ def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.uno
   isLimit :=
     KernelFork.IsLimit.ofι _ _
       (fun g' w' =>
-        (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
+        (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).val.op)
       (fun g' w' =>
         congrArg Quiver.Hom.op
-          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).2)
+          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop
+            (congrArg Quiver.Hom.unop w')).property)
       (by
         rintro Z' g' w' m' rfl
         apply Quiver.Hom.unop_inj

@@ -217,7 +217,7 @@ variable [GroupWithZero K] [Fintype K]
 
 theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
   calc
-    a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).1 := by
+    a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).val := by
       rw [Units.val_pow_eq_pow_val, Units.val_mk0]
     _ = 1 := by
       classical
@@ -255,7 +255,7 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
   let : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
   obtain ⟨n, h⟩ := VectorSpace.card_fintype (ZMod p) K
   rw [ZMod.card] at h
-  refine ⟨⟨n, ?_⟩, hp.1, h⟩
+  refine ⟨⟨n, ?_⟩, hp.out, h⟩
   apply Or.resolve_left (Nat.eq_zero_or_pos n)
   rintro rfl
   rw [pow_zero] at h
@@ -394,14 +394,15 @@ theorem orderOf_frobeniusAlgEquivOfAlgebraic :
   simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using! orderOf_frobeniusAlgHom K L
 
 theorem bijective_frobeniusAlgHom_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.val :=
   let e := (finCongr <| orderOf_frobeniusAlgHom K L).symm.trans <|
     finEquivPowers (orderOf_pos_iff.mp <| orderOf_frobeniusAlgHom K L ▸ Module.finrank_pos)
   (Subtype.val_injective.comp e.injective).bijective_of_nat_card_le
     ((card_algHom_le_finrank K L L).trans_eq <| by simp)
 
 theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦
+      frobeniusAlgEquivOfAlgebraic K L ^ n.val :=
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using! bijective_frobeniusAlgHom_pow K L
 
@@ -473,7 +474,7 @@ namespace ZMod
 open FiniteField Polynomial
 
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
-  rcases hp.1.eq_two_or_odd with rfl | hp_odd
+  rcases hp.out.eq_two_or_odd with rfl | hp_odd
   · unfold ZMod
     fin_cases x
     · use 0; simp
@@ -756,7 +757,7 @@ theorem Polynomial.roots_X_pow_char_sub_X :
   have := Subfield.fintypeBot F p
   have : (univ : Finset (⊥ : Subfield F)).image Subtype.val = primeSubfieldFinset F p := by
     ext; simp
-  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
+  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtypeVal, this]
     using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
 
 @[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
