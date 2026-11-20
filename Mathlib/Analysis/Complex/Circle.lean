@@ -69,7 +69,7 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-@[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+@[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.property
 @[simp] lemma nnNorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
 @[simp] lemma eNorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by simp [eNorm_eq_nnNorm]
 

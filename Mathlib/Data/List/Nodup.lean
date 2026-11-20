@@ -73,7 +73,7 @@ theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort l
 protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
 
 theorem nodup_iff_injective_getElem {l : List α} :
-    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
+    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.val]) :=
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
       obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j

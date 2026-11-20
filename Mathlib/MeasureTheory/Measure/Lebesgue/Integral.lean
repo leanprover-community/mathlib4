@@ -60,7 +60,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
       add_sub_cancel_left, mul_one, norm_le _ (norm_nonneg _), ContinuousMap.restrict_apply]
     intro x
     have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
-        ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
+        ⟨x - n, ⟨sub_nonneg.mpr x.property.1, sub_le_iff_le_add'.mpr x.property.2⟩⟩
     simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
       sub_add_cancel] using this
   · exact iUnion_Icc_intCast ℝ
