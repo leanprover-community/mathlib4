@@ -5,7 +5,6 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.RingTheory.Finiteness.Defs
 

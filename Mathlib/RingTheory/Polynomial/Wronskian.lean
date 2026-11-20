@@ -5,10 +5,11 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.RingTheory.Coprime.Basic
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Wronskian of a pair of polynomial

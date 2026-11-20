@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Fourier.Notation
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # The Fourier transform

@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 module
 
-public meta import Batteries.Tactic.Lint.Basic
 public meta import Lean.Elab.Command
 public meta import Lean.Parser.Module
 -- Import this linter explicitly to ensure that
@@ -14,6 +13,8 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Mathlib.Tactic.DeclarationNames
 
 meta import Lean.Parser.Command
+public import Batteries.Tactic.Lint.Basic
+public import Lean.Parser.Module
 
 /-!
 ## Style linters

@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Init
 
 /-!
 # Notations for operations involving order and algebraic structure

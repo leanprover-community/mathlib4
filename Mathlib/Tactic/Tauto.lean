@@ -8,10 +8,15 @@ module
 public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.Classical
 public meta import Mathlib.Lean.Meta
-public meta import Qq
+public meta import Qq.MetaM
+public meta import Qq.Typ
+public import Lean.Elab.ConfigEval
 public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic output)
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.TacticAnalysis.Declarations
+
+import Qq
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

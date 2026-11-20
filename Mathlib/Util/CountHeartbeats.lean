@@ -8,6 +8,7 @@ module
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Util.Heartbeats
 public import Mathlib.Init
+public import Lean.Meta.TryThis
 
 /-!
 # Counting heartbeats

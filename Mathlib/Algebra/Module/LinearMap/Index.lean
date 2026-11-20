@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 import Mathlib.Algebra.Exact.Sequence
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # The index of a linear map

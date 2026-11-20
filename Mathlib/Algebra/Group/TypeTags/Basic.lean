@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Logic.Equiv.Defs
 

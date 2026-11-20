@@ -5,7 +5,10 @@ Authors: Geoffrey Irving, Bryan Wang, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

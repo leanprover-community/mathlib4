@@ -6,6 +6,7 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.TypeTags
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Pretransitive group actions

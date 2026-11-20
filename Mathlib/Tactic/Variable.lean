@@ -8,6 +8,7 @@ module
 public meta import Lean.Linter.UnusedVariables
 public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Init
+public import Lean.Elab.Term
 
 /-!
 # The `variable?` command

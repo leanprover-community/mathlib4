@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Nontrivial types

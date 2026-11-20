@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 
 /-! # Spectral theory of self-adjoint operators
 

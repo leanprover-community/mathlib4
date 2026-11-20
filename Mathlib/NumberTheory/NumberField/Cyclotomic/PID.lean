@@ -5,10 +5,11 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.NumberTheory.Cyclotomic.Basic
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

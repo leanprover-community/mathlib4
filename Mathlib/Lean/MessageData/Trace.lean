@@ -6,8 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Lean.Message
-
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Utilities for analyzing `MessageData`

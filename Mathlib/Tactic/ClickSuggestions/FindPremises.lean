@@ -295,3 +295,4 @@ public def getMatches {α} (tree : RefinedDiscrTree α) (e : Expr) : MetaM (Matc
     return (← getMatch tree e (unify := true) (matchRootStar := false)).1
 
 end Mathlib.Tactic.ClickSuggestions
+#min_imports

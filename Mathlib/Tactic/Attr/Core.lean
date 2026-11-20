@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Init
 public import Std.Data.DTreeMap.Internal.Operations
 
 import Mathlib.Tactic.Attr.Register

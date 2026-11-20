@@ -6,6 +6,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod

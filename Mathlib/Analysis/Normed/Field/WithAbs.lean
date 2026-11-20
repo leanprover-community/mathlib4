@@ -14,7 +14,6 @@ public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.MetricSpace.Completion
 
 import Mathlib.Analysis.Normed.Field.Instances
-import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
 
 /-!

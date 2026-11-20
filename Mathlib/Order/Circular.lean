@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Order
 
-import Mathlib.Order.Lattice
 
 /-!
 # Circular order hierarchy

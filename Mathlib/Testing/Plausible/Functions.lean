@@ -18,6 +18,8 @@ public import Mathlib.Data.PNat.Notation
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Bound.Init
+public import Plausible
 
 /-!
 ## `Plausible`: generators for functions

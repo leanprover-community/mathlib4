@@ -5,7 +5,6 @@ Authors: Chris Birkbeck, Riccardo Brasca, Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm

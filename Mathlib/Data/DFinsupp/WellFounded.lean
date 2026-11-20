@@ -9,7 +9,6 @@ public import Mathlib.Data.DFinsupp.Lex
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.Cardinal.Order
 
-import Mathlib.Tactic.AdaptationNote
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

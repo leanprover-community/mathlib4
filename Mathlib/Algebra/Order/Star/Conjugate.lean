@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Order.Bounds.OrderIso
-public import Mathlib.Order.OrdContinuous
 
 /-!
 # Conjugation in star-ordered rings
