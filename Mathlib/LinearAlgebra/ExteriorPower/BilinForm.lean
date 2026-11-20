@@ -18,6 +18,7 @@ The file is a home for results about the bilinear forms on exterior powers of a 
   exterior powers.
 * `LinearMap.BilinForm.bijective_exteriorPower`: if a module carries a bijective bilinear form,
   the induced bilinear forms on its exterior powers is also bijective.
+* `LinearMap.BilinForm.discr`: the discriminant of a bilinear form with respect to a volume form.
 -/
 
 noncomputable section
@@ -63,7 +64,13 @@ public lemma discr_def :
     B.discr vol = B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) := by
   rfl
 
--- TODO More API here, extracted from your other lemma
+/-- The discriminant relates the form on the top exterior power to the product of volumes. -/
+@[simp] public lemma discr_mul_vol_mul_vol (x y : ⋀[R]^(finrank R M) M) :
+    B.discr vol * (vol x * vol y) = B.exteriorPower (finrank R M) x y := by
+  calc
+    _ = B.exteriorPower _ (vol x • vol.symm 1) (vol y • vol.symm 1) := by
+      simp [discr_def, mul_comm, mul_left_comm, mul_assoc]
+    _ = _ := by simp [← map_smul]
 
 end Discriminant
 
