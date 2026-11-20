@@ -155,8 +155,8 @@ def isWeakLimitAux' (t : PullbackCone f g)
     (create :
       ∀ s : PullbackCone f g, { l // l ≫ t.fst = s.fst ∧ l ≫ t.snd = s.snd}) :
     Limits.IsWeakLimit t :=
-  PullbackCone.isWeakLimitAux t (fun s => (create s).1)
-    (fun s => (create s).2.1) (fun s => (create s).2.2)
+  PullbackCone.isWeakLimitAux t (fun s => (create s).val)
+    (fun s => (create s).property.1) (fun s => (create s).property.2)
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
 `PullbackCone.mk` is a weak limit cone.

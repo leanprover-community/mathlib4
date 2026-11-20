@@ -423,8 +423,8 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
 submodules. -/
 @[simps]
 def prodEquiv (p : Submodule R M) (q : Submodule R M') : p.prod q ≃ₗ[R] p × q where
-  toFun x := (⟨x.1.1, (mem_prod.1 x.2).1⟩, ⟨x.1.2, (mem_prod.1 x.2).2⟩)
-  invFun y := ⟨(y.1.1, y.2.1), mem_prod.2 ⟨y.1.2, y.2.2⟩⟩
+  toFun x := (⟨x.val.1, (mem_prod.1 x.property).1⟩, ⟨x.val.2, (mem_prod.1 x.property).2⟩)
+  invFun y := ⟨(y.1.val, y.2.val), mem_prod.2 ⟨y.1.property, y.2.property⟩⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -463,7 +463,7 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
   have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
-  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
+  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.property⟩))⟩
 
 lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
     span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
@@ -711,6 +711,14 @@ lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
+theorem isCoatom_iff_exists_notMem_isCompl_span_singleton :
+    IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
+  refine ⟨fun hs ↦ ?_, fun ⟨x, hx, hc⟩ ↦ ?_⟩
+  · have ⟨b, hb⟩ := SetLike.exists_notMem_of_ne_top s hs.ne_top
+    exact ⟨b, hb, isCompl_span_singleton_of_isCoatom_of_notMem hs hb⟩
+  · rw [← covBy_top_iff, ← hc.symm.sup_eq_top]
+    exact covBy_span_singleton_sup hx
+
 end DivisionRing
 
 end Submodule
@@ -932,5 +940,10 @@ theorem coord_self : (coord R M x h) (⟨x, Submodule.mem_span_singleton_self x�
 
 theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y • x = y :=
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
+
+@[simp]
+theorem coord_mk_smul (a : R) :
+    coord R M x h ⟨a • x, Submodule.mem_span_singleton.mpr ⟨a, rfl⟩⟩ = a :=
+  (symm_apply_eq (toSpanNonzeroSingleton R M x h)).mpr rfl
 
 end LinearEquiv

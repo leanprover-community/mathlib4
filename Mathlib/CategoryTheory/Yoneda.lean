@@ -1248,7 +1248,7 @@ functor. -/
 def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
     F.sections ≃ ((const _).obj X ⟶ F) where
   toFun s :=
-    { app j := ↾fun _ ↦ s.1 j
+    { app j := ↾fun _ ↦ s.val j
       naturality _ _ _ := by ext x; simp }
   invFun τ := by
     refine ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ ?_⟩

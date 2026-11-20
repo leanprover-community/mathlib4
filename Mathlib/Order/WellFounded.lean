@@ -34,8 +34,8 @@ theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
     ¬Acc r x ↔ ∃ f : ℕ → α, f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) where
   mp hx := let f : ℕ → {a : α // ¬Acc r a} :=
-      Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.2).choose_spec.1⟩
-    ⟨(f · |>.1), rfl, fun n ↦ (exists_not_acc_lt_of_not_acc (f n).2).choose_spec.2⟩
+      Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.property).choose_spec.1⟩
+    ⟨(f · |>.val), rfl, fun n ↦ (exists_not_acc_lt_of_not_acc (f n).property).choose_spec.2⟩
   mpr h acc := acc.rec
     (fun _x _ ih ⟨f, hf⟩ ↦ ih (f 1) (hf.1 ▸ hf.2 0) ⟨(f <| · + 1), rfl, fun _ ↦ hf.2 _⟩) h
 

@@ -83,17 +83,17 @@ def unitEqualizes (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
   Fork.IsLimit.mk' _ fun s => by
     have := fun Y ↦ h Y |>.mono
-    refine ⟨((h X).lift' s.ι ?_).1, ?_, ?_⟩
+    refine ⟨((h X).lift' s.ι ?_).val, ?_, ?_⟩
     · rw [← cancel_mono (adj₁.unit.app ((h X).Z)), assoc, ← adj₁.unit_naturality (h _).left]
       dsimp only [Functor.comp_obj]
       have := s.condition
       dsimp only [Functor.comp_obj] at this
       rw [← assoc, ← this, assoc, ← U.map_comp, ← F.map_comp, RegularMono.w, F.map_comp,
         U.map_comp, s.condition_assoc, assoc, ← adj₁.unit_naturality (h _).right]
-    · apply ((h X).lift' s.ι _).2
+    · apply ((h X).lift' s.ι _).property
     · intro m hm
       rw [← cancel_mono (adj₁.unit.app X)]
-      apply hm.trans ((h X).lift' s.ι _).2.symm
+      apply hm.trans ((h X).lift' s.ι _).property.symm
 
 /-- Deprecated alias for `unitEqualizes`. -/
 @[deprecated unitEqualizes (since := "2026-10-05")]
