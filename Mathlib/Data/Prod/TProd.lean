@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite products of types
 

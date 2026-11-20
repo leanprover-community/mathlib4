@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Presentable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely Presentable Objects
 

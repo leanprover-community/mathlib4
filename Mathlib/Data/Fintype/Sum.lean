@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fintypes and sum types
 

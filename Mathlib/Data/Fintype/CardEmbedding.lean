@@ -10,6 +10,9 @@ public import Mathlib.Logic.Equiv.Embedding
 
 import Mathlib.Data.Set.Finite.Range
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number of embeddings
 

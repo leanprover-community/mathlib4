@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects on categories equipped with shift
 

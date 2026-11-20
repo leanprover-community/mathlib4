@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of categories of sheaves with a dense subsite that is 1-hypercover dense
 

@@ -10,6 +10,9 @@ public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module
 public import Mathlib.Topology.LocallyConstant.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete condensed `R`-modules
 
