@@ -5,9 +5,11 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
 
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.Field.Basic
 
 /-!

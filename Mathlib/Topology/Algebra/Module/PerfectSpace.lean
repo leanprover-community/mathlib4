@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.Perfect
+
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Vector spaces over nontrivially normed fields are perfect spaces -/
 

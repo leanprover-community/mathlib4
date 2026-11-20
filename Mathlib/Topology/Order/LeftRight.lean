@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Order.Antichain
 public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Defs.Filter
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Left and right continuity

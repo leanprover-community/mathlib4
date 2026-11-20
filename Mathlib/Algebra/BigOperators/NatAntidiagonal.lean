@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.NatAntidiagonal
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,7 +5,10 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.ScottContinuity.Prod
+public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Order.ScottContinuity
+
+import Mathlib.Order.ScottContinuity.Prod
 
 /-!
 # Scott continuity on complete lattices

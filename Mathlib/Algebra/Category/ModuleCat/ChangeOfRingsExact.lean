@@ -6,7 +6,9 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Exactness of functors for change of rings.

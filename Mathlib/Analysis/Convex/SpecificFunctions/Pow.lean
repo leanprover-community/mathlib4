@@ -5,8 +5,10 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+
+import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
 # Convexity properties of `rpow`

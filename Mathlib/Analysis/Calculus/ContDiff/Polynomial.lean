@@ -6,7 +6,9 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 /-!
 # Higher smoothness of polynomials

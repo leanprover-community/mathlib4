@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-public import Mathlib.Topology.NhdsWithin
+public import Mathlib.Topology.Constructions
 
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.

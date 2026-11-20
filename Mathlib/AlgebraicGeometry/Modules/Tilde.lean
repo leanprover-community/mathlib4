@@ -6,11 +6,12 @@ Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian 
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Localization
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 
+import Mathlib.Algebra.Category.ModuleCat.Localization
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Data.Fintype.Order

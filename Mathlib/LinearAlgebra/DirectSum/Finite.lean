@@ -6,7 +6,9 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # A finite direct sum of finite modules is finite

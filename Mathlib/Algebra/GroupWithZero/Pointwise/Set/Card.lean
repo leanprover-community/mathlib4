@@ -6,8 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

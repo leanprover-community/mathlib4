@@ -5,9 +5,11 @@ Authors: Stefan Kebekus, Yi Yuan
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.Analytic
 public import Mathlib.Analysis.Complex.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+import Mathlib.Analysis.Complex.Harmonic.Analytic
 
 /-!
 # The Mean Value Property of Vector-Valued Harmonic Functions

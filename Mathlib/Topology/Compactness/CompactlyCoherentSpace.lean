@@ -5,8 +5,10 @@ Authors: Floris van Doorn, Hannah Scholz
 -/
 module
 
-public import Mathlib.Topology.Coherent
+public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Topology.Coherent
 
 /-!
 # Compactly coherent spaces and the compact coherentification

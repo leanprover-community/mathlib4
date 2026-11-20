@@ -6,7 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Barycentric coordinates are smooth

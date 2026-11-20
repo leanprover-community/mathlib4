@@ -5,10 +5,13 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.LSeries.Basic
-public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+
+import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 
 /-!
 # Odd Hurwitz zeta functions

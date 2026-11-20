@@ -5,9 +5,13 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Matrix.GelfandRadius
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.Separable
+
+import Mathlib.Analysis.Matrix.GelfandRadius
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # The Gelfand radius as an algebra norm

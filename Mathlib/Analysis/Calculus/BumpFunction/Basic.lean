@@ -6,7 +6,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Infinitely smooth "bump" functions

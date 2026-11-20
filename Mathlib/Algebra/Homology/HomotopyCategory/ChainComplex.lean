@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Splitting
+public import Mathlib.Algebra.Homology.Homotopy
 
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+import Mathlib.Algebra.Homology.Embedding.Splitting
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
 /-!

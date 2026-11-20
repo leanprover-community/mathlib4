@@ -6,7 +6,9 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Moments.ComplexMGF
+
+import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
 # Gaussian distributions over ℝ

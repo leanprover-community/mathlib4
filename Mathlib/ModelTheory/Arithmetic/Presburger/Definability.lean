@@ -5,12 +5,14 @@ Authors: Dexin Zhang
 -/
 module
 
+public import Mathlib.Data.Matrix.Mul
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
-public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 public import Mathlib.ModelTheory.Definability
 
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 
 /-!
 # Presburger definability and semilinear sets

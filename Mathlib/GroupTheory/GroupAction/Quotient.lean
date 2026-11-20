@@ -5,14 +5,16 @@ Authors: Chris Hughes, Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.GroupTheory.Commutator.Basic
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.GroupAction.Hom
+
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Properties of group actions involving quotient groups

@@ -5,10 +5,12 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Unramified.Field
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Unramified.Basic
 
+import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.Unramified.Field
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

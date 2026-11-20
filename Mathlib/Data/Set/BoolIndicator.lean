@@ -5,7 +5,9 @@ Authors: Dagur Asgeirsson, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Data.Set.Operations
+
+import Mathlib.Order.BooleanAlgebra.Set
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

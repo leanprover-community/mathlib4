@@ -6,9 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Int.Cast.Field
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.Int.Cast.Pi
+
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Pi
 
 /-!
 # Injectivity of `Int.Cast` into characteristic zero rings and fields.

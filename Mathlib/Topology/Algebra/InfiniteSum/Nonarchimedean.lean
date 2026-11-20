@@ -5,11 +5,12 @@ Authors: Mitchell Lee
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups

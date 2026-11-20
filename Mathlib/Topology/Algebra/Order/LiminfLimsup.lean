@@ -6,10 +6,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Topology.Algebra.Group.ContinuousDiv
-public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Algebra.Order.Group.DenselyOrdered
+import Mathlib.Topology.Algebra.Group.ContinuousDiv
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

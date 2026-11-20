@@ -5,8 +5,11 @@ Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wan
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
-public import Mathlib.RingTheory.MvPolynomial
+public import Mathlib.RingTheory.MvPolynomial.Basic
+
+import Mathlib.RingTheory.MvPolynomial
 
 /-!
 # A basis for `SymmetricAlgebra R M`

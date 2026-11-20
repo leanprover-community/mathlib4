@@ -5,12 +5,14 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Monomorphisms and epimorphisms in `Group`

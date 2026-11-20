@@ -5,8 +5,10 @@ Authors: Kirill Kondrashov, Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.Orientation
+
+import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # Orientations and volume forms on exterior powers

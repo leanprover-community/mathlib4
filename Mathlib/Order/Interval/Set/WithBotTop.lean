@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WithBot
 
 import Mathlib.Data.Set.Image
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Intervals in `WithTop α` and `WithBot α`

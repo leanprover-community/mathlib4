@@ -6,7 +6,9 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
-public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+
+import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Algebraic independence persists to the algebraic closure

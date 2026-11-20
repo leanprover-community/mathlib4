@@ -6,9 +6,11 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Martingale.BorelCantelli
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Process.Filtration
 
 import Mathlib.Probability.ConditionalExpectation
+import Mathlib.Probability.Martingale.BorelCantelli
 
 /-!
 # The second Borel-Cantelli lemma

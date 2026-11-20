@@ -6,7 +6,10 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.Order.Setoid.Basic
+
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Double cosets

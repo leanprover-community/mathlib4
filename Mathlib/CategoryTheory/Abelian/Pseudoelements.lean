@@ -5,8 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Pseudoelements in abelian categories

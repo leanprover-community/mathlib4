@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Order.Atoms
+
+import Mathlib.Algebra.Group.Subgroup.Basic
 
 /-!
 # Simple groups

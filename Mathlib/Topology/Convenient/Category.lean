@@ -6,8 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
+
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category of `X`-generated spaces

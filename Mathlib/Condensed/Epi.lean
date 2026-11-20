@@ -5,11 +5,13 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.EpiMono
-public import Mathlib.Condensed.Equivalence
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.Condensed.Module
+public import Mathlib.Topology.Category.Stonean.Limits
 
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+import Mathlib.CategoryTheory.Sites.EpiMono
+import Mathlib.Condensed.Equivalence
 
 /-!
 # Epimorphisms of condensed objects

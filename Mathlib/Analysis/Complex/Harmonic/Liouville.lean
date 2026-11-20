@@ -5,8 +5,10 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+import Mathlib.Analysis.Complex.Harmonic.Analytic
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Normed.Module.HahnBanach
 

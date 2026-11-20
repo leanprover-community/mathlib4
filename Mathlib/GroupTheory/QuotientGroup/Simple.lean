@@ -5,8 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.Subgroup.Simple
+
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Simplicity of quotient groups

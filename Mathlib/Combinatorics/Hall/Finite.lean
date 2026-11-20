@@ -5,8 +5,10 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Fintype.Card
 
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Set.Finite.Basic
 
 /-!

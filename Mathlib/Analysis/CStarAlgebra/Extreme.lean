@@ -5,8 +5,10 @@ Authors: Monica Omar, Jireh Loreaux, Jon Bannon
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Convex.Extreme
+
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Extreme points of the closed unit ball in C⋆-algebras
 

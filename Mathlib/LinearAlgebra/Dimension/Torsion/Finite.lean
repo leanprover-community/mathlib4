@@ -6,7 +6,10 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Results relating rank and torsion.

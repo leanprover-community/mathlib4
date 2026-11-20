@@ -8,7 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Topology.Covering.AddCircle
+public import Mathlib.Topology.Covering.Quotient
+
+import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Maps on the unit circle

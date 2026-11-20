@@ -5,8 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+
+import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Inner products of strongly measurable functions are strongly measurable.

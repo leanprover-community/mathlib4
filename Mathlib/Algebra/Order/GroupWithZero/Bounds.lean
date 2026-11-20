@@ -6,7 +6,9 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
-public import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.Defs
+
+import Mathlib.Order.Bounds.Image
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

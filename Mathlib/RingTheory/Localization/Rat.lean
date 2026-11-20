@@ -5,8 +5,11 @@ Authors: Ruben Van de Velde
 -/
 module
 
-public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Ring-theoretic fractions in `ℚ`

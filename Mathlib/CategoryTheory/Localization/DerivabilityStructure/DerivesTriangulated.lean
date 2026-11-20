@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+public import Mathlib.CategoryTheory.Triangulated.Functor
 
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
+import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
 
 /-!
 # Triangulated derived functors using derivability structures

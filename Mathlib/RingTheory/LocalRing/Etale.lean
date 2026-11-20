@@ -6,11 +6,12 @@ Authors: Bianca Viray, Bryan Boehnke, Grant Yang, George Peykanu, Tianshuo Wang
 
 module
 
-public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.Etale.Basic
 
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.Smooth.Flat
+import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Étale extensions of local rings

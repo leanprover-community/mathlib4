@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Logic.Pairwise
 
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.Set.Pairwise.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

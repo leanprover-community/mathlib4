@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Artinian.Defs
 
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Instances related to Artinian rings

@@ -5,8 +5,10 @@ Authors: Violeta Hernández Palacios, Junyan Xu
 -/
 module
 
-public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
 

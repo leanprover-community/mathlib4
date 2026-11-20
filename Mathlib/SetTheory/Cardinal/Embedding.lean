@@ -6,9 +6,10 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fin.Tuple.Embedding
-public import Mathlib.SetTheory.Cardinal.NatCard
+public import Mathlib.Data.Set.Card
 
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Existence of embeddings from finite types
 

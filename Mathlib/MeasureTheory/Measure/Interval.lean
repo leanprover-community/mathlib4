@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Continuity
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.Order.Interval.Set.Monotone
+
+import Mathlib.MeasureTheory.Measure.Continuity
 
 /-!
 # Measures of intervals

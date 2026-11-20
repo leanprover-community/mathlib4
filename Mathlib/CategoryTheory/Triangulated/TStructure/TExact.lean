@@ -5,7 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+
+import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
 /-!
 # t-exact functors

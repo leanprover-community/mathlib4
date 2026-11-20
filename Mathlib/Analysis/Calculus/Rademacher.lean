@@ -5,10 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 import Mathlib.Analysis.BoundedVariation
+import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 

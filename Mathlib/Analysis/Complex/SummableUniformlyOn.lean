@@ -6,8 +6,10 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
+import Mathlib.Analysis.Complex.LocallyUniformLimit
 
 /-!
 # Differentiability of uniformly convergent series sums of functions

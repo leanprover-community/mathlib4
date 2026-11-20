@@ -5,10 +5,13 @@ Authors: Brendan Murphy
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Artinian.Defs
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!

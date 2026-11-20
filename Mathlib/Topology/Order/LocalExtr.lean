@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.Extr
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Defs.Filter
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Local extrema of functions on topological spaces

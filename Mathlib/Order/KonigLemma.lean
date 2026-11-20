@@ -5,10 +5,12 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Order.Atoms.Finite
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
 
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Order.Atoms.Finite
 
 /-!
 # Kőnig's infinity lemma

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Scheme-theoretic fiber

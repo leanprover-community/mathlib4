@@ -5,8 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.Data.Vector.Defs
+public import Mathlib.Logic.Small.Defs
+
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Small.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

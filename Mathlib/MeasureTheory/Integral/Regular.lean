@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Topology.UrysohnsLemma
 
 set_option doc.verso true

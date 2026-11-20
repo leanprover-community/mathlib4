@@ -6,7 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
-public import Mathlib.GroupTheory.OreLocalization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.GroupTheory.OreLocalization.Cardinality
 
 /-!
 # Cardinality of localizations of commutative monoids

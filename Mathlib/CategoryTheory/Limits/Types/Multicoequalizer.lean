@@ -6,11 +6,13 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Types.Set
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+
+import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 
 /-!
 # Multicoequalizers in the category of types

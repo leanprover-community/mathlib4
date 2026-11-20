@@ -8,7 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 
 /-!
 # Cofibrations and fibrations in the category of simplicial sets

@@ -5,8 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.FieldTheory.IsSepClosed
+
+import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 
 /-!
 # Elliptic curves with same j-invariants are isomorphic

@@ -5,9 +5,11 @@ Authors: Pieter Cuijpers
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.CompleteLattice.Defs
 
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Tactic.Variable
 
 /-!

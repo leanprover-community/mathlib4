@@ -5,7 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.CompleteLattice.Defs
+
+import Mathlib.Data.Set.BooleanAlgebra
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

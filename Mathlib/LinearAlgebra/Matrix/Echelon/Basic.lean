@@ -5,9 +5,10 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Defs
+
+import Mathlib.Data.Fintype.Defs
+import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Row echelon forms

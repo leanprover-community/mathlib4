@@ -6,9 +6,11 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
-public import Mathlib.Algebra.Central.TensorProduct
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 import Mathlib.Algebra.Central.End
+import Mathlib.Algebra.Central.TensorProduct
 
 /-!
 # Basic properties of Azumaya algebras

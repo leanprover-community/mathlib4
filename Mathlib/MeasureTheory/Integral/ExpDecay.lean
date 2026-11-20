@@ -5,9 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import Mathlib.MeasureTheory.Integral.Asymptotics
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals with exponential decay at ∞

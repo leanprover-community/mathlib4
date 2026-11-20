@@ -5,8 +5,10 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Normed.Lp.PiLp
+
+import Mathlib.Analysis.Analytic.Linear
 
 /-!
 # Analyticity on `WithLp`

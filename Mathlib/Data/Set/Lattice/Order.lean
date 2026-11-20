@@ -5,7 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.BooleanAlgebra
+
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Set unions, intersections, and order

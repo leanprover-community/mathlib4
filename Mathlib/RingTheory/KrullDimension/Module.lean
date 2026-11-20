@@ -6,7 +6,10 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Spectrum.Prime.Module
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Support
+
+import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
 # Krull Dimension of Module

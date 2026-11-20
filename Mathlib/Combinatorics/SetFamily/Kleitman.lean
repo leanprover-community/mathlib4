@@ -5,8 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
+public import Mathlib.Data.Finset.Union
+
+import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 
 /-!
 # Kleitman's bound on the size of intersecting families

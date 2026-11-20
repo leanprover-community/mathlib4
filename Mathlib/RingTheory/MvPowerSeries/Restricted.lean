@@ -5,12 +5,13 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 import Mathlib.Algebra.Order.Antidiag.Tendsto
 import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Multivariate restricted power series

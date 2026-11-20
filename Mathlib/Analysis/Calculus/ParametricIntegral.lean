@@ -5,10 +5,13 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Derivatives of integrals depending on parameters

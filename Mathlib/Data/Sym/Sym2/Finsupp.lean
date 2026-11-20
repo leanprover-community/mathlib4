@@ -5,9 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Finset.Sym
 public import Mathlib.Data.Finsupp.Defs
+
+import Mathlib.Algebra.GroupWithZero.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

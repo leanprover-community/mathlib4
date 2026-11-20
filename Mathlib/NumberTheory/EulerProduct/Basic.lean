@@ -5,10 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
+import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Data.Nat.Factorization.PrimePow
 
 /-!

@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Constructions.SumProd
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Locally finite families of sets

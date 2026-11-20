@@ -5,10 +5,11 @@ Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Order.SuccPred.ENat
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 

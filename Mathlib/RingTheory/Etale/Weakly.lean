@@ -5,7 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Smooth.Flat
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.RingHom.Flat
+
+import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 # Weakly étale algebras

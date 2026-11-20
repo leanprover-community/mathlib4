@@ -5,10 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.OrderDual
-public import Mathlib.Order.Monotone.Union
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Interval.Set.Defs
 
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Order.Monotone.Union
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

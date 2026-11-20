@@ -5,8 +5,9 @@ Authors: Thomas Browning, Junyan Xu
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # Extension of field embeddings

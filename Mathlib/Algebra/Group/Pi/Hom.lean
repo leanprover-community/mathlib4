@@ -5,9 +5,11 @@ Authors: Simon Hudon, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Util.Delaborators
+
+import Mathlib.Algebra.Group.Hom.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

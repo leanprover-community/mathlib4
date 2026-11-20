@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Sets.Closeds
 
+import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactness.Bases
 
 /-!

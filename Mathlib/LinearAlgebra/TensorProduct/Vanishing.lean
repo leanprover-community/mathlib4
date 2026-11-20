@@ -5,9 +5,11 @@ Authors: Mitchell Lee, Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Map
+public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-! # Vanishing of elements in a tensor product of two modules

@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.Group.Int.Even
+
+import Mathlib.Algebra.Ring.Parity
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

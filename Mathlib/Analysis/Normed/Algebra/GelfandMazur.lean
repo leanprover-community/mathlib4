@@ -5,7 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Polynomial.Factorization
+public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.Polynomial.Factorization
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem

@@ -5,8 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.Ring.Int.Units
+
+import Mathlib.Algebra.Ring.Int.Units
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

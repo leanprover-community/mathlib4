@@ -5,7 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+
+import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Bergelson's intersectivity lemma

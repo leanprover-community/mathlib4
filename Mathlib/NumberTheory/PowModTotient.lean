@@ -5,7 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Data.Nat.Totient
+
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Modular exponentiation with the totient function

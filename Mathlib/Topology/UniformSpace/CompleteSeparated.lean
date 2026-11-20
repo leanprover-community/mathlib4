@@ -5,7 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Cauchy
+
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of complete separated uniform spaces.

@@ -5,8 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Nilpotent.Lemmas
+
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

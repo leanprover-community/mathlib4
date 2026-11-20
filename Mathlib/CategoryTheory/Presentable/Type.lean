@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Types.Set
 
 import Mathlib.CategoryTheory.Generator.Type
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 /-!
 # Presentable objects in Type

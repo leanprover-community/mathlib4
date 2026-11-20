@@ -7,7 +7,9 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Set.PowersetCard
-public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+
+import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
 /-! # Combinations
 

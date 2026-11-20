@@ -5,11 +5,14 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.List.MinMax
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Tropicalization of finitary operations

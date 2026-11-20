@@ -5,7 +5,9 @@ Authors: Yaël Dillies, Stefano Rocca
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Defs
+
+import Mathlib.MeasureTheory.Group.Action
 
 /-!
 # Følner sequences and filters - definitions and properties

@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Homology.ShortComplex.Ab
 
 /-!
 # The Serre class of finite abelian groups

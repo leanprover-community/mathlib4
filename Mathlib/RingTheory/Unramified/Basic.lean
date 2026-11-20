@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Ring.Shrink
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
+import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 

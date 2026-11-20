@@ -5,10 +5,13 @@ Authors: Kenny Lau, Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.GroupTheory.Index
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.GroupTheory.OrderOfElement
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,11 +5,13 @@ Authors: Mantas Bakšys, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Rearrangement
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Order.Monotone.Monovary
 public import Mathlib.Tactic.Positivity
 
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Monovary
+import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 

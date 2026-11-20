@@ -5,7 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Order.Zorn
+public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Order.Zorn
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

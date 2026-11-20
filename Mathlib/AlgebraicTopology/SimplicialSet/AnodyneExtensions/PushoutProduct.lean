@@ -7,12 +7,13 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
-public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
 import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
 import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!

@@ -5,11 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
-public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.Ring.Real
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
+import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
 import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
 
 set_option doc.verso true

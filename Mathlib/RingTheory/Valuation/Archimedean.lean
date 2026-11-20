@@ -6,7 +6,10 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.GroupTheory.ArchimedeanDensely
-public import Mathlib.RingTheory.Valuation.ValuationRing
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+public import Mathlib.RingTheory.Valuation.Integers
+
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Ring of integers under a given valuation in a multiplicatively archimedean codomain

@@ -5,9 +5,12 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Double factorials

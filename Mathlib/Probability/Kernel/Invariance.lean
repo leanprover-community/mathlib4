@@ -5,7 +5,9 @@ Authors: Kexing Ying, Matteo Cipollina
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.Composition.Comp
+
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Invariance of measures along a kernel

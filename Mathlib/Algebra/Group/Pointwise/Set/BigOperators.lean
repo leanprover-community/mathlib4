@@ -5,9 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Data.Fintype.Card
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

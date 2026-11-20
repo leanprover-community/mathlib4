@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Lie ideals, invariant root submodules, and simple Lie algebras

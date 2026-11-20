@@ -5,8 +5,10 @@ Authors: Sam van Gool, Jake Levinson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.CategoryTheory.Sites.EpiMono
 
 /-!
 # Locally surjective maps of presheaves.

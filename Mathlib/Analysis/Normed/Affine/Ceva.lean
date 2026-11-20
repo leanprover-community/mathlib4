@@ -5,8 +5,12 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.Normed.Affine.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.Ceva
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
+import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.LinearAlgebra.AffineSpace.Ceva
 
 /-!
 # Ceva's theorem.

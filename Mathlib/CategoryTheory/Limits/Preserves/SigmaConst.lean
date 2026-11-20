@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
+
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # `sigmaConst.obj` preserves colimits

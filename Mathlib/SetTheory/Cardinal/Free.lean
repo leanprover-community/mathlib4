@@ -5,10 +5,11 @@ Authors: Eric Wieser, Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.RingTheory.FreeCommRing
 
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.ZMod.Defs

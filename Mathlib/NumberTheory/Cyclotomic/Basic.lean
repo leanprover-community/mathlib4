@@ -6,7 +6,9 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.FieldTheory.Galois.Abelian
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic extensions

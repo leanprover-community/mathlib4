@@ -5,9 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Order.Filter.AtTopBot.Defs
 
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Tactic.LinearCombination

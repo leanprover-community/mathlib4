@@ -5,12 +5,14 @@ Authors: Blake Farman
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
-public import Mathlib.CategoryTheory.ObjectProperty.Subobject
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 import Mathlib.Algebra.Homology.ShortComplex.Pullback
 import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.ObjectProperty.Subobject
 
 /-!
 # Orthogonals are closed under extensions, and Dickson's theorem

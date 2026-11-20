@@ -5,9 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 import Mathlib.Analysis.Analytic.Within
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Faa di Bruno formula

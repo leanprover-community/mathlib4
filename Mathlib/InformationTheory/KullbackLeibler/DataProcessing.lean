@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 public import Mathlib.Probability.Notation
 
 import Mathlib.Analysis.Convex.Approximation
@@ -14,6 +14,7 @@ import Mathlib.Analysis.Convex.Deriv
 import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Data processing inequality for the Kullback-Leibler divergence

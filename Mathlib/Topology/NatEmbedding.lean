@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Infinite Hausdorff topological spaces

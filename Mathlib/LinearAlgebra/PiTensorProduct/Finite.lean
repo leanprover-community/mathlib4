@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.LinearAlgebra.PiTensorProduct.Generators
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # A multiple tensor product of finitely generated modules is finitely generated

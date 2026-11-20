@@ -5,9 +5,12 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 
 /-!
 # Derivatives of Schwartz functions

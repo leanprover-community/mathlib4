@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
+public import Mathlib.CategoryTheory.Shift.Localization
+
+import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 
 /-!
 # Compatibility with shifts of the comparison morphism for the composition of right derived functors

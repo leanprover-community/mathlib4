@@ -6,11 +6,14 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Under.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.TensorProduct.Pi
+
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # Limits in `Under R` for a commutative ring `R`

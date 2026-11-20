@@ -6,7 +6,9 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.IsNormal
-public import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Topology.Order.IsLUB
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

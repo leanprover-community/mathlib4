@@ -6,8 +6,10 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Order.Monoid.Submonoid
-public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
+
+import Mathlib.Algebra.Order.Ring.InjSurj
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

@@ -5,12 +5,13 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 
 import Mathlib.Algebra.Category.Ring.FinitePresentation
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 /-!

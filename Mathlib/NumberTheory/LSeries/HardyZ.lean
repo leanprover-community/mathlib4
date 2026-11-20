@@ -5,7 +5,9 @@ Authors: Thomas Lince
 -/
 module
 
-public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+
+import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 
 /-!
 # Hardy's Z function

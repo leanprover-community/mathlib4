@@ -6,12 +6,13 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
-public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
-public import Mathlib.Data.Fin.Tuple.Sort
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
+import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
 import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
+import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 
 /-! # Spectral theory of self-adjoint operators

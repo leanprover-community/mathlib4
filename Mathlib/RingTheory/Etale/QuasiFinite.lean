@@ -5,10 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
-public import Mathlib.RingTheory.ZariskisMainTheorem
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.QuasiFinite.Basic
 
 import Mathlib.RingTheory.Ideal.Quotient.Over
+import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
+import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
 # Etale local structure of finite maps

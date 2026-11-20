@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Separation.Regular
+
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Left and right limits

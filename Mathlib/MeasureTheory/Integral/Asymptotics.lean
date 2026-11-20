@@ -5,7 +5,10 @@ Authors: Lawrence Wu
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Bounding of integrals by asymptotics

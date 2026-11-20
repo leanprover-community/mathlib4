@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Rat.Cast.Defs
+
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences

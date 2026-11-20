@@ -6,8 +6,10 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.Order.Hom.Basic
-public import Mathlib.Data.Fintype.Order
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+import Mathlib.Data.Fintype.Order
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!

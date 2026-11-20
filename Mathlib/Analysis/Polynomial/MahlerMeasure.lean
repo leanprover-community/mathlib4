@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.Norm
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Convex.Integral
+import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 /-!
 # Mahler measure of complex polynomials

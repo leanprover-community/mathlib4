@@ -5,8 +5,11 @@ Authors: Joanna Choules
 -/
 module
 
-public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+
+import Mathlib.CategoryTheory.CofilteredSystem
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,8 +6,10 @@ Authors: Eric Wieser
 
 module
 
-public import Mathlib.Data.Fin.Init
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Logic.Function.Basic
+
+import Mathlib.Data.Fin.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

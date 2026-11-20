@@ -5,7 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Monoid.Defs
+
+import Mathlib.Topology.Algebra.Monoid
 
 /-! # Approximate units
 

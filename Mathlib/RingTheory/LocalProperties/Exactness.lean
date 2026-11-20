@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
+import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.Localization.Algebra
 
 /-!

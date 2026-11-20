@@ -5,8 +5,10 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
-public import Mathlib.NumberTheory.ZetaValues
+
+import Mathlib.NumberTheory.ZetaValues
 
 /-!
 # Special values of Hurwitz and Riemann zeta functions

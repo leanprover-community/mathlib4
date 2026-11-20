@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Abelian.Basic
 
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!

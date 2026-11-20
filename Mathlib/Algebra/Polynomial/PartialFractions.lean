@@ -5,9 +5,13 @@ Authors: Kevin Buzzard, Sidharth Hariharan, Aaron Liu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.RingTheory.Coprime.Basic
+
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Partial fractions

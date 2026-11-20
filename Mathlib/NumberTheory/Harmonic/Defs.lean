@@ -5,8 +5,10 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Rat.Defs
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 This file defines the harmonic numbers.

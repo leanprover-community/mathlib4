@@ -5,10 +5,11 @@ Authors: Andreas Swerdlow
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Sesquilinear maps

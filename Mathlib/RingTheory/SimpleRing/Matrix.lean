@@ -5,7 +5,10 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Ideal
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.RingTheory.SimpleRing.Defs
+
+import Mathlib.LinearAlgebra.Matrix.Ideal
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

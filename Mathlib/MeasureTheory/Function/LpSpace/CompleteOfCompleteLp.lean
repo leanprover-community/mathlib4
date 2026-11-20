@@ -5,7 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,7 +6,9 @@ Authors: Martin Winter
 module
 
 public import Mathlib.Geometry.Convex.Cone.Dual
-public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Duals of finitely generated cones

@@ -5,10 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.Map
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Basic.Countable.Defs
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

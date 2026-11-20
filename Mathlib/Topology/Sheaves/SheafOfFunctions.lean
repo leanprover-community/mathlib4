@@ -6,7 +6,9 @@ Authors: Johan Commelin, Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
-public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+public import Mathlib.Topology.Sheaves.Sheaf
+
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.

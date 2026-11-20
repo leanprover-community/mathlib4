@@ -5,7 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Unramified.Locus
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # The meta properties of unramified ring homomorphisms.

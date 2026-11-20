@@ -6,7 +6,9 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Support
-public import Mathlib.Data.ENat.Monoid
+public import Mathlib.Data.ENat.Basic
+
+import Mathlib.Data.ENat.Monoid
 
 /-!
 # Trailing degree of univariate polynomials

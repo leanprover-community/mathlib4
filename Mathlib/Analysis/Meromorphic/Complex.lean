@@ -6,7 +6,9 @@ Authors: Miyahara Kō
 module
 
 public import Mathlib.Analysis.Meromorphic.NormalForm
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+
+import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

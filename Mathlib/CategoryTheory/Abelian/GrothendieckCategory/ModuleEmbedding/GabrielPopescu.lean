@@ -5,12 +5,14 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 

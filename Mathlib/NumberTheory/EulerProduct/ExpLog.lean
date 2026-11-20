@@ -5,10 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.NumberTheory.EulerProduct.Basic
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!

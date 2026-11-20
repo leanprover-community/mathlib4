@@ -5,8 +5,10 @@ Authors: Rémy Degenne, David Ledvinka
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Topology.EMetricSpace.Defs
+
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 /-!
 # Pair Reduction

@@ -5,7 +5,9 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Analysis.Convex.Basic
+
+import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Convex cones

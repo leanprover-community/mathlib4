@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.Localization.Integral
 
+import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!

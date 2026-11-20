@@ -15,6 +15,8 @@ public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Positivity.Core
 
+import Mathlib.Data.Int.Cast.Lemmas
+
 /-!
 ## `positivity` core extensions
 

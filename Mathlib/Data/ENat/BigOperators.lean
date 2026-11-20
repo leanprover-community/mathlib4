@@ -5,11 +5,12 @@ Authors: Joachim Breitner, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.WithTop
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

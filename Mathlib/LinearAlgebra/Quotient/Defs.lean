@@ -8,7 +8,9 @@ module
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.Logic.Small.Defs
+
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Quotients by submodules

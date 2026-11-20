@@ -6,9 +6,11 @@ Authors: Dagur Asgeirsson, Jack McKoen, Christian Merten, Joël Riou, Adam Topaz
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monad.Comonadicity
-public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+
+import Mathlib.RingTheory.Flat.CategoryTheory
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Ideal
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Order.WellQuasiOrder
+
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Semigroup ideals in a canonically ordered and well-quasi-ordered monoid

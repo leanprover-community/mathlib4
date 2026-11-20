@@ -5,11 +5,12 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
+public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
 
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 
 /-!
 # Characters of representations

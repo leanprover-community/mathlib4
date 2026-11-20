@@ -6,7 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.BoxIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
+
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # McShane integrability vs Bochner integrability

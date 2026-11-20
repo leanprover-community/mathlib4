@@ -5,10 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 import Mathlib.Data.Set.Lattice.Disjoint
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Order connected components of a set

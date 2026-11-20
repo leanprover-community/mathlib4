@@ -6,8 +6,11 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Order.Filter.AtTopBot.Floor
-public import Mathlib.Topology.Algebra.Order.Group
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Order.Filter.AtTopBot.Floor
+import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`

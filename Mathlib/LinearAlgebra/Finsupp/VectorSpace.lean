@@ -5,12 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Projection
+
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`

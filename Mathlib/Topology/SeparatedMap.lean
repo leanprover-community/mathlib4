@@ -5,7 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.Connected.Basic
+
+import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Separated maps and locally injective maps out of a topological space.

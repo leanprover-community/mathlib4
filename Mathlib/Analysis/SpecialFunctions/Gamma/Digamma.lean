@@ -5,8 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Complex
+public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+
+import Mathlib.Analysis.Meromorphic.Complex
 
 
 /-!

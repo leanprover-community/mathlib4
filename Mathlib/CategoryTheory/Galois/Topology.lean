@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.Group.ContinuousInv
+public import Mathlib.Topology.Algebra.MulAction
+
+import Mathlib.Topology.Algebra.Group.ContinuousInv
 
 /-!
 # Topology of fundamental group

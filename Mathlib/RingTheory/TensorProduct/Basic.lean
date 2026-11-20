@@ -5,9 +5,11 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
-public import Mathlib.RingTheory.Adjoin.Basic
+
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras

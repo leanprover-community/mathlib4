@@ -5,12 +5,13 @@ Authors: Joël Riou, Yun Liu, Christian Merten, Robin Carlier, Lyne Moser, Nima 
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Weighted limits preserve limits on the weight variable

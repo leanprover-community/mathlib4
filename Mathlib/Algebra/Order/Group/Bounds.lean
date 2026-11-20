@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Bounds.Defs
 
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Order.Bounds.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

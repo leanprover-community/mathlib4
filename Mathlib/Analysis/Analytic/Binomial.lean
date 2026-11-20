@@ -6,11 +6,13 @@ Authors: Vasilii Nesterov, Andrew Yang
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.RingTheory.Binomial
 
 import Mathlib.Analysis.Complex.OperatorNorm
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!

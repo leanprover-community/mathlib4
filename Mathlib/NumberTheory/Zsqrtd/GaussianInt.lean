@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Basic.Complex.Basic
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.NumberTheory.Zsqrtd.Basic
+
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Gaussian integers

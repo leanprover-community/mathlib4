@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Bounds.Defs
 
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,9 +6,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
+
+import Mathlib.Topology.Compactness.LocallyCompact
 
 /-!
 # Separation properties of topological spaces

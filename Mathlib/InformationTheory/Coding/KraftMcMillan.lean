@@ -5,12 +5,14 @@ Authors: Elazar Gershuni
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Card
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Data.Fintype.BigOperators
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

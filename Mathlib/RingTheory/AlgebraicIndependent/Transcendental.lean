@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
+
+import Mathlib.RingTheory.Algebraic.MvPolynomial
 
 /-!
 # Algebraic Independence

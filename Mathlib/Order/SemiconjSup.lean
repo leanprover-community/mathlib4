@@ -5,10 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Order.Bounds.OrderIso
 
 /-!

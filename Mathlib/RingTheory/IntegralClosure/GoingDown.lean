@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
+import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
 /-!

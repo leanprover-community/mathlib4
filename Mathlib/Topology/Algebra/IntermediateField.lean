@@ -6,7 +6,9 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+import Mathlib.Topology.Algebra.Field
 
 /-!
 # Continuous actions related to intermediate fields

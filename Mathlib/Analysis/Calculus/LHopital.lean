@@ -5,9 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms

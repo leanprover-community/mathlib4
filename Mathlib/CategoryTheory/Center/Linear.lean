@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Linear.Basic
+
+import Mathlib.CategoryTheory.Center.Preadditive
 
 /-!
 # Center of a linear category

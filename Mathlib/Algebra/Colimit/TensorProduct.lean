@@ -6,7 +6,9 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Colimit.Finiteness
-public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Map
+
+import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 
 /-!
 # Tensor product with direct limit of finitely generated submodules

@@ -5,11 +5,13 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.List.ToFinsupp
-public import Mathlib.LinearAlgebra.Pi
 
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # `Polynomial.ofFn` and `Polynomial.toFn`

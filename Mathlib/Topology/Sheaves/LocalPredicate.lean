@@ -5,8 +5,10 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafOfFunctions
+public import Mathlib.Topology.Sheaves.PresheafOfFunctions
 public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Topology.Sheaves.SheafOfFunctions
 
 /-!
 # Functions satisfying a local predicate form a sheaf.

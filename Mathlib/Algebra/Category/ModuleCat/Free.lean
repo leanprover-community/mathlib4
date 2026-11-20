@@ -6,7 +6,10 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Exact sequences with free modules

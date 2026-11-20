@@ -5,9 +5,11 @@ Authors: Jingting Wang
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.Zero
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

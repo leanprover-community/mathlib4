@@ -6,8 +6,11 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.GroupWithZero.Hom
+
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.GroupWithZero.Equiv
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

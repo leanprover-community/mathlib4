@@ -5,7 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.SetTheory.Ordinal.Basic
+
+import Mathlib.SetTheory.Ordinal.Family
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

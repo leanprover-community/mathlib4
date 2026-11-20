@@ -6,11 +6,13 @@ Authors: Bhavik Mehta, Arend Mellendijk, Jeremy Tan
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Radical.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # The radical in `ℕ` and `ℤ`

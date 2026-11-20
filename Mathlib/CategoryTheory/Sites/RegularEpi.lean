@@ -5,11 +5,13 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.LeftExact
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.Functor.RegularEpi
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
+import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 # The category of type-valued sheaves is a regular epi category

@@ -7,8 +7,9 @@ Authors: Jonas van der Schaaf, Anish Rajeev
 module
 
 public import Mathlib.ModelTheory.Types
-public import Mathlib.Topology.Baire.LocallyCompactRegular
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
+import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Connected.Separation
 
 /-!

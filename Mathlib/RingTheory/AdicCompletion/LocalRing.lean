@@ -5,8 +5,12 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRankOperations
-public import Mathlib.RingTheory.AdicCompletion.Completeness
+public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.AdicCompletion.Algebra
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+import Mathlib.Algebra.Module.SpanRankOperations
+import Mathlib.RingTheory.AdicCompletion.Completeness
 
 /-!
 # Basic Properties of Complete Local Ring

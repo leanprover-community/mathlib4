@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.MetricSpace.ProperSpace
 
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 import Mathlib.Topology.ShrinkingLemma
 
 /-!

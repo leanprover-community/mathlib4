@@ -5,11 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
-public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
+import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 

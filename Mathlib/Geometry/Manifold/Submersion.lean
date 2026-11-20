@@ -6,10 +6,11 @@ Authors: Michael Rothgang, Samantha Naranjo Guevara
 module
 
 public import Mathlib.Analysis.Normed.Module.Shrink
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Topology.Algebra.Module.TransferInstance
 

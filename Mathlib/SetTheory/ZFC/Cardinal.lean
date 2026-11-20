@@ -5,8 +5,10 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.SetTheory.ZFC.Basic
+
+import Mathlib.SetTheory.Cardinal.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

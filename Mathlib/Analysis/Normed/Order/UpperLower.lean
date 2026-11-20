@@ -5,12 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Topology.MetricSpace.Thickening
 
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
 

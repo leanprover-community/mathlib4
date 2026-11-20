@@ -6,8 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.ContinuousMap.Ordered
-public import Mathlib.Topology.UniformSpace.CompactConvergence
+
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Dini's Theorem
 

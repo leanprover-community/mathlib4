@@ -6,9 +6,10 @@ Authors: Markus Himmel, Timothy Carlin-Burns
 module
 
 public import Mathlib.Data.Set.Lattice.Disjoint
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.Logic.Small.Defs
 
 import Mathlib.Data.Set.Lattice.Bounded
+import Mathlib.Logic.Small.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

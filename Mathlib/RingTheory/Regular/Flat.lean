@@ -5,9 +5,12 @@ Authors: Yongle Hu, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Regular.RegularSequence
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change

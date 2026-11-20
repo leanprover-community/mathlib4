@@ -5,8 +5,10 @@ Authors: Zhouhang Zhou, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Order.Ring.WithTop
+
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

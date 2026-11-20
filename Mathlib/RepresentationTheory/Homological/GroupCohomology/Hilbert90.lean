@@ -5,8 +5,10 @@ Authors: Riccardo Brasca, Amelia Livingston
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 
 /-!
 # Hilbert's Theorem 90

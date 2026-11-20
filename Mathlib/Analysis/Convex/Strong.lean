@@ -5,7 +5,9 @@ Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
+
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Uniformly and strongly convex functions

@@ -5,8 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Finset.Card
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

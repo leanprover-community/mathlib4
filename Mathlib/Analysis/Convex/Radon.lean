@@ -6,8 +6,10 @@ Authors: Vasily Nesterov
 module
 
 public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

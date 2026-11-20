@@ -6,15 +6,17 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.SetTheory.Cardinal.NatCard
+public import Mathlib.SetTheory.Cardinal.Finite
 
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Definition and basic properties of Galois categories

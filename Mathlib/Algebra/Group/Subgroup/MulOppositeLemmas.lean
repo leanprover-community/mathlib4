@@ -5,9 +5,11 @@ Authors: Alex Kontorovich, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
+
+import Mathlib.Algebra.Group.Subgroup.Basic
 
 /-!
 # Mul-opposite subgroups

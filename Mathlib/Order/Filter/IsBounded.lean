@@ -5,11 +5,13 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.Filter.Cofinite
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`

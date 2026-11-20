@@ -5,7 +5,10 @@ Authors: Alex Zhao, Daniel Buth, Sebastian Meier, Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.NatInt
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.RingTheory.Ideal.NatInt
 
 /-!
 # Frobenius Number

@@ -6,9 +6,11 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.BigOperators
-public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.RingTheory.Noetherian.Basic
+
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.

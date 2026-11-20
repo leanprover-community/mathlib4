@@ -5,9 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Card
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
+
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Finsets and multisets form a graded order

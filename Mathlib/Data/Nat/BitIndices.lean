@@ -5,12 +5,13 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Data.List.Sort
 
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Bit Indices

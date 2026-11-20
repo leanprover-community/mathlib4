@@ -5,10 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Data.Set.Card.Arithmetic
-public import Mathlib.Topology.Separation.Connected
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Connected.Clopen
 
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Cardinality of connected components under open and closed maps

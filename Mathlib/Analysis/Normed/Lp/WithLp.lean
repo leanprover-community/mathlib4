@@ -5,8 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Basic.ENNReal.Basic
-public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # The `WithLp` type synonym
 

@@ -5,11 +5,13 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Semisimple
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Symmetric
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+import Mathlib.Analysis.InnerProductSpace.Semisimple
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Pi
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 

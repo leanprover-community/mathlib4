@@ -5,9 +5,11 @@ Authors: Brendan Murphy
 -/
 module
 
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

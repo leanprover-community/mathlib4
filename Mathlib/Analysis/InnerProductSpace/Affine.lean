@@ -5,8 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Normed affine spaces over an inner product space

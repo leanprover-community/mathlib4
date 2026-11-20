@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.Action.Regular
+public import Mathlib.Dynamics.Ergodic.Action.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+import Mathlib.Dynamics.Ergodic.Action.Regular
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 set_option doc.verso true

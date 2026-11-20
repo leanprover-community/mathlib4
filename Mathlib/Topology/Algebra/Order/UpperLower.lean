@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.UpperLower
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.ConstMulAction
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Topological facts about upper/lower/order-connected sets

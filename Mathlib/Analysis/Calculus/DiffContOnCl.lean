@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Functions differentiable on a domain and continuous on its closure

@@ -9,9 +9,12 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic Independence

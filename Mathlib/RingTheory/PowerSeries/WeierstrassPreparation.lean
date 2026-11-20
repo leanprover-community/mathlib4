@@ -5,12 +5,14 @@ Authors: Jz Pan
 -/
 module
 
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Trunc
 
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # Weierstrass preparation theorem for power series over a complete local ring

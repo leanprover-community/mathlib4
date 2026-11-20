@@ -6,12 +6,16 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.Monotone
 
 set_option doc.verso true

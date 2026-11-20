@@ -5,7 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Cauchy
+
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Hofer's lemma

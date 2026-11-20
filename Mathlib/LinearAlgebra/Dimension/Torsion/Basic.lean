@@ -6,7 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Rank and torsion

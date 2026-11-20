@@ -5,7 +5,10 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+
+import Mathlib.Data.Nat.Cast.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

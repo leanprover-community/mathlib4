@@ -5,9 +5,12 @@ Authors: Vlad Tsyrklevich
 -/
 module
 
-public import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+public import Mathlib.GroupTheory.Subgroup.Centralizer
+
+import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # Center and centralizers of free groups

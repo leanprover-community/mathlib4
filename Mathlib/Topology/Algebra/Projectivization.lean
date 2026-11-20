@@ -6,7 +6,9 @@ Authors: Zayn Blore
 module
 
 public import Mathlib.LinearAlgebra.Projectivization.Basic
-public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.ConstMulAction
+
+import Mathlib.Topology.Algebra.MulAction
 
 /-!
 # The quotient topology on projective space

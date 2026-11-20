@@ -6,10 +6,11 @@ Authors: Chris Hughes, Floris Van Doorn
 module
 
 public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Data.Rat.Encodable
+public import Mathlib.Data.Rat.Init
 public import Mathlib.SetTheory.Cardinal.Basic
 
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Data.Rat.Encodable
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

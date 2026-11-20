@@ -5,13 +5,14 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 

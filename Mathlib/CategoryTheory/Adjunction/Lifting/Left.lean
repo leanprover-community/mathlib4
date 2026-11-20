@@ -5,8 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Adjunction
-public import Mathlib.CategoryTheory.Monad.Coequalizer
+
+import Mathlib.CategoryTheory.Monad.Coequalizer
 
 /-!
 # Adjoint lifting

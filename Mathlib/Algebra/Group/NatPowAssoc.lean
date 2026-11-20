@@ -5,9 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Cast.Basic
+
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures

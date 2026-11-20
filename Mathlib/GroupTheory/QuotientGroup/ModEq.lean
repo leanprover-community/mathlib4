@@ -8,7 +8,9 @@ module
 
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.Coset.Defs
+
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

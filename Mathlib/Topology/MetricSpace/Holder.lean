@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.NNReal
+public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.Convex.NNReal
 
 /-!
 # Hölder continuous functions

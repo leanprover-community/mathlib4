@@ -5,11 +5,15 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Hom.Basic
 
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids

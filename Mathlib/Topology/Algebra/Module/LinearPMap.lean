@@ -6,7 +6,9 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Basic
+
+import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-!
 # Partially defined linear operators over topological vector spaces

@@ -5,8 +5,10 @@ Authors: Bo Cowgill
 -/
 module
 
-public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.Factors
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Data.Nat.PrimeFin
 
 /-!
 # Greatest prime factor of a natural number

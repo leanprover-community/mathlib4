@@ -5,9 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Order.Nat
 
 set_option doc.verso true

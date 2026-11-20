@@ -5,8 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.NumberTheory.Divisors
+
+import Mathlib.Data.Nat.Factorization.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

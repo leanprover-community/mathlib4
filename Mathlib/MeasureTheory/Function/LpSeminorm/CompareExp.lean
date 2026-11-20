@@ -5,9 +5,11 @@ Authors: Rémy Degenne, Eric Wieser
 -/
 module
 
+public import Mathlib.Basic.Real.ConjExponents
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
-public import Mathlib.MeasureTheory.Integral.MeanInequalities
+
+import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Compare Lp seminorms for different values of `p`

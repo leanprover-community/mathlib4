@@ -6,8 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
+public import Mathlib.CategoryTheory.RestrictedYoneda
 public import Mathlib.Order.NonemptyFiniteChains
+
+import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 
 /-!
 # The subdivision functors

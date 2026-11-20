@@ -5,10 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 import Mathlib.FieldTheory.Galois.IsGaloisGroup
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 /-!
 # CM-extension of number fields

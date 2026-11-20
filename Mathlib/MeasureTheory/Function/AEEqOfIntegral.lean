@@ -5,11 +5,12 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Continuous
-public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.Order.Filter.Ring
 
+import Mathlib.Analysis.InnerProductSpace.Continuous
+import Mathlib.Analysis.Normed.Module.HahnBanach
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 

@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Analysis.Convex.Deriv
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.Convex.Piecewise
 
 /-!

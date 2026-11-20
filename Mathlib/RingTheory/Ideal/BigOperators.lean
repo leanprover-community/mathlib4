@@ -5,8 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.RingTheory.Ideal.Defs
+
+import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Big operators for ideals

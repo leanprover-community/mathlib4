@@ -5,9 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+
+import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Kan extensions

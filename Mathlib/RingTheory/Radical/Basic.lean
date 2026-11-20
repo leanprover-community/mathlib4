@@ -5,9 +5,11 @@ Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Squarefree.Basic
+
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Radical of an element of a unique factorization normalization monoid

@@ -5,12 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Polynomial.IsIntegral
+import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 
 /-!

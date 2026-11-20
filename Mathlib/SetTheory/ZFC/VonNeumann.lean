@@ -5,8 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.ZFC.Ordinal
+
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Von Neumann hierarchy

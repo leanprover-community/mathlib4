@@ -5,7 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Orzech property of rings

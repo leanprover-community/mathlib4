@@ -5,9 +5,10 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!

@@ -5,7 +5,10 @@ Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Nat.Choose.Basic
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Stirling Numbers

@@ -5,7 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Lattice
+
+import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 ### Order instances on quotients

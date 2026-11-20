@@ -5,9 +5,10 @@ Authors: Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.Ideal.Height
 
 import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.Localization.Away.Lemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 
