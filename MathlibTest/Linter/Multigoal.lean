@@ -211,28 +211,28 @@ Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 #guard_msgs in
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     finish
     finish
 
 -- `focus` is ignored.
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     focus finish
     focus finish
 
 -- `next` is ignored.
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     next => finish
     finish
 
 -- Exclude `skip` from linting.
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     skip
     · finish
     · finish
@@ -252,7 +252,7 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
       constructor
       trivial
       trivial
-    cases #01c5
+    cases #0bbf
 
 -- excluded tactics
 
@@ -263,23 +263,23 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    first (cases #484a) (cases #01c5)
-    first (cases #484a) (cases #01c5)
-    first (cases #484a) (cases #01c5)
+    first (cases #4a1c) (cases #0bbf)
+    first (cases #4a1c) (cases #0bbf)
+    first (cases #4a1c) (cases #0bbf)
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     repeat finish
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     all_goals finish
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
-    cases #484a
+    cases #4a1c
     any_goals finish
 
 end grind_interactive

@@ -37,8 +37,7 @@ def riemannZetaSummandHom (hs : s ≠ 0) : ℕ →*₀ ℂ where
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simpa only [Nat.cast_mul, ofReal_natCast]
-      using mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _
+    simpa only [Nat.cast_mul] using natCast_mul_cpow m n _
 
 /-- When `χ` is a Dirichlet character and `s ≠ 0`, the map `n ↦ χ n * n^(-s)` is completely
 multiplicative and vanishes at zero. -/
@@ -48,10 +47,7 @@ def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0)
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simp_rw [← ofReal_natCast]
-    simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, ofReal_mul,
-      mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _]
-      using mul_mul_mul_comm ..
+    simpa only [Nat.cast_mul, map_mul, natCast_mul_cpow] using mul_mul_mul_comm ..
 
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
@@ -210,7 +206,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 
 section LogDirichlet
 
-open Real hiding log exp_nat_mul exp_add
+open Real hiding log exp_natCast_mul exp_add
 open ArithmeticFunction Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
@@ -232,7 +228,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       refine tsum_congr fun p ↦ tsum_congr fun k ↦ ?_
       have : Complex.log p ≠ 0 := mod_cast p.prop.log_ne_zero
       simp [mul_pow, ← cpow_nat_mul, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
-        vonMangoldt_apply_prime p.2, field]
+        vonMangoldt_apply_prime p.property, field]
     _ = ∑' n : {n : ℕ // IsPrimePow n}, f n := by
       rw [← tsum_primes_pow_eq]
       · exact tsum_congr fun p ↦ tsum_congr fun k ↦ (by unfold f; simp; ring)

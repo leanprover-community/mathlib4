@@ -251,13 +251,13 @@ noncomputable def transfiniteCompositionOfShapeMapFromBot [OrderBot J] [SuccOrde
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
   isoBot := Iso.refl _
   incl :=
-    { app k := (functor hG A₀ J).map (homOfLE k.2)
+    { app k := (functor hG A₀ J).map (homOfLE k.property)
       naturality k k' h := by simp [MonoOver.forget] }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
   map_mem k hk := by
     dsimp [MonoOver.forget]
     convert pushouts_ofLE_le_largerSubobject hG
-      (supTransfiniteIterate (largerSubobject hG) k.1 A₀) using 2
+      (supTransfiniteIterate (largerSubobject hG) k.val A₀) using 2
     all_goals
       rw [Set.Iic.succ_eq_of_not_isMax hk,
         supTransfiniteIterate_succ_of_not_isMax _ _ (Set.not_isMax_coe _ hk)]
