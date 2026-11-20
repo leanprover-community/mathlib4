@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Justus Springer, Anouk Brose
 -/
 module
 
-public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.LinearAlgebra.StdBasis
 
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Analysis.Convex.Combination
@@ -50,11 +50,24 @@ theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
 theorem parallelepiped_of_isEmpty [IsEmpty ι] (v : ι → E) : parallelepiped K v = {0} := by
   simp [parallelepiped]
 
+/-- For linearly independent `v`, a linear combination of `v` lies in the parallelepiped spanned
+by `v` if and only if all its coefficients lie in `[0, 1]`. -/
+theorem LinearIndependent.sum_smul_mem_parallelepiped_iff {v : ι → E}
+    (hv : LinearIndependent K v) {t : ι → K} :
+    ∑ i, t i • v i ∈ parallelepiped K v ↔ t ∈ Icc 0 1 := by
+  refine ⟨fun h ↦ ?_, fun ht ↦ ⟨t, ht, rfl⟩⟩
+  obtain ⟨t', ht', hsum⟩ := (mem_parallelepiped_iff v _).mp h
+  exact funext (Fintype.linearIndependent_iffₛ.mp hv _ _ hsum) ▸ ht'
+
 theorem parallelepiped_basis_eq (b : Basis ι K E) :
     parallelepiped K b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
   rw [parallelepiped, ← funext b.equivFun_symm_apply, LinearEquiv.image_symm_eq_preimage]
   ext
   simp [Pi.le_def, forall_and]
+
+theorem parallelepiped_basisFun : parallelepiped K (Pi.basisFun K ι) = Icc 0 1 := by
+  ext
+  simp [parallelepiped_basis_eq, Pi.le_def, forall_and]
 
 theorem image_parallelepiped (f : E →ₗ[K] F) (v : ι → E) :
     f '' parallelepiped K v = parallelepiped K (f ∘ v) := by
@@ -112,6 +125,12 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → K) :
     simp [Pi.single_apply]
   simp_rw [parallelepiped, h, ← pi_univ_Icc, piMap_image_univ_pi, ← pi_univ_uIcc, Pi.zero_apply,
     Pi.one_apply, ← uIcc_of_le zero_le_one, image_mul_const_uIcc, zero_mul, one_mul]
+
+theorem parallelepiped_subset_hull (v : ι → E) :
+    parallelepiped K v ⊆ (PointedCone.hull K (range v) : Set E) := by
+  rintro _ ⟨t, ht, rfl⟩
+  exact Submodule.sum_mem _ fun i _ ↦
+    Submodule.smul_mem _ (⟨t i, ht.1 i⟩ : {c : K // 0 ≤ c}) (PointedCone.subset_hull ⟨i, rfl⟩)
 
 end parallelepiped
 
