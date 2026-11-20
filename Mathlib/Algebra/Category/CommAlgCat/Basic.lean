@@ -213,7 +213,7 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   inverse.obj A := ↧A
   inverse.map {A B} f := CommAlgCat.ofHom <| CommRingCat.toAlgHom f
   unitIso := NatIso.ofComponents fun A ↦
-    CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
+    CommAlgCat.isoMk (.ofCommutes (.refl A) fun _ ↦ rfl)
   counitIso := .refl _
 
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
