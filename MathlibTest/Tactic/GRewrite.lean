@@ -579,7 +579,7 @@ section badGCongrLemma
 def myId : Nat → Nat := id
 
 /-
-This lemma has a type class that can't be syntesized.
+This lemma has a type class that can't be synthesized.
 This test shows that the lemma can still be used by `grw`,
 leaving extra goals in the tactic state.
 -/
