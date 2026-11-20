@@ -126,7 +126,7 @@ theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
 @[simp]
 theorem count_top : count p (⊤ : FactorSet α) = 0 := by
   rw [count]
-  split_ifs <;> rfl
+  split_ifs <;> simp [bcount]
 
 theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dite_eq_right hp
 
