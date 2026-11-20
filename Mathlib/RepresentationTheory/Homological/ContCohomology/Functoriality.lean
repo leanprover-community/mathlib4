@@ -168,7 +168,7 @@ lemma _root_.TopRep.resolutionXRes_naturality (φ : H →ₜ* G) (f : X ⟶ X') 
   | succ i ih =>
     rw [resolutionXRes_succ, resolutionXRes_succ, resolutionMap_succ, resolutionMap_succ]
     ext F x
-    exact congr($(ih).hom (F (φ x)))
+    congrm($(ih).hom (F (φ x)))
 
 /-- The cochain map from the restriction along `φ : H →ₜ* G` of the shifted standard resolution
 of `X` to the shifted standard resolution of `res φ X`, with levels `resolutionXRes X φ`. -/
@@ -176,19 +176,16 @@ abbrev resolution'Res (φ : H →ₜ* G) :
     ((resFunctor (φ : H →* G)).mapHomologicalComplex (.up ℕ)).obj (resolution' X)
     ⟶ resolution' (res (φ : H →* G) X) where
   f n := resolutionXRes X φ (n + 1)
-  comm' := by
-    intro _ _ rfl
-    simp only [mapHomologicalComplex_obj_d, CochainComplex.of_d, resolution'd_eq]
-    exact resolutionXRes_comp_d φ _
+  comm' := by simp [resolution'd_eq, resolutionXRes_comp_d _]
 
 /-- The cochain maps `resolution'Res φ` as a natural transformation. -/
 def resolution'ResNatTrans (φ : H →ₜ* G) :
     resolution'Functor k G ⋙ (resFunctor ↑φ).mapHomologicalComplex (.up ℕ)
     ⟶ (resFunctor φ) ⋙ resolution'Functor k H where
   app X := resolution'Res φ
-  naturality X Y f := by
-    ext n : 1
-    exact resolutionXRes_naturality φ f (n + 1)
+  naturality X Y f := HomologicalComplex.hom_ext _ _ fun i ↦ by
+    rw [Functor.comp_map, HomologicalComplex.comp_f, Functor.mapHomologicalComplex_map_f,
+      resolutionXRes_naturality]; simp
 
 lemma resolution'ResNatTrans_app_f (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
     ((resolution'ResNatTrans φ).app X).f n = resolutionXRes X φ (n + 1) := rfl
