@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Tactic.Field
 public import Mathlib.Topology.Algebra.Order.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behaviour at infinity of polynomial and rational functions
 
