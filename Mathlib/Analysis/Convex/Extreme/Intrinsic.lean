@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.Intrinsic
+public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 
 /-!
 # Extreme subsets and intrinsic interiors
@@ -93,8 +94,8 @@ end Topological
 
 section FiniteDimensional
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {K F : Set E} {p : E}
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [ContinuousSMul ℝ E] [T2Space E] [FiniteDimensional ℝ E] {K F : Set E} {p : E}
 
 /-- In finite dimensions, a face `F` of `K` is equal to the intersection of `K` with the
 affine span of `F`. -/
@@ -114,22 +115,18 @@ theorem IsExtreme.affineSpan_lt (hF : IsExtreme ℝ K F) (hFc : Convex ℝ F) (h
   (affineSpan_mono ℝ hF.subset).lt_of_ne fun h ↦ hFK <| by
     rw [← hF.inter_affineSpan_eq hFc, h, inter_eq_left.mpr (subset_affineSpan ℝ K)]
 
-/-- In finite dimensions, the vector span of a nonempty proper face `F` of `K` has strictly
-smaller dimension than the vector span of `K`.
-
-Nonemptiness is needed: the empty face of a point has the same dimension. -/
-theorem IsExtreme.finrank_vectorSpan_lt (hF : IsExtreme ℝ K F) (hFc : Convex ℝ F)
-    (hFne : F.Nonempty) (hFK : F ≠ K) :
-    Module.finrank ℝ (vectorSpan ℝ F) < Module.finrank ℝ (vectorSpan ℝ K) := by
-  rw [← direction_affineSpan, ← direction_affineSpan]
-  exact Submodule.finrank_lt_finrank_of_lt <| direction_lt_of_nonempty
-    (hF.affineSpan_lt hFc hFK) ((affineSpan_nonempty ℝ).mpr hFne)
+/-- In finite dimensions, a proper face `F` of `K` has strictly smaller affine dimension
+than `K`. -/
+theorem IsExtreme.finDim_affineSpan_lt (hF : IsExtreme ℝ K F) (hFc : Convex ℝ F) (hFK : F ≠ K) :
+    (affineSpan ℝ F).finDim < (affineSpan ℝ K).finDim :=
+  finDim_strictMono (hF.affineSpan_lt hFc hFK)
 
 /-- In finite dimensions, a face of a closed set is closed. -/
 protected theorem IsExtreme.isClosed (hF : IsExtreme ℝ K F) (hFc : Convex ℝ F)
     (hK : IsClosed K) : IsClosed F := by
   rw [← hF.inter_affineSpan_eq hFc]
-  exact hK.inter (affineSpan ℝ F).isClosed_of_finiteDimensional
+  exact hK.inter ((affineSpan ℝ F).isClosed_direction_iff.mp
+    (affineSpan ℝ F).direction.isClosed_of_finiteDimensional)
 
 /-- In finite dimensions, every point `p` of a convex set `K` lies in the intrinsic interior of
 some face `F`. -/
@@ -139,7 +136,6 @@ theorem Convex.exists_isExtreme_mem_intrinsicInterior (hK : Convex ℝ K) (hpK :
   refine ⟨_, hF, (hK.isLeast_isExtreme_setOfPred_add_smul_sub_mem hpK).1.1,
     hF.mem_intrinsicInterior_iff.mpr ⟨⟨hpK, 1, one_pos, by simpa⟩,
       fun y ⟨hy, t, ht, hz⟩ ↦ ⟨t, ht, hz, t⁻¹, inv_pos.mpr ht, ?_⟩⟩⟩
-  -- The segment from `z = p + t • (p - y)` through `p` extends beyond `p` to `y`.
   simpa [smul_smul, ht.ne'] using hy
 
 /-- In finite dimensions, every point `p` of a convex set `K` lies in the intrinsic interior of a

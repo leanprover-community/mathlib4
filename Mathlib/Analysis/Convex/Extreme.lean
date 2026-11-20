@@ -333,7 +333,6 @@ theorem Convex.isLeast_isExtreme_setOfPred_add_smul_sub_mem (hA : Convex 𝕜 A)
 `x` extends beyond `x` inside `A` is convex. -/
 theorem Convex.convex_setOfPred_add_smul_sub_mem (hA : Convex 𝕜 A) (hx : x ∈ A) :
     Convex 𝕜 {y ∈ A | ∃ t : 𝕜, 0 < t ∧ x + t • (x - y) ∈ A} := by
-  -- A segment that extends beyond `x` by `t` also extends beyond `x` by any `s ∈ [0, t]`.
   have shrink {y : E} {t : 𝕜} (ht : 0 < t) (hz : x + t • (x - y) ∈ A) {s : 𝕜} (hs : 0 ≤ s)
       (hst : s ≤ t) : x + s • (x - y) ∈ A := by
     simpa [smul_smul, div_mul_cancel₀ _ ht.ne'] using

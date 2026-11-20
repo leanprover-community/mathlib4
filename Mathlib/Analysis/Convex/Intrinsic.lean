@@ -508,10 +508,9 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
-
-/-- The intrinsic interior of a nonempty convex set is nonempty. -/
-protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
+/-- Auxiliary lemma for `Set.Nonempty.intrinsicInterior`: the case of a normed space. -/
+private theorem intrinsicInterior_nonempty_of_normedSpace [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [FiniteDimensional ℝ V] {s : Set V} (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by
   have := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
@@ -523,6 +522,22 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
   exact hscv.affine_preimage
     ((_root_.affineSpan ℝ s).subtype.comp
       (AffineIsometryEquiv.constVSub ℝ p').symm.toAffineEquiv.toAffineMap)
+
+variable [AddCommGroup V] [Module ℝ V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [ContinuousSMul ℝ V] [T2Space V] [FiniteDimensional ℝ V] {s : Set V}
+
+/-- In a finite-dimensional Hausdorff real topological vector space, the intrinsic interior of a
+nonempty convex set is nonempty. -/
+protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
+    (intrinsicInterior ℝ s).Nonempty := by
+  let e : V ≃L[ℝ] (Fin (Module.finrank ℝ V) → ℝ) :=
+    ContinuousLinearEquiv.ofFinrankEq (Module.finrank_fin_fun (R := ℝ)).symm
+  let φ : V ≃ᴬ[ℝ] (Fin (Module.finrank ℝ V) → ℝ) :=
+    ⟨e.toLinearEquiv.toAffineEquiv, e.continuous, e.symm.continuous⟩
+  have h : (intrinsicInterior ℝ (φ '' s)).Nonempty :=
+    intrinsicInterior_nonempty_of_normedSpace (hscv.linear_image e.toLinearMap) (hsne.image φ)
+  rw [φ.intrinsicInterior_image] at h
+  exact h.of_image
 
 theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
     (intrinsicInterior ℝ s).Nonempty ↔ s.Nonempty :=
@@ -538,7 +553,6 @@ theorem Convex.mem_intrinsicInterior_iff (hs : Convex ℝ s) {p : V} :
   rintro ⟨hp, h⟩
   obtain ⟨q, hq⟩ := Set.Nonempty.intrinsicInterior hs ⟨p, hp⟩
   obtain ⟨t, ht, hz⟩ := h q (intrinsicInterior_subset hq)
-  -- `p` lies strictly between `q` and the point `p + t • (p - q)` of `s`.
   refine hs.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior hq
     (subset_intrinsicClosure hz) ((mem_openSegment_translate ℝ (-p)).mp
       (mem_openSegment_iff_div.mpr ⟨t, 1, ht, one_pos, ?_⟩))
