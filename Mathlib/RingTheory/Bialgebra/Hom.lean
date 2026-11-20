@@ -117,7 +117,7 @@ instance funLike : FunLike (A →ₐc[R] B) A B where
   coe_injective f g h := by
     rcases f with ⟨_, _⟩
     rcases g with ⟨_, _⟩
-    simp_all
+    simp_all [CoalgHom.toLinearMap_eq_ofClass]
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_add := fun f => f.map_add'
@@ -170,7 +170,7 @@ def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
   __ := f
   map_zero' := f.map_zero
   commutes' := by
-    simp [Algebra.algebraMap_eq_smul_one, toCoalgHom_apply]
+    simp [Algebra.algebraMap_eq_smul_one]
 
 instance : Coe (A →ₐc[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
 
@@ -226,8 +226,8 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
 equalities. -/
 protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₐc[R] B :=
   { toCoalgHom := (f : A →ₗc[R] B).copy f' h
-    map_one' := by simp_all
-    map_mul' := by intros; simp_all }
+    map_one' := by simp_all [CoalgHom.toLinearMap_eq_ofClass]
+    map_mul' := by intros; simp_all [CoalgHom.toLinearMap_eq_ofClass] }
 
 @[simp]
 theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
