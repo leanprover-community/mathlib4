@@ -5,7 +5,6 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Perm.Support.Finset.Basic
 
@@ -35,14 +34,12 @@ In the following, `f g : Equiv.Perm α`.
 * `Equiv.Perm.fixed_point_ncard_lt_of_ne_one`: for finite `α`, a permutation `f ≠ 1` has
   strictly fewer than `Nat.card α - 1` fixed points.
 * `Equiv.Perm.card_supportFinset_eq_ncard_support`: `#f.supportFinset = f.support.ncard`.
-* `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
-  strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
-  (Equivalently, `f.supportFinset` has at least 2 elements.)
+
+See `Mathlib/GroupTheory/Perm/Support/Finset/Card.lean` for the cardinality of
+`Equiv.Perm.supportFinset`.
 -/
 
 public section
-
-open Finset
 
 namespace Equiv.Perm
 
@@ -104,6 +101,12 @@ theorem encard_support_extend_domain {β : Type*} {p : β → Prop} [DecidablePr
     (e : α ≃ Subtype p) : Set.encard (g.extendDomain e).support = Set.encard g.support := by
   rw [support_extend_domain, (Subtype.val_injective.comp e.injective).encard_image]
 
+theorem fixed_point_encard_add_two_le_of_ne_one (h : f ≠ 1) :
+    Set.encard {x | f x = x} + 2 ≤ ENat.card α := by
+  have hc : {x | f x = x} = f.supportᶜ := by ext; simp [mem_support]
+  rw [hc, add_comm, ← Set.encard_add_encard_compl f.support]
+  exact add_le_add_left (two_le_encard_support_of_ne_one h) _
+
 section Finitary
 
 theorem encard_support_swap_mul [DecidableEq α] {x : α} (hf : f.support.Finite := by toFinite_tac)
@@ -114,12 +117,6 @@ theorem encard_support_swap_mul [DecidableEq α] {x : α} (hf : f.support.Finite
     ⟨h, fun h => absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩
 
 end Finitary
-
-theorem fixed_point_encard_add_two_le_of_ne_one (h : f ≠ 1) :
-    Set.encard {x | f x = x} + 2 ≤ ENat.card α := by
-  have hc : {x | f x = x} = f.supportᶜ := by ext; simp [mem_support]
-  rw [hc, add_comm, ← Set.encard_add_encard_compl f.support]
-  exact add_le_add_left (two_le_encard_support_of_ne_one h) _
 
 end Encard
 
@@ -145,6 +142,18 @@ theorem ncard_support_extend_domain {β : Type*} {p : β → Prop} [DecidablePre
   rw [support_extend_domain,
     Set.ncard_image_of_injective _ (Subtype.val_injective.comp e.injective)]
 
+theorem fixed_point_ncard_add_two_le_of_ne_one [Finite α] (h : f ≠ 1) :
+    Set.ncard {x | f x = x} + 2 ≤ Nat.card α := by
+  have := fixed_point_encard_add_two_le_of_ne_one h
+  rw [← (Set.toFinite _).cast_ncard_eq, ← Set.encard_univ, ← (Set.toFinite _).cast_ncard_eq,
+    Set.ncard_univ] at this
+  exact_mod_cast this
+
+theorem fixed_point_ncard_lt_of_ne_one [Finite α] (h : f ≠ 1) :
+    Set.ncard {x | f x = x} < Nat.card α - 1 := by
+  have := fixed_point_ncard_add_two_le_of_ne_one h
+  omega
+
 section Finitary
 
 theorem ncard_support_eq_zero (hf : f.support.Finite := by toFinite_tac) :
@@ -166,11 +175,11 @@ theorem one_lt_ncard_support_iff (hf : f.support.Finite := by toFinite_tac) :
 
 theorem two_le_ncard_support_iff (hf : f.support.Finite := by toFinite_tac) :
     2 ≤ Set.ncard f.support ↔ f ≠ 1 :=
-  one_lt_ncard_support_iff hf
+  Nat.add_one_le_iff.trans (one_lt_ncard_support_iff hf)
 
 theorem two_le_ncard_support_of_ne_one (h : f ≠ 1) (hf : f.support.Finite := by toFinite_tac) :
     2 ≤ Set.ncard f.support :=
-  one_lt_ncard_support_of_ne_one h hf
+  (two_le_ncard_support_iff hf).mpr h
 
 theorem ncard_support_swap_mul [DecidableEq α] {x : α} (hx : f x ≠ x)
     (hf : f.support.Finite := by toFinite_tac) :
@@ -196,102 +205,15 @@ theorem ncard_support_prod_list_of_pairwise_disjoint {l : List (Perm α)}
 
 end Finitary
 
-theorem fixed_point_ncard_lt_of_ne_one [Finite α] (h : f ≠ 1) :
-    Set.ncard {x | f x = x} < Nat.card α - 1 := by
-  have := fixed_point_encard_add_two_le_of_ne_one h
-  rw [← (Set.toFinite _).cast_ncard_eq, ← Set.encard_univ, ← (Set.toFinite _).cast_ncard_eq,
-    Set.ncard_univ] at this
-  norm_cast at this
-  omega
-
 end NCard
 
-section Card
+section Finset
 
 variable [DecidableEq α] [Fintype α]
-
-theorem card_supportFinset_eq_ncard_support (f : Perm α) :
+open _root_.Finset in theorem card_supportFinset_eq_ncard_support (f : Perm α) :
     #f.supportFinset = f.support.ncard := (Set.ncard_coe_finset _).symm.trans <|
       congrArg _ f.coe_supportFinset_eq_support
 
-attribute [local simp] card_supportFinset_eq_ncard_support
-theorem card_supportFinset_eq_zero {f : Perm α} : #f.supportFinset = 0 ↔ f = 1 := by
-  rw [card_supportFinset_eq_ncard_support]; exact ncard_support_eq_zero
-
-@[deprecated (since := "2026-11-16")] alias card_support_eq_zero := card_supportFinset_eq_zero
-
-theorem one_lt_card_supportFinset_of_ne_one {f : Perm α} (h : f ≠ 1) : 1 < #f.supportFinset := by
-  rw [card_supportFinset_eq_ncard_support]; exact one_lt_ncard_support_of_ne_one h
-
-@[deprecated (since := "2026-11-16")] alias one_lt_card_support_of_ne_one :=
-    one_lt_card_supportFinset_of_ne_one
-
-theorem card_supportFinset_ne_one (f : Perm α) : #f.supportFinset ≠ 1 := by
-  rw [card_supportFinset_eq_ncard_support]; exact ncard_support_ne_one f
-
-@[deprecated (since := "2026-11-16")] alias card_support_ne_one := card_supportFinset_ne_one
-
-@[simp]
-theorem card_supportFinset_le_one {f : Perm α} : #f.supportFinset ≤ 1 ↔ f = 1 := by
-  rw [card_supportFinset_eq_ncard_support]; exact ncard_support_le_one
-
-@[deprecated (since := "2026-11-16")] alias card_support_le_one := card_supportFinset_le_one
-
-theorem two_le_card_supportFinset_of_ne_one {f : Perm α} (h : f ≠ 1) : 2 ≤ #f.supportFinset :=
-  one_lt_card_supportFinset_of_ne_one h
-
-@[deprecated (since := "2026-11-16")] alias two_le_card_support_of_ne_one :=
-  two_le_card_supportFinset_of_ne_one
-
-theorem card_supportFinset_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
-    #(swap x (f x) * f).supportFinset < #f.supportFinset := by
-  simp_rw [card_supportFinset_eq_ncard_support]; exact ncard_support_swap_mul hx
-
-@[deprecated (since := "2026-11-16")] alias card_support_swap_mul := card_supportFinset_swap_mul
-
-theorem card_supportFinset_swap {x y : α} (hxy : x ≠ y) : #(swap x y).supportFinset = 2 := by
-  rw [card_supportFinset_eq_ncard_support]; exact ncard_support_swap hxy
-
-@[deprecated (since := "2026-11-16")] alias card_support_swap := card_supportFinset_swap
-
-@[simp]
-theorem card_supportFinset_eq_two {f : Perm α} : #f.supportFinset = 2 ↔ IsSwap f := by
-  rw [card_supportFinset_eq_ncard_support]; exact ncard_support_eq_two
-
-@[deprecated (since := "2026-11-16")] alias card_support_eq_two := card_supportFinset_eq_two
-
-theorem Disjoint.card_supportFinset_mul (h : f.Disjoint g) :
-    #(f * g).supportFinset = #f.supportFinset + #g.supportFinset := by
-  simp_rw [card_supportFinset_eq_ncard_support]; exact h.ncard_support_mul
-
-@[deprecated (since := "2026-11-16")] alias Disjoint.card_support_mul :=
-    Disjoint.card_supportFinset_mul
-
-theorem card_supportFinset_prod_list_of_pairwise_disjoint {l : List (Perm α)}
-    (h : l.Pairwise Perm.Disjoint) :
-    #l.prod.supportFinset = (l.map (card ∘ supportFinset)).sum := by
-  simp_rw [card_supportFinset_eq_ncard_support, ncard_support_prod_list_of_pairwise_disjoint h]
-  exact congrArg _ <| l.map_congr_left (by simp)
-
-@[deprecated (since := "2026-11-16")] alias card_support_prod_list_of_pairwise_disjoint :=
-    card_supportFinset_prod_list_of_pairwise_disjoint
-
-theorem card_supportFinset_extend_domain {β} [DecidableEq β] [Fintype β] {p : β → Prop}
-    [DecidablePred p] (f : α ≃ Subtype p) {g : Perm α} :
-    #(g.extendDomain f).supportFinset = #g.supportFinset := by simp
-
-@[deprecated (since := "2026-11-16")] alias card_support_extend_domain :=
-    card_supportFinset_extend_domain
-
-theorem card_supportFinset_conj : #(f * g * f⁻¹).supportFinset = #g.supportFinset := by simp
-
-@[deprecated (since := "2026-11-16")] alias card_support_conj := card_supportFinset_conj
-
-theorem fixed_point_card_lt_of_ne_one {σ : Perm α} (h : σ ≠ 1) :
-    #{x | σ x = x} < Fintype.card α - 1 := by
-  rw [Nat.lt_sub_iff_add_lt, ← Nat.lt_sub_iff_add_lt', ← Finset.card_compl, Finset.compl_filter]
-  exact one_lt_card_supportFinset_of_ne_one h
-
-end Card
+end Finset
 
 end Equiv.Perm

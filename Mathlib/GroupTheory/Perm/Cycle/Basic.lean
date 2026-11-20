@@ -10,7 +10,7 @@ public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.Perm.Finite
 public import Mathlib.GroupTheory.Perm.List
 public import Mathlib.GroupTheory.Perm.Sign
-public import Mathlib.GroupTheory.Perm.Support.Card
+public import Mathlib.GroupTheory.Perm.Support.Finset.Card
 
 /-!
 # Cycles of a permutation

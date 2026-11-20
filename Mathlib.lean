@@ -5097,6 +5097,7 @@ public import Mathlib.GroupTheory.Perm.Support.Basic
 public import Mathlib.GroupTheory.Perm.Support.Card
 public import Mathlib.GroupTheory.Perm.Support.Disjoint
 public import Mathlib.GroupTheory.Perm.Support.Finset.Basic
+public import Mathlib.GroupTheory.Perm.Support.Finset.Card
 public import Mathlib.GroupTheory.Perm.Support.NoncommProd
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Presentation

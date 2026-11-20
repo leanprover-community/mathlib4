@@ -71,8 +71,7 @@ theorem supportFinset_inv (σ : Perm α) : supportFinset σ⁻¹ = σ.supportFin
 theorem apply_mem_supportFinset {x : α} : f x ∈ f.supportFinset ↔ x ∈ f.supportFinset := by simp
 
 @[simp]
-theorem supportFinset_eq_empty_iff : f.supportFinset = ∅ ↔ f = 1 :=
-  coe_inj.symm.trans <| by simp
+theorem supportFinset_eq_empty_iff : f.supportFinset = ∅ ↔ f = 1 := coe_inj.symm.trans <| by simp
 
 @[simp]
 theorem supportFinset_nonempty_iff : f.supportFinset.Nonempty ↔ f ≠ 1 := by
@@ -80,6 +79,9 @@ theorem supportFinset_nonempty_iff : f.supportFinset.Nonempty ↔ f ≠ 1 := by
 
 theorem supportFinset_ne_singleton {x} : f.supportFinset ≠ {x} := by
   simpa [← coe_inj] using support_ne_singleton
+
+theorem supportFinset_eq_pair_iff {x y : α} : f.supportFinset = {x, y} ↔ x ≠ y ∧ f x = y ∧
+    f y = x ∧ (∀ {z}, z ≠ x → z ≠ y → f z = z) := by simp [← coe_inj, support_eq_pair_iff]
 
 theorem exists_pair_mem_supportFinset_ne (hf : f ≠ 1) :
     ∃ x ∈ f.supportFinset, ∃ y ∈ f.supportFinset, x ≠ y := by
