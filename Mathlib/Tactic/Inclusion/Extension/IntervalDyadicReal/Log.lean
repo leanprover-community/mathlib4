@@ -312,7 +312,8 @@ def logPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
 theorem logPoint_mem (x : Dyadic) (prec : ℕ) : Real.log x ∈ logPoint x prec := by
   rw [mem_iff_mem_map, logPoint]
   split_ifs with hx
-  · rcases hx with rfl | rfl | rfl <;> simp [Interval.map, Interval.singleton]
+  · convert Interval.mem_map_singleton (0 : Dyadic) ((↑) : Dyadic → ℝ)
+    rcases hx with rfl | rfl | rfl <;> simp
   · obtain ⟨hl, hu⟩ := lowerLog_spec x prec
     exact Interval.mem_map_Icc _ hl (by simpa using hu)
 
@@ -340,8 +341,9 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) :
   -- if the lower endpoint `l` of `I.abs` is nonzero, then it is positive
   have hpos {l : Dyadic} {u : WithTop Dyadic} (hI : I.abs = ⟨l, u⟩) (hl : l ≠ 0) :
       0 < (l : ℝ) := by
-    have hl₀ : 0 ≤ l := by simpa [hI] using I.abs_lb_nonneg
-    simpa using lt_of_le_of_ne hl₀ hl.symm
+    have := I.abs_lb_nonneg
+    simp only [hI, WithBot.coe_nonneg] at this
+    simpa using lt_of_le_of_ne this (Ne.symm hl)
   fun_cases log with
   | case1 hI =>
     rw [hI] at hx
