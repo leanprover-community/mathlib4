@@ -328,8 +328,8 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
-  toFun := Function.uncurry Fin.mkDivMod
-  invFun := Function.prod Fin.divNat Fin.modNat
+  toFun p := p.1.mkDivMod p.2
+  invFun k := (k.divNat, k.modNat)
   left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
   right_inv := Fin.mkDivMod_divNat_modNat
 
@@ -338,8 +338,8 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
 This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divModEquiv`. -/
 @[simps]
 def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
-  toFun := Function.uncurry (Nat.mkDivMod · ·)
-  invFun := Function.prod (· / n) (Fin.ofNat n)
+  toFun p := p.1.mkDivMod p.2
+  invFun k := (k / n, Fin.ofNat n k)
   left_inv _ := Prod.ext (Nat.div_mkDivMod _ _) (Nat.cast_mkDivMod _ _)
   right_inv k := Nat.mkDivMod_div_cast k
 
