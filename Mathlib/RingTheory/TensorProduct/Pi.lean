@@ -53,7 +53,7 @@ variable [Fintype ι] [DecidableEq ι]
 
 /-- Tensor product of rings commutes with finite products on the right. -/
 def piRight : A ⊗[R] (∀ i, B i) ≃ₐ[S] ∀ i, A ⊗[R] B i :=
-  AlgEquiv.ofLinearEquiv (_root_.TensorProduct.piRight R S A B) (by simp) (by simp)
+  AlgEquiv.ofLinearEquiv (_root_.TensorProduct.piRight R S A B) (by simp)
 
 @[simp]
 lemma piRight_tmul (x : A) (f : ∀ i, B i) :
@@ -81,7 +81,6 @@ variable (B C : Type*) [Semiring B] [Semiring C] [Algebra R B] [Algebra R C]
 /-- Tensor product of rings commutes with binary products on the right. -/
 nonrec def prodRight : A ⊗[R] (B × C) ≃ₐ[S] A ⊗[R] B × A ⊗[R] C :=
   AlgEquiv.ofLinearEquiv (TensorProduct.prodRight R S A B C)
-    (by simp [Algebra.TensorProduct.one_def])
     (LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp))
 
 lemma prodRight_tmul (a : A) (x : B × C) : prodRight R S A B C (a ⊗ₜ x) = (a ⊗ₜ x.1, a ⊗ₜ x.2) :=

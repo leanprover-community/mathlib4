@@ -225,7 +225,7 @@ lemma map_id : map LieHom.id I = I := by
 lemma map_equiv_eq_comap_symm : map e.toLieHom I = comap e.symm.toLieHom I := by
   apply le_antisymm
   · simp [map_le, Set.subset_def]
-  simp_rw [IsConcreteLE.le_iff, mem_comap, LieEquiv.coe_coe]
+  simp_rw [le_iff_mem_imp_mem, mem_comap, LieEquiv.coe_coe]
   intro x hx
   simpa using mem_map (f := e.toLieHom) hx
 

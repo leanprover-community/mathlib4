@@ -47,6 +47,7 @@ private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
     simp [go]
   | succ fuel ih =>
     rw [go]
+    dsimp only
     split_ifs with h
     case pos =>
       grind
@@ -114,6 +115,7 @@ private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
   | zero => simpa [go]
   | succ fuel ih =>
     rw [go]
+    dsimp only
     split_ifs with h
     case pos =>
       rcases eq_or_ne guess 0 with rfl | hguess

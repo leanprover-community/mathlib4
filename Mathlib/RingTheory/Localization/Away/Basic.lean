@@ -253,11 +253,12 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
-noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
-  ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
+noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ where
+  __ := map Aₚ Bₚ f.toRingHom a
+  commutes' r := by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    simp⟩
+    simp
 
 @[simp]
 lemma mapₐ_apply (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] (x : Aₚ) :

@@ -575,15 +575,15 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro y (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro x (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro w (by simp [*])))
     · apply Nat.le_add_right
   · have : Nonneg ⟨_, _⟩ :=
@@ -592,7 +592,7 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rwa [add_def]
   · exact nonneg_add_lem ha hb
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def]  at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro _ h))
     · apply Nat.le_add_right
   · dsimp
