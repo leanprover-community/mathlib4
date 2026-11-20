@@ -370,12 +370,12 @@ theorem coe_smul (x : 𝓞 K) (y : 𝓞 L) : ((x • y : 𝓞 L) : L) = x • (y
   algebraMap.coe_smul x y L
 
 instance {G : Type*} [Group G] [MulSemiringAction G L] [SMulCommClass G K L] :
-    SMulCommClass G (𝓞 K) L :=
-  ⟨fun g x y ↦ by simp [← algebraMap_smul K, smul_comm]⟩
+    SMulCommClass G (𝓞 K) L where
+  smul_comm _ _ _ := by simp [← algebraMap_smul K, smul_comm]
 
 instance {G : Type*} [Group G] [MulSemiringAction G L] [SMulCommClass G K L] :
-    SMulCommClass G (𝓞 K) (𝓞 L) :=
-  ⟨fun _ _ _ ↦ by simp [RingOfIntegers.ext_iff, smul_comm]⟩
+    SMulCommClass G (𝓞 K) (𝓞 L) where
+  smul_comm _ _ _ := by simp [RingOfIntegers.ext_iff, smul_comm]
 
 instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
   IsIntegralClosure.tower_top (R := ℤ)
