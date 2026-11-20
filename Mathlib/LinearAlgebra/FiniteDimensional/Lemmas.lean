@@ -217,7 +217,7 @@ theorem finrank_range_add_finrank_range [StrongRankCondition R] [Module.Finite R
   have hex : Exact (range f).subtype g.rangeRestrict :=
     LinearMap.exact_iff.2 (by rw [ker_rangeRestrict, range_subtype, hfg.linearMap_ker_eq])
   obtain ⟨l, hl⟩ := g.rangeRestrict.exists_rightInverse_of_surjective g.range_rangeRestrict
-  let e := (hex.splitSurjectiveEquiv (range f).injective_subtype ⟨l, hl⟩).1
+  let e := (hex.splitSurjectiveEquiv (range f).injective_subtype ⟨l, hl⟩).val
   have : Module.Finite R (range f) :=
     .of_surjective (fst R _ _ ∘ₗ e.toLinearMap) (Prod.fst_surjective.comp e.surjective)
   rw [e.finrank_eq, Module.finrank_prod]
@@ -230,7 +230,7 @@ noncomputable def linearEquivQuotientRangeProdKer [Module.Projective R (ker j)]
     LinearMap.exact_iff.2 (by rw [ker_rangeRestrict, range_subtype])
   have : Module.Projective R (range h) := .of_equiv (LinearEquiv.ofEq _ _ hhj.linearMap_ker_eq)
   have hs := h.rangeRestrict.exists_rightInverse_of_surjective h.range_rangeRestrict
-  (hex.splitSurjectiveEquiv (ker h).injective_subtype ⟨hs.choose, hs.choose_spec⟩).1 ≪≫ₗ
+  (hex.splitSurjectiveEquiv (ker h).injective_subtype ⟨hs.choose, hs.choose_spec⟩).val ≪≫ₗ
     (LinearEquiv.ofEq _ _ hgh.linearMap_ker_eq ≪≫ₗ g.quotKerEquivRange.symm ≪≫ₗ
       Submodule.quotEquivOfEq _ _ hfg.linearMap_ker_eq).prodCongr
     (LinearEquiv.ofEq _ _ hhj.linearMap_ker_eq.symm)
