@@ -29,12 +29,12 @@ noncomputable instance : SupSet (ι →₀ M) where
         contrapose hi
         have : (· i) '' S = {0} := Set.eq_singleton_iff_nonempty_unique_mem.2 ⟨h.2.image _, by
           rintro _ ⟨f, hf, rfl⟩
-          exact le_zero_iff.1 <| (h.1.some_mem hf i).trans_eq (by simpa using hi)⟩
+          exact nonpos_iff_eq_zero.1 <| (h.1.some_mem hf i).trans_eq (by simpa using hi)⟩
         rw [this, csSup_singleton]
     else 0
 
 lemma sSup_apply {S : Set (ι →₀ M)} (hS : BddAbove S) (hS₀ : S.Nonempty) (i : ι) :
-    sSup S i = ⨆ f : S, f.1 i := by simp [sSup, sSup_image', *]
+    sSup S i = ⨆ f : S, f.val i := by simp [sSup, sSup_image', *]
 
 lemma iSup_apply {κ : Type*} [Nonempty κ] {f : κ → ι →₀ M} (hf : BddAbove (.range f)) (i : ι) :
     (⨆ j, f j) i = ⨆ j, f j i := by
@@ -44,11 +44,11 @@ noncomputable instance : ConditionallyCompleteLattice (ι →₀ M) := by
   refine conditionallyCompleteLatticeOfLatticeOfsSup _ fun S hS hS₀ ↦
     ⟨fun f hf i ↦ ?_, fun g hg i ↦ ?_⟩
   · rw [sSup_apply hS hS₀]
-    refine le_ciSup (f := fun f : S ↦ f.1 i) ?_ ⟨f, hf⟩
+    refine le_ciSup (f := fun f : S ↦ f.val i) ?_ ⟨f, hf⟩
     simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS
   · rw [sSup_apply hS hS₀]
     have := hS₀.to_subtype
-    exact ciSup_le (hg ·.2 i)
+    exact ciSup_le (hg ·.property i)
 
 end Finsupp
 
@@ -59,16 +59,17 @@ variable {ι : Type*} {M : ι → Type*} [∀ i, Zero (M i)] [∀ i, Conditional
 open scoped Classical in
 noncomputable instance : SupSet (Π₀ i, M i) where
   sSup S := if h : BddAbove S ∧ S.Nonempty then
-      mk h.1.some.support fun i ↦ sSup ((· i.1) '' S)
+      mk h.1.some.support fun i ↦ sSup ((· i.val) '' S)
     else 0
 
 lemma sSup_apply {S : Set (Π₀ i, M i)} (hS : BddAbove S) (hS₀ : S.Nonempty) (i : ι) :
-    sSup S i = ⨆ f : S, f.1 i := by
+    sSup S i = ⨆ f : S, f.val i := by
   classical
   simp only [sSup, hS, hS₀, and_self, ↓reduceDIte, mk_apply]
   split_ifs with hi
   · rw [sSup_image']
-  · have hf (f : S) : f.1 i = 0 := le_zero_iff.1 <| (hS.some_mem f.2 i).trans_eq (by simpa using hi)
+  · have hf (f : S) : f.val i = 0 :=
+      nonpos_iff_eq_zero.1 <| (hS.some_mem f.property i).trans_eq (by simpa using hi)
     simp [hf, hS₀.to_subtype]
 
 lemma iSup_apply {κ : Type*} [Nonempty κ] {f : κ → Π₀ i, M i} (hf : BddAbove (.range f)) (i : ι) :
@@ -79,10 +80,10 @@ noncomputable instance : ConditionallyCompleteLattice (Π₀ i, M i) := by
   refine conditionallyCompleteLatticeOfLatticeOfsSup _ fun S hS hS₀ ↦
     ⟨fun f hf i ↦ ?_, fun g hg i ↦ ?_⟩
   · rw [sSup_apply hS hS₀]
-    refine le_ciSup (f := fun f : S ↦ f.1 i) ?_ ⟨f, hf⟩
+    refine le_ciSup (f := fun f : S ↦ f.val i) ?_ ⟨f, hf⟩
     simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS
   · rw [sSup_apply hS hS₀]
     have := hS₀.to_subtype
-    exact ciSup_le fun f ↦ hg f.2 i
+    exact ciSup_le fun f ↦ hg f.property i
 
 end DFinsupp
