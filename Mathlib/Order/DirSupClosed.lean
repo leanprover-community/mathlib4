@@ -346,6 +346,17 @@ theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
 theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
   (dirSupClosed_singleton a).dirSupClosedOn
 
+theorem Set.Finite.dirSupClosed {s : Set α} (h : s.Finite) : DirSupClosed s := by
+  rw [← s.iUnion_of_singleton_coe]
+  have := h.to_subtype
+  exact .iUnion (dirSupClosed_singleton ·.val)
+
+theorem Set.Finite.dirSupClosedOn (hD : IsLowerSet D) {s : Set α} (h : s.Finite) :
+    DirSupClosedOn D s := by
+  rw [← s.iUnion_of_singleton_coe]
+  have := h.to_subtype
+  exact .iUnion hD (dirSupClosedOn_singleton ·.val)
+
 end PartialOrder
 
 section LinearOrder
