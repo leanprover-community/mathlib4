@@ -209,7 +209,7 @@ lemma ObjectProperty.final_ι_iff_of_isFilteredOrEmpty
     obtain ⟨Y, hY, ⟨f⟩⟩ := h X
     exact ⟨⟨Y, hY⟩, ⟨f⟩⟩
 
-lemma ObjectProperty.initial_ι_iff_of_isCofiltered
+lemma ObjectProperty.initial_ι_iff_of_isCofilteredOrEmpty
     (P : ObjectProperty C) [IsCofilteredOrEmpty C] :
     P.ι.Initial ↔ ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (Y ⟶ X) := by
   rw [← P.final_ι_op_iff, final_ι_iff_of_isFiltered]
