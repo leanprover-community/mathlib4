@@ -211,7 +211,7 @@ theorem A_submatrix_revPerm :
   lia
 
 /-- Swapping the two short arms `n-2` and `n-1` is a symmetry of `Dₙ`. -/
-theorem D_submatrix_swap (hn : 2 ≤ n) :
+theorem D_submatrix_swap (hn : n ≠ 0) :
     (D n).submatrix (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩)
       (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩) = D n := by
   ext i j
@@ -747,7 +747,7 @@ protected lemma reindex (e : ι ≃ κ) : (M.reindex e e).IsFiniteCartan :=
   hM.submatrix e.symm.injective
 
 omit hM in
-@[simp] lemma submatrix_equiv_iff (σ : κ ≃ ι) :
+@[simp] lemma submatrix_equiv_iff {σ : κ ≃ ι} :
     (M.submatrix σ σ).IsFiniteCartan ↔ M.IsFiniteCartan := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.submatrix σ.injective⟩
   simpa using h.submatrix σ.symm.injective
