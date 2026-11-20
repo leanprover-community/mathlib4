@@ -370,8 +370,8 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 
 -- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
@@ -381,8 +381,8 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) :
   rfl
 
 @[simp]
-theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
+theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : A →⋆ₐ[R] B) = f := by
   ext
   rfl
 
@@ -1069,13 +1069,10 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Promote a bijective star algebra homomorphism to a star algebra equivalence. -/
-noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B :=
-  {
-    RingEquiv.ofBijective f
-      (hf : Function.Bijective (f : A → B)) with
-    toFun := f
-    map_star' := map_star f
-    map_smul' := map_smul f }
+noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B where
+  toRingEquiv := .ofBijective f hf
+  map_star' := map_star f
+  map_smul' := map_smul f
 
 @[simp]
 theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
@@ -1084,6 +1081,10 @@ theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
 
 theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarAlgEquiv.ofBijective f hf) a = f a :=
+  rfl
+
+@[simp]
+lemma toRingEquiv_ofBijective (f : F) (hf) : (ofBijective f hf).toRingEquiv = .ofBijective f hf :=
   rfl
 
 end Bijective

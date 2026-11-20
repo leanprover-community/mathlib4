@@ -12,7 +12,6 @@ import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Idempotents in rings
 
 The predicate `IsIdempotentElem` is defined for general monoids in
@@ -314,7 +313,8 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     simp at hn
   rcases n with - | n
   · simpa using he.complete
-  obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
+  obtain ⟨e', h₁, h₂⟩ :=
+    OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.toOrthogonalIdempotents he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
   have (i : _) : f (e' i) = e i := congr($h₂ i)
@@ -413,7 +413,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.
 lemma CompleteOrthogonalIdempotents.prod_one_sub
     (he : CompleteOrthogonalIdempotents e) :
     ∏ i, (1 - e i) = 0 := by
-  rw [he.1.prod_one_sub, he.complete, sub_self]
+  rw [he.toOrthogonalIdempotents.prod_one_sub, he.complete, sub_self]
 
 lemma CompleteOrthogonalIdempotents.of_prod_one_sub
     (he : OrthogonalIdempotents e) (he' : ∏ i, (1 - e i) = 0) :
@@ -425,7 +425,7 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   classical
-  refine ⟨?_, he.1.surjective_pi⟩
+  refine ⟨?_, he.toOrthogonalIdempotents.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
   simp only [funext_iff, RingHom.pi_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
@@ -490,18 +490,20 @@ lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
   choose e' he' using hef
   choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by
+        simp [he', (he.toOrthogonalIdempotents.idem i).eq]))
   refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
   · rintro (_|i) (_|j) h
     · simp at h
     · dsimp; linear_combination - he₀.eq * e' j
     · dsimp; linear_combination - he₀.eq * e' i
     · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+        (hfe₀.le (show f (e' i * e' j) = 0 by
+          simp [he', he.toOrthogonalIdempotents.ortho (by simpa using h)]))
       dsimp
       rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
   · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.complete))
     simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
       sub_eq_iff_eq_add.mp hk]
     linear_combination - he₀.eq * k
@@ -571,8 +573,8 @@ instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corne
   __ : NonUnitalSemiring idem.Corner :=
     inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
-  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
-  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
+  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).1
+  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
@@ -596,15 +598,15 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
     (he : CompleteOrthogonalIdempotents e) (hc : ∀ i, IsMulCentral (e i)) :
     R ≃+* Π i, (he.idem i).Corner where
   toFun r i := ⟨_, r, rfl⟩
-  invFun r := ∑ i, (r i).1
+  invFun r := ∑ i, (r i).val
   left_inv r := by
     simp_rw [((hc _).comm _).eq, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
   right_inv r := funext fun i ↦ Subtype.ext <| by
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_eq_single i _ (by simp at ·)]
-    · have ⟨r', eq⟩ := (r i).2
+    · have ⟨r', eq⟩ := (r i).property
       rw [← eq]; simp_rw [← mul_assoc, (he.idem i).eq, mul_assoc, (he.idem i).eq]
-    · intro j _ ne; have ⟨r', eq⟩ := (r j).2
+    · intro j _ ne; have ⟨r', eq⟩ := (r j).property
       rw [← eq]; simp_rw [← mul_assoc, he.ortho ne.symm, zero_mul]
   map_mul' r₁ r₂ := funext fun i ↦ Subtype.ext <|
     calc e i * (r₁ * r₂) * e i

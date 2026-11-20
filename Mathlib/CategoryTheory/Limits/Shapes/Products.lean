@@ -472,13 +472,27 @@ def Fan.isLimitMapConeEquiv (F : C ⥤ D) {ι : Type*} (X : ι → C) (c : Fan X
 end Comparison
 
 variable (C) in
-/-- An abbreviation for `Π J, HasLimitsOfShape (Discrete J) C` -/
-@[to_dual /-- An abbreviation for `Π J, HasColimitsOfShape (Discrete J) C` -/]
-abbrev HasProducts :=
-  ∀ J : Type w, HasLimitsOfShape (Discrete J) C
+/-- A category has products if it has limits of shape `Discrete J` for all `J : Type w`. -/
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
+class HasProducts where
+  hasLimitsOfShape_discrete (J : Type w) : HasLimitsOfShape (Discrete J) C := by
+    infer_instance
+
+variable (C) in
+/-- A category has coproducts if it has colimits of shape `Discrete J` for all `J : Type w`. -/
+-- See Note [universe output parameters and typeclass caching].
+@[to_dual, univ_out_params, pp_with_univ]
+class HasCoproducts where
+  hasColimitsOfShape_discrete (J : Type w) : HasColimitsOfShape (Discrete J) C := by
+    infer_instance
+
+attribute [instance] HasProducts.hasLimitsOfShape_discrete HasCoproducts.hasColimitsOfShape_discrete
+
+@[to_dual] instance [HasLimitsOfSize.{w, w} C] : HasProducts.{w} C where
 
 @[to_dual]
-lemma hasProducts_shrink [HasProducts.{max w w'} C] : HasProducts.{w} C := fun J =>
+lemma hasProducts_shrink [HasProducts.{max w w'} C] : HasProducts.{w} C := .mk fun J =>
   hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w'} J) ≌ _)
 
 @[to_dual]
@@ -488,7 +502,7 @@ theorem has_smallest_products_of_hasProducts [HasProducts.{w} C] : HasProducts.{
 @[to_dual hasCoproducts_of_colimit_cofans]
 theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
     (lf_isLimit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
-  fun _ : Type w =>
+  .mk fun _ : Type w =>
   { has_limit := fun F =>
       HasLimit.mk
         ⟨(Cone.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),

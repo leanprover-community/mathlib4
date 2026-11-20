@@ -23,7 +23,6 @@ This file defines the following operations on multisets:
   occurrences of `a` in `s` and `t`.
 * `s - t`: The multiset for which the number of occurrences of each `a` is the difference of the
   occurrences of `a` in `s` and `t`.
-
 -/
 
 @[expose] public section

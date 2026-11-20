@@ -34,7 +34,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `⌈a⌉` is `Int.ceil a`.
 
 The index `₊` in the notations for `Nat.floor` and `Nat.ceil` is used in analogy to the notation
-for `nnnorm`.
+for `nnNorm`.
 
 ## TODO
 
@@ -219,18 +219,18 @@ private noncomputable def floorAux
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
   let n := Classical.indefiniteDescription _ above
-  refine Int.greatestOfBdd (P := (· ≤ x)) n.1 (fun m hm ↦ ?_) below
+  refine Int.greatestOfBdd (P := (· ≤ x)) n.val (fun m hm ↦ ?_) below
   rw [← Int.cast_le (R := α)]
-  exact hm.trans n.2
+  exact hm.trans n.property
 
 /-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
 theorem exists_floor'
     {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] (x : α)
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
-  refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
+  refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).property.2 _⟩⟩
   rw [← Int.cast_le (R := α)]
-  exact le_trans' (floorAux below above).2.1
+  exact le_trans' (floorAux below above).property.1
 
 /-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
 bounded above by a natural number. -/

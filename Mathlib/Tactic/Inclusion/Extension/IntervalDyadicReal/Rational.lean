@@ -83,6 +83,7 @@ def natDiv (m d prec : ℕ) : Interval Dyadic :=
 theorem natDiv_eq_rat (m : ℕ) {d : ℕ} (prec : ℕ) (hd : 0 < d) :
     natDiv m d prec = rat (mkRat m d) prec := by
   rw [natDiv, rat]
+  dsimp only
   congr 2 <;>
     simp [Rat.toDyadic_mkRat, Dyadic.toRat_ofIntWithPrec_eq_mkRat, Rat.mkRat_eq_iff,
       Int.shiftLeft_eq, Nat.shiftLeft_eq, hd.ne']
@@ -92,6 +93,16 @@ theorem natDiv_mem (m : ℕ) {d : ℕ} (prec : ℕ) (hd : 0 < d) :
     (m : ℝ) / d ∈ natDiv m d prec := by
   rw [natDiv_eq_rat m prec hd]
   simpa [Rat.cast_mkRat_of_ne_zero, hd.ne'] using ratCast_mem (mkRat m d) prec
+
+/-- `m / d` rounded down to precision `prec` (the lower endpoint of `natDiv m d prec`). Unlike
+`(m / d : ℚ).toDyadic prec`, this does not normalise the fraction `m / d` and so avoids a
+potentially very expensive `Nat.gcd` computation. -/
+def natDivLower (m d prec : ℕ) : Dyadic :=
+  Dyadic.ofIntWithPrec ((m <<< prec / d : ℕ) : ℤ) prec
+
+theorem natDivLower_eq (m d prec : ℕ) : natDivLower m d prec = (m / d : ℚ).toDyadic prec := by
+  rw [natDivLower, ← Int.cast_natCast m, ← Rat.mkRat_eq_div, Rat.toDyadic_mkRat]
+  simp [Int.shiftLeft_eq, Nat.shiftLeft_eq]
 
 /-- Enclose a scientific literal in a dyadic interval with precision `prec`. -/
 def scientific (m : ℕ) (s : Bool) (e prec : ℕ) : Interval Dyadic :=

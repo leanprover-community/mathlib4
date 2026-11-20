@@ -28,7 +28,6 @@ the incenter or an excenter.
 ## References
 
 * Paul Averous, [Problèmes du Club de Maths](https://doi.org/10.13140/RG.2.2.18317.10726)
-
 -/
 
 @[expose] public noncomputable section

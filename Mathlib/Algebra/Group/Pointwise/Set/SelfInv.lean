@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 This file specialises `IsSelfInv` to sets equipped with the pointwise inversion.
 
 See also `Mathlib/Algebra/Group/Pointwise/Finset/SelfInv.lean` for the finset version.
-
 -/
 
 public section
@@ -65,12 +64,12 @@ protected lemma IsSelfInv.iInter {ι : Sort*} {s : ι → Set α}
 @[to_additive]
 protected lemma IsSelfInv.sUnion {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv s) :
     IsSelfInv (⋃₀ S) :=
-  sUnion_eq_iUnion ▸ .iUnion fun s ↦ h s s.2
+  sUnion_eq_iUnion ▸ .iUnion fun s ↦ h s s.property
 
 @[to_additive]
 protected lemma IsSelfInv.sInter {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv s) :
     IsSelfInv (⋂₀ S) :=
-  sInter_eq_iInter ▸ .iInter fun s ↦ h s s.2
+  sInter_eq_iInter ▸ .iInter fun s ↦ h s s.property
 
 @[to_additive Set.IsSelfNeg.prod]
 protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :

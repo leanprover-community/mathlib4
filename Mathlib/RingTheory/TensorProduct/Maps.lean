@@ -25,7 +25,6 @@ This file provides results about maps between tensor products of `R`-algebras.
 ## References
 
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
 -/
 
 @[expose] public section
@@ -832,6 +831,10 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
 @[simp]
 theorem comp_productMap : h.comp (productMap f g) = productMap (h.comp f) (h.comp g) :=
   Algebra.TensorProduct.ext' (by simp)
+
+theorem toLinearMap_productMap_id :
+    (productMap (AlgHom.id R S) f).toLinearMap = f.toLinearMap.liftBaseChange S := by
+  rfl
 
 end
 

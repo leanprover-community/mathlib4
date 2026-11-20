@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Order.Setoid.Basic
 
 /-!
-
 # Sets invariant to a `MulAction`
 
 In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
@@ -89,7 +88,7 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul : SMul R s :=
-  ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
+  ⟨fun r x => ⟨r • x.val, smul_mem r x.property⟩⟩
 
 @[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
     SMulCommClass T R s where
@@ -99,7 +98,7 @@ instance (priority := 50) smul : SMul R s :=
   left_cancel' x _ _ eq := Subtype.ext <| IsLeftCancelSMul.left_cancel x _ _ congr($eq)
 
 @[to_additive] instance (priority := 50) [IsCancelSMul R M] : IsCancelSMul R s where
-  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.1 congr($eq)
+  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.val congr($eq)
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
@@ -125,7 +124,7 @@ theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = �
   rfl
 
 @[to_additive]
-theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
+theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.property⟩ :=
   rfl
 
 @[simp]
@@ -159,10 +158,10 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul' : SMul M s where
-  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+  smul r x := ⟨r • x.val, smul_one_smul N r x.val ▸ smul_mem _ x.property⟩
 
 instance (priority := 50) : IsScalarTower M N s where
-  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.val)
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
@@ -175,7 +174,7 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 
 @[to_additive]
 theorem smul_of_tower_def (r : M) (x : s) :
-    r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
+    r • x = ⟨r • x, smul_one_smul N r x.val ▸ smul_mem _ x.property⟩ :=
   rfl
 
 @[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
@@ -300,7 +299,7 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 
 @[to_additive]
-instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
+instance : SMul R p where smul c x := ⟨c • x.val, smul_mem _ c x.property⟩
 
 variable {p} in
 @[to_additive (attr := norm_cast, simp)]
@@ -374,7 +373,7 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   exact p.smul_mem _ h
 
 @[to_additive]
-instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
+instance smul' : SMul S p where smul c x := ⟨c • x.val, smul_of_tower_mem _ c x.property⟩
 
 @[to_additive]
 instance isScalarTower : IsScalarTower S R p where
@@ -507,7 +506,7 @@ theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
     exact neg_mem _ h, neg_mem _⟩
 
 instance : Neg p :=
-  ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
+  ⟨fun x => ⟨-x.val, neg_mem _ x.property⟩⟩
 
 @[simp, norm_cast]
 theorem val_neg (x : p) : ((-x : p) : M) = -x :=
@@ -596,7 +595,7 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
     g • a ∈ MulAction.fixedPoints H α := by
   intro h
   rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
-  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+  exact ha ⟨_, hH.conj_mem' _ h.property _⟩
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
 @[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]

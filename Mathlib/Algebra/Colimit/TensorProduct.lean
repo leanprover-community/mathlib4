@@ -35,4 +35,4 @@ theorem Submodule.FG.exists_rTensor_fg_inclusion_eq {N : Submodule R P} (hN : N.
   simp_rw [← LinearMap.rTensor_comp_apply, ← (LinearEquiv.eq_toLinearMap_symm_comp _ _).mpr
     (Module.fgSystem.equiv_comp_of N), directLimitLeft_rTensor_of] at eq
   have ⟨N', le, eq⟩ := Module.DirectLimit.exists_eq_of_of_eq eq
-  exact ⟨_, N'.2, le, eq⟩
+  exact ⟨_, N'.property, le, eq⟩

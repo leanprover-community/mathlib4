@@ -49,7 +49,6 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section
@@ -77,8 +76,8 @@ variable [Finite σ]
 
 variable {R S ι σ} in
 lemma SubmersivePresentation.isStandardSmooth [Finite ι] (P : SubmersivePresentation R S ι σ) :
-    IsStandardSmooth R S := by
-  exact ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
+    IsStandardSmooth R S :=
+  ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
 
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is
