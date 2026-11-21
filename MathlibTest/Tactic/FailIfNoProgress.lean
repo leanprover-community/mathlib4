@@ -6,6 +6,8 @@ set_option linter.unusedVariables false
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
 
+section fail_if_no_progress
+
 section success
 
 example : 1 = 1 := by fail_if_no_progress rfl
@@ -100,3 +102,45 @@ example : let x := (fun x => x) Nat.zero; x = x := by
     guard_hyp x : Nat :=ₛ Nat.zero
 
 end failure
+
+end fail_if_no_progress
+
+/--
+error: progress made on
+⊢ 1 = 1
+-/
+#guard_msgs in
+example : 1 = 1 := by fail_if_progress rfl
+
+/--
+error: progress made on
+h : 1 = 1
+⊢ True
+-/
+#guard_msgs in
+example (h : 1 = 1) : True := by
+  fail_if_progress simp
+  trivial
+
+/--
+error: progress made on
+p : Prop
+hp : p
+⊢ p
+-/
+#guard_msgs in
+example {p : Prop} (hp : p) : p := by
+  fail_if_progress simp [hp]
+
+set_option linter.unusedTactic false
+
+-- XXX: the combinator does not swallow inner tactic's errors. Should it?
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example (a : Nat) : 2 + 0 = 4 := by
+  fail_if_not_idempotent simp
+
+-- `fail_if_not_impotent` works fine even if the first tactic call closes the goal
+-- (unlike `simp; fail_if_progress simp`)
+example : 1 + 1 = 2 := by
+  fail_if_not_idempotent simp
