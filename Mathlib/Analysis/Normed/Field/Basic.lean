@@ -110,6 +110,12 @@ theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
 
+lemma norm_inv_sub_inv_le {A : ℝ} (hA : 0 < A) (hAa : A ≤ ‖a‖) (hAb : A ≤ ‖b‖) :
+    ‖a⁻¹ - b⁻¹‖ ≤ A⁻¹ ^ 2 * ‖a - b‖ := by
+  rw [← dist_eq_norm, dist_inv_inv₀ (norm_pos_iff.1 (hA.trans_le hAa))
+    (norm_pos_iff.1 (hA.trans_le hAb)), dist_eq_norm, div_eq_inv_mul, inv_pow, sq]
+  gcongr
+
 lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
     ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
   simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
@@ -120,6 +126,25 @@ lemma nnNorm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
 
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_commutator_sub_one_le := nnNorm_commutator_sub_one_le
+
+/-- In a normed division ring, `‖aⁿ - bⁿ‖ ≤ |n| * (Aⁿ⁻¹ ⊔ Bⁿ⁻¹) * ‖a - b‖` for all integers `n`
+whenever `0 < A ≤ ‖a‖, ‖b‖ ≤ B`. -/
+lemma norm_zpow_sub_zpow_le {A B : ℝ} (hA : 0 < A) (hAa : A ≤ ‖a‖) (hAb : A ≤ ‖b‖) (ha : ‖a‖ ≤ B)
+    (hb : ‖b‖ ≤ B) (n : ℤ) : ‖a ^ n - b ^ n‖ ≤ |n| * (A ^ (n - 1) ⊔ B ^ (n - 1)) * ‖a - b‖ := by
+  obtain ⟨_ | m, rfl | rfl⟩ := n.eq_nat_or_neg
+  · simp
+  · simp
+  · grw [← le_sup_right]
+    rw [zpow_natCast, zpow_natCast]
+    simpa [abs_of_nonneg (by positivity : (0 : ℝ) ≤ m + 1)] using norm_pow_sub_pow_le ha hb (m + 1)
+  grw [← le_sup_left, zpow_neg, zpow_natCast, zpow_neg, zpow_natCast, ← inv_pow, ← inv_pow,
+    norm_pow_sub_pow_le (B := A⁻¹) (by grw [norm_inv, hAa]) (by grw [norm_inv, hAb]),
+    norm_inv_sub_inv_le hA hAa hAb]
+  refine le_of_eq ?_
+  rw [show (-↑(m + 1) : ℤ) - 1 = -(m + 2 : ℕ) by lia]
+  simp only [zpow_neg, zpow_natCast, abs_neg, Nat.abs_cast, inv_pow]
+  push_cast
+  ring
 
 namespace NormedDivisionRing
 
