@@ -107,6 +107,29 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hy] with x hx
     exact (extChartAt I y).right_inv hx
 
+lemma IsLocalHomeomorph.isContMDiffOfRightInverse
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
+    :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiff I I n f := by
+  intro _ p
+  set q := g (f p)
+  have aux : f p = f q := by
+    simp [q, hg (f p)]
+  specialize h p q aux
+  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h
+  have h' : f =ᶠ[𝓝 p] (hf.localInverseAt q).symm ∘ σ := by
+    apply Filter.EventuallyEq.trans (g:= f ∘ σ) hσ3.symm
+    have h1 : f =ᶠ[𝓝 q] (hf.localInverseAt q).symm := by
+      simp
+    refine h1.comp_tendsto ?_
+    have := hσ2.continuousAt.tendsto
+    rwa [← hσ1]
+  apply ContMDiffAt.congr_of_eventuallyEq (h₁:=h')
+  refine ContMDiffAt.comp (I':=I) p ?_ hσ2
+  rw [hσ1]
+  exact contMDiffAt_localInverseAt_symm_rightInverse hf hg (f p)
+
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -185,29 +208,6 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse
   simpa only [← OpenPartialHomeomorph.symm_source,
     OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm] using
     foo hf h (g y) (g x)
-
-lemma IsLocalHomeomorph.isContMDiffOfRightInverse
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
-    :
-    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiff I I n f := by
-  intro _ p
-  set q := g (f p)
-  have aux : f p = f q := by
-    simp [q, hg (f p)]
-  specialize h p q aux
-  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h
-  have h' : f =ᶠ[𝓝 p] (hf.localInverseAt q).symm ∘ σ := by
-    apply Filter.EventuallyEq.trans (g:= f ∘ σ) hσ3.symm
-    have h1 : f =ᶠ[𝓝 q] (hf.localInverseAt q).symm := by
-      simp
-    refine h1.comp_tendsto ?_
-    have := hσ2.continuousAt.tendsto
-    rwa [← hσ1]
-  apply ContMDiffAt.congr_of_eventuallyEq (h₁:=h')
-  refine ContMDiffAt.comp (I':=I) p ?_ hσ2
-  rw [hσ1]
-  exact contMDiffAt_localInverseAt_symm_rightInverse hf hg (f p)
 
 /-- Suppose `F : M → N` is invariant under `f`
 and the map `F ∘ g : M' → N` is `C^n`, then so is `F`. -/
