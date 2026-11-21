@@ -15,7 +15,7 @@ In this file, we show that if `X : SSet` is a quasicategory, then
 `((truncation 2).obj X)` satisfies the property `SSet.Truncated.Quasicategory₂`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -35,7 +35,7 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
   we say that `S` is `R`-quasi-finite at `p` if `Sₚ` is `R`-quasi-finite.
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

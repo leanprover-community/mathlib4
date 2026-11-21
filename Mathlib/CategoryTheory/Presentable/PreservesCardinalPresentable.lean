@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 # Functors which preserve `κ`-presentable objects
 -/
 
-@[expose] public section
+public section
 
 universe w
 

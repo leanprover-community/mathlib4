@@ -18,7 +18,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 # Lemmas about (linear) ordered (semi)fields
 -/
 
-@[expose] public section
+public section
 
 
 open Function OrderDual

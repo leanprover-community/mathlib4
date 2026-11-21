@@ -30,7 +30,7 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 matrix, echelon form, pivot
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 

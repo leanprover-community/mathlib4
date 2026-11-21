@@ -26,7 +26,7 @@ Similarly as for accessible functors, we define a type class `IsPresentable`.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
-@[expose] public section
+public section
 
 universe t w w' v₁ v₂ v₃ u₁ u₂ u₃
 

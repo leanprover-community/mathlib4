@@ -16,7 +16,7 @@ We introduce the category `TopCommRingCat` of topological commutative rings toge
 relevant forgetful functors to topological spaces and commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

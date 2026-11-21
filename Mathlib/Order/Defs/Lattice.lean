@@ -37,7 +37,7 @@ of `sup` over `inf`, on the left or on the right.
 semilattice, lattice
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists LinearOrder
 

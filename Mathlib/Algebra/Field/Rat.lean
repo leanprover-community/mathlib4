@@ -20,7 +20,7 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-@[expose] public section
+public section
 
 namespace Rat
 
