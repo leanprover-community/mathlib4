@@ -50,15 +50,15 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace P]
 
--- TODO: consider defining this as `⨅ A (_ : rank ≤ n), ⨆ x ∈ s, infEDist x A`,
--- which avoids the `r.toReal` coercion (under which `r = ⊤` acts as radius `0`).
 /--
 The `ethickness` of a set `s` at rank `n`
-is the infimal radius `r` such that `s` is contained in the `r`-thickening
-of an affine subspace of rank at most `n`.
+is the infimum, over affine subspaces `A` of rank at most `n`,
+of the largest distance from a point of `s` to `A`.
+Equivalently, it is the infimal radius `r` such that `s` is contained in the `r`-thickening
+of an affine subspace of rank at most `n`; see `Metric.le_ethickness_iff`.
 -/
 noncomputable def ethickness (s : Set P) (n : ℕ) : ℝ≥0∞ :=
-  sInf { r | ∃ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n ∧ s ⊆ cthickening r.toReal A }
+  ⨅ (A : AffineSubspace 𝕜 P) (_ : Module.rank 𝕜 A.direction ≤ n), ⨆ x ∈ s, infEDist x A
 
 /-- The real-valued `n`-thickness of a set `s`:
 the infimum of radii `r ≥ 0` for which `s` is contained
@@ -73,42 +73,47 @@ variable {𝕜}
 theorem toReal_ethickness (s : Set P) (n : ℕ) :
     (ethickness 𝕜 s n).toReal = thickness 𝕜 s n := rfl
 
+theorem le_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) : r ≤ ethickness 𝕜 s n ↔
+    ∀ r' : ℝ≥0, ∀ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n → s ⊆ cthickening r' A
+      → r ≤ r' := by
+  have key (A : Set P) (r' : ℝ≥0) : (⨆ x ∈ s, infEDist x A) ≤ r' ↔ s ⊆ cthickening r' A := by
+    simp [Set.subset_def, mem_cthickening_iff]
+  simp_rw [← key]
+  refine ⟨fun h r' A hA hs ↦ h.trans ((iInf₂_le A hA).trans hs), fun h ↦ le_iInf₂ fun A hA ↦ ?_⟩
+  obtain hM | hM := eq_or_ne (⨆ x ∈ s, infEDist x A) ⊤
+  · exact hM ▸ le_top
+  · exact ENNReal.coe_toNNReal hM ▸ h _ A hA (ENNReal.coe_toNNReal hM).ge
+
+theorem ethickness_le_of_cthickening {s : Set P} {n : ℕ} (r : ℝ≥0)
+    {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
+    (hs : s ⊆ cthickening r A) : ethickness 𝕜 s n ≤ r :=
+  iInf₂_le_of_le A hA <| iSup₂_le fun x hx ↦ by simpa using mem_cthickening_iff.1 (hs hx)
+
 @[simp]
 theorem ethickness_empty [Nontrivial 𝕜] (n : ℕ) : ethickness 𝕜 (∅ : Set P) n = 0 :=
-  nonpos_iff_eq_zero.1 <| sInf_le
-    ⟨⊥, by grind [AffineSubspace.direction_bot, rank_bot, zero_le], by simp⟩
+  nonpos_iff_eq_zero.1 <| ethickness_le_of_cthickening 0 (A := ⊥)
+    (by grind [AffineSubspace.direction_bot, rank_bot, zero_le]) (Set.empty_subset _)
 
 @[simp]
 theorem thickness_empty [Nontrivial 𝕜] (n : ℕ) : thickness 𝕜 (∅ : Set P) n = 0 := by
   rw [← toReal_ethickness, ethickness_empty, ENNReal.toReal_zero]
 
-theorem le_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) : r ≤ ethickness 𝕜 s n ↔
-    ∀ r' : ℝ≥0, ∀ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n → s ⊆ cthickening r' A
-      → r ≤ r' := by
-  rw [ethickness, le_sInf_iff]
-  refine ⟨fun h r' A hA hs ↦ h r' ⟨A, hA, by simpa using hs⟩, fun h t ⟨A, hA, hs⟩ ↦ ?_⟩
-  cases t with
-  | top => exact le_top
-  | coe t => exact h t A hA hs
-
 /-- `ethickness 𝕜 s n` is decreasing in `n`. -/
-theorem ethickness_antitone {s : Set P} : Antitone (ethickness 𝕜 s) := by
-  intro m n hmn
-  exact sInf_le_sInf fun _ ⟨A, hA, hs⟩ ↦ ⟨A, hA.trans (Nat.cast_le.mpr hmn), hs⟩
+theorem ethickness_antitone {s : Set P} : Antitone (ethickness 𝕜 s) := fun _ _ hmn ↦
+  iInf₂_mono' fun A hA ↦ ⟨A, hA.trans (Nat.cast_le.mpr hmn), le_rfl⟩
 
 /-- `ethickness 𝕜 s n` is monotone in `s`. -/
-theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := by
-  intro s t hst n
-  exact sInf_le_sInf fun _ ⟨A, hA, ht⟩ ↦ ⟨A, hA, hst.trans ht⟩
+theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := fun _ _ hst _ ↦
+  iInf₂_mono fun _ _ ↦ biSup_mono hst
 
-/-- Taking the closure does not change `ethickness`, since each `cthickening` is closed. -/
+/-- Taking the closure does not change `ethickness`, since `infEDist` to a set is continuous. -/
 @[simp]
 theorem ethickness_closure (s : Set P) (n : ℕ) :
     ethickness 𝕜 (closure s) n = ethickness 𝕜 s n := by
-  apply congrArg sInf
-  ext r
-  exact ⟨fun ⟨A, hA, h⟩ ↦ ⟨A, hA, subset_closure.trans h⟩,
-    fun ⟨A, hA, h⟩ ↦ ⟨A, hA, closure_minimal h isClosed_cthickening⟩⟩
+  refine le_antisymm (iInf₂_mono fun A _ ↦ iSup₂_le fun x hx ↦ ?_)
+    (ethickness_monotone subset_closure n)
+  exact closure_minimal (fun y hy ↦ le_iSup₂ (f := fun y _ ↦ infEDist y (A : Set P)) y hy)
+    (isClosed_le continuous_infEDist continuous_const) hx
 
 /-- Taking the closure does not change `thickness`. -/
 @[simp]
@@ -118,11 +123,6 @@ theorem thickness_closure (s : Set P) (n : ℕ) :
 
 lemma thickness_nonneg (s : Set P) (n : ℕ) : 0 ≤ thickness 𝕜 s n :=
   ENNReal.toReal_nonneg
-
-theorem ethickness_le_of_cthickening {s : Set P} {n : ℕ} (r : ℝ≥0)
-    {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
-    (hs : s ⊆ cthickening r A) : ethickness 𝕜 s n ≤ r :=
-  sInf_le ⟨A, hA, hs⟩
 
 theorem thickness_le_of_cthickening {s : Set P} {n : ℕ} {r : ℝ} (hr : 0 ≤ r)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
@@ -138,12 +138,12 @@ theorem thickness_eq_zero_of_rank_le {s : Set P} {n : ℕ} (h : Module.rank 𝕜
     thickness 𝕜 s n = 0 := by
   rw [← toReal_ethickness, ethickness_eq_zero_of_rank_le h, ENNReal.toReal_zero]
 
-theorem exists_notMem_cthickening_of_lt_ethickness {s : Set P} {n : ℕ} {r : ℝ≥0∞}
+theorem exists_notMem_cthickening_of_lt_ethickness {s : Set P} {n : ℕ} {r : ℝ≥0}
     (hr : r < ethickness 𝕜 s n)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n) :
-    ∃ x ∈ s, x ∉ cthickening r.toReal (A : Set P) := by
+    ∃ x ∈ s, x ∉ cthickening r A := by
   by_contra! h
-  exact hr.not_ge <| ENNReal.coe_toNNReal hr.ne_top ▸ ethickness_le_of_cthickening r.toNNReal hA h
+  exact hr.not_ge <| ethickness_le_of_cthickening r hA h
 
 /-- If `r : ℝ≥0` strictly exceeds `ethickness 𝕜 s n`,
 then `s` is contained in the closed `r`-neighborhood
@@ -169,12 +169,6 @@ theorem _root_.Set.Subsingleton.ethickness_eq_zero [Nontrivial 𝕜] {s : Set P}
       (by grind [direction_affineSpan, vectorSpan_singleton, rank_bot, zero_le])
       (hs ▸ (subset_affineSpan 𝕜 _).trans (self_subset_cthickening _))
 
-end PseudoEMetricSpace
-
-section PseudoMetricSpace
-
-variable {𝕜} [PseudoMetricSpace P]
-
 /-- The `ethickness` at rank `n` of the `r`-thickening of a set
 is bounded by the `ethickness` at rank `n` of the original set plus `r`. -/
 theorem ethickness_cthickening_le {s : Set P} (r : ℝ≥0) (n : ℕ) :
@@ -185,7 +179,11 @@ theorem ethickness_cthickening_le {s : Set P} (r : ℝ≥0) (n : ℕ) :
   exact ethickness_le_of_cthickening (r + t) hA <| (cthickening_subset_of_subset r hsA).trans
     (cthickening_cthickening_subset r.coe_nonneg t.coe_nonneg _)
 
-variable [Nontrivial 𝕜]
+end PseudoEMetricSpace
+
+section PseudoMetricSpace
+
+variable {𝕜} [PseudoMetricSpace P] [Nontrivial 𝕜]
 
 theorem ethickness_closedBall_le {x : P} (r : ℝ≥0) (n : ℕ) :
     ethickness 𝕜 (closedBall x r) n ≤ r := by

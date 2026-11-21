@@ -72,20 +72,20 @@ lemma infDist_add_le_of_closedBall_subset_cthickening
     Real.norm_of_nonneg (by positivity), add_comm, ← dist_eq_norm_vsub V,
     dist_orthogonalProjection_eq_infDist] at this
 
-variable [FiniteDimensional ℝ V]
-
--- TODO: check whether `[FiniteDimensional ℝ V]` can be dropped in favour of
--- `n < Module.rank ℝ V`, since `A.direction` is finite-dimensional anyway.
 /-- Thickening a nonempty set by `ρ` increases its `ethickness` by at least `ρ`,
 at every rank below the ambient dimension.
 See `Metric.ethickness_cthickening_le` for the reverse inequality. -/
 theorem le_ethickness_cthickening {s : Set E} (hs : s.Nonempty) (ρ : ℝ≥0) {n : ℕ}
-    (hn : n < Module.finrank ℝ V) :
+    (hn : n < Module.rank ℝ V) :
     ethickness ℝ s n + ρ ≤ ethickness ℝ (cthickening ρ s) n := by
   rw [le_ethickness_iff]
   intro r A hA hsub
   have hA' : A.direction ≠ ⊤ := by
-    grind [Submodule.eq_top_iff_finrank_eq (W := A.direction), Module.finrank_le_of_rank_le hA]
+    rintro h
+    rw [h, rank_top] at hA
+    exact (hA.trans_lt hn).false
+  have : FiniteDimensional ℝ A.direction :=
+    Module.rank_lt_aleph0_iff.1 (hA.trans_lt Cardinal.natCast_lt_aleph0)
   obtain ⟨x₀, hx₀⟩ := hs
   have hAne : (A : Set E).Nonempty := by
     by_contra! hAe
@@ -108,7 +108,7 @@ theorem le_ethickness_cthickening {s : Set E} (hs : s.Nonempty) (ρ : ℝ≥0) {
 /-- Thickening a nonempty set by `r` increases its `ethickness` by exactly `r`,
 at every rank below the ambient dimension. -/
 theorem ethickness_cthickening {s : Set E} (hs : s.Nonempty) (r : ℝ≥0) {n : ℕ}
-    (hn : n < Module.finrank ℝ V) :
+    (hn : n < Module.rank ℝ V) :
     ethickness ℝ (cthickening r s) n = ethickness ℝ s n + r :=
   (ethickness_cthickening_le r n).antisymm (le_ethickness_cthickening hs r hn)
 
@@ -116,7 +116,7 @@ theorem ethickness_cthickening {s : Set E} (hs : s.Nonempty) (r : ℝ≥0) {n : 
 at every rank below the ambient dimension.
 See `Metric.ethickness_closedBall_le` for the reverse inequality. -/
 theorem le_ethickness_closedBall {x : E} (r : ℝ≥0) {n : ℕ}
-    (hn : n < Module.finrank ℝ V) :
+    (hn : n < Module.rank ℝ V) :
     (r : ℝ≥0∞) ≤ ethickness ℝ (closedBall x r) n := by
   simpa [Set.subsingleton_singleton.ethickness_eq_zero, cthickening_singleton _ r.coe_nonneg]
     using le_ethickness_cthickening (Set.singleton_nonempty x) r hn
@@ -124,7 +124,7 @@ theorem le_ethickness_closedBall {x : E} (r : ℝ≥0) {n : ℕ}
 /-- The closed ball of radius `r` has `ethickness` equal to `r`,
 at every rank below the ambient dimension. -/
 theorem ethickness_closedBall {x : E} (r : ℝ≥0) {n : ℕ}
-    (hn : n < Module.finrank ℝ V) :
+    (hn : n < Module.rank ℝ V) :
     ethickness ℝ (closedBall x r) n = r :=
   (ethickness_closedBall_le r n).antisymm (le_ethickness_closedBall r hn)
 
