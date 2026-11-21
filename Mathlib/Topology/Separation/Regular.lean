@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.Connected.TotallyDisconnected
-public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Topology.Connected.Clopen
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces

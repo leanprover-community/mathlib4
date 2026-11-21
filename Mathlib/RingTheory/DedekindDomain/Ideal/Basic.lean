@@ -5,9 +5,10 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
+
+import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 
 /-!
 # Dedekind domains and invertible ideals

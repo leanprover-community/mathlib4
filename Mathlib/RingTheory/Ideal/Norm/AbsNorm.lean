@@ -5,17 +5,17 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
+import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Data.SetLike.Fintype
+import Mathlib.LinearAlgebra.FreeModule.Determinant
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Ideal norms

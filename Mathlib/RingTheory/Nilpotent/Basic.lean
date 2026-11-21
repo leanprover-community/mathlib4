@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.RingTheory.Nilpotent.Defs
+
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Nilpotent elements

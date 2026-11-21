@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Tactic.Field
+
+import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Bases in a vector space
