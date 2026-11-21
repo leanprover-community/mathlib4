@@ -48,37 +48,37 @@ variable {M : Type*} [TopologicalSpace M]
 -- TODO: find a proper name for `Foo`
 variable (I n f) in
 structure Foo : Prop where
-  exists_contMDiffAt (p q : M) (hpq : f p = f q) :
-    ∃ σ : M → M, σ p = q ∧ CMDiffAt n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f
+  exists_contMDiffAt (x y : M) (hxy : f x = f y) :
+    ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
 /-- If `f` satisfies the condition, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
-    (h : Foo I n f) (p q : M) :
-    CMDiff[((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q).source] n
-      ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q) := by
-  set τ := (hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q
-  have hτ {r : M} (hr : r ∈ τ.source) : f (τ r) = f r := by
+    (h : Foo I n f) (x y : M) :
+    CMDiff[((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y).source] n
+      ((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y) := by
+  set τ := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
+  have hτ {z : M} (hz : z ∈ τ.source) : f (τ z) = f z := by
     simp only [τ, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
-      hf.localInverseAt_symm] at hr
-    simpa [τ] using hf.apply_localInverseAt_of_mem hr.2
-  intro r hr
-  obtain ⟨σ, hσr, hσ, hfσ⟩ := h.exists_contMDiffAt r (τ r) (hτ hr).symm
+      hf.localInverseAt_symm] at hz
+    simpa [τ] using hf.apply_localInverseAt_of_mem hz.2
+  intro z hz
+  obtain ⟨σ, hσz, hσ, hfσ⟩ := h.exists_contMDiffAt z (τ z) (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
-  have ht : (hf.localInverseAt q).target ∈ 𝓝 (σ r) :=
-    (hf.localInverseAt q).open_target.mem_nhds (hσr ▸ (τ.map_source hr).1)
-  filter_upwards [τ.open_source.mem_nhds hr, hσ.continuousAt.preimage_mem_nhds ht, hfσ]
-    with r' hr' hσr' hfσr'
-  exact hf.injOn_localInverseAt_target (τ.map_source hr').1 hσr' ((hτ hr').trans hfσr'.symm)
+  have ht : (hf.localInverseAt y).target ∈ 𝓝 (σ z) :=
+    (hf.localInverseAt y).open_target.mem_nhds (hσz ▸ (τ.map_source hz).1)
+  filter_upwards [τ.open_source.mem_nhds hz, hσ.continuousAt.preimage_mem_nhds ht, hfσ]
+    with z' hz' hσz' hfσz'
+  exact hf.injOn_localInverseAt_target (τ.map_source hz').1 hσz' ((hτ hz').trans hfσz'.symm)
 
 lemma IsLocalHomeomorph.isManifold_of_rightInverse [IsManifold I n M] (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   refine { compatible := ?_ }
-  rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
-  rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g x)).symm.trans_assoc,
-    ← (hf.localInverseAt (g x)).symm.trans_assoc]
+  rintro - - ⟨y, rfl⟩ ⟨y', rfl⟩
+  rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g y)).symm.trans_assoc,
+    ← (hf.localInverseAt (g y)).symm.trans_assoc]
   refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
     (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
@@ -99,11 +99,11 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
     refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
       (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
-    filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
+    filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
     simp only [Function.comp_apply, id]
     rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target, Set.mem_inter_iff,
-      Set.mem_preimage] at hx
-    obtain ⟨⟨h1, h2⟩, h3⟩ := hx
+      Set.mem_preimage] at hz
+    obtain ⟨⟨h1, h2⟩, h3⟩ := hz
     rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
 
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
@@ -121,24 +121,24 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
       change extChartAt I (g y) (hf.localInverseAt (g y) y) ∈ _ at this
       rwa [show hf.localInverseAt (g y) y = g y by
         simpa [hg y] using hf.localInverseAt_apply_self (x := g y)] at this
-    filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hgy] with x hx
-    exact (extChartAt I y).right_inv hx
+    filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hgy] with z hz
+    exact (extChartAt I y).right_inv hz
 
 lemma IsLocalHomeomorph.contMDiff_of_rightInverse
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n f := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  intro p
-  obtain ⟨σ, hσp, hσ, hfσ⟩ := h.exists_contMDiffAt p (g (f p)) (hg (f p)).symm
-  have : f =ᶠ[𝓝 p] (hf.localInverseAt (g (f p))).symm ∘ σ := by
+  intro x
+  obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt x (g (f x)) (hg (f x)).symm
+  have : f =ᶠ[𝓝 x] (hf.localInverseAt (g (f x))).symm ∘ σ := by
     refine hfσ.symm.trans ?_
-    have : f =ᶠ[𝓝 (g (f p))] (hf.localInverseAt (g (f p))).symm := by simp
-    exact this.comp_tendsto (hσp.symm ▸ hσ.continuousAt.tendsto)
+    have : f =ᶠ[𝓝 (g (f x))] (hf.localInverseAt (g (f x))).symm := by simp
+    exact this.comp_tendsto (hσx.symm ▸ hσ.continuousAt.tendsto)
   refine ContMDiffAt.congr_of_eventuallyEq ?_ this
-  refine ContMDiffAt.comp p ?_ hσ
-  rw [hσp]
-  exact hf.contMDiffAt_localInverseAt_symm_rightInverse hg (f p)
+  refine ContMDiffAt.comp x ?_ hσ
+  rw [hσx]
+  exact hf.contMDiffAt_localInverseAt_symm_rightInverse hg (f x)
 
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -155,8 +155,8 @@ lemma IsLocalHomeomorph.contMDiffAt_of_contMDiffAt_comp {φ : M' → N} {y : M'}
     have hs : (hf.localInverseAt (g y)).source ∈ 𝓝 y := by
       refine (hf.localInverseAt (g y)).open_source.mem_nhds ?_
       simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
-    filter_upwards [hs] with x hx
-    simp [hf.apply_localInverseAt_of_mem hx]
+    filter_upwards [hs] with y' hy'
+    simp [hf.apply_localInverseAt_of_mem hy']
   refine ContMDiffAt.congr_of_eventuallyEq ?_ this
   refine ContMDiffAt.comp y ?_ (hf.contMDiffAt_localInverseAt_rightInverse hg y)
   rwa [show hf.localInverseAt (g y) y = g y by
@@ -171,10 +171,10 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
 
 /-- If `F : M → N` is `C^n` and invariant under `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
-    (hFf : ∀ p q, f p = f q → F p = F q) (hF : CMDiff n F) :
+    (hFf : ∀ x y, f x = f y → F x = F y) (hF : CMDiff n F) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n (F ∘ g) :=
-  hf.contMDiff_of_contMDiff_comp hg <| hF.congr (fun y ↦ hFf _ _ (hg (f y)))
+  hf.contMDiff_of_contMDiff_comp hg <| hF.congr (fun x ↦ hFf _ _ (hg (f x)))
 
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
