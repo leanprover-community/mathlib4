@@ -90,7 +90,7 @@ lemma artinSchreierPoly_irreducible [hp : Fact p.Prime]
     have ⟨x, hx⟩ := exists_root_of_natDegree_eq_one hr
     exact ⟨x, (mem_roots h0).mpr (hx.dvd hb3)⟩
   have h2 : b.natDegree ∣ (artinSchreierPoly a).natDegree := by
-    refine dvd_natDegree_of_monic_of_irreducible _ fun c hc0 hc hc1 ↦ ?_
+    refine dvd_natDegree_of_monic_of_irreducible _ _ fun c hc0 hc hc1 ↦ ?_
     have := Fact.mk hc
     have : ExpChar (AdjoinRoot c) p := (RingHom.expChar_iff (algebraMap F _)
       (FaithfulSMul.algebraMap_injective F _) p).mp ‹ExpChar F p›
