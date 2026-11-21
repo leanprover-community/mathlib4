@@ -3224,6 +3224,7 @@ public import Mathlib.CategoryTheory.Localization.LocallySmall
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
+public import Mathlib.CategoryTheory.Localization.Monoidal.Linear
 public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Localization.Pi
@@ -3335,6 +3336,7 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
 public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Linear.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Mod
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
@@ -3343,6 +3345,7 @@ public import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Opposite.Mon
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
+public import Mathlib.CategoryTheory.Monoidal.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
@@ -3587,6 +3590,7 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.Linear
 public import Mathlib.CategoryTheory.Sites.LocalProperties
 public import Mathlib.CategoryTheory.Sites.LocalSite
 public import Mathlib.CategoryTheory.Sites.Localization
@@ -3611,6 +3615,7 @@ public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Presheaf
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+public import Mathlib.CategoryTheory.Sites.Preadditive
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.Precoverage.Generates
 public import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
