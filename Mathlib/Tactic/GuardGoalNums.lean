@@ -13,6 +13,8 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
+# The `guard_goal_nums` tactic
+
 A tactic stub file for the `guard_goal_nums` tactic.
 -/
 

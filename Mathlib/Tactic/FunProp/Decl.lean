@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 
 /-!
-## `funProp` environment extension that stores all registered function properties
+# `funProp` environment extension that stores all registered function properties
 -/
 
 public meta section

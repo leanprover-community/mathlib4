@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Tactic.SetLike
 
 /-!
-## `norm_num` plugin for scientific notation.
+# `norm_num` plugin for scientific notation
 -/
 
 public meta section

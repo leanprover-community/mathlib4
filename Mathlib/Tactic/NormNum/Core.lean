@@ -12,7 +12,7 @@ public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.NormNum.Result
 
 /-!
-## `norm_num` core functionality
+# `norm_num` core functionality
 
 This file sets up the `norm_num` tactic and the `@[norm_num]` attribute,
 which allow for plugging in new normalization functionality around a simp-based driver.

@@ -13,7 +13,7 @@ public import Mathlib.Init
 The `upstreamableDecl` linter detects declarations that could be moved to a file higher up in the
 import hierarchy. This is intended to assist with splitting files.
 
-# TODO
+## TODO
 
 This functionality does not behave well with the module system, and should be upgraded to use new
 `#find_home` internals (and/or upstreamed to `ImportGraph`).
