@@ -84,10 +84,11 @@ for adjacent vertices.
 -/
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
-  ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
-    induction p with
-    | nil => rintro _; rfl
-    | cons a q ih => rename_i u v w; rintro h'; exact (h u.prop v.prop a).trans (ih h'.of_cons)
+  ConnectedComponent.lift (f ·.prop) fun v w p ↦ by
+    obtain ⟨p', hp⟩ := p.exists_isPath
+    induction p' with
+    | nil => rfl
+    | cons a q ih => rename_i u v w; exact (h u.prop v.prop a).trans (ih q.reachable hp.of_cons)
 
 @[elab_as_elim]
 protected theorem ind {β : G.ComponentCompl K → Prop}
