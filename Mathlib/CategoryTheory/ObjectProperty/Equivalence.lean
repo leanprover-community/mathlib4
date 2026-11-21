@@ -62,8 +62,7 @@ lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
   rw [h]
   exact (topEquivalence C).isEquivalence_functor
 
-lemma isEquivalence_lift_iff {D : Type*} [Category* D]
-    (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms]
+lemma isEquivalence_lift_iff {D : Type*} [Category* D] (P : ObjectProperty D)
     (F : C ⥤ D) [F.Full] [F.Faithful] (hF : ∀ (X : C), P (F.obj X)) :
     (P.lift F hF).IsEquivalence ↔ F.essImage = P.isoClosure := by
   suffices H : F.essImage.inverseImage P.ι = ⊤ ↔ (F.essImage = P.isoClosure) by

@@ -251,8 +251,7 @@ lemma ObjectProperty.essImage_ι (P : ObjectProperty C) :
     fun ⟨Y, hY, ⟨e⟩⟩ ↦ ⟨⟨Y, hY⟩, ⟨e.symm⟩⟩⟩
 
 lemma ObjectProperty.essImage_lift
-    (P : ObjectProperty D) (F : C ⥤ D) [F.Full] [F.Faithful]
-    (hF : ∀ (X : C), P (F.obj X)) :
+    (P : ObjectProperty D) (F : C ⥤ D) (hF : ∀ (X : C), P (F.obj X)) :
     (P.lift F hF).essImage = F.essImage.inverseImage P.ι := by
   ext X
   exact ⟨fun ⟨Y, ⟨e⟩⟩ ↦ ⟨_, ⟨P.ι.mapIso e⟩⟩,
