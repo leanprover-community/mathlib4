@@ -130,6 +130,7 @@ def homeomorph : I ≃ₜ unitInterval := Homeomorph.ulift
 lemma ext {x y : I.{u}} (h : homeomorph x = homeomorph y) : x = y :=
   homeomorph.injective h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
 def symm : I.{u} ⟶ I :=
   ofHom ⟨homeomorph.symm ∘ unitInterval.symm ∘ homeomorph, by fun_prop⟩

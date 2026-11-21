@@ -109,6 +109,7 @@ theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⋆ₘₗ[μ] g) μ := by
   unfold mlconvolution
+  have := quasiMeasurePreserving_inv_mul_swap μ μ
   fun_prop
 
 @[to_additive]
@@ -123,6 +124,7 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     rw [← lintegral_mul_const'' _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · simp [mul_assoc]
+  have := quasiMeasurePreserving_inv_mul μ μ
   simpa [mul_assoc] using by fun_prop
 
 /-- Convolution is associative. -/
