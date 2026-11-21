@@ -273,16 +273,30 @@ This is not an instance as it forms a non-defeq diamond with
 abbrev center.commSemiring' : CommSemiring (center R) :=
   { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
+instance : NonAssocCommSemiring (Center R) :=
+  {toNonAssocSemiring := inferInstanceAs <| NonAssocSemiring (center R), mul_comm}
+
 variable {R}
 
 /-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
-@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
-  NonUnitalSubsemiring.centerCongr e
+@[simps!, deprecated "use `RingEquiv.toCenter` instead" (since := "2026-10-27")]
+def centerCongr (e : R ≃+* S) : center R ≃+* center S := e.toCenter
 
 /-- The center of a (not necessarily associative) semiring
 is isomorphic to the center of its opposite. -/
-@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
-  NonUnitalSubsemiring.centerToMulOpposite
+@[simps!, deprecated "use `Center.toMulOppositeRingEquiv` instead" (since := "2026-10-27")]
+def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOppositeRingEquiv
+
+@[simp]
+lemma _root_.Center.coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
+
+/-- The inclusion of `Center R` into `R` as a `RingHom`. -/
+@[simps!]
+def _root_.Center.ringHom (R : Type*) [NonAssocSemiring R] :
+    Center R →+* R where
+  toMonoidHom := Center.monoidHom R
+  map_add' _ _ := by simp
+  map_zero' := by simp
 
 end NonAssocSemiring
 
@@ -297,6 +311,9 @@ instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) where
 example {R} [Semiring R] :
     center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by
   with_reducible_and_instances rfl
+
+instance {R} [Semiring R] : CommSemiring (Center R) :=
+  { toSemiring := inferInstanceAs <| Semiring (center R), mul_comm}
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
@@ -980,6 +997,32 @@ instance (priority := low) {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R']
 instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α :=
   inferInstance
 
+instance [SMul R' α] : SMul (Center R') α := inferInstanceAs <| SMul (center R') α
+
+@[simp]
+lemma _root_.Center.smul_def [SMul R' α] (z : Center R') (m : α) : z • m = z.val • m := rfl
+
+instance [SMul R' β] [SMul α β] [SMulCommClass R' α β] : SMulCommClass (Center R') α β :=
+  inferInstanceAs <| SMulCommClass (center R') α β
+
+instance [SMul α β] [SMul R' β] [SMulCommClass α R' β] : SMulCommClass α (Center R') β :=
+  inferInstanceAs <| SMulCommClass α (center R') β
+
+instance {R M : Type*} [Semiring R] [MulAction R M] : SMulCommClass R (Center R) M where
+  smul_comm _ _ _ := by simp [smul_smul, Center.comm]
+
+instance {R M : Type*} [Semiring R] [MulAction R M] : SMulCommClass (Center R) R M where
+  smul_comm _ _ _ := by simp [smul_smul, Center.comm]
+
+instance [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β] : IsScalarTower (Center R') α β
+  where smul_assoc := by simp
+
+instance [SMul R' α] [FaithfulSMul R' α] : FaithfulSMul (Center R') α :=
+  inferInstanceAs <| FaithfulSMul (center R') α
+
+instance [Zero α] [SMulWithZero R' α] : SMulWithZero (Center R') α :=
+  inferInstanceAs <| SMulWithZero (center R') α
+
 end NonAssocSemiring
 
 variable [Semiring R']
@@ -1029,6 +1072,24 @@ instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
   Submonoid.center.smulCommClass_right
+
+instance [Semiring α] [MulSemiringAction R' α] : MulSemiringAction (Center R') α :=
+  inferInstanceAs <| MulSemiringAction (center R') α
+
+instance [MulAction R' α] : MulAction (Center R') α :=
+  inferInstanceAs <| MulAction (center R') α
+
+instance [AddMonoid α] [DistribMulAction R' α] : DistribMulAction (Center R') α :=
+  inferInstanceAs <| DistribMulAction (center R') α
+
+instance [Monoid α] [MulDistribMulAction R' α] : MulDistribMulAction (Center R') α :=
+  inferInstanceAs <| MulDistribMulAction (center R') α
+
+instance [Zero α] [MulActionWithZero R' α] : MulActionWithZero (Center R') α :=
+  inferInstanceAs <| MulActionWithZero (center R') α
+
+instance [AddCommMonoid α] [Module R' α] : Module (Center R') α :=
+  inferInstanceAs <| Module (center R') α
 
 lemma closure_le_centralizer_centralizer (s : Set R') :
     closure s ≤ centralizer (centralizer s) :=
