@@ -287,22 +287,21 @@ lemma restrict_compl_sigmaFiniteSetWRT [SFinite ν] (hμν : μ ≪ ν) :
 
 end SFinite
 
+/-- If `μ` is sigma-finite, then `(μ.sigmaFiniteSetWRT ν)ᶜ` is `ν`-null, for any measure `ν`. -/
 @[simp]
-lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFinite ν] :
-    ν (μ.sigmaFiniteSetWRT ν)ᶜ = 0 := by
-  have h : ν (μ.sigmaFiniteSetWRT ν)ᶜ ≠ 0 → μ (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ :=
-    measure_eq_top_of_subset_compl_sigmaFiniteSetWRT subset_rfl
-  by_contra h0
-  refine ENNReal.top_ne_zero ?_
-  rw [← h h0, ← Measure.iSup_restrict_spanningSets]
-  simp_rw [Measure.restrict_apply' (measurableSet_spanningSets μ _), ENNReal.iSup_eq_zero]
-  intro i
-  by_contra h_ne_zero
-  have h_zero_top := measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
-    (Set.inter_subset_left : (μ.sigmaFiniteSetWRT ν)ᶜ ∩ spanningSets μ i ⊆ _) ?_
-  swap; · exact fun h ↦ h_ne_zero (hμν h)
-  refine absurd h_zero_top (ne_of_lt ?_)
-  exact (measure_mono Set.inter_subset_right).trans_lt (measure_spanningSets_lt_top μ i)
+lemma measure_compl_sigmaFiniteSetWRT [SigmaFinite μ] : ν (μ.sigmaFiniteSetWRT ν)ᶜ = 0 := by
+  have h : ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
+      ∧ (∀ t ⊆ sᶜ, ν t ≠ 0 → μ t = ∞) :=
+    ⟨Set.univ, .univ, by rw [Measure.restrict_univ]; infer_instance, fun t ht _ ↦ by simp_all⟩
+  have hs : ∀ t ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ, ν t ≠ 0 → μ t = ∞ := by
+    rw [Measure.sigmaFiniteSetWRT, dite_eq_left h]
+    exact h.choose_spec.2.2
+  refine measure_mono_null (fun x hx ↦ ?_) (measure_iUnion_null (μ := ν)
+    (s := fun i ↦ (μ.sigmaFiniteSetWRT ν)ᶜ ∩ spanningSets μ i) fun i ↦ ?_)
+  · simpa using ⟨hx, _, mem_spanningSetsIndex μ x⟩
+  · by_contra hne
+    exact (measure_mono Set.inter_subset_right |>.trans_lt
+      (measure_spanningSets_lt_top μ i)).ne (hs _ Set.inter_subset_left hne)
 
 section SigmaFiniteSet
 
@@ -341,7 +340,7 @@ lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero (h : μ μ.sigmaFinite
 
 @[simp]
 lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.sigmaFiniteSetᶜ = 0 :=
-  measure_compl_sigmaFiniteSetWRT Measure.AbsolutelyContinuous.rfl
+  measure_compl_sigmaFiniteSetWRT
 
 /-- An s-finite measure `μ` is sigma-finite iff `μ μ.sigmaFiniteSetᶜ = 0`. -/
 lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) :

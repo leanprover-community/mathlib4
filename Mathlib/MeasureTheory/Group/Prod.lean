@@ -250,20 +250,23 @@ theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν 
 
 section SigmaFinite
 
-variable (μ' ν' : Measure G) [SigmaFinite μ'] [SigmaFinite ν'] [IsMulLeftInvariant μ']
+variable (μ' ν' : Measure G) [SFinite μ'] [SigmaFinite ν'] [IsMulLeftInvariant μ']
   [IsMulLeftInvariant ν']
 
-@[to_additive]
-theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
-    ∀ᵐ x ∂μ', ν' ((· * x) ⁻¹' s) < ∞ := by
+/-- Auxiliary lemma for `ae_measure_preimage_mul_right_lt_top`, which proves the same statement
+for any s-finite left-invariant measure in place of the first `ν'`. -/
+@[to_additive /-- Auxiliary lemma for `ae_measure_preimage_add_right_lt_top`, which proves the same
+statement for any s-finite left-invariant measure in place of the first `ν'`. -/]
+private theorem ae_measure_preimage_mul_right_lt_top_self (hνs : ν' s ≠ ∞) :
+    ∀ᵐ x ∂ν', ν' ((· * x) ⁻¹' s) < ∞ := by
   wlog sm : MeasurableSet s generalizing s
-  · filter_upwards [this ((measure_toMeasurable _).trans_ne hμs) (measurableSet_toMeasurable ..)]
+  · filter_upwards [this ((measure_toMeasurable _).trans_ne hνs) (measurableSet_toMeasurable ..)]
       with x hx using lt_of_le_of_lt (by gcongr; apply subset_toMeasurable) hx
   refine ae_of_forall_measure_lt_top_ae_restrict' ν'.inv _ ?_
   intro A hA _ h3A
   simp only [ν'.inv_apply] at h3A
   apply ae_lt_top (measurable_measure_mul_right ν' sm)
-  have h1 := measure_mul_lintegral_eq μ' ν' sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
+  have h1 := measure_mul_lintegral_eq ν' ν' sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
   rw [lintegral_indicator hA.inv] at h1
   simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv_eq_inv, indicator_image inv_injective,
     image_inv_eq_inv, ← indicator_mul_right _ fun x => ν' ((· * x) ⁻¹' s), Function.comp,
@@ -274,7 +277,7 @@ theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
 @[to_additive]
 theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     ∀ᵐ x ∂μ', ν' ((fun y => y * x) ⁻¹' s) < ∞ := by
-  refine (ae_measure_preimage_mul_right_lt_top ν' ν' h3s).filter_mono ?_
+  refine (ae_measure_preimage_mul_right_lt_top_self ν' h3s).filter_mono ?_
   refine (absolutelyContinuous_of_isMulLeftInvariant μ' ν' ?_).ae_le
   refine mt ?_ h2s
   intro hν
@@ -333,6 +336,35 @@ theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
   ext1 t -
   rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
+
+@[to_additive]
+theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
+    ∀ᵐ x ∂μ', ν' ((· * x) ⁻¹' s) < ∞ := by
+  rcases eq_or_ne ν' 0 with rfl | hν
+  · simp
+  obtain ⟨t, ht0, htop⟩ : ∃ t, ν' t ≠ 0 ∧ ν' t ≠ ∞ := by
+    obtain ⟨n, hn⟩ : ∃ n, 0 < ν' (spanningSets ν' n) := by
+      simpa using (exists_measure_inter_spanningSets_pos (μ := ν') Set.univ).2
+        (measure_univ_pos.2 hν)
+    exact ⟨_, hn.ne', (measure_spanningSets_lt_top ν' n).ne⟩
+  have h := measure_eq_div_smul μ' ν' ht0 htop
+  set c := μ' t / ν' t
+  rcases eq_or_ne c ∞ with hc | hc
+  · -- `μ' = ∞ • ν'`, so `ν' s = 0` and all right translates of `s` are `ν'`-null
+    have hs : ν' s = 0 := by
+      by_contra hs
+      rw [h, hc] at hμs
+      simp [hs] at hμs
+    exact Eventually.of_forall fun x ↦ by
+      rw [(measure_mul_right_null ν' x).2 hs]; exact ENNReal.zero_lt_top
+  rcases eq_or_ne c 0 with hc0 | hc0
+  · rw [h, hc0, zero_smul]; simp
+  have hs : ν' s ≠ ∞ := by
+    rw [h, smul_apply, smul_eq_mul] at hμs
+    exact fun h' ↦ hμs (by rw [h', ENNReal.mul_top hc0])
+  rw [h]
+  exact (ae_measure_preimage_mul_right_lt_top_self ν' hs).filter_mono
+    (ae_mono' smul_absolutelyContinuous)
 
 end SigmaFinite
 
