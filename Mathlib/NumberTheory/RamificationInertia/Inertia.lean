@@ -138,7 +138,7 @@ set_option linter.deprecated.deprecatedTarget false in
 lemma inertiaDeg'_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg' p (P.map e) = inertiaDeg' p P := by
-  rw [show P.map e = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  rw [show P.map e = _ from map_comap_of_equiv (RingEquiv.ofClass e : S ≃+* S₁)]
   exact p.inertiaDeg'_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 set_option linter.deprecated.deprecatedTarget false in

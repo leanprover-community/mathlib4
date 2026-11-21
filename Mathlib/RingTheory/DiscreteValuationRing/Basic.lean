@@ -301,7 +301,7 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     (e : E) : IsDiscreteValuationRing B where
   principal := (isPrincipalIdealRing_iff _).1 <|
     .of_surjective _ (EquivLike.surjective e)
-  __ : IsLocalRing B := (RingEquivClass.toRingEquiv e).isLocalRing
+  __ : IsLocalRing B := (RingEquiv.ofClass e).isLocalRing
   not_a_field' := by
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
       <| IsDiscreteValuationRing.not_a_field A)
