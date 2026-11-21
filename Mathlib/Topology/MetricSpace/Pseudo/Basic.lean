@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Pseudo-metric spaces

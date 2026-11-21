@@ -7,7 +7,8 @@ module
 
 public import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # Center and centralizers of free groups

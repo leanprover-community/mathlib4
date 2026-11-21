@@ -5,10 +5,11 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # `WithAbs` type synonym

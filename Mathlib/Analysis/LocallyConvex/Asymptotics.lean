@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+
+import Mathlib.Analysis.Asymptotics.Basic
 
 /-!
 # Asymptotics for locally convex topological vector spaces
