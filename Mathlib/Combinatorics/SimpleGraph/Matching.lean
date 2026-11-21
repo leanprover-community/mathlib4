@@ -70,32 +70,30 @@ def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w,
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hvw : M.Adj v w) :
-    h.toEdge ⟨v, hvw.fst_mem⟩ = ⟨s(v, w), hvw⟩ := by
-  rw [IsMatching.toEdge, Subtype.mk_eq_mk, ← h hvw.fst_mem |>.choose_spec.right w hvw]
+    h.toEdge ⟨v, hvw.fst_mem⟩ = ⟨s(v, w), hvw⟩ :=
+  Subtype.ext congr(s(v, $(((h hvw.fst_mem).choose_spec.right w hvw).symm)))
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
   rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj he⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching) (ha : M.Adj v w) :
-    h.toEdge ⟨v, ha.fst_mem⟩ = h.toEdge ⟨w, ha.snd_mem⟩ := by
-  rw [h.toEdge_eq_of_adj ha, h.toEdge_eq_of_adj ha.symm, Subtype.mk_eq_mk, Sym2.eq_swap]
+    h.toEdge ⟨v, ha.fst_mem⟩ = h.toEdge ⟨w, ha.snd_mem⟩ :=
+  (h.toEdge_eq_of_adj ha).trans
+    ((Subtype.ext Sym2.eq_swap).trans (h.toEdge_eq_of_adj ha.symm).symm)
 
 theorem IsMatching.mem_coe_toEdge (h : M.IsMatching) {v : V} (hv : v ∈ M.verts) :
     v ∈ (h.toEdge ⟨v, hv⟩ : Sym2 V) :=
   ⟨h hv |>.choose, rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem IsMatching.toEdge_preimage_singleton (h : M.IsMatching) (huv : M.Adj u v) :
     h.toEdge ⁻¹' {⟨s(u, v), huv⟩} = {⟨u, huv.fst_mem⟩, ⟨v, huv.snd_mem⟩} := by
   refine Set.ext fun w ↦ ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
   · grind [h.mem_coe_toEdge w.property]
   · rcases hw with rfl | rfl
     · simp [h.toEdge_eq_of_adj huv]
-    · simp [h.toEdge_eq_of_adj huv.symm]
+    · exact (h.toEdge_eq_toEdge_of_adj huv.symm).trans (h.toEdge_eq_of_adj huv)
 
 lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
@@ -595,19 +593,19 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
     · grind
   · grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
+  change ∃! w, (M.spanningCoe ∆ G').Adj v w
   simp only [symmDiff_def]
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
     have hmadj : M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
-    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
+    simp only [SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
       hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
     · grind
@@ -615,7 +613,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
       by_contra! hc
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' by simpa using hG' hc hr.1 hw'.2]
   · use w
-    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
+    simp only [SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
       not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1

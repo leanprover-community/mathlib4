@@ -332,7 +332,6 @@ section Copy
 
 variable {α β : Type*} [Fintype α] [Fintype β]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
 vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
 of a complete bipartite graph. -/
@@ -357,14 +356,11 @@ noncomputable def Copy.completeBipartiteGraph
       simpa using (h (fα p₁).prop (fβ p₂).prop).symm.ne'
     | .inr p₁, .inr p₂ => simp
   refine ⟨⟨f.toFun, fun {s₁ s₂} hadj ↦ ?_⟩, f.injective⟩
-  rcases hadj with ⟨hs₁, hs₂⟩ | ⟨hs₁, hs₂⟩
-  all_goals dsimp [f]
-  · rw [← Sum.inl_getLeft s₁ hs₁, ← Sum.inr_getRight s₂ hs₂,
-      Sum.elim_inl, Sum.elim_inr]
-    exact h (by simp) (by simp)
-  · rw [← Sum.inr_getRight s₁ hs₁, ← Sum.inl_getLeft s₂ hs₂,
-      Sum.elim_inl, Sum.elim_inr, adj_comm]
-    exact h (by simp) (by simp)
+  cases s₁ <;> cases s₂
+  · simp at hadj
+  · exact h (fα _).prop (fβ _).prop
+  · exact (h (fα _).prop (fβ _).prop).symm
+  · simp at hadj
 
 /-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff there exists a "left"
 subset of `card α` vertices and a "right" subset of `card β` vertices such that every vertex
@@ -535,7 +531,7 @@ section BipartiteDoubleCover
 
 /-- `bipartiteDoubleCover G` has two vertices `inl v` and `inr v` for each vertex `v` in `G`
 such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent to `w` in `G`. -/
-@[simp] def bipartiteDoubleCover (G : SimpleGraph V) : SimpleGraph (V ⊕ V) where
+@[simps] def bipartiteDoubleCover (G : SimpleGraph V) : SimpleGraph (V ⊕ V) where
   Adj
   | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
   | _, _ => False
@@ -552,7 +548,6 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inr _ | .inr _, .inl _ => by simp
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
 theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by
