@@ -491,6 +491,40 @@ theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
     restrictHom G G' A B C g • I.under B = (g • I).under B := by
   simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
 
+/-- The homomorphism `restrictHom` is the unique homomorphism `G →* G'` for which
+`algebraMap B C` is compatible with the actions of `G'` on `B` and of `G` on `C`. -/
+theorem restrictHom_eq_of_algebraMap_smul [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (f : G →* G')
+    (hf : ∀ g x, algebraMap B C (f g • x) = g • algebraMap B C x) :
+    restrictHom G G' A B C = f := by
+  ext g
+  have : FaithfulSMul G' B := faithful A
+  exact eq_of_smul_eq_smul fun x ↦ FaithfulSMul.algebraMap_injective B C <| by
+    rw [algebraMap_restrictHom_smul, hf]
+
+/-- The homomorphism `restrictHom` does not depend on the tower `C/B/A` used to define it, as
+long as the actions of `G` and `G'` are compatible with the maps `B → B'` and `C → C'`. -/
+theorem restrictHom_eq_restrictHom (A' B' C' : Type*) [CommRing A'] [CommRing B'] [CommRing C']
+    [IsDomain C'] [Algebra A' B'] [Algebra A' C'] [Algebra B' C'] [IsScalarTower A' B' C']
+    [FaithfulSMul B' C'] [Algebra B B'] [Algebra C C'] [Algebra B C'] [IsScalarTower B B' C']
+    [IsScalarTower B C C'] [FaithfulSMul C C'] [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [MulSemiringAction G C']
+    [IsGaloisGroup G A' C'] [MulSemiringAction G' B'] [IsGaloisGroup G' A' B']
+    [SMulDistribClass G C C'] [SMulDistribClass G' B B'] :
+    restrictHom G G' A B C = restrictHom G G' A' B' C' :=
+  restrictHom_eq_of_algebraMap_smul _ _ _ _ _ _ fun g x ↦
+    FaithfulSMul.algebraMap_injective C C' <| by
+      rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B B' C',
+        algebraMap.smul', algebraMap_restrictHom_smul, ← IsScalarTower.algebraMap_apply,
+        algebraMap.smul', ← IsScalarTower.algebraMap_apply]
+
+/-- For fields, the homomorphism `restrictHom` is `AlgEquiv.restrictNormalHom`. -/
+theorem restrictHom_eq_restrictNormalHom (E : Type*) [Field E] [Algebra K E] [Algebra E L]
+    [IsScalarTower K E L] [FiniteDimensional K L] [FiniteDimensional K E] [IsGalois K L]
+    [IsGalois K E] :
+    restrictHom Gal(L/K) Gal(E/K) K E L = AlgEquiv.restrictNormalHom E :=
+  restrictHom_eq_of_algebraMap_smul _ _ _ _ _ _ fun σ x ↦ σ.restrictNormal_commutes E x
+
 end Domain
 
 noncomputable section IntermediateField
