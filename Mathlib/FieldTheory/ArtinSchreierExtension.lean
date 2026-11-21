@@ -68,7 +68,7 @@ end CommRing
 
 section Field
 
-variable {F : Type*} (p : ℕ) [Field F] [ExpChar F p]
+variable {F : Type*} [Field F]
 
 open AdjoinRoot Multiset IntermediateField Polynomial
 
@@ -83,6 +83,8 @@ lemma artinSchreierPoly_splits {a c : F} (hr : (artinSchreierPoly a).IsRoot c) :
     have := Fact.mk hp
     simpa using splits_X_pow_char_sub_X F p
   · simp [artinSchreierPoly_def p, hp1]
+
+variable (p : ℕ) [ExpChar F p]
 
 lemma artinSchreierPoly_irreducible [hp : Fact p.Prime]
     {a : F} (hr : (artinSchreierPoly a).roots = 0) : Irreducible (artinSchreierPoly a) := by
