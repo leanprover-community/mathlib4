@@ -31,8 +31,6 @@ functions on a non-compact topological space. A proper map between a pair of suc
 (contravariantly) induces a morphism between their algebras of compactly-supported functions which
 will be a `NonUnitalAlgHom`.
 
-TODO: add `NonUnitalAlgEquiv` when needed.
-
 ## Main definitions
 
   * `NonUnitalAlgHom`
