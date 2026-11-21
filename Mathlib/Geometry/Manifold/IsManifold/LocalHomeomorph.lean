@@ -75,7 +75,7 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M] (h : Foo I n
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  refine { compatible := ?_ } -- Why does `constructor` fail here?
+  refine { compatible := ?_ }
   rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
   rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g x)).symm.trans_assoc,
     ← (hf.localInverseAt (g x)).symm.trans_assoc]
