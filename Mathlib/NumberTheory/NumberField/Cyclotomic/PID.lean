@@ -47,7 +47,7 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
 
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
-  have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
+  have : Fact (Nat.Prime 5) := ⟨prime_five⟩
   have : 3 < π := pi_gt_three
   apply isPrincipalIdealRing_of_abs_discr_lt
   rw [discr_prime 5 K, finrank 5 K, nrComplexPlaces_eq_totient_div_two 5,
