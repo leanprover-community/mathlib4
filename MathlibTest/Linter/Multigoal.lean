@@ -40,16 +40,15 @@ Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   conv =>
     congr
-    rw [← Nat.add_zero 0]
+    · rw [← Nat.add_zero 0]
   conv_lhs =>
     congr
-    rw [← Nat.add_zero n]
-    rfl
+    · rw [← Nat.add_zero n]
   conv_rhs =>
     rw [← Nat.add_zero 0]
     congr
-    rfl
-    rfl
+    · rfl
+    · rfl
   by_cases 0 = 0
   assumption
   assumption

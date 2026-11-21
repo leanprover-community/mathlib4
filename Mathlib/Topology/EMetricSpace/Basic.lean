@@ -11,9 +11,9 @@ public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Extended metric spaces
