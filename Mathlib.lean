@@ -11,6 +11,7 @@ public import Mathlib.Tactic.Gavrilovich.Tactics
 public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Mathlib.Topology.Gavrilovich.Model
 public import Mathlib.Topology.Gavrilovich.Relabel
+public import Mathlib.Topology.Gavrilovich.Sierpinski
 public import Mathlib.Topology.Gavrilovich.Space
 public import Std
 public import Batteries
