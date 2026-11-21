@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
@@ -48,6 +49,7 @@ This is available in bundled forms as:
 * `Matrix.diagonalRingHom`
 * `Matrix.diagonalAlgHom`
 -/
+@[wikidata Q332791]
 def diagonal [Zero α] (d : n → α) : Matrix n n α :=
   of fun i j => if i = j then d i else 0
 
