@@ -188,27 +188,6 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     · exact ⟨hf.self_mem_localInverseAt_target, by simpa [hg y] using hy⟩
   · exact contMDiffAt_localInverseAt_rightInverse hf hg y
 
-variable [IsManifold I n M]
-
-lemma IsLocalHomeomorph.isManifoldOfRightInverse
-    -- TODO: Is `h` below the most useful hypothesis?
-    -- I think so? from h we are trying to prove f is local diffeom. but also
-    -- i think the converse is true? and its not too painful to work with
-    -- but maybe it could be its own Prop definition (?)
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
-    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    IsManifold I n M' := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  refine { compatible := ?_ } -- Why does `constructor` fail here?
-  rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
-  rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g x)).symm.trans_assoc,
-    ← (hf.localInverseAt (g x)).symm.trans_assoc]
-  refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
-    (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _) (foo hf h _ _) ?_
-  simpa only [← OpenPartialHomeomorph.symm_source,
-    OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm] using
-    foo hf h (g y) (g x)
-
 /-- Suppose `F : M → N` is invariant under `f`
 and the map `F ∘ g : M' → N` is `C^n`, then so is `F`. -/
 lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
@@ -230,5 +209,26 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_iff_contMDiff
     ContMDiff I J n (F ∘ g) ↔ CMDiff n F :=
   ⟨fun h' ↦ IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse hf hg h hF h',
     fun h' ↦ IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff hf hg hF h'⟩
+
+variable [IsManifold I n M]
+
+lemma IsLocalHomeomorph.isManifoldOfRightInverse
+    -- TODO: Is `h` below the most useful hypothesis?
+    -- I think so? from h we are trying to prove f is local diffeom. but also
+    -- i think the converse is true? and its not too painful to work with
+    -- but maybe it could be its own Prop definition (?)
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    IsManifold I n M' := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  refine { compatible := ?_ } -- Why does `constructor` fail here?
+  rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
+  rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g x)).symm.trans_assoc,
+    ← (hf.localInverseAt (g x)).symm.trans_assoc]
+  refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
+    (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _) (foo hf h _ _) ?_
+  simpa only [← OpenPartialHomeomorph.symm_source,
+    OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm] using
+    foo hf h (g y) (g x)
 
 end
