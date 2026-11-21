@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Fintypes and sum types

@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Bases and matrices
@@ -223,9 +224,8 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι' R (ι → R)) (A : Matrix ι 
 namespace Module.Basis
 
 /-- See also `Basis.toMatrix_reindex` which gives the `simp` normal form of this result. -/
-theorem toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
-    (e : ι ≃ ι') : (b.reindex e).toMatrix v =
-    Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
+theorem toMatrix_reindex' (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
+    (b.reindex e).toMatrix v = Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
   ext
   simp [Basis.toMatrix_apply]
 
