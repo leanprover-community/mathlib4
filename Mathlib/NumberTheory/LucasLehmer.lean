@@ -59,7 +59,11 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
     simpa using! Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
-@[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
+@[simp] lemma mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
+@[simp] lemma mersenne_eq_zero {p : ℕ} : mersenne p = 0 ↔ p = 0 := by
+  simp [← not_iff_not, ← pos_iff_ne_zero]
+
+lemma mersenne_ne_zero {p : ℕ} : mersenne p ≠ 0 ↔ p ≠ 0 := mersenne_eq_zero.ne
 
 lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
@@ -76,19 +80,18 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
+alias ⟨_, mersenne_ne_zero_of_ne_zero⟩ := mersenne_ne_zero
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalMersenne : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
-    | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
+    match ra.toNonzero (q(inferInstance) : Q(Zero ℕ)) with
+    | some pa => pure (.nonzero q(mersenne_ne_zero_of_ne_zero $pa))
+    | none => pure .none
   | _, _, _ => throwError "not mersenne"
 
 end Mathlib.Meta.Positivity
