@@ -362,7 +362,7 @@ abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q 
     (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
-attribute [to_dual exisiting] kernel.map.congr_simp
+attribute [to_dual existing] kernel.map.congr_simp
 
 @[to_dual (attr := simp)]
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
