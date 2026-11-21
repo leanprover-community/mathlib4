@@ -63,16 +63,16 @@ namespace DualNumber
 open TrivSqZeroExt Algebra
 
 @[simp]
-theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
+theorem fst_eps [Zero R] [One R] : DualNumber.eps.fst = (0 : R) :=
   rfl
 
 @[simp]
-theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
+theorem snd_eps [Zero R] [One R] : DualNumber.eps.snd = (1 : R) :=
   rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
-theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
+theorem snd_mul [Semiring R] (x y : R[ε]) : (x * y).snd = x.fst * y.snd + x.snd * y.fst :=
   rfl
 
 @[simp]
@@ -89,7 +89,7 @@ theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
 
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
-  ext (mul_zero r).symm (mul_one r).symm
+  TrivSqZeroExt.ext (mul_zero r).symm (mul_one r).symm
 
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
