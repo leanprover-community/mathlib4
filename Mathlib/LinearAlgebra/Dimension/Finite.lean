@@ -6,11 +6,13 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.RankZero
 
 /-!
 # Conditions for rank to be finite
 
-Also contains characterization for when rank equals zero or rank equals one.
+Also contains characterization for when rank equals one.
+See `Mathlib.LinearAlgebra.Dimension.RankZero` for modules of rank zero.
 -/
 
 @[expose] public section
@@ -46,66 +48,10 @@ theorem rank_le {n : ℕ}
   rintro ⟨s, li⟩
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
 
-section RankZero
-
-/-- See `rank_zero_iff` for a stronger version with `IsTorsionFree R M`. -/
-lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
-    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
-  nontriviality R
-  constructor
-  · contrapose!
-    rintro ⟨x, hx⟩
-    rw [← Cardinal.one_le_iff_ne_zero]
-    have : LinearIndependent R (fun _ : Unit ↦ x) :=
-      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
-        hx _ H ((Finsupp.linearCombination_unique _ _ _).symm.trans hl))
-    simpa using this.cardinal_lift_le_rank
-  · intro h
-    rw [← nonpos_iff_eq_zero, Module.rank_def]
-    apply ciSup_le'
-    intro ⟨s, hs⟩
-    rw [nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, ← not_nonempty_iff]
-    rintro ⟨i : s⟩
-    obtain ⟨a, ha, ha'⟩ := h i
-    apply ha
-    simpa using congr($(linearIndependent_iff.mp hs (.single i a) (by simpa)) i)
-
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-
-section
-variable [IsDomain R] [IsTorsionFree R M]
-
-theorem rank_zero_iff_forall_zero :
-    Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
-  simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
-    exists_and_right, and_iff_right (exists_ne (0 : R))]
-
-/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
-Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
-theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
-  rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
-
-theorem rank_pos_iff_exists_ne_zero : 0 < Module.rank R M ↔ ∃ x : M, x ≠ 0 := by
-  contrapose!; rw [nonpos_iff_eq_zero]; exact rank_zero_iff_forall_zero
-
-theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
-  rank_pos_iff_exists_ne_zero.trans (nontrivial_iff_exists_ne 0).symm
-
-theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
-  rank_pos_iff_nontrivial.mpr ‹_›
-
-theorem Module.finite_of_rank_eq_zero (h : Module.rank R M = 0) : Module.Finite R M := by
-  nontriviality R
-  rw [rank_zero_iff] at h
-  infer_instance
-
-end
-
-lemma exists_mem_ne_zero_of_rank_pos [Nontrivial R] {s : Submodule R M} (h : 0 < Module.rank R s) :
-    ∃ b : M, b ∈ s ∧ b ≠ 0 :=
-  exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
-
-end RankZero
+theorem Module.finite_of_rank_eq_zero [RankZeroSubsingleton R M] (h : Module.rank R M = 0) :
+    Module.Finite R M :=
+  have := subsingleton_of_rank_zero h
+  inferInstance
 
 section Finite
 
@@ -427,21 +373,6 @@ theorem Module.finrank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : f
 section
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [IsDomain R] [IsTorsionFree R M]
-
-lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Submodule R M) = ⊤ := by
-  nontriviality R
-  rw [rank_zero_iff] at h
-  subsingleton
-
-/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
-@[simp]
-theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S = ⊥ :=
-  ⟨fun h =>
-    (Submodule.eq_bot_iff _).2 fun x hx =>
-      congr_arg Subtype.val <|
-        ((Submodule.eq_bot_iff _).1 <| Eq.symm <| Submodule.bot_eq_top_of_rank_eq_zero h) ⟨x, hx⟩
-          Submodule.mem_top,
-    fun h => by rw [h, rank_bot]⟩
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] {S : Submodule R M} [Module.Finite R S] :
