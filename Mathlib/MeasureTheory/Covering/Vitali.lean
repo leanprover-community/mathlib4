@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.MeasureTheory.Measure.WithDensityFinite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -30,7 +31,8 @@ definite proportion of the ball `B (x, 6 r)` for a given measure `μ` (think of 
 where `μ` is a doubling measure and `t` is a family of balls). Consider a set `s` at which the
 family is fine, i.e., every point of `s` belongs to arbitrarily small elements of `t`. Then one
 can extract from `t` a disjoint subfamily that covers almost all `s`. It is proved in
-`Vitali.exists_disjoint_covering_ae`.
+`Vitali.exists_disjoint_covering_ae`. The proportion is allowed to depend on the center `x` of the
+ball, i.e., we only need `μ (B (x, 3 r)) ≤ C x * μ a` for some function `C`.
 
 A way to restate this theorem is to say that the set of closed sets `a` with nonempty interior
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
@@ -226,18 +228,10 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
 
-/-- The measurable **Vitali covering theorem**.
-
-Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
-included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
-measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
-Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
-belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
-that covers almost all `s`.
-
-For more flexibility, we give a statement with a parameterized family of sets.
--/
-theorem exists_disjoint_covering_ae
+/-- The measurable **Vitali covering theorem** with a uniform doubling constant `C`.
+This is an auxiliary statement, see `exists_disjoint_covering_ae` for a version where the constant
+may depend on the center of the ball. -/
+private theorem exists_disjoint_covering_ae_of_const
     [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
     (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
@@ -425,6 +419,122 @@ theorem exists_disjoint_covering_ae
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
 
+/-- The measurable **Vitali covering theorem**.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion `1 / C x` of the ball `B (x, 3 r)`
+for a given measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family
+of balls). The proportion may depend on the center `x`.
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
+
+For more flexibility, we give a statement with a parameterized family of sets.
+-/
+theorem exists_disjoint_covering_ae
+    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    (C : α → ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α)
+    (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
+    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C (c a) * μ (B a))
+    (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
+    (hf : ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x) :
+    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
+  /- The idea of the proof is the following. Let `s n` be the set of points `x ∈ s` such that
+  `C x ≤ n`. We construct inductively an increasing sequence of finite disjoint subfamilies `F n`
+  of `t` such that the measure of `s n \ ⋃ F (n + 1)` is at most `1 / n`. To construct `F (n + 1)`
+  from `F n`, we apply the uniform version of the theorem with the constant `n` to the points of
+  `s n` that are not covered by the closed set `K = ⋃ F n`, using only the elements of `t` which
+  are disjoint from `K`. This gives a countable disjoint family `u` covering almost all
+  `s n \ K`, and we add to `F n` a finite subfamily of `u` covering most of `⋃ u`.
+  To make sense of "most of" for a locally finite measure, we measure everything with a finite
+  measure `ν` having the same null sets as `μ`. The union of the `F n` is the desired family. -/
+  set ν := μ.toFinite
+  /- A finite disjoint subfamily of `t`, encoded as an element of a subtype to make the inductive
+  construction easier. -/
+  let S := {F : Set ι // F.Finite ∧ F ⊆ t ∧ F.PairwiseDisjoint B}
+  -- The main step: one can enlarge a finite disjoint subfamily to cover most of `s n`.
+  have step : ∀ (F : S) (n : ℕ), ∃ G : S, F.1 ⊆ G.1 ∧
+      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ G.1, B a) < (n : ℝ≥0∞)⁻¹ := by
+    rintro ⟨F, hFfin, hFt, hFdisj⟩ n
+    set K := ⋃ a ∈ F, B a
+    have hK : IsClosed K := hFfin.isClosed_biUnion fun a ha ↦ h't a (hFt ha)
+    let t' := {a ∈ t | C (c a) ≤ n ∧ Disjoint (B a) K}
+    -- the family `t'` is still fine at the points of `s n` outside of `K`
+    have hf' : ∀ x ∈ {x ∈ s | C x ≤ n} \ K, ∀ ε > (0 : ℝ), ∃ a ∈ t', r a ≤ ε ∧ c a = x := by
+      rintro x ⟨⟨hxs, hxC⟩, hxK⟩ ε εpos
+      obtain ⟨d, dpos, hd⟩ : ∃ d > 0, closedBall x d ⊆ Kᶜ :=
+        nhds_basis_closedBall.mem_iff.1 (hK.isOpen_compl.mem_nhds hxK)
+      obtain ⟨a, hat, ha, rfl⟩ := hf x hxs (min ε d) (lt_min εpos dpos)
+      refine ⟨a, ⟨hat, hxC, subset_compl_iff_disjoint_right.1 ?_⟩, ha.trans (min_le_left _ _),
+        rfl⟩
+      exact (hB a hat).trans ((closedBall_subset_closedBall (ha.trans (min_le_right _ _))).trans hd)
+    obtain ⟨u, ut', u_count, u_disj, hu⟩ := exists_disjoint_covering_ae_of_const μ
+      ({x ∈ s | C x ≤ n} \ K) t' n r c B (fun a ha ↦ hB a ha.1)
+      (fun a ha ↦ (μB a ha.1).trans (by gcongr; exact_mod_cast ha.2.1))
+      (fun a ha ↦ ht a ha.1) (fun a ha ↦ h't a ha.1) hf'
+    have ut : u ⊆ t := fun a ha ↦ (ut' ha).1
+    have : Countable u := u_count.to_subtype
+    -- the elements of `u` have summable `ν`-measures, so one can keep finitely many of them
+    -- so that the remaining ones have a total measure `< 1 / n`.
+    have I : ∑' a : u, ν (B a) ≠ ∞ := by
+      rw [← measure_biUnion u_count u_disj fun a ha ↦ (h't a (ut ha)).measurableSet]
+      exact measure_ne_top _ _
+    obtain ⟨w, hw⟩ : ∃ w : Finset u, ∑' a : {a // a ∉ w}, ν (B a) < (n : ℝ≥0∞)⁻¹ :=
+      ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I)).2 _
+        (ENNReal.inv_pos.2 (ENNReal.natCast_ne_top n))).exists
+    refine ⟨⟨F ∪ (↑) '' (w : Set u), hFfin.union ((w.finite_toSet).image _),
+      union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.2), ?_⟩, subset_union_left, ?_⟩
+    · refine hFdisj.union (u_disj.subset (by rintro - ⟨a, -, rfl⟩; exact a.2)) ?_
+      rintro a ha - ⟨b, -, rfl⟩ -
+      exact ((ut' b.2).2.2.mono_right (subset_biUnion_of_mem ha)).symm
+    -- the points of `s n` that are not covered are either not covered by `u` (a null set),
+    -- or covered by an element of `u` outside of `w`.
+    have M : {x ∈ s | C x ≤ n} \ ⋃ a ∈ F ∪ (↑) '' (w : Set u), B a ⊆
+        (({x ∈ s | C x ≤ n} \ K) \ ⋃ a ∈ u, B a) ∪ ⋃ a : {a : u // a ∉ w}, B a := by
+      intro x ⟨hxs, hxG⟩
+      simp only [mem_iUnion, mem_union, mem_image, Finset.mem_coe, exists_prop, not_exists,
+        not_and, or_imp, forall_and] at hxG
+      by_cases hxu : x ∈ ⋃ a ∈ u, B a
+      · obtain ⟨a, hau, hxa⟩ := mem_iUnion₂.1 hxu
+        refine Or.inr (mem_iUnion.2 ⟨⟨⟨a, hau⟩, fun haw ↦ ?_⟩, hxa⟩)
+        exact hxG.2 a ⟨⟨a, hau⟩, haw, rfl⟩ hxa
+      · exact Or.inl ⟨⟨hxs, by simpa [K] using hxG.1⟩, hxu⟩
+    calc
+      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ F ∪ (↑) '' (w : Set u), B a)
+        ≤ ν (({x ∈ s | C x ≤ n} \ K) \ ⋃ a ∈ u, B a) + ν (⋃ a : {a : u // a ∉ w}, B a) :=
+          (measure_mono M).trans (measure_union_le _ _)
+      _ ≤ 0 + ∑' a : {a : u // a ∉ w}, ν (B a) := by
+          gcongr
+          · exact (toFinite_absolutelyContinuous μ hu).le
+          · exact measure_iUnion_le _
+      _ < (n : ℝ≥0∞)⁻¹ := by rwa [zero_add]
+  choose G hFG hG using step
+  -- the inductive construction of the sequence of finite subfamilies
+  let F : ℕ → S := fun n ↦ Nat.rec ⟨∅, finite_empty, empty_subset _, pairwiseDisjoint_empty⟩
+    (fun n Fn ↦ G Fn n) n
+  have F_succ (n : ℕ) : F (n + 1) = G (F n) n := rfl
+  have F_mono : Monotone fun n ↦ (F n).1 :=
+    monotone_nat_of_le_succ fun n ↦ by rw [F_succ]; exact hFG _ _
+  refine ⟨⋃ n, (F n).1, iUnion_subset fun n ↦ (F n).2.2.1,
+    countable_iUnion fun n ↦ (F n).2.1.countable,
+    (pairwiseDisjoint_iUnion F_mono.directed_le).2 fun n ↦ (F n).2.2.2, ?_⟩
+  rw [← toFinite_apply_eq_zero_iff]
+  -- it suffices to show that each `s n` is almost everywhere covered
+  have : s \ ⋃ a ∈ ⋃ n, (F n).1, B a ⊆
+      ⋃ n : ℕ, {x ∈ s | C x ≤ n} \ ⋃ a ∈ ⋃ n, (F n).1, B a := by
+    intro x ⟨hxs, hx⟩
+    obtain ⟨n, hn⟩ := exists_nat_ge (C x)
+    exact mem_iUnion.2 ⟨n, ⟨hxs, by exact_mod_cast hn⟩, hx⟩
+  refine measure_mono_null this (measure_iUnion_null fun n ↦ ?_)
+  -- the measure of the uncovered part of `s n` is at most `1 / m` for any `m ≥ n`.
+  refine le_antisymm (ge_of_tendsto ENNReal.tendsto_inv_nat_nhds_zero ?_) bot_le
+  filter_upwards [eventually_ge_atTop n] with m hm
+  refine le_trans (measure_mono ?_) (hG (F m) m).le
+  refine sdiff_subset_sdiff (fun x hx ↦ ⟨hx.1, hx.2.trans (by exact_mod_cast hm)⟩) ?_
+  rw [← F_succ]
+  exact biUnion_subset_biUnion_left (subset_iUnion (fun n ↦ (F n).1) (m + 1))
+
 /-- The measurable **Vitali covering theorem**, filter version.
 
 Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
@@ -439,8 +549,9 @@ For more flexibility, we give a statement with a parameterized family of sets.
 theorem exists_disjoint_covering_ae'
     [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
-    (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
-    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
+    (C : α → ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α)
+    (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
+    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C (c a) * μ (B a))
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
     (hf : ∀ x ∈ s, ∃ᶠ ε in 𝓝[>] 0, ∃ a ∈ t, r a = ε ∧ c a = x) :
     ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
@@ -452,28 +563,29 @@ theorem exists_disjoint_covering_ae'
   obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
   exact ⟨a, ha₁, by grind, ha₃⟩
 
-/-- Assume that around every point there are arbitrarily small scales at which the measure is
-doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
-covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
+/-- Assume that around every point `x` there are arbitrarily small scales at which the measure is
+doubling, with a doubling constant `C x` that may depend on `x`. Then the set of closed sets `a`
+with nonempty interior contained in `closedBall x r` and covering a proportion `1 / C x` of the ball
+`closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
 protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : ℝ≥0)
-    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : α → ℝ≥0)
+    (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r)) :
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧
-    ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a }
+    ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C x * μ a }
   measurableSet _ _ ha := ha.1.measurableSet
   nonempty_interior _ _ ha := ha.2.1
   nontrivial x ε εpos := by
     obtain ⟨r, μr, rpos, rε⟩ :
-        ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
+        ∃ r, μ (closedBall x (3 * r)) ≤ C x * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
     refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩, by gcongr⟩
     exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   covering := by
     intro s f fsubset ffine
     let t : Set (ℝ × α × Set α) :=
-      { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C * μ p.2.2 ∧
+      { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C p.2.1 * μ p.2.2 ∧
             (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ p.2.2 ∈ f p.2.1 ∧ p.2.1 ∈ s }
     have A : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
       intro x xs ε εpos
