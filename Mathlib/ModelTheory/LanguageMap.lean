@@ -343,6 +343,12 @@ instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn
 theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
+/-- A language of constants indexed by a countable type has countably many symbols. -/
+instance Countable.countable_constantsOn [Countable α] : Countable (constantsOn α).Symbols := by
+  refine mk_le_aleph0_iff.mp ?_
+  change (constantsOn α).card ≤ ℵ₀
+  simpa only [card_constantsOn, mk_le_aleph0_iff]
+
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
 @[instance_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
@@ -383,6 +389,12 @@ def withConstants : Language.{max u w', v} :=
 
 @[inherit_doc FirstOrder.Language.withConstants]
 scoped[FirstOrder] notation:max L "[[" α "]]" => Language.withConstants L α
+
+/-- Adding countably many constants to a language with countably many symbols preserves
+countability. -/
+instance Countable.countable_withConstants [Countable L.Symbols] [Countable α] :
+    Countable L[[α]].Symbols :=
+  inferInstanceAs (Countable (L.sum (constantsOn α)).Symbols)
 
 @[simp]
 theorem card_withConstants :
