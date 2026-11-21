@@ -157,9 +157,9 @@ theorem ofReal_le_eNorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
 
 end Real
 
-section SeminormedCommGroup
+section SeminormedGroup
 
-variable [SeminormedCommGroup E] {a : E}
+variable [SeminormedGroup E] {a : E}
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.
@@ -181,6 +181,6 @@ lemma eNorm_eNorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x�
 
 @[deprecated (since := "2026-11-06")] alias enorm_enorm := eNorm_eNorm
 
-end SeminormedCommGroup
+end SeminormedGroup
 
 lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop
