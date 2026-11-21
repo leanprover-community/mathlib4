@@ -5,14 +5,14 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
+public meta import Batteries.Lean.Syntax
+public meta import Lean.Elab.AuxDef
 public meta import Lean.Elab.MacroArgUtil
 public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
-public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public meta import Batteries.Lean.Syntax
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Batteries.Linter.UnreachableTactic
 public import Batteries.Util.ExtendedBinder
-public import Lean.Elab.AuxDef
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 
@@ -132,7 +132,7 @@ saved context. Fails if the variable has no value. -/
 def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
   let some (se, lctx, linsts) := s.vars[name]? | failure
-  withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
+  withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) m
 
 /-- Delaborate the given variable's value. Fails if the variable has no value.
 If `checkNot` is provided, then checks that the expression being delaborated is not
@@ -195,7 +195,7 @@ def natLitMatcher (n : Nat) : Matcher := fun s => do
 
 /-- Matches applications. -/
 def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isApp
+  guard (← getExpr).isApp
   let s ← withAppFn <| matchFun s
   let s ← withAppArg <| matchArg s
   return s
@@ -203,14 +203,14 @@ def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
 /-- Matches pi types. The name `n` should be unique, and `matchBody` should use `n`
 as the `userName` of its fvar. -/
 def matchForall (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isForall
+  guard (← getExpr).isForall
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
 
 /-- Matches lambdas. The `matchBody` takes the fvar introduced when visiting the body. -/
 def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isLambda
+  guard (← getExpr).isLambda
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
@@ -556,7 +556,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
       syntaxArgs := syntaxArgs.push (← `(stx| $lit:str))
-      pattArgs := pattArgs.push <| mkAtomFrom lit lit.1.isStrLit?.get!
+      pattArgs := pattArgs.push <| mkAtomFrom lit lit.raw.isStrLit?.get!
     | `(notation3Item| $_:bindersItem) =>
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
@@ -600,13 +600,13 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
-          $(⟨lit.1.mkAntiquotNode `term⟩):term)
+          $(⟨lit.raw.mkAntiquotNode `term⟩):term)
       boundNames := boundNames.push lit.getId
     | `(notation3Item| $lit:ident $(prec?)?) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       boundIdents := boundIdents.insert lit.getId lit
-      boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
+      boundValues := boundValues.insert lit.getId <| lit.raw.mkAntiquotNode `term
       boundNames := boundNames.push lit.getId
     | _stx => throwUnsupportedSyntax
   if hasScoped && !hasBindersItem then

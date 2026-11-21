@@ -143,13 +143,13 @@ public theorem isDedekindDomain_iff_isDiscreteValuationRing_atPrime [IsDomain A]
       let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
       have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
         IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
-      have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
-      have hq1 : Q.1 ≠ ⊥ :=
+      have hp1 : P.val ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
+      have hq1 : Q.val ≠ ⊥ :=
         fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
       rcases (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
         (h q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
       rw [show p = q from Subtype.val_inj.mpr <| f.injective <|
-        Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
+        Subtype.val_inj.mp (huq.unique ⟨hp1, P.property⟩ ⟨hq1, Q.property⟩)]
       exact hq
     have _i3 : IsIntegrallyClosed A :=
       IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm ↦

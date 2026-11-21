@@ -6,13 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Relator
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
-public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Use
+
+import Batteries.Logic
 
 /-!
 # Relation closures
@@ -64,29 +64,21 @@ section NeImp
 
 variable {r : α → α → Prop}
 
-@[deprecated (since := "2026-03-27")] alias Std.Refl.reflexive := refl
-
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
 theorem Std.Refl.rel_of_ne_imp [Std.Refl r] {x y : α} (hr : x ≠ y → r x y) : r x y := by
   grind [Std.Refl]
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.rel_of_ne_imp := Std.Refl.rel_of_ne_imp
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 then it holds whether or not `x ≠ y`. -/
 theorem Std.Refl.ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   ⟨Std.Refl.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
-@[deprecated (since := "2026-03-27")] alias Reflexive.ne_imp_iff := Std.Refl.ne_imp_iff
-@[deprecated (since := "2026-03-27")] alias reflexive_ne_imp_iff := Std.Refl.ne_imp_iff
-
 theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
 @[deprecated (since := "2026-06-30")] alias refl_iff_subrelation_eq := refl_iff_eq_le
-@[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
@@ -123,8 +115,6 @@ variable {r : β → β → Prop}
 
 instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
   refl a := refl <| f a
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.comap := Std.Refl.comap
 
 instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
   symm _ _ hab := symm_of r hab
@@ -254,8 +244,6 @@ lemma _root_.Std.Refl.map {r : α → α → Prop} [Std.Refl r] {f : α → β} 
     obtain ⟨y, rfl⟩ := hf x
     exact ⟨y, y, refl y, rfl, rfl⟩
 
-@[deprecated (since := "2026-03-27")] alias map_reflexive := Std.Refl.map
-
 instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → β) :
     Std.Symm (Relation.Map r f f) where
   symm _ _ := by
@@ -267,8 +255,6 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
   grind [isTrans_def]
-
-@[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
     (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
@@ -378,6 +364,14 @@ theorem bicompl_map_bicompl_iff_bicompl {a b} :
 lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} {f : α → β} {a b : α} :
     Relation.Map (r on f) f f (f a) (f b) ↔ r (f a) (f b) :=
   bicompl_map_bicompl_iff_bicompl
+
+theorem _root_.Acc.of_map {r : α → α → Prop} {f : α → β} {a : α}
+    (h : Acc (Relation.Map r f f) (f a)) : Acc r a :=
+  Subrelation.accessible @(Relation.le_onFun_map f) (InvImage.accessible f h)
+
+theorem _root_.Function.Injective.acc_map_iff {r : α → α → Prop} {f : α → β} {a : α}
+    (hf : f.Injective) : Acc (Relation.Map r f f) (f a) ↔ Acc r a :=
+  ⟨.of_map, .ndrec fun a _ _ ↦ Acc.intro (f a) (by grind)⟩
 
 end Map
 
@@ -645,9 +639,6 @@ lemma reflGen_eq_self [Std.Refl r] : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ refl y
 
-@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
-lemma reflexive_reflGen : Std.Refl (ReflGen r) := inferInstance
-
 lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : r ≤ r') : ReflGen r ≤ r' := by
   simpa [reflGen_eq_self] using ReflGen.mono h
 
@@ -686,15 +677,11 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
 
 @[grind =]
 theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
-  funext₂ fun a b ↦ propext <|
+  funext₂ fun a b ↦ propext
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
-
-@[deprecated transGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
-theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
-  transGen_eq_self
 
 theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     TransGen r ≤ (TransGen p on f) := by
@@ -775,13 +762,6 @@ instance : IsPreorder α (ReflTransGen r) where
   refl := @ReflTransGen.refl α r
   trans := @ReflTransGen.trans α r
 
-@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
-theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-@[deprecated reflTransGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
-theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
-  reflTransGen_eq_self
-
 theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (ReflTransGen p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) := by
   intro _ _ hab
@@ -828,24 +808,27 @@ lemma reflTransGen_eq_reflGen [IsTrans α r] : ReflTransGen r = ReflGen r := by
 
 end ReflTransGen
 
-namespace EqvGen
+section EqvGen
 
 variable (r)
 
-theorem is_equivalence : Equivalence (@EqvGen α r) :=
+theorem EqvGen.equivalence : Equivalence (@EqvGen α r) :=
   Equivalence.mk EqvGen.refl (EqvGen.symm _ _) (EqvGen.trans _ _ _)
 
-instance : IsEquiv α (EqvGen r) := is_equivalence _ |>.isEquiv
+@[deprecated (since := "2026-10-24")]
+protected alias EqvGen.is_equivalence := EqvGen.equivalence
+
+instance : IsEquiv α (EqvGen r) := EqvGen.equivalence _ |>.isEquiv
 
 /-- `EqvGen.setoid r` is the setoid generated by a relation `r`.
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
 @[instance_reducible]
-def setoid : Setoid α :=
-  Setoid.mk _ (EqvGen.is_equivalence r)
+def EqvGen.setoid : Setoid α :=
+  Setoid.mk _ (EqvGen.equivalence r)
 
-theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := by
+theorem EqvGen.mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := by
   intro _ _ h
   induction h with
   | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
@@ -853,31 +836,40 @@ theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p 
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_mono := EqvGen.mono
+
 lemma eqvGen_le {r r' : α → α → Prop} [IsEquiv α r'] (h : r ≤ r') : EqvGen r ≤ r'
   | _, _, .refl _ => _root_.refl _
   | _, _, .symm _ _ hxy => _root_.symm (eqvGen_le h _ _ hxy)
   | _, _, .trans _ _ _ hxy hyz => _root_.trans (eqvGen_le h _ _ hxy) (eqvGen_le h _ _ hyz)
   | _, _, .rel _ _ hab => h _ _ hab
 
-lemma eqvGen_mono {r r' : α → α → Prop} (h : r ≤ r') : EqvGen r ≤ EqvGen r'
-  | _, _, .refl _ => .refl _
-  | _, _, .symm _ _ hxy => .symm _ _ (eqvGen_mono h _ _ hxy)
-  | _, _, .trans _ _ _ hxy hyz => .trans _ _ _ (eqvGen_mono h _ _ hxy) (eqvGen_mono h _ _ hyz)
-  | _, _, .rel _ _ hab => .rel _ _ (h _ _ hab)
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_le := eqvGen_le
 
 lemma reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
   |  _, _, .refl => .refl _
   |  _, _, .single h => .rel _ _ h
 
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
+
 lemma symmGen_le_eqvGen : SymmGen r ≤ EqvGen r
   | _, _, .inl h => .rel _ _ h
   | _, _, .inr h => _root_.symm <| .rel _ _ h
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
 
 lemma transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using TransGen.trans_induction_on with
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
 
 lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
   intro _ _ h
@@ -886,33 +878,54 @@ lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
 
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
+
 @[simp, grind =]
 lemma eqvGen_reflGen : EqvGen (ReflGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (reflGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (reflGen_le_eqvGen _)) (EqvGen.mono fun _ _ => .single)
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_reflGen := eqvGen_reflGen
 
 @[simp, grind =]
 lemma eqvGen_transGen : EqvGen (TransGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (transGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (transGen_le_eqvGen _)) (EqvGen.mono fun _ _ => .single)
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_transGen := eqvGen_transGen
 
 @[simp, grind =]
 lemma eqvGen_symmGen : EqvGen (SymmGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (symmGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .inl)
+    (eqvGen_le (symmGen_le_eqvGen _)) (EqvGen.mono fun _ _ => .inl)
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_symmGen := eqvGen_symmGen
 
 @[simp, grind =]
 lemma eqvGen_reflTransGen : EqvGen (ReflTransGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (reflTransGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (reflTransGen_le_eqvGen _)) (EqvGen.mono fun _ _ => .single)
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_reflTransGen := eqvGen_reflTransGen
 
 @[grind =]
 lemma eqvGen_eq_reflTransGen [Std.Symm r] : EqvGen r = ReflTransGen r :=
   have : IsEquiv α (ReflTransGen r) := ⟨⟩
   Subrelation.antisymm (eqvGen_le fun _ _ => .single) (reflTransGen_le_eqvGen _)
 
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.eqvGen_eq_reflTransGen := eqvGen_eq_reflTransGen
+
 lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
   rw [← eqvGen_eq_reflTransGen, eqvGen_symmGen]
+
+@[deprecated (since := "2026-10-15")]
+protected alias EqvGen.reflTransGen_symmGen := reflTransGen_symmGen
 
 end EqvGen
 
@@ -1021,6 +1034,6 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+  funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff
 
 end EqvGen

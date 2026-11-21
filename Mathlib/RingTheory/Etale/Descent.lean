@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Etale
 public import Mathlib.RingTheory.Finiteness.Descent
-public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+public import Mathlib.RingTheory.RingHom.Etale
+
+import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 
 /-!
 # Etale descends along faithfully flat ring maps
@@ -60,7 +61,7 @@ lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
   constructor
   · let _ : Algebra T (S ⊗[R] T) := TensorProduct.rightAlgebra
     let e : S ⊗[R] T ≃ₐ[T] T ⊗[R] S :=
-      .ofRingEquiv (f := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
+      .ofCommutes (e := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
     have : FormallySmooth T (S ⊗[R] T) := .of_equiv e.symm
     let e' : (S ⊗[R] T) ⊗[S] Ω[S⁄R] ≃ₗ[S ⊗[R] T] Ω[S ⊗[R] T⁄T] :=
       KaehlerDifferential.tensorKaehlerEquiv R T S (S ⊗[R] T)

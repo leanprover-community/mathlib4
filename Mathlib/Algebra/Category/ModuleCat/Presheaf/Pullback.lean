@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Adjunction.CompositionIso
+public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # Pullback of presheaves of modules
@@ -21,7 +21,6 @@ The existence of this left adjoint functor is obtained under suitable universe a
 
 From the compatibility of `pushforward` with respect to composition, we deduce
 similar pseudofunctor-like properties of the `pullback` functors.
-
 -/
 
 @[expose] public section

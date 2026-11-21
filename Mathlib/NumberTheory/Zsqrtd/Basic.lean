@@ -5,11 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Tactic.Ring
-public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -20,7 +18,6 @@ as well as an integral domain.
 
 We provide the universal property, that ring homomorphisms `ℤ√d →+* R` correspond
 to choices of square roots of `d` in `R`.
-
 -/
 
 @[expose] public section
@@ -96,7 +93,7 @@ theorem im_sqrtd : (sqrtd : ℤ√d).im = 1 :=
 
 /-- Addition of elements of `ℤ√d` -/
 instance : Add (ℤ√d) :=
-  ⟨fun z w => ⟨z.1 + w.1, z.2 + w.2⟩⟩
+  ⟨fun z w => ⟨z.re + w.re, z.im + w.im⟩⟩
 
 @[simp]
 theorem add_def (x y x' y' : ℤ) : (⟨x, y⟩ + ⟨x', y'⟩ : ℤ√d) = ⟨x + x', y + y'⟩ :=
@@ -112,7 +109,7 @@ theorem im_add (z w : ℤ√d) : (z + w).im = z.im + w.im :=
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
-  ⟨fun z => ⟨-z.1, -z.2⟩⟩
+  ⟨fun z => ⟨-z.re, -z.im⟩⟩
 
 @[simp]
 theorem re_neg (z : ℤ√d) : (-z).re = -z.re :=
@@ -124,7 +121,7 @@ theorem im_neg (z : ℤ√d) : (-z).im = -z.im :=
 
 /-- Multiplication in `ℤ√d` -/
 instance : Mul (ℤ√d) :=
-  ⟨fun z w => ⟨z.1 * w.1 + d * z.2 * w.2, z.1 * w.2 + z.2 * w.1⟩⟩
+  ⟨fun z w => ⟨z.re * w.re + d * z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
 
 @[simp]
 theorem re_mul (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
@@ -203,7 +200,7 @@ instance : Distrib (ℤ√d) := by infer_instance
 
 /-- Conjugation in `ℤ√d`. The conjugate of `a + b √d` is `a - b √d`. -/
 instance : Star (ℤ√d) where
-  star z := ⟨z.1, -z.2⟩
+  star z := ⟨z.re, -z.im⟩
 
 @[simp]
 theorem star_mk (x y : ℤ) : star (⟨x, y⟩ : ℤ√d) = ⟨x, -y⟩ :=
@@ -381,7 +378,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert! this using 1
+      convert this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
@@ -482,9 +479,8 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
     fun h => by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
-    have := congr_arg (Int.natAbs ∘ norm) hy
-    rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
-      Int.natAbs_one, eq_comm, mul_eq_one] at this
+    have := congr((norm $hy).natAbs)
+    rw [norm_mul, Int.natAbs_mul, norm_one, Int.natAbs_one, eq_comm, mul_eq_one] at this
     exact this.1⟩
 
 theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.norm := by
@@ -575,15 +571,15 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro y (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro x (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro w (by simp [*])))
     · apply Nat.le_add_right
   · have : Nonneg ⟨_, _⟩ :=
@@ -592,7 +588,7 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rwa [add_def]
   · exact nonneg_add_lem ha hb
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def]  at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro _ h))
     · apply Nat.le_add_right
   · dsimp
@@ -864,7 +860,7 @@ root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of 
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
   toFun r :=
-    { toFun := fun a => a.1 + a.2 * (r : R)
+    { toFun := fun a => a.re + a.im * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
         simp only [re_add, Int.cast_add, im_add]

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
 
-/-! ### Products of modules
+/-! # Products of modules
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
@@ -262,11 +262,11 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
   right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
   map_add' a b := by
     ext
-    simp only [Prod.snd_add, add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
+    simp only [Prod.snd_add, LinearMap.add_apply, coprod_apply, Prod.fst_add, add_add_add_comm]
   map_smul' r a := by
     dsimp
     ext
-    simp only [smul_add, smul_apply, coprod_apply]
+    simp
 
 theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
@@ -453,7 +453,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -557,7 +557,7 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  toFun x := x.1.1
+  toFun x := x.val.1
   invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -577,7 +577,7 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  toFun x := x.1.2
+  toFun x := x.val.2
   invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -589,16 +589,14 @@ theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = �
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
   aesop
 
-theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
-  rw [eq_top_iff]
-  rintro ⟨m, n⟩ -
-  rw [show (m, n) = (m, 0) + (0, n) by simp]
-  apply Submodule.add_mem (Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂)
-  · exact Submodule.mem_sup_left (Submodule.mem_comap.mpr (by simp))
-  · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
+theorem isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (Submodule.snd R M M₂) := by
+  simpa [range_inl, range_inr] using! isCompl_range_inl_inr
 
-theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  aesop
+theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
+  (isCompl_fst_snd R M M₂).sup_eq_top
+
+theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ :=
+  (isCompl_fst_snd R M M₂).inf_eq_bot
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by
@@ -673,6 +671,9 @@ theorem snd_comp_prodComm :
 
 @[simp]
 theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : prodComm R M M₂ ≪≫ₗ prodComm R M₂ M = .refl _ _ := rfl
 
 end prodComm
 
@@ -859,7 +860,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
@@ -950,7 +951,7 @@ first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`. -/
 lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
-      (fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hf₁.injective h))
+      (fun a b h ↦ congr((Prod.snd ∘ G.subtype) $(hf₁.injective h)))
 
 /-- **Line test** for module isomorphisms.
 

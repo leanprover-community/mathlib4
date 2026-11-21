@@ -6,11 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -23,7 +19,6 @@ The following meta-properties of predicates on ring homomorphisms are defined
 * `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
 * `RingHom.IsStableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
-
 -/
 
 @[expose] public section
@@ -50,13 +45,13 @@ def RespectsIso : Prop :=
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
-    convert! hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
+    convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
-    convert! hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
+    convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
@@ -143,16 +138,16 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
       P (algebraMap R T) → P (algebraMap S (S ⊗[R] T))) :
     IsStableUnderBaseChange @P := by
   introv R h H
-  let e := h.symm.1.equiv
+  let e := h.symm.out.equiv
   let f' := Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
     (IsScalarTower.toAlgHom R S S')
   have hef (x : _) : e x = f' x := by
     suffices e.toLinearMap.restrictScalars R = f'.toLinearMap from congr($this x)
     exact ext' fun x y ↦ by simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
-  convert! h₁.1 _ { e with map_mul' := hemul } (h₂ H)
+  convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
+  simp [e, h.symm.out.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
@@ -209,9 +204,9 @@ lemma isStableUnderCobaseChange_toMorphismProperty_iff :
   refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
       fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
   · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
-    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+    exact h.of_isPushout (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
   · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
-    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.toCommSq.w).hom x)
     have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
     exact h (R := R) (S := S) _ _ hf
 

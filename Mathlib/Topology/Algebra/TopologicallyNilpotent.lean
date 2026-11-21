@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.Topology.Algebra.LinearTopology
 
 /-! # Topologically nilpotent elements
 
@@ -33,7 +33,6 @@ Let `R` be a commutative ring with a linear topology.
   then `a + b` is topologically nilpotent.
 
 These lemmas are actually deduced from their analogues for commuting elements of rings.
-
 -/
 
 @[expose] public section

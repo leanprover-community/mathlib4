@@ -131,12 +131,12 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
     ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
   let s₀ := (t₀ : ℝ) -- t₀ is in unitInterval
   let s₁ := min (s₀ + δ / 2) 1
-  have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.2.1 (by positivity)
+  have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.property.1 (by positivity)
   have hs₁ : 0 ≤ s₁ := le_min h_s₀_delta_pos zero_le_one
   have hs₁' : s₁ ≤ 1 := min_le_right ..
   refine ⟨⟨s₁, hs₁, hs₁'⟩, lt_min ((lt_add_iff_pos_right _).mpr (half_pos hδ)) ht₀, ?_⟩
   have h_le : s₁ ≤ s₀ + δ / 2 := min_le_left _ _
-  have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.2.2
+  have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.property.2
   rw [Subtype.dist_eq, dist_comm, dist_eq, abs_of_nonneg (by linarith)]
   linarith
 
@@ -186,7 +186,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
     simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
-    (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
+    (isPreconnected_Icc.image _ xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)
       (show a ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₁, ⟨ht₁.1.le, le_rfl⟩, rfl⟩)
   -- **Step 3**: For every `y ∈ [-1, 1]`, there exists a `t` with `p t = y` and `dist t₀ t < δ`.

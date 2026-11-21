@@ -6,7 +6,6 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -80,9 +79,11 @@ theorem lipschitzOnWith_empty (K : ℝ≥0) (f : α → β) : LipschitzOnWith K 
 @[simp] lemma locallyLipschitzOn_empty (f : α → β) : LocallyLipschitzOn ∅ f := fun _ ↦ False.elim
 
 /-- Being Lipschitz on a set is monotone w.r.t. that set. -/
+@[gcongr]
 theorem LipschitzOnWith.mono (hf : LipschitzOnWith K f t) (h : s ⊆ t) : LipschitzOnWith K f s :=
   fun _x x_in _y y_in => hf (h x_in) (h y_in)
 
+@[gcongr]
 lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : LocallyLipschitzOn s f :=
   fun x hx ↦ by obtain ⟨K, u, hu, hfu⟩ := hf (h hx); exact ⟨K, u, nhdsWithin_mono _ h hu, hfu⟩
 
@@ -206,8 +207,11 @@ protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 
 /-- The inclusion of a subset is 1-Lipschitz. -/
-protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
+protected theorem subtypeVal (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
+
+@[deprecated (since := "2026-11-10")]
+protected alias subtype_val := LipschitzWith.subtypeVal
 
 theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f x)) :
     LipschitzWith K (fun x => ⟨f x, hp x⟩ : α → { y // p y }) :=
@@ -215,7 +219,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
+  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :

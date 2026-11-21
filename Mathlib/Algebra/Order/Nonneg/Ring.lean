@@ -9,7 +9,9 @@ public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Nonneg.Lattice
 public import Mathlib.Algebra.Order.Ring.InjSurj
-public import Mathlib.Tactic.FastInstance
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
@@ -67,7 +69,7 @@ instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] 
 
 instance nontrivial [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     Nontrivial (Nonneg α) :=
-  ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
+  ⟨⟨0, 1, fun h => zero_ne_one congr($(h).val)⟩⟩
 
 instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
     Nontrivial (Nonneg α) := by
@@ -78,12 +80,12 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero (Nonneg α) where
-  isBot_zero a := a.2
+  isBot_zero a := a.property
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd (Nonneg α) where
-  le_add_self _ b := le_add_of_nonneg_left b.2
-  le_self_add _ b := le_add_of_nonneg_right b.2
+  le_add_self _ b := le_add_of_nonneg_left b.property
+  le_self_add _ b := le_add_of_nonneg_right b.property
   exists_add_of_le := fun {a b} h =>
     ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩
 
