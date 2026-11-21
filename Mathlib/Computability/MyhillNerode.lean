@@ -21,7 +21,7 @@ there are finitely many such states.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
+* <https://en.wikipedia.org/wiki/Myhill%E2%80%93Nerode_theorem>
 -/
 
 @[expose] public section
@@ -33,24 +33,23 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
+def leftQuotient (x : List α) : Language α := .ofSet {y | ⟨x ++ y.toList⟩ ∈ L}
 
 variable (L) in
 @[simp]
 theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (L) in
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
-  simp [leftQuotient, Language]
+  simp [leftQuotient, ← SetSemiring.mem_toSet]
 
 @[simp]
-theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
+theorem mem_leftQuotient (x y : List α) : ⟨y⟩ ∈ L.leftQuotient x ↔ ⟨x ++ y⟩ ∈ L := Iff.rfl
 
 theorem leftQuotient_accepts_apply (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
-  ext y
+  ext ⟨y⟩
   simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
 
 theorem leftQuotient_accepts (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
@@ -72,10 +71,10 @@ def toDFA : DFA α (Set.range L.leftQuotient) where
     exists y ++ [a]
     rw [← hy, leftQuotient_append]
   start := ⟨L, by exists []⟩
-  accept := { s | [] ∈ s.val }
+  accept := {s | 1 ∈ s.val}
 
 @[simp]
-theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ [] ∈ s.val := Iff.rfl
+theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ 1 ∈ s.val := Iff.rfl
 
 @[simp]
 theorem step_toDFA (s : Set.range L.leftQuotient) (a : α) :
@@ -88,9 +87,9 @@ theorem start_toDFA : L.toDFA.start.val = L := rfl
 variable (L) in
 @[simp]
 theorem accepts_toDFA : L.toDFA.accepts = L := by
-  ext x
+  ext ⟨x⟩
   rw [DFA.mem_accepts]
-  suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
+  suffices L.toDFA.eval x = L.leftQuotient x by simp [this, leftQuotient, ← SetSemiring.mem_toSet]
   induction x using List.reverseRecOn with
   | nil => simp
   | append_singleton x a ih => simp [ih, leftQuotient_append]

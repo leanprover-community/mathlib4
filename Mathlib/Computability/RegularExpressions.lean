@@ -99,7 +99,7 @@ Not named `matches` since that is a reserved word.
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
-  | char a => {[a]}
+  | char a => {.of a}
   | P + Q => P.matches' + Q.matches'
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
@@ -110,7 +110,7 @@ theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
 theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 
-theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
+theorem matches'_char (a : α) : (char a).matches' = {.of a} :=
   rfl
 
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
@@ -297,24 +297,37 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 
 @[simp]
 theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
-    P.rmatch x ↔ x ∈ P.matches' := by
+    P.rmatch x ↔ ⟨x⟩ ∈ P.matches' := by
   induction P generalizing x with
   | zero =>
     rw [zero_def, zero_rmatch]
     tauto
   | epsilon =>
-    rw [one_def, one_rmatch_iff, matches'_epsilon, Language.mem_one]
+    rw [one_def, one_rmatch_iff, matches'_epsilon, Language.mem_one, FreeMonoid.ext_iff,
+      FreeMonoid.toList_ofList, FreeMonoid.toList_one]
   | char =>
-    rw [char_rmatch_iff]
-    rfl
+    rw [char_rmatch_iff, matches', SetSemiring.mem_singleton_iff, FreeMonoid.ext_iff,
+      FreeMonoid.toList_ofList, FreeMonoid.toList_of]
   | plus _ _ ih₁ ih₂ =>
     rw [plus_def, add_rmatch_iff, ih₁, ih₂]
     rfl
   | comp P Q ih₁ ih₂ =>
-    simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, *]
+    simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, FreeMonoid.ext_iff, *]
     tauto
   | star _ ih =>
-    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
+    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_ne_one, and_comm,
+      ← FreeMonoid.ofList.injEq]
+    constructor <;> rintro ⟨S, hS₁, hS₂⟩
+    · refine ⟨S.map .ofList, by simp [← FreeMonoid.ofList_flatten, ← hS₁], fun y my ↦ ?_⟩
+      rw [mem_map] at my
+      obtain ⟨y, my, rfl⟩ := my
+      specialize hS₂ _ my
+      rwa [← FreeMonoid.toListEquiv.injective.ne_iff]
+    · refine ⟨S.map FreeMonoid.toList, by simp [hS₁], fun l ml ↦ ?_⟩
+      rw [mem_map] at ml
+      obtain ⟨l, ml, rfl⟩ := ml
+      specialize hS₂ _ ml
+      rwa [← FreeMonoid.toListEquiv.injective.ne_iff] at hS₂
 
 instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
