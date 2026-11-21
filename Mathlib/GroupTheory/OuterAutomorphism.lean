@@ -20,11 +20,6 @@ normal (`MulAut.normal_inner`).
 * `MulAut.Outer G` : the outer automorphism group `MulAut G ⧸ MulAut.inner G`.
 * `MulAut.Outer.of` : the canonical projection `MulAut G →* MulAut.Outer G`.
 * `MulAut.Outer.congr` : the isomorphism of outer automorphism groups induced by `G ≃* H`.
-
-## Main results
-
-* `MulAut.inner_eq_top_iff` : every automorphism of `G` is inner (`MulAut.inner G = ⊤`) iff the
-  outer automorphism group is trivial.
 -/
 
 @[expose] public section
@@ -47,14 +42,6 @@ theorem Outer.of_surjective : Function.Surjective ⇑(Outer.of (G := G)) :=
 
 @[to_additive (attr := simp)]
 theorem Outer.ker_of : Outer.of.ker = inner G := QuotientGroup.ker_mk' _
-
-@[to_additive]
-theorem inner_eq_top_iff : inner G = ⊤ ↔ Subsingleton (Outer G) :=
-  QuotientGroup.subsingleton_iff.symm
-
-@[to_additive (attr := simp)]
-theorem inner_eq_top [Subsingleton (Outer G)] : inner G = ⊤ :=
-  inner_eq_top_iff.mpr ‹_›
 
 /-- An isomorphism `G ≃* H` induces an isomorphism of their outer automorphism groups. -/
 @[to_additive
