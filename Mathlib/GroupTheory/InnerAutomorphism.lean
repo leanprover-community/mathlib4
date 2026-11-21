@@ -24,7 +24,7 @@ again inner (`MulAut.conj_conj`).
 
 ## Main results
 
-* `MulAut.inner G` is a normal subgroup of `MulAut G` (an instance). This is the
+* `MulAut.normal_inner` : `MulAut.inner G` is a normal subgroup of `MulAut G`. This is the
   foundational fact behind the outer automorphism group `MulAut G ⧸ MulAut.inner G`.
 * `MulAut.inner_eq_bot_iff` : `MulAut.inner G` is trivial iff `G` is commutative.
 -/
@@ -33,16 +33,17 @@ again inner (`MulAut.conj_conj`).
 
 namespace MulAut
 
-variable (G : Type*) [Group G]
 
 /-- The **inner automorphism group** of a multiplicative group `G`: the subgroup of `MulAut G`
 consisting of the automorphisms given by conjugation, i.e. the range of `MulAut.conj`. -/
 @[to_additive
 /-- The **inner automorphism group** of an additive group `G`: the subgroup of `AddAut G` consisting
 of the automorphisms given by conjugation, i.e. the range of `AddAut.addConj`. -/]
-def inner : Subgroup (MulAut G) := conj.range
+def inner (G : Type*) [Group G] : Subgroup (MulAut G) := conj.range
 
-variable {G}
+variable {G : Type*} [Group G]
+
+@[to_additive (attr := simp)] theorem range_conj : conj.range = inner G := rfl
 
 @[to_additive]
 theorem mem_inner_iff {f : MulAut G} : f ∈ inner G ↔ ∃ g : G, conj g = f := MonoidHom.mem_range
@@ -52,7 +53,7 @@ theorem conj_mem_inner {g : G} : conj g ∈ inner G := ⟨g, rfl⟩
 
 /-- The inner automorphism group is normal in the full automorphism group. -/
 @[to_additive /-- The inner automorphism group is normal in the full automorphism group. -/]
-instance : (inner G).Normal where
+instance normal_inner : (inner G).Normal where
   conj_mem _ := fun ⟨g, hg⟩ h ↦ hg ▸ ⟨h g, (conj_conj h g).symm⟩
 
 @[to_additive]

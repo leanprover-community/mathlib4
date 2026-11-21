@@ -77,7 +77,8 @@ theorem map_center_eq {F} [EquivLike F G H] [MulEquivClass F G H] (f : F) :
   SetLike.coe_injective (Set.image_center_eq f)
 
 /-- The kernel of the conjugation homomorphism `MulAut.conj` is the center. -/
-@[to_additive /-- The kernel of the conjugation homomorphism `AddAut.addConj` is the center. -/]
+@[to_additive (attr := simp)
+/-- The kernel of the conjugation homomorphism `AddAut.addConj` is the center. -/]
 theorem ker_conj : (MulAut.conj (G := G)).ker = center G := by
   ext z
   simp [mem_center_iff, DFunLike.ext_iff, mul_inv_eq_iff_eq_mul, eq_comm (a := _ * z)]
