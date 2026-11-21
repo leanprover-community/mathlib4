@@ -622,7 +622,7 @@ Logic and computation:
   Set theory:
     Ordinals:
       ordinal: 'Ordinal'
-      Cantor normal form: 'Ordinal.CNF'
+      Cantor normal form: 'Ordinal.cantorNF'
       fundamental sequences: 'Ordinal.IsFundamentalSeq'
       epsilon numbers: 'Ordinal.epsilon'
       gamma numbers: 'Ordinal.gamma'
