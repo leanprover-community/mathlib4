@@ -20,7 +20,7 @@ namespace Inclusion
 
 namespace IntervalDyadicReal
 
-open Inclusion.IntervalDyadicReal.Dyadic
+open _root_.Dyadic Inclusion.IntervalDyadicReal.Dyadic
 
 /-- Computes a lower bound for `√x` with precision `prec`, given a lower bound `lb` for `x`. -/
 @[expose]
@@ -55,7 +55,7 @@ theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb
     simp only [lowerSqrt, Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
       ← Rat.cast_pow, Rat.cast_le]
     generalize ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt = m at h ⊢
-    rw [toRat_shiftLeft_nat, mul_comm 2, mul_comm] at h
+    rw [toRat_shiftLeft_nat, Nat.mul_comm 2, Rat.mul_comm] at h
     simpa [mul_pow, ← pow_mul, field] using h
   · have : (lb <<< (2 * prec)).toRat < 0 := by
       rw [toRat_shiftLeft_nat]
@@ -74,7 +74,7 @@ theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toR
   rw [Real.sqrt_le_left (by simp [toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow])]
   grw [hx]
   simp only [Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← Rat.cast_pow, Rat.cast_le]
-  simpa [← pow_mul, field, toRat_shiftLeft_nat, mul_comm 2] using hm
+  simpa [← pow_mul, field, toRat_shiftLeft_nat, Nat.mul_comm 2] using hm
 
 @[inclusion_op interval_dyadic_real]
 theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec := by
