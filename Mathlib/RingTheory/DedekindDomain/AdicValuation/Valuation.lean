@@ -649,6 +649,11 @@ def adicAbv : AbsoluteValue K ℝ where
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
   isNonarchimedean_adicAbvDef v hb
 
+theorem adicAbv_apply : v.adicAbv hb x = toNNReal (ne_zero_of_lt hb) (v.valuation K x) := rfl
+
+theorem adicAbv_lt_one_iff : v.adicAbv hb x < 1 ↔ v.valuation K x < 1 := by
+  simpa [adicAbv_apply] using toNNReal_lt_one_iff hb
+
 /-- The `v`-adic absolute value of `r / s : K` is the absolute value of `r` divided by the absolute
 value of `s`. -/
 theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
@@ -670,6 +675,23 @@ theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v
 theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
   rw [adicAbv_of_algebraMap]
   exact intAdicAbv_eq_one_iff v hb r
+
+/-- An absolute value that is `1` on the `v`-adic units and takes the value `b⁻¹` at a uniformizer
+of `v` is the `v`-adic absolute value with base `b`. -/
+theorem eq_adicAbv_of_apply_uniformizer {f : AbsoluteValue K ℝ}
+    (h : ∀ x, v.adicAbv hb x = 1 → f x = 1) {π : R} (hπ : v.intValuation π = exp (-1))
+    (hfπ : f (algebraMap R K π) = (b : ℝ)⁻¹) :
+    f = v.adicAbv hb := by
+  ext x
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  have hxv : v.valuation K x ≠ 0 := (v.valuation K).ne_zero_iff.mpr hx
+  have hb₀ : (0 : ℝ) < b := zero_lt_one.trans (mod_cast hb)
+  have := h (x * algebraMap R K π ^ log (v.valuation K x)) <| by
+    simp [adicAbv_apply, valuation_of_algebraMap, hπ, toNNReal_neg_apply, hxv,
+      mul_inv_cancel₀ (zpow_pos hb₀ _).ne']
+  rw [map_mul, map_zpow₀, hfπ, inv_zpow', zpow_neg, mul_inv_eq_one₀ (zpow_pos hb₀ _).ne'] at this
+  simp [this, adicAbv_apply, toNNReal_neg_apply _ hxv]
 
 end AbsoluteValue
 
