@@ -182,7 +182,7 @@ theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   push Not
   exact Nat.add_one_ne_zero
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) prev_nat_succ]
 theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
   (ComplexShape.down ℕ).next_eq' rfl
 
