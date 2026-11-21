@@ -599,14 +599,37 @@ section dualNumber
 
 open scoped DualNumber
 
+variable [CommRing R]
+
+variable (R) in
 /-- `QuadraticAlgebra R 0 0` is the algebra of dual numbers, with `ω` the nilpotent `ε`. -/
-def algEquivDualNumber (R : Type*) [CommRing R] :
+def algEquivDualNumber :
     QuadraticAlgebra R 0 0 ≃ₐ[R] DualNumber R :=
   AlgEquiv.ofAlgHom (lift ⟨ε, by simp⟩)
     (DualNumber.lift ⟨(Algebra.ofId R _, ω), by ext <;> simp,
       fun _ ↦ Commute.all _ _⟩)
     (by apply DualNumber.algHom_ext; simp)
     (by apply algHom_ext; simp)
+
+@[simp]
+theorem algEquivDualNumber_fst (z : QuadraticAlgebra R 0 0) :
+    (algEquivDualNumber R z).fst = z.re := by
+  simp [algEquivDualNumber]
+
+@[simp]
+theorem algEquivDualNumber_snd (z : QuadraticAlgebra R 0 0) :
+    (algEquivDualNumber R z).snd = z.im := by
+  simp [algEquivDualNumber]
+
+@[simp]
+theorem algEquivDualNumber_symm_re (d : DualNumber R) :
+    ((algEquivDualNumber R).symm d).re = d.fst := by
+  simp [algEquivDualNumber, DualNumber.lift_apply_apply]
+
+@[simp]
+theorem algEquivDualNumber_symm_im (d : DualNumber R) :
+    ((algEquivDualNumber R).symm d).im = d.snd := by
+  simp [algEquivDualNumber, DualNumber.lift_apply_apply]
 
 end dualNumber
 

@@ -275,26 +275,73 @@ end field
 
 section degenerate
 
-variable {K : Type*} [Field K]
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b s : K}
 
 /-- If the discriminant is zero, `QuadraticAlgebra K a b` is the algebra of dual numbers
 `K[ε] = K[X] / (X ^ 2)`, in which `ε` is nilpotent of order two. -/
-def algEquivDualNumberOfDiscrZero [NeZero (2 : K)] {a b : K} (h : discr a b = 0) :
+def algEquivDualNumberOfDiscrZero (h : discr a b = 0) :
     QuadraticAlgebra K a b ≃ₐ[K] DualNumber K :=
   letI := invertibleOfNonzero (two_ne_zero (α := K))
-  (algEquivDiscrZero a b).trans (by rw [h]; exact algEquivDualNumber K)
+  (algEquivDiscrZero a b).trans <|
+    (changeGeneratorEquiv _ 0 1 0 (by simp [h]) (by simp)).symm.trans (algEquivDualNumber K)
+
+@[simp]
+theorem algEquivDualNumberOfDiscrZero_fst (h : discr a b = 0) (z : QuadraticAlgebra K a b) :
+    (algEquivDualNumberOfDiscrZero h z).fst = z.re + 2⁻¹ * b * z.im := by
+  simp [algEquivDualNumberOfDiscrZero]
+
+@[simp]
+theorem algEquivDualNumberOfDiscrZero_snd (h : discr a b = 0) (z : QuadraticAlgebra K a b) :
+    (algEquivDualNumberOfDiscrZero h z).snd = 2⁻¹ * z.im := by
+  simp [algEquivDualNumberOfDiscrZero]
+
+@[simp]
+theorem algEquivDualNumberOfDiscrZero_symm_re (h : discr a b = 0) (d : DualNumber K) :
+    ((algEquivDualNumberOfDiscrZero h).symm d).re = d.fst - b * d.snd := by
+  simp [algEquivDualNumberOfDiscrZero]
+
+@[simp]
+theorem algEquivDualNumberOfDiscrZero_symm_im (h : discr a b = 0) (d : DualNumber K) :
+    ((algEquivDualNumberOfDiscrZero h).symm d).im = 2 * d.snd := by
+  simp [algEquivDualNumberOfDiscrZero]
 
 /-- If the discriminant is a nonzero square, `QuadraticAlgebra K a b` splits as `K × K`,
 via the two distinct roots `(b ± s) / 2` of `X ^ 2 - b * X - a`. -/
-noncomputable def algEquivProdOfDiscrSq [NeZero (2 : K)] {a b s : K} (hd : discr a b = s ^ 2)
-    (hs : s ≠ 0) : QuadraticAlgebra K a b ≃ₐ[K] K × K :=
+def algEquivProdOfDiscrSq (hd : discr a b = s ^ 2) (hs : s ≠ 0) :
+    QuadraticAlgebra K a b ≃ₐ[K] K × K :=
   letI := invertibleOfNonzero (two_ne_zero (α := K))
-  (algEquivDiscrZero a b).trans <| hd ▸ AlgEquiv.ofBijective
-    (lift ⟨(s, -s), by ext <;> simp <;> ring⟩)
-    (Function.bijective_iff_has_inverse.mpr
-      ⟨fun p ↦ ⟨2⁻¹ * (p.1 + p.2), 2⁻¹ * (p.1 - p.2) / s⟩,
-      fun _ ↦ by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring,
-      fun _ ↦ by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring⟩)
+  (algEquivDiscrZero a b).trans <|
+    (changeGeneratorEquiv _ 0 1 0 (by simp [hd]) (by simp)).symm.trans
+    { (lift ⟨(s, -s), by ext <;> simp <;> ring⟩ : QuadraticAlgebra K (s ^ 2) 0 →ₐ[K] K × K) with
+      invFun p := ⟨2⁻¹ * (p.1 + p.2), 2⁻¹ * (p.1 - p.2) / s⟩
+      left_inv _ := by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring
+      right_inv _ := by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring }
+
+@[simp]
+theorem algEquivProdOfDiscrSq_fst (hd : discr a b = s ^ 2) (hs : s ≠ 0)
+    (z : QuadraticAlgebra K a b) :
+    (algEquivProdOfDiscrSq hd hs z).1 = z.re + 2⁻¹ * (b + s) * z.im := by
+  simp [algEquivProdOfDiscrSq, lift_apply_apply]
+  ring
+
+@[simp]
+theorem algEquivProdOfDiscrSq_snd (hd : discr a b = s ^ 2) (hs : s ≠ 0)
+    (z : QuadraticAlgebra K a b) :
+    (algEquivProdOfDiscrSq hd hs z).2 = z.re + 2⁻¹ * (b - s) * z.im := by
+  simp [algEquivProdOfDiscrSq, lift_apply_apply]
+  ring
+
+@[simp]
+theorem algEquivProdOfDiscrSq_symm_re (hd : discr a b = s ^ 2) (hs : s ≠ 0) (p : K × K) :
+    ((algEquivProdOfDiscrSq hd hs).symm p).re = 2⁻¹ * (p.1 + p.2) - b * (p.1 - p.2) / (2 * s) := by
+  simp [algEquivProdOfDiscrSq]
+  ring
+
+@[simp]
+theorem algEquivProdOfDiscrSq_symm_im (hd : discr a b = s ^ 2) (hs : s ≠ 0) (p : K × K) :
+    ((algEquivProdOfDiscrSq hd hs).symm p).im = (p.1 - p.2) / s := by
+  simp [algEquivProdOfDiscrSq]
+  field_simp
 
 end degenerate
 
