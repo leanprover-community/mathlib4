@@ -82,11 +82,12 @@ open Zify
 or the negation thereof.
 -/
 partial def isNatProp (e : Expr) : MetaM Bool := succeeds do
-  let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
+  let (_, _, ty, _, _) ← e.ineqOrNotIneq?
+  let .const ``Nat [] := ty.cleanupAnnotations | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
 def isNatCoe (e : Expr) : Option (Expr × Expr) :=
-  match e.getAppFnArgs with
+  match e.consumeMData.getAppFnArgs with
   | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none
 
@@ -96,7 +97,7 @@ def isNatCoe (e : Expr) : Option (Expr × Expr) :=
 partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
   match isNatCoe e with
   | some x => [x]
-  | none => match e.getAppFnArgs with
+  | none => match e.consumeMData.getAppFnArgs with
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | (``HSub.hSub, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
