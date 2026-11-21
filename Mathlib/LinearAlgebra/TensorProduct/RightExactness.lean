@@ -611,16 +611,18 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?
   simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
   rw [← RingHom.comap_ker]
-  simp only [← AlgHom.toRingHom_eq_coe]
+  simp only [← AlgHom.toRingHom_eq_coe f, ← AlgHom.toRingHom_eq_coe g]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg,
     RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g).toRingHom,
     ← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g).toRingHom
       (LinearMap.lTensor_surjective A hg)]
   -- apply the other step of exactness
+  simp only [← AlgHom.toRingHom_eq_coe]
   rw [Algebra.TensorProduct.rTensor_ker _ hf]
   apply congr_arg₂ _ rfl
-  simp [AlgHom.toRingHom_eq_coe, Ideal.map_map, RingHom.coe_coe, ← AlgHom.coe_comp,
-    Algebra.TensorProduct.map_comp_includeLeft]
+  simp only [AlgHom.toRingHom_eq_coe, Ideal.map_map]
+  rw [← AlgHom.comp_toRingHom (map (AlgHom.id R A) g) includeLeft]
+  simp [Algebra.TensorProduct.map_comp_includeLeft]
 
 end Algebras
