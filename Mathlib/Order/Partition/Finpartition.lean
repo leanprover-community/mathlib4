@@ -154,6 +154,48 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
 theorem parts_map {β : Type*} [Lattice β] [OrderBot β] {a : α} {e : α ≃o β} {P : Finpartition a} :
     (P.map e).parts = P.parts.map e := rfl
 
+section Congr
+variable {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
+
+/-- Transport a partition of `univ : Finset ι` along a type equivalence `e : ι ≃ κ`,
+relabelling the underlying elements. -/
+protected def congr (e : ι ≃ κ) (P : Finpartition (univ : Finset ι)) :
+    Finpartition (univ : Finset κ) :=
+  (P.map (Finset.congrOrderIso e)).copy (Finset.congrOrderIso_univ e)
+
+@[simp]
+theorem parts_congr (e : ι ≃ κ) (P : Finpartition (univ : Finset ι)) :
+    (P.congr e).parts = P.parts.image (·.map e.toEmbedding) := by
+  rw [Finpartition.congr, copy_parts, parts_map, Finset.map_eq_image]
+  exact Finset.image_congr fun _ _ => rfl
+
+@[simp]
+theorem congr_refl (P : Finpartition (univ : Finset ι)) : P.congr (Equiv.refl ι) = P := by
+  ext : 1
+  simp only [parts_congr, Equiv.refl_toEmbedding, Finset.map_refl, Finset.image_id']
+
+@[simp]
+theorem congr_symm_congr (e : ι ≃ κ) (P : Finpartition (univ : Finset ι)) :
+    (P.congr e).congr e.symm = P := by
+  ext : 1
+  rw [parts_congr, parts_congr, Finset.image_image]
+  refine (Finset.image_congr fun _ _ => ?_).trans P.parts.image_id'
+  -- each block round-trips: `e.toEmbedding.trans e.symm.toEmbedding` is the identity
+  have h : e.toEmbedding.trans e.symm.toEmbedding = Function.Embedding.refl ι := by
+    ext x; simp
+  rw [Function.comp_apply, Finset.map_map, h, Finset.map_refl]
+
+@[simp]
+theorem congr_congr_symm (e : ι ≃ κ) (P : Finpartition (univ : Finset κ)) :
+    (P.congr e.symm).congr e = P := by
+  simpa using congr_symm_congr e.symm P
+
+theorem card_parts_congr (e : ι ≃ κ) (P : Finpartition (univ : Finset ι)) :
+    (P.congr e).parts.card = P.parts.card := by
+  rw [parts_congr, Finset.card_image_of_injective _ (Finset.map_injective e.toEmbedding)]
+
+end Congr
+
 variable (α)
 
 /-- The empty finpartition. -/
