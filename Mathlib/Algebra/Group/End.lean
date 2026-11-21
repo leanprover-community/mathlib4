@@ -770,6 +770,11 @@ def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
 theorem congr_conj [Group G] {H} [Group H] (e : G ≃* H) (g : G) :
     MulAut.congr e (conj g) = conj (e g) := by ext; simp
 
+@[to_additive]
+theorem congr_comp_conj [Group G] {H} [Group H] (e : G ≃* H) :
+    (MulAut.congr e : MulAut G →* MulAut H).comp conj = conj.comp e :=
+  MonoidHom.ext (congr_conj e)
+
 end MulAut
 
 namespace AddAut

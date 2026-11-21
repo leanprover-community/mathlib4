@@ -24,7 +24,7 @@ again inner (`MulAut.conj_conj`).
 
 ## Main results
 
-* `MulAut.normal_inner` : `MulAut.inner G` is a normal subgroup of `MulAut G`. This is the
+* `MulAut.inner G` is a normal subgroup of `MulAut G` (an instance). This is the
   foundational fact behind the outer automorphism group `MulAut G ⧸ MulAut.inner G`.
 * `MulAut.inner_eq_bot_iff` : `MulAut.inner G` is trivial iff `G` is commutative.
 -/
@@ -36,11 +36,11 @@ namespace MulAut
 variable (G : Type*) [Group G]
 
 /-- The **inner automorphism group** of a multiplicative group `G`: the subgroup of `MulAut G`
-  consisting of the automorphisms given by conjugation, i.e. the range of `MulAut.conj`. -/
-@[to_additive /-- The **inner automorphism group** of an additive group `G`: the subgroup of
-`AddAut G` consisting of the automorphisms given by conjugation, i.e. the range of
-`AddAut.addConj`. -/]
-def inner : Subgroup (MulAut G) := (conj (G := G)).range
+consisting of the automorphisms given by conjugation, i.e. the range of `MulAut.conj`. -/
+@[to_additive
+/-- The **inner automorphism group** of an additive group `G`: the subgroup of `AddAut G` consisting
+of the automorphisms given by conjugation, i.e. the range of `AddAut.addConj`. -/]
+def inner : Subgroup (MulAut G) := conj.range
 
 variable {G}
 
@@ -52,7 +52,7 @@ theorem conj_mem_inner {g : G} : conj g ∈ inner G := ⟨g, rfl⟩
 
 /-- The inner automorphism group is normal in the full automorphism group. -/
 @[to_additive /-- The inner automorphism group is normal in the full automorphism group. -/]
-instance normal_inner : (inner G).Normal where
+instance : (inner G).Normal where
   conj_mem _ hn h := by
     obtain ⟨g, rfl⟩ := mem_inner_iff.mp hn
     exact conj_conj h g ▸ conj_mem_inner (g := h g)
@@ -69,9 +69,8 @@ variable {H : Type*} [Group H]
 
 @[to_additive]
 theorem map_inner_congr (e : G ≃* H) : (inner G).map (MulAut.congr e) = inner H := by
-  ext φ
-  simp only [Subgroup.mem_map, mem_inner_iff, MonoidHom.coe_ofClass, exists_exists_eq_and]
-  exact e.exists_congr (Eq.congr_left <| congr_conj e ·)
+  rw [inner, ← MonoidHom.range_comp, congr_comp_conj, MonoidHom.range_comp,
+    e.range_eq_top, Subgroup.map_top, inner]
 
 /-- An isomorphism `G ≃* H` induces an isomorphism of their inner automorphism groups. -/
 @[to_additive (attr := simps!)

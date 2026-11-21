@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.Subgroup.Center
 
 The *outer automorphism group* of a group `G` is the quotient of its automorphism group by the
 inner automorphisms, `MulAut G ⧸ MulAut.inner G`. It is a group because `MulAut.inner G` is
-normal (`MulAut.normal_inner`).
+normal.
 
 ## Main definitions
 
