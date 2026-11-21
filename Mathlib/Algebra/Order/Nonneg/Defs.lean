@@ -44,6 +44,8 @@ structure Nonneg (α : Type*) [Zero α] [LE α] where
 
 namespace Nonneg
 
+@[deprecated (since := "2026-11-21")] protected alias property := val_nonneg
+
 attribute [coe] val
 
 variable [Zero α] [LE α] {a b : Nonneg α} {x : α}
