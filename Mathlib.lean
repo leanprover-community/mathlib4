@@ -1,9 +1,12 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
+public import Mathlib.Tactic.Gavrilovich
 public import Mathlib.Tactic.Gavrilovich.Elab.Basic
+public import Mathlib.Tactic.Gavrilovich.Elab.Full
 public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
 public import Mathlib.Tactic.Gavrilovich.Tactics
+public import Mathlib.Topology.Gavrilovich.Model
 public import Mathlib.Topology.Gavrilovich.Space
 public import Std
 public import Batteries
