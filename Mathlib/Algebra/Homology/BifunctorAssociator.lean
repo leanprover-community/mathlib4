@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.CategoryTheory.GradedObject.Associator
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The associator for actions of bifunctors on homological complexes

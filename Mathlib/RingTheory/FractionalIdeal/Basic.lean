@@ -5,8 +5,9 @@ Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Fractional ideals
