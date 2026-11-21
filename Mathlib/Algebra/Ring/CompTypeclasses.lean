@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Equiv
 # Propositional typeclasses on several ring homs
 
 This file contains three typeclasses used in the definition of (semi)linear maps:
-* `RingHomId σ`, which expresses the fact that `σ₂₃ = id`
+* `RingHomId σ`, which expresses the fact that `σ = id`
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
@@ -145,13 +145,9 @@ end RingHomInvPair
 
 namespace RingHomCompTriple
 
-instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
-  ⟨by
-    simp⟩
+instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ := ⟨by simp⟩
 
-instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
-  ⟨by
-    simp⟩
+instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ := ⟨by simp⟩
 
 end RingHomCompTriple
 
@@ -175,10 +171,10 @@ instance ids : RingHomSurjective (RingHom.id R₁) :=
 
 /-- This cannot be an instance as there is no way to infer `σ₁₂` and `σ₂₃`. -/
 theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] :
-    RingHomSurjective σ₁₃ :=
-  { is_surjective := by
-      have := σ₂₃.surjective.comp σ₁₂.surjective
-      rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
+    RingHomSurjective σ₁₃ where
+  is_surjective := by
+    have := σ₂₃.surjective.comp σ₁₂.surjective
+    rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this
 
 instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
