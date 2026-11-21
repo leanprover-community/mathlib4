@@ -191,6 +191,22 @@ theorem le_iff_le_sSup' [WellFoundedLT α] {f : α → α} (hf : IsNormal f) {x 
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
+variable {ι : Sort*} [ConditionallyCompleteLinearOrderBot α]
+  [ConditionallyCompleteLinearOrderBot β]
+
+theorem _root_.InitialSeg.map_csSup (f : α ≤i β) {s : Set α} (hs : BddAbove s) :
+    f (sSup s) = sSup (f '' s) := by
+  obtain rfl | hs' := s.eq_empty_or_nonempty
+  · simp
+  · exact f.isNormal.leftOrdContinuous.map_csSup hs' hs
+
+theorem _root_.InitialSeg.map_ciSup (f : α ≤i β) {g : ι → α} (hg : BddAbove (range g)) :
+    f (⨆ i, g i) = ⨆ i, f (g i) := by
+  rw [← sSup_range, ← sSup_range, f.map_csSup hg, ← range_comp, Function.comp_def]
+
+end ConditionallyCompleteLinearOrderBot
+
+section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrder β]
 
 theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
