@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Basic.TwoPointing
 public import Mathlib.CategoryTheory.Category.Bipointed
+public import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
@@ -25,6 +25,8 @@ This defines `TwoP`, the category of two-pointed types.
 open CategoryTheory Option
 
 universe u
+
+variable {α β : Type*}
 
 
 /-- The category of two-pointed types. -/
@@ -63,10 +65,12 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
 noncomputable instance largeCategory : LargeCategory TwoP :=
   inferInstanceAs <| Category (InducedCategory _ toBipointed)
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable instance concreteCategory : ConcreteCategory TwoP
     (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toBipointed) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
   inferInstanceAs <| HasForget₂ (InducedCategory _ toBipointed) _
 
@@ -101,9 +105,10 @@ theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
 
 end TwoP
 
-@[simp, nolint simpNF] -- mathlib builds without this simp attribute
+@[simp]
 theorem TwoP_swap_comp_forget_to_Bipointed :
-    TwoP.swap ⋙ forget₂ TwoP Bipointed = forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
+    TwoP.swap ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) =
+      forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
   rfl
 
 /-- The functor from `Pointed` to `TwoP` which adds a second point. -/
@@ -132,16 +137,17 @@ theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToT
 theorem pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
   rfl
 
-@[simp, nolint simpNF] -- mathlib builds without this simp attribute
+@[simp]
 theorem pointedToTwoPFst_comp_forget_to_bipointed :
-    pointedToTwoPFst ⋙ forget₂ TwoP Bipointed = pointedToBipointedFst :=
+    pointedToTwoPFst ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) = pointedToBipointedFst :=
   rfl
 
-@[simp, nolint simpNF] -- mathlib builds without this simp attribute
+@[simp]
 theorem pointedToTwoPSnd_comp_forget_to_bipointed :
-    pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed = pointedToBipointedSnd :=
+    pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) = pointedToBipointedSnd :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Adding a second point is left adjoint to forgetting the second point. -/
 noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
     pointedToTwoPFst ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedFst :=
@@ -155,6 +161,7 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
             · rfl }
       homEquiv_naturality_left_symm := fun f g => by ext (_ | _) : 4 <;> rfl }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Adding a first point is left adjoint to forgetting the first point. -/
 noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
     pointedToTwoPSnd ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedSnd :=
