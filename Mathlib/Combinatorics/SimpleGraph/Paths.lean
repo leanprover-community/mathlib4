@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
+import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Algebra.Order.Interval.Set.SuccPred
 import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
@@ -601,25 +603,52 @@ theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
 
 /-! ### About cycles -/
 
+theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
+    p.IsCycle ↔ p.tail.IsPath ∧ 3 ≤ p.length := by
+  refine ⟨fun h ↦ ⟨h.isPath_tail, h.three_le_length⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  cases p with
+  | nil => simp at h₂
+  | cons h' p =>
+    simp only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
+    refine p.cons_isCycle_iff h' |>.mpr ⟨h₁, fun hh ↦ ?_⟩
+    have : p.support[0] = p.support[p.length - 1] := by
+      simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
+    lia [p.isPath_iff_injective_get_support.mp h₁ this]
+
+theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
+    p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
+  rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
+
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
+
+theorem isCycle_iff_getVert_injOn_Iio {v : V} {p : G.Walk v v} :
+    p.IsCycle ↔ Set.InjOn p.getVert (.Iio p.length) ∧ 3 ≤ p.length := by
+  rw [isCycle_iff_isPath_dropLast_and_le_length, ← IsPath.getVert_injOn_iff]
+  refine and_congr_left fun hlen ↦ ?_
+  rw [length_dropLast, ← Set.Iio_add_one_eq_Iic, Nat.sub_one_add_one <| by lia]
+  exact Set.EqOn.injOn_iff fun _ ↦ p.getVert_dropLast
+
+theorem isCycle_iff_getVert_injOn_Ioc {v : V} {p : G.Walk v v} :
+    p.IsCycle ↔ Set.InjOn p.getVert (.Ioc 0 p.length) ∧ 3 ≤ p.length := by
+  rw [isCycle_iff_isPath_tail_and_le_length, ← IsPath.getVert_injOn_iff]
+  refine and_congr_left fun hlen ↦ ?_
+  simp_rw [← Set.Icc_bot, ← Set.Ico_add_one_right_eq_Icc, p.length_tail_add_one <| by grind,
+    ← Set.Icc_add_one_left_eq_Ioc]
+  convert add_left_injective 1 |>.injOn.comp_iff
+  all_goals ext; simp
+
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert (.Ioc 0 p.length) := by
-  intro n hn m hm hnm
-  have := hpc.isPath_tail.getVert_injOn (x₁ := n - 1) (x₂ := m - 1)
-  grind [getVert_tail, length_tail_add_one hpc.not_nil]
+    Set.InjOn p.getVert (.Ioc 0 p.length) :=
+  isCycle_iff_getVert_injOn_Ioc.mp hpc |>.left
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert (.Iio p.length) := by
-  intro n hn m hm hnm
-  suffices p.length - n = p.length - m by grind
-  have := hpc.three_le_length
-  have := p.length_reverse
-  exact hpc.reverse.getVert_injOn (by grind) (by grind) (by grind [getVert_reverse])
+    Set.InjOn p.getVert (.Iio p.length) :=
+  isCycle_iff_getVert_injOn_Iio.mp hpc |>.left
 
 lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
   intro h
   have := hp.three_le_length
-  grind [hp.getVert_injOn (by grind) (by grind) h]
+  lia [hp.getVert_injOn (by grind) (by grind) h]
 
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
@@ -632,25 +661,8 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   intro h'
   by_cases hi' : i ≥ p.length - 1
-  · grind [hpc.three_le_length, p.getVert_of_length_le, hpc.getVert_endpoint_iff]
-  grind [hpc.getVert_injOn' (by grind) (by grind) h']
-
-theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
-    p.IsCycle ↔ p.tail.IsPath ∧ 3 ≤ p.length := by
-  refine ⟨fun h ↦ ⟨h.isPath_tail, h.three_le_length⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  cases p with
-  | nil => simp_all
-  | cons h' p =>
-    simp only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
-    refine p.cons_isCycle_iff h' |>.mpr ⟨h₁, fun hh ↦ ?_⟩
-    have : p.support[0] = p.support[p.length - 1] := by
-      simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
-    have := p.isPath_iff_injective_get_support.mp h₁ this
-    lia
-
-theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
-    p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
-  rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
+  · lia [hpc.three_le_length, p.getVert_of_length_le, hpc.getVert_endpoint_iff]
+  lia [hpc.getVert_injOn' (by grind) (by grind) h']
 
 /-! ### Walk decompositions -/
 
