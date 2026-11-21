@@ -243,9 +243,9 @@ instance : ZeroDimensionalSpace Gal(L/K) := by
           exact ne_of_ne_of_eq hd hc
       rw [hcm]
       exact isOpen_iUnion fun d => isOpen_iUnion fun hd =>
-        (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.1).preimage
+        (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.val).preimage
           (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
-    · exact (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.1).preimage
+    · exact (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.val).preimage
         (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
   · rintro ⟨s, ⟨hs, hxs⟩, hst⟩
     exact mem_of_superset (hs.isOpen.mem_nhds hxs) hst
@@ -293,8 +293,8 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
       map_zero' := (hs 0).exists.elim fun _ h => by simp [h]
       map_one' := (hs 1).exists.elim fun _ h => by simp [h]
       commutes' x :=
-        ((hs x.1).and ((Filter.eventually_mem_principal _).filter_mono hfE)).exists.elim fun _ h =>
-          by simp [h.1, (mem_fixingSubgroup_iff _ _).1 h.2]
+        ((hs x.val).and ((Filter.eventually_mem_principal _).filter_mono hfE)).exists.elim
+          fun _ h => by simp [h.1, (mem_fixingSubgroup_iff _ _).1 h.2]
       map_add' x y := by
         obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x + y)))).exists
         simp [hτ.1, hτ.2.1, hτ.2.2]
@@ -341,7 +341,7 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
       | mul _ _ _ _ ihl ihr => simpa using congrArg₂ (· * ·) ihl ihr
     rw [hττE, map_zero, Polynomial.map_aeval_eq_aeval_map h]
     simp
-  refine ⟨E.fixingSubgroupEquiv.symm σ, (E.fixingSubgroupEquiv.symm σ).2, fun U hU => ?_⟩
+  refine ⟨E.fixingSubgroupEquiv.symm σ, (E.fixingSubgroupEquiv.symm σ).prop, fun U hU => ?_⟩
   rw [← map_mul_left_nhds_one, Filter.mem_map, AlgEquiv.mem_nhds_one_iff'] at hU
   obtain ⟨F, fg, hF⟩ := hU
   rw [← Set.image_subset_iff] at hF
