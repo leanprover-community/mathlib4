@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 
@@ -25,7 +26,6 @@ as a derived functor of the functor `F.mapCochainComplexPlus`
 that `F` induces on the categories of bounded below cochain complexes.
 
 TODO(@joelriou): refactor the definition of `Functor.rightDerived`
-
 -/
 
 @[expose] public section

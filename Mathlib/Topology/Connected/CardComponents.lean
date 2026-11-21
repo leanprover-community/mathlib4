@@ -6,8 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Data.Set.Card.Arithmetic
-import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Separation.Connected
+
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Cardinality of connected components under open and closed maps

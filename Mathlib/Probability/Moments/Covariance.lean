@@ -6,8 +6,9 @@ Authors: Rémy Degenne, Etienne Marion
 module
 
 public import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Integration
 public import Mathlib.Probability.Notation
+
+import Mathlib.Probability.Independence.Integration
 
 /-!
 # Covariance
@@ -27,7 +28,6 @@ We define the covariance of two real-valued random variables.
 
 * `cov[X, Y; μ] = covariance X Y μ`
 * `cov[X, Y] = covariance X Y volume`
-
 -/
 
 @[expose] public section

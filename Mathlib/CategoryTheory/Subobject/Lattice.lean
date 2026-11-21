@@ -127,7 +127,6 @@ section Inf
 
 variable [HasPullbacks C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -170,22 +169,18 @@ and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
   Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -756,13 +751,12 @@ end ZeroObject
 
 section SubobjectSubobject
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The subobject lattice of a subobject `Y` is order isomorphic to the interval `Set.Iic Y`. -/
 def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
-  invFun Z := Subobject.mk (ofLE _ _ Z.2)
+  invFun Z := Subobject.mk (ofLE _ _ Z.property)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by cat_disch)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by

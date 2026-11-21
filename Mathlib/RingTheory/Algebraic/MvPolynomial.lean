@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.RingTheory.Algebraic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transcendental elements in `MvPolynomial`
 
@@ -88,7 +91,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
   · rw [← transcendental_polynomial_aeval_X_iff R i]
     refine h.restrictScalars fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
     simp_rw [← MvPolynomial.algebraMap_eq]
-    congrm $(heq).1
+    congrm $(heq).val
 
 theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
     Transcendental (supported R s) (X i : MvPolynomial σ R) := by

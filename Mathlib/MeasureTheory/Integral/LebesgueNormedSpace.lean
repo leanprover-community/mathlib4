@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 
@@ -20,7 +20,7 @@ open NNReal ENNReal
 variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
+    [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
     (hf : Measurable f) {g : α → E} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ) • g x) μ := by

@@ -5,11 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Fin.Tuple.Embedding
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 
@@ -188,8 +188,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     ∃ (g : G) (y : Fin n ↪ ofStabilizer G a), g • x = ofStabilizer.snoc y := by
   obtain ⟨g, hgx⟩ := exists_smul_eq G (x (Fin.last n)) a
   have H : ∀ i, Fin.Embedding.init (g • x) i ∈ ofStabilizer G a := fun i ↦ by
-    simp only [mem_ofStabilizer_iff,
-      Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
+    simp only [mem_ofStabilizer_iff, Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
     suffices Fin.Embedding.init (g • x) i = (g • x) i.castSucc by
       simp [this]
     simp [Fin.Embedding.init, Fin.init_def]

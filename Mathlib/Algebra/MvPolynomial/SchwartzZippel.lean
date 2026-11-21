@@ -5,9 +5,10 @@ Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Variables
+
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Algebra.Polynomial.Roots

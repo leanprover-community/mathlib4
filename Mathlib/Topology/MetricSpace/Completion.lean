@@ -5,10 +5,14 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
+
+import Mathlib.Topology.Algebra.Ring.Real
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The completion of a metric space

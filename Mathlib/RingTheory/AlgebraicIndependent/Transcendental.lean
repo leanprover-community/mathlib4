@@ -19,12 +19,9 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 
 ## Tags
 transcendence
-
 -/
 
 public section
-
-noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
@@ -77,7 +74,8 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 end AlgebraicIndependent
 
 theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
-  bot_unique <| ciSup_le' fun s ↦ have := s.2.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
+  bot_unique <| ciSup_le' fun s ↦
+    have := s.property.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
 
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
@@ -162,7 +160,7 @@ theorem algebraicIndependent_of_finite' (s : Set A)
       ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
     AlgebraicIndependent R ((↑) : s → A) :=
   algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
-    (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
+    (by rintro _ ⟨x, _, rfl⟩; exact x.property) (hfin.image _) h.image _ i.property
     (mt Subtype.val_injective.mem_set_image.mp hi)
 
 namespace AlgebraicIndependent
@@ -192,7 +190,7 @@ theorem iff_adjoin_image_compl (s : Set ι) :
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
       Transcendental (adjoin R (x '' {i}ᶜ)) (x i) :=
-  (iff_adjoin_image_compl _).trans <| and_congr_right
+  (iff_adjoin_image_compl {i}).trans <| and_congr_right
     fun _ ↦ algebraicIndependent_unique_type_iff (ι := {j // j = i})
 
 variable (hx : AlgebraicIndependent R x)
@@ -208,7 +206,7 @@ theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebra
   set Rx := adjoin R (range x)
   let _ : Algebra Rx S :=
     (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
-  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).val by simp
   refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
   simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
 

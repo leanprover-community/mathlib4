@@ -5,9 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Ideals and quotients of topological rings

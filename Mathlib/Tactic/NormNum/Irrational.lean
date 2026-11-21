@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.Rify
+
+import Mathlib.Tactic.Qify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -25,7 +26,6 @@ such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
 Disprove `Irrational x` for rational `x`.
-
 -/
 
 public meta section

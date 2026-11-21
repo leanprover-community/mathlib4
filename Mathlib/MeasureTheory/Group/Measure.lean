@@ -5,13 +5,14 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-!
 # Measures on Groups
@@ -118,7 +119,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_left_eq_self⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is right invariant under addition. -/]
@@ -129,10 +130,10 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_right_eq_self⟩
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -142,7 +143,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ
     map_mul_left_eq_self μ g, map_mul_left_eq_self ν h]
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
@@ -291,7 +292,8 @@ lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : Measurab
     _ = μ univ := by
       rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
       · simp [hs.mul_eq]
-      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+      · exact fun a b hab ↦
+          hs.pairwiseDisjoint_smul a.property b.property (Subtype.val_injective.ne hab)
 
 end Group
 
@@ -631,7 +633,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}
     (hs : IsOpen s) : μ s ≠ 0 ↔ s.Nonempty := by
-  simpa [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ] using nonempty_iff_ne_empty.symm
+  simp [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ]
 
 @[to_additive]
 theorem measure_pos_iff_nonempty_of_isMulLeftInvariant [Regular μ] (h3μ : μ ≠ 0) {s : Set G}
@@ -926,7 +928,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 @[to_additive]
 instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
 /-- If the neutral element of a group is not isolated, then a Haar measure on this group has value

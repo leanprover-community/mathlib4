@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.RingTheory.Adjoin.FGBaseChange
+
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -58,7 +60,6 @@ the current `Module.Flat` to `Module.MonoFlat`.
 ## TODO
 
 * Generalize flatness to noncommutative semirings.
-
 -/
 
 @[expose] public section
@@ -403,7 +404,7 @@ end Module
 section Injective
 
 variable {R S A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+  [CommSemiring S] [Algebra S A]
 
 namespace Algebra.TensorProduct
 
@@ -439,7 +440,7 @@ noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChang
 @[simp]
 theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
     (toBaseChange.toLinearEquiv A p).symm
-      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.property⟩ = a ⊗ₜ[R] m :=
   (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
 
 end Submodule

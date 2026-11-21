@@ -66,13 +66,17 @@ lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
 
-lemma Orthonormal.nnnorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+lemma Orthonormal.nnNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖₊ = 1 := by
   suffices (‖v i‖₊ : ℝ) = 1 by norm_cast at this
   simp [h.norm_eq_one]
 
-lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+@[deprecated (since := "2026-10-31")] alias Orthonormal.nnnorm_eq_one := Orthonormal.nnNorm_eq_one
+
+lemma Orthonormal.eNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
+
+@[deprecated (since := "2026-11-06")] alias Orthonormal.enorm_eq_one := Orthonormal.eNorm_eq_one
 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
     ⟪v i, v j⟫ = 0 := h.2 hij
@@ -437,8 +441,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
     ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
-    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) := by
-    exact hv.inner_left_right_finset
+    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) :=
+    hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]

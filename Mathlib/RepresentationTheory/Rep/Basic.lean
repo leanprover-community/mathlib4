@@ -16,7 +16,6 @@ public import Mathlib.RepresentationTheory.Equiv
 Given a `G`-representation `ρ` on a module `V`, you can construct the bundled representation as
 `Rep.of ρ`. Conversely, given a bundled representation `A : Rep k G`, you can get the underlying
 module as `A.V` and the representation on it as `A.ρ`.
-
 -/
 
 @[expose] public section
@@ -117,7 +116,7 @@ variable {A B} in
 
 variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
-  simpa using congr($(f.hom.2 g) a)
+  simpa using congr($(f.hom.isIntertwining' g) a)
 
 variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
 
@@ -477,13 +476,12 @@ section Action
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every object in `Rep k G` naturally correspond to an object in `Action`. -/
 @[simps]
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
   obj X := ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩
   map f := ⟨f.toModuleCatHom, fun g ↦ ModuleCat.hom_ext <| by
-    simp [ModuleCat.endRingEquiv, f.hom.2]⟩
+    simp [ModuleCat.endRingEquiv, f.hom.isIntertwining']⟩
 
 lemma RepToAction_obj (X : Rep.{w} k G) : (RepToAction k G).obj X =
   ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩ := rfl
@@ -881,22 +879,22 @@ variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
-def norm : End A := Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
-    fun g ↦ by ext; simp⟩
+def norm : End A :=
+  .of (Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
+    fun g ↦ by ext; simp⟩)
 
 @[simp]
-lemma norm_apply {x : A} : (norm A).hom x = A.ρ.norm x := rfl
+lemma norm_apply {x : A} : (norm A).asHom.hom x = A.ρ.norm x := rfl
 
 @[reassoc, elementwise]
-lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ (norm B).asHom = (norm A).asHom ≫ f := by
   ext; simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
 @[simps]
-def normNatTrans : End (𝟭 (Rep k G)) where
-  app := norm
-  naturality _ _ := norm_comm
+def normNatTrans : End (𝟭 (Rep k G)) :=
+  .of { app A := (norm A).asHom, naturality _ _ := norm_comm }
 
 end
 
@@ -936,8 +934,8 @@ abbrev freeLiftLEquiv :
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g :=
+  (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section

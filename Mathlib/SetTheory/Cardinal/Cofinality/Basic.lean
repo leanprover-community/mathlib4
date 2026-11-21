@@ -50,7 +50,7 @@ variable (α) in
 /-- Every well-order has a cofinal subset of cardinal `cof α`. -/
 theorem exists_cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
   obtain ⟨s, hs⟩ := ciInf_mem fun s : {s : Set α // IsCofinal s} ↦ #s
-  exact ⟨s.1, s.2, hs⟩
+  exact ⟨s.val, s.property, hs⟩
 
 @[deprecated (since := "2026-05-25")] alias cof_eq := exists_cof_eq
 
@@ -179,12 +179,8 @@ theorem OrderIso.lift_cof_congr (f : α ≃o β) :
     Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
   f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
 
-@[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
-
 theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
   simpa using f.lift_cof_congr
-
-@[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
 
 end Congr
 
@@ -195,7 +191,7 @@ theorem isCofinal_of_isCofinal_sUnion {α : Type*} [LinearOrder α] {s : Set (Se
   contrapose! h₂
   simp_rw [not_isCofinal_iff] at h₂
   choose f hf using h₂
-  refine (cof_le (s := range fun x ↦ f x.1 x.2) fun a ↦ ?_).trans mk_range_le
+  refine (cof_le (s := range fun x ↦ f x.val x.property) fun a ↦ ?_).trans mk_range_le
   obtain ⟨b, ⟨t, ht, hb⟩, hab⟩ := h₁ a
   simpa using ⟨t, ht, hab.trans (hf t ht b hb).le⟩
 

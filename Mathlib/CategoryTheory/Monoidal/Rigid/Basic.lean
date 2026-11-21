@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -56,7 +57,6 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 ## Tags
 
 rigid category, monoidal category
-
 -/
 
 @[expose] public section

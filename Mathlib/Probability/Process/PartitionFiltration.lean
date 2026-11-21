@@ -33,7 +33,6 @@ function on `α`.
 
 * `ProbabilityTheory.iSup_partitionFiltration`: `⨆ n, partitionFiltration α n` is the measurable
   space on `α`.
-
 -/
 
 @[expose] public section
@@ -72,15 +71,13 @@ lemma measurable_memPartitionSet_subtype (ht : ∀ n, MeasurableSet (t n)) (n : 
     (partitionFiltration ht n) _ (fun s ↦ ?_)
   rcases s with ⟨s, hs⟩
   suffices MeasurableSet[partitionFiltration ht n] {x | memPartitionSet t n x = s} by
-    convert this
-    ext x
-    simp
+    simpa [Set.preimage] using this
   simp_rw [memPartitionSet_eq_iff _ hs]
   exact measurableSet_partitionFiltration_of_mem _ _ hs
 
 lemma measurable_partitionFiltration_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
     Measurable[partitionFiltration ht n] (memPartitionSet t n) :=
-  measurable_subtype_coe.comp (measurable_memPartitionSet_subtype ht _ _)
+  measurable_subtypeVal.comp (measurable_memPartitionSet_subtype ht _ _)
 
 lemma measurable_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
     Measurable (memPartitionSet t n) :=
@@ -131,7 +128,7 @@ lemma measurable_countablePartitionSet_subtype (n : ℕ)
 lemma measurable_countableFiltration_countablePartitionSet (α : Type*)
     [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     Measurable[countableFiltration α n] (countablePartitionSet n) :=
-  measurable_subtype_coe.comp (measurable_countablePartitionSet_subtype _ _)
+  measurable_subtypeVal.comp (measurable_countablePartitionSet_subtype _ _)
 
 lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
     (n : ℕ) :

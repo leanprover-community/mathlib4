@@ -8,8 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.CompactOpen
 
-import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
 /-!
 # A measurable space structure on the type of continuous maps
@@ -101,8 +101,8 @@ theorem borel_eq_iSup_comap_eval :
     simp_rw [Set.mapsTo_iff_image_subset] at hf ⊢
     rw [hV.open_eq_sUnion_of_closure_subset hU] at hf
     obtain ⟨b, ⟨hb1, hb2⟩, hb3⟩ : ∃ b, (b ∈ V ∧ closure b ⊆ U) ∧ f '' K ⊆ b := by
-      refine (hK.image f.continuous).elim_directedOn_cover _
-        (fun v hv ↦ hV.isOpen hv.1) hf ?_ ?_
+      refine (hK.image f.continuous).elim_directedOn_cover _ ?_ hf ?_ ?_
+      · exact fun v hv ↦ hV.isOpen hv.1
       · rintro - ⟨⟨f, ⟨hf1, hf2⟩, rfl⟩, hf3⟩ - ⟨⟨g, ⟨hg1, hg2⟩, rfl⟩, hg3⟩
         exact ⟨⋃₀ (f ∪ g), ⟨⟨f ∪ g, ⟨hf1.union hg1, by grind⟩, rfl⟩,
           by simp_all [Set.sUnion_union]⟩, by grind, by grind⟩
@@ -167,13 +167,13 @@ variable (X Y) in
 /-- A measurable equivalence between `C(X, Y)` and `{f : X → Y // Continuous f}`. -/
 def continuousMapToFun : C(X, Y) ≃ᵐ {f : X → Y // Continuous f} where
   toFun f := ⟨f, f.continuous⟩
-  invFun f := ⟨f.1, f.2⟩
+  invFun f := ⟨f.val, f.property⟩
   left_inv f := rfl
   right_inv f := rfl
   measurable_toFun :=
     .subtype_mk (.of_eval fun _ ↦ (continuous_eval_const _).measurable)
   measurable_invFun :=
-    ContinuousMap.measurable_iff_eval.2 fun x ↦ by simpa using measurable_subtype_coe.eval
+    ContinuousMap.measurable_iff_eval.2 fun x ↦ by simpa using measurable_subtypeVal.eval
 
 @[simp]
 lemma continuousMapToFun_apply (f : C(X, Y)) :
@@ -181,12 +181,12 @@ lemma continuousMapToFun_apply (f : C(X, Y)) :
 
 @[simp]
 lemma symm_continuousMapToFun_apply (f : {g : X → Y // Continuous g}) :
-    (continuousMapToFun X Y).symm f = ⟨f.1, f.2⟩ := rfl
+    (continuousMapToFun X Y).symm f = ⟨f.val, f.property⟩ := rfl
 
 lemma continuousMapToFun_apply_apply (f : C(X, Y)) (x : X) :
-    (continuousMapToFun X Y f).1 x = f x := rfl
+    (continuousMapToFun X Y f).val x = f x := rfl
 
 lemma symm_continuousMapToFun_apply_apply (f : {g : X → Y // Continuous g}) (x : X) :
-    (continuousMapToFun X Y).symm f x = f.1 x := rfl
+    (continuousMapToFun X Y).symm f x = f.val x := rfl
 
 end MeasurableEquiv

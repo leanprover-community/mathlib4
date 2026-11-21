@@ -6,12 +6,13 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Topology.Order.DenselyOrdered
+
+import Mathlib.Analysis.Convex.Function
 
 /-!
 # Exposed sets

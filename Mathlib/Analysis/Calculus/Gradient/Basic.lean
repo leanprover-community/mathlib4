@@ -5,8 +5,8 @@ Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # Gradient
@@ -274,12 +274,13 @@ end GradientProperties
 
 section Inner
 
-lemma HasGradientWithinAt.fderivWithin_apply
+protected lemma HasGradientWithinAt.fderivWithin_apply
     (h : HasGradientWithinAt f f' s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 f s x y = ⟪f', y⟫ := by
   rw [h.hasFDerivWithinAt.fderivWithin hs, toDual_apply_apply]
 
-lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y = ⟪f', y⟫ := by
+protected lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) :
+    fderiv 𝕜 f x y = ⟪f', y⟫ := by
   rw [h.hasFDerivAt.fderiv, toDual_apply_apply]
 
 @[simp]

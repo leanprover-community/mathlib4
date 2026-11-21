@@ -187,7 +187,7 @@ theorem ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F
 /-- A realizer of the neighborhood of a point. -/
 protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
   ⟨{ s : F.σ // a ∈ F.F s },
-    { f := fun s ↦ F.F s.1
+    { f := fun s ↦ F.F s.val
       pt := ⟨_, F.F.top_mem a⟩
       inf := fun ⟨x, h₁⟩ ⟨y, h₂⟩ ↦ ⟨_, F.F.inter_mem x y a ⟨h₁, h₂⟩⟩
       inf_le_left := fun ⟨x, h₁⟩ ⟨y, h₂⟩ _z h ↦ (F.F.inter_sub x y a ⟨h₁, h₂⟩ h).1
@@ -202,7 +202,7 @@ protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
 theorem nhds_σ (F : Realizer α) (a : α) : (F.nhds a).σ = { s : F.σ // a ∈ F.F s } := rfl
 
 @[simp]
-theorem nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.1 := rfl
+theorem nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.val := rfl
 
 theorem tendsto_nhds_iff {m : β → α} {f : Filter β} (F : f.Realizer) (R : Realizer α) {a : α} :
     Tendsto m f (𝓝 a) ↔ ∀ t, a ∈ R.F t → ∃ s, ∀ x ∈ F.F s, m x ∈ R.F t :=
@@ -219,7 +219,8 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
     {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
-  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.rfl⟩, have := R.sets a; Set.toFinite _⟩
+  ⟨_, F.mem_nhds.2 ⟨(R.bas a).val, (R.bas a).property, Subset.rfl⟩,
+    have := R.sets a; Set.toFinite _⟩
 
 theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
     {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=

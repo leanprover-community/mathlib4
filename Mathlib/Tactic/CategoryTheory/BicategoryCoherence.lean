@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A `coherence` tactic for bicategories
 

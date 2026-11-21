@@ -33,7 +33,6 @@ requires more unfolding without much obvious benefit.
 
 primitive element, separable field extension, separable extension, intermediate field, adjoin,
 exists_adjoin_simple_eq_top
-
 -/
 
 @[expose] public section
@@ -208,16 +207,14 @@ variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 @[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
-  · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
-    have base : P ⊥ := ⟨0, adjoin_zero⟩
-    have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
-      intro K β hK
+  · induction (⊤ : IntermediateField F E) using induction_on_adjoin with
+    | bot => exact ⟨0, adjoin_zero⟩
+    | adjoin_simple K β hK =>
       obtain ⟨α, hK⟩ := hK
       rw [← hK, adjoin_simple_adjoin_simple]
       have : Infinite F := isEmpty_fintype.mp F_inf
       obtain ⟨γ, hγ⟩ := primitive_element_inf_aux F α β
       exact ⟨γ, hγ.symm⟩
-    exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
 
 /-- Alternative phrasing of primitive element theorem:
@@ -275,11 +272,11 @@ theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
   have := isAlgebraic_of_finite_intermediateField F E
-  have : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
+  have : ∀ K : IF, FiniteDimensional F K.val := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral _)
-  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
-  have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
-    le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
+  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.val)
+  have htop : ⨆ K : IF, K.val = ⊤ := le_top.antisymm fun x _ ↦
+    le_iSup (fun K : IF ↦ K.val) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
@@ -289,10 +286,12 @@ theorem exists_primitive_element_of_finite_intermediateField
   rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
     exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr(lift $h)⟩
-  · apply induction_on_adjoin (fun K ↦ ∃ α : E, F⟮α⟯ = K) ⟨0, adjoin_zero⟩
-    rintro K β ⟨α, rfl⟩
-    simp_rw [adjoin_simple_adjoin_simple, eq_comm]
-    exact primitive_element_inf_aux_of_finite_intermediateField F α β
+  · induction K using induction_on_adjoin with
+    | bot => exact ⟨0, adjoin_zero⟩
+    | adjoin_simple K β ih =>
+      obtain ⟨α, rfl⟩ := ih
+      simp_rw [adjoin_simple_adjoin_simple, eq_comm]
+      exact primitive_element_inf_aux_of_finite_intermediateField F α β
 
 theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
     (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by

@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.MetricSpace.Gluing
+
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 
 /-!
 # The Gromov-Hausdorff distance is realized

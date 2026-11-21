@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon's theorem on convex sets
 
@@ -125,7 +128,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Given any subcollection `J` of `ι` containing `i`, because `F i` is convex, we need only
   show that `a j ∈ F i` for each `j ∈ s \ J`. -/
   intro J hi
-  rw [convexHull_subset_iff (h_convex i.1 i.2)]
+  rw [convexHull_subset_iff (h_convex i.val i.property)]
   rintro v ⟨j, hj, hj_v⟩
   rw [← hj_v]
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:

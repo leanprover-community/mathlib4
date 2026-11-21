@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
+
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -104,7 +105,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   refine Finset.sum_congr rfl fun p hp ↦ ?_
   have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
-    ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
+    ← natCast_mul_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
