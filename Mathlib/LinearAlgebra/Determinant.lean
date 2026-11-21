@@ -304,7 +304,7 @@ theorem eq_det_smul_id_of_finrank_eq_one [Module.Free A M] (h : Module.finrank A
 determinant. -/
 theorem apply_eq_det_smul_of_finrank_eq_one [Module.Free A M] (h : Module.finrank A M = 1)
     (f : M →ₗ[A] M) (x : M) : f x = f.det • x :=
-  congr($(eq_det_smul_id_of_finrank_eq_one h f) x)
+  LinearMap.congr_fun (eq_det_smul_id_of_finrank_eq_one h f) x
 
 /-- An endomorphism of a free module of rank one has determinant `1` if and only if it is the
 identity. -/
