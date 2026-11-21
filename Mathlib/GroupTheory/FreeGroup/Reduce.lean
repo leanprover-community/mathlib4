@@ -422,13 +422,6 @@ theorem isCyclic_iff_subsingleton : IsCyclic (FreeGroup α) ↔ Subsingleton α 
 theorem isMulCommutative_iff_subsingleton : IsMulCommutative (FreeGroup α) ↔ Subsingleton α :=
   ⟨fun _ ↦ subsingleton_of_isMulCommutative, fun _ ↦ inferInstance⟩
 
-@[to_additive (attr := simp)]
-theorem one_ne_of (a : α) : 1 ≠ of a :=
-  letI := Classical.decEq α; ne_of_apply_ne toWord <| by simp
-
-@[to_additive (attr := simp)]
-theorem of_ne_one (a : α) : of a ≠ 1 := one_ne_of _ |>.symm
-
 @[to_additive]
 instance [Nonempty α] : Nontrivial (FreeGroup α) where
   exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of x⟩

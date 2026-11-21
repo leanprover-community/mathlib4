@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Control.Basic
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # Free abelian groups
@@ -127,7 +128,7 @@ def of (x : α) : FreeCommGroup α :=
 
 /-- The map `FreeCommGroup α →* A` induced by a map of types `α → A`. -/
 @[to_additive /-- The map `FreeAdCommGroup α →+ A` induced by a map of types `α → A`. -/]
-def lift {β : Type v} [CommGroup β] : (α → β) ≃ (FreeCommGroup α →* β) :=
+def lift {β : Type v} [Group β] [IsMulCommutative β] : (α → β) ≃ (FreeCommGroup α →* β) :=
   FreeGroup.lift.trans Group.Abelianization.lift
 
 @[to_additive]
@@ -136,7 +137,7 @@ instance [IsEmpty α] : Unique (FreeCommGroup α) :=
 
 section lift
 
-variable {β : Type v} [CommGroup β] (f : α → β)
+variable {β : Type v} [Group β] [IsMulCommutative β] (f : α → β)
 
 open FreeCommGroup
 
@@ -208,38 +209,37 @@ theorem FreeAddCommGroup.freeAddCommGroupEquivAdditive_symm_ofMul_of (x : α) :
 
 end AdditiveEquiv
 
+namespace FreeCommGroup
+
 section
 
-namespace FreeAddCommGroup
-
-theorem of_injective : Function.Injective (of : α → FreeAddCommGroup α) := by
+@[to_additive (attr := simp)]
+theorem of_injective : Function.Injective (of : α → FreeCommGroup α) := by
   classical
   exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
-    let f : FreeAddCommGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
-    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
-    have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| ite_eq_right hxy
-    one_ne_zero <| hfy1.symm.trans hfy0
+    let f : FreeCommGroup α →* FreeGroup Unit :=
+      lift fun z ↦ if x = z then FreeGroup.of () else 1
+    have hfxu : f (of x) = FreeGroup.of () := (lift_apply_of _ _).trans <| ite_eq_left rfl
+    have hfyu : f (of y) = FreeGroup.of () := hoxy ▸ hfxu
+    have hfy1 : f (of y) = 1 := (lift_apply_of _ _).trans <| ite_eq_right hxy
+    FreeGroup.of_ne_one () <| hfyu.symm.trans hfy1
 
-@[simp]
-theorem of_ne_zero (x : α) : of x ≠ 0 := by
+@[to_additive (attr := simp)]
+theorem of_ne_one (x : α) : of x ≠ 1 := by
   intro h
-  let f : FreeAddCommGroup α →+ ℤ := lift 1
-  have hfx : f (of x) = 1 := lift_apply_of _ _
-  have hf0 : f (of x) = 0 := by rw [h, map_zero]
-  exact one_ne_zero <| hfx.symm.trans hf0
+  let f : FreeCommGroup α →* (FreeGroup Unit) := lift fun _ ↦ FreeGroup.of ()
+  have hfu : f (of x) = FreeGroup.of () := lift_apply_of _ _
+  have hf1 : f (of x) = 1 := by rw [h, map_one]
+  exact FreeGroup.of_ne_one () <| hfu.symm.trans hf1
 
-@[simp]
-theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
+@[to_additive (attr := simp)]
+theorem one_ne_of (x : α) : 1 ≠ of x := of_ne_one _ |>.symm
 
-instance [Nonempty α] : Nontrivial (FreeAddCommGroup α) where
-  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
-
-end FreeAddCommGroup
+@[to_additive]
+instance [Nonempty α] : Nontrivial (FreeCommGroup α) where
+  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of _⟩
 
 end
-
-namespace FreeCommGroup
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem induction_on
@@ -494,26 +494,23 @@ def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeCommGroup α ≃* FreeCom
   right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, MonoidHom.id_apply]
   map_mul' := map_mul _
 
-end FreeCommGroup
-
-namespace FreeAddCommGroup
+/-- The free commutative group on a subsingleton is isomorphic to the free group on it. -/
+@[to_additive
+/-- The free additive commutative group on a subsingleton is isomorphic to the free additive
+group on it. -/]
+def mulEquivFreeGroupOfSubsingleton (T : Type*) [Subsingleton T] :
+    FreeCommGroup T ≃* FreeGroup T :=
+  (lift FreeGroup.of).toMulEquiv (FreeGroup.lift of) (by ext; simp) (by ext; simp)
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def uniqueEquiv (T : Type*) [Unique T] : FreeAddCommGroup T ≃+ ℤ where
-  toFun := FreeAddCommGroup.lift fun _ ↦ (1 : ℤ)
-  invFun n := n • of Inhabited.default
-  left_inv z := FreeAddCommGroup.induction_on z
-    (by simp only [zero_smul, map_zero])
-    (Unique.forall_iff.2 <| by simp only [one_smul, lift_apply_of]) (Unique.forall_iff.2 <| by simp)
-    fun x y hx hy ↦ by
-      simp only [map_add, add_smul] at *
-      rw [hx, hy]
-  right_inv n := by
-    rw [map_zsmul, lift_apply_of]
-    exact zsmul_one n
-  map_add' := map_add _
+def uniqueEquiv (T : Type*) [Unique T] : FreeCommGroup T ≃* Multiplicative ℤ :=
+  (mulEquivFreeGroupOfSubsingleton T).trans FreeGroup.mulEquivIntOfUnique
 
-end FreeAddCommGroup
+end FreeCommGroup
+
+/-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
+def FreeAddCommGroup.uniqueEquiv (T : Type*) [Unique T] : FreeAddCommGroup T ≃+ ℤ :=
+  (addEquivFreeAddGroupOfSubsingleton T).trans FreeAddGroup.addEquivIntOfUnique
 
 section deprecated
 
