@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Triviality of power-multiplicative algebra norms

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Quotient
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Topology.Algebra.Order.Floor
+
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Integrals of periodic functions

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Yoneda
+
+import Mathlib.CategoryTheory.Limits.Types.Images
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

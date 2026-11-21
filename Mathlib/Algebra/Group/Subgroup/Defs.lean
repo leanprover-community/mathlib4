@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Subgroups

@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.IterateMapComap
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.OrzechProperty
+
+import Mathlib.Algebra.Module.Submodule.IterateMapComap
 
 /-!
 # Noetherian rings have the Orzech property
