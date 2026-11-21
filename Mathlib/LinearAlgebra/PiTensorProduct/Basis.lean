@@ -14,7 +14,12 @@ set_option doc.verso.suggestions false
 /-!
 # Basis for `PiTensorProduct`
 
-This file constructs a basis for `PiTensorProduct` given bases on the component spaces.
+This file constructs a basis for a finite-indexed `PiTensorProduct` given bases on the component
+spaces.
+
+It also provides an instance showing that a finite-indexed `PiTensorProduct` of free modules is
+free.
+
 -/
 
 @[expose] public section
@@ -55,5 +60,8 @@ theorem Basis.piTensorProduct_apply [Finite ι] (b : Π i, Basis (κ i) R (M i))
   classical
   refine (Basis.piTensorProduct b).ext_elem (fun q ↦ ?_)
   simp [Finsupp.single_apply, Fintype.prod_ite_zero, ← funext_iff]
+
+instance PiTensorProduct.Free [Finite ι] [∀ i, Free R (M i)] : Free R (⨂[R] i, M i) :=
+  Free.of_basis (Basis.piTensorProduct fun i ↦ Free.chooseBasis R (M i))
 
 end PiTensorProduct
