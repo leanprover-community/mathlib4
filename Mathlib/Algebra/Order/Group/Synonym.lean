@@ -177,105 +177,107 @@ end Monoid
 
 namespace Lex
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [One α] : One (Lex α) := inferInstanceAs <| One α
+@[to_additive] instance [One α] : One (Lex α) where one := ⟨1⟩
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Mul α] : Mul (Lex α) := inferInstanceAs <| Mul α
+@[to_additive] instance [Mul α] : Mul (Lex α) where mul a b := ⟨a.ofLex * b.ofLex⟩
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Inv α] : Inv (Lex α) := inferInstanceAs <| Inv α
+@[to_additive] instance [Inv α] : Inv (Lex α) where inv a := ⟨a.ofLex⁻¹⟩
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Div α] : Div (Lex α) := inferInstanceAs <| Div α
+@[to_additive] instance [Div α] : Div (Lex α) where div a b := ⟨a.ofLex / b.ofLex⟩
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
-instance [Pow α β] : Pow (Lex α) β := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow (Lex α) β where pow a b := ⟨a.ofLex ^ b⟩
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
-instance [Pow α β] : Pow α (Lex β) := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow α (Lex β) where pow a b := a ^ b.ofLex
 
 @[to_additive]
-instance [Semigroup α] : Semigroup (Lex α) := inferInstanceAs <| Semigroup α
+instance [Semigroup α] : Semigroup (Lex α) where mul_assoc _ _ _ := Lex.ext (mul_assoc ..)
 
 @[to_additive]
-instance [CommSemigroup α] : CommSemigroup (Lex α) := inferInstanceAs <| CommSemigroup α
+instance [CommSemigroup α] : CommSemigroup (Lex α) where mul_comm _ _ := Lex.ext (mul_comm ..)
 
 @[to_additive]
-instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) :=
-  inferInstanceAs <| IsLeftCancelMul α
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) where
+  mul_left_cancel _ _ _ h := Lex.ext (mul_left_cancel (Lex.ext_iff.mp h))
 
 @[to_additive]
-instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) :=
-  inferInstanceAs <| IsRightCancelMul α
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) where
+  mul_right_cancel _ _ _ h := Lex.ext (mul_right_cancel (Lex.ext_iff.mp h))
 
 @[to_additive]
-instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) :=
-  inferInstanceAs <| IsCancelMul α
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) where
 
 @[to_additive]
-instance [LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) :=
-  inferInstanceAs <| LeftCancelSemigroup α
+instance [LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) where
 
 @[to_additive]
-instance [RightCancelSemigroup α] : RightCancelSemigroup (Lex α) :=
-  inferInstanceAs <| RightCancelSemigroup α
+instance [RightCancelSemigroup α] : RightCancelSemigroup (Lex α) where
 
 @[to_additive]
-instance [MulOneClass α] : MulOneClass (Lex α) := inferInstanceAs <| MulOneClass α
+instance [MulOneClass α] : MulOneClass (Lex α) where
+  one_mul _ := Lex.ext (one_mul _)
+  mul_one _ := Lex.ext (mul_one _)
 
 @[to_additive]
-instance [Monoid α] : Monoid (Lex α) := inferInstanceAs <| Monoid α
+instance [Monoid α] : Monoid (Lex α) where
+  npow_zero _ := Lex.ext (pow_zero _)
+  npow_succ _ _ := Lex.ext (pow_succ ..)
 
 @[to_additive]
-instance [CommMonoid α] : CommMonoid (Lex α) := inferInstanceAs <| CommMonoid α
+instance [CommMonoid α] : CommMonoid (Lex α) where
 
 @[to_additive]
-instance [LeftCancelMonoid α] : LeftCancelMonoid (Lex α) := inferInstanceAs <| LeftCancelMonoid α
+instance [LeftCancelMonoid α] : LeftCancelMonoid (Lex α) where
 
 @[to_additive]
-instance [RightCancelMonoid α] : RightCancelMonoid (Lex α) := inferInstanceAs <| RightCancelMonoid α
+instance [RightCancelMonoid α] : RightCancelMonoid (Lex α) where
 
 @[to_additive]
-instance [CancelMonoid α] : CancelMonoid (Lex α) := inferInstanceAs <| CancelMonoid α
+instance [CancelMonoid α] : CancelMonoid (Lex α) where
 
 @[to_additive]
-instance [CancelCommMonoid α] : CancelCommMonoid (Lex α) := inferInstanceAs <| CancelCommMonoid α
+instance [CancelCommMonoid α] : CancelCommMonoid (Lex α) where
 
 @[to_additive]
-instance [InvolutiveInv α] : InvolutiveInv (Lex α) := inferInstanceAs <| InvolutiveInv α
+instance [InvolutiveInv α] : InvolutiveInv (Lex α) where inv_inv _ := Lex.ext (inv_inv _)
 
 @[to_additive]
-instance [DivInvMonoid α] : DivInvMonoid (Lex α) := inferInstanceAs <| DivInvMonoid α
+instance [DivInvMonoid α] : DivInvMonoid (Lex α) where
+  div_eq_mul_inv _ _ := Lex.ext (div_eq_mul_inv ..)
+  zpow_zero' _ := Lex.ext (zpow_zero _)
+  zpow_succ' _ _ := Lex.ext (DivInvMonoid.zpow_succ' ..)
+  zpow_neg' _ _ := Lex.ext (DivInvMonoid.zpow_neg' ..)
 
 @[to_additive]
-instance [DivisionMonoid α] : DivisionMonoid (Lex α) := inferInstanceAs <| DivisionMonoid α
+instance [DivisionMonoid α] : DivisionMonoid (Lex α) where
+  mul_inv_rev _ _ := Lex.ext (mul_inv_rev ..)
+  inv_eq_of_mul _ _ h := Lex.ext (inv_eq_of_mul_eq_one_right (Lex.ext_iff.mp h))
 
 @[to_additive]
-instance [DivisionCommMonoid α] : DivisionCommMonoid (Lex α) :=
-  inferInstanceAs <| DivisionCommMonoid α
+instance [DivisionCommMonoid α] : DivisionCommMonoid (Lex α) where
 
 @[to_additive]
-instance [Group α] : Group (Lex α) := inferInstanceAs <| Group α
+instance [Group α] : Group (Lex α) where inv_mul_cancel _ := Lex.ext (inv_mul_cancel _)
 
 @[to_additive]
-instance [CommGroup α] : CommGroup (Lex α) := inferInstanceAs <| CommGroup α
+instance [CommGroup α] : CommGroup (Lex α) where
 
 end Lex
+
+open Lex
 
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
+theorem toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := by rw [Lex.ext_iff]; rfl
 
 @[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
+theorem ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := by rw [Lex.ext_iff]; rfl
 
 @[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl
@@ -311,22 +313,26 @@ section Monoid
 variable [Monoid α]
 
 @[to_additive (attr := simp)]
-lemma isLeftRegular_toLex {a : α} : IsLeftRegular (toLex a) ↔ IsLeftRegular a := .rfl
+lemma isLeftRegular_toLex {a : α} : IsLeftRegular (toLex a) ↔ IsLeftRegular a := by
+  simp [IsLeftRegular, Function.Injective, ← toLex_mul]
 
 @[to_additive (attr := simp)]
-lemma isLeftRegular_ofLex {a : Lex α} : IsLeftRegular (ofLex a) ↔ IsLeftRegular a := .rfl
+lemma isLeftRegular_ofLex {a : Lex α} : IsLeftRegular (ofLex a) ↔ IsLeftRegular a := by
+  simpa using (isLeftRegular_toLex (a := ofLex a)).symm
 
 @[to_additive (attr := simp)]
-lemma isRightRegular_toLex {a : α} : IsRightRegular (toLex a) ↔ IsRightRegular a := .rfl
+lemma isRightRegular_toLex {a : α} : IsRightRegular (toLex a) ↔ IsRightRegular a := by
+  simp [IsRightRegular, Function.Injective, ← toLex_mul]
 
 @[to_additive (attr := simp)]
-lemma isRightRegular_ofLex {a : Lex α} : IsRightRegular (ofLex a) ↔ IsRightRegular a := .rfl
+lemma isRightRegular_ofLex {a : Lex α} : IsRightRegular (ofLex a) ↔ IsRightRegular a := by
+  simpa using (isRightRegular_toLex (a := ofLex a)).symm
 
 @[to_additive (attr := simp)]
-lemma isRegular_toLex {a : α} : IsRegular (toLex a) ↔ IsRegular a := .rfl
+lemma isRegular_toLex {a : α} : IsRegular (toLex a) ↔ IsRegular a := by simp [isRegular_iff]
 
 @[to_additive (attr := simp)]
-lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := .rfl
+lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := by simp [isRegular_iff]
 
 end Monoid
 
@@ -335,100 +341,107 @@ end Monoid
 
 namespace Colex
 
-@[to_additive] instance [One α] : One (Colex α) := inferInstanceAs <| One α
+@[to_additive] instance [One α] : One (Colex α) where one := ⟨1⟩
 
-@[to_additive] instance [Mul α] : Mul (Colex α) := inferInstanceAs <| Mul α
+@[to_additive] instance [Mul α] : Mul (Colex α) where mul a b := ⟨a.ofColex * b.ofColex⟩
 
-@[to_additive] instance [Inv α] : Inv (Colex α) := inferInstanceAs <| Inv α
+@[to_additive] instance [Inv α] : Inv (Colex α) where inv a := ⟨a.ofColex⁻¹⟩
 
-@[to_additive] instance [Div α] : Div (Colex α) := inferInstanceAs <| Div α
+@[to_additive] instance [Div α] : Div (Colex α) where div a b := ⟨a.ofColex / b.ofColex⟩
 
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
-instance [Pow α β] : Pow (Colex α) β := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow (Colex α) β where pow a b := ⟨a.ofColex ^ b⟩
 
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
-instance [Pow α β] : Pow α (Colex β) := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow α (Colex β) where pow a b := a ^ b.ofColex
 
 @[to_additive]
-instance [Semigroup α] : Semigroup (Colex α) := inferInstanceAs <| Semigroup α
+instance [Semigroup α] : Semigroup (Colex α) where mul_assoc _ _ _ := Colex.ext (mul_assoc ..)
 
 @[to_additive]
-instance [CommSemigroup α] : CommSemigroup (Colex α) := inferInstanceAs <| CommSemigroup α
+instance [CommSemigroup α] : CommSemigroup (Colex α) where mul_comm _ _ := Colex.ext (mul_comm ..)
 
 @[to_additive]
-instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Colex α) :=
-  inferInstanceAs <| IsLeftCancelMul α
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Colex α) where
+  mul_left_cancel _ _ _ h := Colex.ext (mul_left_cancel (Colex.ext_iff.mp h))
 
 @[to_additive]
-instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Colex α) :=
-  inferInstanceAs <| IsRightCancelMul α
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Colex α) where
+  mul_right_cancel _ _ _ h := Colex.ext (mul_right_cancel (Colex.ext_iff.mp h))
 
 @[to_additive]
-instance [Mul α] [IsCancelMul α] : IsCancelMul (Colex α) :=
-  inferInstanceAs <| IsCancelMul α
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Colex α) where
 
 @[to_additive]
-instance [LeftCancelSemigroup α] : LeftCancelSemigroup (Colex α) :=
-  inferInstanceAs <| LeftCancelSemigroup α
+instance [LeftCancelSemigroup α] : LeftCancelSemigroup (Colex α) where
 
 @[to_additive]
-instance [RightCancelSemigroup α] : RightCancelSemigroup (Colex α) :=
-  inferInstanceAs <| RightCancelSemigroup α
+instance [RightCancelSemigroup α] : RightCancelSemigroup (Colex α) where
 
 @[to_additive]
-instance [MulOneClass α] : MulOneClass (Colex α) := inferInstanceAs <| MulOneClass α
+instance [MulOneClass α] : MulOneClass (Colex α) where
+  one_mul _ := Colex.ext (one_mul _)
+  mul_one _ := Colex.ext (mul_one _)
 
 @[to_additive]
-instance [Monoid α] : Monoid (Colex α) := inferInstanceAs <| Monoid α
+instance [Monoid α] : Monoid (Colex α) where
+  npow_zero _ := Colex.ext (pow_zero _)
+  npow_succ _ _ := Colex.ext (pow_succ ..)
 
 @[to_additive]
-instance [CommMonoid α] : CommMonoid (Colex α) := inferInstanceAs <| CommMonoid α
+instance [CommMonoid α] : CommMonoid (Colex α) where
 
 @[to_additive]
-instance [LeftCancelMonoid α] : LeftCancelMonoid (Colex α) := inferInstanceAs <| LeftCancelMonoid α
+instance [LeftCancelMonoid α] : LeftCancelMonoid (Colex α) where
 
 @[to_additive]
-instance [RightCancelMonoid α] : RightCancelMonoid (Colex α) :=
-  inferInstanceAs <| RightCancelMonoid α
+instance [RightCancelMonoid α] : RightCancelMonoid (Colex α) where
 
 @[to_additive]
-instance [CancelMonoid α] : CancelMonoid (Colex α) := inferInstanceAs <| CancelMonoid α
+instance [CancelMonoid α] : CancelMonoid (Colex α) where
 
 @[to_additive]
-instance [CancelCommMonoid α] : CancelCommMonoid (Colex α) := inferInstanceAs <| CancelCommMonoid α
+instance [CancelCommMonoid α] : CancelCommMonoid (Colex α) where
 
 @[to_additive]
-instance [InvolutiveInv α] : InvolutiveInv (Colex α) := inferInstanceAs <| InvolutiveInv α
+instance [InvolutiveInv α] : InvolutiveInv (Colex α) where inv_inv _ := Colex.ext (inv_inv _)
 
 @[to_additive]
-instance [DivInvMonoid α] : DivInvMonoid (Colex α) := inferInstanceAs <| DivInvMonoid α
+instance [DivInvMonoid α] : DivInvMonoid (Colex α) where
+  div_eq_mul_inv _ _ := Colex.ext (div_eq_mul_inv ..)
+  zpow_zero' _ := Colex.ext (zpow_zero _)
+  zpow_succ' _ _ := Colex.ext (DivInvMonoid.zpow_succ' ..)
+  zpow_neg' _ _ := Colex.ext (DivInvMonoid.zpow_neg' ..)
 
 @[to_additive]
-instance [DivisionMonoid α] : DivisionMonoid (Colex α) := inferInstanceAs <| DivisionMonoid α
+instance [DivisionMonoid α] : DivisionMonoid (Colex α) where
+  mul_inv_rev _ _ := Colex.ext (mul_inv_rev ..)
+  inv_eq_of_mul _ _ h := Colex.ext (inv_eq_of_mul_eq_one_right (Colex.ext_iff.mp h))
 
 @[to_additive]
-instance [DivisionCommMonoid α] : DivisionCommMonoid (Colex α) :=
-  inferInstanceAs <| DivisionCommMonoid α
+instance [DivisionCommMonoid α] : DivisionCommMonoid (Colex α) where
 
 @[to_additive]
-instance [Group α] : Group (Colex α) := inferInstanceAs <| Group α
+instance [Group α] : Group (Colex α) where inv_mul_cancel _ := Colex.ext (inv_mul_cancel _)
 
 @[to_additive]
-instance [CommGroup α] : CommGroup (Colex α) := inferInstanceAs <| CommGroup α
+instance [CommGroup α] : CommGroup (Colex α) where
 
 end Colex
+
+open Colex
 
 @[to_additive (attr := simp)]
 theorem toColex_one [One α] : toColex (1 : α) = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem toColex_eq_one [One α] {a : α} : toColex a = 1 ↔ a = 1 := .rfl
+theorem toColex_eq_one [One α] {a : α} : toColex a = 1 ↔ a = 1 := by rw [Colex.ext_iff]; rfl
 
 @[to_additive (attr := simp)]
 theorem ofColex_one [One α] : (ofColex 1 : α) = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem ofColex_eq_one [One α] {a : Colex α} : ofColex a = 1 ↔ a = 1 := .rfl
+theorem ofColex_eq_one [One α] {a : Colex α} : ofColex a = 1 ↔ a = 1 := by rw [Colex.ext_iff]; rfl
 
 @[to_additive (attr := simp)]
 theorem toColex_mul [Mul α] (a b : α) : toColex (a * b) = toColex a * toColex b := rfl
@@ -464,21 +477,26 @@ section Monoid
 variable [Monoid α]
 
 @[to_additive (attr := simp)]
-lemma isLeftRegular_toColex {a : α} : IsLeftRegular (toColex a) ↔ IsLeftRegular a := .rfl
+lemma isLeftRegular_toColex {a : α} : IsLeftRegular (toColex a) ↔ IsLeftRegular a := by
+  simp [IsLeftRegular, Function.Injective, ← toColex_mul]
 
 @[to_additive (attr := simp)]
-lemma isLeftRegular_ofColex {a : Colex α} : IsLeftRegular (ofColex a) ↔ IsLeftRegular a := .rfl
+lemma isLeftRegular_ofColex {a : Colex α} : IsLeftRegular (ofColex a) ↔ IsLeftRegular a := by
+  simpa using (isLeftRegular_toColex (a := ofColex a)).symm
 
 @[to_additive (attr := simp)]
-lemma isRightRegular_toColex {a : α} : IsRightRegular (toColex a) ↔ IsRightRegular a := .rfl
+lemma isRightRegular_toColex {a : α} : IsRightRegular (toColex a) ↔ IsRightRegular a := by
+  simp [IsRightRegular, Function.Injective, ← toColex_mul]
 
 @[to_additive (attr := simp)]
-lemma isRightRegular_ofColex {a : Colex α} : IsRightRegular (ofColex a) ↔ IsRightRegular a := .rfl
+lemma isRightRegular_ofColex {a : Colex α} : IsRightRegular (ofColex a) ↔ IsRightRegular a := by
+  simpa using (isRightRegular_toColex (a := ofColex a)).symm
 
 @[to_additive (attr := simp)]
-lemma isRegular_toColex {a : α} : IsRegular (toColex a) ↔ IsRegular a := .rfl
+lemma isRegular_toColex {a : α} : IsRegular (toColex a) ↔ IsRegular a := by simp [isRegular_iff]
 
 @[to_additive (attr := simp)]
-lemma isRegular_ofColex {a : Colex α} : IsRegular (ofColex a) ↔ IsRegular a := .rfl
+lemma isRegular_ofColex {a : Colex α} : IsRegular (ofColex a) ↔ IsRegular a := by
+  simp [isRegular_iff]
 
 end Monoid

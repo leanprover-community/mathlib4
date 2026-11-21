@@ -62,28 +62,40 @@ end OrderDual
 
 namespace Lex
 
-instance instSMulWithZero [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero (Lex G₀) M₀ :=
-  inferInstanceAs <| SMulWithZero G₀ M₀
+instance instSMulWithZero [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero (Lex G₀) M₀ where
+  smul_zero _ := smul_zero _
+  zero_smul _ := zero_smul ..
 
-instance instSMulWithZero' [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ (Lex M₀) :=
-  inferInstanceAs <| SMulWithZero G₀ M₀
+instance instSMulWithZero' [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ (Lex M₀) where
+  smul_zero _ := Lex.ext (smul_zero _)
+  zero_smul _ := Lex.ext (zero_smul ..)
 
-instance instDistribSMul [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul (Lex G₀) M₀ :=
-  inferInstanceAs <| DistribSMul G₀ M₀
+instance instDistribSMul [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul (Lex G₀) M₀ where
+  smul_zero _ := smul_zero _
+  smul_add _ _ _ := smul_add ..
 
-instance instDistribSMul' [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ (Lex M₀) :=
-  inferInstanceAs <| DistribSMul G₀ M₀
+instance instDistribSMul' [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ (Lex M₀) where
+  smul_zero _ := Lex.ext (smul_zero _)
+  smul_add _ _ _ := Lex.ext (smul_add ..)
 
 instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction (Lex G₀) M₀ := inferInstanceAs <| DistribMulAction G₀ M₀
+    DistribMulAction (Lex G₀) M₀ where
+  smul_zero := smul_zero
+  smul_add := smul_add
 
 instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction G₀ (Lex M₀) := inferInstanceAs <| DistribMulAction G₀ M₀
+    DistribMulAction G₀ (Lex M₀) where
+  smul_zero := smul_zero
+  smul_add := smul_add
 
 instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero (Lex G₀) M₀ := inferInstanceAs <| MulActionWithZero G₀ M₀
+    MulActionWithZero (Lex G₀) M₀ where
+  smul_zero := smul_zero
+  zero_smul := zero_smul _
 
 instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ (Lex M₀) := inferInstanceAs <| MulActionWithZero G₀ M₀
+    MulActionWithZero G₀ (Lex M₀) where
+  smul_zero := smul_zero
+  zero_smul := zero_smul _
 
 end Lex

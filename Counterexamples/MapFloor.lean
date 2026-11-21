@@ -41,7 +41,7 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 
 namespace Counterexample
 
-open Function Int Polynomial
+open Function Int Polynomial Lex
 
 /-- The integers with infinitesimals adjoined. Higher powers of `ε` are smaller than lower
 powers. -/
@@ -55,11 +55,11 @@ namespace IntWithEpsilon
 
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (fun x ↦ toLex ⇑x.coeff) <|
-    DFunLike.coe_injective.comp AddMonoidAlgebra.coeff_injective
+    toLex_injective.comp (DFunLike.coe_injective.comp AddMonoidAlgebra.coeff_injective)
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
-    (fun x ↦ toLex ⇑x.coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
+    (fun x ↦ toLex ⇑x.coeff) (fun _ _ ↦ Lex.ext <| funext fun _ ↦ coeff_add ..) .rfl
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]

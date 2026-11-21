@@ -86,6 +86,8 @@ theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α
 
 namespace DegLex
 
+open _root_.Lex
+
 theorem wellFounded
     {r : α → α → Prop} [Std.Trichotomous r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
@@ -96,8 +98,9 @@ theorem wellFounded
   rw [← Set.wellFoundedOn_range]
   exact Set.WellFoundedOn.mono wft (le_refl _) (fun _ _ ↦ trivial)
 
-instance [LT α] : LT (DegLex (α →₀ ℕ)) :=
-  ⟨fun f g ↦ Finsupp.DegLex (· < ·) (· < ·) (ofDegLex f) (ofDegLex g)⟩
+instance [LT α] : LT (DegLex (α →₀ ℕ)) where
+  lt a b := toLex ((ofDegLex a).degree, toLex (ofDegLex a)) <
+    toLex ((ofDegLex b).degree, toLex (ofDegLex b))
 
 theorem lt_def [LT α] {a b : DegLex (α →₀ ℕ)} :
     a < b ↔ (toLex ((ofDegLex a).degree, toLex (ofDegLex a))) <
@@ -133,12 +136,12 @@ noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
 theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
-  simp only [le_iff_eq_or_lt, lt_iff, EmbeddingLike.apply_eq_iff_eq]
+  simp only [le_iff_eq_or_lt, lt_iff]
   by_cases h : x = y
   · simp [h]
   · by_cases k : (ofDegLex x).degree < (ofDegLex y).degree
     · simp [k]
-    · simp only [h, k, false_or]
+    · simp [h, k, false_or]
 
 instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
@@ -183,7 +186,8 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
     · simp [h]
 
 instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  wellFounded wellFounded_gt wellFounded_lt fun n ↦ n.not_lt_zero
+  InvImage.wf (fun x : DegLex (α →₀ ℕ) ↦ toLex ((ofDegLex x).degree, toLex (ofDegLex x)))
+    wellFounded_lt
 
 end DegLex
 
@@ -196,8 +200,7 @@ open Finsupp
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def degLex :
-    MonomialOrder σ where
+noncomputable def degLex : MonomialOrder σ where
   syn := DegLex (σ →₀ ℕ)
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by

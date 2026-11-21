@@ -20,13 +20,11 @@ This file defines two orders on a sigma type:
 * The lexicographical order. `a` is less than `b` if its summand is strictly less than the summand
   of `b` or they are in the same summand and `a` is less than `b` there.
 
-We make the disjoint sum of orders the default set of instances. The lexicographic order goes on a
-type synonym.
+We make the disjoint sum of orders the default set of instances.
 
 ## Notation
 
-* `_root_.Lex (Sigma α)`: Sigma type equipped with the lexicographic order.
-  Type synonym of `Σ i, α i`.
+* `Σₗ i, α i`: Sigma type equipped with the lexicographic order.
 
 ## See also
 
@@ -119,59 +117,52 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 /-! ### Lexicographical order on `Sigma` -/
 
-
 namespace Lex
+
+open _root_.Lex
+
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
 notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
 
-/-- The lexicographical `≤` on a sigma type. -/
-protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where
-  le := Lex (· < ·) fun _ => (· ≤ ·)
+protected instance [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where
+  le a b := (Lex (· < ·) fun _ ↦ (· ≤ ·)) (ofLex a) (ofLex b)
 
-/-- The lexicographical `<` on a sigma type. -/
-protected instance LT [LT ι] [∀ i, LT (α i)] : LT (Σₗ i, α i) where
-  lt := Lex (· < ·) fun _ => (· < ·)
+protected instance [LT ι] [∀ i, LT (α i)] : LT (Σₗ i, α i) where
+  lt a b := (Lex (· < ·) fun _ ↦ (· < ·)) (ofLex a) (ofLex b)
 
 theorem le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
-    a ≤ b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 :=
+    a ≤ b ↔ (ofLex a).1 < (ofLex b).1 ∨
+      ∃ h : (ofLex a).1 = (ofLex b).1, h.rec (ofLex a).2 ≤ (ofLex b).2 :=
   Sigma.lex_iff
 
 theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
-    a < b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 < b.2 :=
+    a < b ↔ (ofLex a).1 < (ofLex b).1 ∨
+      ∃ h : (ofLex a).1 = (ofLex b).1, h ▸ (ofLex a).2 < (ofLex b).2 :=
   Sigma.lex_iff
 
-/-- The lexicographical preorder on a sigma type. -/
-instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
-  { Sigma.Lex.LE, Sigma.Lex.LT with
-    le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
-    le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    lt_iff_le_not_ge := by
-      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
-      · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
-        · exact hij.not_gt hji
-        · exact lt_irrefl _ hji
-        · exact lt_irrefl _ hij
-        · exact hab.not_ge hba
-      · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
-        · exact Sigma.Lex.left _ _ hij
-        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }
+instance [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) where
+  le_refl a := Lex.right a.ofLex.2 a.ofLex.2 le_rfl
+  le_trans _ _ _ := trans_of ((Lex (· < ·)) fun _ ↦ (· ≤ ·))
+  lt_iff_le_not_ge := by
+    rintro ⟨a⟩ ⟨b⟩
+    refine ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
+    · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
+      · exact hij.not_gt hji
+      · exact lt_irrefl _ hji
+      · exact lt_irrefl _ hij
+      · exact hab.not_ge hba
+    · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
+      · exact Sigma.Lex.left _ _ hij
+      · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h)
 
-/-- The lexicographical partial order on a sigma type. -/
-instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
-    PartialOrder (Σₗ i, α i) :=
-  { Lex.preorder with
-    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
+instance [Preorder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ i, α i) where
+  le_antisymm _ _ h₁ h₂ := Lex.ext (antisymm_of (Sigma.Lex _ _) h₁ h₂)
 
-
-
-/-- The lexicographical linear order on a sigma type. -/
-instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
-    LinearOrder (Σₗ i, α i) :=
-  { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    toDecidableEq := Sigma.instDecidableEqSigma
-    toDecidableLE := Lex.decidable _ _
-    toDecidableLT := Lex.decidable _ _ }
+instance [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ i, α i) where
+  le_total x y := total_of (Sigma.Lex _ _) x.ofLex y.ofLex
+  toDecidableEq := inferInstance
+  toDecidableLE x y := Sigma.Lex.decidable _ _ x.ofLex y.ofLex
+  toDecidableLT x y := Sigma.Lex.decidable _ _ x.ofLex y.ofLex
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

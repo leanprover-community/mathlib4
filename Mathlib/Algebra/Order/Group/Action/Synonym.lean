@@ -60,35 +60,37 @@ end OrderDual
 namespace Lex
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction (Lex M) α :=
-  inferInstanceAs <| MulAction M α
+instance instMulAction [Monoid M] [MulAction M α] : MulAction (Lex M) α where
+  mul_smul _ _ _ := mul_smul ..
+  one_smul _ := one_smul ..
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M (Lex α) :=
-  inferInstanceAs <| MulAction M α
+instance instMulAction' [Monoid M] [MulAction M α] : MulAction M (Lex α) where
+  mul_smul _ _ _ := Lex.ext (mul_smul ..)
+  one_smul _ := Lex.ext (one_smul ..)
 
 @[to_additive]
 instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass (Lex M) N α := inferInstanceAs <| SMulCommClass M N α
+    SMulCommClass (Lex M) N α where smul_comm a := smul_comm a.ofLex
 
 @[to_additive]
 instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M (Lex N) α := inferInstanceAs <| SMulCommClass M N α
+    SMulCommClass M (Lex N) α where smul_comm _ a := smul_comm _ a.ofLex
 
 @[to_additive]
 instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M N (Lex α) := inferInstanceAs <| SMulCommClass M N α
+    SMulCommClass M N (Lex α) where smul_comm _ _ _ := Lex.ext (smul_comm ..)
 
 @[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower (Lex M) N α := inferInstanceAs <| IsScalarTower M N α
+    IsScalarTower (Lex M) N α where smul_assoc a := smul_assoc a.ofLex
 
 @[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M (Lex N) α := inferInstanceAs <| IsScalarTower M N α
+    IsScalarTower M (Lex N) α where smul_assoc _ a := smul_assoc _ a.ofLex
 
 @[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N (Lex α) := inferInstanceAs <| IsScalarTower M N α
+    IsScalarTower M N (Lex α) where smul_assoc _ _ _ := Lex.ext (smul_assoc ..)
 
 end Lex

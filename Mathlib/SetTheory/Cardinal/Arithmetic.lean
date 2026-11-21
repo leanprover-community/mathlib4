@@ -53,7 +53,7 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- Every initial segment of the embedding is contained in `β × β` for some `#β < c`.
   -- By the inductive hypothesis, this means `#(β × β) < c`, and thus `#(α × α) ≤ c`.
   apply mk_le_of_forall_mk_setOfPred_lt (β := α ×ₗ (α ×ₗ α))
-    (fun p ↦ toLex (uncurry max p, toLex p)) (fun _ _ ↦ congrArg Prod.snd)
+    (fun p ↦ Lex.toLex (uncurry max p, Lex.toLex p)) (fun _ _ ↦ by simp)
   intro ⟨a, b⟩
   obtain ⟨q, hq'⟩ := exists_gt (max a b)
   apply lt_of_le_of_lt (b := #(Iio q) * #(Iio q))

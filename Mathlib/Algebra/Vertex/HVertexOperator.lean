@@ -154,7 +154,7 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
 
 @[simp]
 theorem coeff_comp (g : Γ' ×ₗ Γ) :
-    (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+    (comp A B).coeff g = A.coeff g.ofLex.2 ∘ₗ B.coeff g.ofLex.1 := by
   rfl
 
 end Products
