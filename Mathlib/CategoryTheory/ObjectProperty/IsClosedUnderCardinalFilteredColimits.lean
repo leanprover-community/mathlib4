@@ -32,7 +32,7 @@ universe w
 
 namespace CategoryTheory.ObjectProperty
 
-open Limits
+open Limits Opposite
 
 variable {C : Type*} [Category* C]
 
@@ -43,7 +43,7 @@ class IsClosedUnderCardinalFilteredColimits
     (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalClosedUnderColimitsOfShape'
       (P) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
-    P.IsClosedUnderColimitsOfShape J := by infer_instance
+    P.IsClosedUnderColimitsOfShape J := by intros; infer_instance
 
 namespace IsClosedUnderCardinalFilteredColimits
 
@@ -91,5 +91,15 @@ instance {D : Type*} [Category* D] (F : D ⥤ C) [F.IsCardinalAccessible κ] :
     infer_instance
 
 end IsClosedUnderCardinalFilteredColimits
+
+lemma isCardinalPresentable_of_fullSubcategory
+    {P : ObjectProperty C} (X : P.FullSubcategory)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
+    [P.IsClosedUnderCardinalFilteredColimits κ]
+    (hX : IsCardinalPresentable X.obj κ := by infer_instance) :
+    IsCardinalPresentable X κ := by
+  let e : coyoneda.obj (op X) ≅ P.ι ⋙ coyoneda.obj (op X.obj) :=
+    NatIso.ofComponents (fun _ ↦ P.fullyFaithfulι.homEquiv.toIso)
+  exact Functor.isCardinalAccessible_of_natIso e.symm _
 
 end CategoryTheory.ObjectProperty
