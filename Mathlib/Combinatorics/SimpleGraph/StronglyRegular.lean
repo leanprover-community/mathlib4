@@ -91,14 +91,12 @@ theorem IsSRGWith.top :
   of_adj _ _ := card_commonNeighbors_top
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  · simp [commonNeighbors, ← neighborFinset_def, Finset.card_union_add_card_inter,
-      h.regular.degree_eq, two_mul]
+  · simp [card_union_add_card_inter, h.regular.degree_eq, two_mul]
   · apply le_trans (card_commonNeighbors_le_degree_left _ _ _)
     simp [h.regular.degree_eq, two_mul]
 
@@ -198,7 +196,6 @@ theorem IsSRGWith.param_eq
       ← Set.toFinset_card]
     congr!
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`
@@ -212,7 +209,7 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
     (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
-    simp [commonNeighbors, ← neighborFinset_def, h.regular v]
+    simp [h.regular v]
   · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
     by_cases ha : G.Adj v w <;>
       simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one,
