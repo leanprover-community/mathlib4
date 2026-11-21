@@ -1,5 +1,6 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
+public import Mathlib.Topology.Gavrilovich.Space
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
