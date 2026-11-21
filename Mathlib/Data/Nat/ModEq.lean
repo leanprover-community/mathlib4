@@ -484,6 +484,18 @@ theorem chineseRemainder_lt_mul (co : n.Coprime m) (a b : ℕ) (hn : n ≠ 0) (h
     ↑(chineseRemainder co a b) < n * m :=
   lt_of_lt_of_le (chineseRemainder'_lt_lcm _ hn hm) (le_of_eq co.lcm_eq_mul)
 
+/-- If `k ≡ a [MOD n]` and `k ≡ b [MOD m]`, then `a ≡ b [MOD gcd n m]`: the
+compatibility condition of the Chinese remainder theorem is necessary. -/
+theorem modEq_gcd_of_modEq_of_modEq {k : ℕ} (h₁ : k ≡ a [MOD n]) (h₂ : k ≡ b [MOD m]) :
+    a ≡ b [MOD gcd n m] :=
+  (h₁.of_dvd (gcd_dvd_left n m)).symm.trans (h₂.of_dvd (gcd_dvd_right n m))
+
+/-- **Chinese remainder theorem**, solvability criterion: `k ≡ a [MOD n]` and
+`k ≡ b [MOD m]` have a common solution iff `a ≡ b [MOD gcd n m]`. -/
+theorem exists_modEq_and_modEq_iff :
+    (∃ k, k ≡ a [MOD n] ∧ k ≡ b [MOD m]) ↔ a ≡ b [MOD gcd n m] :=
+  ⟨fun ⟨_, h₁, h₂⟩ ↦ modEq_gcd_of_modEq_of_modEq h₁ h₂, fun h ↦ ⟨_, (chineseRemainder' h).2⟩⟩
+
 theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm n m] :=
   Nat.modEq_iff_dvd.mpr <| Int.coe_lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
 
