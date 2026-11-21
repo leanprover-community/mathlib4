@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # The homology functor as a cokernel and as a kernel

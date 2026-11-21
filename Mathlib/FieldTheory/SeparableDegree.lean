@@ -7,9 +7,10 @@ module
 
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
+
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 
 /-!
 # Separable degree
@@ -269,7 +270,8 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
           fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
   refine Infinite.of_injective f fun m n h ↦ ?_
   replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
-    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+    simpa [f, MvPolynomial.comp_aeval, -map_pow] using
+      congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
   simpa using congr(MvPolynomial.totalDegree $h)
 
 /-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
@@ -332,7 +334,7 @@ theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
 
 /-- A non-constant polynomial has non-zero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
-  rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
+  rw [natSepDegree, Finset.card_ne_zero]
   use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]

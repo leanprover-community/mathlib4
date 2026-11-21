@@ -47,7 +47,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
-def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
+def graph.proj {f : Fin n → α} : graph f → α := fun p => p.val.1
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -64,7 +64,7 @@ set_option backward.isDefEq.respectTransparency false in
 mapping `i` to `(f i, i)`. -/
 def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
   toFun i := ⟨(f i, i), by simp [graph]⟩
-  invFun p := p.1.2
+  invFun p := p.val.2
   left_inv i := by simp
   right_inv := fun ⟨⟨x, i⟩, h⟩ => by
     simpa [graph, eq_comm, eqComm] using h
