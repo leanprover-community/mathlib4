@@ -34,16 +34,16 @@ smooth manifold, local homeomorphism
 
 public noncomputable section
 
+open scoped ContDiff Manifold Topology
+
 variable {M : Type*} [TopologicalSpace M]
   {H : Type*} [TopologicalSpace H] [ChartedSpace H M]
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+  {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
   {M' : Type*} [TopologicalSpace M']
   {f : M → M'} (hf : IsLocalHomeomorph f)
   {g : M' → M} (hg : Function.RightInverse g f)
-
-open scoped ContDiff Manifold Topology
 
 -- TODO: find a proper name for `Foo`
 variable (I n f) in
