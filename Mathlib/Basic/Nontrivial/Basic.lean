@@ -39,7 +39,7 @@ theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x <
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
-  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne, Subtype.ext_iff]
+  simp [_root_.nontrivial_iff_exists_ne x, Ne, Subtype.ext_iff]
 
 open scoped Classical in
 /-- An inhabited type is either nontrivial, or has a unique element. -/

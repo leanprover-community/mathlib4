@@ -423,13 +423,13 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
   open scoped Classical in Decidable.and_iff_not_not_or_not
 
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor, not_or, not_not, ← iff_iff_implies_and_implies]
+  simp [Xor, ← iff_iff_implies_and_implies]
 
 theorem xor_iff_not_iff (P Q : Prop) : Xor P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
-theorem xor_iff_iff_not : Xor a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_iff_not : Xor a b ↔ (a ↔ ¬b) := by simp [← @xor_not_right a]
 
-theorem xor_iff_not_iff' : Xor a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+theorem xor_iff_not_iff' : Xor a b ↔ (¬a ↔ b) := by simp [← @xor_not_left _ b]
 
 theorem xor_iff_or_and_not_and (a b : Prop) : Xor a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
   rw [Xor, or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
@@ -506,7 +506,7 @@ lemma heq_iff_exists_eq_cast :
 
 lemma heq_iff_exists_cast_eq :
     a ≍ b ↔ ∃ (h : α = β), cast h a = b := by
-  simp only [heq_comm (a := a), heq_iff_exists_eq_cast, eq_comm]
+  simp [heq_comm (a := a), heq_iff_exists_eq_cast, eq_comm]
 
 end Equality
 
@@ -655,7 +655,7 @@ theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
 theorem exists₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
-  simp only [@exists_comm (κ₁ _), @exists_comm ι₁]
+  simp [@exists_comm (κ₁ _), @exists_comm ι₁]
 
 theorem And.exists {p q : Prop} {f : p ∧ q → Prop} : (∃ h, f h) ↔ ∃ hp hq, f ⟨hp, hq⟩ :=
   ⟨fun ⟨h, H⟩ ↦ ⟨h.1, h.2, H⟩, fun ⟨hp, hq, H⟩ ↦ ⟨⟨hp, hq⟩, H⟩⟩
@@ -902,7 +902,7 @@ theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := 
   grind
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp only [Ne, dite_eq_right_iff, not_forall]
+  simp [Ne]
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
   dite_ne_left_iff.trans <| by rw [exists_prop]

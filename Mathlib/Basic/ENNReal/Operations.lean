@@ -528,12 +528,12 @@ theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using! (toNNReal_iInf hf)
 
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by
-  simp only [ENNReal.toReal, toNNReal_iInf hf, NNReal.coe_iInf]
+  simp [ENNReal.toReal, toNNReal_iInf hf, NNReal.coe_iInf]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toReal = sInf (ENNReal.toReal '' s) := by
-  simp only [ENNReal.toReal, toNNReal_sInf s hf, NNReal.coe_sInf, Set.image_image]
+  simp [ENNReal.toReal, toNNReal_sInf s hf, NNReal.coe_sInf, Set.image_image]
 
 @[simp] lemma ofReal_iInf [Nonempty ι] (f : ι → ℝ) :
     ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
@@ -580,7 +580,7 @@ lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
 
 lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
     (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
-  simp only [add_comm, add_iInf₂]
+  simp [add_comm, add_iInf₂]
 
 lemma add_sInf {s : Set ℝ≥0∞} : a + sInf s = ⨅ b ∈ s, a + b := by
   rw [sInf_eq_iInf, add_iInf₂]
@@ -628,12 +628,12 @@ theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using! (toNNReal_iSup hf)
 
 theorem toReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toReal = ⨆ i, (f i).toReal := by
-  simp only [ENNReal.toReal, toNNReal_iSup hf, NNReal.coe_iSup]
+  simp [ENNReal.toReal, toNNReal_iSup hf]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toReal = sSup (ENNReal.toReal '' s) := by
-  simp only [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
+  simp [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
 
 theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
   le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i => tsub_le_iff_right.1 <| le_iSup (f · - a) i)
@@ -659,10 +659,10 @@ lemma iSup_add [Nonempty ι] (f : ι → ℝ≥0∞) : (⨆ i, f i) + a = ⨆ i,
 lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
     a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
   have : Nonempty {i // p i} := nonempty_subtype.2 h
-  simp only [iSup_subtype', add_iSup]
+  simp [iSup_subtype', add_iSup]
 
 lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
-    (⨆ i, ⨆ _ : p i, f i) + a = ⨆ i, ⨆ _ : p i, f i + a := by simp only [add_comm, add_biSup' h]
+    (⨆ i, ⨆ _ : p i, f i) + a = ⨆ i, ⨆ _ : p i, f i + a := by simp [add_comm, add_biSup' h]
 
 lemma add_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℝ≥0∞) :
     a + ⨆ i ∈ s, f i = ⨆ i ∈ s, a + f i := add_biSup' hs _
