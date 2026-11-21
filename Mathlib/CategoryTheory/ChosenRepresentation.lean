@@ -95,9 +95,9 @@ lemma map_homFromElement_apply : F.map (op (F.homFromElement z)) F.univ = z := b
   apply homFromElement_injective
   rw [← homFromElement_comp, homFromElement_univ, Category.comp_id]
 
-@[simp]
 /-- Convenience version of `map_homFromElement_apply` in the case when `F.reprObj` is
 a unique type. -/
+@[simp]
 lemma map_homFromElement_apply' [Unique (F.obj (op F.reprObj))]
     (a : F.obj (op F.reprObj)) : F.map (op (F.homFromElement z)) a = z := by
   rw [Unique.eq_default a, Unique.default_eq F.univ, map_homFromElement_apply]
@@ -149,10 +149,10 @@ lemma map_homOfElement_apply : F.map (F.homOfElement z) F.couniv = z := by
   apply homOfElement_injective
   rw [← homOfElement_comp, homOfElement_univ, Category.id_comp]
 
-@[simp]
 /-- Convenience version of `map_homOfElement_apply` in the common case when `F.coreprObj` is
 a unique type. In particular, this is true of `forget C` for many concrete categories `C`,
 including `Type` itself. -/
+@[simp]
 lemma map_homOfElement_apply' [Unique (F.obj F.coreprObj)]
     (a : F.obj F.coreprObj) : F.map (F.homOfElement z) a = z := by
   rw [Unique.eq_default a, Unique.default_eq F.couniv, map_homOfElement_apply]
