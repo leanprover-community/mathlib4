@@ -59,9 +59,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
       ((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y) := by
   set τ := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
   have hτ {z : M} (hz : z ∈ τ.source) : f (τ z) = f z := by
-    simp only [τ, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
-      hf.localInverseAt_symm] at hz
-    simpa [τ] using hf.apply_localInverseAt_of_mem hz.2
+    simpa [τ] using hf.apply_localInverseAt_of_mem (by simpa using hz.2)
   intro z hz
   obtain ⟨σ, hσz, hσ, hfσ⟩ := h.exists_contMDiffAt (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
