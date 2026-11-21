@@ -82,9 +82,12 @@ variable {X Y : StructuredArrow S T} (f : X ⟶ Y)
 @[to_dual /-- The morphism that is part of a morphism of costructured arrows. -/]
 abbrev Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 
-@[to_dual (attr := reassoc (attr := simp))]
+-- `costructuedArrow.w` is not marked `simp` because `CommaMorphism.w` already is.
+@[to_dual, reassoc (attr := simp)]
 theorem w : X.hom ≫ T.map f.right = Y.hom := by
-  simpa using (CommaMorphism.w f).symm
+  simp [← CommaMorphism.w f]
+
+attribute [reassoc] CostructuredArrow.w
 
 @[to_dual (attr := reassoc)]
 lemma Hom.w : X.hom ≫ T.map f.right = Y.hom := StructuredArrow.w f
@@ -994,3 +997,4 @@ def costructuredArrowSndAdjunction (b : B) :
 end Comma
 
 end CategoryTheory
+#lint
