@@ -8,3 +8,5 @@ Geometric group theory is the study of finitely generated groups through their a
 
 The geometric group theory topics currently covered are:
 * Growth of groups
+* The word metric of a group with respect to a generating family
+* The Cayley graph of a generating family, whose graph distance is the word metric
