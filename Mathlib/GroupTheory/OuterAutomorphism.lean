@@ -46,7 +46,7 @@ theorem Outer.of_surjective : Function.Surjective ⇑(Outer.of (G := G)) :=
   QuotientGroup.mk'_surjective _
 
 @[to_additive (attr := simp)]
-theorem Outer.ker_of : (Outer.of (G := G)).ker = inner G := QuotientGroup.ker_mk' _
+theorem Outer.ker_of : Outer.of.ker = inner G := QuotientGroup.ker_mk' _
 
 @[to_additive]
 theorem inner_eq_top_iff : inner G = ⊤ ↔ Subsingleton (Outer G) :=

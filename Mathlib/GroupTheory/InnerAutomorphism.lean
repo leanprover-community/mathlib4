@@ -68,8 +68,8 @@ variable {H : Type*} [Group H]
 
 @[to_additive]
 theorem map_inner_congr (e : G ≃* H) : (inner G).map (MulAut.congr e) = inner H := by
-  rw [inner, ← MonoidHom.range_comp, congr_comp_conj, MonoidHom.range_comp,
-    e.range_eq_top, Subgroup.map_top, inner]
+  rw [← range_conj, MonoidHom.map_range, congr_comp_conj, MonoidHom.range_comp,
+    e.range_eq_top, Subgroup.map_top, range_conj]
 
 /-- An isomorphism `G ≃* H` induces an isomorphism of their inner automorphism groups. -/
 @[to_additive (attr := simps!)
