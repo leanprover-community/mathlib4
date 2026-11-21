@@ -5305,6 +5305,7 @@ public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
+public import Mathlib.LinearAlgebra.ExteriorPower.Generators
 public import Mathlib.LinearAlgebra.ExteriorPower.HodgeStar
 public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
