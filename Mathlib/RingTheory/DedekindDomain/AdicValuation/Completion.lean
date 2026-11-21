@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
 # Completions of Dedekind domains with respect to adic valuations
@@ -272,6 +273,41 @@ theorem continuous_ofCompletion : Continuous (ofCompletion (K := K) (v := v)) :=
 instance : T0Space (adicCompletion K v) :=
   (uniformEquiv K v).toHomeomorph.isEmbedding.t0Space
 
+theorem denseRange_coe : DenseRange ((↑) : K → adicCompletion K v) :=
+  (ofCompletion_surjective K v).denseRange.comp
+    (UniformSpace.Completion.denseRange_coe.comp
+      (WithVal.equiv (v.valuation K)).symm.surjective.denseRange
+      (UniformSpace.Completion.continuous_coe _))
+    (continuous_ofCompletion K v)
+
+@[elab_as_elim]
+theorem induction_on {p : adicCompletion K v → Prop} (x : adicCompletion K v)
+    (hp : IsClosed {x | p x}) (ih : ∀ a : K, p a) : p x :=
+  (denseRange_coe K v).induction_on x hp ih
+
+@[elab_as_elim]
+theorem induction_on₂ {p : adicCompletion K v → adicCompletion K v → Prop}
+    (x y : adicCompletion K v)
+    (hp : IsClosed {q : adicCompletion K v × adicCompletion K v | p q.1 q.2})
+    (ih : ∀ a b : K, p a b) : p x y :=
+  (denseRange_coe K v).induction_on₂ hp ih x y
+
+@[elab_as_elim]
+theorem induction_on₃
+    {p : adicCompletion K v → adicCompletion K v → adicCompletion K v → Prop}
+    (x y z : adicCompletion K v)
+    (hp : IsClosed {q : adicCompletion K v × adicCompletion K v × adicCompletion K v |
+      p q.1 q.2.1 q.2.2})
+    (ih : ∀ a b c : K, p a b c) : p x y z :=
+  (denseRange_coe K v).induction_on₃ hp ih x y z
+
+/-- Two continuous functions out of `adicCompletion K v` into a Hausdorff space are equal if they
+agree on `K`. -/
+theorem ext_of_continuous {Y : Type*} [TopologicalSpace Y] [T2Space Y]
+    {f g : adicCompletion K v → Y} (hf : Continuous f) (hg : Continuous g)
+    (h : ∀ a : K, f a = g a) : f = g :=
+  (denseRange_coe K v).equalizer hf hg (funext h)
+
 end adicCompletion
 
 lemma valuedAdicCompletion_surjective :
@@ -292,7 +328,7 @@ lemma adicCompletion_valueGroup_eq : (Valued.v (R := adicCompletion K v)).valueG
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
-  Valued.v.valuationSubring
+  (adicCompletion.valuation K v).valuationSubring
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
@@ -369,15 +405,29 @@ theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
+theorem adicCompletion.algebraMap_eq_coe' (k : K) :
+    algebraMap K (v.adicCompletion K) k = (WithVal.toVal (v.valuation K) k : v.adicCompletion K) :=
+  rfl
+
 variable {R} in
-theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) := by
-  rw [algebraMap_adicCompletion]
-  exact (adicCompletion.ofCompletion_surjective K v).denseRange.comp
-    (UniformSpace.Completion.denseRange_coe.comp (WithVal.equiv _).symm.surjective.denseRange
-      (UniformSpace.Completion.continuous_coe _))
-    (adicCompletion.continuous_ofCompletion K v)
+theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :=
+  adicCompletion.denseRange_coe K v
 
 end Algebra
+
+section Tower
+
+variable {B L : Type*} [CommRing B] [IsDedekindDomain B] [Field L] [Algebra B L]
+  [IsFractionRing B L] [Algebra K L] (w : HeightOneSpectrum B)
+  [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+  [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+
+@[simp]
+theorem adicCompletion.algebraMap_coe (k : K) :
+    algebraMap (v.adicCompletion K) (w.adicCompletion L) k = algebraMap K L k :=
+  (IsScalarTower.algebraMap_apply K (v.adicCompletion K) (w.adicCompletion L) k).symm
+
+end Tower
 
 theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
   rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply,
