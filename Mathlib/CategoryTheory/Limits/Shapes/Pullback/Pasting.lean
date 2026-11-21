@@ -346,13 +346,13 @@ theorem pullbackRightPullbackFstIso_inv_fst :
       pullback.fst (f' ≫ f) g :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
 
-@[to_dual (attr := reassoc (attr := simp))]
+@[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_snd :
     (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 
-@[to_dual (attr := reassoc (attr := simp))]
+@[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_fst :
     (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ f' := by
@@ -382,7 +382,7 @@ variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (g' : W ⟶ Y)
 variable [HasPullback f g] [HasPullback (pullback.snd f g) g']
 
 @[to_dual]
-instance hasPullbackVertPaste : HasPullback f (g' ≫ g) :=
+instance : HasPullback f (g' ≫ g) :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteVert (pullback.cone (pullback.snd f g) g') rfl
     isLimit := pasteVertIsPullback rfl (pullback.isLimit f g)
@@ -408,7 +408,7 @@ theorem pullbackLeftPullbackSndIso_hom_snd :
     (pullbackLeftPullbackSndIso f g g').hom ≫ pullback.snd _ _ = pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
 
-@[to_dual (attr := reassoc (attr := simp))]
+@[reassoc (attr := simp)]
 theorem pullbackLeftPullbackSndIso_inv_fst :
     (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ :=
@@ -419,7 +419,7 @@ theorem pullbackLeftPullbackSndIso_inv_snd_snd :
     (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.snd _ _ = pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 
-@[to_dual (attr := reassoc (attr := simp))]
+@[reassoc (attr := simp)]
 theorem pullbackLeftPullbackSndIso_inv_fst_snd :
     (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ g' := by
