@@ -84,20 +84,16 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 @[to_dual isCoatom_iff_ge_of_le]
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
-  and_congr Iff.rfl <|
-    forall_congr' fun b => by
-      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
-
-@[to_dual]
-lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
+  and_congr_right' <|
+    forall_congr' fun b ↦ by
+      simp [@not_imp_comm (b = ⊥), lt_iff_le_not_ge]
 
 @[to_dual]
 theorem minimal_ne_bot_iff : Minimal (· ≠ ⊥) a ↔ IsAtom a := by
-  refine ⟨fun h ↦ ⟨h.prop, fun b hlt ↦ ?_⟩, fun h ↦ ⟨h.ne_bot, fun b hne hle ↦ ?_⟩⟩
-  · by_contra hne
-    exact hlt.not_ge <| h.le_of_le hne hlt.le
-  · by_contra hge
-    exact hne <| h.right b (lt_of_le_not_ge hle hge)
+  rw [Minimal, isAtom_iff_le_of_ge]
+
+@[to_dual]
+lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
 
 @[to_dual (attr := simp)]
 theorem isCoatom_dual_iff_isAtom {a : α} : IsCoatom (OrderDual.toDual a) ↔ IsAtom a :=
