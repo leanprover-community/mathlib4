@@ -147,7 +147,7 @@ def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
   (addNatEmb (m - n)).trans (finCongr (by lia)).toEmbedding
 
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
-    Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
+    Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.val} := by
   simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
   ext y
   exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; lia,

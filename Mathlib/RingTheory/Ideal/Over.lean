@@ -319,9 +319,8 @@ variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
-def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
-  __ := quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h
-  commutes' := by
+def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  .ofCommutes (quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h) <| by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
@@ -342,7 +341,7 @@ end algEquiv
 
 /-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
 def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
-  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.2.symm
+  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.property.symm
   map_one' := by
     ext ⟨x⟩
     exact congrArg (Ideal.Quotient.mk P) (one_smul G x)
@@ -381,11 +380,11 @@ def primesOver : Set (Ideal B) :=
 
 variable {B}
 
-instance primesOver.isPrime (Q : primesOver p B) : Q.1.IsPrime :=
-  Q.2.1
+instance primesOver.isPrime (Q : primesOver p B) : Q.val.IsPrime :=
+  Q.property.1
 
-instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
-  Q.2.2
+instance primesOver.liesOver (Q : primesOver p B) : Q.val.LiesOver p :=
+  Q.property.2
 
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=

@@ -9,6 +9,12 @@ on:
 env:
   TESTED_REPO: leanprover-community/mathlib4
   GH_REPO: ${{ github.repository }}
+  # CI uploads the oleans of a `bump/*` commit to the `forks` container, under the commit.
+  # `lake exe cache get` reads `master`, then `forks` at the checked-out commit.
+  # lean-action sets `MATHLIB_CACHE_GET_URL` to the `master` URL when the variable is unset,
+  # and that URL overrides `MATHLIB_CACHE_FROM`. An empty value makes lean-action unset it.
+  MATHLIB_CACHE_GET_URL: ''
+  MATHLIB_CACHE_FROM: master,forks
 
 permissions:
   contents: read
@@ -42,8 +48,10 @@ jobs:
           # Test the newest pushed commit whose build succeeded, so that the cache has its oleans.
           for sha in $(gh run list --workflow build.yml --branch "$ref" --event push --limit 10 \
               --json headSha --jq '.[].headSha'); do
+            # A commit can have several `ci / Build` runs, for example when it is also on master.
+            # They build the same tree, so one success is enough.
             conclusions=$(gh api "repos/$GH_REPO/commits/$sha/check-runs?check_name=ci%20%2F%20Build" \
-              --jq '[.check_runs[].conclusion] | join(",")')
+              --jq '[.check_runs[].conclusion] | if any(. == "success") then "success" else join(",") end')
             if [ "$conclusions" = success ]; then
               echo "Testing $ref@$sha"
               {

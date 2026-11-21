@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.InvSubmonoid
 
 import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # The meta properties of finite-type ring homomorphisms.
@@ -45,7 +45,7 @@ theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType := by
   refine finiteType_stableUnderComposition.respectsIso (fun {R S} _ _ e ↦ ?_)
   algebraize [e.toRingHom]
   apply Algebra.FiniteType.equiv (inferInstanceAs <| Algebra.FiniteType R R) <|
-    .ofRingEquiv (congrFun rfl)
+    .ofCommutes (e := e) (congrFun rfl)
 
 theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
   apply IsStableUnderBaseChange.mk

@@ -59,9 +59,19 @@ abbrev Copy := L
 
 set_option pp.explicit true in
 /--
-info: @AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
-  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))
-  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+info: @AlgEquiv K L L
+  (@Distrib.toAdd L
+    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Distrib.toAdd L
+    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Distrib.toMul L
+    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Distrib.toMul L
+    (@instDistribOfSemiring L (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))))
+  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+    (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝)
+  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+    (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝) : Type uL
 -/
 #guard_msgs in
 #check Gal(L/K)

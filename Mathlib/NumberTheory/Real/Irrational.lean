@@ -6,9 +6,10 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 module
 
 public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
+
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # Irrational real numbers
@@ -85,7 +86,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
-  rw [multiplicity_pow (Nat.prime_iff_prime_int.1 hp.1), Nat.mul_mod_right] at hv
+  rw [multiplicity_pow (Nat.prime_iff_prime_int.1 hp.out), Nat.mul_mod_right] at hv
   exact hv rfl
 
 theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp : Fact p.Prime]

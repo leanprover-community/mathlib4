@@ -199,13 +199,12 @@ theorem insert_eq (x : α) (s : Set α) : insert x s = ({x} : Set α) ∪ s :=
 theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
   ⟨a, rfl⟩
 
-@[simp]
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-11")]
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
-@[simp]
-theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) :=
-  (singleton_ne_empty a).symm
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-14")]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) := by simp
 
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
@@ -217,6 +216,7 @@ theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
 @[gcongr]
 theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
 
+@[deprecated ofPred_eq_eq_singleton (since := "2026-11-16")]
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
 
@@ -257,7 +257,7 @@ lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
 lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
 
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
-  nonempty_iff_ne_empty.symm
+  ne_empty_iff_nonempty
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
   ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.ext h⟩
@@ -310,7 +310,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ empty_ne_singleton _
+  simp +contextual
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs

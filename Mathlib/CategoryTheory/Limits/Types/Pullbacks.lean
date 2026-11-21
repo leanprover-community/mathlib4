@@ -41,8 +41,8 @@ example (p : PullbackObj f g) : X × Y :=
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
 abbrev pullbackCone : Limits.PullbackCone f g :=
-  PullbackCone.mk (↾fun p : PullbackObj f g => p.1.1)
-    (↾fun p => p.1.2) (by ext p; exact p.2)
+  PullbackCone.mk (↾fun p : PullbackObj f g => p.val.1)
+    (↾fun p => p.val.2) (by ext p; exact p.property)
 
 /-- The explicit pullback in the category of types, bundled up as a `LimitCone`
 for given `f` and `g`.
@@ -71,24 +71,24 @@ noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
   (IsLimit.conePointUniqueUpToIso hc (Types.pullbackLimitCone f g).isLimit).toEquiv
 
 @[simp]
-lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x :=
+lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).val.1 = c.fst x :=
   (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
     (Types.pullbackLimitCone f g).isLimit .left)) x
 
 @[simp]
-lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x :=
+lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).val.2 = c.snd x :=
   (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
     (Types.pullbackLimitCone f g).isLimit .right)) x
 
 @[simp]
 lemma equivPullbackObj_symm_apply_fst (x : Types.PullbackObj f g) :
-    c.fst ((equivPullbackObj hc).symm x) = x.1.1 := by
+    c.fst ((equivPullbackObj hc).symm x) = x.val.1 := by
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
 
 @[simp]
 lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
-    c.snd ((equivPullbackObj hc).symm x) = x.1.2 := by
+    c.snd ((equivPullbackObj hc).symm x) = x.val.2 := by
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
 
@@ -144,14 +144,14 @@ theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_fst :
     (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ =
-      ↾fun p => (p.1 : X × Y).fst := by
+      ↾fun p => (p.val : X × Y).fst := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) _
 
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ =
-      ↾fun p => (p.1 : X × Y).snd := by
+      ↾fun p => (p.val : X × Y).snd := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) _
 
@@ -229,7 +229,7 @@ lemma isPullback_iff :
         simp [φ] at h
         grind
       · intro x
-        obtain ⟨a, ha⟩ := h₂ x.1.1 x.1.2 (by grind)
+        obtain ⟨a, ha⟩ := h₂ x.val.1 x.val.2 (by grind)
         cat_disch
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩

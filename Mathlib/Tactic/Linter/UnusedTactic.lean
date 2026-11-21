@@ -234,8 +234,6 @@ partial def getTactics (ignoreTacticKinds : NameHashSet)
     (tactics convs : Parser.SyntaxNodeKindSet) (stx : Syntax) :
     StateRefT (Std.HashMap Syntax.Range (Syntax × Option MessageData)) BaseIO Unit := do
   if let .node _ k args := stx then
-    if !isIgnoreTacticKind ignoreTacticKinds k then
-      args.forM (getTactics ignoreTacticKinds tactics convs)
     if tactics.contains k || convs.contains k then
       if let some r := stx.getRange? true then
         modify (·.insert r (stx, none))
@@ -244,6 +242,14 @@ partial def getTactics (ignoreTacticKinds : NameHashSet)
         if let some arg := args[1]? then
           if let some r := arg.getRange? true then
             modify (·.insert r (arg, none))
+    if !isIgnoreTacticKind ignoreTacticKinds k then
+      -- Instead of writing `args.forM getTactics`,
+      -- we separate the last `getTactics` call,
+      -- so that this function uses tail recursion.
+      if h : args.size ≠ 0 then
+        let last := args.size - 1
+        args.forM (stop := last) (getTactics ignoreTacticKinds tactics convs)
+        getTactics ignoreTacticKinds tactics convs args[last]
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/

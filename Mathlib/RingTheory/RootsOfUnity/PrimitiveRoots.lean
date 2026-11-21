@@ -212,7 +212,7 @@ protected theorem orderOf (ζ : M) : IsPrimitiveRoot ζ (orderOf ζ) :=
   ⟨pow_orderOf_eq_one ζ, fun _ ↦ orderOf_dvd_of_pow_eq_one⟩
 
 theorem unique {ζ : M} (hk : IsPrimitiveRoot ζ k) (hl : IsPrimitiveRoot ζ l) : k = l :=
-  Nat.dvd_antisymm (hk.2 _ hl.1) (hl.2 _ hk.1)
+  Nat.dvd_antisymm (hk.dvd_of_pow_eq_one _ hl.pow_eq_one) (hl.dvd_of_pow_eq_one _ hk.pow_eq_one)
 
 theorem eq_orderOf (h : IsPrimitiveRoot ζ k) : k = orderOf ζ :=
   h.unique (IsPrimitiveRoot.orderOf ζ)
@@ -349,8 +349,8 @@ section DivisionCommMonoid
 
 variable {ζ : G}
 
-theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
-  exact mod_cast h.pow_eq_one
+theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 :=
+  mod_cast h.pow_eq_one
 
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
   by_cases h0 : 0 ≤ l
@@ -418,9 +418,9 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
   have h : p ≠ 0 ∧ n ≠ 0 := by aesop
   have : NeZero p := .mk h.1
   have hp : Fact p.Prime := CharP.char_is_prime_of_pos R p
-  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.1.one_lt) <|
+  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.out.one_lt) <|
     frobenius_inj R p ?_).elim
-  rw [frobenius_def, ← pow_mul', hζ.1, map_one]
+  rw [frobenius_def, ← pow_mul', hζ.pow_eq_one, map_one]
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
@@ -725,20 +725,20 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
 @[simps]
 def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
-  toFun x := ⟨x.1 ^ a,
+  toFun x := ⟨x.val ^ a,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : a.Coprime n := by
       simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
-  invFun x := ⟨x.1 ^ b,
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.val ^ b,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
     have hr' : b.Coprime n := by
       simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
-    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.property).pow_of_coprime _ hr'⟩
   left_inv x := by ext; simp [← pow_mul,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
   right_inv x := by ext; simp [← pow_mul, mul_comm b,
-    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.property).pow_eq_one]
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/
@@ -765,7 +765,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZer
   constructor
   · intro H
     obtain ⟨k, hk, hx⟩ := exists_pos H (NeZero.ne n)
-    exact ⟨k, hx.2 _ H, (mem_primitiveRoots hk).mpr hx⟩
+    exact ⟨k, hx.dvd_of_pow_eq_one _ H, (mem_primitiveRoots hk).mpr hx⟩
   · rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := Nat.pos_of_ne_zero fun ha₀ ↦ by simp_all
     rw [mem_primitiveRoots hazero] at ha
