@@ -15,7 +15,6 @@ Given a filter `l` we define the notion of a function being `ZeroAtFilter` as we
 `BoundedAtFilter`. Alongside this we construct the `Submodule`, `AddSubmonoid` of functions
 that are `ZeroAtFilter`. Similarly, we construct the `Submodule` and `Subalgebra` of functions
 that are `BoundedAtFilter`.
-
 -/
 
 @[expose] public section

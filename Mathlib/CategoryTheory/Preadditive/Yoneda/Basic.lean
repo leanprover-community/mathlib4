@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Yoneda
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -21,7 +22,6 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 
 ## TODO
 * The Yoneda embedding is additive itself
-
 -/
 
 @[expose] public section

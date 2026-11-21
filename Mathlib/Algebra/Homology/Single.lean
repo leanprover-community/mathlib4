@@ -18,7 +18,6 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
 (This is useful translating between a projective resolution and
 an augmented exact complex of projectives.)
-
 -/
 
 @[expose] public section
@@ -35,6 +34,7 @@ variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
 -/
+@[implicit_reducible]
 noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
     { X := fun i => if i = j then A else 0
@@ -201,20 +201,16 @@ variable {V}
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
-  rw [HomologicalComplex.single_map_f_self]
-  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  rw [comp_id, id_comp]
-
+  simp [HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
+    HomologicalComplex.singleObjXIsoOfEq]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.down ℕ) 0 X = Iso.refl _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
@@ -223,9 +219,9 @@ are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
   toFun φ := ⟨φ.f 0, by rw [← φ.comm 1 0, HomologicalComplex.single_obj_d, comp_zero]⟩
-  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomToSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv f := by simp
 
@@ -235,7 +231,6 @@ lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}
     ((toSingle₀Equiv C X).symm ⟨f, hf⟩).f 0 = f := by
   simp [toSingle₀Equiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms from a single object chain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X 0`.
 -/
@@ -247,7 +242,6 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
@@ -273,19 +267,16 @@ variable {V}
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
-  rw [HomologicalComplex.single_map_f_self]
-  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  rw [comp_id, id_comp]
+  simp [HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
+    HomologicalComplex.singleObjXIsoOfEq]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
@@ -293,9 +284,9 @@ are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
 noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
   toFun φ := ⟨φ.f 0, by rw [φ.comm 0 1, HomologicalComplex.single_obj_d, zero_comp]⟩
-  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomFromSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv := by cat_disch
 
@@ -305,7 +296,6 @@ lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
     ((fromSingle₀Equiv C X).symm ⟨f, hf⟩).f 0 = f := by
   simp [fromSingle₀Equiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms to a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C` are the same as morphisms `f : C.X 0 ⟶ X`.
 -/
@@ -317,7 +307,6 @@ noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero
     {C : CochainComplex V ℕ} {X : V} (f : C.X 0 ⟶ X) :

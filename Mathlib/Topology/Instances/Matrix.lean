@@ -6,12 +6,13 @@ Authors: Oliver Nash, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Star
+
+import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 
 /-!
 # Topological properties of matrices

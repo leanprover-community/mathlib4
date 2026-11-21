@@ -28,7 +28,6 @@ We do not make a separate adic completion type in algebra case, to not duplicate
 module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
-
 -/
 
 @[expose] public section
@@ -431,7 +430,7 @@ its `I`-adic completion is an `S`-algebra isomorphism.
 noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   __ := ofLinearEquiv I S
   map_mul' _ _ := by ext; simp
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by

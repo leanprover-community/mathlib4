@@ -24,7 +24,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
-
 -/
 
 @[expose] public section
@@ -76,7 +75,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
-    change Rat.padicValuation p (x' - y') < embedding γ.1
+    change Rat.padicValuation p (x' - y') < embedding γ.val
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
       unfold Rat.padicValuation at *

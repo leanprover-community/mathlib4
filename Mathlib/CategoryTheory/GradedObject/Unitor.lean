@@ -19,7 +19,6 @@ Under similar assumptions, we also obtain a right unitor isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
 the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
 to a triangle identity for the induced functors on graded objects.
-
 -/
 
 @[expose] public section

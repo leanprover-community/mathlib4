@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Topology.Algebra.Order.Polynomial
+
+import Mathlib.Algebra.Polynomial.Roots
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -19,7 +20,6 @@ This file proves basic facts about the asymptotics of of polynomial and rational
 The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
-
 -/
 
 public section

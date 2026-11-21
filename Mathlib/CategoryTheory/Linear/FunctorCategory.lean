@@ -6,14 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Linear structure on functor categories
 
 If `C` and `D` are categories and `D` is `R`-linear,
 then `C ⥤ D` is also `R`-linear.
-
 -/
 
 @[expose] public section

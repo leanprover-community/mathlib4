@@ -25,7 +25,6 @@ We promote `eval₂` to an algebra hom in `aeval`.
 
 - `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
   coefficients of a polynomial in `S[X]`.
-
 -/
 
 @[expose] public section
@@ -99,7 +98,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[deprecated "Now a tautology" (since := "2026-07-18"), simps! -isSimp apply symm_apply]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun _ => rfl }
+    map_smul' _ _ := rfl }
 
 attribute [deprecated "Now a tautology" (since := "2026-07-18")]
   toFinsuppIsoAlg_apply toFinsuppIsoAlg_symm_apply

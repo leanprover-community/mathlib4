@@ -5,19 +5,15 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Module.Torsion.Pi
+
+import Mathlib.Algebra.Group.FunLike
 
 /-! # Module instances for `FunLike` types
 In this file we define various instances related to modules for `FunLike` types.
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
 typeclass searches.
-
-## TODO:
-Add definitions and API for the coercion being a linear map, similar to `FunLike.coeMonoidHom`,
-and related definitions.
-
 -/
 
 public section

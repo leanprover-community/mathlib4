@@ -6,12 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Group.Ext
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -51,7 +52,6 @@ matrices over a ring, in particular the Schur complement (see
 `Mathlib/LinearAlgebra/Matrix/SchurComplement.lean`). In particular, the declarations
 `CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
-
 -/
 
 @[expose] public section
@@ -801,8 +801,7 @@ theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
     simp only [Category.assoc]
     rw [comp_add_assoc, add_comp]
     conv_lhs =>
-      congr
-      next => skip
+      enter [2]
       slice 1 3
       rw [a₂]
     simp only [zero_comp, add_zero]

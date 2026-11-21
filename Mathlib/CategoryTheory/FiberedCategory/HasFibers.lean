@@ -46,7 +46,6 @@ analogously to the standard fibers.
   morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
   some fiber followed by a pullback.
-
 -/
 
 @[expose] public section
@@ -164,7 +163,7 @@ noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
-  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.property
 
 section
 

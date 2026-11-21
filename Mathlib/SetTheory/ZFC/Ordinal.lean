@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
+public import Mathlib.SetTheory.ZFC.Class
 public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
@@ -123,7 +124,7 @@ theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
-  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
+  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.property⟩
 
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
 the standard one. -/
@@ -223,7 +224,7 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
-  trichotomous := h.trichotomous.1
+  trichotomous := h.trichotomous.trichotomous
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
@@ -282,16 +283,16 @@ theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.val.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.val.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
-decreasing_by rename_i x; exact x.2
+decreasing_by rename_i x; exact x.property
 
 /-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
@@ -388,9 +389,20 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
   toFun o := ⟨_, isOrdinal_toZFSet o⟩
-  invFun x := rank x.1
+  invFun x := rank x.val
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
+
+open scoped ZFClass in
+/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
+theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ univ := by
+  rintro ⟨x, hx, -⟩
+  suffices IsOrdinal x by
+    apply ZFClass.cmem_irrefl (A := x)
+    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
+  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
+    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
+  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

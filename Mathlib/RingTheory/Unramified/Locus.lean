@@ -134,11 +134,11 @@ lemma unramifiedLocus_eq_univ_iff :
     Module.support_eq_empty_iff, Algebra.formallyUnramified_iff]
 
 theorem formallyUnramified_iff_forall :
-    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
 
 theorem unramified_iff_forall [FiniteType R A] :
-    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   .trans ⟨fun h ↦ h.formallyUnramified, fun h ↦ ⟨h, inferInstance⟩⟩ formallyUnramified_iff_forall
 
 lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) := by

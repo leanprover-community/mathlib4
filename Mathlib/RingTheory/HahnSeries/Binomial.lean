@@ -18,7 +18,6 @@ We introduce binomial expansions using `embDomain`.
 
 ## Main results
   * coefficients of powers of binomials
-
 -/
 
 @[expose] public section
@@ -97,11 +96,11 @@ end SummableFamily
 open SummableFamily
 
 instance : Pow (orderTopSubOnePos Γ R) R where
-  pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r)
+  pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.property r)
 
 @[simp]
 theorem binomial_power {x : orderTopSubOnePos Γ R} {r : R} :
-    x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r) :=
+    x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.property r) :=
   rfl
 
 theorem pow_add {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r + s) = x ^ r * x ^ s := by

@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.SetNotation
+
+import Mathlib.Order.Bounds.Defs
 
 /-! # Conditionally complete partial orders
 
@@ -37,7 +38,6 @@ has an antitone involution (e.g., if it is an ordered ring, then negation would 
 then any `ConditionallyCompletePartialOrder{Sup,Inf}` is automatically a
 `ConditionallyCompletePartialOrder`. Because of the `to_dual` attribute, the additional overhead
 required to add and maintain the infimum version is minimal.
-
 -/
 
 public section
