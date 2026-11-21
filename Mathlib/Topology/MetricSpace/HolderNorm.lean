@@ -201,15 +201,13 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   constructor
   · intro h x₁ x₂
-    by_cases hx : x₁ = x₂
-    · rw [hx]
-    · rw [eHolderNorm, ← bot_eq_zero, iInf₂_eq_bot] at h
-      rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
-      refine le_of_forall_gt fun b hb => ?_
-      obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
-        (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
-          (edist_lt_top x₁ x₂).ne).ne)
-      exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
+    rw [eHolderNorm, ← bot_eq_zero, iInf₂_eq_bot] at h
+    rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
+    refine le_of_forall_gt fun b hb => ?_
+    obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
+      (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
+        (edist_lt_top x₁ x₂).ne).ne)
+    exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
     rcases isEmpty_or_nonempty X with hX | hX
     · exact eHolderNorm_of_isEmpty
