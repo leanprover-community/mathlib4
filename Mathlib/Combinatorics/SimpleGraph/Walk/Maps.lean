@@ -260,9 +260,9 @@ lemma edges_induce {u v} : ∀ {w : G.Walk u v} (hw),
   | cons .., _ => by simp [edges_induce]
 
 @[simp] lemma map_induce {u v : V} :
-    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Hom.induce s G) = w
   | .nil, hw => rfl
-  | .cons (v := u') huu' w, hw => by simp [map_induce]
+  | .cons huu' w, hw => congrArg (cons huu') (map_induce w _)
 
 lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
     (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (fun x hx ↦ hs (hw x hx))
