@@ -131,6 +131,16 @@ theorem maxPowDividing_eq_pow_multiset_count (I : Ideal R) :
     maxPowDividing v I = v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   rw [maxPowDividing, Ideal.count_normalizedFactors_eq_multiplicity]
 
+theorem maxPowDividing_ne_one_iff (I : Ideal R) :
+    v.maxPowDividing I ≠ 1 ↔ v.asIdeal ∈ normalizedFactors I := by
+  rw [maxPowDividing_eq_pow_multiplicity]
+  obtain rfl | hI := eq_or_ne I 0
+  · simp [-Submodule.zero_eq_bot, -Ideal.zero_eq_bot]
+  rw [ne_eq, Ideal.one_eq_top, Ideal.pow_eq_top_iff, not_or, Ideal.mem_normalizedFactors_iff hI,
+    and_iff_right v.isPrime.ne_top, and_iff_right v.isPrime, ← ne_eq, multiplicity_ne_zero,
+    Ideal.dvd_iff_le]
+  exact Ideal.finiteMultiplicity v.isPrime.ne_top hI
+
 end IsDedekindDomain.HeightOneSpectrum
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
@@ -191,9 +201,7 @@ theorem hasFiniteMulSupport_zpow_multiplicity (I : Ideal R) :
 theorem hasFiniteMulSupport_zpow_neg_multiplicity (I : Ideal R) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-(multiplicity v.asIdeal I : ℤ)) := by
-  rw [HasFiniteMulSupport, mulSupport]
-  simp_rw [zpow_neg, Ne, inv_eq_one]
-  exact hasFiniteMulSupport_zpow_multiplicity I
+  simpa [HasFiniteMulSupport] using hasFiniteMulSupport_zpow_multiplicity I
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
@@ -218,6 +226,7 @@ theorem hasFiniteMulSupport_inv {I : Ideal R} (_hI : I ≠ 0) :
   simp_rw [count_associates_factors_eq_multiplicity]
   exact hasFiniteMulSupport_zpow_neg_multiplicity I
 
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
 private theorem pow_multiplicity_add_one_not_dvd_finprod (I : Ideal R) :
     ¬v.asIdeal ^ (multiplicity v.asIdeal I + 1) ∣
         ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
@@ -234,6 +243,7 @@ private theorem pow_multiplicity_add_one_not_dvd_finprod (I : Ideal R) :
 
 end Ideal
 
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
 theorem Associates.finprod_ne_zero (I : Ideal R) :
     Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) ≠ 0 := by
   classical
@@ -246,6 +256,7 @@ theorem Associates.finprod_ne_zero (I : Ideal R) :
 
 namespace Ideal
 
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
 private theorem multiplicity_finprod_maxPowDividing (I : Ideal R) :
     multiplicity v.asIdeal (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) =
       multiplicity v.asIdeal I := by
@@ -260,17 +271,16 @@ private theorem multiplicity_finprod_maxPowDividing (I : Ideal R) :
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
-  rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
-  apply Associates.eq_of_eq_counts
-  · apply Associates.finprod_ne_zero I
-  · apply Associates.mk_ne_zero.mpr hI
-  intro v hv
-  obtain ⟨J, hJv⟩ := Associates.exists_rep v
-  rw [← hJv, Associates.irreducible_mk] at hv
-  rw [← hJv]
-  have : J.IsPrime := Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv)
-  rw [count_associates_factors_eq_multiplicity, count_associates_factors_eq_multiplicity]
-  exact multiplicity_finprod_maxPowDividing ⟨J, this, hv.ne_zero⟩ I
+  rw [finprod_eq_prod _ (hasFiniteMulSupport I),
+    Finset.prod_congr rfl fun v _ ↦ maxPowDividing_eq_pow_multiset_count v I,
+    ← Finset.prod_image (f := fun J ↦ J ^ Multiset.count J (normalizedFactors I))
+      asIdeal_injective.injOn, Finset.prod_congr _ fun _ _ ↦ rfl,
+    ← Finset.prod_multiset_count, prod_normalizedFactors_eq_self hI]
+  ext
+  simp only [Finset.mem_image, (hasFiniteMulSupport I).mem_toFinset, mem_mulSupport,
+    maxPowDividing_ne_one_iff, Multiset.mem_toFinset]
+  refine ⟨fun ⟨v, hv, h⟩ ↦ h ▸ hv, fun h ↦ ⟨⟨_, isPrime_of_prime (prime_of_normalized_factor _ h),
+    ne_zero_of_mem_normalizedFactors h⟩, h, rfl⟩⟩
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 @[deprecated finprod_heightOneSpectrum_factorization +typeChanged (since := "2026-11-12")]
