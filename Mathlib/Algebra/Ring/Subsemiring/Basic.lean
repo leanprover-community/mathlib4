@@ -754,7 +754,7 @@ theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
   SetLike.coe_injective <| Set.range_codRestrict h
 
 theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
-    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
+    Function.Surjective (codRestrict f s h) ↔ f.rangeS = .ofClass s :=
   (Set.surjective_codRestrict h).trans <| .symm SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
