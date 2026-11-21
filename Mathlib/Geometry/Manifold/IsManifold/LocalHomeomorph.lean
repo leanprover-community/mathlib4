@@ -107,8 +107,7 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   rw [contMDiffAt_iff]
   constructor
-  · apply OpenPartialHomeomorph.continuousAt
-    simp
+  · exact OpenPartialHomeomorph.continuousAt _ (by simp)
   · rw [show (hf.localInverseAt (g y)).symm (g y) = y by simpa using hg y]
     refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ (Set.mem_range_self _)
     have hgy : extChartAt I (g y) (g y) ∈ (extChartAt I y).target := by
