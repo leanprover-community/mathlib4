@@ -26,6 +26,8 @@ This is an analytic notion of "being on the side of". It is weaker than being ex
 * `Set.extremePoints 𝕜 A`: Set of extreme points of `A` (corresponding to extreme singletons).
 * `Convex.mem_extremePoints_iff_convex_sdiff`: A useful equivalent condition to being an extreme
   point: `x` is an extreme point iff `A \ {x}` is convex.
+* `Convex.isLeast_isExtreme_setOfPred_add_smul_sub_mem`: An explicit description of the least
+  extreme subset of a convex set `A` containing a given point.
 
 ## Implementation notes
 
@@ -299,6 +301,51 @@ theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜
     hx.1).2 rfl
 
 end LinearOrderedRing
+
+section LinearOrderedField
+
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  {A B : Set E} {x y : E} {t : 𝕜}
+
+/-- If an extreme subset `B ⊆ A` contains `x`, and `y ∈ A`, and for some `t > 0` the point
+`x + t • (x - y)` belongs to `A`, then `y ∈ B`. -/
+theorem IsExtreme.mem_of_add_smul_sub_mem (hAB : IsExtreme 𝕜 A B) (hy : y ∈ A) (hxB : x ∈ B)
+    (ht : 0 < t) (hz : x + t • (x - y) ∈ A) : y ∈ B :=
+  hAB.left_mem_of_mem_openSegment hy hz hxB <| (mem_openSegment_translate 𝕜 (-x)).mp
+    (mem_openSegment_iff_div.mpr ⟨t, 1, ht, one_pos, by module⟩)
+
+/-- For `x` in a convex set `A`, the points `y ∈ A` such that the segment from `y` through `x`
+extends beyond `x` inside `A` form the least extreme subset of `A` containing `x`. -/
+theorem Convex.isLeast_isExtreme_setOfPred_add_smul_sub_mem (hA : Convex 𝕜 A) (hx : x ∈ A) :
+    IsLeast {B | IsExtreme 𝕜 A B ∧ x ∈ B} {y ∈ A | ∃ t : 𝕜, 0 < t ∧ x + t • (x - y) ∈ A} := by
+  refine ⟨⟨⟨sep_subset _ _, ?_⟩, hx, 1, one_pos, by simpa⟩,
+    fun B ⟨hAB, hxB⟩ y ⟨hy, t, ht, hz⟩ ↦ hAB.mem_of_add_smul_sub_mem hy hxB ht hz⟩
+  -- If `z = a • y₁ + b • y₂` extends beyond `x` to `w`, then `y₁` extends beyond `x` to a point
+  -- of the segment from `w` to `y₂`.
+  rintro y₁ hy₁ y₂ hy₂ z ⟨-, t, ht, hw⟩ ⟨a, b, ha, hb, hab, rfl⟩
+  obtain rfl := eq_sub_of_add_eq hab
+  refine ⟨hy₁, t * (1 - b) / (1 + t * b), by positivity, ?_⟩
+  convert hA hw hy₂ (a := 1 / (1 + t * b)) (b := t * b / (1 + t * b)) (by positivity)
+    (by positivity) (by field_simp) using 1
+  match_scalars <;> field_simp <;> ring
+
+/-- For `x` in a convex set `A`, the set of points `y ∈ A` such that the segment from `y` through
+`x` extends beyond `x` inside `A` is convex. -/
+theorem Convex.convex_setOfPred_add_smul_sub_mem (hA : Convex 𝕜 A) (hx : x ∈ A) :
+    Convex 𝕜 {y ∈ A | ∃ t : 𝕜, 0 < t ∧ x + t • (x - y) ∈ A} := by
+  have shrink {y : E} {t : 𝕜} (ht : 0 < t) (hz : x + t • (x - y) ∈ A) {s : 𝕜} (hs : 0 ≤ s)
+      (hst : s ≤ t) : x + s • (x - y) ∈ A := by
+    simpa [smul_smul, div_mul_cancel₀ _ ht.ne'] using
+      hA.add_smul_mem hx hz (t := s / t) ⟨by positivity, (div_le_one ht).mpr hst⟩
+  rintro y₁ ⟨hy₁, t₁, ht₁, hz₁⟩ y₂ ⟨hy₂, t₂, ht₂, hz₂⟩ a b ha hb hab
+  have hs := lt_min ht₁ ht₂
+  refine ⟨hA hy₁ hy₂ ha hb hab, min t₁ t₂, hs, ?_⟩
+  convert hA (shrink ht₁ hz₁ hs.le (min_le_left _ _)) (shrink ht₂ hz₂ hs.le (min_le_right _ _))
+    ha hb hab using 1
+  obtain rfl := eq_sub_of_add_eq hab
+  module
+
+end LinearOrderedField
 
 section star
 variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
