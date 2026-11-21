@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 module
 
-public meta import Lean.Util.Path
+public import Lean.Util.Path
 
 import Mathlib.Init
 
@@ -17,7 +17,7 @@ TODO:
 should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 -/
 
-public meta section
+public section
 
 open Lean System.FilePath
 
