@@ -244,12 +244,12 @@ theorem korseltAux_iff {n fuel m d : ℕ} {c : Bool} (hd : 3 ≤ d) (hdo : d % 2
         rw [squarefree_mul_iff, hdp.coprime_iff_not_dvd]
         tauto
       simp [Nat.dvd_iff_mod_eq_zero.1 hdk, this]
-    simp only [Bool.and_eq_true, Bool.not_eq_true', Nat.beq_eq, Bool.eq_false_iff, ne_eq,
-      ← Nat.dvd_iff_mod_eq_zero, hdk, not_false_eq_true, and_true]
-    rw [ih (by lia) (by lia) (add_two_le_of_forall_prime_dvd hd hdo
-      (fun p hp hpk ↦ hm p hp (dvd_mul_of_dvd_right hpk _)) hdk) (by lia)]
-    simp only [true_or, true_and, hnp, not_false_eq_true, or_true, squarefree_mul_iff,
-      hdp.coprime_iff_not_dvd, hdk, hdp.prime.squarefree]
+    suffices (d - 1 ∣ n - 1 ∧ Squarefree k ∧ ∀ p, p.Prime → p ∣ k → p - 1 ∣ n - 1) ↔
+        Squarefree k ∧ ∀ p, p.Prime → p ∣ d * k → p - 1 ∣ n - 1 by
+      simpa [Bool.eq_false_iff, Nat.beq_eq, ← Nat.dvd_iff_mod_eq_zero, hdk, hnp,
+        squarefree_mul_iff, hdp.coprime_iff_not_dvd, hdp.prime.squarefree,
+        ih (by lia) (by lia) (add_two_le_of_forall_prime_dvd hd hdo
+          (fun p hp hpk ↦ hm p hp (dvd_mul_of_dvd_right hpk _)) hdk) (by lia)]
     constructor
     · rintro ⟨hn, hsq, h⟩
       exact ⟨hsq, fun q hq hqd ↦ (hq.dvd_mul.1 hqd).elim
