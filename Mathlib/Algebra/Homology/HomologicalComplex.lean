@@ -690,7 +690,9 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
-@[to_dual]
+@[to_dual
+/-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s pred).X (n + 3)` that is given by
+the inductive construction. -/]
 def mkXIso (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3) ≅
       (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).1 :=
@@ -748,7 +750,9 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
 
 /-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
 the inductive construction. -/
-@[to_dual]
+@[to_dual
+/-- The isomorphism from `(mk' X₀ X₁ d₀ pred').X (n + 2)` that is given by
+the inductive construction. -/]
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
   obtain _ | n := n
