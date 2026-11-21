@@ -60,8 +60,8 @@ theorem IsHadamard.isStarNormal (hA : A.IsHadamard) : IsStarNormal A where
     rw [commute_iff_eq, star_eq_conjTranspose, hA.conjTranspose_mul, hA.mul_conjTranspose]
 
 /-- The conjugate transpose of a Hadamard matrix is Hadamard. -/
-theorem IsHadamard.conjTranspose (hA : A.IsHadamard) : Aᴴ.IsHadamard := by
-  exact ⟨fun i j => Unitary.star_mem (hA.apply_mem j i),
+theorem IsHadamard.conjTranspose (hA : A.IsHadamard) : Aᴴ.IsHadamard :=
+  ⟨fun i j => Unitary.star_mem (hA.apply_mem j i),
     by simpa using hA.conjTranspose_mul,
     by simpa using hA.mul_conjTranspose⟩
 

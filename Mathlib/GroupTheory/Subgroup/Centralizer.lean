@@ -105,7 +105,7 @@ instance characteristic_centralizer [hH : H.Characteristic] :
 
 @[to_additive]
 theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
-  ⟨fun h ↦ ⟨⟨fun x y ↦ Subtype.ext <| h y.2 x x.2⟩⟩,
+  ⟨fun h ↦ ⟨⟨fun x y ↦ Subtype.ext <| h y.property x x.property⟩⟩,
     fun _ x hx y hy ↦ congrArg Subtype.val <| mul_comm' ⟨y, hy⟩ ⟨x, hx⟩⟩
 
 variable (H)
@@ -181,7 +181,7 @@ theorem normalizer_singleton (g : G) : normalizer {g} = centralizer {g} := by
 /-- The conjugation action of `N(H)` on `H`. -/
 @[simps]
 instance : MulDistribMulAction (normalizer H : Subgroup G) H where
-  smul g h := ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
+  smul g h := ⟨g * h * g⁻¹, (g.property h).mp h.property⟩
   one_smul g := by simp [HSMul.hSMul]
   mul_smul := by simp [HSMul.hSMul, mul_assoc]
   smul_one := by simp [HSMul.hSMul]

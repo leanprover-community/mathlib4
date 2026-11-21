@@ -340,8 +340,8 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
 def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
     (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
     IsLimit t :=
-  Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w zero)
+  Trident.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w zero)
 
 /-- This is a slightly more convenient method to verify that a cotrident is a colimit cocone. It
     only asks for a proof of facts that carry any mathematical content -/
@@ -364,8 +364,8 @@ def Cotrident.IsColimit.mk' [Nonempty J] (t : Cotrident f)
     (create :
       ∀ s : Cotrident f, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) :
     IsColimit t :=
-  Cotrident.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w one)
+  Cotrident.IsColimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w one)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -377,7 +377,7 @@ Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
 def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
-  invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
+  invFun h := (Trident.IsLimit.lift' ht _ h.prop).val
   left_inv _ := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
   right_inv _ := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
 
@@ -397,7 +397,7 @@ point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t) (Z : C) :
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
-  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).1
+  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).val
   left_inv _ := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
   right_inv _ := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
 

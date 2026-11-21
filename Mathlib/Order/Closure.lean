@@ -72,7 +72,7 @@ namespace ClosureOperator
 
 @[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
-  coe c := c.1
+  coe c := c.toOrderHom
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
@@ -281,7 +281,7 @@ variable [CompleteLattice α] (c : ClosureOperator α)
 def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
   ofPred (fun a ↦ ⨅ b : {b // a ≤ b ∧ p b}, b) p
     (fun a ↦ by simp +contextual)
-    (fun _ ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
+    (fun _ ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.property.2)
     (fun _ b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
 theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
@@ -550,7 +550,7 @@ def GaloisConnection.closureOperator [PartialOrder α] [Preorder β] {l : α →
 def ClosureOperator.gi [PartialOrder α] (c : ClosureOperator α) :
     GaloisInsertion c.toCloseds (↑) where
   choice x hx := ⟨x, isClosed_iff_closure_le.2 hx⟩
-  gc _ y := y.2.closure_le_iff
+  gc _ y := y.property.closure_le_iff
   le_l_u _ := c.le_closure _
   choice_eq x hx := le_antisymm (c.le_closure x) hx
 

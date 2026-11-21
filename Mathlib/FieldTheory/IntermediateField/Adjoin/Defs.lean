@@ -422,7 +422,7 @@ theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
   adjoin_map _ _ _
 
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
-    lift (adjoin F {α}) = adjoin F {α.1} := by
+    lift (adjoin F {α}) = adjoin F {α.val} := by
   simp only [lift_adjoin, Set.image_singleton]
 
 @[simp]
@@ -634,8 +634,8 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (one_mem ⊥)
 
 @[simp]
-theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
 
 @[simp]
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
@@ -801,7 +801,7 @@ theorem extendScalars_self : extendScalars (le_refl F) = ⊥ := by
   rw [mem_extendScalars, IntermediateField.mem_bot]
   refine ⟨fun h ↦ ⟨⟨x, h⟩, rfl⟩, ?_⟩
   rintro ⟨y, rfl⟩
-  exact y.2
+  exact y.property
 
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=

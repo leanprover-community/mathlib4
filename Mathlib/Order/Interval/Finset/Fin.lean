@@ -31,10 +31,10 @@ variable (n : ℕ)
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
-  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2
-  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.2
-  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2
-  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.2
+  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.isLt
+  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.isLt
+  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.isLt
+  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.isLt
   finset_mem_Icc a b := by simp
   finset_mem_Ico a b := by simp
   finset_mem_Ioc a b := by simp
@@ -53,27 +53,27 @@ variable {m : ℕ} (a b : Fin n)
 
 @[simp]
 theorem attachFin_Icc :
-    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2) = Icc a b :=
+    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.isLt) = Icc a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ico :
-    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.2) = Ico a b :=
+    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.isLt) = Ico a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ioc :
-    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2) = Ioc a b :=
+    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.isLt) = Ioc a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ioo :
-    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.2) = Ioo a b :=
+    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.isLt) = Ioo a b :=
   rfl
 
 @[simp]
 theorem attachFin_uIcc :
-    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).2) = uIcc a b :=
+    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).isLt) = uIcc a b :=
   rfl
 
 @[simp]
@@ -85,11 +85,12 @@ theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx
   ext; simp
 
 @[simp]
-theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
+theorem attachFin_Iic :
+    attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.isLt) = Iic a := by
   ext; simp
 
 @[simp]
-theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
+theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.isLt) = Iio a := by
   ext; simp
 
 section val

@@ -339,7 +339,6 @@ instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) wher
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 /-- The coercion `C(X, R)₀ → C(X, R)` bundled as a non-unital star algebra homomorphism. -/
-@[simps]
 def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ[R] C(X, R) where
   toFun f := f
   map_smul' _ _ := rfl
@@ -347,6 +346,11 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   map_star' _ := rfl
+
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+lemma toContinuousMapHom_apply_apply [StarRing R] [ContinuousStar R] (f : C(X, R)₀) (a : X) :
+    (toContinuousMapHom f) a = f a :=
+  rfl
 
 @[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
@@ -524,3 +528,67 @@ instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ w
 end Norm
 
 end ContinuousMapZero
+
+namespace ContinuousMap
+
+open ContinuousMapZero
+
+variable {X R : Type*} [TopologicalSpace X] [Zero X] [TopologicalSpace R]
+variable [AddCommGroup R] [IsTopologicalAddGroup R]
+
+/-- This is the canonical retraction of the coercion `C(X, R)₀ → C(X, R)` given by
+`fun g x ↦ g x - g 0`. -/
+def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
+  toContinuousMap := g - const X (g 0)
+  map_zero' := by simp
+
+@[simp]
+lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
+
+@[simp]
+lemma coe_toContinuousMapZero (g : C(X, R)) :
+    (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
+  rfl
+
+@[simp]
+lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp
+
+@[simp]
+lemma toContinuousMapZero_zero : (0 : C(X, R)).toContinuousMapZero = 0 := by ext; simp
+
+@[simp]
+lemma toContinuousMapZero_add (f g : C(X, R)) :
+    (f + g).toContinuousMapZero = f.toContinuousMapZero + g.toContinuousMapZero := by
+  ext; simp [add_sub_add_comm]
+
+@[simp]
+lemma toContinuousMapZero_neg (f : C(X, R)) :
+    (-f).toContinuousMapZero = -f.toContinuousMapZero := by
+  ext; simp [neg_add_eq_sub]
+
+@[simp]
+lemma toContinuousMapZero_sub (f g : C(X, R)) :
+    (f - g).toContinuousMapZero = f.toContinuousMapZero - g.toContinuousMapZero := by
+  ext; simp [sub_sub_sub_comm]
+
+@[simp]
+lemma toContinuousMapZero_smul {M : Type*} [DistribSMul M R] [ContinuousConstSMul M R]
+    (m : M) (f : C(X, R)) :
+    (m • f).toContinuousMapZero = m • f.toContinuousMapZero := by
+  ext; simp [smul_sub]
+
+@[simp]
+lemma toContinuousMapZero_coe (f : C(X, R)₀) : (f : C(X, R)).toContinuousMapZero = f := by
+  ext; simp
+
+lemma toContinuousMapZero_surjective :
+    Function.Surjective (toContinuousMapZero (X := X) (R := R)) :=
+  fun f ↦ ⟨f, toContinuousMapZero_coe f⟩
+
+@[fun_prop]
+lemma continuous_toContinuousMapZero :
+    Continuous (toContinuousMapZero : C(X, R) → C(X, R)₀) := by
+  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
+  exact continuous_id.sub <| continuous_const'.comp <| continuous_eval_const 0
+
+end ContinuousMap
