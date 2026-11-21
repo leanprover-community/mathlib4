@@ -55,7 +55,7 @@ theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R 
 end MulOpposite
 
 namespace AlgEquiv
-variable (R A)
+variable (R A : Type*) [Add A] [Mul A] [SMul R A]
 
 /-- An algebra is isomorphic to the opposite of its opposite. -/
 @[simps!]
@@ -131,6 +131,7 @@ def opComm : (A →ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ →ₐ[R] B) :=
 end AlgHom
 
 namespace AlgEquiv
+variable {R A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -139,12 +140,15 @@ set_option backward.isDefEq.respectTransparency.types false in
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
-  toFun f := .ofCommutes (RingEquiv.op f.toRingEquiv)
-    fun r => MulOpposite.unop_injective <| f.commutes r
-  invFun f := .ofCommutes (RingEquiv.unop f.toRingEquiv)
-    fun r => MulOpposite.op_injective <| f.commutes r
+  toFun f :=
+    { __ := RingEquiv.op f.toRingEquiv
+      map_smul' := by simp }
+  invFun f :=
+    { __ := RingEquiv.unop f.toRingEquiv
+      map_smul' := by simp }
 
-theorem toAlgHom_op (f : A ≃ₐ[R] B) :
+theorem toAlgHom_op {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=
   rfl
 
@@ -155,7 +159,8 @@ theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
 /-- The 'unopposite' of an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
 abbrev unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
-theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
+theorem toAlgHom_unop {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
   rfl
 
 theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
@@ -170,7 +175,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=
   AlgEquiv.op.trans <| AlgEquiv.refl.equivCongr (opOp R B).symm
 
-variable (R S)
+section ModuleEnd
+variable (R : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- The canonical algebra isomorphism from `Aᵐᵒᵖ` to `Module.End A A` induced by the right
 multiplication. -/
@@ -184,22 +190,28 @@ multiplication. -/
   .ofCommutes (RingEquiv.moduleEndSelfOp A)
     fun _ ↦ by ext; simp [Algebra.algebraMap_eq_smul_one]
 
+end ModuleEnd
+
 end AlgEquiv
 
 end Semiring
 
 section CommSemiring
-variable (R A) [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [NonUnitalCommSemiring A] [SMul R A]
 
 namespace AlgEquiv
 
+variable (R A) in
 /-- A commutative algebra is isomorphic to its opposite. -/
 @[simps!]
-def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ :=
-  .ofCommutes (RingEquiv.toOpposite A) fun _ ↦ rfl
+def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
+  __ := RingEquiv.toOpposite A
+  map_smul' := by simp
 
 @[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
-@[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
+
+@[simp] lemma toLinearEquiv_toOpposite {R : Type*} [Semiring R] [Module R A] :
+    toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
 
 end AlgEquiv
 
