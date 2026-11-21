@@ -664,14 +664,14 @@ theorem rpow_lt_rpow_right_of_lt_one (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) :
   repeat' rw [rpow_def_of_pos hx0]
   rw [exp_lt_exp]; exact mul_lt_mul_of_neg_left hyz (log_neg hx0 hx1)
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_lt_rpow_of_exponent_gt := rpow_lt_rpow_right_of_lt_one
 
 theorem rpow_le_rpow_right_of_le_one (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ y) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos hx0]
   rw [exp_le_exp]; exact mul_le_mul_of_nonpos_left hyz (log_nonpos (le_of_lt hx0) hx1)
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_of_exponent_ge := rpow_le_rpow_right_of_le_one
 
 @[simp]
@@ -680,7 +680,7 @@ theorem rpow_le_rpow_iff_right_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
   rw [← log_le_log_iff (rpow_pos_of_pos hx0 y) (rpow_pos_of_pos hx0 z), log_rpow hx0, log_rpow hx0,
     mul_le_mul_right_of_neg (log_neg hx0 hx1)]
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_left_iff_of_base_lt_one := rpow_le_rpow_iff_right_of_base_lt_one
 
 @[simp]
@@ -688,7 +688,7 @@ theorem rpow_lt_rpow_iff_right_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y < x ^ z ↔ z < y := by
   rw [lt_iff_not_ge, rpow_le_rpow_iff_right_of_base_lt_one hx0 hx1, lt_iff_not_ge]
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_lt_rpow_left_iff_of_base_lt_one := rpow_lt_rpow_iff_right_of_base_lt_one
 
 theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^ z < 1 := by
@@ -758,7 +758,7 @@ theorem rpow_le_rpow_right_of_le_one_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz
       apply zero_rpow_nonneg
   · exact rpow_le_rpow_right_of_le_one hx0' hx1 hyz
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_of_exponent_ge_of_imp := rpow_le_rpow_right_of_le_one_of_imp
 
 /-- This version of `rpow_le_rpow_right_of_le_one` allows `x = 0` but requires `0 ≤ z`.
@@ -767,7 +767,7 @@ theorem rpow_le_rpow_right_of_le_one' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 �
     x ^ y ≤ x ^ z :=
   rpow_le_rpow_right_of_le_one_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_of_exponent_ge' := rpow_le_rpow_right_of_le_one'
 
 lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :

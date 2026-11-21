@@ -357,14 +357,14 @@ theorem rpow_lt_rpow_right_of_lt_one {x : ℝ≥0} {y z : ℝ} (hx0 : 0 < x) (hx
     x ^ y < x ^ z :=
   Real.rpow_lt_rpow_right_of_lt_one hx0 hx1 hyz
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_lt_rpow_of_exponent_gt := rpow_lt_rpow_right_of_lt_one
 
 theorem rpow_le_rpow_right_of_le_one {x : ℝ≥0} {y z : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z :=
   Real.rpow_le_rpow_right_of_le_one hx0 hx1 hyz
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_of_exponent_ge := rpow_le_rpow_right_of_le_one
 
 theorem rpow_pos {p : ℝ} {x : ℝ≥0} (hx_pos : 0 < x) : 0 < x ^ p := by
@@ -907,7 +907,7 @@ theorem rpow_lt_rpow_right_of_lt_one {x : ℝ≥0∞} {y z : ℝ} (hx0 : 0 < x) 
   simp only [coe_lt_one_iff, coe_pos] at hx0 hx1
   simp [← coe_rpow_of_ne_zero (ne_of_gt hx0), NNReal.rpow_lt_rpow_right_of_lt_one hx0 hx1 hyz]
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_lt_rpow_of_exponent_gt := rpow_lt_rpow_right_of_lt_one
 
 theorem rpow_le_rpow_right_of_le_one {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1) (hyz : z ≤ y) :
@@ -922,7 +922,7 @@ theorem rpow_le_rpow_right_of_le_one {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1
     simp [← coe_rpow_of_ne_zero h,
       NNReal.rpow_le_rpow_right_of_le_one (bot_lt_iff_ne_bot.mpr h) hx1 hyz]
 
-@[deprecated (since := "2026-11-22")] alias 
+@[deprecated (since := "2026-11-22")] alias
   rpow_le_rpow_of_exponent_ge := rpow_le_rpow_right_of_le_one
 
 theorem rpow_le_self_of_le_one {x : ℝ≥0∞} {z : ℝ} (hx : x ≤ 1) (h_one_le : 1 ≤ z) : x ^ z ≤ x := by
