@@ -1119,12 +1119,12 @@ end LinearIsometryEquiv
 /-- Two linear isometries are equal if they are equal on basis vectors. -/
 theorem Module.Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
-  LinearIsometry.toLinearMap_injective <| b.ext h
+  LinearIsometry.toLinearMap_injective <| b.ext_linearMap h
 
 /-- Two linear isometric equivalences are equal if they are equal on basis vectors. -/
 theorem Module.Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
-  LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
+  LinearIsometryEquiv.toLinearEquiv_injective <| b.ext_linearEquiv h
 
 /-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
 @[simps! apply_coe]

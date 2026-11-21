@@ -343,7 +343,7 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     suffices ∀ j : b.support,
         (P.reflection k).trans f (P.root j) = f.trans (P₂.reflection (e k)) (P.root j) by
       rw [← LinearEquiv.toLinearMap_inj]
-      exact b.toWeightBasis.ext fun j ↦ by simpa using this j
+      exact b.toWeightBasis.ext_linearMap fun j ↦ by simpa using this j
     intro j
     suffices P₂.pairing (e j) (e k) = P.pairing j k by simp [reflection_apply, hf, this]
     simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr(algebraMap ℤ R $(he j k))

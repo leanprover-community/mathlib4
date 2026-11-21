@@ -206,7 +206,7 @@ def LinearMap.toMatrixRight' [DecidableEq m] : ((m → R) →ₗ[R] n → R) ≃
     ext i j
     simp
   left_inv f := by
-    apply (Pi.basisFun R m).ext
+    apply (Pi.basisFun R m).ext_linearMap
     intro j; ext i
     simp
   map_add' f g := by
@@ -369,7 +369,7 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
     ext i j
     simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply]
   left_inv f := by
-    apply (Pi.basisFun R n).ext
+    apply (Pi.basisFun R n).ext_linearMap
     intro j; ext i
     simp only [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
       Matrix.mulVecLin_apply, of_apply]
@@ -1112,7 +1112,7 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (b : Basis ι R M) (a : ι → R) (s : Module.End R M)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
-  refine b.ext fun k ↦ ?_
+  refine b.ext_linearMap fun k ↦ ?_
   simp only [Ring.lie_def, LinearMap.sub_apply, mul_apply_eq_comp, end_apply_apply, sub_smul,
     LinearMap.smul_apply, smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk

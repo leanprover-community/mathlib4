@@ -41,9 +41,10 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 ## Main results
 
-* `Basis.ext` states that two linear maps are equal if they coincide on a basis.
-  Similar results are available for linear equivs (if they coincide on the basis vectors),
-  elements (if their coordinates coincide) and the functions `b.repr` and `⇑b`.
+* `Basis.ext` states that two bases are equal if they have the same basis vectors.
+* `Basis.ext_linearMap` states that two linear maps are equal if they coincide on a basis.
+  A similar result is available for linear equivs (`Basis.ext_linearEquiv`),
+  for elements (if their coordinates coincide), and for the functions `b.repr` and `⇑b`.
 
 ## Implementation notes
 
@@ -311,16 +312,18 @@ variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 
 /-- Two linear maps are equal if they are equal on basis vectors. -/
-theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
+theorem ext_linearMap {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
   simp only [map_sum, map_smulₛₗ, h]
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
-theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
+theorem ext_linearEquiv {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
   simp only [map_sum, map_smulₛₗ, h]
+
+@[deprecated (since := "2026-11-21")] alias ext' := ext_linearEquiv
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
@@ -330,11 +333,12 @@ alias ⟨_, ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext_linearMap fun i => (b.repr_self i).trans (h i).symm⟩
 
 theorem repr_eq_iff' {b : Basis ι R M} {f : M ≃ₗ[R] ι →₀ R} :
     b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext' fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i,
+    fun h => b.ext_linearEquiv fun i => (b.repr_self i).trans (h i).symm⟩
 
 theorem apply_eq_iff {b : Basis ι R M} {x : M} {i : ι} : b i = x ↔ b.repr x = Finsupp.single i 1 :=
   ⟨fun h => h ▸ b.repr_self i, fun h => b.repr.injective ((b.repr_self i).trans h.symm)⟩
@@ -348,7 +352,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_add' _ _ := by rw [hadd, Pi.add_apply]
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
-    refine b.ext fun j => ?_
+    refine b.ext_linearMap fun j => ?_
     change b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
@@ -363,8 +367,11 @@ theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i
 
 /-- Two bases are equal if their basis vectors are the same. -/
 @[ext]
-theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
+theorem ext {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
   DFunLike.ext _ _
+
+@[deprecated (since := "2026-11-21")] alias eq_of_apply_eq := ext
+@[deprecated (since := "2026-11-21")] alias eq_of_apply_eq_iff := Basis.ext_iff
 
 end Ext
 
@@ -510,13 +517,13 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     ext
     simp
   right_inv f := by
-    refine b.ext fun i => ?_
+    refine b.ext_linearMap fun i => ?_
     simp
   map_add' f g := by
-    refine b.ext fun i => ?_
+    refine b.ext_linearMap fun i => ?_
     simp
   map_smul' c f := by
-    refine b.ext fun i => ?_
+    refine b.ext_linearMap fun i => ?_
     simp
 
 theorem constr_def (f : ι → M') :
@@ -538,7 +545,7 @@ theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M →
 
 theorem constr_eq {g : ι → M'} {f : M →ₗ[R] M'} (h : ∀ i, g i = f (b i)) :
     constr (M' := M') b S g = f :=
-  b.ext fun i => (b.constr_basis S g i).trans (h i)
+  b.ext_linearMap fun i => (b.constr_basis S g i).trans (h i)
 
 theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b i)) = f :=
   b.constr_eq S fun _ => rfl
@@ -552,7 +559,7 @@ theorem constr_range {f : ι → M'} :
 @[simp]
 theorem constr_comp (f : M' →ₗ[R] M') (v : ι → M') :
     constr (M' := M') b S (f ∘ v) = f.comp (constr (M' := M') b S v) :=
-  b.ext fun i => by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
+  b.ext_linearMap fun i => by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
 
 variable (S : Type*) [Semiring S] [Module S M']
 variable [SMulCommClass R S M']
@@ -580,16 +587,16 @@ theorem equiv_apply : b.equiv b' e (b i) = b' (e i) := by simp [Basis.equiv]
 
 @[simp]
 theorem equiv_refl : b.equiv b (Equiv.refl ι) = LinearEquiv.refl R M :=
-  b.ext' fun i => by simp
+  b.ext_linearEquiv fun i => by simp
 
 @[simp]
 theorem equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm :=
-  b'.ext' fun i => (b.equiv b' e).injective (by simp)
+  b'.ext_linearEquiv fun i => (b.equiv b' e).injective (by simp)
 
 @[simp]
 theorem equiv_trans {ι'' : Type*} (b'' : Basis ι'' R M'') (e : ι ≃ ι') (e' : ι' ≃ ι'') :
     (b.equiv b' e).trans (b'.equiv b'' e') = b.equiv b'' (e.trans e') :=
-  b.ext' fun i => by simp
+  b.ext_linearEquiv fun i => by simp
 
 @[simp]
 theorem map_equiv (b : Basis ι R M) (b' : Basis ι' R M') (e : ι ≃ ι') :
@@ -613,14 +620,14 @@ def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg 
     invFun := constr (M' := M) b' R (g ∘ b')
     left_inv :=
       have : (constr (M' := M) b' R (g ∘ b')).comp (constr (M' := M') b R (f ∘ b)) = LinearMap.id :=
-        b.ext fun i =>
+        b.ext_linearMap fun i =>
           Exists.elim (hf i) fun i' hi' => by
             rw [LinearMap.comp_apply, b.constr_basis, Function.comp_apply, ← hi', b'.constr_basis,
               Function.comp_apply, hi', hgf, LinearMap.id_apply]
       fun x => congr($this x)
     right_inv :=
       have : (constr (M' := M') b R (f ∘ b)).comp (constr (M' := M) b' R (g ∘ b')) = LinearMap.id :=
-        b'.ext fun i =>
+        b'.ext_linearMap fun i =>
           Exists.elim (hg i) fun i' hi' => by
             rw [LinearMap.comp_apply, b'.constr_basis, Function.comp_apply, ← hi', b.constr_basis,
               Function.comp_apply, hi', hfg, LinearMap.id_apply]

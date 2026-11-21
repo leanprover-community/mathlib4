@@ -398,7 +398,8 @@ theorem apply_dualBasis_right (hB : B.Nondegenerate) (sym : B.IsSymm)
 lemma dualBasis_dualBasis_flip (hB : B.Nondegenerate) (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
-  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
+  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot <|
+    (B.flip.dualBasis hB.flip b).ext_linearMap fun j ↦ ?_
   simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]

@@ -41,7 +41,7 @@ variable (b₁ : Basis ι₁ R M) (b₂ : Basis ι₂ S N) (b₁' : Basis ι₁ 
 /-- Two bilinear maps are equal when they are equal on all basis vectors. -/
 theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : ∀ i j, B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j)) :
     B = B' :=
-  b₁.ext fun i => b₂.ext fun j => h i j
+  b₁.ext_linearMap fun i => b₂.ext_linearMap fun j => h i j
 
 lemma ext_iff_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} :
     B = B' ↔ ∀ (i : ι₁) (j : ι₂), B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j) :=

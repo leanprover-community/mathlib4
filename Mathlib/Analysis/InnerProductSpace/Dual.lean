@@ -113,7 +113,7 @@ variable {E 𝕜}
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
-  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
+  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext_linearMap ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe, toDualMap_apply_apply]
   rw [← inner_conj_symm]

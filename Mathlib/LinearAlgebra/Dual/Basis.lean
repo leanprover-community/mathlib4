@@ -105,7 +105,7 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ :=
   eq_top_iff'.2 fun f => ⟨Finsupp.linearCombination R b <|
-    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext fun i => by simp⟩
+    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext_linearMap fun i => by simp⟩
 
 omit [DecidableEq ι] in
 @[simp]
@@ -160,7 +160,7 @@ theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
 
 @[simp]
 theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
-  refine b.ext fun i => b.dualBasis.ext fun j => ?_
+  refine b.ext_linearMap fun i => b.dualBasis.ext_linearMap fun j => ?_
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
 
@@ -305,6 +305,6 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   rwa [← lc_def, h.dual_lc] at hi
 
 theorem coe_dualBasis [DecidableEq ι] [Finite ι] : ⇑h.basis.dualBasis = ε :=
-  funext fun i => h.basis.ext fun j => by simp
+  funext fun i => h.basis.ext_linearMap fun j => by simp
 
 end Module.DualBases

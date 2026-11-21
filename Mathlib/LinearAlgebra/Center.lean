@@ -179,7 +179,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     simp
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
   · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
-  apply b.ext
+  apply b.ext_linearMap
   simpa [Subring.smul_def] using feq i
 
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
@@ -222,7 +222,7 @@ theorem exists_eq_smul_id_of_forall_notLinearIndependent
   · rw [finrank_eq_one_iff Unit] at hV1
     let b : Basis Unit R V := Classical.ofNonempty
     use b.coord () (f (b ()))
-    apply b.ext
+    apply b.ext_linearMap
     intro i
     nth_rewrite 1 [← b.linearCombination_repr (f (b i))]
     simp [linearCombination_unique]

@@ -109,7 +109,7 @@ lemma wedgePairing_eq_apply_topVector_smul :
   suffices ∀ (I : powersetCard ι k) (J : powersetCard ι l),
       (wedgePairing vol hkl) (b.exteriorPower k I) (b.exteriorPower l J) =
         powersetCard.sign I • vol b.topVector • if Disjoint I.val J.val then 1 else 0 by
-    refine (b.exteriorPower k).ext fun I ↦ (b.exteriorPower l).ext fun J ↦ ?_
+    refine (b.exteriorPower k).ext_linearMap fun I ↦ (b.exteriorPower l).ext_linearMap fun J ↦ ?_
     simp [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply, Basis.dualBasis_apply_self,
       Equiv.eq_symm_apply, eq_comm (b := I), powersetCard.disjoint_iff_eq_compl hkl', this I J]
   intro I J

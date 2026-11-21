@@ -167,7 +167,7 @@ set_option backward.isDefEq.respectTransparency false in
 def tensorCotangentEquiv :
     S ⊗[D.T] D.presLeft.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := by
   refine LinearEquiv.ofLinearMap D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
-  · refine b.ext fun i ↦ ?_
+  · refine b.ext_linearMap fun i ↦ ?_
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
       tensorCotangentHom_tmul] using! D.hf (b i)
   · ext : 2

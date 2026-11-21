@@ -345,7 +345,7 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
     ⟪a, x⟫ • innerₛₗ ℝ a + ω a x • ω a = ‖a‖ ^ 2 • innerₛₗ ℝ x := by
   by_cases ha : a = 0
   · simp [ha]
-  apply (o.basisRightAngleRotation a ha).ext
+  apply (o.basisRightAngleRotation a ha).ext_linearMap
   intro i
   fin_cases i
   · simp [mul_comm, real_inner_comm]
@@ -364,7 +364,7 @@ theorem inner_sq_add_areaForm_sq (a b : E) : ⟪a, b⟫ ^ 2 + ω a b ^ 2 = ‖a�
 theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • innerₛₗ ℝ a = ‖a‖ ^ 2 • ω x := by
   by_cases ha : a = 0
   · simp [ha]
-  apply (o.basisRightAngleRotation a ha).ext
+  apply (o.basisRightAngleRotation a ha).ext_linearMap
   intro i
   fin_cases i
   · simp [mul_comm, o.areaForm_swap a x]

@@ -150,7 +150,7 @@ lemma pairingDual_eq_dualBasis_constr [Finite I] :
     pairingDual R M n = (b.dualBasis.exteriorPower n).constr R (b.exteriorPower n).dualBasis := by
   set b₁ := b.dualBasis.exteriorPower n
   set b₂ := (b.exteriorPower n).dualBasis
-  refine b₁.ext fun s ↦ ?_
+  refine b₁.ext_linearMap fun s ↦ ?_
   rw [Basis.constr_basis]
   simpa [b₁, b₂] using pairingDual_apply_dualBasis_exteriorPower n b s
 

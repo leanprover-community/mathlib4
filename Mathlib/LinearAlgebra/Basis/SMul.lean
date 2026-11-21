@@ -115,7 +115,7 @@ variable [CommSemiring R₂] [Module R₂ M]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
   classical
-    apply e.ext
+    apply e.ext_linearMap
     intro j
     trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
     · simp [Basis.unitsSMul, ← mul_smul]

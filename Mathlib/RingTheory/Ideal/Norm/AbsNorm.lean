@@ -510,7 +510,7 @@ theorem absNorm_span_singleton (r : S) :
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr
-  refine b.ext fun i => ?_
+  refine b.ext_linearMap fun i => ?_
   simp
 
 lemma absNorm_span_natCast (n : ℕ) : (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
