@@ -83,6 +83,7 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M]
     OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm] using
     foo hf h (g y) (g x)
 
+-- TODO: this and the lemma below use a very similar argument. can this be simplified?
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
