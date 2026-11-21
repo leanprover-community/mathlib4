@@ -140,11 +140,11 @@ lemma compl_le_compl_iff_le : aᶜ ≤ bᶜ ↔ b ≤ a where
   mpr h := compl_le_compl _ _ h
 
 instance : Lattice α where
-  sup a b := aᶜ | bᶜ
+  max a b := aᶜ | bᶜ
   le_sup_left := le_sup_left
   le_sup_right a b := comm aᶜ bᶜ ▸ le_sup_left b a
   sup_le := sup_le
-  inf a b := (a | b)ᶜ
+  min a b := (a | b)ᶜ
   inf_le_left := inf_le_left
   inf_le_right a b := comm a b ▸ inf_le_left b a
   le_inf a b c h₁ h₂ := by
