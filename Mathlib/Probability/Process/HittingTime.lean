@@ -364,7 +364,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
   simp only [hittingBtwn]
   split_ifs with h_n h_n' h_n'
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
+    exact ⟨n, by simp [mem_lowerBounds]; grind⟩
   · obtain ⟨t, ht⟩ := h_n
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · have ⟨t, ht⟩ := h_n'
@@ -378,7 +378,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   split_ifs with h_n h_m h_m
   · norm_cast
     gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
+    exact ⟨n, by simp [mem_lowerBounds]; grind⟩
   · simp
   · have ⟨t, ht⟩ := h_m
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
