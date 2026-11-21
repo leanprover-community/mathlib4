@@ -71,7 +71,7 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
   rintro J (hJ : f ∉ J.asIdeal)
   obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul f
     (J.asIdeal.comap g) inferInstance
-  refine ⟨_, ?_, ⟨_, (basicOpen a).is_open'.prod (basicOpen t).is_open', rfl⟩, ?_⟩
+  refine ⟨_, ?_, ⟨_, (basicOpen a).isOpen.prod (basicOpen t).isOpen, rfl⟩, ?_⟩
   · rintro x ⟨hx₁ : a ⊗ₜ[R] (1 : T) ∉ x.asIdeal, hx₂ : (1 : S) ⊗ₜ[R] t ∉ x.asIdeal⟩
       (hx₃ : f ∈ x.asIdeal)
     apply x.asIdeal.primeCompl.mul_mem hx₁ hx₂

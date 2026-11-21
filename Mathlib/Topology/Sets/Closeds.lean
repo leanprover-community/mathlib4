@@ -237,7 +237,7 @@ def Closeds.compl (s : Closeds α) : Opens α :=
 /-- The complement of an open set as a closed set. -/
 @[simps]
 def Opens.compl (s : Opens α) : Closeds α :=
-  ⟨sᶜ, s.is_open'.isClosed_compl⟩
+  ⟨sᶜ, s.isOpen.isClosed_compl⟩
 
 nonrec theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
   Closeds.ext (compl_compl (s : Set α))

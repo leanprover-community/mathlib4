@@ -718,7 +718,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
       obtain ⟨_, rfl, H⟩ := this
       obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
         X (U := f ⁻¹ᵁ U)
-        (QuasiCompact.isCompact_preimage (f := f) _ U.val.is_open' U.property.isCompact)
+        (QuasiCompact.isCompact_preimage (f := f) _ U.val.isOpen U.property.isCompact)
         (f.app U x) (f.app U s) H
       exact ⟨_, ⟨n, rfl⟩, by simpa using hn⟩
     refine ⟨f ⁻¹ᵁ Y.basicOpen s, by simp, ?_⟩
