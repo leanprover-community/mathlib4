@@ -297,7 +297,7 @@ lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) 
 
 lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
-  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
+  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.property ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
 lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
@@ -311,7 +311,7 @@ def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
-  inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf L M := ⟨L.val ⊓ M.val, fun x ↦ Filter.inter_mem_iff.2 ⟨L.property x, M.property x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k :=

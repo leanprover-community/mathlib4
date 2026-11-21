@@ -91,7 +91,7 @@ theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
 /-- The canonical map from nonnegative extended reals to extended reals. -/
 @[coe] def _root_.ENNReal.toEReal : ℝ≥0∞ → EReal
   | ⊤ => ⊤
-  | .some x => x.1
+  | .some x => x.val
 
 instance : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩
@@ -880,13 +880,13 @@ theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧
 theorem le_of_forall_lt_ratCast_imp_le {a b : EReal} (h : ∀ q : ℚ, b < (q : ℝ) → a ≤ (q : ℝ)) :
     a ≤ b :=
   le_of_not_gt fun hba =>
-    let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
+    let ⟨_, hb, ha⟩ := exists_ratCast_btwn_of_lt hba
     ha.not_ge <| h _ hb
 
 theorem le_of_forall_ratCast_lt_imp_le {a b : EReal} (h : ∀ q : ℚ, (q : ℝ) < a → (q : ℝ) ≤ b) :
     a ≤ b :=
   le_of_not_gt fun hba =>
-    let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
+    let ⟨_, hb, ha⟩ := exists_ratCast_btwn_of_lt hba
     hb.not_ge <| h _ ha
 
 /-- The set of numbers in `EReal` that are not equal to `±∞` is equivalent to `ℝ`. -/

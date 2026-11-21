@@ -80,7 +80,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
-    ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors',
+    ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtypeVal_factors',
     factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
@@ -88,8 +88,8 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_ofPred]
   have h_fin := fintypeSubtypeDvd I hI
-  refine
-    Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
+  refine Finite.of_injective
+    (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.property⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext (by simpa using hvw))
 
@@ -682,7 +682,7 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     use x
     simpa [hb, ← mul_assoc, mul_add, mul_comm b (.spanSingleton _ _)] using congr(b * $e)
   subst hb'
-  have H : Ideal.span {c.den.1} * a.num ≤ c.num * Ideal.span {a.den.1} := by
+  have H : Ideal.span {c.den.val} * a.num ≤ c.num * Ideal.span {a.den.val} := by
     rw [← FractionalIdeal.coeIdeal_le_coeIdeal K]
     simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton, ←
       FractionalIdeal.den_mul_self_eq_num']
@@ -690,9 +690,9 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     gcongr
   obtain ⟨x, hx⟩ := exists_sup_span_eq H
     (by simpa using FractionalIdeal.num_eq_zero_iff.not.mpr ha)
-  refine ⟨algebraMap R K x / algebraMap R K (a.den.1 * c.den.1), ?_⟩
+  refine ⟨algebraMap R K x / algebraMap R K (a.den.val * c.den.val), ?_⟩
   refine mul_left_injective₀ (b := .spanSingleton _
-    (algebraMap R K (a.den.1 * c.den.1))) ?_ ?_
+    (algebraMap R K (a.den.val * c.den.val))) ?_ ?_
   · simp
   · simp only [map_mul (algebraMap R K), mul_one, add_mul,
       ← map_mul (FractionalIdeal.spanSingleton R⁰),
@@ -714,7 +714,7 @@ theorem ClassGroup.exists_mk0_eq_and_isCoprime (C : ClassGroup R) {J : Ideal R} 
     exact ⟨I, rfl, by simp⟩
   obtain ⟨I₀, hI₀⟩ := mk0_surjective C⁻¹
   have hI₀_nz := nonZeroDivisors.coe_ne_zero I₀
-  obtain ⟨a, ha⟩ := exists_sup_span_eq (Ideal.mul_le_left : I₀.1 * J ≤ I₀) (mul_ne_zero hI₀_nz hJ)
+  obtain ⟨a, ha⟩ := exists_sup_span_eq (Ideal.mul_le_left : I₀.val * J ≤ I₀) (mul_ne_zero hI₀_nz hJ)
   have ha₀ : a ≠ 0 := by
     intro rfl
     exact hJ_ne (mul_left_cancel₀ hI₀_nz (by simpa using ha))

@@ -486,7 +486,7 @@ theorem affineIndepOn_congr {p q : ι → P} {s : Set ι} (h : Set.EqOn p q s) :
   rw [AffineIndepOn, AffineIndepOn]
   convert Iff.rfl using 2
   ext x
-  exact h.symm x.2
+  exact h.symm x.property
 
 protected theorem AffineIndepOn.congr {p q : ι → P} {s : Set ι} (hp : AffineIndepOn k p s)
     (h : Set.EqOn p q s) : AffineIndepOn k q s :=

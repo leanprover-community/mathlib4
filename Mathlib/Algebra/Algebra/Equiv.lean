@@ -928,6 +928,7 @@ def AlgHom.ulift (f : S →ₐ[R] T) :
     ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
   __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
   commutes' _ := by simp
+  map_smul' _ _ := by simp
 
 @[simp]
 lemma AlgHom.down_ulift_apply (f : S →ₐ[R] T) (x : ULift S) :

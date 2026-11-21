@@ -203,12 +203,13 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
       (fun c hc1 hc2 Q hQ =>
         ⟨{  carrier := ⋃ R : c, R
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
-            inv_mem' := fun {_} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
+            inv_mem' := fun {_} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.val.inv_mem hg⟩
             mul_mem' := fun {_} _ ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
-              (hc2.total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
-                ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
+              (hc2.total R.property S.property).elim
+                (fun T => ⟨S, ⟨S, rfl⟩, S.val.mul_mem (T hg) hh⟩)
+                fun T => ⟨R, ⟨R, rfl⟩, R.val.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
-          refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
+          refine Exists.imp (fun k hk => ?_) (hc1 S.property ⟨g, hg⟩)
           rw [Subtype.ext_iff, coe_pow] at hk ⊢
           assumption, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
@@ -350,14 +351,14 @@ instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)
   ⟨fun P Q => by
     have H := fun {R : Sylow p G} {S : orbit G P} =>
       calc
-        S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
+        S ∈ fixedPoints R (orbit G P) ↔ S.val ∈ fixedPoints R (Sylow p G) :=
           forall_congr' fun a => Subtype.ext_iff
         _ ↔ R.toSubgroup ≤ S := R.isPGroup.sylow_mem_fixedPoints_iff
-        _ ↔ S.1.toSubgroup = R := ⟨R.maximal_isPGroup.eq_of_ge S.val.isPGroup, ge_of_eq⟩
+        _ ↔ S.val.toSubgroup = R := ⟨R.maximal_isPGroup.eq_of_ge S.val.isPGroup, ge_of_eq⟩
     suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
       exact Exists.elim this fun R hR => by
         rw [← Sylow.ext (H.mp hR)]
-        exact R.2
+        exact R.property
     apply Q.isPGroup.nonempty_fixed_point_of_prime_not_dvd_card
     refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
     calc
@@ -538,7 +539,7 @@ theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Norma
   refine top_le_iff.mp fun g _ => ?_
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
-  apply mul_mem_sup (N.inv_mem n.2)
+  apply mul_mem_sup (N.inv_mem n.property)
   rw [smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← MulAut.conjNormal.map_mul,
     Sylow.ext_iff, pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
   have : Function.Injective (MulAut.conj (n * g)).toMonoidHom := (MulAut.conj (n * g)).injective
@@ -936,7 +937,7 @@ noncomputable def directProductOfNormal [Finite G]
     · apply injective_noncommPiCoprod_of_iSupIndep
       refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
       simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup (P p₂).isPGroup
-    · simp_rw [Nat.card_pi, card_eq_multiplicity, univ_eq_attach, Finsupp.prod_attach_index]
+    · simp_rw [Nat.card_pi, card_eq_multiplicity, univ_eq_attach, Finset.prod_attach_index]
       exact (Nat.prod_primeFactors_pow_factorization Nat.card_pos.ne').symm
   .trans (.piCongrRight fun _ ↦ MulEquiv.piUnique _) (.ofBijective (noncommPiCoprod hcomm) hbij)
 
