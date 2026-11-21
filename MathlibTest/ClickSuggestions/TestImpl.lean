@@ -58,9 +58,8 @@ def trimWhitespace (string : String) : String :=
 
 elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ : tactic => do
   let goals ← Elab.Tactic.getGoals
-  let onGoal := onGoal?.map (·.getNat - 1)
-  let some goal := goals[onGoal.getD 0]? | throwError "there is no goal number {onGoal}"
-  let focus := onGoal.getD 0 == 0 && 2 ≤ goals.length
+  let onGoal := onGoal?.elim 0 (·.getNat - 1)
+  let some goal := goals[onGoal]? | throwError "there is no goal number {onGoal}"
   goal.withContext do
   let hyp? ← hyp?.mapM fun hyp ↦ return (← getLocalDeclFromUserName hyp.getId).fvarId
   let pos? ← pos?.mapM fun pos ↦ do
@@ -73,17 +72,19 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
     | none  , some pos => pure <| .target pos
     | some h, none     => pure <| .hyp h
     | none  , none     => pure <| .target .root
-  let text ← getFileMap
+  let fileMap ← getFileMap
   let some cursorPos := (← getRef).getPos? | throwError "found no valid cursor position"
-  let cursorPos := text.utf8PosToLspPos cursorPos
+  let cursorPos := fileMap.utf8PosToLspPos cursorPos
   let (_, statusToken) ← mkRefreshComponent
   let (_, solvedToken) ← mkRefreshComponent
   let (html, masterToken) ← mkRefreshComponent
   let ctx := {
-    cursorPos, masterToken, statusToken, solvedToken
-    «meta» := { (default : DocumentMeta) with text }
-    onGoal, focus
-    stx := default
+    fileMap, onGoal, cursorPos, masterToken, statusToken, solvedToken
+    fileVersion := { uri := default }
+    numGoals := goals.length
+    goalsAt := {
+      ctxInfo := { ← getThe Core.State, ← readThe Core.Context with }
+      tacticInfo := default, useAfter := default, indented := default, priority := default }
     goal
     hyp?
     pos := pos?.getD .root
