@@ -202,7 +202,6 @@ lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n φ ↔ ContMDiff I J n (φ ∘ f) := by
   intro _
-  exact ⟨fun hφ ↦ hφ.comp (hf.isContMDiffOfRightInverse hg h),
-    hf.contMDiff_of_contMDiff_comp hg⟩
+  exact ⟨fun hφ ↦ hφ.comp (hf.isContMDiffOfRightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
 
 end
