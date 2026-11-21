@@ -292,6 +292,7 @@ namespace Bornology
 
 variable [Bornology α]
 
+@[grind =]
 theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
   ⟨fun h => ⟨h⟩, fun h => h.bounded_univ⟩
 
