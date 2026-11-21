@@ -10,9 +10,8 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Order.Basic
 
-import Mathlib.Topology.Order.DenselyOrdered
-
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Exposed sets
