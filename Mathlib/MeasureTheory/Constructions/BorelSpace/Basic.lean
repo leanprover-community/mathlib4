@@ -250,6 +250,9 @@ theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
   rcases h with ⟨S, hSo, hSc, rfl⟩
   exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).measurableSet
 
+theorem IsFσ.measurableSet (hs : IsFσ s) : MeasurableSet s := by
+  simpa using hs.isGδ_compl.measurableSet
+
 theorem measurableSet_of_continuousAt {β} [PseudoEMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
   (IsGδ.setOfPred_continuousAt f).measurableSet
