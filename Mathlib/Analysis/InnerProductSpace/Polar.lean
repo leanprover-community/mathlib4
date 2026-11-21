@@ -1,0 +1,99 @@
+/-
+Copyright (c) 2026 Tjeerd Jan Heeringa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tjeerd Jan Heeringa
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Abs
+public import Mathlib.Analysis.Normed.Operator.Extend
+
+/-!
+# Polar decomposition
+
+This file defines the polar decomposition for a continuous linear map `T : E →L[ℂ] F`
+between (potentially distinct) Hilbert spaces `E` and `F`.
+
+## Main definitions
+ - `ContinuousLinearMap.polarₗᵢ` the linear isometry `U : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F`
+    such that `T = U ∘ T.abs`.
+
+-/
+
+public noncomputable section
+
+namespace ContinuousLinearMap
+
+
+open scoped ENNReal InnerProductSpace
+
+variable {E F : Type*}
+  [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
+  [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
+
+section Polar
+
+private def polarₗᵢAux (T : E →L[ℂ] F) : T.abs.range →ₗ[ℂ] F :=
+  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs fun _ a ↦ a)
+    ∘ₗ T.abs.quotKerEquivRange.symm.toLinearMap
+
+@[simp]
+private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : T.abs x ∈ T.abs.range) :
+    polarₗᵢAux T ⟨T.abs x, h⟩ = T x :=
+  congrArg _ (T.abs.quotKerEquivRange_symm_apply_image x h)
+
+private theorem denseRange_inclusion (T : E →L[ℂ] F) :
+    DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) :=
+  (denseRange_inclusion_iff T.abs.range.le_topologicalClosure).mpr
+    (Submodule.topologicalClosure_coe _).subset
+
+/-- The polar `U` is a linear isometry from the range `T.abs.range` of `T.abs` to the orthogonal of
+the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ T.abs`. -/
+def polarₗᵢ (T : E →L[ℂ] F) : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F :=
+  T.polarₗᵢAux.extendOfIsometry
+    (e := Submodule.inclusion T.abs.range.le_topologicalClosure)
+    T.denseRange_inclusion
+    (by
+      rintro ⟨_, x, rfl⟩
+      simp [norm_abs_apply])
+
+theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
+    T.polarₗᵢ ⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
+  rw [← Submodule.inclusion_apply T.abs.range.le_topologicalClosure
+    ⟨T.abs x, LinearMap.mem_range_self _ x⟩]
+  simp [polarₗᵢ]
+
+theorem range_polarₗᵢ (T : E →L[ℂ] F) :
+    T.polarₗᵢ.range = T.range.topologicalClosure := by
+  apply le_antisymm
+  · rintro _ ⟨m, rfl⟩
+    rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe]
+    refine T.denseRange_inclusion.induction_on m
+      (isClosed_closure.preimage T.polarₗᵢ.toContinuousLinearMap.continuous) ?_
+    rintro ⟨_, x, rfl⟩
+    exact subset_closure ⟨x, T.polarₗᵢ_apply x ▸ rfl⟩
+  · refine Submodule.topologicalClosure_minimal _ ?_
+      T.polarₗᵢ.isometry.isClosedEmbedding.isClosed_range
+    rintro _ ⟨x, rfl⟩
+    exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩
+
+theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
+    T.polarₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₗᵢ.toContinuousLinearMap = .id ℂ _ := by
+  ext
+  refine ext_inner_right ℂ fun y ↦ ?_
+  simp
+
+theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
+    T.polarₗᵢ.toContinuousLinearMap ∘L T.polarₗᵢ.toContinuousLinearMap.adjoint
+     = T.range.topologicalClosure.starProjection := by
+  ext
+  refine (Submodule.eq_starProjection_of_mem_of_inner_eq_zero ?_ fun _ hy ↦ ?_).symm
+  · simp_rw [← range_polarₗᵢ]
+    simp
+  · simp_rw [← range_polarₗᵢ] at hy
+    obtain ⟨_, rfl⟩ := hy
+    simp [inner_sub_left, adjoint_inner_left]
+
+end Polar
+
+end ContinuousLinearMap
