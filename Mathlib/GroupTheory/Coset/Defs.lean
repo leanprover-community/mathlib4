@@ -5,11 +5,11 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Quotient
 public import Mathlib.Algebra.Group.Action.Opposite
-public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Quotient
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Cosets
@@ -257,6 +257,14 @@ theorem preimage_mk_one (N : Subgroup α) :
     mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
   rw [← image_singleton, preimage_image_mk_eq_mul]
   simp
+
+@[to_additive (attr := simp)]
+theorem mk_eq_one_iff : (a : α ⧸ s) = (1 : α) ↔ a ∈ s := by
+  simpa using congr(a ∈ $(preimage_mk_one s))
+
+@[to_additive (attr := simp)]
+theorem out_mem_iff {a : α ⧸ s} : a.out ∈ s ↔ a = (1 : α) := by
+  rw [← mk_eq_one_iff, out_eq']
 
 end QuotientGroup
 

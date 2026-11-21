@@ -11,6 +11,9 @@ public import Mathlib.Topology.UniformSpace.Completion
 
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of uniform spaces
 
@@ -207,7 +210,7 @@ open CpltSepUniformSpace
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := ↧(Completion X)
-  map f := ConcreteCategory.ofHom ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
+  map f := ConcreteCategory.ofHom ⟨Completion.map f.hom', Completion.uniformContinuous_map⟩
   map_id _ := InducedCategory.hom_ext (hom_ext (by apply Completion.map_id))
   map_comp f g := InducedCategory.hom_ext (hom_ext (by
     exact (Completion.map_comp g.hom.property f.hom.property).symm))
@@ -256,7 +259,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         ext x
         dsimp [-Function.comp_apply]
-        erw [Completion.extension_map (γ := Y) g.hom.2 f.hom.2]
+        erw [Completion.extension_map (γ := Y) g.hom.property f.hom.property]
         rfl }
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where

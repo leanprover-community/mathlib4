@@ -11,6 +11,9 @@ public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining Elements to Fields
 
@@ -93,7 +96,6 @@ lemma fg_top_iff :
     (⊤ : IntermediateField F E).FG ↔ Algebra.EssFiniteType F E := by
   constructor
   · intro ⟨s, hs⟩
-    have : Algebra.FiniteType F (Algebra.adjoin F (s : Set E)) := .adjoin_of_finite s.finite_toSet
     have : Algebra.EssFiniteType (Algebra.adjoin F (s : Set E)) (adjoin F (s : Set E)) :=
       .of_isLocalization _ (nonZeroDivisors _)
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
@@ -104,12 +106,12 @@ lemma fg_top_iff :
     use Algebra.EssFiniteType.finset F E
     refine top_le_iff.mp fun x _ ↦ ?_
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq (Algebra.EssFiniteType.submonoid F E) x
-    have hs : s.1.1 ≠ 0 := (IsLocalization.map_units E s).ne_zero
+    have hs : s.val.val ≠ 0 := (IsLocalization.map_units E s).ne_zero
     have H : IsLocalization.mk' E x s = x / s := by
       simp [IsLocalization.mk'_eq_iff_eq_mul, hs]
     rw [H]
-    exact div_mem (IntermediateField.algebra_adjoin_le_adjoin _ _ x.2)
-      (IntermediateField.algebra_adjoin_le_adjoin _ _ s.1.2)
+    exact div_mem (IntermediateField.algebra_adjoin_le_adjoin _ _ x.property)
+      (IntermediateField.algebra_adjoin_le_adjoin _ _ s.val.property)
 
 variable (F E) in
 lemma fg_top [Algebra.EssFiniteType F E] : (⊤ : IntermediateField F E).FG := by
@@ -123,6 +125,9 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
       ← (IntermediateField.map_injective K.val).eq_iff, ← IntermediateField.fg_top_iff,
       adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using! this
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
+
+instance [Finite S] : Algebra.EssFiniteType F (adjoin F S) :=
+  essFiniteType_iff.mpr (fg_adjoin_of_finite S.toFinite)
 
 /-- A field is finitely generated if and only if it is essentially of finite type over its prime
 subfield. -/

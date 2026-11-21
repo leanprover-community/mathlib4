@@ -5,11 +5,11 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
-public import Mathlib.Geometry.Manifold.MFDeriv.Defs
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
@@ -35,7 +35,6 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 * `TensorialAt.mkHom₂`: An operation on sections of `V` and `V'` which is tensorial at `x` in both
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
-
 -/
 
 open Bundle FiberBundle Module

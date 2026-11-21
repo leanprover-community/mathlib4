@@ -87,7 +87,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
     measure_sdiff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
       (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
-  suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_sdiff ▸ this)
+  suffices ν (f ⁻¹' s \ s) = 0 from (ae_subset.mpr this).antisymm (ae_subset.mpr <| hν_sdiff ▸ this)
   contrapose! hμ_sdiff with h₀
   apply ne_of_gt
   calc

@@ -32,7 +32,6 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 - define a structure `LocallyConvexFilterBasis`, extending `ModuleFilterBasis`, for filter
   bases generating a locally convex topology
-
 -/
 
 public section
@@ -112,11 +111,11 @@ theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [
     {S : Set E} (hS : Convex ℝ S) : LocallyPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
-  let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
+  let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.val).mem_iff.mp ht.1
   refine ⟨(↑) ⁻¹' t', ⟨?_, ?_⟩, (preimage_mono ht'.2).trans ht.2⟩
-  · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
+  · exact continuousAt_subtypeVal.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
-    exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
+    exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.property, mem_of_mem_nhds ht'.1.1⟩
 
 @[deprecated (since := "2026-06-21")]
 alias Convex.locPathConnectedSpace := Convex.locallyPathConnectedSpace
@@ -146,13 +145,14 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
   let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
-  rw [← uniformity_eq_comap_nhds_zero] at this
+  have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.1 - x.2
+  rw [← uniformity_eq_comap_nhds_zero_swapped] at this
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
   refine ⟨s + V, t + V, hVopen.add_left, hVopen.add_left, hs₁.add hVconvex, ht₁.add hVconvex,
     subset_add_left _ hV0, subset_add_left _ hV0, ?_⟩
   simp_rw [← iUnion_add_left_image, image_add_left]
-  simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
+  simp_rw [show ∀ (W : SetRel E E) (y : E), W.ball y = (fun a ↦ (a, y)) ⁻¹' W from
+    fun _ _ ↦ rfl, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex
@@ -179,7 +179,7 @@ protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
       (fun x => ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
-  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
+  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.property) x
 
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :

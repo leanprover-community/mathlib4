@@ -5,12 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Data.Set.BooleanAlgebra
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -23,7 +23,6 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section
@@ -191,7 +190,7 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
   Iff.rfl
 
 instance : SMulCommClass M (FixedPoints.submonoid M α) α where
-  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.2 g]
+  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.property g]
 
 end Monoid
 

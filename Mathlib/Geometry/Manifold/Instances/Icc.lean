@@ -57,7 +57,7 @@ the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
 Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
 orientation-reversing. -/
-irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+@[no_expose] def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
   mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1
 
@@ -169,17 +169,17 @@ lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     CMDiff[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) ↔ CMDiff n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
-  convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.property)
   ext z
   simp
 
 lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     CMDiffAt[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) w ↔ CMDiffAt n f w := by
   refine ⟨fun hf ↦ ?_,
-    fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
+    fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.property) (by simp)⟩
   have A := contMDiff_subtypeVal_Icc (x := x) (y := y) (n := n) w
   rw [← contMDiffWithinAt_univ] at A ⊢
-  convert hf.comp _ A (fun z hz ↦ z.2)
+  convert hf.comp _ A (fun z hz ↦ z.property)
   ext z
   simp
 
@@ -188,10 +188,10 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
   · have A := (contMDiff_subtypeVal_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
-    convert hf.comp _ A (fun z hz ↦ z.2)
+    convert hf.comp _ A (fun z hz ↦ z.property)
     ext z
     simp
-  · have := (contMDiffOn_projIcc (x := x) (y := y) w w.2).mdifferentiableWithinAt one_ne_zero
+  · have := (contMDiffOn_projIcc (x := x) (y := y) w w.property).mdifferentiableWithinAt one_ne_zero
     exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
 lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
@@ -209,25 +209,24 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
   · simp [hw]
-  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
-  · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
+  · exact (contMDiffOn_projIcc _ w.property).mdifferentiableWithinAt one_ne_zero
+  · exact (uniqueDiffOn_Icc h.out _ w.property).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
-  rw [projIcc_of_mem _ w.2]
-  congr 1
-  convert! mfderivWithin_projIcc_one w.2
+  rw [projIcc_of_mem _ w.property]
+  rfl
 
 lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
   have A : mfderiv[Icc x y] (Subtype.val ∘ (projIcc x y h.out.le)) z 1
       = mfderiv[Icc x y] (@id ℝ) z 1 := by
     congr 1
-    apply mfderivWithin_congr_of_mem _ z.2
+    apply mfderivWithin_congr_of_mem _ z.property
     intro z hz
     simp [projIcc_of_mem h.out.le hz]
   rw [← mfderivWithin_comp_projIcc_one, A]
   simp only [id_eq, mfderivWithin_eq_fderivWithin]
-  rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
+  rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.property)]
   rfl
 
 @[deprecated (since := "2026-07-22")]

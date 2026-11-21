@@ -171,7 +171,7 @@ example (a b c : ℝ≥0∞) (hc : c ≠ ⊤) (h : a + c = b + c) : ∀ _ : ℕ,
 
 /-- An atom under a `let` -/
 example (a b : ℝ≥0∞) (h : (let c : ℝ≥0∞ := a + b; c) = 0) : a = 0 := by
-  basify <;> linarith
+  basify; linarith
 
 /-- A subterm with bvar is not an atom -/
 example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by

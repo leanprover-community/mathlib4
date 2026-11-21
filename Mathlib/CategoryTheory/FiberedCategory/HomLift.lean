@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.CommSq
 
 /-!
-
 # HomLift
 
 Given a functor `p : 𝒳 ⥤ 𝒮`, this file provides API for expressing the fact that `p(φ) = f`
@@ -28,7 +27,6 @@ it is used to make the code more readable.
 The class `IsHomLift` is defined as an inductive with the single constructor
 `.map (φ : a ⟶ b) : IsHomLift p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
 `.rfl (a : α) : Eq a a`.
-
 -/
 
 @[expose] public section
@@ -116,7 +114,7 @@ lemma of_commsq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.o
 
 lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
     (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ :=
-  of_commsq p f φ ha hb h.1
+  of_commsq p f φ ha hb h.w
 
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by

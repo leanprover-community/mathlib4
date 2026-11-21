@@ -23,7 +23,6 @@ is an abelian category if the following conditions are satisfied:
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
-
 -/
 
 @[expose] public section
@@ -42,7 +41,6 @@ namespace AbelianSubcategory
 
 variable (hι : ∀ ⦃X Y : A⦄ ⦃n : ℤ⦄ (f : ι.obj X ⟶ (ι.obj Y)⟦n⟧), n < 0 → f = 0)
 
-set_option backward.isDefEq.respectTransparency false in
 include hι in
 omit [HasZeroObject C] [Pretriangulated C] in
 lemma eq_zero_of_hom_shift_pos
@@ -82,7 +80,6 @@ lemma ι_map_πQ : ι.map (πQ f₂ β) = f₂ ≫ β :=
 
 variable {f₂ f₃} [Preadditive A] [ι.Faithful]
 
-set_option backward.defeqAttrib.useBackward true in
 include hT in
 @[reassoc]
 lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
@@ -91,7 +88,6 @@ lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
     dsimp at this
     simp [this])
 
-set_option backward.defeqAttrib.useBackward true in
 include hT in
 @[reassoc]
 lemma mor₁_πQ : f₁ ≫ πQ f₂ β = 0 :=
@@ -215,7 +211,6 @@ attribute [local instance] hasZeroObject_of_hasTerminal_object
 
 variable [HasFiniteProducts A] [ι.Additive]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₁` is a kernel of `X₂ ⟶ X₃`. -/
 noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
@@ -236,8 +231,6 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
   exact Fork.ext (-(Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
     (by simp))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₃` is a cokernel of `X₁ ⟶ X₂`. -/
 noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
@@ -263,8 +256,6 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
 
 variable (hA : admissibleMorphism ι = ⊤)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hι hA in
 omit [HasFiniteProducts A] in
 lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) [Epi π] :
@@ -285,8 +276,6 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
   refine isomorphic_distinguished _ hT _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso α)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (ι) in
 /-- Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
 an additive category and `C` is a triangulated category. The category `A`

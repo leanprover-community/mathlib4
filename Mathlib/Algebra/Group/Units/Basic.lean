@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Basic.Unique
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
-public import Mathlib.Tactic.Attr.Core
 
 
 /-!

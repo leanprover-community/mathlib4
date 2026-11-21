@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.PropInstances
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.PropInstances
 
 /-!
 # Heyting algebras
@@ -120,29 +120,10 @@ class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, Orde
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
-section
-
-@[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
-theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
-  GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
-
-theorem sdiff_le_iff' [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ c ⊔ b := by
-  rw [sdiff_le_iff, sup_comm]
-
-/-- `p → q → r ↔ p ∧ q → r` -/
-@[to_dual existing sdiff_le_iff', simp]
-theorem le_himp_iff [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
-  GeneralizedHeytingAlgebra.le_himp_iff _ _ _
-
-/-- `p → q → r ↔ q ∧ p → r` -/
-@[to_dual existing sdiff_le_iff]
-theorem le_himp_iff' [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by
-  rw [le_himp_iff, inf_comm]
-
-end
-
-to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := sdiff_le_iff'
-to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := le_himp_iff'
+to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := by
+  rw [self.sdiff_le_iff, sup_comm]
+to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := by
+  rw [self.le_himp_iff, inf_comm]
 to_dual_for GeneralizedHeytingAlgebra.mk :=
   { sdiff_le_iff a b c := by
       rw [le_himp_iff, sup_comm] }
@@ -157,7 +138,8 @@ attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
 to_dual_for BiheytingAlgebra.toHNot := self.toCompl
 to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
 to_dual_for BiheytingAlgebra.top_sdiff := self.himp_bot a
-to_dual_for BiheytingAlgebra.sdiff_le_iff := le_himp_iff'
+to_dual_for BiheytingAlgebra.sdiff_le_iff := by
+  rw [self.le_himp_iff, inf_comm]
 to_dual_for BiheytingAlgebra.mk :=
   { le_himp_iff a b c := by
       rw [sdiff_le_iff, inf_comm]
@@ -202,6 +184,16 @@ the same in this logic.
 See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
+-- low priority so that it doesn't overwrite user-provided simp lemmas
+@[to_dual le_himp_iff', simp low]
+theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
+  GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
+
+/-- `p → q → r ↔ p ∧ q → r` -/
+@[to_dual sdiff_le_iff', simp]
+theorem le_himp_iff [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
+  GeneralizedHeytingAlgebra.le_himp_iff _ _ _
+
 variable [GeneralizedHeytingAlgebra α] {a b c d : α}
 
 /-- `p → q → r ↔ q → p → r` -/
@@ -232,14 +224,15 @@ theorem himp_inf_le : (a ⇨ b) ⊓ a ≤ b :=
 theorem inf_himp_le : a ⊓ (a ⇨ b) ≤ b := by rw [inf_comm, ← le_himp_iff]
 
 /-- `p ∧ (p → q) ↔ p ∧ q` -/
-@[to_dual (attr := simp) sup_sdiff_self]
--- TODO: Should this be renamed to `inf_himp_self`?
-theorem inf_himp (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
+@[to_dual (attr := simp)]
+theorem inf_himp_self (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
   le_antisymm (le_inf inf_le_left <| by rw [inf_comm, ← le_himp_iff]) <| inf_le_inf_left _ le_himp
+
+@[deprecated (since := "2026-10-12")] alias inf_himp := inf_himp_self
 
 /-- `(p → q) ∧ p ↔ q ∧ p` -/
 @[to_dual (attr := simp)]
-theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp, inf_comm]
+theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp_self, inf_comm]
 
 /-- The **deduction theorem** in the Heyting algebra model of intuitionistic logic:
 an implication holds iff the conclusion follows from the hypothesis. -/
@@ -604,11 +597,12 @@ theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
 
 @[to_dual]
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
-  h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
+  h.disjoint.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint
 
 @[to_dual]
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
-  h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
+  h.disjoint.le_compl_right.antisymm <|
+    Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint.symm
 
 @[to_dual none]
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=

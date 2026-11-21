@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public meta import Lean.Meta.CoeAttr
-
 public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs

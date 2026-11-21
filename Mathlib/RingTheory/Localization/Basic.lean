@@ -96,12 +96,13 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
-    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    refine ⟨⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩, funext fun j ↦ ?_⟩
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
     · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := exists_mk'_eq S x
-    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+    exact ⟨mk' (M := T) _ (update 0 i r)
+        ⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩,
       by simp [map_mk']⟩
 
 end Localization
@@ -248,7 +249,7 @@ set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
 theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
-      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
+      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.property⟩ := by
   simp [map_mk']
 
 theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
@@ -290,9 +291,6 @@ lemma of_le_isUnit_of_bijective {M : Submonoid R}
 
 lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
   of_le_isUnit_of_bijective (by simpa) Function.bijective_id
-
-@[deprecated (since := "2026-04-15")]
-alias at_units := of_le_isUnit
 
 instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
 

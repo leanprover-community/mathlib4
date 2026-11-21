@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Make `fun_prop` work for finite (multiplicative) support
 
