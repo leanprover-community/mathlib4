@@ -6,7 +6,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" from git "https://github.com/leanprover-community/batteries" @ "aa6dc6d6546299ac756d0824a88481d289c789a6"
+require "leanprover-community" / "batteries" from git "https://github.com/leanprover-community/batteries" @ "dd40f5cabb85bd5f20fb254a2873888578950938"
 require "leanprover-community" / "Qq" @ git "master"
 
 require "leanprover-community" / "aesop" @ git "master"
