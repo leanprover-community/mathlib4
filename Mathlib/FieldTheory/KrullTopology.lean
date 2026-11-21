@@ -98,23 +98,7 @@ theorem AlgEquiv.mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ F : IntermediateField K L,
     F.FG ∧ ∀ σ τ : Gal(L/K), Set.EqOn σ τ F → σ ~[s] τ := by
   rw [AlgEquiv.mem_uniformity_iff]
-  simp_rw [FG, existsAndEq, true_and]
-  refine exists_congr fun u => forall₂_congr fun σ τ => imp_congr_left ?_
-  unfold Set.EqOn
-  simp_rw [← AlgEquiv.symm_apply_eq, ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply]
-  have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
-    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff,
-      le_fixedField_iff_le_fixingSubgroup, Subgroup.zpowers_le, ← AlgEquiv.smul_def,
-      ← MulAction.mem_stabilizer_iff]
-    revert σ
-    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_fixedField_iff_le_fixingSubgroup,
-      adjoin_simple_le_iff]
-    constructor
-    · simp
-    · intro σ hσ
-      simpa using hσ ⟨x, mem_adjoin_simple_self K x⟩
-  simp_rw [hst, ← Set.ofPred_subset_ofPred, SetLike.setOfPred_mem_eq,
-    Set.ofPred_mem_eq, SetLike.coe_subset_coe, adjoin_le_iff]
+  simp_rw [FG, existsAndEq, true_and, ← AlgEquiv.coe_toAlgHom, AlgHom.eqOn_fieldAdjoin_iff]
 
 variable (K L) in
 /-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
@@ -154,23 +138,12 @@ lemma AlgEquiv.mem_nhds_one_iff' {s : Set Gal(L/K)} :
     kernMap_principal, le_principal_iff, AlgEquiv.mem_uniformity_iff]
   simp_rw [← Prod.forall', ← Set.ofPred_subset_ofPred, Prod.eta, Set.ofPred_mem_eq,
     Set.subset_kernImage_iff, Set.preimage_ofPred_eq, Set.ofPred_subset,
-    FG, existsAndEq, true_and, Set.subset_def, SetLike.mem_coe,
-    IntermediateField.mem_fixingSubgroup_iff, Set.EqOn, AlgEquiv.one_apply]
-  refine exists_congr fun u => forall_congr' fun σ => imp_congr_left ?_
-  revert σ
-  have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
-    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff,
-      le_fixedField_iff_le_fixingSubgroup, Subgroup.zpowers_le, ← AlgEquiv.smul_def,
-      ← MulAction.mem_stabilizer_iff]
-    revert σ
-    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_fixedField_iff_le_fixingSubgroup,
-      adjoin_simple_le_iff]
-    constructor
-    · simp
-    · intro σ hσ
-      simpa using hσ ⟨x, mem_adjoin_simple_self K x⟩
-  simp_rw [hst, ← Set.ofPred_subset_ofPred, SetLike.setOfPred_mem_eq,
-    Set.ofPred_mem_eq, SetLike.coe_subset_coe, adjoin_le_iff, forall_true_iff]
+    FG, existsAndEq, true_and, Set.subset_def, SetLike.mem_coe]
+  refine exists_congr fun u => forall_congr' fun σ => imp_congr_left (Iff.symm ?_)
+  rw [IntermediateField.mem_fixingSubgroup_iff]
+  change Set.EqOn σ.toAlgHom (AlgHom.id K L) (adjoin K (u : Set L)) ↔
+    Set.EqOn σ.toAlgHom (AlgHom.id K L) (u : Set L)
+  exact AlgHom.eqOn_fieldAdjoin_iff
 
 open IntermediateField in
 open scoped Topology in
