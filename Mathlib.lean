@@ -9,6 +9,7 @@ public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
 public import Mathlib.Tactic.Gavrilovich.Relabel
 public import Mathlib.Tactic.Gavrilovich.Tactics
+public import Mathlib.Tactic.OrbitCases
 public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Mathlib.Topology.Category.TopCat.Separation.Basic
 public import Mathlib.Topology.Gavrilovich.Model

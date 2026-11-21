@@ -319,6 +319,7 @@ public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.OrbitCases
 public import Mathlib.Tactic.Order
 public import Mathlib.Tactic.Order.CollectFacts
 public import Mathlib.Tactic.Order.Graph.Basic
