@@ -45,14 +45,14 @@ def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
     | ⊤ => ⊤
     | WithTop.some ub => upperSqrt ub prec
 
-theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb ≤ x) :
-    Dyadic.toReal (lowerSqrt lb prec) ≤ √x := by
+theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : lb ≤ x) :
+    lowerSqrt lb prec ≤ √x := by
   rcases le_or_gt 0 lb.toRat with hlb | hlb
   · apply Real.le_sqrt_of_sq_le
     have h : ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt ^ 2 ≤ (lb <<< (2 * prec)).toRat := by
       grw [← Nat.cast_pow, Nat.sqrt_le', Nat.floor_le (by rw [toRat_shiftLeft_nat]; positivity)]
     grw [← hx]
-    simp only [lowerSqrt, Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
+    simp only [lowerSqrt, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
       ← Rat.cast_pow, Rat.cast_le]
     generalize ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt = m at h ⊢
     rw [toRat_shiftLeft_nat, mul_comm 2, mul_comm] at h
@@ -60,20 +60,20 @@ theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb
   · have : (lb <<< (2 * prec)).toRat < 0 := by
       rw [toRat_shiftLeft_nat]
       exact mul_neg_of_neg_of_pos hlb (by positivity)
-    simp [lowerSqrt, Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this, Dyadic.toReal]
+    simp [lowerSqrt, Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this]
 
-theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toReal ub) :
-    √x ≤ Dyadic.toReal (upperSqrt ub prec) := by
+theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ ub) :
+    √x ≤ upperSqrt ub prec := by
   set n := ⌈(ub <<< (2 * prec)).toRat⌉₊
-  suffices H : ∀ m : ℕ, n ≤ m ^ 2 → √x ≤ Dyadic.toReal (Dyadic.ofIntWithPrec m prec) by
+  suffices H : ∀ m : ℕ, n ≤ m ^ 2 → √x ≤ Dyadic.ofIntWithPrec m prec by
     dsimp only [upperSqrt]
     split_ifs with h
     exacts [H _ h, H _ n.lt_succ_sqrt'.le]
   intro m hm
   replace hm : _ ≤ (m : ℚ) ^ 2 := (Nat.le_ceil _).trans (mod_cast hm)
-  rw [Real.sqrt_le_left (by simp [toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow])]
+  rw [Real.sqrt_le_left (by simp [Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow])]
   grw [hx]
-  simp only [Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← Rat.cast_pow, Rat.cast_le]
+  simp only [Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← Rat.cast_pow, Rat.cast_le]
   simpa [← pow_mul, field, toRat_shiftLeft_nat, mul_comm 2] using hm
 
 @[inclusion_op interval_dyadic_real]

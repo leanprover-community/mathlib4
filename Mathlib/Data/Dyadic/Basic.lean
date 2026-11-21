@@ -6,11 +6,15 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Dyadic rationals form an ordered ring
 
 We provide instances of `LinearOrder Dyadic`, `CommRing Dyadic`, and `IsOrderedRing Dyadic`.
+We also bundle `Dyadic.toRat` as a ring homomorphism and an order embedding.
 -/
 
 public section
@@ -18,9 +22,9 @@ namespace Dyadic
 
 section Lemmas
 
-@[simp] theorem toRat_one : toRat 1 = 1 := rfl
+@[simp, norm_cast] theorem toRat_one : toRat 1 = 1 := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := by
   rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := Rat)]
   exact toRat_natCast n
@@ -102,15 +106,31 @@ instance : CommRing Dyadic where
   mul_comm := Dyadic.mul_comm
 
 instance : IsStrictOrderedRing Dyadic where
-  add_le_add_left := by simp [← Dyadic.toRat_le_toRat_iff, Rat.add_le_add_right]
-  add_le_add_right := by simp [← Dyadic.toRat_le_toRat_iff, Rat.add_le_add_left]
-  le_of_add_le_add_left := by simp [← Dyadic.toRat_le_toRat_iff, Rat.add_le_add_left]
-  le_of_add_le_add_right := by simp [← Dyadic.toRat_le_toRat_iff, Rat.add_le_add_right]
-  mul_lt_mul_of_pos_left := by simp +contextual [← Dyadic.toRat_lt_toRat_iff, Rat.mul_lt_mul_left]
-  mul_lt_mul_of_pos_right := by simp +contextual [← Dyadic.toRat_lt_toRat_iff, Rat.mul_lt_mul_right]
+  add_le_add_left := by simp [← Dyadic.toRat_le_toRat_iff]
+  add_le_add_right := by simp [← Dyadic.toRat_le_toRat_iff]
+  le_of_add_le_add_left := by simp [← Dyadic.toRat_le_toRat_iff]
+  le_of_add_le_add_right := by simp [← Dyadic.toRat_le_toRat_iff]
+  mul_lt_mul_of_pos_left := by simp +contextual [← Dyadic.toRat_lt_toRat_iff]
+  mul_lt_mul_of_pos_right := by simp +contextual [← Dyadic.toRat_lt_toRat_iff]
   zero_le_one := by decide
   exists_pair_ne := ⟨0, 1, by decide⟩
 
 end Instances
+
+/-- Coercion from dyadic rationals to rational numbers as a ring homomorphism. -/
+@[expose, simps]
+def toRatRingHom : Dyadic →+* ℚ where
+  toFun := toRat
+  map_zero' := toRat_zero
+  map_one' := toRat_one
+  map_add' := toRat_add
+  map_mul' := toRat_mul
+
+/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
+@[expose, simps]
+def toRatOrderEmbedding : Dyadic ↪o ℚ where
+  toFun := toRat
+  inj' := fun _ _ ↦ toRat_inj.mp
+  map_rel_iff' := toRat_le_toRat_iff
 
 end Dyadic
