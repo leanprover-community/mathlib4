@@ -59,7 +59,7 @@ theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 
 is `4`. -/
 theorem floor_minkowskiNormBound_seven [IsCyclotomicExtension {7} ℚ K] :
     ⌊minkowskiNormBound K⌋₊ = 4 := by
-  have : Fact (Nat.Prime 7) := ⟨Nat.prime_seven⟩
+  have : Fact (Nat.Prime 7) := ⟨prime_seven⟩
   have : π ∈ Set.Ioo 3 3.15 := ⟨pi_gt_three, pi_lt_d2⟩
   rw [minkowskiNormBound, floor_eq_iff (by positivity), discr_prime 7 K, finrank 7 K,
     nrComplexPlaces_eq_totient_div_two 7, totient_prime Nat.prime_seven]
