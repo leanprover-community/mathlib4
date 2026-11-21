@@ -5984,6 +5984,7 @@ public import Mathlib.ModelTheory.Encoding
 public import Mathlib.ModelTheory.Equivalence
 public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.ModelTheory.FunctionalFormula
 public import Mathlib.ModelTheory.Graph
 public import Mathlib.ModelTheory.LanguageMap
 public import Mathlib.ModelTheory.Order
