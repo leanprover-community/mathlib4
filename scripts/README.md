@@ -240,7 +240,6 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
-  `check_title_labels.lean` is a temporary copy of `check-title-labels.lean` and will be deleted soon.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
@@ -335,7 +334,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   (leanprover/lean4#12805 or later).
 
 **API surrounding CI**
-- `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+- `check-title-labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.

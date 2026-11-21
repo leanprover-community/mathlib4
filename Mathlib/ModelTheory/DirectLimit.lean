@@ -317,7 +317,7 @@ substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
     ∃ i, ∃ T : L.Substructure (G i), T.map (of L ι G f i).toHom = S := by
   let ⟨A, A_closure⟩ := S_fg
-  let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.1)
+  let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.val)
   use i
   use Substructure.closure L (range y)
   rw [Substructure.map_closure]

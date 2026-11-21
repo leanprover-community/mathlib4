@@ -109,12 +109,12 @@ theorem le_commensurator_left (H₂ : Subgroup G) [h : IsHeckeTriple Δ H₁ H�
 /-- Elements of `Δ` lie in the commensurator of the right subgroup. -/
 theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₂ :=
-  le_commensurator_right H₁ g.2
+  le_commensurator_right H₁ g.property
 
 /-- Elements of `Δ` lie in the commensurator of the left subgroup. -/
 theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₁ :=
-  le_commensurator_left H₂ g.2
+  le_commensurator_left H₂ g.property
 
 /-- Conjugating the right subgroup of a Hecke triple `(H₁, Δ, H₂)` by an element of `Δ` gives a
 subgroup commensurable with the left one. -/

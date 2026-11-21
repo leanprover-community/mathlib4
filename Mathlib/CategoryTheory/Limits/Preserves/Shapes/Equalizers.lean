@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 
 /-!

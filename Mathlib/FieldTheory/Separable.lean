@@ -320,7 +320,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
       separable_prod'
         (fun x _hx y _hy hxy =>
           @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.ext <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
+            (fun x y hxy => Subtype.ext <| H x.val x.property y.val y.property hxy) _ _ hxy)
         fun _ _ => separable_X_sub_C⟩
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
@@ -401,7 +401,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   · rw [isUnit_iff] at h
     rcases h with ⟨r, hr, rfl⟩
     simp_rw [expand_C] at hf
-    exact absurd (isUnit_C.2 hr) hf.1
+    exact absurd (isUnit_C.2 hr) hf.not_isUnit
   · rw [add_zero, pow_zero, expand_one]
     constructor <;> rfl
 
@@ -728,10 +728,8 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
         smul_def' := fun _ _ ↦ rfl }
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
       (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
-  let e : B₁ ≃ₐ[A₂] B₂ :=
-    { e₂ with
-      commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using! congr($he.symm (e₁.symm x)) }
+  let e : B₁ ≃ₐ[A₂] B₂ := .ofCommutes e₂ fun x ↦ by
+    simpa [RingHom.algebraMap_toAlgebra] using! congr($he.symm (e₁.symm x))
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
