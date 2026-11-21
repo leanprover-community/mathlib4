@@ -203,15 +203,14 @@ end Semiring
 
 section Algebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [DecidableEq m] [DecidableEq n]
-  [DecidableEq o] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [Semiring A] [Algebra R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
 map that reindexes a matrix's rows and columns with equivalent types,
 `Matrix.reindex`, is an equivalence of algebras. -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A where
   __ := reindexRingEquiv A e
-  commutes' _ := by simp [algebraMap]
+  map_smul' := by simp [submatrix_smul]
 
 @[simp]
 theorem coe_reindexAlgEquiv (e : m ≃ n) : ⇑(reindexAlgEquiv R A e) = reindex e e :=
@@ -315,7 +314,7 @@ end StarAlgebra
 
 @[simp]
 theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] [Semiring A]
-    [Algebra R A] [Star A] [DecidableEq m] [DecidableEq n] (e : m ≃ n) :
+    [Algebra R A] [Star A] (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
   rfl
 

@@ -9,11 +9,11 @@ public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Localization.Free
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.Topology.LocallyConstant.Basic
 
+import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-!
 # The free locus of a module
@@ -69,8 +69,8 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
     (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
-    p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
-  exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
+    p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) :=
+  mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
 
 lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     freeLocus R M = freeLocus R M' := by
@@ -117,7 +117,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-      refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
+      refine ⟨algebraMap _ _ s.val, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
   let : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
@@ -141,7 +141,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-      refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
+      refine ⟨algebraMap _ _ s.val, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
   rw [mem_freeLocus_of_isLocalization (R := Localization S) p Rₚ Mₚ l]
@@ -171,7 +171,7 @@ lemma isOpen_freeLocus [Module.FinitePresentation R M] :
   obtain ⟨r, hr, hr', _⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).2, hr⟩
+  exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).is_open', hr⟩
 
 variable (M) in
 /-- The rank of `M` at the stalk of `p` is the rank of `Mₚ` as a `Rₚ`-module. -/
@@ -180,13 +180,14 @@ def rankAtStalk (p : PrimeSpectrum R) : ℕ :=
   Module.finrank (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M)
 
 lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
-    IsLocallyConstant (fun x : freeLocus R M ↦ rankAtStalk M x.1) := by
+    IsLocallyConstant (fun x : freeLocus R M ↦ rankAtStalk M x.val) := by
   refine (IsLocallyConstant.iff_exists_open _).mpr fun ⟨x, hx⟩ ↦ ?_
   have : Module.Free _ _ := hx
   obtain ⟨f, hf, hf', hf''⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).2.preimage continuous_subtype_val, hf, ?_⟩
+  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).is_open'.preimage continuous_subtypeVal,
+    hf, ?_⟩
   rintro ⟨p, hp''⟩ hp
   let p' := Algebra.algebraMapSubmonoid (Localization (.powers f)) p.asIdeal.primeCompl
   have hp' : Submonoid.powers f ≤ p.asIdeal.primeCompl := by

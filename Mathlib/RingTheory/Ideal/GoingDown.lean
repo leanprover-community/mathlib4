@@ -116,7 +116,7 @@ lemma iff_generalizingMap_primeSpectrumComap :
   · have : (⟨p, hp⟩ : PrimeSpectrum R) ⤳ (PrimeSpectrum.comap (algebraMap R S) ⟨Q, hQ⟩) :=
       (PrimeSpectrum.le_iff_specializes _ _).mp hlt.le
     obtain ⟨P, hs, heq⟩ := h this
-    refine ⟨P.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, P.2, ⟨?_⟩⟩
+    refine ⟨P.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, P.isPrime, ⟨?_⟩⟩
     simpa [PrimeSpectrum.ext_iff] using heq.symm
 
 variable (R S) in
@@ -142,7 +142,7 @@ lemma of_comap_localRingHom_surjective
       Ideal.isPrime_map_of_isLocalizationAtPrime (Q.under R) hlt.le
     obtain ⟨⟨Pl, _⟩, hl⟩ := H Q ⟨pl, inferInstance⟩
     refine ⟨Pl.under S, ?_, Ideal.IsPrime.under S Pl, ⟨?_⟩⟩
-    · exact (IsLocalization.AtPrime.orderIsoOfPrime _ Q ⟨Pl, inferInstance⟩).2.2
+    · exact (IsLocalization.AtPrime.orderIsoOfPrime _ Q ⟨Pl, inferInstance⟩).property.2
     · let := Localization.AtPrime.algebraOfLiesOver (Q.under R) Q
       replace hl : Pl.under _ = pl := by simpa [PrimeSpectrum.ext_iff] using! hl
       rw [Ideal.under_under, ← Ideal.under_under (B := (Localization.AtPrime <| Q.under R)) Pl, hl,

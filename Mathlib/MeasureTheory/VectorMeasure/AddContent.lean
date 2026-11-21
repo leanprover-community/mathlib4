@@ -111,7 +111,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   have C'_dense : Dense C' := by
     simp only [Dense, EMetric.mem_closure_iff, gt_iff_lt]
     intro x ε εpos
-    rcases h'C x ε x.2 εpos with ⟨s, sC, hs⟩
+    rcases h'C x ε x.property εpos with ⟨s, sC, hs⟩
     refine ⟨⟨s, hCmeas s sC⟩, ⟨s, sC, rfl⟩, ?_⟩
     rw [edist_comm]
     exact hs
@@ -123,20 +123,22 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     intro s t
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, eDist_eq_eNorm_sub]
-    rw [measure_symmDiff_eq (by exact s.1.2.nullMeasurableSet) (by exact t.1.2.nullMeasurableSet)]
+    rw [measure_symmDiff_eq (by exact s.val.property.nullMeasurableSet)
+      (by exact t.val.property.nullMeasurableSet)]
     have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_sdiff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
-    rw [addContent_union hC (hC.inter_mem (C'C _ t.2) (C'C _ s.2))
-        (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
-      addContent_union hC (hC.inter_mem (C'C _ s.2) (C'C _ t.2))
-        (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+    rw [addContent_union hC (hC.inter_mem (C'C _ t.property) (C'C _ s.property))
+        (hC.sdiff_mem (C'C _ t.property) (C'C _ s.property)) Set.disjoint_sdiff_inter.symm,
+      addContent_union hC (hC.inter_mem (C'C _ s.property) (C'C _ t.property))
+        (hC.sdiff_mem (C'C _ s.property) (C'C _ t.property)) Set.disjoint_sdiff_inter.symm,
+      Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply eNorm_sub_le.trans
     gcongr
-    · exact hm _ (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2))
-    · exact hm _ (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2))
+    · exact hm _ (hC.sdiff_mem (C'C _ s.property) (C'C _ t.property))
+    · exact hm _ (hC.sdiff_mem (C'C _ t.property) (C'C _ s.property))
   -- Let `m₁` be the extension of `m₀` to all elements of `MeasuredSets μ` by continuity
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
   -- It is again Lipschitz continuous and bounded by `μ`
@@ -154,16 +156,16 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely
   additive. -/
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :
-      m₁ ⟨s ∪ t, s.2.union t.2⟩ = m₁ s + m₁ t := by
-    suffices ∀ ε > 0, ‖m₁ (⟨s ∪ t, s.2.union t.2⟩) - m₁ s - m₁ t‖ₑ < ε by
+      m₁ ⟨s ∪ t, s.property.union t.property⟩ = m₁ s + m₁ t := by
+    suffices ∀ ε > 0, ‖m₁ (⟨s ∪ t, s.property.union t.property⟩) - m₁ s - m₁ t‖ₑ < ε by
       rw [← sub_eq_zero, ← eNorm_eq_zero, sub_add_eq_sub_sub]
       exact eq_bot_iff.2 (le_of_forall_gt this)
     intro ε εpos
     obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ 8 * δ = ε :=
       ⟨ε / 8, (ENNReal.div_pos εpos.ne' (by simp)), ENNReal.mul_div_cancel (by simp) (by simp)⟩
     -- approximate `s` and `t` up to `δ` by sets `s'` and `t'` in `C`.
-    obtain ⟨s', s'C, hs'⟩ : ∃ s' ∈ C, μ (s' ∆ s) < δ := h'C _ _ s.2 δpos
-    obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t' ∆ t) < δ := h'C _ _ t.2 δpos
+    obtain ⟨s', s'C, hs'⟩ : ∃ s' ∈ C, μ (s' ∆ s) < δ := h'C _ _ s.property δpos
+    obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t' ∆ t) < δ := h'C _ _ t.property δpos
     have It : ‖m t' - m₁ t‖ₑ < δ := by
       have : m₁ ⟨t', hCmeas _ t'C⟩ = m t' :=
         C'_dense.extend_eq lip.continuous ⟨⟨t', hCmeas _ t'C⟩, ⟨t', t'C, rfl⟩⟩
@@ -196,7 +198,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       exact hs''
     -- `s'' ∪ t'` also approximates well `s ∪ t`.
-    have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.2.union t.2⟩‖ₑ < 4 * δ := by
+    have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.property.union t.property⟩‖ₑ < 4 * δ := by
       have s''t'C : s'' ∪ t' ∈ C := hC.union_mem s''C t'C
       have : m₁ ⟨s'' ∪ t', hCmeas _ s''t'C⟩ = m (s'' ∪ t') :=
         C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hCmeas _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
@@ -212,12 +214,13 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     -- conclusion: to estimate `m₁ (s ∪ t) - m₁ s - m₁ t`, replace it up to a small error by
     -- `m₁ (s'' ∪ t') - m₁ s'' - m₁ t'`, which is zero as `m₁` is additive on `C` and these
     -- two sets are disjoint
-    calc ‖m₁ (⟨s ∪ t, s.2.union t.2⟩) - m₁ s - m₁ t‖ₑ
-    _ = ‖(m (s'' ∪ t') - m s'' - m t') + (m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t'))
+    calc ‖m₁ (⟨s ∪ t, s.property.union t.property⟩) - m₁ s - m₁ t‖ₑ
+    _ = ‖(m (s'' ∪ t') - m s'' - m t') + (m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t'))
           + (m s'' - m₁ s) + (m t' - m₁ t)‖ₑ := by abel_nf
-    _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ
+    _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t')‖ₑ
           + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := eNorm_add₄_le
-    _ = ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := by
+    _ = ‖m₁ ⟨s ∪ t, s.property.union t.property⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ
+          + ‖m t' - m₁ t‖ₑ := by
       rw [addContent_union hC s''C t'C Set.disjoint_sdiff_left]
       simp
     _ < 4 * δ + 3 * δ + δ := by

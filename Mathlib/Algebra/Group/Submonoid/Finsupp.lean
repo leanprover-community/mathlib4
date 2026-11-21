@@ -54,14 +54,14 @@ theorem mem_closure_range_iff_of_fintype [Fintype ι] :
 
 @[to_additive]
 theorem mem_closure_iff_of_fintype {s : Set M} [Fintype s] :
-    x ∈ closure s ↔ ∃ a : s → ℕ, x = ∏ i : s, i.1 ^ a i := by
+    x ∈ closure s ↔ ∃ a : s → ℕ, x = ∏ i : s, i.val ^ a i := by
   conv_lhs => rw [← Subtype.range_coe (s := s)]
   exact mem_closure_range_iff_of_fintype
 
 /-- A variant of `Submonoid.mem_closure_finset` using `s` as the index type. -/
 @[to_additive /-- A variant of `AddSubmonoid.mem_closure_finset` using `s` as the index type. -/]
 theorem mem_closure_finset' {s : Finset M} :
-    x ∈ closure s ↔ ∃ a : s → ℕ, x = ∏ i : s, i.1 ^ a i :=
+    x ∈ closure s ↔ ∃ a : s → ℕ, x = ∏ i : s, i.val ^ a i :=
   mem_closure_iff_of_fintype
 
 end Submonoid

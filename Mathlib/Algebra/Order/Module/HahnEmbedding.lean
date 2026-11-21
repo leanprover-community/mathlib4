@@ -320,7 +320,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     apply Finset.min'_lt_of_mem_erase_min' (α := FiniteArchimedeanClass M)
     apply Finset.min'_mem _ _
   · -- special case: `f` has a single term, and becomes 0 after removing it
-    simpa [hsupport'] using! (f.support.min' hsupport).2.lt_top
+    simpa [hsupport'] using! (f.support.min' hsupport).property.lt_top
 
 theorem baseEmbedding_strictMono [IsOrderedAddMonoid R] : StrictMono seed.baseEmbedding := by
   intro x y h
@@ -705,7 +705,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   -- * `mk (x - y) = mk (z - y)`
   obtain ⟨z, hz⟩ := f.exists_sub_mem_ball hx y
   rw [f.evalCoeff_eq hz]
-  have : z ≠ x := by rintro rfl; exact hx z.2
+  have : z ≠ x := by rintro rfl; exact hx z.property
   have hzy : z < y := by
     change z.val < y.val
     refine (sub_lt_sub_iff_right x).mp <|
