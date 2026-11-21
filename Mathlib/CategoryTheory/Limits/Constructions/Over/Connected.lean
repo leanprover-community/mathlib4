@@ -49,7 +49,7 @@ def natTransInCostructuredArrow {B : D} (F : J ⥤ CostructuredArrow K B) :
 /-- (Implementation) Given a cone in the base category, raise it to a cone in
 `CostructuredArrow K B`. Note this is where the connected assumption is used.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     Cone F where
@@ -69,8 +69,6 @@ theorem mapCone_raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     (CostructuredArrow.proj K B).mapCone (raiseCone c) = c := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show that the raised cone is a limit. -/
 def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     {c : Cone (F ⋙ CostructuredArrow.proj K B)}
@@ -94,16 +92,11 @@ instance [IsConnected J] {B : D} : CreatesLimitsOfShape J (CostructuredArrow.pro
         validLift := eqToIso (CreatesConnected.mapCone_raiseCone c)
         makesLimit := CreatesConnected.isLimitRaiseCone t }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
 instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
   preservesLimit.preserves hc := ⟨{
     lift s := (CostructuredArrow.proj K B).map (hc.lift (CreatesConnected.raiseCone s))
-    fac _ _ := by
-      rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
-        CreatesConnected.raiseCone_π_app, CostructuredArrow.proj_map,
-        CostructuredArrow.homMk_left _ _]
+    fac s j := congr($(hc.fac (CreatesConnected.raiseCone s) j).left)
     uniq s m fac :=
       congrArg (CostructuredArrow.proj K B).map (hc.uniq (CreatesConnected.raiseCone s)
         (CostructuredArrow.homMk m (by simp [← fac])) fun j =>
@@ -158,7 +151,7 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
 
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
-@[simps]
+@[simps, implicit_reducible]
 def conePost (F : J ⥤ C) (i : J) : Cone F ⥤ Cone (Over.post (X := i) F) where
   obj c := { pt := Over.mk (c.π.app i), π := { app X := Over.homMk (c.π.app X.left) } }
   map f := { hom := Over.homMk f.hom }

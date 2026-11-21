@@ -29,7 +29,7 @@ variable {α : Type u} {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := Finset.univ.inf F.obj
@@ -39,7 +39,7 @@ def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone
 /--
 The colimit cocone over any functor from a finite diagram into a `SemilatticeSup` with `OrderBot`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := Finset.univ.sup F.obj
@@ -168,7 +168,7 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 
 /-- The limit cone over any functor into a complete lattice.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
@@ -179,7 +179,7 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj

@@ -157,13 +157,13 @@ end
 namespace Prod
 
 /-- `sectL C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sectL (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D where
   obj X := (X, Z)
   map f := f ×ₘ 𝟙 Z
 
 /-- `sectR Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
-@[simps]
+@[simps, implicit_reducible]
 def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D where
   obj X := (Z, X)
   map f := 𝟙 Z ×ₘ f

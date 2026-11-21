@@ -160,7 +160,6 @@ open scoped MonoidalCategory.ExternalProduct
 
 variable (X Y : C ⥤ Type u)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/

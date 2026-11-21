@@ -72,8 +72,6 @@ end
 
 variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 
-attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
@@ -84,9 +82,6 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
     simp [Functor.sections, ← t.naturality]) ⟨⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-attribute [local simp←] comp_apply in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/
@@ -96,8 +91,6 @@ noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun X => limitCompCoyonedaIsoCone F X.unop)
 
-attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
 @[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
@@ -108,8 +101,6 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
     simp [Functor.sections]) ⟨⟩
 
-attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
     naturally in `F` and `X`. -/

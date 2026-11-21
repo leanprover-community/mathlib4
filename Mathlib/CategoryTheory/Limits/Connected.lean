@@ -197,7 +197,7 @@ def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J)
 
 /-- (Impl).
 Given a cone for (X × K -), produce a cone for K using the natural transformation `γ₂` -/
-@[simps]
+@[simps, implicit_reducible]
 def forgetCone {X : C} {K : J ⥤ C} (s : Cone (K ⋙ prod.functor.obj X)) : Cone K where
   pt := s.pt
   π := s.π ≫ γ₂ X
@@ -206,7 +206,6 @@ end ProdPreservesConnectedLimits
 
 open ProdPreservesConnectedLimits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(X × -)` preserves any connected limit.
 Note that this functor does not preserve the two most obvious disconnected limits - that is,
 `(X × -)` does not preserve products or terminal object, e.g. `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic

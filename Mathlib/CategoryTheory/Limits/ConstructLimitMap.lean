@@ -43,7 +43,6 @@ private abbrev left (c : Cone D) : I ⥤ Under c.pt :=
 private abbrev right (c' : Cone D') (f : c.pt ⟶ c'.pt) : I' ⥤ Under c.pt :=
   (c'.toStructuredArrow ⋙ StructuredArrow.toUnder c'.pt D') ⋙ Under.map f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tautological natural transformation on the comma category of `f`-compatible squares,
 inducing `f` on limits (see `ConstructLimitMap.eq_isLimitMap`). -/
 @[simps]
@@ -55,7 +54,6 @@ variable [IsCofiltered I] [∀ i : I', PreservesColimit D.op (yoneda.obj (D'.obj
 
 include hc
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma isCofiltered_costructuredArrow (i' : I') :
     IsCofiltered (CostructuredArrow (left c) ((right c' f).obj i')) := by
   refine isCofiltered_costructuredArrow_of_isCofiltered_of_exists _ _ ?_ ?_

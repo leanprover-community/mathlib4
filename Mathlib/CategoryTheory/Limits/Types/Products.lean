@@ -65,6 +65,7 @@ def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
 lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x = .unit := rfl
 
 /-- The category of types has `PUnit` as a terminal object. -/
+@[implicit_reducible]
 def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_, isTerminalPUnit⟩
 
 /-- The terminal object in `Type u` is `PUnit`. -/
@@ -91,7 +92,7 @@ open CategoryTheory.Limits.WalkingPair
 -- We manually generate the other projection lemmas since the simp-normal form for the legs is
 -- otherwise not created correctly.
 /-- The product type `X × Y` forms a cone for the binary product of `X` and `Y`. -/
-@[simps! pt]
+@[simps! pt, implicit_reducible]
 def binaryProductCone (X Y : Type u) : BinaryFan X Y :=
   BinaryFan.mk (↾_root_.Prod.fst) (↾_root_.Prod.snd)
 
@@ -118,7 +119,7 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
 /-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
@@ -147,7 +148,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
-@[simps]
+@[simps, implicit_reducible]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
     { obj := fun Y => X × Y
@@ -157,7 +158,6 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
     { app := fun Y =>
       BinaryFan.IsLimit.lift (binaryProductLimit X₂ Y) (↾_root_.Prod.fst ≫ f) (↾_root_.Prod.snd) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product functor given by the instance `HasBinaryProducts (Type u)` is isomorphic to the
 explicit binary product functor given by the product type.
 -/
@@ -173,6 +173,7 @@ noncomputable def binaryProductIsoProd :
 /--
 The category of types has `Π j, f j` as the product of a type family `f : J → Type max v u`.
 -/
+@[implicit_reducible]
 def productLimitCone {J : Type v} (F : J → Type (max v u)) :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
@@ -212,6 +213,7 @@ variable {J : Type v} (F : J → Type u) [Small.{u} J]
 /--
 A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
 -/
+@[implicit_reducible]
 noncomputable def productLimitCone :
     Limits.LimitCone (Discrete.functor F) where
   cone :=

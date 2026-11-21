@@ -63,7 +63,7 @@ def Fan.mk {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : Fan f where
 
 /-- Get the `j`th "projection" in the fan.
 (Note that the initial letter of `proj` matches the greek letter in `Cone.π`.) -/
-@[to_dual inj
+@[to_dual (attr := implicit_reducible) inj
 /-- Get the `j`th "injection" in the cofan.
 (Note that the initial letter of `inj` matches the greek letter in `Cocone.ι`.) -/]
 def Fan.proj {f : β → C} (p : Fan f) (j : β) : p.pt ⟶ f j :=
@@ -676,19 +676,17 @@ end Fubini
 
 variable (α) in
 /-- The functor `(f : α → C) ↦ ∏ᶜ f`. -/
-@[to_dual (attr := simps) /-- The functor `(f : α → C) ↦ ∐ f`. -/]
+@[to_dual (attr := simps, implicit_reducible) /-- The functor `(f : α → C) ↦ ∐ f`. -/]
 noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
   obj f := ∏ᶜ f
   map {f g} t := Pi.map t
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation induced by `Pi.π`. -/
 @[to_dual (attr := simps) /-- The natural transformation induced by `Sigma.ι`. -/]
 def Pi.functorπ [HasProductsOfShape α C] (a : α) :
     Pi.functor α ⟶ Pi.eval (fun _ ↦ C) a where
   app f := Pi.π f a
 
-set_option backward.defeqAttrib.useBackward true in
 variable (α) in
 /-- Up to pre-composing with an equivalence of categories, `Pi.functor` is isomorphic to `lim`. -/
 @[to_dual (attr := simps!)
@@ -698,7 +696,6 @@ def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
     (piEquivalenceFunctorDiscrete α C).functor ⋙ lim ≅ Pi.functor _ :=
   NatIso.ofComponents fun _ ↦ Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc)]
 lemma piEquivalenceFunctorDiscreteCompLim_comp_functorπ [HasProductsOfShape α C] (a : α) :
     (piEquivalenceFunctorDiscreteCompLim (C := C) α).hom ≫ Pi.functorπ a =

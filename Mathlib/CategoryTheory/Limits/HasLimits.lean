@@ -412,7 +412,6 @@ def HasLimit.isoOfEquivalence {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit
     (w : e.functor ⋙ G ≅ F) : limit F ≅ limit G :=
   IsLimit.conePointsIsoOfEquivalence (limit.isLimit F) (limit.isLimit G) e w
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc (attr := simp)) ι_isoOfEquivalence_inv]
 theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
@@ -421,7 +420,6 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc (attr := simp)) ι_isoOfEquivalence_hom]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
@@ -592,8 +590,6 @@ theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H
   ext
   simp only [whiskerRight_app, limMap_π, assoc, limit.post_π_assoc, limit.post_π, ← H.map_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between
 morphisms from `W` to the cone point of the limit cone for `F`
 and cones over `F` with cone point `W`
@@ -640,12 +636,11 @@ adjunction `adj : Functor.const _ ⊣ (L : (J ⥤ C) ⥤ C)`, we directly constr
 a limit cone for any `F : J ⥤ C`. -/
 
 /-- The limit cone obtained from a right adjoint of the constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
   pt := L.obj F
   π := adj.counit.app F
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 @[simps]
 def isLimitConeOfAdj (F : J ⥤ C) :
@@ -761,8 +756,6 @@ section ColimFunctor
 
 variable [HasColimitsOfShape J C]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between
 morphisms from the cone point of the colimit cocone for `F` to `W`
 and cocones over `F` with cone point `W`

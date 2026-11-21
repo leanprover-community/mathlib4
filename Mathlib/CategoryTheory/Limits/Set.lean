@@ -24,8 +24,6 @@ open CategoryTheory Limits CompleteLattice
 
 namespace Set
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (functorToTypes (X := X)) where
@@ -37,7 +35,7 @@ instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
       obtain ⟨i, hi⟩ := hx
       exact ⟨i, ⟨x, hi⟩, rfl⟩
     · intro i j ⟨x, hx⟩ ⟨y, hy⟩ h
-      obtain rfl : x = y := by simpa using h
+      obtain rfl : x = y := congr($(h).val)
       exact ⟨IsFiltered.max i j, IsFiltered.leftToMax i j, IsFiltered.rightToMax i j, rfl⟩
 
 end Set

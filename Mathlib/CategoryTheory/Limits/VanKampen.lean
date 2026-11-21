@@ -464,7 +464,6 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     · intro H
       exact ⟨H _, H _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     (cofans : ∀ X Y : C, BinaryCofan X Y) (colimits : ∀ X Y, IsColimit (cofans X Y))
     (cones : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), PullbackCone f g)
@@ -527,8 +526,6 @@ end BinaryCoproduct
 
 section FiniteCoproducts
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsUniversalColimit c₁) (t₂ : IsUniversalColimit c₂)
@@ -721,7 +718,6 @@ variable {ι ι' : Type*} {S : C}
 variable {B : C} {X : ι → C} {a : Cofan X} (hau : IsUniversalColimit a) (f : ∀ i, X i ⟶ S)
   (u : a.pt ⟶ S) (v : B ⟶ S)
 
-set_option backward.isDefEq.respectTransparency.types false in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
 `∐ (B ×[S] Xᵢ) ≅ B ×[S] (∐ Xᵢ)`. -/
@@ -737,7 +733,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
     Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
   refine hau _ (Discrete.natTrans fun i ↦ (s i.as).snd) t.snd ?_ (.of_discrete _) fun j ↦ ?_
-  · ext; simp [Cofan.inj]
+  · cat_disch
   · simp only [Discrete.functor_obj_eq_as, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app,
       Discrete.natTrans_app]
     rw [← Cofan.inj]
@@ -784,7 +780,6 @@ lemma IsUniversalColimit.isPullback_of_isColimit_left {d : Cofan P} (hd : IsColi
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
 `∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
@@ -800,7 +795,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
     Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
   refine hau _ (Discrete.natTrans fun i ↦ (s i.as).fst) t.fst ?_ (.of_discrete _) fun j ↦ ?_
-  · ext; simp [Cofan.inj]
+  · cat_disch
   · simp only [Discrete.functor_obj_eq_as, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app,
       Discrete.natTrans_app]
     rw [← Cofan.inj]

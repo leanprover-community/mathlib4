@@ -50,7 +50,7 @@ lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
 /--
 The evaluation functor at `i : I`, sending an `I`-indexed family of objects to the object over `i`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def eval (i : I) : (∀ i, C i) ⥤ C i where
   obj f := f i
   map α := α i
@@ -174,14 +174,14 @@ variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [C
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i where
   obj f i := (F i).obj (f i)
   map α i := (F i).map (α i)
 
 /-- Similar to `pi`, but all functors come from the same category `A`
 -/
-@[simps]
+@[simps, implicit_reducible]
 def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
   obj a i := (f i).obj a
   map h i := (f i).map h
@@ -309,10 +309,8 @@ def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
 
 attribute [local simp] eqToHom_map
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Reindexing a family of categories gives equivalent `Pi` categories. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
   functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
@@ -328,10 +326,8 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (leftUnitor _).symm)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
-@[simps]
+@[simps, implicit_reducible]
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
     (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) where
   functor := Functor.prod' (Pi.eval C' none)
@@ -349,10 +345,9 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
-@[simps]
+@[simps, implicit_reducible]
 def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   functor := Functor.pi (fun i => (E i).functor)
   inverse := Functor.pi (fun i => (E i).inverse)
