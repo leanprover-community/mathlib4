@@ -104,22 +104,22 @@ section singlePass
 
 initialize registerTraceClass `Meta.grewrite
 
-/-- The congruence loop keeps track of its progress using 3 states.
-- Each rewrite starts off as `noMatch`.
-- As soon as a rewrite has successfully been applied with `GRewriteLemma.apply`,
-  this switches to `matched`. In this state we continue trying to rewrite.
-- When the rewrite lemma is not valid anymore in the local context, i.e. if the lemma depends on a
-  free variable that is not in scope anymore, then we switch to `matchedOutOfScope`.
-  In this state we stop trying to rewrite.
+/-- The congruence loop keeps track of its progress as follows.
+- Each rewrite starts off as `.noMatch`.
+- When a rewrite has first successfully been applied (with `applyGRewriteLemma`),
+  this switches to `.matched lctx linsts maxFVar`,
+  consisting of the current local context and local instances,
+  and the last `gcongr` lemma variable that the rewrite depends on.
+  This variable is used to determine in what local context it is valid to do more rewrites:
+  if this variable is out of scope, then we can't do more rewrites.
+- When another rewrite is successfully applied in a different local context,
+  the `lctx` and `linsts` fields are set to the intersection of the different local contexts.
 -/
 inductive Progress where
   /-- The rewrite lemma has not unified with anything yet. -/
   | noMatch
   /-- The rewrite lemma has unified with something. -/
-  | matched
-  /-- The rewrite lemma has unified with something, and depends on a free variable that is now
-  out of scope. We store a local context in which the rewrite makes sense. -/
-  | matchedOutOfScope (lctx : LocalContext)
+  | matched (lctx : LocalContext) (linsts : LocalInstances) (maxFVar : Option FVarId)
 
 /-- The state used in `GRewriteM`. -/
 structure State where
@@ -144,7 +144,9 @@ structure GRewriteLemma where
   index : HeadIndex × Nat
   /-- The metavariables that appear in the lemma. We do the slightly dodgy thing of
   modifying their local context in order to be able to unify with bound variables. -/
-  mvarIds : Array (MVarId × Array LocalDecl)
+  mvarIds : Array (MVarId × Array LocalDecl × LocalInstances)
+  /-- Number of indices in the starting local context. -/
+  lctxInitIndices   : Nat := 0
 
 /-- The monad used for `grw`. -/
 abbrev GRewriteM := ReaderT GRewriteLemma StateRefT State GCongr.GCongrM
@@ -181,6 +183,69 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
     catch _ => setMCtx mctx
   return false
 
+/--
+Run `GRewriteLemma.apply`, ensuring that the metavariable context and `Progress` are set correctly.
+-/
+def applyGRewriteLemma (goal : MVarId) (symm : Bool) (config : GRewrite.Config) :
+    GRewriteM Bool := do
+  match (← get).progress with
+  | .noMatch =>
+    let lctx ← getLCtx
+    let linsts ← getLocalInstances
+    -- If no `gcongr` lemma variables were added to the local context,
+    -- then we don't need to modify the metavariable context.
+    if lctx.numIndices == (← read).lctxInitIndices then
+      if ← (← read).apply goal symm config then
+        modify ({ · with progress := .matched lctx linsts none})
+        return true
+      return false
+    -- Update the local context of each metavariable to include the `gcongr` lemma variables.
+    let mctx ← getMCtx
+    setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx (mvarId, decls, insts) ↦
+      { mctx with
+        decls := mctx.decls.insert mvarId {
+          mctx.getDecl mvarId with
+          lctx := decls.foldl (·.addDecl ·) lctx
+          localInstances := linsts ++ insts } }
+    if ← (← read).apply goal symm config then
+      modify ({ · with progress := .matched lctx linsts (← getMaxFVar)})
+      return true
+    setMCtx mctx
+    return false
+  | .matched lctx linsts maxFVar =>
+    if ← (← read).apply goal symm config then
+      let mut lctx := lctx
+      let mut linsts := linsts
+      while let some lastDecl := lctx.lastDecl do
+        if (← getLCtx).contains lastDecl.fvarId then break
+        lctx := lctx.pop
+        linsts := linsts.erase lastDecl.fvarId
+      modify ({ · with progress := .matched lctx linsts maxFVar })
+      return true
+    return false
+where
+  /--
+  If we have just successfully applied the grewrite lemma for the first time,
+  then return the last `gcongr` variable that the rewrite depends on,
+  i.e. the one with the highest `index`.
+  This assumes that there is at least one introduced bound variable in the local context.
+  -/
+  getMaxFVar : GRewriteM (Option FVarId) := do
+    let mvarIds := (← read).mvarIds
+    let assignments ← mvarIds.filterMapM (getExprMVarAssignment? ·.1)
+    -- If there is any unassigned metavariable, it can depend on any free variable,
+    -- so we return the last free variable.
+    if assignments.size < mvarIds.size then
+      return (← getLCtx).lastDecl.map (·.fvarId)
+    let usedFVars := (assignments.foldl Lean.collectFVars {}).fvarIds
+    let mut maxFVar : Option (FVarId × Nat) := none
+    for fvarId in usedFVars do
+      let index := (← fvarId.getDecl).index
+      if (← read).lctxInitIndices ≤ index then
+        if maxFVar.all (·.2 < index) then
+          maxFVar := (fvarId, index)
+    return maxFVar.map (·.1)
+
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
@@ -215,8 +280,8 @@ mutual
 /-- Recursively call `grewriteCore` to process a subgoal of a `gcongr` lemma.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config : Config) :
-    GRewriteM Bool := do
+partial def processGCongrHypothesis (goal : MVarId) (forward : Bool) (config : Config) :
+    GRewriteM Bool := goal.withContext do
   let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
@@ -231,42 +296,6 @@ partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config 
   else
     return false
 
-/-- Update the local contexts of the metavariables to include the variables introduced by the
-`gcongr` lemma. This is a bit of a hack.
-
-Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
-    (config : Config) : GRewriteM Bool := do
-  -- If the local context was not changed, we don't need to modify the local contexts.
-  if (← goal.getDecl).lctx.numIndices == (← getLCtx).numIndices then
-    processGCongrHypothesisAux goal forward config
-  else
-  let outerLCtx ← getLCtx
-  goal.withContext do
-  -- We can only modify the metavariable local contexts if no match has happened yet.
-  if (← get).progress matches .noMatch then
-    let mctx ← getMCtx
-    let lctx ← getLCtx
-    setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx (mvarId, decls) ↦
-      -- Create a local context for `mvarId` by adding `decls` to the current local context.
-      let lctx := decls.foldl (·.addDecl ·) lctx
-      { mctx with decls := mctx.decls.insert mvarId { mctx.getDecl mvarId with lctx } }
-    let result ← processGCongrHypothesisAux goal forward config
-    if (← get).progress matches .noMatch then
-      -- If we still don't have a match, then revert the changes to the metavariable local contexts.
-      setMCtx mctx
-    else
-      -- If we did get a match, then we might be exiting the scope where this rewrite makes sense,
-      -- in which case we should not rewrite any more.
-      let validInOuterLCtx ← (← read).mvarIds.allM fun (mvarId, _) ↦ do
-        let some val ← getExprMVarAssignment? mvarId | return false
-        return (Lean.collectFVars {} val).fvarIds.all outerLCtx.contains
-      unless validInOuterLCtx do
-        modify ({ · with progress := .matchedOutOfScope (← getLCtx) })
-    return result
-  else
-    processGCongrHypothesisAux goal forward config
-
 /-- Apply the `gcongr` lemma to the goal. The main subgoals are visited for rewriting in,
 and otherwise closed `by rfl`. If at least one rewrite has happened, we commit to this lemma,
 and we try to discharge the side goals.
@@ -280,12 +309,9 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
   -- Recursively rewrite in the main subgoals
   let mut anyProgress := false
   for (goal, isContra) in mainGoals do
-    -- Any of the rewrites in this loop could make a match that is out of scope here.
-    -- In that case we should stop rewriting, and the remaining goals should be closed `by rfl`.
-    unless (← get).progress matches .matchedOutOfScope _ do
-      if ← processGCongrHypothesis goal (forward != isContra) config then
-        anyProgress := true
-        continue
+    if ← processGCongrHypothesis goal (forward != isContra) config then
+      anyProgress := true
+      continue
     try
       -- Due to an issue in `rfl`, we need this transparency bump. See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/.60with_reducible.20rfl.60.20failing/with/590957602
       withReducibleAndInstances goal.applyRflOrId
@@ -316,7 +342,10 @@ unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
 partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forward : Bool)
-    (config : Config) : GRewriteM (Option (Expr × Expr)) :=
+    (config : Config) : GRewriteM (Option (Expr × Expr)) := do
+  if let .matched _ _ (some fvarId) := (← get).progress then
+    unless (← getLCtx).contains fvarId do
+      return none
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   let e ← instantiateMVars e; let rel? ← rel?.mapM instantiateMVars
@@ -328,8 +357,7 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
   -- Try the given grewrite lemma.
   let lem ← read
   if (e.toHeadIndex, e.headNumArgs) == lem.index then
-    if ← lem.apply goal.mvarId! (forward == lem.symm) config then
-      modify ({ · with progress := .matched })
+    if ← applyGRewriteLemma goal.mvarId! (forward == lem.symm) config then
       return (mvar, goal)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
@@ -364,7 +392,7 @@ If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]
 The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
 public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
-    (mvarIds : Array (MVarId × Array LocalDecl)) (forwardImp symm : Bool)
+    (mvarIds : Array (MVarId × Array LocalDecl × LocalInstances)) (forwardImp symm : Bool)
     (config : GRewrite.Config) : MetaM GRewriteResult :=
   goal.withContext do
     goal.checkNotAssigned `grewrite
@@ -401,9 +429,10 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         m!"pattern is a metavariable{indentExpr pattern}\nfrom relation{indentExpr hrelType}"
     -- abstract the occurrences of `lhs` from `e` to get `eAbst`
     let e ← instantiateMVars e
-    let (lctx?, eNew, impProof, sideGoals) ←
+    let ((lctx, linsts), eNew, impProof, sideGoals) ←
       if config.useKAbstract then
-        (none, ·) <$> grewriteUsingKAbstract goal e hrel pattern replacement forwardImp config
+        ((← getLCtx, ← getLocalInstances), ·)
+          <$> grewriteUsingKAbstract goal e hrel pattern replacement forwardImp config
       else
       withReducible do
       let some (_, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
@@ -414,15 +443,17 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else if lhs' == rhs && rhs' == lhs then pure !symm
         else throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
-      let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
+      let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[], #[])
+      let ctx := {
+        symm := symm', proof := hrel, type := hrelType, index, mvarIds
+        lctxInitIndices := (← getLCtx).numIndices }
       if let ((some (eNew, impProof), { progress, ..}), s) ←
-        grewriteCore `_Implies none e (forward := forwardImp) config |>.run
-          { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
-          |>.run {} |>.run then
-        let lctx? := match progress with
-          | .matchedOutOfScope lctx => some lctx
-          | _ => none
-        pure (lctx?, eNew, impProof, s.newGoals)
+        grewriteCore `_Implies none e (forward := forwardImp) config
+          |>.run ctx |>.run {} |>.run then
+        let lctx ← match progress with
+          | .matched lctx linsts _ => pure (lctx, linsts)
+          | _ => throwError "internal `grewrite` error: succeeded without a match"
+        pure (lctx, eNew, impProof, s.newGoals)
       else
         withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
           let hrelType := updateRel hrelType replacement' symm
@@ -431,12 +462,16 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
             in the target expression{indentExpr e}\n\n\
             Use the command `set_option trace.Meta.grewrite true` to inspect this."
     -- post-process the metavariables
-    postprocessAppMVars `grewrite goal newMVars binderInfos
-      (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
+    withLCtx lctx linsts do
+      postprocessAppMVars `grewrite goal newMVars binderInfos
+        (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
     let newMVarIds ← (sideGoals ++ newMVars.map Expr.mvarId!).filterM (not <$> ·.isAssigned)
     let otherMVarIds ← getMVarsNoDelayed hrelIn
     let otherMVarIds := otherMVarIds.filter (!newMVarIds.contains ·)
     let newMVarIds := newMVarIds ++ otherMVarIds
-    pure { eNew, impProof, mvarIds := newMVarIds.toList, lctx? }
+    pure {
+      eNew, impProof
+      mvarIds := newMVarIds.toList
+      lctx? := if lctx.numIndices == (← getLCtx).numIndices then none else some lctx }
 
 end Mathlib.Tactic.GRewrite
