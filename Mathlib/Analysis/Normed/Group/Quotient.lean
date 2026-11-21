@@ -231,6 +231,13 @@ example :
 example [IsClosed (S : Set M)] :
     (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
+@[to_additive]
+lemma image_mk_ball (m : M) (r : ℝ) : ((↑) '' ball m r : Set (M ⧸ S)) = ball (m : M ⧸ S) r := by
+  refine Set.ext <| mk_surjective.forall.2 fun x ↦ ?_
+  simp only [mem_image, mem_ball, dist_eq_norm_div, ← mk_div, norm_lt_iff]
+  apply (Equiv.divRight m).exists_congr
+  simp [mk_div, and_comm]
+
 /-- An isometric version of `Subgroup.quotientEquivOfEq`. -/
 @[to_additive /-- An isometric version of `AddSubgroup.quotientEquivOfEq`. -/]
 def _root_.Subgroup.quotientIsometryEquivOfEq (h : S = T) : M ⧸ S ≃ᵢ M ⧸ T where
@@ -444,6 +451,10 @@ nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {
 
 theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M ⧸ S)‖ ≤ ‖m‖ :=
   norm_mk_le_norm
+
+theorem Submodule.Quotient.image_mk_ball (m : M) (r : ℝ) :
+    (Submodule.Quotient.mk '' ball m r : Set (M ⧸ S)) = ball (Submodule.Quotient.mk m) r :=
+  QuotientAddGroup.image_mk_ball (S := S.toAddSubgroup) m r
 
 instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
     [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
