@@ -193,7 +193,7 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
     refine ⟨inferInstance, ?_⟩
     simp only [initiallySmall_iff_of_isCofiltered] at h ⊢
     choose Q _ hQ using h
-    simp only [ObjectProperty.initial_ι_iff_of_isCofiltered] at hQ ⊢
+    simp only [ObjectProperty.initial_ι_iff_of_isCofilteredOrEmpty] at hQ ⊢
     choose e he he' using hQ
     refine ⟨⨆ (j : J), (Q j).strictMap (p.ι.app j).mapElements, inferInstance, fun x ↦ ?_⟩
     obtain ⟨j, y, hy⟩ := Types.jointly_surjective_of_isColimit
