@@ -67,7 +67,7 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
       Nat.cast_one]
   apply iff_of_false _ (mt _ h)
   · intro he
-    rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_left_nonneg_of_pos, he] at h
+    rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_of_pos_right, he] at h
     exacts [h (Nat.cast_nonneg _), zero_lt_two]
   · rw [mul_comm]
     exact fun h => (Nat.le_div_iff_mul_le zero_lt_two).2 h.le
