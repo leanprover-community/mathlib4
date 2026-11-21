@@ -313,8 +313,8 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 @[congr]
-theorem det_toBlock_congr (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
-    (e : ∀ x, p x ↔ q x) : (toBlock M p p).det = (toBlock M q q).det := by
+theorem det_toBlock_congr {M M' : Matrix m m R} {p q : m → Prop} [DecidablePred p] [DecidablePred q]
+    (hM : M = M') (e : ∀ x, p x ↔ q x) : (toBlock M p p).det = (toBlock M' q q).det := by
   have : q = p := by grind
   subst this
   congr!
@@ -322,7 +322,7 @@ theorem det_toBlock_congr (M : Matrix m m R) {p q : m → Prop} [DecidablePred p
 @[deprecated det_toBlock_congr +typeChanged (since := "2026-11-15")]
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
     (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det :=
-  det_toBlock_congr _ (e · |>.symm)
+  det_toBlock_congr rfl (e · |>.symm)
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
