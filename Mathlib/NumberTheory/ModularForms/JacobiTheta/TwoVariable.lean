@@ -352,6 +352,19 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     (((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prodMk_left z τ)).hasDerivAt :)
   rwa [← step1.tsum_eq] at step3
 
+/-- The derivative of `Θ z τ` in `τ`, for fixed `z`, as a sum over `n` of the `τ`-derivatives
+of the summands. Compare `hasDerivAt_jacobiTheta₂_fst` for the derivative in `z`. -/
+lemma summable_and_hasDerivAt_jacobiTheta₂_apply (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
+    letI F (n : ℤ) : ℂ := π * I * n ^ 2 * jacobiTheta₂_term n z τ
+    Summable F ∧ HasDerivAt (jacobiTheta₂ z) (∑' n, F n) τ := by
+  let F (n : ℤ) : ℂ := π * I * n ^ 2 * jacobiTheta₂_term n z τ
+  have hF : HasSum F (jacobiTheta₂_fderiv z τ (0, 1)) := by
+    simpa [F, jacobiTheta₂_term_fderiv, jacobiTheta₂_term, mul_comm] using
+      (hasSum_jacobiTheta₂_term_fderiv z hτ).mapL (.apply ℂ ℂ (0, 1))
+  refine ⟨hF.summable, ?_⟩
+  rw [hF.tsum_eq]
+  exact ((hasFDerivAt_jacobiTheta₂ z hτ).comp τ (hasFDerivAt_prodMk_right z τ)).hasDerivAt
+
 lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     ContinuousAt (fun p : ℂ × ℂ ↦ jacobiTheta₂' p.1 p.2) (z, τ) := by
   obtain ⟨T, hT, hτ'⟩ := exists_between hτ
