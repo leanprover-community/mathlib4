@@ -26,7 +26,7 @@ The set is not assumed to be convex.
 
 ## Main results
 
-* `Metric.ethickness_antitone`, `Metric.ethickness_monotone`:
+* `Metric.ethickness_antitone`, `Metric.ethickness_mono`:
   `ethickness` decreases in the rank and increases in the set.
 * `Metric.ethickness_eq_ofReal_thickness`, `Bornology.IsBounded.ethickness_eq_ofReal_thickness`:
   where `ethickness` is finite, in particular over a bounded set, the two variants agree.
@@ -103,7 +103,7 @@ theorem ethickness_antitone {s : Set P} : Antitone (ethickness 𝕜 s) := fun _ 
   iInf₂_mono' fun A hA ↦ ⟨A, hA.trans (Nat.cast_le.mpr hmn), le_rfl⟩
 
 /-- `ethickness 𝕜 s n` is monotone in `s`. -/
-theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := fun _ _ hst _ ↦
+theorem ethickness_mono : Monotone (ethickness 𝕜 (P := P)) := fun _ _ hst _ ↦
   iInf₂_mono fun _ _ ↦ biSup_mono hst
 
 /-- Taking the closure does not change `ethickness`, since `infEDist` to a set is continuous. -/
@@ -111,7 +111,7 @@ theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := fun _ _ hst
 theorem ethickness_closure (s : Set P) (n : ℕ) :
     ethickness 𝕜 (closure s) n = ethickness 𝕜 s n := by
   refine le_antisymm (iInf₂_mono fun A _ ↦ iSup₂_le fun x hx ↦ ?_)
-    (ethickness_monotone subset_closure n)
+    (ethickness_mono subset_closure n)
   exact closure_minimal (fun y hy ↦ le_iSup₂ (f := fun y _ ↦ infEDist y (A : Set P)) y hy)
     (isClosed_le continuous_infEDist continuous_const) hx
 
@@ -200,7 +200,7 @@ theorem thickness_closedBall_le {x : P} {r : ℝ} (hr : 0 ≤ r) (n : ℕ) :
 then its `ethickness` is bounded by `r` at all ranks. -/
 theorem ethickness_le_of_subset_closedBall {s : Set P} {x : P} (r : ℝ≥0)
     (h : s ⊆ closedBall x r) (n : ℕ) : ethickness 𝕜 s n ≤ r := by
-  grw [ethickness_monotone h n, ethickness_closedBall_le]
+  grw [ethickness_mono h n, ethickness_closedBall_le]
 
 /-- If a set is contained in a ball of radius `r ≥ 0`,
 then its `thickness` is bounded by `r` at all ranks. -/
@@ -237,7 +237,7 @@ theorem _root_.Bornology.IsBounded.ethickness_eq_ofReal_thickness {s : Set P}
 /-- `thickness 𝕜 s` is monotone in `s` over bounded sets. -/
 theorem thickness_mono {s t : Set P} (ht : Bornology.IsBounded t) (h : s ⊆ t) :
     thickness 𝕜 s ≤ thickness 𝕜 t := fun n ↦
-  ENNReal.toReal_mono (ht.ethickness_ne_top n) (ethickness_monotone h n)
+  ENNReal.toReal_mono (ht.ethickness_ne_top n) (ethickness_mono h n)
 
 /-- Provided that `s` is bounded, `thickness 𝕜 s n` is decreasing in `n`. -/
 theorem thickness_antitone {s : Set P} (hs : Bornology.IsBounded s) :
