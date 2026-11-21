@@ -883,6 +883,20 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [InnerRegularCo
     μ A = ⨆ (K) (_ : K ⊆ A) (_ : IsCompact K), μ K :=
   InnerRegularCompactLTTop.innerRegular.measure_eq_iSup ⟨hA, h'A⟩
 
+open Topology in
+/-- If `μ` is inner regular for finite measure sets with respect to compact sets, then every
+measurable set `A` of finite positive measure contains a point `x` such that `A ∩ U` has positive
+measure for every neighborhood `U` of `x`. -/
+theorem _root_.MeasurableSet.exists_forall_nhds_measure_pos [InnerRegularCompactLTTop μ]
+    ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) (hμA : 0 < μ A) :
+    ∃ x ∈ A, ∀ U ∈ 𝓝 x, 0 < μ (A ∩ U) := by
+  obtain ⟨K, hKA, hK, hK_pos⟩ := hA.exists_lt_isCompact_of_ne_top h'A hμA
+  by_contra! h
+  refine hK_pos.ne' (hK.measure_zero_of_nhdsWithin fun a ha ↦ ?_)
+  obtain ⟨U, haU, hμU⟩ := h a (hKA ha)
+  exact ⟨K ∩ U, inter_mem_nhdsWithin K haU,
+    measure_mono_null (inter_subset_inter_left U hKA) (nonpos_iff_eq_zero.1 hμU)⟩
+
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets, then its
 restriction to any set also is. -/
 instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
