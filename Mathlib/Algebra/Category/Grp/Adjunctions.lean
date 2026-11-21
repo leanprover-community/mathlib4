@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
 
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Types.Coproducts
-
 /-!
 # Adjunctions regarding the category of (abelian) groups
 
@@ -102,8 +99,8 @@ instance : (free.{u}).PreservesMonomorphisms where
     by_cases! hX : IsEmpty X
     · constructor
       intros
-      apply (IsInitial.isInitialObj free _
-        ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
+      ext
+      exact Subsingleton.elim _ _ (h := Unique.instSubsingleton (α := FreeAbelianGroup X))
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
@@ -115,6 +112,7 @@ namespace GrpCat
 
 /-- The free functor `Type u ⥤ Group` sending a type `X` to the free group with generators `x : X`.
 -/
+@[simps obj map]
 def free : Type u ⥤ GrpCat where
   obj α := of (FreeGroup α)
   map f := ofHom (FreeGroup.map f)
@@ -134,8 +132,23 @@ def adj : free ⊣ forget GrpCat.{u} :=
         intros
         rfl }
 
+instance : free.{u}.IsLeftAdjoint :=
+  ⟨_, ⟨adj⟩⟩
+
 instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
+
+instance : (free.{u}).PreservesMonomorphisms where
+  preserves {X Y} f _ := by
+    by_cases! hX : IsEmpty X
+    · constructor
+      intros
+      ext
+      exact Subsingleton.elim _ _ (h := Unique.instSubsingleton (α := FreeGroup X))
+    · have hf : Function.Injective f := by rwa [← mono_iff_injective]
+      obtain ⟨g, hg⟩ := hf.hasLeftInverse
+      have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
+      infer_instance
 
 section Abelianization
 
