@@ -400,6 +400,10 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 section
 section NatTrans
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable {F G : WalkingReflexivePair ⥤ C}
   (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
   (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by cat_disch)
