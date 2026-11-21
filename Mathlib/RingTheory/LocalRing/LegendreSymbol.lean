@@ -12,7 +12,7 @@ public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 /-!
-# The Legendre Symbol for `p`-adic Integers
+# The Legendre Symbol for Local Rings with Finite Reside Field
 
 This file contains results about Legendre symbols for local rings with finite residue fields.
 
