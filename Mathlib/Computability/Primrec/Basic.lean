@@ -89,11 +89,15 @@ theorem casesOn' {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
     Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| Nat.pair z y) :=
   (prec hf (hg.comp (pair left (left.comp right)))).of_eq fun n => by simp
 
-protected theorem swap : Nat.Primrec (unpaired (swap Nat.pair)) :=
+protected theorem dflip : Nat.Primrec (unpaired (dflip Nat.pair)) :=
   (pair right left).of_eq fun n => by simp
 
-theorem swap' {f} (hf : Nat.Primrec (unpaired f)) : Nat.Primrec (unpaired (swap f)) :=
-  (hf.comp .swap).of_eq fun n => by simp
+@[deprecated (since := "2026-10-14")] protected alias swap := Nat.Primrec.dflip
+
+theorem dflip' {f} (hf : Nat.Primrec (unpaired f)) : Nat.Primrec (unpaired (dflip f)) :=
+  (hf.comp .dflip).of_eq fun n => by simp
+
+@[deprecated (since := "2026-10-14")] alias swap' := dflip'
 
 theorem pred : Nat.Primrec pred :=
   (casesOn1 0 Primrec.id).of_eq fun n => by cases n <;> simp [*]
@@ -460,12 +464,16 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
-protected theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
+protected theorem dflip {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (dflip f) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
-protected theorem _root_.PrimrecRel.swap {r : α → β → Prop} (h : PrimrecRel r) :
-    PrimrecRel (swap r) :=
+@[deprecated (since := "2026-10-14")] protected alias swap := Primrec₂.dflip
+
+protected theorem _root_.PrimrecRel.dflip {r : α → β → Prop} (h : PrimrecRel r) :
+    PrimrecRel (dflip r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
+
+@[deprecated (since := "2026-10-14")] protected alias _root_.PrimrecRel.swap := PrimrecRel.dflip
 
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
     (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
@@ -604,7 +612,7 @@ theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} 
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
   Primrec₂.primrecRel ((nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
-    dsimp [swap]
+    dsimp [dflip]
     rcases e : p.1 - p.2 with - | n
     · simp [Nat.sub_eq_zero_iff_le.1 e]
     · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)])
@@ -645,7 +653,7 @@ protected theorem _root_.PrimrecPred.or {p q : α → Prop} :
 
 protected theorem eq : PrimrecRel (@Eq α) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
-    (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
+    (PrimrecPred.and nat_le nat_le.dflip).of_eq fun a => by simp [le_antisymm_iff]
   (this.decide.comp₂ (Primrec.encode.comp₂ Primrec₂.left)
       (Primrec.encode.comp₂ Primrec₂.right)).primrecRel.of_eq
     fun _ _ => encode_injective.eq_iff
@@ -673,7 +681,7 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
   by simp [List.findIdx_cons]
 
 theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf a :=
-  list_findIdx₁ (.swap .beq) l
+  list_findIdx₁ (.dflip .beq) l
 
 theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α

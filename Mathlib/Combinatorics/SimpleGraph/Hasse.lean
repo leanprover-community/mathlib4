@@ -123,7 +123,7 @@ alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
 theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] :
     (hasse α).Preconnected :=
   fun a b => by
-  rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
+  rw [reachable_iff_reflTransGen, ← reflTransGen_dflip]
   exact
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin

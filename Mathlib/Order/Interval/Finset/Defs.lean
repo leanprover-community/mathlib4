@@ -124,10 +124,10 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 
 to_dual_for LocallyFiniteOrder.mk := {
-  finsetIcc := swap finsetIcc
-  finsetIco := swap finsetIoc
-  finsetIoc := swap finsetIco
-  finsetIoo := swap finsetIoo
+  finsetIcc := dflip finsetIcc
+  finsetIco := dflip finsetIoc
+  finsetIoc := dflip finsetIco
+  finsetIoo := dflip finsetIoo
   finset_mem_Icc := by grind
   finset_mem_Ico := by grind
   finset_mem_Ioc := by grind
