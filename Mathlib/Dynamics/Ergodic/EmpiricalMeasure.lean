@@ -73,14 +73,15 @@ lemma integral_empiricalMeasure_eq_birkhoffaverage (n : ℕ) :
   simp [empiricalMeasure,
     integral_birkhoffAverage_measure f g x .dirac (by fun_prop (disch := simp))]
 
-lemma tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder
-    (hfg : Bornology.IsBounded (Set.range (g <| f^[·] x))) :
-    Tendsto (fun n ↦
-        (∫ y, (g ∘ f) y ∂(empiricalMeasure f x n)) - ∫ y, g y ∂(empiricalMeasure f x n))
-      atTop (𝓝 0) := by
-  simpa only [integral_empiricalMeasure_eq_birkhoffaverage, birkhoffAverage_comp_apply,
+lemma tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBounded
+    {ι : Type*} {F : Filter ι} (x : ι → X) {u : ι → ℕ} (hfg : Bornology.IsBounded (Set.range g))
+    (hu : Tendsto u F atTop) :
+    Tendsto (fun n ↦ (∫ y, (g ∘ f) y ∂(empiricalMeasure f (x n) (u n))) -
+      ∫ y, g y ∂(empiricalMeasure f (x n) (u n))) F (𝓝 0) := by
+  simpa [integral_empiricalMeasure_eq_birkhoffaverage, birkhoffAverage_fun_comp_apply,
     birkhoffAverage_apply_congr_ring (R := NNReal) (S := ℝ)] using
-    (tendsto_add_atTop_iff_nat 1).mpr (tendsto_birkhoffAverage_apply_sub_birkhoffAverage ℝ hfg)
+    tendsto_birkhoffAverage_apply_sub_birkhoffAverage ℝ f x
+      (hfg.subset (Set.range_comp_subset_range _ _)) ((tendsto_add_atTop_nat 1).comp hu)
 
 end NormedAddCommGroup
 
@@ -103,16 +104,24 @@ lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
       (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ g)
   exact tendsto_nhds_unique hgf hgf'
 
-/-- **Krylov-Bogolyubov theorem**: there exists a regular, invariant, Borel probability measure,
-for a continuous function on a nonempty, compact, Hausdorff space. -/
-public theorem exists_measurePreserving_probabilityMeasure
+/-- There exists a regular, invariant, Borel probability measure, for a continuous function on a
+nonempty, compact, Hausdorff space. We give a more precise version specifying how the integral
+of a function with respect to this measure can be obtained as a cluster point of specified
+Birkhoff sums. This version will imply both the existence theorem of Krylov-Bogolyubov, and
+the uniform convergence of Birkhoff averages in uniquely ergodic systems. -/
+theorem exists_measurePreserving_isProbabilityMeasure_mapClusterPt
+    {ι : Type*} {F : Filter ι} [F.NeBot]
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
-    [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
-    ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
-  obtain ⟨x⟩ := ‹Nonempty X›
-  -- starting from any point, the empirical measures must accumulate at some measure μ
+    [CompactSpace X] {f : X → X} (hf : Continuous f) {u : ι → ℕ} (x : ι → X)
+    (hu : Tendsto u F atTop)
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    {g : X → E} (hg : Continuous g) :
+    ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧
+      MapClusterPt (∫ x, g x ∂μ) F (fun n ↦ birkhoffAverage ℝ f g (u n) (x n)) := by
+  -- starting from the point `x n`, the empirical measures for time `u n` must accumulate at some
+  -- measure μ
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
-    (u := fun n ↦ (empiricalMeasure f x n).toProbabilityMeasure) (f := atTop) (by simp)
+    (u := fun n ↦ (empiricalMeasure f (x n) (u n - 1)).toProbabilityMeasure) (f := F) (by simp)
   -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
   obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace
   have hprob : ν Set.univ = 1 := by
@@ -130,11 +139,37 @@ public theorem exists_measurePreserving_probabilityMeasure
       rw [← ContinuousMap.coe_mk f hf]
       simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
       refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ (g := g) ?_
-      refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f x g ?_
-      exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
+      apply tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBounded f g
+      · exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
+      · exact (tendsto_sub_atTop_nat 1).comp hu
     · exact g.continuous.aestronglyMeasurable
-  use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
+  refine ⟨ν, ⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩, ?_⟩
+  have M : MapClusterPt (∫ x, g x ∂μ) F
+      (fun n ↦ ∫ x, g x ∂(empiricalMeasure f (x n) (u n - 1))) := by
+    have : Continuous (fun (ρ : ProbabilityMeasure X) ↦ ∫ x, g x ∂ρ) :=
+      ProbabilityMeasure.continuous_integral_of_continuous_of_compactSpace hg
+    exact hμ.continuousAt_comp (this.continuousAt)
+  have : ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
+    let g' := ContinuousMap.equivBoundedOfCompact X E ⟨g, hg⟩
+    exact Measure.integral_eq_of_forall_integral_real_eq hμν g'
+      hg.aestronglyMeasurable_of_compactSpace hg.aestronglyMeasurable_of_compactSpace
+  rw [this] at M
+  apply MapClusterPt.congrFun _ M
+  filter_upwards [hu (Ioi_mem_atTop 0)] with n (hn : 0 < u n)
+  simp only [integral_empiricalMeasure_eq_birkhoffaverage]
+  rw [show u n - 1 + 1 = u n by grind]
+  exact birkhoffAverage_apply_congr_ring NNReal ℝ f g (u n) (x n)
+
+/-- **Krylov-Bogolyubov theorem**: there exists a regular, invariant, Borel probability measure,
+for a continuous function on a nonempty, compact, Hausdorff space. -/
+theorem exists_measurePreserving_probabilityMeasure
+    [TopologicalSpace X] [BorelSpace X] [T2Space X]
+    [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
+    ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
+  obtain ⟨x⟩ := ‹Nonempty X›
+  rcases exists_measurePreserving_isProbabilityMeasure_mapClusterPt (x := fun (n : ℕ) ↦ x) hf
+    tendsto_id (g := fun (x : X) ↦ (0 : ℝ)) (by fun_prop) with ⟨μ, h1, h2, h3, h4⟩
+  exact ⟨μ, h1, h2, h3⟩
 
 /-- **Krylov-Bogolyubov theorem** for forward invariant compact sets. -/
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant

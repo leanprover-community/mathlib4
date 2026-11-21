@@ -25,7 +25,7 @@ open Finset Function
 
 section AddCommMonoid
 
-variable {α M : Type*} [AddCommMonoid M]
+variable {α β M : Type*} [AddCommMonoid M]
 
 /-- The sum of values of `g` on the first `n` points of the orbit of `x` under `f`. -/
 def birkhoffSum (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := ∑ k ∈ range n, g (f^[k] x)
@@ -120,6 +120,12 @@ theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = �
 theorem birkhoffSum_const (f : α → α) (a : M) {n : ℕ} :
     birkhoffSum f (fun _ ↦ a) n = n • fun _ ↦ a :=
   birkhoffSum_of_comp_eq rfl n
+
+/-- A semiconjugation between two systems sends Birkhoff sums to Birhoff sums. -/
+theorem Function.Semiconj.birkhoffSum_comp {f : α → β} {ga : α → α} {gb : β → β} {φ : β → M}
+    (h : Function.Semiconj f ga gb) {n : ℕ} {x : α} :
+    birkhoffSum ga (φ ∘ f) n x = birkhoffSum gb φ n (f x) := by
+  simp [birkhoffSum, h.iterate_right _ x]
 
 end AddCommMonoid
 
