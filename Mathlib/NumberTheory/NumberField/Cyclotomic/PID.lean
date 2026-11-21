@@ -61,7 +61,7 @@ theorem floor_minkowskiNormBound_seven [IsCyclotomicExtension {7} ℚ K] :
     ⌊minkowskiNormBound K⌋₊ = 4 := by
   have : Fact (Nat.Prime 7) := ⟨prime_seven⟩
   have : π ∈ Set.Ioo 3 3.15 := ⟨pi_gt_three, pi_lt_d2⟩
-  rw [minkowskiNormBound, floor_eq_iff (by positivity), discr_prime 7 K, finrank 7 K,
+  rw [minkowskiNormBound, floor_eq_iff (by positivity), discr_prime 7, finrank 7,
     nrComplexPlaces_eq_totient_div_two 7, totient_prime Nat.prime_seven]
   norm_num
   field_simp
