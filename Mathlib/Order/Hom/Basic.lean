@@ -493,6 +493,17 @@ def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
   { Subtype.impEmbedding _ _ h with
     map_rel_iff' := by aesop }
 
+/-- `Equiv.subtypeEquivRight` as an order isomorphism. -/
+@[simps! apply_coe toEquiv]
+def _root_.Subtype.orderIso {p q : α → Prop} (h : ∀ a, p a ↔ q a) :
+    {x // p x} ≃o {x // q x} :=
+  { Equiv.subtypeEquivRight h with
+    __ := Subtype.orderEmbedding (h · |>.mp) }
+
+@[simp]
+theorem _root_.Subtype.orderIso_symm {p q : α → Prop} (h : ∀ a, p a ↔ q a) :
+    (Subtype.orderIso h).symm = Subtype.orderIso (h · |>.symm) := rfl
+
 /-- There is a unique monotone map from a subsingleton to itself. -/
 instance unique [Subsingleton α] : Unique (α →o α) where
   default := OrderHom.id
