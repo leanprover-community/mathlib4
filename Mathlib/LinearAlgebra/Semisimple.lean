@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.Perfect
 public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 
 import Mathlib.RingTheory.Artinian.Instances
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
 # Semisimple linear endomorphisms
@@ -219,8 +218,7 @@ theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
       ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
   let R := K[X] ⧸ Ideal.span {p}
-  have : IsReduced R :=
-    (Ideal.isRadical_iff_quotient_reduced _).mp (isRadical_iff_span_singleton.mp hp.isRadical)
+  have : IsReduced R := AdjoinRoot.isReduced_iff_isRadical.mpr hp.isRadical
   have : FiniteDimensional K R := (AdjoinRoot.powerBasis hp.ne_zero).finite
   have : IsArtinianRing R := .of_finite K R
   have : IsSemisimpleRing R := IsArtinianRing.isSemisimpleRing_of_isReduced R
@@ -247,8 +245,7 @@ protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| IsIntegral.isIntegral f).finite
-  have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
-    span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
+  have : IsReduced R := AdjoinRoot.isReduced_iff_isRadical.mpr hf.minpoly_squarefree.isRadical
   isSemisimple_of_squarefree_aeval_eq_zero ((minpoly.isRadical K _).squarefree <|
     minpoly.ne_zero <| .of_finite K <| Ideal.Quotient.mkₐ K (.span {minpoly K f}) p) <| by
       rw [← Ideal.Quotient.liftₐ_comp (.span {minpoly K f}) (aeval f)
@@ -283,11 +280,9 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ K[f, g]) :
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| IsIntegral.isIntegral g).map _).finite
   have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
-  have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
-    span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
-  have : IsReduced S := by
-    simp_rw [S, AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
-    exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
+  have : IsReduced R := AdjoinRoot.isReduced_iff_isRadical.mpr hf.minpoly_squarefree.isRadical
+  have : IsReduced S := AdjoinRoot.isReduced_iff_isRadical.mpr
+    (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
   let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom (Ideal.Quotient.liftₐ _ (aeval f)
     fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
   rotate_left 1

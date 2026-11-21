@@ -374,6 +374,11 @@ end AdjoinInv
 
 section Prime
 
+theorem isReduced_iff_isRadical : IsReduced (AdjoinRoot f) ↔ IsRadical f := by
+  rw [isRadical_iff_span_singleton, ← Ideal.mk_ker (I := span {f})]
+  exact (RingHom.ker_isRadical_iff_reduced_of_surjective
+    (Ideal.Quotient.mk_surjective (I := span {f}))).symm
+
 theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
