@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 import Mathlib.RingTheory.Norm.Basic
 
 /-!
-
 # Ideal norms
 
 This file defines the absolute ideal norm `Ideal.absNorm (I : Ideal R) : ℕ` as the cardinality of
@@ -167,7 +166,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P, Nat.card_congr hquot]
-  choose a a_mem a_notMem using IsConcreteLE.exists_of_lt this
+  choose a a_mem a_notMem using exists_mem_notMem_of_lt this
   choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_notMem hc
   choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
@@ -353,9 +352,11 @@ theorem isPrime_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.ab
   isPrime_of_prime
     (UniqueFactorizationMonoid.irreducible_iff_prime.mp (irreducible_of_irreducible_absNorm hI))
 
-theorem prime_of_irreducible_absNorm_span {a : S} (ha : a ≠ 0)
-    (hI : Irreducible (Ideal.absNorm (Ideal.span ({a} : Set S)))) : Prime a :=
-  (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
+theorem prime_of_irreducible_absNorm_span {a : S}
+    (hI : Irreducible (Ideal.absNorm (Ideal.span ({a} : Set S)))) : Prime a := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp at hI
+  exact (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
 
 theorem absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
   obtain rfl | hI := eq_or_ne I ⊥
@@ -546,7 +547,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
   have hP : P.absNorm = p ^ (n : ℕ) := by
     rw [Ideal.absNorm_eq_natCard]
     exact Nat.card_eq_fintype_card.trans e
-  refine ⟨p, n, n.2, ?_, hp, hP⟩
+  refine ⟨p, n, n.property, ?_, hp, hP⟩
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP]
   exact P.absNorm_mem
 

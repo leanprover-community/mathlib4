@@ -15,7 +15,6 @@ quasi-compact.
 
 It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
-
 -/
 
 public section
@@ -45,14 +44,14 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
 
 variable {f} in
 theorem quasiCompact_iff_isSpectralMap : QuasiCompact f ↔ IsSpectralMap f :=
-  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.isCompact_preimage_of_isOpen⟩⟩
 
 theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
   rwa [← quasiCompact_iff_isSpectralMap]
 
 lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
     (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
-  f.isSpectralMap.2 U.2 hU
+  f.isSpectralMap.isCompact_preimage_of_isOpen U.is_open' hU
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -78,11 +77,11 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
   · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
-  · exact fun i => i.2.isCompact
+  · exact fun i => i.property.isCompact
 
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
-  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) with s
+  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.carrier) with s
   · simp [U.isOpen]
   · convert SetLike.coe_injective.eq_iff.symm; simp
 
@@ -105,9 +104,9 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   refine isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ?_
   obtain ⟨s, hs, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hU
-  let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
-    rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
-    exact V.1.2.basicOpen _⟩
+  let g : s → X.affineOpens := fun V ↦ ⟨V.val ⊓ X.basicOpen f, by
+    rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.val V.property).trans_eq e.symm)).op]
+    exact V.val.property.basicOpen _⟩
   have : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   rw [iSup_range, ← iSup_inf_eq, iSup_subtype, ← e, inf_eq_right.mpr (X.basicOpen_le f)]
@@ -238,7 +237,7 @@ nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
     (hS : IsCompact (S : Set X)) (h₁ : P ⊥)
-    (h₂ : ∀ (S : X.Opens) (_ : IsCompact S.1) (U : X.affineOpens), P S → P (S ⊔ U)) :
+    (h₂ : ∀ (S : X.Opens) (_ : IsCompact S.carrier) (U : X.affineOpens), P S → P (S ⊔ U)) :
     P S := by
   obtain ⟨s, hs, rfl⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hS
   refine hs.induction_on _ (by simpa using h₁) fun {x s} _ hs h₄ ↦ ?_
@@ -256,17 +255,18 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
-    {U : X.Opens} (hU : IsCompact U.1) (x f : Γ(X, U))
+    {U : X.Opens} (hU : IsCompact U.carrier) (x f : Γ(X, U))
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
-  obtain ⟨s, hs, e⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.2⟩
+  obtain ⟨s, hs, e⟩ :=
+    isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.is_open'⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
-  have h₁ (i : s) : i.1.1 ≤ U := by
+  have h₁ (i : s) : i.val.val ≤ U := by
     rw [e]
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
-    exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
+    exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.val.property
       (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) ?_
   swap
   · change (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0

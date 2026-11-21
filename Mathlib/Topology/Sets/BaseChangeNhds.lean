@@ -16,7 +16,6 @@ This file builds base changes for `.compactsInside`, `openNhds`.
 
 It also contains the evidences that `openRcNhds_to_openNhds`and
  `openRcNhds_to_compactNhds` are initials functors.
-
 -/
 
 @[expose] public section
@@ -89,8 +88,8 @@ instance {K : Compacts α} [T2Space α] : K.openRcNhdsToCompactNhds_mono.functor
   intro L
   obtain ⟨U, h1, h2⟩ := exists_open_set_nhds_of_compactsNhds L
   have h3 : closure (U : Set α) ⊆ L := (IsClosed.closure_subset_iff
-    (IsCompact.isClosed L.1.isCompact') ).2 h2
-  exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
+    (IsCompact.isClosed L.val.isCompact') ).2 h2
+  exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.val.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
 
 end Compacts
 

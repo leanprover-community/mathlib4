@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Functor.RegularEpi
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 
 /-!
-
 # The category of type-valued sheaves is a regular epi category
 
 ## Main results

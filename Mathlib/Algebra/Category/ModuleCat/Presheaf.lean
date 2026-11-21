@@ -320,11 +320,11 @@ def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _)
 
 /-- Given a presheaf of modules `M`, `s : M.sections` and `X : Cᵒᵖ`, this is the induced
 element in `M.obj X`. -/
-abbrev sections.eval {M : PresheafOfModules.{v} R} (s : M.sections) (X : Cᵒᵖ) : M.obj X := s.1 X
+abbrev sections.eval {M : PresheafOfModules.{v} R} (s : M.sections) (X : Cᵒᵖ) : M.obj X := s.val X
 
 @[simp]
 lemma sections_property {M : PresheafOfModules.{v} R} (s : M.sections)
-    {X Y : Cᵒᵖ} (f : X ⟶ Y) : M.map f (s.1 X) = s.1 Y := s.2 f
+    {X Y : Cᵒᵖ} (f : X ⟶ Y) : M.map f (s.val X) = s.val Y := s.property f
 
 /-- Constructor for sections of a presheaf of modules. -/
 @[simps]
@@ -342,7 +342,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of presheaves of modules. -/
 @[simps!]
 def sectionsMap {M N : PresheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
-  N.sectionsMk (fun X ↦ f.app X (s.1 _))
+  N.sectionsMk (fun X ↦ f.app X (s.val _))
     (fun X Y g ↦ by rw [← naturality_apply, sections_property])
 
 @[simp]
@@ -384,7 +384,6 @@ variable (X : Cᵒᵖ) (hX : Limits.IsInitial X)
 ## `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
 
 When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
-
 -/
 
 section

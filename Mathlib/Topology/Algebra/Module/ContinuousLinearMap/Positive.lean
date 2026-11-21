@@ -21,7 +21,6 @@ positive linear maps.
 We do not define `PositiveContinuousLinearMapClass` to avoid adding a class that mixes order and
 algebra. One can achieve the same effect by using a combination of `ContinuousLinearMapClass` and
 `OrderHomClass`.
-
 -/
 
 @[expose] public section

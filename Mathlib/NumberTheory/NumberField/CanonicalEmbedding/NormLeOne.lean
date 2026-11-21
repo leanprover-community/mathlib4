@@ -119,7 +119,6 @@ identify `realSpace K` with its image in `mixedSpace K`).
 * `expMapBasis : realSpace K → realSpace K`: the map that sends `x : realSpace K` to
   `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
   by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
-
 -/
 
 @[expose] public section
@@ -297,7 +296,7 @@ theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
 
 theorem logMap_expMap {x : realSpace K}
     (hx : mixedEmbedding.norm (mixedSpaceOfRealSpace (expMap x)) = 1) :
-    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.1 := by
+    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.val := by
   ext
   rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
     mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
@@ -328,14 +327,11 @@ variable [NumberField K]
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
-open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
 -/
-def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
-  Fintype.equivOfCardEq <| by
-    rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
+@[deprecated NumberField.Units.equivFinRank (since := "2026-11-02")]
+abbrev equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} := Units.equivFinRank K
 
 open scoped Classical in
 variable (K) in
@@ -345,19 +341,20 @@ and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, se
 -/
 def completeFamily : InfinitePlace K → realSpace K :=
   fun i ↦ if hi : i = w₀ then fun w ↦ mult w else
-    expMap.symm <| normAtAllPlaces <| mixedEmbedding K <| fundSystem K <| equivFinRank.symm ⟨i, hi⟩
+    expMap.symm <| normAtAllPlaces <| mixedEmbedding K <| fundSystem K <|
+      (Units.equivFinRank K).symm ⟨i, hi⟩
 
 /--
 An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
 linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
-  toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
+  toFun := fun x w ↦ x w.val - w.val.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
-    realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
+    realSpaceToLogSpace x w = x w - w.val.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
 theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
     realSpaceToLogSpace (expMap.symm (normAtAllPlaces (mixedEmbedding K x))) =
@@ -373,14 +370,15 @@ theorem realSpaceToLogSpace_completeFamily_of_eq :
     mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr Module.finrank_pos.ne'), sub_self, Pi.zero_apply]
 
 theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
-    realSpaceToLogSpace (completeFamily K i) = basisUnitLattice K (equivFinRank.symm i) := by
+    realSpaceToLogSpace (completeFamily K i) =
+      basisUnitLattice K ((Units.equivFinRank K).symm i) := by
   ext
   rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dite_eq_right,
     realSpaceToLogSpace_expMap_symm]
   exact coe_ne_zero _
 
 theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
-    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) :
+    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.val)) :
     ∑ w, x w = 0 := by
   induction hx using Submodule.span_induction with
   | mem _ h =>
@@ -396,13 +394,14 @@ variable (K)
 theorem linearIndependent_completeFamily :
     LinearIndependent ℝ (completeFamily K) := by
   classical
-  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
+  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.val) := by
     refine LinearIndependent.of_comp realSpaceToLogSpace ?_
     simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
-    convert! (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
+    convert! (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex
+      (Units.equivFinRank K)).linearIndependent
     simp
   have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
-      (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) := by
+      (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.val)) := by
     intro h
     have := sum_eq_zero_of_mem_span_completeFamily h
     rw [completeFamily, dite_eq_left rfl, ← Nat.cast_sum, sum_mult_eq, Nat.cast_eq_zero] at this
@@ -425,8 +424,8 @@ theorem completeBasis_apply_of_eq :
   rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dite_eq_left rfl]
 
 theorem completeBasis_apply_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
-    completeBasis K i =
-      expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i)))) := by
+    completeBasis K i = expMap.symm
+      (normAtAllPlaces (mixedEmbedding K (fundSystem K ((Units.equivFinRank K).symm i)))) := by
   rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dite_eq_right]
 
 theorem expMap_basis_of_eq :
@@ -436,7 +435,7 @@ theorem expMap_basis_of_eq :
 
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) =
-      normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
+      normAtAllPlaces (mixedEmbedding K (fundSystem K ((Units.equivFinRank K).symm i))) := by
   rw [completeBasis_apply_of_ne, expMap.right_inv (by simp [expMap_target, pos_at_place])]
 
 theorem abs_det_completeBasis_equivFunL_symm :
@@ -444,7 +443,8 @@ theorem abs_det_completeBasis_equivFunL_symm :
       Module.finrank ℚ K * regulator K := by
   classical
   rw [ContinuousLinearMap.det, ← LinearMap.det_toMatrix (completeBasis K), ← Matrix.det_transpose,
-    regulator_eq_regOfFamily_fundSystem, finrank_mul_regOfFamily_eq_det _ w₀ equivFinRank.symm]
+    regulator_eq_regOfFamily_fundSystem,
+    finrank_mul_regOfFamily_eq_det _ w₀ (Units.equivFinRank K).symm]
   congr 2 with w i
   rw [Matrix.transpose_apply, LinearMap.toMatrix_apply, Matrix.of_apply, ← Basis.equivFunL_apply,
     ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_apply,
@@ -498,7 +498,7 @@ open scoped Classical in
 theorem expMapBasis_apply' (x : realSpace K) :
     expMapBasis x = Real.exp (x w₀) •
       fun w : InfinitePlace K ↦
-         ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
+         ∏ i : {w // w ≠ w₀}, w (fundSystem K ((Units.equivFinRank K).symm i)) ^ x i := by
   simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
     expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
     expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, Finset.prod_apply,
@@ -536,7 +536,7 @@ theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
         ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
       ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
-  simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
+  simp_rw [ZSpan.mem_fundamentalDomain, (Units.equivFinRank K).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun w hw ↦ ?_
   rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
     (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap (by rw [← expMapBasis_apply,
@@ -561,7 +561,7 @@ theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
 open scoped Classical in
 theorem prod_deriv_expMap_single (x : realSpace K) :
     ∏ w, deriv_expMap_single w ((completeBasis K).equivFun.symm x w) =
-      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ *
+      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ *
         (2⁻¹) ^ nrComplexPlaces K := by
   simp only [deriv_expMap_single, expMap_single_apply]
   rw [Finset.prod_mul_distrib]
@@ -589,7 +589,7 @@ open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
       Real.exp (x w₀ * Module.finrank ℚ K) *
-      (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
+      (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
         (Module.finrank ℚ K) * regulator K := by
   simp_rw [fderiv_expMapBasis, det, toLinearMap_comp, LinearMap.det_comp, fderiv_expMap, coe_pi,
     toLinearMap_comp, coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe,
@@ -617,7 +617,7 @@ theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableS
   have : Measurable expMapBasis := (continuous_expMapBasis K).measurable
   rw [← lintegral_const_mul _ (by fun_prop)]
   congr with x
-  have : 0 ≤ (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ :=
+  have : 0 ≤ (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ :=
     inv_nonneg.mpr <| Finset.prod_nonneg fun _ _ ↦ (expMapBasis_pos _ _).le
   rw [ofReal_mul (by positivity), ofReal_mul (by positivity), ofReal_mul (by positivity),
     ofReal_mul (by positivity), ofReal_pow (by positivity), ofReal_inv_of_pos (Finset.prod_pos

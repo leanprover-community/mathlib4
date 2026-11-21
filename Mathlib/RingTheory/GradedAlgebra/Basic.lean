@@ -137,12 +137,12 @@ theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing
 theorem decompose_mul_add_left [AddLeftCancelMonoid ι] [GradedRing 𝒜] (a : 𝒜 i) {b : A} :
     decompose 𝒜 (↑a * b) (i + j) =
       @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ a (decompose 𝒜 b j) :=
-  Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.2
+  Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.property
 
 theorem decompose_mul_add_right [AddRightCancelMonoid ι] [GradedRing 𝒜] {a : A} (b : 𝒜 j) :
     decompose 𝒜 (a * ↑b) (i + j) =
       @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
-  Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.2
+  Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.property
 
 theorem coe_decompose_mul_of_left_mem_zero [AddMonoid ι] [GradedRing 𝒜] {a b : A}
     (a_mem : a ∈ 𝒜 0) : (decompose 𝒜 (a * b) j : A) = a * decompose 𝒜 b j := by
@@ -199,7 +199,7 @@ def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
       map_mul' := map_mul (coeAlgHom 𝒜)
-      commutes' := (coeAlgHom 𝒜).commutes }
+      map_smul' := map_smul (coeAlgHom 𝒜) }
 
 @[simp]
 lemma decomposeAlgEquiv_apply (a : A) :
@@ -258,7 +258,7 @@ def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
   map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
   map_zero' := by rw [decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
-  map_add' _ _ := by rw [decompose_add, add_apply, AddMemClass.coe_add]
+  map_add' _ _ := by rw [decompose_add, DirectSum.add_apply, AddMemClass.coe_add]
   map_mul' := by
     refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
@@ -277,9 +277,9 @@ def GradedRing.projZeroRingHom : A →+* A where
           · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
           · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
-        simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
+        simp only [mul_add, decompose_add, DirectSum.add_apply, AddMemClass.coe_add, hd, he]
     · rintro _ _ ha hb _
-      simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
+      simp only [add_mul, decompose_add, DirectSum.add_apply, AddMemClass.coe_add, ha, hb]
 
 section GradeZero
 
@@ -353,7 +353,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
 noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
     (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
-  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
+  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with map_smul' := fun r => by simp }
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`

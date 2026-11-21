@@ -19,7 +19,6 @@ A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 
 We show that this property is local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -214,7 +213,6 @@ We show that this map is
 5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
   bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
-
 -/
 
 variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
@@ -273,9 +271,10 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       (Y.presheaf.map (homOfLE (by subst hUY hVU; gcongr; exact le_iSup _ _)).op).hom
   -- The map `Γ(X, U) ⟶ ∏ᵢ Γ(X, Vᵢ)`
   let ψ : Γ(X, UX) →ₐ[Γ(S, US)] Π i, Γ(X, VX i) := AlgHom.pi fun i ↦
-    ⟨(X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom, fun r ↦ by
-      dsimp [RingHom.algebraMap_toAlgebra]
-      simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map]⟩
+    { (X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom with
+      commutes' r := by
+        dsimp [RingHom.algebraMap_toAlgebra]
+        simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map] }
   -- ... is injective by the sheaf axiom,
   have hψ : Function.Injective ψ := by
     intro s t est
@@ -294,11 +293,11 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       ((CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.hom.hom.comp
       (by exact Pi.evalRingHom _ _))).comp (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).toRingHom
   -- ... is also injective by our hypotheses on `Vᵢ`.
-  have hφ : Function.Injective φ := by
-    dsimp [φ]
-    refine .comp ?_ (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
-    exact .piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
-      |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective
+  have hφ : Function.Injective φ :=
+    Function.Injective.comp (f := ⇑(Algebra.TensorProduct.piRight _ Γ(S, US) _ _))
+      (.piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
+        |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective)
+      (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
   let e : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
       .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
     (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm
@@ -438,7 +437,9 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq (ι := I) H hUST hUSX hUY (·) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.1.2; inferInstance)
+    (fun i ↦
+      have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.val.property
+      inferInstance)
     (f.flat_appLE hUS hUT _)
 
 lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
@@ -453,12 +454,14 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX) :
     IsIso (pushoutSection H hUST hUSX hUY) := by
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
-  have hIUX (i : I) : i.1 ≤ UX := by rw [e]; intro i; aesop
+  have hIUX (i : I) : i.val ≤ UX := by rw [e]; intro i; aesop
   have := hI.to_subtype
-  exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
-    eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2) (fun i j ↦
-    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.2
-    i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
+  exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i)
+    (by rwa [iSup_subtype, eq_comm])
+    (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.val.property)
+    (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT
+      (hUX' _ _ (hIUX _) i.val.val.is_open' i.val.property.isCompact (hIUX _) j.val.val.is_open'
+        j.val.property.isCompact))
     (f.flat_appLE hUS hUT _)
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
@@ -476,7 +479,7 @@ lemma mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat iX]
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ mono_pushoutSection_of_isCompact_of_flat_left _ _ _ _ hUS i.1.2 hUT) hf
+    (fun i ↦ mono_pushoutSection_of_isCompact_of_flat_left _ _ _ _ hUS i.val.property hUT) hf
 
 lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT)
@@ -495,12 +498,15 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   suffices IsIso (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
     rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert this; cat_disch
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUT
-  have hIUT (i : I) : i.1 ≤ UT := by rw [e]; intro i; aesop
+  have hIUT (i : I) : i.val ≤ UT := by rw [e]; intro i; aesop
   have := hI.to_subtype
   exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
-    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.1.2 hUX hUX')
+    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.val.property
+      hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-    (hUT' _ _ (hIUT _) i.1.1.2 i.1.2.isCompact (hIUT _) j.1.1.2 j.1.2.isCompact) hiX) hiX
+      (hUT' _ _ (hIUT _) i.val.val.is_open' i.val.property.isCompact (hIUT _) j.val.val.is_open'
+        j.val.property.isCompact)
+      hiX) hiX
 
 end sections
 

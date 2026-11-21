@@ -317,8 +317,9 @@ lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
     haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
   have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
-    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_one)
-  exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
+    ne_of_gt <| Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
+      (by fun_prop) f_comp f_nonneg f_one
+  exact haarScalarFactor_eq_integral_div _ _ (by fun_prop) f_comp int_f_ne_zero
 
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
 lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaarMeasure μ]
@@ -368,7 +369,8 @@ lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
   · simp [haarScalarFactor, hG]
   obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero hg.1 hg.2.1 hg.2.2)
+    ne_of_gt <| Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
+      (by fun_prop) hg.1 hg.2.1 hg.2.2
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
@@ -798,13 +800,13 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         apply lt_of_le_of_lt (MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint _ M _) _
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
             hdj.mono (fun x ↦ inter_subset_right)
-          exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
+          exact I.on_injective Subtype.val_injective (fun x ↦ x.property)
         · exact lt_of_le_of_lt (measure_mono (by simp)) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
         refine eq_univ_iff_forall.2 fun i ↦ ?_
-        refine ne_of_gt (hρ (i : G) (hms i.2) _ ?_)
+        refine ne_of_gt (hρ (i : G) (hms i.property) _ ?_)
         exact inter_mem_nhdsWithin s (by simpa)
       rw [this] at C
       have : Countable m := countable_univ_iff.mp C

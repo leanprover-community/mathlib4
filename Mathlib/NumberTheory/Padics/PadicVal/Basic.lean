@@ -208,7 +208,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 /-- The multiplicity of `p : ℕ` in `a : ℤ` is finite exactly when `a ≠ 0`. -/
 theorem finite_int_prime_iff {a : ℤ} : FiniteMultiplicity (p : ℤ) a ↔ a ≠ 0 := by
-  simp [Int.finiteMultiplicity_iff, hp.1.ne_one]
+  simp [Int.finiteMultiplicity_iff, hp.out.ne_one]
 
 /-- A rewrite lemma for `padicValRat p q` when `q` is expressed in terms of `Rat.mk`. -/
 protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz : q ≠ 0)
@@ -218,8 +218,8 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
   rw [padicValRat.multiplicity_sub_multiplicity]
   simp only [hc1, hc2]
-  rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1),
-    multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]
+  rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.out),
+    multiplicity_mul (Nat.prime_iff_prime_int.1 hp.out)]
   · rw [Nat.cast_add, Nat.cast_add]
     simp_rw [Int.natCast_multiplicity p q.den]
     ring
@@ -233,7 +233,7 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     rw [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, Nat.cast_mul]
   have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_divInt_den]
-  have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
+  have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.out
   rw [padicValRat.defn p (mul_ne_zero hq hr) this]
   conv_rhs =>
     rw [← q.num_divInt_den, padicValRat.defn p hq', ← r.num_divInt_den, padicValRat.defn p hr']
@@ -283,8 +283,8 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
       padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₂ hd₂) rfl, sub_le_iff_le_add', ←
       add_sub_assoc, le_sub_iff_add_le]
     norm_cast
-    rw [← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf1, add_comm,
-        ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf2,
+    rw [← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.out) hf1, add_comm,
+        ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.out) hf2,
         hf1.multiplicity_le_multiplicity_iff hf2]
 
 /-- Sufficient conditions to show that the `p`-adic valuation of `q` is less than or equal to the
@@ -304,15 +304,16 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
       conv_lhs => rw [← q.num_divInt_den]
       rw [hqreq, padicValRat_le_padicValRat_iff hqn hqrd hqd (mul_ne_zero hqd hrd), ←
         emultiplicity_le_emultiplicity_iff, mul_left_comm,
-        emultiplicity_mul (Nat.prime_iff_prime_int.1 hp.1), add_mul]
+        emultiplicity_mul (Nat.prime_iff_prime_int.1 hp.out), add_mul]
       rw [← q.num_divInt_den, ← r.num_divInt_den, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         emultiplicity_le_emultiplicity_iff] at h
       calc
         _ ≤ min (emultiplicity ↑p (q.num * r.den * q.den))
                 (emultiplicity ↑p (q.den * r.num * q.den)) :=
           le_min
-            (by rw [emultiplicity_mul (a := _ * _) (Nat.prime_iff_prime_int.1 hp.1), add_comm])
-            (by grw [mul_assoc, emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1), h])
+            (by rw [emultiplicity_mul (a := _ * _) (Nat.prime_iff_prime_int.1 hp.out), add_comm])
+            (by grw [mul_assoc,
+              emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.out), h])
         _ ≤ _ := min_le_emultiplicity_add
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/
@@ -515,7 +516,7 @@ theorem pow_succ_multiplicity_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 
 theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
     multiplicity p q = 0 :=
   multiplicity_eq_zero_of_not_dvd <|
-    (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
+    (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.out hq.out))).mp ne
 
 @[deprecated (since := "2026-10-28")] alias padicValNat_primes := multiplicity_primes
 

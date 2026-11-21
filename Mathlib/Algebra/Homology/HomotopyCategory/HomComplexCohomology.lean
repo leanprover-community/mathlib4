@@ -138,7 +138,6 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The additive map which sends a cohomology class to the corresponding morphism
 in the homotopy category. -/
 def toHom :
@@ -256,7 +255,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         simpa using! congr($hl y))
 
 lemma leftHomologyData'_f'_apply_coe (hm : n + 1 = m) (hp : m + 1 = p) (x : Cochain K L n) :
-    ((leftHomologyData' K L n m p hm hp).f' x).1 = δ n m x := rfl
+    ((leftHomologyData' K L n m p hm hp).f' x).val = δ n m x := rfl
 
 /-- `CohomologyClass K L n` identifies to the cohomology of the complex `HomComplex K L`
 in degree `n`. -/
@@ -290,8 +289,8 @@ noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m 
     rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
   hπ :=
     isColimitOfReflects (forget₂ _ AddCommGrpCat) (by
-      refine (CokernelCofork.isColimitMapCoconeEquiv ..).2
-        ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+      refine (CokernelCofork.isColimitMapCoconeEquiv ..).invFun
+        ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun
           (leftHomologyData' K L n m p hm hp).hπ')
       · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ (by simp)
         ext (x : Cochain K L n)

@@ -41,9 +41,12 @@ structure NonlinearRightInverse where
   Do NOT use directly. Use the coercion instead. -/
   toFun : F → E
   /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/
-  nnnorm : ℝ≥0
-  bound' : ∀ y, ‖toFun y‖ ≤ nnnorm * ‖y‖
+  nnNorm : ℝ≥0
+  bound' : ∀ y, ‖toFun y‖ ≤ nnNorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
+
+@[deprecated (since := "2026-10-31")]
+alias NonlinearRightInverse.nnnorm := NonlinearRightInverse.nnNorm
 
 instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
   ⟨fun fsymm => fsymm.toFun⟩
@@ -54,7 +57,7 @@ theorem NonlinearRightInverse.right_inv {f : E →SL[σ] F} (fsymm : NonlinearRi
   fsymm.right_inv' y
 
 theorem NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
-    ‖fsymm y‖ ≤ fsymm.nnnorm * ‖y‖ :=
+    ‖fsymm y‖ ≤ fsymm.nnNorm * ‖y‖ :=
   fsymm.bound' y
 
 end ContinuousLinearMap
@@ -67,7 +70,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse
     [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
     ContinuousLinearMap.NonlinearRightInverse (f : E →SL[σ] F) where
   toFun := f.invFun
-  nnnorm := ‖(f.symm : F →SL[σ'] E)‖₊
+  nnNorm := ‖(f.symm : F →SL[σ'] E)‖₊
   bound' _ := ContinuousLinearMap.le_opNorm (f.symm : F →SL[σ'] E) _
   right_inv' := f.apply_symm_apply
 
@@ -277,12 +280,12 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
   ((f.isOpenMap hsurj).preimage_frontier_eq_frontier_preimage f.continuous s).symm
 
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
-    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
+    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnNorm := by
   choose C hC fsymm h using
     exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
-      nnnorm := ⟨C, hC.lt.le⟩
+      nnNorm := ⟨C, hC.lt.le⟩
       bound' := fun y => (h y).2
       right_inv' := fun y => (h y).1 }
   exact hC
@@ -298,10 +301,13 @@ noncomputable def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
   (hsurj : f.range = ⊤) : NonlinearRightInverse f :=
   Classical.choose (exists_nonlinearRightInverse_of_surjective f hsurj)
 
-theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
-    0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm := by
+theorem nonlinearRightInverseOfSurjective_nnNorm_pos (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
+    0 < (nonlinearRightInverseOfSurjective f hsurj).nnNorm := by
   rw [nonlinearRightInverseOfSurjective]
   exact Classical.choose_spec (exists_nonlinearRightInverse_of_surjective f hsurj)
+
+@[deprecated (since := "2026-10-31")]
+alias nonlinearRightInverseOfSurjective_nnnorm_pos := nonlinearRightInverseOfSurjective_nnNorm_pos
 
 end ContinuousLinearMap
 
@@ -383,7 +389,7 @@ variable {E F : Type*}
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
-  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
+  ⟨_, .comp (.subtypeVal (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
 
 /-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
 (assuming `E` and `F` are Banach spaces). -/
@@ -543,8 +549,8 @@ protected theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph
   let φ : E ≃ₗ[𝕜] g.graph :=
     (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
   let ψ : g.graph ≃L[𝕜] E :=
-    φ.symm.toContinuousLinearEquivOfContinuous continuous_subtype_val.fst
-  exact (continuous_subtype_val.comp ψ.symm.continuous).snd
+    φ.symm.toContinuousLinearEquivOfContinuous continuous_subtypeVal.fst
+  exact (continuous_subtypeVal.comp ψ.symm.continuous).snd
 
 /-- A useful form of the **closed graph theorem** : let `f` be a linear map between two Banach
 spaces. To show that `f` is continuous, it suffices to show that for any convergent sequence

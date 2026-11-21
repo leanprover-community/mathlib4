@@ -37,7 +37,6 @@ When extra assumptions are given, we shall also provide simplification lemmas fo
 unit and counit isomorphisms of `equivalence`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

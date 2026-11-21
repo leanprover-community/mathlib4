@@ -54,7 +54,7 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{v}) :
   simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
   apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.toOrd,
-    (mem_Iio.mp (ToType.toOrd _).2).trans_le (le_ciSup hf _)⟩))
+    (mem_Iio.mp (ToType.toOrd _).property).trans_le (le_ciSup hf _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
   obtain ⟨i, hi⟩ := (lt_ciSup_iff' hf).mp hx
@@ -179,7 +179,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
   | limit b hb IH =>
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isSuccLimit hb]
     exact card_iSup_Iio_le (le_max_right ..) fun i ↦
-      (IH i i.2).trans (max_le_max_left _ (card_le_card i.2.le))
+      (IH i i.property).trans (max_le_max_left _ (card_le_card i.property.le))
 
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by

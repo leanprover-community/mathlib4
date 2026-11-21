@@ -37,7 +37,6 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 The design follows a monadic structure where `StdSimplex R` forms a monad and `convexCombination`
 is a monadic algebra. This eliminates the need for explicit extensionality axioms and resolves
 universe issues with indexed families.
-
 -/
 
 @[expose] public noncomputable section
@@ -354,16 +353,15 @@ lemma weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· 
       ((w.weights.filter (· ∈ s)).sum fun _x k ↦ k)⁻¹ • w.weights.filter (· ∈ s) := by
   simp [restrict]; congr
 
-variable [IsDomain K]
-
 @[simp]
 lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· ∈ s)] :
     (w.restrict s hs).weights.support = w.weights.support.filter (· ∈ s) := by
   have : (w.weights.filter (· ∈ s)).sum (fun x k ↦ k) ≠ 0 :=
     (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by
       simpa [ne_iff, filter_apply]).ne'
-  rw [weights_restrict, support_smul_eq (by convert inv_ne_zero this)]
-  simp
+  rw [weights_restrict]
+  ext a
+  simp [filter_apply, inv_ne_zero this, and_comm]
 
 @[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :
     w.restrict {x} hx = single x := by
@@ -535,15 +533,16 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
     (s.map f).iConvexComb g = s.iConvexComb (fun i ↦ g (f i)) := by
   simp only [iConvexComb, map_map]
 
-@[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
-    (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
-    w.iConvexComb f = w.iConvexComb g := by
+@[congr] lemma iConvexComb_congr {w w' : StdSimplex R I} {f g : I → X}
+    (hw : w = w') (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
+    w.iConvexComb f = w'.iConvexComb g := by
+  subst hw
   congrm sConvexComb ?_
   ext i
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.
   congr 1
-  refine Finsupp.mapDomain_congr fun i hi ↦ ?_
+  refine Finsupp.mapDomain_congr rfl fun i hi ↦ ?_
   exact hfg i (by simpa using hi)
 
 lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → X) :
