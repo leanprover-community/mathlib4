@@ -300,11 +300,10 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
     let type ← mvarId.getType
     -- There may be instance side goals that still had metavariables before recursively rewriting.
     if (← isClass? type).isSome then
-      if let some inst ← synthInstance? type then
+      if let .some inst ← trySynthInstance type then
         mvarId.assign inst
         continue
-    else
-      dischargeSide mvarId
+    dischargeSide mvarId
   return true
 
 /-- The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
