@@ -115,7 +115,8 @@ def SimpleGraph.mk' {V : Type u} :
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
-instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
+instance SimpleGraph.instFintypeOfDecidableEq {V : Type u} [Fintype V] [DecidableEq V] :
+    Fintype (SimpleGraph V) where
   elems := Finset.univ.map SimpleGraph.mk'
   complete := by
     classical
