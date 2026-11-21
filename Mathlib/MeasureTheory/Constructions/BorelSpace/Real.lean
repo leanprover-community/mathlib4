@@ -52,7 +52,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
     (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
   rintro _ ⟨a, rfl⟩
   have : IsLUB (range ((↑) : ℚ → ℝ) ∩ Iio a) a := by
-    simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_rat_lt_imp_le]
+    simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_ratCast_lt_imp_le]
   rw [← this.biUnion_Iio_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
   exact MeasurableSet.biUnion (to_countable _)
     fun b _ => GenerateMeasurable.basic (Iio (b : ℝ)) (by simp)
@@ -64,7 +64,7 @@ theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
     (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
   rintro _ ⟨a, rfl⟩
   have : IsGLB (range ((↑) : ℚ → ℝ) ∩ Ioi a) a := by
-    simp [isGLB_iff_le_iff, mem_lowerBounds, ← le_iff_forall_lt_rat_imp_le]
+    simp [isGLB_iff_le_iff, mem_lowerBounds, ← le_iff_forall_lt_ratCast_imp_le]
   rw [← this.biUnion_Ioi_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
   exact MeasurableSet.biUnion (to_countable _)
     fun b _ => GenerateMeasurable.basic (Ioi (b : ℝ)) (by simp)

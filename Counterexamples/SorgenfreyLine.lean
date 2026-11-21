@@ -84,14 +84,14 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by
   refine ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun r hr => ⟨_, hr, Subset.rfl⟩,
     Set.to_countable _⟩
-  rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
+  rcases exists_ratCast_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
     ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.pos), Subset.rfl⟩
-  rcases exists_nat_one_div_lt (sub_pos.2 hb) with ⟨k, hk⟩
+  rcases exists_natCast_one_div_lt (sub_pos.2 hb) with ⟨k, hk⟩
   rw [one_div] at hk
   rw [← Nat.cast_add_one] at hk
   exact ⟨k.succPNat, trivial, Ico_subset_Ico_right (le_sub_iff_add_le'.1 hk.le)⟩
@@ -195,7 +195,7 @@ theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
   refine dense_iff_inter_open.2 ?_
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
-  rcases exists_rat_btwn hxy with ⟨z, hxz, hzy⟩
+  rcases exists_ratCast_btwn hxy with ⟨z, hxz, hzy⟩
   exact ⟨z, hU ⟨hxz.le, hzy⟩, mem_range_self _⟩
 
 instance : SeparableSpace ℝₗ :=

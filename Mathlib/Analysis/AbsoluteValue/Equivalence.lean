@@ -320,7 +320,7 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
     ← div_lt_div_iff₀ (log_pos ha) (log_pos hwa)] at h_lt
-  let ⟨q, ⟨hq₁, hq₂⟩⟩ := exists_rat_btwn h_lt
+  let ⟨q, ⟨hq₁, hq₂⟩⟩ := exists_ratCast_btwn h_lt
   rw [← Rat.num_div_den q, Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast] at hq₁ hq₂
   rw [div_lt_div_iff₀ (log_pos ha) (by simp [q.den_pos]), mul_comm, ← log_pow, ← log_zpow,
     log_lt_log_iff (pow_pos (by linarith) _) (zpow_pos (by linarith) _),

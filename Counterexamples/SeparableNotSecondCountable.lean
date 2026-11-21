@@ -35,13 +35,13 @@ instance instSeparableSpace : SeparableSpace (ℝ ×ₗ Bool) := by
   · rcases exists_Ioc_subset_of_mem_nhds (hUo.mem_nhds hx) (exists_lt _) with ⟨y, hyx, hyU⟩
     rcases toLex.surjective y with ⟨y, rfl⟩
     have : y.1 < x := by simpa [Prod.Lex.toLex_lt_toLex, y.2.false_le.not_gt] using hyx
-    rcases exists_rat_btwn this with ⟨q, hyq, hqx⟩
+    rcases exists_ratCast_btwn this with ⟨q, hyq, hqx⟩
     refine ⟨(q, false), hyU ?_, mem_range_self _⟩
     simp [Prod.Lex.toLex_le_toLex, Prod.Lex.toLex_lt_toLex, hyq, hqx]
   · rcases exists_Ico_subset_of_mem_nhds (hUo.mem_nhds hx) (exists_gt _) with ⟨y, hyx, hyU⟩
     rcases toLex.surjective y with ⟨y, rfl⟩
     have : x < y.1 := by simpa [Prod.Lex.toLex_lt_toLex, y.2.le_true.not_gt] using hyx
-    rcases exists_rat_btwn this with ⟨q, hyq, hqx⟩
+    rcases exists_ratCast_btwn this with ⟨q, hyq, hqx⟩
     refine ⟨(q, false), hyU ?_, mem_range_self _⟩
     simp [Prod.Lex.toLex_le_toLex, Prod.Lex.toLex_lt_toLex, hyq, hqx]
 

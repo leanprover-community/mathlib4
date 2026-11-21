@@ -276,7 +276,7 @@ theorem difference_quotients_converge_uniformly
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hfg'
   rw [Metric.tendstoUniformlyOnFilter_iff] at hfg'
   intro ε hε
-  obtain ⟨q, hqpos, hqε⟩ := exists_pos_rat_lt hε
+  obtain ⟨q, hqpos, hqε⟩ := exists_pos_ratCast_lt hε
   specialize hfg' (q : ℝ) (by simp [hqpos])
   have := (tendsto_swap4_prod.eventually (hf.prod_mk hf)).diag_of_prod_right
   obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 (hfg'.and this)
