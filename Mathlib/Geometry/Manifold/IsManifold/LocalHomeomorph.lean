@@ -94,11 +94,11 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   · apply OpenPartialHomeomorph.continuousAt
     simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
   · rw [show hf.localInverseAt (g y) y = g y by
-      simpa [hg y] using (hf.localInverseAt_apply_self (x := g y))]
+      simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
     have hc : chartAt H y = hf.localInverseAt (g y) ≫ₕ chartAt H (g y) := rfl
     rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
-    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
-      (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
+    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ <|
+      Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y)
     filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
     simp only [Function.comp_apply, id]
     rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target, Set.mem_inter_iff,
@@ -174,7 +174,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
     (hFf : ∀ x y, f x = f y → F x = F y) (hF : CMDiff n F) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n (F ∘ g) :=
-  hf.contMDiff_of_contMDiff_comp hg <| hF.congr (fun x ↦ hFf _ _ (hg (f x)))
+  hf.contMDiff_of_contMDiff_comp hg <| hF.congr fun x ↦ hFf _ _ (hg (f x))
 
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
@@ -185,8 +185,8 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro y hy
   refine (hf.contMDiffAt_of_contMDiffAt_comp hg ?_).contMDiffWithinAt
-  simpa using (hf.contMDiffOn_localInverseAt_symm_trans h (g y) x).contMDiffAt
-    <| (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
+  simpa using (hf.contMDiffOn_localInverseAt_symm_trans h (g y) x).contMDiffAt <|
+    (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
 lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
