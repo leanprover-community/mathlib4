@@ -79,7 +79,7 @@ theorem IsLocalHomeomorph.isManifold_of_rightInverse [IsManifold I n M] (h : Foo
   rintro - - ⟨y, rfl⟩ ⟨y', rfl⟩
   rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g y)).symm.trans_assoc,
     ← (hf.localInverseAt (g y)).symm.trans_assoc]
-  refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
+  exact symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
     (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
     (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
