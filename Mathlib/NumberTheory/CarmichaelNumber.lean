@@ -169,13 +169,29 @@ theorem isCarmichael_iff_korselt_primeFactorsList :
 
 /-- Auxiliary function for the decidability of `IsCarmichael`.
 
-`korseltAux n fuel m d c` checks, by trial division of `m` starting at `d`, that `m` is squarefree
-and that `p - 1 ∣ n - 1` for all prime factors `p` of `m`, returning `false` as soon as a prime
-factor is repeated or does not satisfy the divisibility condition. It also checks that `c` is
-`true` or `m` is not prime. Here `c` records whether a prime factor has already been removed.
+`korseltAux n fuel m d c` checks Korselt's criterion for the part `m` of `n` that has not been
+factored yet, by trial division of `m` by the odd numbers `d, d + 2, d + 4, ...`. It is meant
+to be called with `d ≥ 3` odd and with every prime factor of `m` being at least `d`, so that the
+first divisor of `m` found is always prime. The flag `c` records whether a prime factor of `n`
+has already been divided out.
 
-It is defined by structural recursion on `fuel`, so that it can be evaluated by `decide`. See
-`Nat.korseltAux_eq_true_iff` for the conditions under which it is correct. -/
+Each step does the following:
+* If `m ≤ 1`, return whether `m = 1`. Then all of `n` has been factored.
+* If `m < d * d`, then `m` is prime since it has no prime factor less than `d`. Return whether
+  `m - 1 ∣ n - 1` and `c` holds. `c` rules out the case where `n` itself is prime.
+* If `d ∣ m`, then `d` is a prime factor of `m`. Return `false` unless `d - 1 ∣ n - 1` and
+  `d * d` does not divide `m`. Otherwise divide `d` out of `m` and keep going with `d + 2` and
+  `c := true`.
+* If `d` does not divide `m`, keep going with `d + 2`.
+
+So `korseltAux n fuel m d c` holds iff `m` is squarefree, `p - 1 ∣ n - 1` for every prime
+factor `p` of `m`, and either `c` holds or `m` is not prime. In particular, `korseltAux n n n 3
+false` decides Korselt's criterion for odd `n`.
+
+The function is defined by structural recursion on `fuel`, rather than well-founded recursion on
+`m - d`, so that it can be evaluated by `decide`. It returns `false` once it runs out of fuel,
+which never happens as long as `m < fuel + d`. See `Nat.korseltAux_iff` for the precise statement.
+-/
 def korseltAux (n fuel m d : ℕ) (c : Bool) : Bool :=
   if m.ble 1 then m.beq 1
   else if m.blt (d * d) then c && ((n - 1) % (m - 1)).beq 0
