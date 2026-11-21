@@ -122,7 +122,7 @@ def ofSimpleGraph (G : SimpleGraph α) : Graph α (Sym2 α) where
   IsLink e x y := e = s(x, y) ∧ e ∈ G.edgeSet
   isLink_symm e he := ⟨fun u v ↦ by simp [Sym2.eq_swap]⟩
   eq_or_eq_of_isLink_of_isLink e u v x y he hf := by grind
-  edge_mem_iff_exists_isLink e := by induction e with | h u v => grind
+  edge_mem_iff_exists_isLink e := by induction e with | mk u v => grind
 
 @[simp]
 lemma ofSimpleGraph_adj_iff {G : SimpleGraph α} (u v : α) :

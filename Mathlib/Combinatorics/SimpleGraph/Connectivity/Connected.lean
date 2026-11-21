@@ -865,7 +865,7 @@ theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v �
   grind [edgeSet_strict_mono this, edgeSet_deleteEdges]
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
-  cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
+  cases e with | mk u v => exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
 theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     (G.deleteEdges {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
@@ -983,7 +983,7 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 
 @[simp] lemma isBridge_deleteEdges_singleton {e : Sym2 V} :
     (G.deleteEdges {e}).IsBridge e ↔ G.IsBridge e := by
-  induction e with | h u v; simp [isBridge_iff]
+  induction e with | mk u v => simp [isBridge_iff]
 
 @[deprecated "Use `isBridge_sup_edge` and `IsBridge.of_not_reachable`" (since := "2026-06-04")]
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
