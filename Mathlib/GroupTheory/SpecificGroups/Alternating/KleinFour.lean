@@ -71,7 +71,7 @@ theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
   rw [mem_alternatingGroup, sign_of_cycleType] at hg0
   have h1 : g.cycleType.sum ≤ 4 := by
     rw [sum_cycleType, ← hα4, Nat.card_eq_fintype_card]
-    exact g.support.card_le_univ
+    exact g.supportFinset.card_le_univ
   have h2 : ∀ k ∈ g.cycleType, k = 2 := by
     intro k hk
     have hk4 := (Multiset.le_sum_of_mem hk).trans h1
