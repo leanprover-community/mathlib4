@@ -58,6 +58,40 @@ lemma _root_.Module.Basis.extendOfIsFullLattice_apply {M : Submodule R V} [IsFul
     {ι : Type*} (b : Basis ι R M) (k : ι) : b.extendOfIsFullLattice A k = (b k).val := by
   simp [Basis.extendOfIsFullLattice]
 
+lemma _root_.Module.Basis.coe_extendOfIsFullLattice {M : Submodule R V} [IsFullLattice A M]
+    {ι : Type*} (b : Basis ι R M) : b.extendOfIsFullLattice A = Subtype.val ∘ b :=
+  funext (b.extendOfIsFullLattice_apply _)
+
+@[simp]
+lemma _root_.Module.Basis.extendOfIsFullLattice_repr_apply {M : Submodule R V}
+    [IsFullLattice A M] {ι : Type*} (b : Basis ι R M) (x : M) (i : ι) :
+    (b.extendOfIsFullLattice A).repr x i = algebraMap R A (b.repr x i) := by
+  suffices ((b.extendOfIsFullLattice A).repr.toLinearMap.restrictScalars R) ∘ₗ M.subtype =
+      Finsupp.mapRange.linearMap (Algebra.linearMap R A) ∘ₗ b.repr.toLinearMap from
+    congr($this x i)
+  refine b.ext fun j ↦ ?_
+  simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
+    LinearEquiv.coe_coe, coe_subtype, ← b.extendOfIsFullLattice_apply A, Basis.repr_self,
+    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
+
+lemma _root_.Module.Basis.span_extendOfIsFullLattice {M : Submodule R V} [IsFullLattice A M]
+    {ι : Type*} (b : Basis ι R M) : span R (Set.range (b.extendOfIsFullLattice A)) = M := by
+  rw [b.coe_extendOfIsFullLattice A, ← M.coe_subtype, Set.range_comp, ← map_span, b.span_eq,
+    map_top, range_subtype]
+
+/-- The coordinate map of `b.extendOfIsFullLattice A` maps the lattice onto `span R` of the
+standard basis of `ι → A`. -/
+lemma _root_.Module.Basis.image_equivFun_extendOfIsFullLattice {M : Submodule R V}
+    [IsFullLattice A M] {ι : Type*} [Finite ι] (b : Basis ι R M) :
+    (b.extendOfIsFullLattice A).equivFun '' M = span R (Set.range (Pi.basisFun A ι)) := by
+  classical
+  nth_rw 2 [← b.span_extendOfIsFullLattice A]
+  rw [← LinearEquiv.coe_coe, ← LinearMap.coe_restrictScalars R, ← map_coe, map_span,
+    ← Set.range_comp]
+  congr 3
+  ext
+  simp [Finsupp.single_apply, Pi.single_apply, eq_comm]
+
 /-- A lattice containing a full lattice is itself full. -/
 theorem of_le {M N : Submodule R V} (hle : M ≤ N) [IsFullLattice A M] [IsLattice A N] :
     IsFullLattice A N where
@@ -68,6 +102,50 @@ set_option backward.isDefEq.respectTransparency false in
 instance smul (M : Submodule R V) [IsFullLattice A M] (a : Aˣ) :
     IsFullLattice A (a • M : Submodule R V) where
   span_eq_top := by rw [Submodule.coe_pointwise_smul, span_smul, span_eq_top, smul_top]
+
+section map
+
+variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
+variable (M : Submodule R V)
+
+/-- The image of a full lattice under an `A`-linear equivalence is a full lattice. -/
+instance [IsFullLattice A M] (e : V ≃ₗ[A] W) :
+    IsFullLattice A (M.map (e.restrictScalars R).toLinearMap) where
+  span_eq_top := by
+    rw [map_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
+
+/-- The preimage of a full lattice under an `A`-linear equivalence is a full lattice. -/
+instance [IsFullLattice A M] (e : W ≃ₗ[A] V) :
+    IsFullLattice A (M.comap (e.restrictScalars R).toLinearMap) where
+  span_eq_top := by
+    rw [comap_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars,
+      LinearEquiv.coe_coe, ← e.image_symm_eq_preimage, ← LinearEquiv.coe_coe, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
+
+/-- A lattice is a full lattice in its own `A`-span. -/
+instance _root_.Submodule.IsLattice.isFullLattice_span_self [IsLattice A M] :
+    IsFullLattice A (M.comap ((span A (M : Set V)).subtype.restrictScalars R)) where
+  toIsLattice := .comap A M (injective_subtype _) fun x hx ↦ ⟨⟨x, subset_span hx⟩, rfl⟩
+  span_eq_top := by
+    apply map_injective_of_injective (injective_subtype (span A (M : Set V)))
+    rw [map_span, map_top, range_subtype, comap_coe, LinearMap.coe_restrictScalars,
+      Set.image_preimage_eq_of_subset fun x hx ↦ ⟨⟨x, subset_span hx⟩, rfl⟩]
+
+end map
+
+section Basis
+
+variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
+
+/-- Extending lattice bases commutes with mapping bases along linear equivalences. -/
+lemma _root_.Module.Basis.extendOfIsFullLattice_map_ofSubmodule'_symm {M : Submodule R V}
+    [IsFullLattice A M] (e : W ≃ₗ[A] V) {ι : Type*} (b : Basis ι R M) :
+    (b.map ((e.restrictScalars R).ofSubmodule' M).symm).extendOfIsFullLattice A =
+      (b.extendOfIsFullLattice A).map e.symm :=
+  Basis.eq_of_apply_eq fun i ↦ by simp
+
+end Basis
 
 end CommRing
 
