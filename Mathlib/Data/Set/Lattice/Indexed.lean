@@ -652,4 +652,13 @@ theorem iInter_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma γ, s ia.1 ia.2 :=
   iInf_psigma' _
 
+/-- Union over a linearly ordered type can be split into the union over stricktly smaller and
+larger elements. -/
+lemma iUnion_lt_union_iUnion_ge {α : Type*} {ι : Type*} [LinearOrder ι] {s : ι → Set α} (k : ι) :
+    (⋃ i < k, s i) ∪ ⋃ (i : ι), ⋃ (_ : i ≥ k), s i = ⋃ i, s i := by
+  rw [← iUnion_union_distrib]
+  congr with i
+  rw [← iUnion_or (s := fun _ ↦ s _), iff_true_intro (lt_or_ge i k), iUnion_true]
+
 end Set
+-- (⋃ i < k, s i) ∪ (⋃ i ≥ k, s i)

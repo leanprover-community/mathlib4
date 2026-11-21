@@ -358,4 +358,39 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
 lemma RelCWComplex.finite_iff_finite_cells : Finite C ↔ _root_.Finite (Σ n, cell C n) :=
   ⟨fun h ↦ finite_cells_of_finite (finite := h), finite_of_finite_cells⟩
 
+/-- For a finite dimensional relative CW complex `C` we can find a natural number `m` such that
+ `C` equals `skeletonLT C m`. -/
+@[alias_in CWComplex]
+lemma RelCWComplex.FiniteDimensional.eq_skeletonLT [T2Space X] (C : Set X) {D : Set X}
+    [RelCWComplex C D] (hX : FiniteDimensional C) : ∃ (m : ℕ),
+    C = skeletonLT C m := by
+  obtain ⟨m, hm⟩ := Filter.eventually_atTop.1 hX.eventually_isEmpty_cell
+  use m
+  simp_rw [eq_skeletonLT_union_iUnion_openCell C m]
+  convert union_empty _
+  simp_rw [iUnion_eq_empty]
+  intro i hi
+  simp [hm i hi]
+
+/-- For a finite dimensional relative CW complex `C` we can find a natural number `m` such that
+ either `C` equals `skeleton C m` or `C` equals  the base `D`. -/
+@[alias_in CWComplex]
+lemma RelCWComplex.FiniteDimensional.eq_skeleton_or_eq_base [T2Space X] (C : Set X) {D : Set X}
+    [RelCWComplex C D] (hX : FiniteDimensional C) : (∃ (m : ℕ), C = skeleton C m) ∨ C = D := by
+  obtain ⟨m, hm⟩ := hX.eq_skeletonLT
+  by_cases h0 : m = 0
+  · right
+    simpa [← skeletonLT_zero_eq_base (C := C), h0] using hm
+  · left
+    use m - 1
+    convert hm
+    norm_cast
+    exact Nat.succ_pred_eq_of_ne_zero h0
+
+/-- For a finite dimensional CW-complex `C` we can find a natural number `m` such that
+  `C` equals `skeleton C m` or `C = ∅`. -/
+lemma CWComplex.FiniteDimensional.eq_skeleton [T2Space X] (C : Set X)
+    [CWComplex C] (hX : FiniteDimensional C) : (∃ (m : ℕ), C = skeleton C m) ∨ C = ∅ :=
+  RelCWComplex.FiniteDimensional.eq_skeleton_or_eq_base C hX
+
 end Topology
