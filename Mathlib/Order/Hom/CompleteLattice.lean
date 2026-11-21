@@ -23,6 +23,8 @@ be satisfied by itself and all stricter types.
 * `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`. Note that while a frame
   is a Heyting algebra, frame homs need not preserve `⇨`. For instance,
   `TopologicalSpace.Opens.frameHom` does not in general preserve complementation.
+* `CoframeHom`: Coframe homomorphisms. Maps which preserve `⨅`, `⊔` and `⊥`. The dual note to the
+`FrameHom` note applies: coframes are co-Heyting algebras but coframe homs need not preserve `\`.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -30,6 +32,7 @@ be satisfied by itself and all stricter types.
 * `sSupHomClass`
 * `sInfHomClass`
 * `FrameHomClass`
+* `CoframeHomClass`
 * `CompleteLatticeHomClass`
 
 ## Concrete homs
@@ -373,7 +376,7 @@ instance : FrameHomClass (FrameHom α β) α β where
   map_top f := f.map_top'
 
 /-- Reinterpret a `FrameHom` as a `LatticeHom`. -/
-@[to_dual]
+@[to_dual /-- Reinterpret a `CoframeHom` as a `LatticeHom`. -/]
 def toLatticeHom (f : FrameHom α β) : LatticeHom α β where
   toFun := f
   map_sup' := map_sup f
@@ -392,7 +395,8 @@ theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `FrameHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_dual]
+@[to_dual /-- Copy of a `CoframeHom` with a new `toFun` equal to the old one. Useful to fix
+definitional equalities. -/]
 protected def copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : FrameHom α β :=
   { (f : sSupHom α β).copy f' h with toInfTopHom := f.toInfTopHom.copy f' h }
 
@@ -426,7 +430,7 @@ theorem id_apply (a : α) : FrameHom.id α a = a :=
   rfl
 
 /-- Composition of `FrameHom`s as a `FrameHom`. -/
-@[to_dual]
+@[to_dual /-- Composition of `CoframeHom`s as a `CoframeHom`. -/]
 def comp (f : FrameHom β γ) (g : FrameHom α β) : FrameHom α γ :=
   { (f : sSupHom β γ).comp (g : sSupHom α β) with
     toInfTopHom := f.toInfTopHom.comp g.toInfTopHom }
