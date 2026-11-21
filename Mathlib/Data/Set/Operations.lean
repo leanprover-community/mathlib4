@@ -27,8 +27,9 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.range f`: the range of a function;
   it is more general than `f '' univ` because it allows functions from `Sort*`;
 - `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
-- `Set.diagonal`: the diagonal in `α × α`;
-- `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
+- `Set.diagonalUniv`: the diagonal in `α × α`;
+- `Set.diagonal s`: the part of `s ×ˢ s` that is on the diagonal;
+- `Set.offDiagonal s`: the part of `s ×ˢ s` that is off the diagonal;
 - `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
 - `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
@@ -252,19 +253,34 @@ end Prod
 
 section Diagonal
 
-/-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
+/-- `diagonalUniv α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
+def diagonalUniv (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 
-theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
+theorem mem_diagonalUniv (x : α) : (x, x) ∈ diagonalUniv α := rfl
 
-@[simp, grind =, push] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp, grind =, push] theorem mem_diagonalUniv_iff {x : α × α} :
+    x ∈ diagonalUniv α ↔ x.1 = x.2 := .rfl
 
-/-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
-def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
+@[deprecated (since := "2026-11-18")] alias mem_diagonal_iff := mem_diagonalUniv_iff
+
+/-- The diagonal of a set `s` is the set of pairs `(a, a)` with `a ∈ s`. -/
+def diagonal (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.1 = x.2}
 
 @[simp, grind =, push]
-theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
+theorem mem_diagonal {x : α × α} {s : Set α} : x ∈ s.diagonal ↔ x.1 ∈ s ∧ x.1 = x.2 :=
   Iff.rfl
+
+/-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
+def offDiagonal (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
+
+@[deprecated (since := "2026-09-06")] alias offDiag := offDiagonal
+
+@[simp, grind =, push]
+theorem mem_offDiagonal {x : α × α} {s : Set α} :
+    x ∈ s.offDiagonal ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
+  Iff.rfl
+
+@[deprecated (since := "2026-09-06")] alias mem_offDiag := mem_offDiagonal
 
 end Diagonal
 

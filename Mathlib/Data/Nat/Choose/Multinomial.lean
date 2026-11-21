@@ -267,24 +267,24 @@ open scoped Function -- required for scoped `on` notation
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
-lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
+lemma sum_pow_eq_sum_piAntidiagonal_of_commute (s : Finset α) (f : α → R)
     (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
-    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiagonal s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   induction s using Finset.cons_induction generalizing n with
   | empty => cases n <;> simp
   | cons a s has ih => ?_
-  rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
+  rw [Finset.sum_cons, piAntidiagonal_cons, sum_disjiUnion]
   simp only [sum_map, Pi.add_apply, multinomial_cons,
     Pi.add_apply, ite_true, Nat.cast_mul, noncommProd_cons,
     ite_true, sum_add_distrib, sum_ite_eq', has, ite_false, add_zero,
     addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
-    ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
+    ∑ g ∈ piAntidiagonal s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
         (f a ^ (g a + p.1) * s.noncommProd (fun i ↦ f i ^ (g i + ite (i = a) p.1 0))
           ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) =
-      ∑ g ∈ piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
+      ∑ g ∈ piAntidiagonal s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
         s.noncommProd (fun i ↦ f i ^ g i) ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) by
     rw [sum_congr rfl this]
     simp only [Nat.antidiagonal_eq_map, sum_map, Function.Embedding.coeFn_mk]
@@ -294,7 +294,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     refine sum_congr rfl fun i _ ↦ sum_congr rfl fun g _ ↦ ?_
     rw [← Nat.cast_comm, (Nat.commute_cast (f a ^ i) _).left_comm, mul_assoc]
   refine fun p hp ↦ sum_congr rfl fun f hf ↦ ?_
-  rw [mem_piAntidiag] at hf
+  rw [mem_piAntidiagonal] at hf
   rw [not_imp_comm.1 (hf.2 _) has, zero_add, hf.1]
   congr 2
   · rw [mem_antidiagonal.1 hp]
@@ -305,6 +305,9 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   refine noncommProd_congr rfl (fun t ht ↦ ?_) _
   rw [ite_eq_right, add_zero]
   exact ne_of_mem_of_not_mem ht has
+
+@[deprecated (since := "2026-09-06")]
+alias sum_pow_eq_sum_piAntidiag_of_commute := sum_pow_eq_sum_piAntidiagonal_of_commute
 
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
@@ -347,10 +350,13 @@ end Semiring
 section CommSemiring
 variable [CommSemiring R] {f : α → R} {s : Finset α}
 
-lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
-    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k * ∏ i ∈ s, f i ^ k i := by
+lemma sum_pow_eq_sum_piAntidiagonal (s : Finset α) (f : α → R) (n : ℕ) :
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiagonal s n, multinomial s k * ∏ i ∈ s, f i ^ k i := by
   simp_rw [← noncommProd_eq_prod]
-  rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
+  rw [← sum_pow_eq_sum_piAntidiagonal_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
+
+@[deprecated (since := "2026-09-06")]
+alias sum_pow_eq_sum_piAntidiag := sum_pow_eq_sum_piAntidiagonal
 
 theorem sum_pow (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k ∈ s.sym n, k.val.countPerms * (k.val.map x).prod := by
