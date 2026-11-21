@@ -107,7 +107,7 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
   obtain rfl : f ''ᵁ V = U := Subtype.ext_iff.mp (Subtype.ext_iff.mp hV)
   obtain ⟨y, hy, e : f y = f x⟩ := hxU
   obtain rfl := f.isOpenEmbedding.injective e
-  refine ⟨V, hy, V.2, ?_⟩
+  refine ⟨V, hy, V.property, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap y)).mpr H
   replace H := ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
@@ -177,7 +177,7 @@ instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   choose f hf using fun x ↦ (hJ x).mp
   obtain ⟨s, hs⟩ := (isNoetherianRing_iff_ideal_fg R).mp ‹_› J
   have hs' : (s : Set R) ⊆ J := hs ▸ Ideal.subset_span
-  refine ⟨_, (s.attach.prod fun x ↦ f x (hs' x.2)).2, fun x y e hy ↦ ⟨1, ?_⟩⟩
+  refine ⟨_, (s.attach.prod fun x ↦ f x (hs' x.property)).property, fun x y e hy ↦ ⟨1, ?_⟩⟩
   rw [pow_one, mul_comm, ← smul_eq_mul, ← Submodule.mem_annihilator_span_singleton]
   refine mem_of_le_of_mem ?_ ((hJ x).mpr ⟨⟨y, hy⟩, e⟩)
   rw [← hs, Ideal.span_le]
@@ -293,7 +293,7 @@ lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens}
   refine ⟨V', hxV', CommRingCat.ofHom (e.symm.toRingHom.comp
     (φ.hom.codRestrict _ (fun x ↦ hf' (hV ⟨x, rfl⟩)))), iV'V.trans iVU, hV', ?_, ?_⟩
   · ext a
-    change φ a = (e (e.symm _)).1
+    change φ a = (e (e.symm _)).val
     simp only [RingEquiv.apply_symm_apply]
     rfl
   · ext a

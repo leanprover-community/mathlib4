@@ -222,7 +222,7 @@ def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChai
       Subtype.ext <| not_not.mp (hs ha hb · |>.elim hba.not_gt hab.not_gt)
   le_total :=
     fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
-  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
+  toDecidableLE x y := inferInstanceAs (Decidable (x.val ≤ y.val))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
@@ -421,7 +421,7 @@ theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt
 
 instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
-    le_total := fun a b => s.le_or_le a.2 b.2
+    le_total := fun a b => s.le_or_le a.property b.property
     toDecidableLE := Subtype.decidableLE
     toDecidableLT := Subtype.decidableLT
     toDecidableEq := Subtype.instDecidableEq }

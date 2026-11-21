@@ -476,7 +476,7 @@ theorem image_castSucc_uIoo (i j : Fin n) : castSucc '' uIoo i j = uIoo i.castSu
 ### `Fin.natAdd`
 -/
 
-theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i | m ≤ i.1} := by
+theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i | m ≤ i.val} := by
   ext i
   constructor
   · rintro ⟨i, rfl⟩

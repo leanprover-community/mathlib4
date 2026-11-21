@@ -265,7 +265,7 @@ instance NonUnitalSubring.nonUnitalSeminormedRing {E : Type*}
     NonUnitalSeminormedRing s :=
   fast_instance%
   { s.seminormedAddCommGroup, s.toNonUnitalRing with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+    norm_mul_le a b := norm_mul_le a.val b.val }
 
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
 with the restriction of the norm. -/
@@ -325,7 +325,7 @@ instance Subring.seminormedRing {E : Type*} [SeminormedRing E] (s : Subring E) :
     SeminormedRing s :=
   fast_instance%
   { s.seminormedAddCommGroup, s.toRing with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+    norm_mul_le a b := norm_mul_le a.val b.val }
 
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/

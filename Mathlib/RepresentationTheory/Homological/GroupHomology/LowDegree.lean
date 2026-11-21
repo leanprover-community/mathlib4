@@ -361,11 +361,11 @@ def cycles₁IsoOfIsTrivial [A.IsTrivial] :
 
 @[simp]
 lemma cycles₁IsoOfIsTrivial_hom_apply [A.IsTrivial] (x : cycles₁ A) :
-    (cycles₁IsoOfIsTrivial A).hom x = x.1 := rfl
+    (cycles₁IsoOfIsTrivial A).hom x = x.val := rfl
 
 @[simp]
 lemma cycles₁IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : G →₀ A) :
-    ((cycles₁IsoOfIsTrivial A).inv x).1 = x := rfl
+    ((cycles₁IsoOfIsTrivial A).inv x).val = x := rfl
 
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
     x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -422,7 +422,7 @@ abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
 
 @[simp]
 lemma boundariesToCycles₁_apply (x : boundaries₁ A) :
-    (boundariesToCycles₁ A x).1 = x.1 := rfl
+    (boundariesToCycles₁ A x).val = x.val := rfl
 
 end
 
@@ -459,7 +459,7 @@ abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
 
 @[simp]
 lemma boundariesToCycles₂_apply (x : boundaries₂ A) :
-    (boundariesToCycles₂ A x).1 = x.1 := rfl
+    (boundariesToCycles₂ A x).val = x.val := rfl
 
 end
 
@@ -922,13 +922,13 @@ lemma π_comp_H1Iso_inv :
 
 variable {A}
 
-lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
+lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.val ∈ boundaries₁ A := by
   rw [← π_comp_H1Iso_inv_apply, map_eq_zero_iff _
     ((ModuleCat.mono_iff_injective (H1Iso A).inv).1 inferInstance)]
   simp [LinearMap.range_codRestrict, shortComplexH1, boundaries₁]
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
-    H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
+    H1π A x = H1π A y ↔ x.val - y.val ∈ boundaries₁ A := by
   rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]
@@ -1058,13 +1058,13 @@ lemma π_comp_H2Iso_inv :
 
 variable {A}
 
-lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
+lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.val ∈ boundaries₂ A := by
   rw [← π_comp_H2Iso_inv_apply, map_eq_zero_iff _
     ((ModuleCat.mono_iff_injective (H2Iso A).inv).1 inferInstance)]
   simp [LinearMap.range_codRestrict, shortComplexH2, boundaries₂]
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
-    H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
+    H2π A x = H2π A y ↔ x.val - y.val ∈ boundaries₂ A := by
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]

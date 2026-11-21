@@ -179,9 +179,10 @@ theorem piCongrLeft_comp_restrict :
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/
 @[simp]
-def restrict₂ (hst : s ⊆ t) (f : (i : t) → π i) (i : s) : π i := f ⟨i.1, hst i.2⟩
+def restrict₂ (hst : s ⊆ t) (f : (i : t) → π i) (i : s) : π i := f ⟨i.val, hst i.property⟩
 
-theorem restrict₂_def (hst : s ⊆ t) : restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+theorem restrict₂_def (hst : s ⊆ t) :
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.val, hst x.property⟩ := rfl
 
 theorem restrict₂_comp_restrict (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
@@ -208,7 +209,7 @@ lemma domRestrict_preimage [DecidableEq ι] {I : Set ι}
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
-      (@Set.univ t).pi (fun j ↦ if h : j.1 ∈ s then u ⟨j.1, h⟩ else Set.univ) := by
+      (@Set.univ t).pi (fun j ↦ if h : j.val ∈ s then u ⟨j.val, h⟩ else Set.univ) := by
   grind [restrict₂]
 
 end Pi

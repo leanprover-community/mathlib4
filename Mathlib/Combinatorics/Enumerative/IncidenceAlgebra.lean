@@ -357,7 +357,7 @@ private def muFun (a : α) : α → 𝕜
     if a = b then 1
     else
       -∑ x ∈ (Ico a b).attach,
-          let h := mem_Ico.1 x.2
+          let h := mem_Ico.1 x.property
           have : #(Icc a x) < #(Icc a b) :=
             card_lt_card (Icc_ssubset_Icc_right (h.1.trans h.2.le) le_rfl h.2)
           muFun a x
@@ -416,7 +416,7 @@ private def muFun' (b : α) : α → 𝕜
     if a = b then 1
     else
       -∑ x ∈ (Ioc a b).attach,
-          let h := mem_Ioc.1 x.2
+          let h := mem_Ioc.1 x.property
           have : #(Icc ↑x b) < #(Icc a b) :=
             card_lt_card (Icc_ssubset_Icc_left (h.1.le.trans h.2) h.1 le_rfl)
           muFun' b x
