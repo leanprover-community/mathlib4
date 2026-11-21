@@ -81,6 +81,7 @@ theorem mem_vonNeumann_succ (x : ZFSet) : x ∈ V_ (succ (rank x)) := by
   simp [mem_vonNeumann]
 
 /-- Every set is in some element of the von Neumann hierarchy. -/
+@[stacks 000C]
 theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
   ⟨_, mem_vonNeumann_succ x⟩
 
