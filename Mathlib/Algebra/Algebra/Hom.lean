@@ -418,13 +418,14 @@ alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
 namespace AlgHomClass
 
--- TODO: rename again when RingHomClass.toRingHom gets renamed
 @[simp]
-lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+lemma ofClass_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+    RingHom.ofClass (AlgHom.ofClass f) = .ofClass f := rfl
 
-@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
+@[deprecated (since := "2026-11-21")] alias toRingHom_ofClass := ofClass_ofClass
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := ofClass_ofClass
 
 end AlgHomClass
 

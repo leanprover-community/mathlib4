@@ -68,7 +68,7 @@ This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 def _root_.AlgEquiv.ofClass {F R A B : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) : A ≃ₐ[R] B :=
-  { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
+  { (f : A ≃ B), (.ofClass f : A ≃+* B) with commutes' := commutes f }
 
 @[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
 
