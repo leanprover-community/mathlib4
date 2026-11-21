@@ -356,13 +356,13 @@ def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f 
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
 
 /-- A commuting square induces a morphism of kernels. -/
-@[to_dual (reorder := X X', Y Y', f f', 7 11, p q)
+@[to_dual (reorder := f f', p q)
 /-- A commuting square induces a morphism of cokernels. -/]
-abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
-    (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
+abbrev kernel.map {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f']
+    (p : X ⟶ X') (q : Y ⟶ Y') (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
-attribute [to_dual existing] kernel.map.congr_simp
+attribute [to_dual none] kernel.map.congr_simp cokernel.map.congr_simp
 
 @[to_dual (attr := simp)]
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
