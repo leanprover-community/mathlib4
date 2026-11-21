@@ -231,12 +231,13 @@ def map : WeierstrassCurve A :=
   ⟨f W.a₁, f W.a₂, f W.a₃, f W.a₄, f W.a₆⟩
 
 variable (A) in
-/-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
-def baseChange [Algebra R A] : WeierstrassCurve A :=
+/-- A helper to define the `baseChange` notation to make the delaborator work. -/
+abbrev baseChangeAux [Algebra R A] : WeierstrassCurve A :=
   W.map <| algebraMap R A
 
-/-- The notation `\textf` for `WeierstrassCurve.baseChange W A`. -/
-scoped notation:max (priority := low) W:max "⁄" A:max => baseChange W A
+/-- The notation `W⁄A`, the base change of the curve `W` to an algebra `A` over `R`.
+This is equivalent to `W.map <| algebraMap R A` where `R` is the base ring of `W`. -/
+scoped notation:max (name := baseChange) (priority := low) W:max "⁄" A:max => baseChangeAux W A
 
 @[simp]
 lemma map_b₂ : (W.map f).b₂ = f W.b₂ := by
