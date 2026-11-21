@@ -175,10 +175,10 @@ private theorem finite_projective : Module.Finite R M ∧ Projective R M := by
   let N := Dual R M
   let e : M ⊗[R] N ≃ₗ[R] R := TensorProduct.comm .. ≪≫ₗ linearEquiv R M
   have ⟨S, hS⟩ := TensorProduct.exists_finset (e.symm 1)
-  let f : (S →₀ N) →ₗ[R] R := Finsupp.lsum R fun i ↦ e.toLinearMap ∘ₗ TensorProduct.mk R M N i.1.1
+  let f : (S →₀ N) →ₗ[R] R := Finsupp.lsum R fun i ↦ e.toLinearMap ∘ₗ TensorProduct.mk R M N i.val.1
   have : Function.Surjective f := by
     rw [← LinearMap.range_eq_top, Ideal.eq_top_iff_one]
-    use Finsupp.equivFunOnFinite.symm fun i ↦ i.1.2
+    use Finsupp.equivFunOnFinite.symm fun i ↦ i.val.2
     simp_rw [f, Finsupp.coe_lsum]
     rw [Finsupp.sum_fintype _ _ fun _ ↦ map_zero _]
     rwa [e.symm_apply_eq, map_sum, ← Finset.sum_coe_sort, eq_comm] at hS
@@ -661,18 +661,18 @@ variable [Semiring A] [Algebra R A] [FaithfulSMul R A]
 open LinearMap in
 set_option backward.privateInPublic true in
 private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule R A)ˣ) :
-    Projective R I ∧ Function.Bijective (mul' R A ∘ₗ I.1.subtype.lTensor A) := by
+    Projective R I ∧ Function.Bijective (mul' R A ∘ₗ I.val.subtype.lTensor A) := by
   obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.inv_mul ▸ one_le.mp le_rfl)
   classical
   rw [← Set.image2_mul, ← Finset.coe_image₂, mem_span_finset] at one_mem
   set S := T.image₂ (· * ·) T'
   obtain ⟨r, hr⟩ := one_mem
-  choose a ha b hb eq using fun i : S ↦ Finset.mem_image₂.mp i.2
+  choose a ha b hb eq using fun i : S ↦ Finset.mem_image₂.mp i.property
   let f : I →ₗ[R] S → R := .pi fun i ↦ (LinearEquiv.ofInjective
       (Algebra.linearMap R A) (FaithfulSMul.algebraMap_injective R A)).symm.comp <|
     restrict (mulRight R (r i • a i)) fun x hx ↦ by
-      rw [← one_eq_range, ← I.mul_inv]; exact mul_mem_mul hx (I⁻¹.1.smul_mem _ <| hT <| ha i)
-  have hf (x : I.1) (i : S) : algebraMap R A (f x i) = x * r i • a i := by
+      rw [← one_eq_range, ← I.mul_inv]; exact mul_mem_mul hx (I⁻¹.val.smul_mem _ <| hT <| ha i)
+  have hf (x : I.val) (i : S) : algebraMap R A (f x i) = x * r i • a i := by
     dsimp [f, ← Algebra.linearMap_apply]
     exact LinearEquiv.ofInjective_symm_apply ..
   let g : (S → R) →ₗ[R] I := .lsum _ _ ℕ fun i ↦ .toSpanSingleton _ _ ⟨b i, hT' <| hb i⟩
@@ -680,7 +680,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
     simp only [g, lsum_apply, comp_apply, LinearMap.sum_apply, toSpanSingleton_apply, proj_apply]
     simp_rw [coe_sum, coe_smul, Algebra.smul_def, hf, mul_assoc, ← Finset.mul_sum,
       Algebra.smul_mul_assoc, eq, (Finset.sum_coe_sort ..).trans hr.2, mul_one, id_apply]
-  set m := mul' R A ∘ₗ I.1.subtype.lTensor A
+  set m := mul' R A ∘ₗ I.val.subtype.lTensor A
   have eq : (piScalarRight R R A S).toLinearMap ∘ₗ f.lTensor A =
       (.pi fun i : S ↦ mulRight R (r i • a i)) ∘ₗ m := by
     ext; simp [(Algebra.smul_def ..).trans (Algebra.commutes ..), hf, m, mul_assoc]
@@ -688,7 +688,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
     (f.lTensor A) (g.lTensor A) <| by rw [← lTensor_comp, hgf, lTensor_id]
   rw [← LinearEquiv.coe_toLinearMap, ← coe_comp, eq, coe_comp] at this
   refine ⟨.of_split f g hgf, .of_comp this, range_eq_top.mp ?_⟩
-  rw [show m = mulMap ⊤ I ∘ₗ (topEquiv.symm.rTensor I.1).toLinearMap by ext; rfl, range_comp,
+  rw [show m = mulMap ⊤ I ∘ₗ (topEquiv.symm.rTensor I.val).toLinearMap by ext; rfl, range_comp,
     LinearEquiv.range, map_top, mulMap_range, top_mul_eq_top_of_mul_eq_one I.inv_mul]
 
 open LinearMap in
@@ -708,7 +708,7 @@ noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
   convert
     (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
-      (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
+      (Flat.rTensor_preserves_injective_linearMap _ I.val.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -745,10 +745,10 @@ theorem ker_unitsToPic :
     have h := eq_span_singleton_of_surjective e.surjective
     have h' := eq_span_singleton_of_surjective e'.surjective
     refine ⟨(isUnit_iff_exists_and_exists.mpr ⟨?_, ?_⟩).unit, Units.ext h.symm⟩
-    · have : span R {(e 1).1 * e' 1} = 1 := by simpa [span_mul_span] using congr($h * $h').symm
+    · have : span R {(e 1).val * e' 1} = 1 := by simpa [span_mul_span] using congr($h * $h').symm
       have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
       exact ⟨e' 1 * algebraMap R A r.inv, by simp [← mul_assoc, hr, ← map_mul]⟩
-    · have : span R {(e' 1).1 * e 1} = 1 := by simpa [span_mul_span] using congr($h' * $h).symm
+    · have : span R {(e' 1).val * e 1} = 1 := by simpa [span_mul_span] using congr($h' * $h).symm
       have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
       exact ⟨algebraMap R A r.inv * e' 1, by simp [mul_assoc, hr, ← map_mul]⟩
   · obtain ⟨x, rfl⟩ := h
@@ -838,7 +838,7 @@ theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   · obtain ⟨I, rfl⟩ := h
     exact mk_eq_one_iff.mpr ⟨AlgebraTensorModule.congr (.refl ..) (unitsToPicEquiv I) ≪≫ₗ
       .ofBijective ((Algebra.TensorProduct.lmul'' R).toLinearMap ∘ₗ AlgebraTensorModule.lTensor A A
-        I.1.subtype) (projective_units_and_mul'_comp_lTensor_bijective I).2⟩
+        I.val.subtype) (projective_units_and_mul'_comp_lTensor_bijective I).2⟩
   have e := (mk_eq_one_iff.mp h).some
   have f := (mk_eq_one_iff.mp (inv_mem h)).some
   refine ⟨(isUnit_of_mul_isUnit_left (x := submoduleAlgebra e) (y := submoduleAlgebra f) ?_).unit,
@@ -927,6 +927,6 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
-  exacts [mul_le_left (e 1).2, mul_le_right (e 1).2]
+  exacts [mul_le_left (e 1).property, mul_le_right (e 1).property]
 
 end Ideal
