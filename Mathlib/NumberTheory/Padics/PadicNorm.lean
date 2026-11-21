@@ -76,18 +76,14 @@ protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 /-- The `p`-adic norm of `1` is `1`. -/
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
-/-- The `p`-adic norm of `p` is `p⁻¹` if `p > 1`.
-
-See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime. -/
-theorem padicNorm_p (hp : 1 < p) : padicNorm p p = (p : ℚ)⁻¹ := by
-  simp [padicNorm, (pos_of_gt hp).ne', Nat.multiplicity_self hp]
-
-/-- The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
-
-See also `padicNorm.padicNorm_p` for a version assuming `1 < p`. -/
+/-- The `p`-adic norm of `p` is `p⁻¹`. -/
 @[simp]
-theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
-  padicNorm_p <| Nat.Prime.one_lt Fact.out
+theorem padicNorm_p : padicNorm p p = (p : ℚ)⁻¹ := by
+  rcases le_or_gt p 1 with hp | hp
+  · interval_cases p <;> simp
+  · simp [padicNorm, (pos_of_gt hp).ne', Nat.multiplicity_self hp]
+
+@[deprecated (since := "2026-11-04")] alias padicNorm_p_of_prime := padicNorm_p
 
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
@@ -100,7 +96,7 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
 
 See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p_lt_one (hp : 1 < p) : padicNorm p p < 1 := by
-  rw [padicNorm_p hp, inv_lt_one_iff₀]
+  rw [padicNorm_p, inv_lt_one_iff₀]
   exact mod_cast Or.inr hp
 
 /-- The `p`-adic norm of `p` is less than `1` if `p` is prime.

@@ -223,8 +223,12 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
 
 /-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
 of the equation `x^2 - a*y^2 = 0` with `x ≠ 0`. -/
-theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
+theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ}
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
+  have ha : (a : ZMod p) ≠ 0 := by
+    intro ha
+    rw [ha, zero_mul, sub_zero, sq_eq_zero_iff] at hxy
+    exact hx hxy
   have hy : y ≠ 0 := by
     rintro rfl
     rw [zero_pow two_ne_zero, mul_zero, sub_zero, sq_eq_zero_iff] at hxy
@@ -241,7 +245,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     simp at h
   by_contra hf
   rcases imp_iff_or_not.mp (not_and'.mp hf) with hx | hy
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, CharZero.eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' hx hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
