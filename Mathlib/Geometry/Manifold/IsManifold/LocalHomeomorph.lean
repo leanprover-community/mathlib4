@@ -195,26 +195,14 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     · exact ⟨hf.self_mem_localInverseAt_target, by simpa [hg y] using hy⟩
   · exact contMDiffAt_localInverseAt_rightInverse hf hg y
 
-/-- If `F : M → N` is invariant under `f`, `f` satisfies the condition, and the map
-`F ∘ g : M' → N`, for `g` a right inverse of `f`, is `C^n`, then so is `F`. -/
-lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
+/-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
+lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
-    {F : M → N} (hF : ∀ p q, f p = f q → F p = F q)
-    (hFg : letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg;
-      ContMDiff I J n (F ∘ g)) :
-    ContMDiff I J n F := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
-  exact fun y ↦ hF _ _ (hg (f y)).symm
-
-/-- Suppose `F : M → N` is invariant under `f` and `f` satisfies the condition.
-Then `F` is `C^n` if and only if the map `F ∘ g : M' → N` is. -/
-lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_iff_contMDiff
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
-    {F : M → N} (hF : ∀ p q, f p = f q → F p = F q) :
+    {φ : M' → N} :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiff I J n (F ∘ g) ↔ CMDiff n F :=
-  ⟨fun h' ↦ IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse hf hg h hF h',
-    fun h' ↦ IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff hf hg hF h'⟩
+    ContMDiff I J n φ ↔ ContMDiff I J n (φ ∘ f) := by
+  intro _
+  exact ⟨fun hφ ↦ hφ.comp (hf.isContMDiffOfRightInverse hg h),
+    hf.contMDiff_of_contMDiff_comp hg⟩
 
 end
