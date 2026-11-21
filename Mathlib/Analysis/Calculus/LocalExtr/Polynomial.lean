@@ -27,6 +27,11 @@ Namely, we prove the following facts.
 * `Polynomial.Splits.derivative_of_real`: the derivative of a real polynomial that splits
   also splits.
 
+## TODO
+
+* Generalise `Polynomial.Splits.derivative_of_real` to real closed fields once the intermediate
+  value theorem is available for them.
+
 ## Keywords
 
 polynomial, Rolle's Theorem, root
