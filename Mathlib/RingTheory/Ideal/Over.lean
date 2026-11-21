@@ -316,9 +316,8 @@ variable {P} {E : Type*} (σ : B ≃ₐ[A] C)
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
-def algEquivOfEqMap (h : Q = P.map σ.toRingHom) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
-  __ := quotientEquiv P Q σ.toRingEquiv h
-  commutes' := by
+def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  .ofCommutes (quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h) <| by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
