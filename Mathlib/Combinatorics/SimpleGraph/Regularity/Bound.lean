@@ -62,9 +62,9 @@ open SzemerediRegularity
 variable {α : Type*} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
   {u : Finset α} {ε : ℝ}
 
-local notation3 "m" => (card α / stepBound #P.parts : ℕ)
+local notation +delab "m" => (card α / stepBound #P.parts : ℕ)
 
-local notation3 "a" => (card α / #P.parts - m * 4 ^ #P.parts : ℕ)
+local notation +delab "a" => (card α / #P.parts - m * 4 ^ #P.parts : ℕ)
 
 namespace SzemerediRegularity.Positivity
 

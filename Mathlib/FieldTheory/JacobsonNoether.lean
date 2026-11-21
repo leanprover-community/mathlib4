@@ -56,7 +56,7 @@ namespace JacobsonNoether
 
 variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
-local notation3 "k" => Subring.center D
+local notation +delab "k" => Subring.center D
 
 open LinearMap LieAlgebra
 

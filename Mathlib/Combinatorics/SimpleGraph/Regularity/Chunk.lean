@@ -48,7 +48,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Fi
   (hP : P.IsEquipartition) (G : SimpleGraph α) [DecidableRel G.Adj] (ε : ℝ) {U : Finset α}
   (hU : U ∈ P.parts) (V : Finset α)
 
-local notation3 "m" => (card α / stepBound #P.parts : ℕ)
+local notation +delab "m" => (card α / stepBound #P.parts : ℕ)
 
 /-!
 ### Definitions

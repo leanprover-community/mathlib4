@@ -6,7 +6,7 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements
@@ -81,10 +81,10 @@ open Function
 variable (α : Type*)
 
 /-- Local notation for the nonnegative elements of a type `α`. -/
-local notation3 "α≥0" => { x : α // 0 ≤ x }
+local notation +delab "α≥0" => { x : α // 0 ≤ x }
 
 /-- Local notation for the positive elements of a type `α`. -/
-local notation3 "α>0" => { x : α // 0 < x }
+local notation +delab "α>0" => { x : α // 0 < x }
 
 section Abbreviations
 

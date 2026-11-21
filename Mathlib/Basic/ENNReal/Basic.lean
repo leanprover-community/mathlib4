@@ -106,10 +106,10 @@ def ENNReal := WithTop ℝ≥0
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 
--- note: using notation3 rather than notation means that `∞` pretty-prints
+-- note: using `notation +delab` rather than `notation` means that `∞` pretty-prints
 -- as `∞` rather than `top`. Despite this, we still use `top` in the names of lemmas.
 /-- Notation for infinity as an `ENNReal` number. -/
-scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
+scoped[ENNReal] notation +delab "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 

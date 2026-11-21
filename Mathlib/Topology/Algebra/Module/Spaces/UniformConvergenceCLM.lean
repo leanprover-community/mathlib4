@@ -89,11 +89,11 @@ def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] 
 
 @[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation3:25 E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
+notation:25 +delab E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
 
 @[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation3:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
+notation:25 +delab E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
 
 namespace UniformConvergenceCLM
 
