@@ -126,9 +126,8 @@ theorem IsLocalHomeomorph.contMDiff_of_rightInverse
   intro x
   obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt (hg (f x)).symm
   have : f =ᶠ[𝓝 x] (hf.localInverseAt (g (f x))).symm ∘ σ := by
-    refine hfσ.symm.trans ?_
-    have : f =ᶠ[𝓝 (g (f x))] (hf.localInverseAt (g (f x))).symm := by simp
-    exact this.comp_tendsto (hσx.symm ▸ hσ.continuousAt.tendsto)
+    rw [hf.localInverseAt_symm]
+    exact hfσ.symm
   refine ContMDiffAt.congr_of_eventuallyEq ?_ this
   refine ContMDiffAt.comp x ?_ hσ
   rw [hσx]
