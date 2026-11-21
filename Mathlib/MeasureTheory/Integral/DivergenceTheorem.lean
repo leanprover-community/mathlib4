@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
 
+import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!

@@ -80,13 +80,13 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
     simp [h.1.symm]
   · rintro (rfl | h) a b
     · simp [Fin.val_inj]
-    · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
+    · rw [Nat.mod_eq_of_lt (a.isLt.trans_le h), Nat.mod_eq_of_lt (b.isLt.trans_le h), Fin.val_inj]
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff_isEmpty_copy_top_fin]
   by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
-    (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
+    (⟨(f x).val % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   rw [Fin.mk.injEq] at c
   exact absurd c <| f.toHom.map_adj d
 
@@ -262,7 +262,7 @@ theorem nonempty_iso_turanGraph :
   rw [← not_iff_not, not_ne_iff, this, card_parts]
   rcases le_or_gt r (card V) with c | c
   · rw [min_eq_right c]; rfl
-  · have lc : ∀ x, zm ⟨x, _⟩ < card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
+  · have lc : ∀ x, zm ⟨x, _⟩ < card V := fun x ↦ (zm ⟨x, mem_univ x⟩).isLt
     rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),
       ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c)]; rfl
 
@@ -419,7 +419,6 @@ theorem mul_turanNumber_le : 2 * r * turanNumber n r ≤ (r - 1) * n ^ 2 := by
   grw [turanNumber_eq, mul_add, Nat.mul_div_le]
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
   · grw [Nat.mod_le]
-    exact Nat.zero_le _
   rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]

@@ -163,7 +163,7 @@ noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
-  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.property
 
 section
 

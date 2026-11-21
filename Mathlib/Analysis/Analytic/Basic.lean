@@ -232,11 +232,11 @@ theorem HasFPowerSeriesAt.radius_pos (hf : HasFPowerSeriesAt f p x) : 0 < p.radi
 theorem HasFPowerSeriesWithinOnBall.of_le
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (r'_pos : 0 < r') (hr : r' ≤ r) :
     HasFPowerSeriesWithinOnBall f p s x r' :=
-  ⟨le_trans hr hf.1, r'_pos, fun hy h'y => hf.hasSum hy (Metric.eball_subset_eball hr h'y)⟩
+  ⟨le_trans hr hf.r_le, r'_pos, fun hy h'y => hf.hasSum hy (Metric.eball_subset_eball hr h'y)⟩
 
 theorem HasFPowerSeriesOnBall.mono (hf : HasFPowerSeriesOnBall f p x r) (r'_pos : 0 < r')
     (hr : r' ≤ r) : HasFPowerSeriesOnBall f p x r' :=
-  ⟨le_trans hr hf.1, r'_pos, fun hy => hf.hasSum (Metric.eball_subset_eball hr hy)⟩
+  ⟨le_trans hr hf.r_le, r'_pos, fun hy => hf.hasSum (Metric.eball_subset_eball hr hy)⟩
 
 lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
@@ -1120,8 +1120,7 @@ theorem hasFPowerSeriesAt_iff :
       convert! tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
       simp [norm_smul, mul_comm]
     refine lt_of_lt_of_le ?_ this
-    simp only [ENNReal.coe_pos]
-    exact zero_lt_iff.mpr (nnNorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
+    rwa [ENNReal.coe_pos, pos_iff_ne_zero, nnNorm_ne_zero_iff, ← norm_pos_iff]
   · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_

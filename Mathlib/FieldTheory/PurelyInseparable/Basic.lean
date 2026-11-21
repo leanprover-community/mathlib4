@@ -330,7 +330,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
     by_cases h : (⊥ : IntermediateField F E) = ⊤
     · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
-    obtain ⟨x, -, hx⟩ := IsConcreteLE.exists_of_lt (lt_of_le_of_ne bot_le h :)
+    obtain ⟨x, -, hx⟩ := exists_mem_notMem_of_lt (lt_of_le_of_ne bot_le h :)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
     have : finrank F F⟮x⟯ = q ^ m := by
       rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
@@ -502,7 +502,7 @@ theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
   obtain ⟨y, rfl⟩ := h.inseparable' _ <|
     IsSeparable.tower_top L (mem_separableClosure_iff.1 hx)
-  exact y.2
+  exact y.property
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
 separable closure of `F` in `E` if and only if `E` is purely inseparable over it. -/
@@ -615,7 +615,7 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
     have := IsPurelyInseparable.tower_top S L K
     obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
-    exact y.2
+    exact y.property
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then

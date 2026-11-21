@@ -1,4 +1,4 @@
-module  -- shake: keep-all --deprecated_module: ignore
+module -- shake: keep-all -- deprecated_module: ignore
 
 public import Std
 public import Batteries
@@ -802,6 +802,8 @@ public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.Algebra.LieRinehartAlgebra.Defs
+public import Mathlib.Algebra.LieRinehartAlgebra.Quotient
+public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Algebra.Module.Basic
@@ -822,6 +824,8 @@ public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
+public import Mathlib.Algebra.Module.Lattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Full
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
@@ -1157,11 +1161,15 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Round
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
+public import Mathlib.Algebra.Order.Star.Conjugate
 public import Mathlib.Algebra.Order.Star.Int
+public import Mathlib.Algebra.Order.Star.Orthogonal
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Algebra.Order.Star.Projection
 public import Mathlib.Algebra.Order.Star.Rat
 public import Mathlib.Algebra.Order.Star.Real
+public import Mathlib.Algebra.Order.Star.Unitization
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Sub.Prod
@@ -1666,6 +1674,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.FundamentalGroupoid
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
@@ -2104,6 +2113,7 @@ public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.Analysis.FunctionalSpaces.BesselPotentialSpace
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.Hofer
+public import Mathlib.Analysis.InnerProductSpace.Abs
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Basic
@@ -2362,6 +2372,7 @@ public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.GelfandRadiusNorm
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulTrivial
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
@@ -4801,6 +4812,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Segment
@@ -4827,6 +4839,7 @@ public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
+public import Mathlib.Geometry.Euclidean.EulerQuadrilateral
 public import Mathlib.Geometry.Euclidean.Incenter
 public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Incenter.SouthPole
@@ -4850,6 +4863,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Geometry.Euclidean.Volume.Basic
 public import Mathlib.Geometry.Euclidean.Volume.Def
+public import Mathlib.Geometry.Euclidean.Volume.Incenter
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Euclidean.Volume.Triangle
@@ -4991,6 +5005,7 @@ public import Mathlib.GroupTheory.Focal
 public import Mathlib.GroupTheory.Frattini
 public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Center
 public import Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
 public import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
@@ -5087,6 +5102,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 public import Mathlib.GroupTheory.QuotientGroup.ModEq
 public import Mathlib.GroupTheory.QuotientGroup.Simple
+public import Mathlib.GroupTheory.QuotientGroup.UnitsModPow
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.RegularWreathProduct
 public import Mathlib.GroupTheory.ResiduallyFinite
@@ -5285,10 +5301,12 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
+public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.HodgeStar
+public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
@@ -5415,6 +5433,7 @@ public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.LinearAlgebra.Matrix.Stochastic
 public import Mathlib.LinearAlgebra.Matrix.Swap
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Symmetrizable
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.Matrix.Trace
@@ -6123,6 +6142,7 @@ public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.QExpansionInjective
 public import Mathlib.NumberTheory.ModularForms.RamanujanFormula
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -6159,6 +6179,7 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.HeckeLFunction
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
@@ -7733,7 +7754,9 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
@@ -7785,6 +7808,7 @@ public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
+public import Mathlib.Tactic.Linter.NumericProjection
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PPRoundtrip
@@ -8161,6 +8185,7 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.ApproximateUnit
+public import Mathlib.Topology.Baire.Absorbent
 public import Mathlib.Topology.Baire.BaireMeasurable
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Topology.Baire.Lemmas
@@ -8289,6 +8314,7 @@ public import Mathlib.Topology.ContinuousMap.CocompactMap
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero.Unitization
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.ContinuousMap.Ideals

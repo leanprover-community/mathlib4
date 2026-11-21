@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Algebra.Field.Subfield.Basic
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # Filtered colimits of local rings via local homomorphisms are local rings

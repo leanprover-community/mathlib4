@@ -283,9 +283,9 @@ theorem toSquareBlockProp_lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) �
 rows `[i+1 ... n-1]` and columns `[i ... n-2]` of `M`. -/
 theorem toSquareBlockProp_lastColMinor_not_lt (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α)
     (i : Fin n) : (M.lastColMinor i).toSquareBlockProp (¬ · < i) =
-      of fun a b => M a.1.succ b.1.castSucc := by
-  have hrow (a : {j : Fin n // ¬ j < i}) : i.castSucc.succAbove a = a.1.succ :=
-    Fin.succAbove_castSucc_of_le _ _ (not_lt.mp a.2)
+      of fun a b => M a.val.succ b.val.castSucc := by
+  have hrow (a : {j : Fin n // ¬ j < i}) : i.castSucc.succAbove a = a.val.succ :=
+    Fin.succAbove_castSucc_of_le _ _ (not_lt.mp a.property)
   ext a b
   simp [toSquareBlockProp_def, hrow]
 

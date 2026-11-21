@@ -24,11 +24,11 @@ namespace Set
 variable {J : Type u} [Preorder J] {S : Set J} (m : S)
 
 lemma not_isMax_coe (hm : ¬ IsMax m) :
-    ¬ IsMax m.1 :=
+    ¬ IsMax m.val :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
 lemma not_isMin_coe (hm : ¬ IsMin m) :
-    ¬ IsMin m.1 :=
+    ¬ IsMin m.val :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
 end Set

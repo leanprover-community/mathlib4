@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
+
+import Mathlib.Basic.ENNReal.Action
 
 /-!
 # Induced Outer Measure
