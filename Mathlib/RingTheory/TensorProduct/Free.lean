@@ -90,7 +90,7 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
-  apply (basis A b').ext
+  apply (basis A b').ext_linearMap
   intro k
   conv_lhs => simp only [basis_apply, baseChange_tmul]
   simp_rw [Basis.linearMap_apply_apply, basis_apply]

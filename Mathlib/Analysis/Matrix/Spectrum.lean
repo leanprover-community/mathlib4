@@ -127,7 +127,8 @@ open Unitary
 theorem conjStarAlgAut_star_eigenvectorUnitary :
     conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
-  apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
+  apply Matrix.toEuclideanLin.injective <|
+    (EuclideanSpace.basisFun n 𝕜).toBasis.ext_linearMap fun i ↦ ?_
   simp only [conjStarAlgAut_star_apply, toLpLin_apply, OrthonormalBasis.coe_toBasis,
     EuclideanSpace.basisFun_apply, PiLp.ofLp_single, ← mulVec_mulVec,
     eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,

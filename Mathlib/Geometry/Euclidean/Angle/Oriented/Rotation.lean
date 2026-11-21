@@ -93,7 +93,7 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
     (o.rotation θ).toLinearMap =
       Matrix.toLin (o.basisRightAngleRotation x hx) (o.basisRightAngleRotation x hx)
         !![θ.cos, -θ.sin; θ.sin, θ.cos] := by
-  apply (o.basisRightAngleRotation x hx).ext
+  apply (o.basisRightAngleRotation x hx).ext_linearMap
   intro i
   fin_cases i
   · rw [Matrix.toLin_self]
@@ -333,7 +333,7 @@ theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
   use o.oangle x (f x)
   apply LinearIsometryEquiv.toLinearEquiv_injective
   apply LinearEquiv.toLinearMap_injective
-  apply (o.basisRightAngleRotation x hx).ext
+  apply (o.basisRightAngleRotation x hx).ext_linearMap
   intro i
   symm
   fin_cases i

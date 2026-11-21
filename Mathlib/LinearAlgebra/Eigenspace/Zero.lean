@@ -165,7 +165,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   let bW := chooseBasis K W
   let b := bV.prod bW
   have hψ : ψ = e.symm.conj φ := by
-    apply b.ext
+    apply b.ext_linearMap
     simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
       LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,

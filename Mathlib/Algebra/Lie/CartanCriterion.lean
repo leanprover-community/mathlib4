@@ -141,7 +141,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
         have h₂ (i j : I) : ⁅y, v.end (i, j)⁆ = (fμ i - fμ j) • v.end (i, j) := by
           rw [instLieRingModule_eq, v.lie_end_of_apply_eq_smul fμ y hyv]
         obtain ⟨r, hr⟩ := exists_polynomial_eval_sub_aux μ hμ f
-        refine ⟨r, v.end.ext fun ⟨i, j⟩ ↦ ?_⟩
+        refine ⟨r, v.end.ext_linearMap fun ⟨i, j⟩ ↦ ?_⟩
         rw [ad_apply, ← instLieRingModule_eq, aeval_apply_of_mem_apply_eq_smul (h₁ i j), hr, h₂]
         rfl
       obtain ⟨p, hp⟩ : ∃ p : K[X], p.aeval (ad K _ (φ x)) = ad K _ s :=
@@ -158,7 +158,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
     rw [adjoin_singleton_eq_range_aeval]
     obtain ⟨q, hq⟩ : ∃ q : K[X], ∀ i, q.eval (μ i) = fμ i :=
       (Polynomial.exists_eval_eq_iff μ fμ).mpr <| by aesop
-    refine ⟨q, v.ext fun i ↦ ?_⟩
+    refine ⟨q, v.ext_linearMap fun i ↦ ?_⟩
     rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, aeval_apply_of_mem_apply_eq_smul (hsv i), hq, hyv]
   /- By general results we need only prove `trace K M (φ x * y) = ∑ i, fμ i * μ i`. -/
   suffices trace K M (φ x * y) = ∑ i, fμ i * μ i from

@@ -171,7 +171,7 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   have h3 : φ (Pi.single s 1) = 1 := by
     rwa [Fintype.sum_eq_single s h2] at h1
   use s
-  refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
+  refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext_linearMap fun t ↦ ?_)
   by_cases t = s <;> simp_all
 
 namespace Module

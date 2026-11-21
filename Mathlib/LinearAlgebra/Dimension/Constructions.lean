@@ -635,7 +635,7 @@ theorem sumQuot_repr_inr (v : V) (j : n) :
   rw [← LinearMap.comp_apply]
   revert v
   rw [← LinearMap.ext_iff]
-  apply (sumQuot bW bQ).ext
+  apply (sumQuot bW bQ).ext_linearMap
   intro x
   induction x with
   | inl i =>

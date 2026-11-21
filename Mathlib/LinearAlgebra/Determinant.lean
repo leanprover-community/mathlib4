@@ -740,7 +740,7 @@ coordinates provided by `v` in terms of determinants relative to `e`. -/
 theorem det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent R v)
     (hsp : ⊤ ≤ span R (range v)) (i : ι) :
     e.det v • (Basis.mk hli hsp).coord i = e.det.toMultilinearMap.toLinearMap v i := by
-  apply (Basis.mk hli hsp).ext
+  apply (Basis.mk hli hsp).ext_linearMap
   intro k
   rcases eq_or_ne k i with (rfl | hik) <;>
     simp only [smul_eq_mul, coe_mk, LinearMap.smul_apply,

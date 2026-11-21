@@ -441,9 +441,9 @@ theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : D
 @[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistrib R M N).comp (dualDistribInvOfBasis b c) = LinearMap.id := by
-  apply (b.tensorProduct c).dualBasis.ext
+  apply (b.tensorProduct c).dualBasis.ext_linearMap
   rintro ⟨i, j⟩
-  apply (b.tensorProduct c).ext
+  apply (b.tensorProduct c).ext_linearMap
   rintro ⟨i', j'⟩
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
@@ -457,7 +457,7 @@ lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Bas
 @[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistribInvOfBasis b c).comp (dualDistrib R M N) = LinearMap.id := by
-  apply (b.dualBasis.tensorProduct c.dualBasis).ext
+  apply (b.dualBasis.tensorProduct c.dualBasis).ext_linearMap
   rintro ⟨i, j⟩
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,

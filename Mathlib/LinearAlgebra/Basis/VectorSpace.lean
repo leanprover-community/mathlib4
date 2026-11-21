@@ -250,7 +250,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
   have Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext_linearMap fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.property⟩ := by
     change f b = Basis.extend this _
@@ -374,7 +374,7 @@ theorem exists_basis_of_pairing_ne_zero
   have hi : b i = v := by simp [b, i]
   refine ⟨n, b, i, by simp [b, i], ?_⟩
   rw [← hi]
-  apply b.ext
+  apply b.ext_linearMap
   intro j
   by_cases h : i = j
   · simp [h]
@@ -424,7 +424,7 @@ theorem exists_basis_of_pairing_eq_zero
   refine ⟨n, b, ⟨v, by simp [n, hvs]⟩, ⟨w, by simp [n]⟩, ?_, by simp [b], ?_⟩
   · apply_fun (f ∘ (↑))
     simp [hw]
-  · apply b.ext
+  · apply b.ext_linearMap
     intro i
     rw [Basis.coord_apply, Basis.repr_self]
     simp only [b]

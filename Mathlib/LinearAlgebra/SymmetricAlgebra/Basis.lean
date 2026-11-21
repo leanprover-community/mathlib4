@@ -50,7 +50,7 @@ noncomputable def equivMvPolynomial (b : Basis κ R M) :
     (SymmetricAlgebra.lift <| Basis.constr b R .X)
     (MvPolynomial.aeval fun i ↦ ι R M (b i))
     (MvPolynomial.algHom_ext fun i ↦ by simp)
-    (algHom_ext <| b.ext fun i ↦ by simp)
+    (algHom_ext <| b.ext_linearMap fun i ↦ by simp)
 
 @[simp]
 lemma equivMvPolynomial_ι_apply (b : Basis κ R M) (i : κ) :
