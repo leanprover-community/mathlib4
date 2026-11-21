@@ -46,8 +46,8 @@ variable {M : Type*} [TopologicalSpace M]
 open scoped ContDiff Manifold Topology
 
 -- TODO: find proper name for this
-lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧
-      ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) (p q : M) :
+lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
+    (p q : M) :
     ContMDiffOn I I n ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q)
       ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q).source := by
   set τ := (hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q
@@ -78,10 +78,8 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M]
   rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, (chartAt H (g x)).symm.trans_assoc,
     ← (hf.localInverseAt (g x)).symm.trans_assoc]
   refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
-    (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _) (foo hf h _ _) ?_
-  simpa only [← OpenPartialHomeomorph.symm_source,
-    OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm] using
-    foo hf h (g y) (g x)
+    (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
+    (foo hf h _ _) (foo hf h _ _)
 
 -- TODO: this and the lemma below use a very similar argument. can this be simplified?
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
