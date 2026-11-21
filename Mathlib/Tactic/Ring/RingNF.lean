@@ -238,6 +238,18 @@ macro (name := ringConv) "ring" : conv =>
 
 end RingNF
 
+namespace ClickSuggestions.Normalize
+
+/-- The entry for `ring_nf` in `#click_suggestions`. -/
+meta def ringNF : NormTactic where
+  tacStx loc? := `(tactic| ring_nf $[$loc?]?)
+  convStx := `(conv| ring_nf)
+  run e := runNF e RingNF.evalExpr (RingNF.cleanup {})
+
+meta initialize normTacticRef.modify (·.push ringNF)
+
+end ClickSuggestions.Normalize
+
 end Mathlib.Tactic
 
 /-!
