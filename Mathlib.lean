@@ -1779,6 +1779,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometr
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Note
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Orthogonal
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
