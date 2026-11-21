@@ -462,8 +462,11 @@ theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
     ← rpow_natCast, log_rpow zero_lt_two, cast_ofNat]
   linarith [log_two_lt_d9]
 
-theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
+theorem lower_bound_le_one (hN' : N ≤ 4096) :
     (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
+  obtain rfl | rfl | hN : N = 0 ∨ N = 1 ∨ 2 ≤ N := by lia
+  · simp
+  · simp
   rw [← log_le_log_iff (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
@@ -473,18 +476,15 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
   apply le_trans _ four_zero_nine_six_lt_exp_sixteen.le
   exact mod_cast hN'
 
-theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
-    (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
-  obtain rfl | hN := hN.eq_or_lt
-  · simp
-  · exact lower_bound_le_one' hN hN'
+@[deprecated (since := "2026-11-04")]
+alias lower_bound_le_one' := lower_bound_le_one
 
 theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · simp
   obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
-  · apply (lower_bound_le_one hN h₁.le).trans
+  · apply (lower_bound_le_one h₁.le).trans
     simpa using! rothNumberNat.monotone hN
 
 end Behrend
