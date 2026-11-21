@@ -5,6 +5,7 @@ Authors: David Ledvinka, Emlis
 -/
 module
 
+public import Mathlib.Data.Rat.Floor
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 /-!
@@ -37,21 +38,31 @@ section DyadicDiv
 
 variable (a b : Dyadic) (prec : ℤ)
 
-/-- TODO doc -/
+/-- Divide two dyadic numbers, rounding the quotient downward to the `2⁻prec` grid. -/
 @[expose]
 def Dyadic.fdiv : Dyadic :=
   match a, b with
-  | ofOdd m p _, ofOdd n q _ => match prec + q - p with
-    | .ofNat k => .ofIntWithPrec ((m <<< k).fdiv n) prec
-    | .negSucc k => .ofIntWithPrec (m.fdiv (n <<< k)) prec
+  | ofOdd m p _, ofOdd n q _ =>
+    .ofIntWithPrec ((m <<< (prec + q - p).toNat).fdiv (n <<< (-(prec + q - p)).toNat)) prec
   | _, _ => 0
 
-/-- TODO doc -/
+/-- Divide two dyadic numbers, rounding the quotient upward to the `2⁻prec` grid. -/
 @[expose]
 def Dyadic.cdiv : Dyadic := -fdiv (-a) b prec
 
 theorem fdiv_le : (fdiv a b prec).toRat ≤ a.toRat / b.toRat := by
-  sorry
+  rcases a with _ | ⟨m, p, -⟩
+  · simp [fdiv]
+  rcases b with _ | ⟨n, q, -⟩
+  · simp [fdiv]
+  grw [fdiv, toRat_ofIntWithPrec_eq_mul_two_pow, Int.fdiv_eq_floor, Int.floor_le]
+  on_goal 2 => exact Rat.zpow_nonneg rfl
+  simp only [toRat_ofOdd_eq_mul_two_pow, Int.shiftLeft_eq, Int.cast_mul, Int.cast_pow,
+    Int.cast_ofNat]
+  rw [mul_div_mul_comm, ← zpow_natCast, ← zpow_natCast, ← zpow_sub₀ two_ne_zero,
+    Int.toNat_sub_toNat_neg, Rat.mul_assoc, ← zpow_add₀ two_ne_zero,
+    ← sub_eq_add_neg, add_sub_assoc, add_sub_cancel_left,
+    mul_div_mul_comm, ← zpow_sub₀ two_ne_zero, neg_sub_neg]
 
 theorem le_cdiv : a.toRat / b.toRat ≤ (cdiv a b prec).toRat := by
   rw [cdiv, ← neg_neg a.toRat, toRat_neg, neg_div, neg_le_neg_iff, ← toRat_neg]
