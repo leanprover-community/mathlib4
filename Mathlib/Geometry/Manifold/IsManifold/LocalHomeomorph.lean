@@ -152,13 +152,12 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
   have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
     have hT : (hf.localInverseAt (g x')).source ∈ 𝓝 x' := by
       refine (hf.localInverseAt (g x')).open_source.mem_nhds ?_
-      simpa [hg x'] using hf.apply_self_mem_localInverseAt_source (x:= g x')
+      simpa [hg x'] using hf.apply_self_mem_localInverseAt_source (x := g x')
     filter_upwards [hT] with x hx
     simp [hf.apply_localInverseAt_of_mem hx]
-  apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
-  apply ContMDiffAt.comp (I' := I) x'
-  · exact hφ.contMDiffAt
-  · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
+  refine ContMDiffAt.congr_of_eventuallyEq ?_ this
+  refine ContMDiffAt.comp x' hφ.contMDiffAt ?_
+  exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
 
 -- TODO: decide whether to keep this result
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
