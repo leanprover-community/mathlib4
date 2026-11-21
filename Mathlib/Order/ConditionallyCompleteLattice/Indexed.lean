@@ -362,7 +362,7 @@ variable [WellFoundedLT α]
 theorem exists_eq_iInf [Nonempty ι] (f : ι → α) : ∃ i, f i = ⨅ i, f i :=
   csInf_mem (range_nonempty f)
 
-@[deprecated exists_eq_iInf (since := "2026-08-16")]
+@[deprecated exists_eq_iInf +typeChanged (since := "2026-08-16")]
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   exists_eq_iInf f
 
