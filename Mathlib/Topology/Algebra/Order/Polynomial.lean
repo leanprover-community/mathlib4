@@ -144,8 +144,9 @@ theorem tendsto_atBot_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
 
 theorem tendsto_atBot_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
     (h : P.degree ≤ 0) : Tendsto P.eval atBot (𝓝 P.leadingCoeff) := by
-  simpa [← tendsto_comp_neg_atTop_iff, natDegree_eq_zero_iff_degree_le_zero.mpr h] using
-    (P.comp (-X)).tendsto_atTop_nhds_of_degree_le_zero (by simpa using h)
+  rw [← tendsto_comp_neg_atTop_iff]
+  convert (P.comp (-X)).tendsto_atTop_nhds_of_degree_le_zero _ using 2 <;>
+    simp_all [← natDegree_eq_zero_iff_degree_le_zero]
 
 end PolynomialAtBot
 
