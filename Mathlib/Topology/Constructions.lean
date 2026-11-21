@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Constructions.SumProd
 
 import Mathlib.Order.Filter.Curry
@@ -61,6 +62,7 @@ instance instTopologicalSpaceSigma {ι : Type*} {X : ι → Type v} [t₂ : ∀ 
     TopologicalSpace (Sigma X) :=
   ⨆ i, coinduced (Sigma.mk i) (t₂ i)
 
+@[wikidata Q1070472]
 instance Pi.topologicalSpace {ι : Type*} {Y : ι → Type v} [t₂ : (i : ι) → TopologicalSpace (Y i)] :
     TopologicalSpace ((i : ι) → Y i) :=
   ⨅ i, induced (fun f => f i) (t₂ i)
