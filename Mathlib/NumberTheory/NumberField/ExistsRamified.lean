@@ -63,7 +63,7 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
   have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _
   have : NumberField K := { to_finiteDimensional := Module.Finite.of_isLocalization ℤ 𝒪 ℤ⁰ }
   have := NumberField.finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
-  have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom _ _ _)
+  have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom ℤ ℚ K)
     (Algebra.finrank_eq_one_iff_bijective_algebraMap.mp this)) (by simp)
   exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 

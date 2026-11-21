@@ -71,10 +71,10 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
         (@Fintype.card_le_of_injective (zpowers a)
           (({b : α | b ^ orderOf a = 1} : Finset _) : Set α) (id _) (id _)
           (fun b =>
-            ⟨b.1,
+            ⟨b.val,
               mem_filter.2
                 ⟨mem_univ _, by
-                  let ⟨i, hi⟩ := b.2
+                  let ⟨i, hi⟩ := b.property
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.ext (Subtype.mk.inj h))
@@ -282,7 +282,7 @@ theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Sub
   rw [isCyclic_iff_exists_zpowers_eq_top]
   obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
   · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
-  · refine IsConcreteLE.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
+  · refine exists_mem_notMem_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
     by_contra hne
     obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
     exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))

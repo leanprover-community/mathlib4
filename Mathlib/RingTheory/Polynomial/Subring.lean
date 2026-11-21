@@ -57,7 +57,7 @@ theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n 
   · rfl
 
 @[deprecated coeff_toSubring (since := "2026-11-16")]
-theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n := by
+theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).val = coeff p n := by
   simp
 
 @[simp]

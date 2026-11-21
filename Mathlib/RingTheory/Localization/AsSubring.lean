@@ -29,7 +29,7 @@ section CommRing
 variable [CommRing K] [Algebra A K] [IsFractionRing A K]
 
 theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) := by
-  apply IsLocalization.map_units K (⟨s.1, hS s.2⟩ : A⁰)
+  apply IsLocalization.map_units K (⟨s.val, hS s.property⟩ : A⁰)
 
 /-- The canonical map from a localization of `A` at `S` to the fraction ring
   of `A`, given that `S ≤ A⁰`. -/
@@ -50,7 +50,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
   ⟨by
     rintro ⟨x, rfl⟩
     obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-    use a, s, s.2
+    use a, s, s.property
     apply IsLocalization.lift_mk', by
     rintro ⟨a, s, hs, rfl⟩
     use IsLocalization.mk' _ a ⟨s, hs⟩

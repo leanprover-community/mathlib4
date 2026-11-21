@@ -139,8 +139,7 @@ theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr absConvexHull_eq_empty
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 

@@ -241,6 +241,7 @@ def univ : Class :=
 @[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Top Class := ⟨univ⟩
 
+set_option linter.deprecated false in
 deriving instance CompleteLattice for Class
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
@@ -343,6 +344,7 @@ scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   sSup (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
 
@@ -352,6 +354,7 @@ Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   sInf (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
 
@@ -552,7 +555,7 @@ theorem choice_cmem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) : choice x �
   exact choice_mem_aux x h y yx
 
 private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
-    (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
+    (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).val.out) = s := by
   ext x
   rw [SetLike.mem_coe, ← mk_out x, mk_mem_iff, mk_out]
   refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
@@ -565,9 +568,10 @@ private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x, x.small_coe⟩
-  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).1.out
+  invFun := fun ⟨s, _⟩ ↦
+    mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).val.out
   left_inv := private Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
-    fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.2
-  right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
+    fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.property
+  right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.property
 
 end ZFSet

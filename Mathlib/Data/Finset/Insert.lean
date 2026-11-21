@@ -98,13 +98,12 @@ theorem singleton_inj : ({a} : Finset α) = {b} ↔ a = b :=
 theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
   ⟨a, mem_singleton_self a⟩
 
-@[simp]
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-11")]
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
-@[simp]
-theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
-  (singleton_ne_empty a).symm
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-14")]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) := by simp
 
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
@@ -202,7 +201,7 @@ lemma Nontrivial.not_subset_singleton (hs : s.Nontrivial) : ¬s ⊆ {a} :=
   mod_cast hs.coe.not_subset_singleton
 
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
-  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, (singleton_nonempty _).ne_empty⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
@@ -210,7 +209,7 @@ instance [IsEmpty α] : Unique (Finset α) where
 
 instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
-  uniq j := Subtype.ext <| mem_singleton.mp j.2
+  uniq j := Subtype.ext <| mem_singleton.mp j.property
 
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
@@ -289,7 +288,8 @@ theorem cons_empty (a : α) : cons a ∅ (notMem_empty _) = {a} := rfl
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+@[deprecated cons_nonempty +typeChanged (since := "2026-11-11")]
+theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
@@ -432,7 +432,7 @@ theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a 
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
   ⟨a, mem_insert_self a s⟩
 
-@[simp]
+@[deprecated insert_nonempty +typeChanged (since := "2026-11-11")]
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 
@@ -537,8 +537,8 @@ lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a h
 /-- Inserting an element to a finite set is equivalent to the option type. -/
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
-  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
+  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.property).resolve_left h⟩
+  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.property⟩
   left_inv y := by grind
   right_inv := by rintro (_ | y) <;> grind
 
@@ -617,7 +617,7 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 
 @[simp]
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
-  simp [Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 end List
 
