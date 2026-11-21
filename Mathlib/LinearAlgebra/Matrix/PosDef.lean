@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
-public import Mathlib.Data.Int.Interval
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Data.Int.Interval
+import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-! # Positive Definite Matrices
 

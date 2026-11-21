@@ -5,9 +5,10 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Subobject.Lattice
+
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Subobjects satisfying a property of objects

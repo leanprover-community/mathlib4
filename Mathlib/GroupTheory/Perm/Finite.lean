@@ -8,7 +8,8 @@ module
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support.Finset.Card
-public import Mathlib.Logic.Equiv.Fintype
+
+import Mathlib.Logic.Equiv.Fintype
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

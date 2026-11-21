@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
+
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Quotients by submodules

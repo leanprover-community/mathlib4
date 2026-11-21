@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Tactic.Linarith
+
+import Mathlib.Algebra.Module.Equiv.Basic
 
 /-! # Shifting cochains
 
