@@ -259,13 +259,12 @@ section Restrict
 
 /-- The restriction of a presheafed space along an open embedding into the space.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : PresheafedSpace C where
   carrier := U
   presheaf := h.functor.op ⋙ X.presheaf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps]
@@ -308,7 +307,6 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.carri
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 
-set_option backward.defeqAttrib.useBackward true in
 theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.isOpenEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
@@ -316,7 +314,6 @@ theorem restrict_top_presheaf (X : PresheafedSpace C) :
   rw [Opens.inclusion'_top_functor X.carrier]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofRestrict_top_c (X : PresheafedSpace C) :
     (X.ofRestrict (Opens.isOpenEmbedding ⊤)).c =
       eqToHom
