@@ -5,8 +5,11 @@ Authors: Pepa Montero
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Topology.Covering.Quotient
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Manifold structure induced by a local homeomorphism
