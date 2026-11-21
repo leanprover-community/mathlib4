@@ -74,7 +74,7 @@ theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞
     fun p hp hprime ↦ ?_
   have : Fact p.Prime := ⟨hprime⟩
   obtain ⟨P⟩ := (span {(p : ℤ)}).nonempty_primesOver (S := 𝓞 K)
-  refine ⟨P, P.prop, Or.inl ?_⟩
+  refine ⟨P, P.prop, .inl ?_⟩
   rw [floor_minkowskiNormBound_seven K] at hp ⊢
   obtain ⟨hpl, hpu⟩ := Finset.mem_Icc.mp hp
   interval_cases p <;> try exact absurd hprime (by decide)
