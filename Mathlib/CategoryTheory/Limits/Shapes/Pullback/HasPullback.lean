@@ -256,26 +256,13 @@ instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) 
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pullback f₁ g₁ ≅ pullback f₂ g₂` -/
-@[to_dual
+@[to_dual (attr := simps)
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pushout f₁ g₁ ≅ pullback f₂ g₂` -/]
 def pullback.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h₁ : f₁ = f₂) (h₂ : g₁ = g₂)
-    [HasPullback f₁ g₁] [HasPullback f₂ g₂] : pullback f₁ g₁ ≅ pullback f₂ g₂ :=
-  asIso <| pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
-
-@[to_dual (attr := simp) congrHom_inv]
-theorem pullback.congrHom_hom {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h₁ : f₁ = f₂)
-    (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
-    (pullback.congrHom h₁ h₂).hom =
-      pullback.map f₁ g₁ f₂ g₂ (𝟙 X) (𝟙 Y) (𝟙 Z) (by simp [h₁]) (by simp [h₂]) := by
-  rfl
-
-@[to_dual (attr := simp) congrHom_hom]
-theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h₁ : f₁ = f₂)
-    (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
-    (pullback.congrHom h₁ h₂).inv =
-      pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext <;> simp [Iso.inv_comp_eq]
+    [HasPullback f₁ g₁] [HasPullback f₂ g₂] : pullback f₁ g₁ ≅ pullback f₂ g₂ where
+  hom := pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
+  inv := pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
 
 @[to_dual]
 theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S) (i' : S ⟶ S')
