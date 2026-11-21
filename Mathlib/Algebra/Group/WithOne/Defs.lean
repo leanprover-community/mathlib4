@@ -47,7 +47,7 @@ instance WithZero.instRepr [Repr α] : Repr (WithZero α) :=
   ⟨fun o _ =>
     match o with
     | none => "0"
-    | some a => "↑" ++ repr a⟩
+    | some a => "↑" ++ reprArg a⟩
 
 namespace WithOne
 
@@ -56,7 +56,7 @@ instance [Repr α] : Repr (WithOne α) :=
   ⟨fun o _ =>
     match o with
     | none => "1"
-    | some a => "↑" ++ repr a⟩
+    | some a => "↑" ++ reprArg a⟩
 
 @[to_additive]
 instance instMonad : Monad WithOne :=
