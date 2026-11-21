@@ -409,3 +409,133 @@ def Fin.appendEquiv {α : Type*} (m n : ℕ) :
 @[simps!]
 def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
   (appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
+
+namespace Fin.Perm
+
+open Equiv
+
+section removeNth
+
+/-- Removes the `i`-th entry of a permutation and collapses the domain and range to `Fin n`. -/
+def removeNth (σ : Perm (Fin (n + 1)))
+    (i : Fin (n + 1)) : Perm (Fin n) :=
+  ((finSuccAboveEquiv i).trans
+    (σ.subtypeEquiv (p := fun x ↦ x ≠ i) (q := fun x ↦ x ≠ σ i) (by
+      intro x
+      constructor
+      · intro hx h
+        exact hx (σ.injective h)
+      · intro hx h
+        exact hx (by simpa using congrArg σ h)))).trans
+    (finSuccAboveEquiv (σ i)).symm
+
+variable {σ : Perm (Fin (n + 1))} {i : Fin (n + 1)} {j : Fin n}
+
+theorem removeNth_of_castSucc_lt₁ (h₁ : j.castSucc < i) (h₂ : σ j.castSucc < σ i) :
+    (removeNth σ i j).castSucc = σ j.castSucc := by
+  unfold removeNth
+  simp only [ne_eq, Equiv.trans_apply, Equiv.subtypeEquiv_apply, finSuccAboveEquiv_apply]
+  conv =>
+    lhs
+    rhs
+    rhs
+    congr
+    rw [succAbove_of_castSucc_lt i j h₁]
+  have h : ∃ k : Fin n, k.castSucc = σ j.castSucc := by
+    rw [exists_castSucc_eq]
+    exact Fin.ne_last_of_lt h₂
+  rcases h with ⟨k, hk⟩
+  have : (finSuccAboveEquiv (σ i)).symm ⟨σ j.castSucc, Fin.ne_of_lt h₂⟩ = k := by
+    rw [Equiv.symm_apply_eq, finSuccAboveEquiv_apply]
+    simp only [ne_eq, Subtype.mk.injEq]
+    rw [succAbove_of_castSucc_lt _ _ (by rw [hk]; exact h₂), hk]
+  rw [this, hk]
+
+theorem removeNth_of_castSucc_lt₂ (h₁ : j.castSucc < i) (h₂ : σ i < σ j.castSucc) :
+    (removeNth σ i j).succ = σ j.castSucc := by
+  unfold removeNth
+  simp only [ne_eq, Equiv.trans_apply, Equiv.subtypeEquiv_apply, finSuccAboveEquiv_apply]
+  conv =>
+    lhs
+    rhs
+    rhs
+    congr
+    rw [succAbove_of_castSucc_lt i j h₁]
+  have h : ∃ k : Fin n, k.succ = σ j.castSucc := by
+    rw [exists_succ_eq]
+    exact Fin.ne_zero_of_lt h₂
+  rcases h with ⟨k, hk⟩
+  have : (finSuccAboveEquiv (σ i)).symm ⟨σ j.castSucc, (Fin.ne_of_lt h₂).symm⟩ = k := by
+    rw [Equiv.symm_apply_eq, finSuccAboveEquiv_apply]
+    simp only [ne_eq, Subtype.mk.injEq]
+    rw [succAbove_of_lt_succ _ _ (by rw [hk]; exact h₂), hk]
+  rw [this, hk]
+
+theorem removeNth_of_le_castSucc₁ (h₁ : i ≤ j.castSucc) (h₂ : σ j.succ < σ i) :
+    (removeNth σ i j).castSucc = σ j.succ := by
+  unfold removeNth
+  simp only [ne_eq, Equiv.trans_apply, Equiv.subtypeEquiv_apply, finSuccAboveEquiv_apply]
+  conv =>
+    lhs
+    rhs
+    rhs
+    congr
+    rw [succAbove_of_le_castSucc i j h₁]
+  have h : ∃ k : Fin n, k.castSucc = σ j.succ := by
+    rw [exists_castSucc_eq]
+    exact Fin.ne_last_of_lt h₂
+  rcases h with ⟨k, hk⟩
+  have : (finSuccAboveEquiv (σ i)).symm ⟨σ j.succ, Fin.ne_of_lt h₂⟩ = k := by
+    rw [Equiv.symm_apply_eq, finSuccAboveEquiv_apply]
+    simp only [ne_eq, Subtype.mk.injEq]
+    rw [succAbove_of_castSucc_lt _ _ (by rw [hk]; exact h₂), hk]
+  rw [this, hk]
+
+theorem removeNth_of_le_castSucc₂ (h₁ : i ≤ j.castSucc) (h₂ : σ i < σ j.succ) :
+    (removeNth σ i j).succ = σ j.succ := by
+  unfold removeNth
+  simp only [ne_eq, Equiv.trans_apply, Equiv.subtypeEquiv_apply, finSuccAboveEquiv_apply]
+  conv =>
+    lhs
+    rhs
+    rhs
+    congr
+    rw [succAbove_of_le_castSucc i j h₁]
+  have h : ∃ k : Fin n, k.succ = σ j.succ := by
+    rw [exists_succ_eq]
+    exact Fin.ne_zero_of_lt h₂
+  rcases h with ⟨k, hk⟩
+  have : (finSuccAboveEquiv (σ i)).symm ⟨σ j.succ, (Fin.ne_of_lt h₂).symm⟩ = k := by
+    rw [Equiv.symm_apply_eq, finSuccAboveEquiv_apply]
+    simp only [ne_eq, Subtype.mk.injEq]
+    rw [succAbove_of_lt_succ _ _ (by rw [hk]; exact h₂), hk]
+  rw [this, hk]
+
+@[simp]
+theorem succAbove_removeNth (i : Fin (n + 1)) (j : Fin n) :
+    (σ i).succAbove (removeNth σ i j) = σ (i.succAbove j) := by
+  change (((finSuccAboveEquiv (σ i)) ((removeNth σ i) j)).1) = _
+  simp [removeNth, finSuccAboveEquiv_apply]
+
+end removeNth
+
+section castSucc
+
+variable {n : ℕ} (σ : Perm (Fin n))
+
+/-- Embeds the permutations of `Fin n` into those of `Fin (n + 1)`, fixing the last -/
+def castSucc : Perm (Fin (n + 1)) :=
+  (finSuccEquiv n).trans ((Equiv.optionCongr σ).trans (finSuccEquiv n).symm)
+
+@[simp]
+theorem castSucc_zero : Fin.Perm.castSucc σ 0 = 0 := by
+  simp [Fin.Perm.castSucc]
+
+@[simp]
+theorem castSucc_succ (i : Fin n) :
+    Fin.Perm.castSucc σ i.succ = (σ i).succ := by
+  simp [Fin.Perm.castSucc]
+
+end castSucc
+
+end Fin.Perm
