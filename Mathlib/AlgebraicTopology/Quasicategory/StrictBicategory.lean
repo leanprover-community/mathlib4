@@ -62,6 +62,7 @@ def QCat.forgetEnrichment.equiv :
     ForgetEnrichment Cat QCat ≌ QCat := ForgetEnrichment.equiv Cat
 
 /-- The bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
+@[nolint instanceDiamonds]
 instance QCat.bicategory : Bicategory QCat :=
   CatEnrichedOrdinary.instBicategory
 
