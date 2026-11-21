@@ -95,8 +95,7 @@ theorem convexHull_eq_empty : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr convexHull_eq_empty
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 

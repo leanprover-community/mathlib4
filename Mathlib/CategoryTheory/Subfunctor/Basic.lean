@@ -179,10 +179,10 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     ext U x
     apply (iff_of_eq (iff_true _)).mpr
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
-    exact ((inv (G.ι.app U)) x).2
+    exact ((inv (G.ι.app U)) x).property
 
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
-    (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
+    (x : F'.obj U) : (f.app V (F'.map i x)).val = F.map i (f.app U x).val :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
 
 end Subfunctor

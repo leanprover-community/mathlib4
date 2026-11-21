@@ -121,12 +121,12 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
   let P : Sylow p G := default
   rw [← hp.pow_dvd_iff_le_factorization Monoid.exponent_ne_zero_of_finite,
       ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
-  exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
+  exact Monoid.exponent_dvd_of_monoidHom P.toSubgroup.subtype P.toSubgroup.subtype_injective
 
 open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
-  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
-    ⟨Nat.prime_of_mem_primeFactors p.2⟩
+  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.val.Prime :=
+    ⟨Nat.prime_of_mem_primeFactors p.property⟩
   obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 1 5).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
@@ -223,7 +223,7 @@ theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
     refine ⟨fun k hk g hg ↦ P.mul_mem ((hKP hk g).mp hg) (P.inv_mem hg), fun g hg ↦ ?_⟩
     obtain ⟨k, q, hkq⟩ := h ⟨g, hg⟩
     rw [← Subtype.coe_mk g hg, ← hkq]
-    exact Subgroup.commutator_mem_commutator k.2 q.2
+    exact Subgroup.commutator_mem_commutator k.property q.property
 
 end IsPGroup
 
@@ -234,7 +234,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
 /-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
-    (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
+    (h : K.IsComplement' P) : ⁅K, P.toSubgroup⁆ = ⊥ ∨ ⁅K, P.toSubgroup⁆ = P :=
   P.isPGroup.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 

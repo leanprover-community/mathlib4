@@ -248,7 +248,7 @@ theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)
 @[simps! toMultilinearMap apply_coe]
 def codRestrict (f : ContinuousMultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
     ContinuousMultilinearMap R M₁ p :=
-  ⟨f.1.codRestrict p h, f.cont.subtype_mk _⟩
+  ⟨f.toMultilinearMap.codRestrict p h, f.cont.subtype_mk _⟩
 
 section
 

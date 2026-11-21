@@ -361,11 +361,11 @@ def cycles₁IsoOfIsTrivial [A.IsTrivial] :
 
 @[simp]
 lemma cycles₁IsoOfIsTrivial_hom_apply [A.IsTrivial] (x : cycles₁ A) :
-    (cycles₁IsoOfIsTrivial A).hom x = x.1 := rfl
+    (cycles₁IsoOfIsTrivial A).hom x = x.val := rfl
 
 @[simp]
 lemma cycles₁IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : G →₀ A) :
-    ((cycles₁IsoOfIsTrivial A).inv x).1 = x := rfl
+    ((cycles₁IsoOfIsTrivial A).inv x).val = x := rfl
 
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
     x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -422,7 +422,7 @@ abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
 
 @[simp]
 lemma boundariesToCycles₁_apply (x : boundaries₁ A) :
-    (boundariesToCycles₁ A x).1 = x.1 := rfl
+    (boundariesToCycles₁ A x).val = x.val := rfl
 
 end
 
@@ -459,7 +459,7 @@ abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
 
 @[simp]
 lemma boundariesToCycles₂_apply (x : boundaries₂ A) :
-    (boundariesToCycles₂ A x).1 = x.1 := rfl
+    (boundariesToCycles₂ A x).val = x.val := rfl
 
 end
 
@@ -744,14 +744,15 @@ def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ↧(cycles₁ A) :=
-    cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
-      (shortComplexH1 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] ShortComplex.cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_hom_comp_i :
     (isoCycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCycles A 1 ≫ (chainsIso₁ A).hom := by
-  simp [isoCycles₁, iCycles, HomologicalComplex.iCycles, ShortComplex.iCycles]
+  simp [isoCycles₁, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_inv_comp_iCycles :
@@ -788,14 +789,15 @@ def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ↧(cycles₂ A) :=
-    cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
-      (shortComplexH2 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] ShortComplex.cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_hom_comp_i :
     (isoCycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
       iCycles A 2 ≫ (chainsIso₂ A).hom := by
-  simp [isoCycles₂, iCycles, HomologicalComplex.iCycles, ShortComplex.iCycles]
+  simp [isoCycles₂, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_inv_comp_iCycles :
@@ -904,13 +906,14 @@ instance : Epi (H1π A) :=
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
-      (shortComplexH1 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH1 A).moduleCatLeftHomologyData.π := by
+  simp [H1Iso, isoCycles₁, HomologicalComplex.homologyπ]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_inv :
@@ -919,13 +922,13 @@ lemma π_comp_H1Iso_inv :
 
 variable {A}
 
-lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
+lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.val ∈ boundaries₁ A := by
   rw [← π_comp_H1Iso_inv_apply, map_eq_zero_iff _
     ((ModuleCat.mono_iff_injective (H1Iso A).inv).1 inferInstance)]
   simp [LinearMap.range_codRestrict, shortComplexH1, boundaries₁]
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
-    H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
+    H1π A x = H1π A y ↔ x.val - y.val ∈ boundaries₁ A := by
   rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]
@@ -1039,13 +1042,14 @@ instance : Epi (H2π A) :=
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
-      (shortComplexH2 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH2 A).moduleCatLeftHomologyData.π := by
+  simp [H2Iso, isoCycles₂, HomologicalComplex.homologyπ]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_inv :
@@ -1054,13 +1058,13 @@ lemma π_comp_H2Iso_inv :
 
 variable {A}
 
-lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
+lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.val ∈ boundaries₂ A := by
   rw [← π_comp_H2Iso_inv_apply, map_eq_zero_iff _
     ((ModuleCat.mono_iff_injective (H2Iso A).inv).1 inferInstance)]
   simp [LinearMap.range_codRestrict, shortComplexH2, boundaries₂]
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
-    H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
+    H2π A x = H2π A y ↔ x.val - y.val ∈ boundaries₂ A := by
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]

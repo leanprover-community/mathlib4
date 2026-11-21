@@ -70,10 +70,10 @@ evaluating iterations of `φ` on `x₀`. -/
 @[nolint unusedArguments]
 def limitSequence (_ : ∀ (n : ℕ) (x : X n), (φ n x).val.EqUpTo x.val (p₀ + n)) (x₀ : X 0) :
     Cochain K L d :=
-  Cochain.mk (fun p q hpq => (sequence φ x₀ (p - p₀).toNat).1.v p q hpq)
+  Cochain.mk (fun p q hpq => (sequence φ x₀ (p - p₀).toNat).val.v p q hpq)
 
 lemma limitSequence_eqUpTo (n : ℕ) :
-    (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).1 (p₀ + n) := by
+    (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).val (p₀ + n) := by
   intro p q hpq hp
   exact sequence_eqUpTo φ hφ _ _ _ (by lia) _ _ _ (by lia)
 
