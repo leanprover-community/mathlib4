@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Matrix.GelfandRadius
+public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
@@ -102,6 +103,26 @@ theorem gelfandRadiusNormAux_map (f : F) (x : L) :
     gelfandRadiusNormAux K M (f x) = gelfandRadiusNormAux K L x :=
   let := (AlgHom.ofClass f).toAlgebra
   gelfandRadiusNormAux_algebraMap K M x
+
+theorem isNonarchimedean_gelfandRadiusNormAux [IsUltrametricDist K] :
+    IsNonarchimedean (gelfandRadiusNormAux K L) := by
+  intro x y
+  simp_rw [gelfandRadiusNormAux_def]
+  set T := Algebra.leftMulMatrix (Module.finBasis K L)
+  refine le_of_forall_gt_imp_ge_of_dense fun r hr ↦ ?_
+  have hr' : 0 ≤ r := by grind [gelfandRadius_nonneg]
+  rw [max_lt_iff] at hr
+  obtain ⟨Cx, hCx0, hCx⟩ := norm_pow_le_mul_pow_of_gelfandRadius_lt (T x) hr.1
+  obtain ⟨Cy, hCy0, hCy⟩ := norm_pow_le_mul_pow_of_gelfandRadius_lt (T y) hr.2
+  refine gelfandRadius_le_of_bound (C := Cx * Cy * Module.finrank K L) hr' fun n ↦ ?_
+  suffices ∀ i ∈ Finset.range (n + 1), ‖T x ^ i * T y ^ (n - i) * (n.choose i)‖ ≤ Cx * Cy * r ^ n by
+    grw [mul_assoc, mul_left_comm, map_add, ((Commute.all x y).map T).add_pow,
+      Matrix.linfty_opNorm_sum_le_card_mul_of_forall_le _ _ _ (by positivity) this,
+        Fintype.card_fin]
+  intro k hk
+  grw [norm_mul_le, norm_mul_le, hCx, hCy, ← map_natCast (algebraMap K _), norm_algebraMap',
+    IsUltrametricDist.norm_natCast_le_one, mul_one,
+    mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' (Finset.mem_range_succ_iff.mp hk)]
 
 end
 
@@ -292,6 +313,15 @@ theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
     contrapose hx
     exact hx.of_pow hk
 
+open IntermediateField in
+theorem isNonarchimedean_gelfandRadiusNorm [IsUltrametricDist K] [Algebra.IsAlgebraic K L] :
+    IsNonarchimedean (gelfandRadiusNorm K L) := by
+  intro x y
+  rw [K⟮x, y⟯.gelfandRadiusNorm_eq x (AdjoinPair.gen₁ K x y) rfl,
+    K⟮x, y⟯.gelfandRadiusNorm_eq y (AdjoinPair.gen₂ K x y) rfl,
+    K⟮x, y⟯.gelfandRadiusNorm_eq (x + y) (AdjoinPair.gen₁ K x y + AdjoinPair.gen₂ K x y) rfl]
+  apply isNonarchimedean_gelfandRadiusNormAux
+
 end gelfandRadiusNorm
 
 section gelfandRadiusAlgNorm
@@ -341,6 +371,10 @@ theorem gelfandRadiusAlgNorm_eq_norm (x : K) : gelfandRadiusAlgNorm K K x = ‖x
 /-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
+
+theorem isNonarchimedean_gelfandRadiusAlgNorm [IsUltrametricDist K] :
+    IsNonarchimedean (gelfandRadiusAlgNorm K L) :=
+  isNonarchimedean_gelfandRadiusNorm K L
 
 end gelfandRadiusAlgNorm
 
