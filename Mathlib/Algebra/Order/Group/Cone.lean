@@ -70,6 +70,60 @@ def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈
   le_total a b := by simpa using hMs.mem_or_inv_mem (b / a)
   toDecidableLE a b := dec (b / a)
 
+namespace CommGroup
+
+variable (G) in
+/-- Equivalence between positive cones in an abelian group `G`
+    and partially ordered group structures on `G`. -/
+@[to_additive
+  /-- Equivalence between positive cones in an abelian group `G`
+    and partially ordered group structures on `G`. -/]
+noncomputable def conePartiallyOrderedGroupEquiv :
+    {C : Submonoid G // C.IsMulPointed} ≃
+      {_o : PartialOrder G // IsOrderedMonoid G} where
+  toFun := fun ⟨_, hC⟩ ↦ ⟨.ofSubmonoid hC, .ofSubmonoid _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _⟩
+  left_inv := fun ⟨_, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨v, p⟩ ↦ by ext; simp +instances
+
+@[to_additive (attr := simp)]
+theorem conePartiallyOrderedGroupEquiv_apply
+    (C : Submonoid G) (h : C.IsMulPointed) :
+    conePartiallyOrderedGroupEquiv G ⟨C, h⟩ = PartialOrder.ofSubmonoid h := rfl
+
+@[to_additive (attr := simp)]
+theorem conePartiallyOrderedGroupEquiv_symm_apply (o : PartialOrder G) (h : IsOrderedMonoid G) :
+    (conePartiallyOrderedGroupEquiv G).symm ⟨o, h⟩ = Submonoid.oneLE G := rfl
+
+open Classical in
+variable (G) in
+/-- Equivalence between spanning positive cones in an abelian group `G`
+    and linearly ordered group structures on `G`. -/
+@[to_additive
+  /-- Equivalence between spanning positive cones in an abelian group `G`
+    and linearly ordered group structures on `G`. -/]
+noncomputable def coneLinearlyOrderedGroupEquiv :
+    {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning} ≃
+      {_o : LinearOrder G // IsOrderedMonoid G} where
+  toFun := fun ⟨C, hC⟩ ↦ ⟨.ofSubmonoid hC.1 hC.2, .ofSubmonoid _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _, .oneLE _⟩
+  left_inv := fun ⟨_, _, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨_, _⟩ ↦ by ext; simp
+
+open Classical in
+@[to_additive (attr := simp)]
+theorem coneLinearlyOrderedGroupEquiv_apply
+    (C : Submonoid G) (h : C.IsMulPointed ∧ C.IsMulSpanning) :
+    coneLinearlyOrderedGroupEquiv G ⟨C, h⟩ = LinearOrder.ofSubmonoid h.1 h.2 := rfl
+
+@[to_additive (attr := simp)]
+theorem coneLinearlyOrderedGroupEquiv_symm_apply (l : LinearOrder G) (h : IsOrderedMonoid G) :
+    (coneLinearlyOrderedGroupEquiv G).symm ⟨l, h⟩ = Submonoid.oneLE G := rfl
+
+end CommGroup
+
+/- Deprecated -/
+
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
     extends AddSubmonoidClass S G where

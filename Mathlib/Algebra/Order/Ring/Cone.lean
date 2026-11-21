@@ -38,6 +38,54 @@ theorem IsOrderedRing.ofSubsemiring :
   haveI : ZeroLEOneClass R := ⟨by simp [PartialOrder.ofAddSubmonoid_le_iff]⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ S by simpa using Subsemiring.mul_mem _ xnn ynn
 
+namespace Ring
+
+variable (R) in
+/-- Equivalence between positive cones in a ring `R`
+    and partially ordered ring structures on `R`. -/
+noncomputable def conePartiallyOrderedRingEquiv :
+    {C : Subsemiring R // C.IsPointed} ≃
+      {_o : PartialOrder R // IsOrderedRing R} where
+  toFun := fun ⟨_, hC⟩ ↦ ⟨.ofAddSubmonoid hC, .ofSubsemiring _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _⟩
+  left_inv := fun ⟨_, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨_, _⟩ ↦ by ext; simp +instances
+
+@[simp]
+theorem conePartiallyOrderedRingEquiv_apply
+    (C : Subsemiring R) (h : C.IsPointed) :
+    conePartiallyOrderedRingEquiv R ⟨C, h⟩ = PartialOrder.ofAddSubmonoid h := rfl
+
+@[simp]
+theorem conePartiallyOrderedRingEquiv_symm_apply (o : PartialOrder R) (h : IsOrderedRing R) :
+    (conePartiallyOrderedRingEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+
+variable (R) in
+open Classical in
+/-- Equivalence between spanning positive cones in a ring `R`
+    and linearly ordered ring structures on `R`. -/
+noncomputable def coneLinearlyOrderedRingEquiv :
+    {C : Subsemiring R // C.IsPointed ∧ C.IsSpanning} ≃
+      {_o : LinearOrder R // IsOrderedRing R} where
+  toFun := fun ⟨C, hC⟩ ↦ ⟨.ofAddSubmonoid hC.1 hC.2, .ofSubsemiring _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _, .nonneg _⟩
+  left_inv := fun ⟨_, _, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨_, _⟩ ↦ by ext; simp
+
+open Classical in
+@[simp]
+theorem coneLinearlyOrderedRingEquiv_apply
+    (C : Subsemiring R) (h : C.IsPointed ∧ C.IsSpanning) :
+    coneLinearlyOrderedRingEquiv R ⟨C, h⟩ = LinearOrder.ofAddSubmonoid h.1 h.2 := rfl
+
+@[simp]
+theorem coneLinearlyOrderedRingEquiv_symm_apply (o : LinearOrder R) (h : IsOrderedRing R) :
+    (coneLinearlyOrderedRingEquiv R).symm ⟨o, h⟩ = Subsemiring.nonneg R := rfl
+
+end Ring
+
+/- Deprecated -/
+
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 @[deprecated AddSubmonoid.IsPointed +typeChanged (since := "2026-10-28")]
 class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
