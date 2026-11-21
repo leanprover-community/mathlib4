@@ -159,7 +159,7 @@ theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i
 
 variable [CompleteSpace E]
 
-theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [PosSMulMono ℝ E]
     [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Supermartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f j ω ∂μ ≤ ∫ ω in s, f i ω ∂μ := by
@@ -238,7 +238,7 @@ theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
   simpa
 
 /-- The converse of this lemma is `MeasureTheory.submartingale_of_setIntegral_le`. -/
-theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [PosSMulMono ℝ E]
     [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ := by
@@ -254,7 +254,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
   hf.sub_supermartingale hg.supermartingale
 
 protected theorem sup [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    [PosSMulMono ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
   refine ⟨fun i =>
@@ -269,7 +269,7 @@ protected theorem sup [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
         (Eventually.of_forall fun x => le_sup_right))
 
 protected theorem pos [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
+    [PosSMulMono ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
     Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
@@ -337,7 +337,7 @@ theorem sub_martingale [CompleteSpace E] [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [NormedSpace ℝ F] [CompleteSpace F]
-  [IsOrderedModule ℝ F]
+  [PosSMulMono ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -360,7 +360,7 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [PosSMulMono ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
@@ -406,7 +406,7 @@ end OfSetIntegral
 section OfSucc
 
 variable [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E] [ClosedIciTopology E]
-  [IsOrderedModule ℝ E]
+  [PosSMulMono ℝ E]
 
 theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i ≤ᵐ[μ] μ[f (i + 1) | 𝒢 i]) :
@@ -554,7 +554,7 @@ end Submartingale
 
 section SumSMul
 
-variable [CompleteSpace E] [PartialOrder E] [IsOrderedModule ℝ E] [ClosedIciTopology E]
+variable [CompleteSpace E] [PartialOrder E] [PosSMulMono ℝ E] [ClosedIciTopology E]
   [IsOrderedAddMonoid E]
 
 theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ}

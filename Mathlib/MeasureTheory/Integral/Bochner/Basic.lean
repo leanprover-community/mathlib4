@@ -626,7 +626,7 @@ end Basic
 
 section Order
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [PosSMulMono ℝ E]
 
 @[gcongr]
 lemma integral_mono_measure [OrderClosedTopology E] {f : α → E} {ν : Measure α} (hle : μ ≤ ν)

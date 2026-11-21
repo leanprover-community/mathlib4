@@ -728,7 +728,7 @@ end NormedAddCommGroup
 section Mono
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
-    [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+    [IsOrderedAddMonoid E] [PosSMulMono ℝ E]
     {μ : Measure X} {f g : X → E} {s t : Set X}
 
 theorem setIntegral_mono_set [OrderClosedTopology E] (hfi : IntegrableOn f t μ)
