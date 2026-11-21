@@ -17,6 +17,8 @@ example : ((3 : ℕ) : ℝ) ≤ 3 := by dyadic_interval
 
 example : ((-3 : ℤ) : ℝ) = -3 := by dyadic_interval
 
+example : (3 : ℝ) / 2 = 1.5 := by dyadic_interval [prec := 1]
+
 end Constants
 
 section Integers
@@ -188,6 +190,45 @@ example {x y : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) (hy : y ∈ Set.Icc 0.5 
 example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : y ≤ -1) :
     x ^ 4 + 0.5 * x ^ 2 * y + ((1 / 8 : ℚ) : ℝ) ∈ Set.Icc (-2.125) 5.1875 := by
   dyadic_interval [prec := 4]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 2 4) :
+    x / y ∈ Set.Icc 0.25 1 := by dyadic_interval [prec := 2]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc (-4) (-2)) :
+    x / y ∈ Set.Icc (-1) (-0.25) := by dyadic_interval [prec := 2]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-1) 1) (hy : y ∈ Set.Icc 2 4) :
+    x / y ∈ Set.Icc (-0.5) 0.5 := by dyadic_interval [prec := 1]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-2) (-1)) (hy : y ∈ Set.Icc (-4) (-2)) :
+    x / y ∈ Set.Icc 0.25 1 := by dyadic_interval [prec := 2]
+
+example {x : ℝ} : x / 0 = 0 := by dyadic_interval
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 2 3) (hy : y ∈ Set.Icc 0 4) : x / y ∈ Set.Ici 0 := by
+  dyadic_interval
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 2 3) (hy : y ∈ Set.Icc (-4) 0) : x / y ∈ Set.Iic 0 := by
+  dyadic_interval
+
+example {x : ℝ} (hx : x ∈ Set.Icc 2 4) : x⁻¹ ∈ Set.Icc 0.25 0.5 := by
+  dyadic_interval [prec := 2]
+
+example {x : ℝ} (hx : x ∈ Set.Icc 1 2) : 1 / (x + 1) ∈ Set.Icc 0.25 0.5 := by
+  dyadic_interval [prec := 2]
+
+example {x : ℝ} (hx : x ∈ Set.Icc 1 2) : x / (x + 1) ∈ Set.Icc 0.25 1 := by
+  dyadic_interval [prec := 2]
+
+example {y : ℝ} (hy : y ∈ Set.Icc 1 2) : 1 / y + y / 2 ∈ Set.Icc 1 2.5 := by
+  dyadic_interval [prec := 2]
+
+example {y : ℝ} (hy : y ∈ Set.Icc 1 4) : 1 / y ∈ Set.Icc 0.25 1 := by
+  dyadic_interval [prec := 2]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 2 4) :
+    -(2 / y) - y⁻¹ + x ^ 2 * y ∈ Set.Icc (1 / 2) (61 / 4) := by
+  dyadic_interval [prec := 2]
 
 end Arithmetic
 
