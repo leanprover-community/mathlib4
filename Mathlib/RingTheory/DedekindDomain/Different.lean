@@ -75,7 +75,7 @@ lemma le_traceDual_iff_map_le_one {I J : Submodule B L} :
     I ≤ Jᵛ ↔ ((I * J : Submodule B L).restrictScalars A).map
       ((trace K L).restrictScalars A) ≤ 1 := by
   rw [Submodule.map_le_iff_le_comap, Submodule.restrictScalars_mul, Submodule.mul_le]
-  simp [IsConcreteLE.le_iff, mem_traceDual]
+  simp [le_iff_mem_imp_mem, mem_traceDual]
 
 lemma le_traceDual_mul_iff {I J J' : Submodule B L} :
     I ≤ (J * J')ᵛ ↔ I * J ≤ J'ᵛ := by
@@ -118,10 +118,10 @@ lemma traceDual_top' :
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
-  · simp only [IsConcreteLE.le_iff, restrictScalars_mem, LinearMap.mem_range, mem_one,
+  · simp only [le_iff_mem_imp_mem, restrictScalars_mem, LinearMap.mem_range, mem_one,
       forall_exists_index, forall_apply_eq_imp_iff, not_forall, not_exists] at h
     obtain ⟨b, hb⟩ := h
-    simp_rw [eq_bot_iff, IsConcreteLE.le_iff, mem_bot, mem_traceDual, mem_top, true_implies,
+    simp_rw [eq_bot_iff, le_iff_mem_imp_mem, mem_bot, mem_traceDual, mem_top, true_implies,
       traceForm_apply, RingHom.mem_range]
     contrapose! hb with hx'
     obtain ⟨c, hc, hc0⟩ := hx'
@@ -135,7 +135,7 @@ lemma traceDual_top [Decidable (IsField A)] :
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_eq_top, _root_.eq_top_iff]
-  simp [IsConcreteLE.le_iff]
+  simp [le_iff_mem_imp_mem]
 
 end Submodule
 
@@ -698,8 +698,10 @@ set_option linter.overlappingInstances false
 
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux
-    {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (he : e ≠ 0) (hp : p ≠ ⊥)
+    {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
+  rcases eq_or_ne e 0 with rfl | he
+  · simp
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
@@ -753,9 +755,7 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
   have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
-  by_cases he : e = 0
-  · rw [he, pow_zero]; exact one_dvd _
-  exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
+  exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ hp hP
 
 theorem not_dvd_differentIdeal_of_intTrace_notMem
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
@@ -833,8 +833,8 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
   have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
     Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
   let e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ Q) :=
-    { __ := (Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ),
-      commutes' := Quotient.ind fun _ ↦ rfl }
+    .ofCommutes ((Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ))
+      (Quotient.ind fun _ ↦ rfl)
   obtain ⟨x, hx⟩ : ∃ x, Algebra.trace (A ⧸ p) (B ⧸ P) x ≠ 0 := by
     simpa [LinearMap.ext_iff] using Algebra.trace_ne_zero (A ⧸ p) (B ⧸ P)
   obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (e.symm (x, 0))
@@ -911,8 +911,8 @@ lemma dvd_differentIdeal_of_not_isSeparable
   have := ((Ideal.prime_iff_isPrime hPbot).mpr inferInstance)
   rw [← this.irreducible.gcd_eq_one_iff, ← Ideal.isCoprime_iff_gcd] at hPa
   let e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ a) :=
-    { __ := (Ideal.quotEquivOfEq ha).trans (Ideal.quotientMulEquivQuotientProd P a hPa),
-      commutes' := Quotient.ind fun _ ↦ rfl }
+    .ofCommutes ((Ideal.quotEquivOfEq ha).trans (Ideal.quotientMulEquivQuotientProd P a hPa))
+      (Quotient.ind fun _ ↦ rfl)
   have hx' : (e (Ideal.Quotient.mk _ x)).2 = 0 := by
     simpa [e, Ideal.Quotient.eq_zero_iff_mem]
   rw [← Algebra.trace_eq_of_algEquiv e, Algebra.trace_prod_apply,

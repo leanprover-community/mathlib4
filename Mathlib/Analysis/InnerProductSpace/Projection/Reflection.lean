@@ -6,7 +6,8 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.Analysis.Normed.Group.RadialFunction
+
+import Mathlib.Analysis.Normed.Group.RadialFunction
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -55,7 +56,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       intro x
       let w : K := K.orthogonalProjectionOnto x
       let v := x - w
-      have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
+      have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.property
       convert norm_sub_eq_norm_add this
       · dsimp [reflectionLinearEquiv, v, w]
         abel

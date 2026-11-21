@@ -264,7 +264,7 @@ lemma pairwiseDisjoint_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ 
     (ht : t ∈ C) :
     PairwiseDisjoint (insert t (hC.disjointOfDiff hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_disjointOfDiff hs ht
-  refine PairwiseDisjoint.insert_of_notMem h (hC.notMem_disjointOfDiff hs ht) fun u hu ↦ ?_
+  refine PairwiseDisjoint.insert h fun u hu _ ↦ ?_
   simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointOfDiff hs ht)
   exact subset_sUnion_of_mem hu
@@ -407,7 +407,7 @@ noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : 
 
 private theorem disjointOfUnion_coe (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : J) :
     hC.disjointOfUnion hJ j = (hC.exists_partition_disjointed hJ j).choose.parts := by
-  rw [disjointOfUnion, dite_eq_left j.2]
+  rw [disjointOfUnion, dite_eq_left j.property]
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) := by

@@ -64,7 +64,9 @@ variable {K}
 theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
   mem_div_iff_of_ne_zero hI
 
-theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
+theorem inv_anti_mono (hI : I ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
+  rcases eq_or_ne J 0 with rfl | hJ
+  · simp [inv_zero']
   intro x
   simp only [mem_inv_iff hJ, mem_inv_iff hI]
   exact fun h y hy => h y (hIJ hy)
@@ -177,7 +179,7 @@ theorem invertible_iff_generator_ne_zero (I : FractionalIdeal R₁⁰ K)
 alias invertible_iff_generator_nonzero := invertible_iff_generator_ne_zero
 
 theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)]
-    (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.1 := by
+    (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.val := by
   rw [val_eq_coe, isPrincipal_iff]
   use (generator (I : Submodule R₁ K))⁻¹
   have hI : I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 :=

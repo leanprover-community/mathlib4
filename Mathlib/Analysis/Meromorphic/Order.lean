@@ -723,7 +723,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
-    rcases (hf z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    rcases (hf z.val z.property).eventually_eq_zero_or_eventually_ne_zero with h | h
     · -- Case: f is locally zero in a punctured neighborhood of z
       rw [← meromorphicOrderAt_eq_top_iff] at h
       tauto
@@ -738,7 +738,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
         · rw [meromorphicOrderAt_eq_top_iff, not_eventually]
           apply Filter.Eventually.frequently
           rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
-          use t' \ {z.1}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
+          use t' \ {z.val}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
             mem_singleton_iff.not.2 (Subtype.coe_ne_coe.mpr h₁w)
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
@@ -759,7 +759,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
+    use t' \ {z.val}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
     · exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
@@ -1049,9 +1049,12 @@ variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
 At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
 meromorphic order equals `-1`.
 -/
-theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜]
     (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
     meromorphicOrderAt (logDeriv f) x = -1 := by
+  have hf : MeromorphicAt f x := by
+    by_contra h
+    exact h₁ (meromorphicOrderAt_of_not_meromorphicAt h)
   lift meromorphicOrderAt f x to ℤ using h₂ with n hn
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
     meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,

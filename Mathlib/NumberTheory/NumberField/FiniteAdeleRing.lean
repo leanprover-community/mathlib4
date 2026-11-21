@@ -48,7 +48,7 @@ namespace FiniteAdeleRing
 
 open scoped AdeleRing
 
-theorem hasFiniteMulSupport_norm (x : 𝔸ᶠ[R, K]ˣ) : (fun v ↦ ‖x.1 v‖).HasFiniteMulSupport :=
+theorem hasFiniteMulSupport_norm (x : 𝔸ᶠ[R, K]ˣ) : (fun v ↦ ‖x.val v‖).HasFiniteMulSupport :=
   (FiniteAdeleRing.hasFiniteMulSupport_valued x).of_eq_one_iff
     fun _ ↦ Valued.toNormedField.norm_eq_one_iff.symm
 
@@ -82,7 +82,7 @@ theorem hasProd_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) :
   by_cases hx₀ : ∃ v, x v = 0
   · exact hasProd_zero_of_exists_eq_zero (by simpa using hx₀)
   have hT := hasProd_zero_subset_lt_one_valued hx (by simpa using hx₀)
-  have h : HasProd (fun v : {v | Valued.v (x v) = 1} ↦ ‖x.1 v‖) 1 := by
+  have h : HasProd (fun v : {v | Valued.v (x v) = 1} ↦ ‖x.val v‖) 1 := by
     convert hasProd_one; aesop (add simp [Valued.toNormedField.norm_eq_one_iff])
   have := HasProd.mul_disjoint (by grind) (hasProd_subset_valued_one_lt x) h (f := fun v ↦ ‖x v‖)
   simpa using this.mul_isCompl ⟨by grind, fun _ _ _ ↦ by grind⟩ hT

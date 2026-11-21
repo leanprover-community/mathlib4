@@ -146,9 +146,8 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     congr($((CommRingCat.isPushout_tensorProduct R R' S).inl_isoPushout_hom).hom r)
   have h3 (x : R') := congr($h.inl_isoPushout_inv x)
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h3
-  let e' : R' ⊗[R] S ≃ₐ[R'] S' := {
-    __ := e
-    commutes' r := by simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3] }
+  let e' : R' ⊗[R] S ≃ₐ[R'] S' := .ofCommutes e fun r ↦ by
+    simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3]
   refine Algebra.IsPushout.of_equiv e' ?_
   ext s
   have h1 : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
@@ -282,15 +281,13 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
   fac c j := by
     ext
-    rcases j with ⟨⟨⟩⟩ <;>
-    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right] <;> rfl
+    rcases j with ⟨⟨⟩⟩ <;> rfl
   uniq s m h := by
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
@@ -471,7 +468,7 @@ def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
     rfl
   · intro s m e₁ e₂
     refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
-    change (m x).1 = (_, _)
+    change (m x).val = (_, _)
     have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]
