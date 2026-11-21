@@ -43,43 +43,51 @@ growth of groups, word ball, geometric group theory
 
 open Set
 
+namespace Function
+
 /-- `f` dominates `g` (written `f ≽ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
-def Function.GrowthDominates (f g : ℕ → ℕ) : Prop :=
+def GrowthDominates (f g : ℕ → ℕ) : Prop :=
   ∃ α : ℕ, ∀ n, g n ≤ f (α * n)
 
 /-- Two functions are growth-equivalent (written `f ∼ᵍ g`) if each dominates the other. -/
-def Function.GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
+def GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
   f.GrowthDominates g ∧ g.GrowthDominates f
 
-@[inherit_doc Function.GrowthDominates]
-scoped[Growth] infix:50 " ≽ᵍ " => Function.GrowthDominates
+namespace GrowthDominates
 
-@[inherit_doc Function.GrowthEquivalent]
-scoped[Growth] infix:50 " ∼ᵍ " => Function.GrowthEquivalent
-
-namespace Function
-
-lemma GrowthDominates.refl (f : ℕ → ℕ) : f.GrowthDominates f :=
+lemma refl (f : ℕ → ℕ) : f.GrowthDominates f :=
   ⟨1, by simp⟩
 
-lemma GrowthDominates.trans {f g h : ℕ → ℕ} (hfg : f.GrowthDominates g)
+lemma trans {f g h : ℕ → ℕ} (hfg : f.GrowthDominates g)
     (hgh : g.GrowthDominates h) : f.GrowthDominates h := by
   obtain ⟨α₁, h₁⟩ := hfg
   obtain ⟨α₂, h₂⟩ := hgh
   refine ⟨α₁ * α₂, fun n ↦ ?_⟩
   grw [h₂ n, h₁ (α₂ * n), mul_assoc]
 
-lemma GrowthEquivalent.refl (f : ℕ → ℕ) : f.GrowthEquivalent f :=
+end GrowthDominates
+
+namespace GrowthEquivalent
+
+lemma refl (f : ℕ → ℕ) : f.GrowthEquivalent f :=
   ⟨.refl f, .refl f⟩
 
-lemma GrowthEquivalent.symm {f g : ℕ → ℕ} (h : f.GrowthEquivalent g) : g.GrowthEquivalent f :=
+lemma symm {f g : ℕ → ℕ} (h : f.GrowthEquivalent g) : g.GrowthEquivalent f :=
   ⟨h.2, h.1⟩
 
-lemma GrowthEquivalent.trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
+lemma trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
     (hgh : g.GrowthEquivalent h) : f.GrowthEquivalent h :=
   ⟨hfg.1.trans hgh.1, hgh.2.trans hfg.2⟩
 
+end GrowthEquivalent
+
 end Function
+
+@[inherit_doc Function.GrowthDominates]
+scoped[Growth] infix:50 " ≽ᵍ " => Function.GrowthDominates
+
+@[inherit_doc Function.GrowthEquivalent]
+scoped[Growth] infix:50 " ∼ᵍ " => Function.GrowthEquivalent
 
 namespace Group.Generators
 
@@ -147,7 +155,7 @@ lemma wordLength_le_mul {Q : Group.Generators G ι'} {α : ℕ}
 @[to_additive /-- Any two finite generating families yield comparable word lengths. -/]
 lemma exists_mul_le_wordLength [Finite ι'] (Q : Group.Generators G ι') :
     ∃ α, ∀ g, P.wordLength g ≤ α * Q.wordLength g := by
-  obtain ⟨α, hα⟩ := Finite.exists_le (fun j : ι' ↦ P.wordLength (Q.val j))
+  obtain ⟨α, hα⟩ := Finite.exists_le fun j ↦ P.wordLength (Q.val j)
   exact ⟨α, wordLength_le_mul P hα⟩
 
 /-- The growth function of a finite generating family dominates that of any other finite
@@ -159,7 +167,8 @@ lemma growthDominates_growth [Finite ι] [Finite ι'] (Q : Group.Generators G ι
   obtain ⟨α, hα⟩ := P.exists_mul_le_wordLength Q
   refine ⟨α, fun n ↦ ?_⟩
   refine ncard_le_ncard (fun g hg ↦ ?_) (P.finite_wordBall (α * n))
-  exact (hα g).trans (Nat.mul_le_mul_left α hg)
+  rw [mem_wordBall] at hg ⊢
+  grw [hα, hg]
 
 /-- The growth of a finitely generated group is independent of the finite generating family. -/
 @[to_additive /-- The growth of a finitely generated group is independent of the finite generating
