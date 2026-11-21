@@ -14,6 +14,7 @@ public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Sigma
 
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.List.Sort
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -272,6 +273,31 @@ lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (
 @[simp]
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
   grind [length_toList, last, Fin.last, toList_getElem]
+
+@[simp]
+lemma nodup_toList_iff_injective_toFun (p : RelSeries r) : p.toList.Nodup ↔ p.toFun.Injective := by
+  rw [List.nodup_iff_injective_get, Function.Injective, Function.Injective,
+    Function.Surjective.forall₂ (f := finCongr p.length_toList) (Equiv.surjective _)]
+  simp [Fin.cast, Fin.val_eq_val]
+
+@[simp]
+lemma injective_toFun_fromListIsChain_iff_nodup
+    (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) :
+    (fromListIsChain x x_ne_nil hx).toFun.Injective ↔ x.Nodup := by
+  rw [Iff.comm]
+  simpa using (fromListIsChain x x_ne_nil hx).nodup_toList_iff_injective_toFun
+
+lemma coe_toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
+    p.toList.toFinset = {l | l ∈ p} := by simp
+
+lemma finite_ofPred_mem (p : RelSeries r) : {l | l ∈ p}.Finite := by
+    classical
+    simp [← p.coe_toFinset_toList_eq, -List.coe_toFinset]
+
+lemma toFinset_toList_eq [DecidableEq α] (p : RelSeries r) :
+    p.toList.toFinset = Set.Finite.toFinset (s := {l | l ∈ p}) p.finite_ofPred_mem := by
+  ext
+  simp
 
 end
 
@@ -753,6 +779,15 @@ lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p
   congr
   lia
 
+lemma exists_of_set [Std.Trichotomous (· ~[r] ·)] {s : Set α} (hs' : s.Finite)
+    (hs : s.Nonempty) : ∃ p : RelSeries r, p.toFun.Injective ∧ {l | l ∈ p} = s := by
+  classical
+  use fromListIsChain
+    (hs'.toFinset.toList.insertionSort (· ~[r] ·)) (by simpa [List.ne_nil_iff_length_pos])
+    (hs'.toFinset.toList.isChain_insertionSort' (r := (· ~[r] ·)) hs'.toFinset.nodup_toList)
+  simp [← coe_toFinset_toList_eq, List.toFinset_eq_of_perm _ _ <| List.perm_insertionSort ..,
+    List.Perm.nodup (List.perm_insertionSort ..).symm hs'.toFinset.nodup_toList]
+
 end RelSeries
 
 variable {r} in
@@ -821,6 +856,18 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   SetRel.InfiniteDimensional {(a, b) : γ × γ | a < b}
+
+instance [Infinite α] [Std.Trichotomous (· ~[r] ·)] : r.InfiniteDimensional where
+  exists_relSeries_with_length n := open RelSeries in by
+    classical
+    obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α (n + 1)
+    obtain ⟨p, h⟩ := exists_of_set (r := r) s.finite_toSet (by simp [← Finset.card_pos, hs])
+    rw [← nodup_toList_iff_injective_toFun, ← coe_toFinset_toList_eq, SetLike.coe_set_eq] at h
+    rw [← h.2, p.toList.toFinset_card_of_nodup h.1, p.length_toList] at hs
+    grind
+
+instance [Nonempty α] [r.IsRefl] : r.InfiniteDimensional where
+  exists_relSeries_with_length n := ⟨⟨n, fun i ↦ Nonempty.some ‹_›, fun i ↦ r.refl _⟩, rfl⟩
 
 section LTSeries
 
@@ -1034,6 +1081,10 @@ lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :
 /-- In ℤ, the head and tail of an `LTSeries` differ at least by the length of the series -/
 lemma head_add_length_le_int (p : LTSeries ℤ) : p.head + p.length ≤ p.last := by
   simpa using! LTSeries.apply_add_index_le_apply_add_index_int _ _ (Fin.last _) (Fin.zero_le _)
+
+instance {α} [LinearOrder α] [Infinite α] : InfiniteDimensionalOrder α :=
+  have : Std.Trichotomous (· < · : α → α → Prop) := inferInstance
+  inferInstance
 
 section Fintype
 
