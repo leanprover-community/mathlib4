@@ -46,7 +46,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-! ### The Foo condition -/
 
--- TODO: find a proper name for `Foo` and add a docstring.
+/- TODO: find a proper name for `Foo` and add a docstring. -/
 variable (I n f) in
 structure Foo : Prop where
   exists_contMDiffAt {x y : M} (hxy : f x = f y) :
