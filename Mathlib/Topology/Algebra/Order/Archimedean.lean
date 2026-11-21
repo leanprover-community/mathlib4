@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.Topology.Algebra.Order.Group
+
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Topology on archimedean groups and fields

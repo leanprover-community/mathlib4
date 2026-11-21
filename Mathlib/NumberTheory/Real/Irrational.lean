@@ -6,9 +6,10 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 module
 
 public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
+
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # Irrational real numbers

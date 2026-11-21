@@ -8,7 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Topology.MetricSpace.Perfect
-public import Mathlib.Topology.Separation.CountableSeparatingOn
+
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces

@@ -5,11 +5,12 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+
+import Mathlib.Algebra.Category.Ring.Under.Limits
 
 /-!
 # Flat morphisms
@@ -293,11 +294,11 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       ((CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.hom.hom.comp
       (by exact Pi.evalRingHom _ _))).comp (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).toRingHom
   -- ... is also injective by our hypotheses on `Vᵢ`.
-  have hφ : Function.Injective φ := by
-    dsimp [φ]
-    refine .comp ?_ (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
-    exact .piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
-      |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective
+  have hφ : Function.Injective φ :=
+    Function.Injective.comp (f := ⇑(Algebra.TensorProduct.piRight _ Γ(S, US) _ _))
+      (.piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
+        |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective)
+      (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
   let e : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
       .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
     (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm

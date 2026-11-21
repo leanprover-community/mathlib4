@@ -9,13 +9,14 @@ module
 public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
+
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 
 /-!
 # Continuous linear maps

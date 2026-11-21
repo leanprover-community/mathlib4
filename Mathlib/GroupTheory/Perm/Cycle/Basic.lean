@@ -5,12 +5,13 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.Perm.Finite
 public import Mathlib.GroupTheory.Perm.List
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.GroupTheory.Perm.Support.Finset.Card
+
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Cycles of a permutation
