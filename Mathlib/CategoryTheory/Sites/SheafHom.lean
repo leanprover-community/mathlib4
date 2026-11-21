@@ -80,13 +80,13 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
 def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=
-    { app := fun X => (s.1 X).app ⟨Over.mk (𝟙 _)⟩
+    { app := fun X => (s.val X).app ⟨Over.mk (𝟙 _)⟩
       naturality := by
         rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
         dsimp
-        refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
+        refine Eq.trans ?_ ((s.val ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
-        rw [← s.2 f.op]
+        rw [← s.property f.op]
         dsimp
         rw [presheafHom_map_app_op_mk_id]
         rfl }
@@ -94,7 +94,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   left_inv s := by
     dsimp
     ext ⟨X⟩ ⟨Y : Over X⟩
-    have H := s.2 Y.hom.op
+    have H := s.property Y.hom.op
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
@@ -248,6 +248,6 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
-    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := (rfl)
+    ((sheafHomSectionsEquiv F G).symm φ).val X = (J.overPullback A X.unop).map φ := (rfl)
 
 end CategoryTheory

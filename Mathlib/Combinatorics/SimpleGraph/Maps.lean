@@ -592,7 +592,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.property⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h ⊢
@@ -788,10 +788,10 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.property⟩
   invFun w :=
     ⟨f.symm w, by
-      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_neighborSet_iff.mpr w.2⟩
+      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_neighborSet_iff.mpr w.property⟩
   left_inv w := by simp
   right_inv w := by simp
 

@@ -492,7 +492,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
-  · exact ⟨.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp,
+  · exact ⟨.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.val; simp,
       Subtype.ext hf0⟩
   · congr
   · exact fun _ ↦ rfl
@@ -652,7 +652,7 @@ lemma cfcₙ_mono {f g : R → R} {a : A} (h : ∀ x ∈ σₙ R a, f x ≤ g x)
     cfcₙ f a ≤ cfcₙ g a := by
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a]
-    exact cfcₙHom_mono ha fun x ↦ h x.1 x.2
+    exact cfcₙHom_mono ha fun x ↦ h x.val x.property
   · grind
 
 lemma cfcₙ_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
@@ -827,13 +827,13 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
   ext x
   constructor
   · rintro (⟨x, rfl⟩ | rfl)
-    · exact ⟨⟨x.1, spectrum_subset_quasispectrum R a x.2⟩, rfl⟩
+    · exact ⟨⟨x.val, spectrum_subset_quasispectrum R a x.property⟩, rfl⟩
     · exact ⟨0, map_zero f⟩
   · rintro ⟨x, rfl⟩
-    have hx := x.2
+    have hx := x.property
     simp_rw [quasispectrum_eq_spectrum_union_zero R a] at hx
     obtain (hx | hx) := hx
-    · exact Or.inl ⟨⟨x.1, hx⟩, rfl⟩
+    · exact Or.inl ⟨⟨x.val, hx⟩, rfl⟩
     · apply Or.inr
       push _ ∈ _ at hx ⊢
       rw [show x = 0 from Subtype.val_injective hx, map_zero]

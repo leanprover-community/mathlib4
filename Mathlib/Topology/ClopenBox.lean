@@ -85,7 +85,7 @@ instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
 lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
     Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
-  · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
+  · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.val, s.property⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
   · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)),
         s.carrier = (SetLike.coe t).sUnion :=

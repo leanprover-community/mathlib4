@@ -288,12 +288,12 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
     IsLocallySurjective J (J.toPlus P) where
   imageSieve_mem x := by
     obtain ⟨S, x, rfl⟩ := exists_rep x
-    refine J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, ?_⟩) S.2
+    refine J.superset_covering (fun Y f hf => ⟨x.val ⟨Y, f, hf⟩, ?_⟩) S.property
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
     simpa using!
-      x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
+      x.property { fst.hf := hf, snd.hf := S.val.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :

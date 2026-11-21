@@ -349,7 +349,7 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
 `quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
-  toFun f := Quotient.lift (f : α → β) f.2
+  toFun f := Quotient.lift (f : α → β) f.property
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
@@ -580,11 +580,12 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := ⟨Quotient.lift₂ s.1.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
-      (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
-      (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.iseqv.refl, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.iseqv.symm,
-      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.iseqv.trans⟩⟩
+  toFun s := ⟨Quotient.lift₂ s.val.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+      (fun h ↦ s.val.trans' (s.val.trans' (s.val.symm' (s.property h₁)) h) (s.property h₂))
+      (fun h ↦ s.val.trans' (s.val.trans' (s.property h₁) h) (s.val.symm' (s.property h₂))),
+    ⟨Quotient.ind s.val.iseqv.refl,
+      fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.val.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=
