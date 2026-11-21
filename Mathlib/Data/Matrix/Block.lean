@@ -191,7 +191,7 @@ theorem toBlock_apply (M : Matrix m n α) (p : m → Prop) (q : n → Prop) (i :
 abbrev toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a } { a // p a } α :=
   toBlock M _ _
 
-@[deprecated "unfold submatrix instead or use toBlock_apply" (since := "2026-11-15")]
+@[deprecated "unfold `submatrix` instead or use `toBlock_apply`" (since := "2026-11-15")]
 theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
     toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
