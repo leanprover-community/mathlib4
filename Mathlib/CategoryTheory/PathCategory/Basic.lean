@@ -29,6 +29,7 @@ section
 
 /-- A type synonym for the category of paths in a quiver.
 -/
+@[implicit_reducible]
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
@@ -47,7 +48,7 @@ instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
 
 /-- The inclusion of a quiver `V` into its path category, as a prefunctor.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath

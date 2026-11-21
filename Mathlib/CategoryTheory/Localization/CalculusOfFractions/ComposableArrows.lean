@@ -27,8 +27,7 @@ variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismPr
 
 open ComposableArrows
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] Nat.mod in
 lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     [W.HasRightCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj where
@@ -45,7 +44,8 @@ lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
         ((L.objObjPreimageIso Z).hom ≫ f ≫ (e.app 0).inv)
       refine ⟨Y'.precomp f'.f,
         ⟨isoMkSucc (isoOfHom L W _ f'.hs ≪≫ L.objObjPreimageIso Z) e ?_⟩⟩
-      dsimp at hf' ⊢
+      rw [Iso.app_inv] at hf'
+      dsimp
       simp [← cancel_mono (e.inv.app 0), hf']
 
 lemma essSurj_mapComposableArrows [W.HasLeftCalculusOfFractions] (n : ℕ) :

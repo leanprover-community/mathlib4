@@ -31,7 +31,6 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
     P.isLocal.IsStableUnderTransfiniteCompositionOfShape J where
   le := fun X Y f ⟨hf⟩ Z hZ ↦ by
@@ -49,10 +48,8 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
         .ofExists (fun j hj ↦ (hf.map_mem j hj _ hZ).2) (fun j hj s ↦ by
           let c : Cocone ((Set.principalSegIio j).monotone.functor ⋙ hf.F) :=
             { pt := Z
-              ι.app k := s.val (op k)
-              ι.naturality _ _ g := by
-                dsimp
-                simpa only [Category.comp_id] using! s.property g.op }
+              ι.app k := s.1 (op k)
+              ι.naturality _ _ g := (s.2 g.op).trans (Category.comp_id _).symm }
           exact ⟨(hf.F.isColimitOfIsWellOrderContinuous j hj).desc c, fun k hk ↦
             by simpa using! (hf.F.isColimitOfIsWellOrderContinuous j hj).fac c ⟨k, hk⟩⟩)
       let σ := d.sectionsMk (hf.isoBot.hom ≫ g)

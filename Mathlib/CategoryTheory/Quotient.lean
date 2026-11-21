@@ -131,6 +131,7 @@ instance [Inhabited C] : Inhabited (Quotient r) :=
 namespace Quotient
 
 /-- Hom-sets of the quotient category. -/
+@[implicit_reducible]
 def Hom (s t : Quotient r) : Type _ :=
   Quot <| @HomRel.CompClosure C _ r s.as t.as
 

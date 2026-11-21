@@ -78,7 +78,6 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
@@ -90,7 +89,9 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
     (εIso G ≪≫ e.symm.app _ ≪≫ F.mapIso (εIso L).symm) (curriedTensorPreIsoPost L W F G) ?_ ?_ ?_
   · refine natTrans₃_ext L L L W W W (fun X₁ X₂ X₃ ↦ ?_)
     dsimp [e]
-    rw [curriedTensorPreIsoPost_hom_app_app, curriedTensorPreIsoPost_hom_app_app,
+    rw [LaxMonoidal.ofBifunctor.firstMap_app_app_app,
+      LaxMonoidal.ofBifunctor.secondMap_app_app_app,
+      curriedTensorPreIsoPost_hom_app_app, curriedTensorPreIsoPost_hom_app_app,
       curriedTensorPreIsoPost_hom_app_app' L W F G (μIso L _ _) (Iso.refl _),
       curriedTensorPreIsoPost_hom_app_app' L W F G (Iso.refl _) (μIso L _ _)]
     monoidal_simps
@@ -111,12 +112,16 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
     have := NatTrans.congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality (εIso L).inv)
       (L.obj X₂)
     dsimp [e] at this ⊢
+    simp only [LaxMonoidal.ofBifunctor.leftMapₗ_app, LaxMonoidal.ofBifunctor.topMapₗ_app,
+      LaxMonoidal.ofBifunctor.bottomMapₗ_app] at this ⊢
     monoidal_simps
     simp [reassoc_of% this, curriedTensorPreIsoPost_hom_app_app, ← comp_whiskerRight_assoc,
       -comp_whiskerRight, tensorHom_def, ← whisker_exchange_assoc, ← map_comp]
   · refine natTrans_ext L W (fun X₁ ↦ ?_)
     have := ((curriedTensorPreIsoPost L W F G).hom.app (L.obj X₁)).naturality (εIso L).inv
     dsimp [e] at this ⊢
+    simp only [LaxMonoidal.ofBifunctor.leftMapᵣ_app, LaxMonoidal.ofBifunctor.topMapᵣ_app,
+      LaxMonoidal.ofBifunctor.bottomMapᵣ_app] at this ⊢
     monoidal_simps
     simp [reassoc_of% this, curriedTensorPreIsoPost_hom_app_app, tensorHom_def,
       whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, ← map_comp]

@@ -64,7 +64,6 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
   obtain ⟨T', e', hT'⟩ := h
   exact ⟨T', e ≪≫ e', hT'⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
@@ -146,7 +145,6 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
 section
 variable [W.IsCompatibleWithTriangulation]
 
-set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -181,10 +179,12 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
       (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), ?_, ?_⟩
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
+    simp only [completeDistinguishedTriangleMorphism_hom₁, Triangle.homMk_hom₁]
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₂, ← comp_hom₂, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
-    simp only [Functor.map_comp, reassoc_of% hγ,
+    simp only [completeDistinguishedTriangleMorphism_hom₂, Triangle.homMk_hom₂,
+      Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]

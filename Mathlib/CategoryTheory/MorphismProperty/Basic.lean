@@ -99,11 +99,11 @@ lemma iInf_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶
   simp [← sInf_range]
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
-@[simp]
+@[simp, implicit_reducible]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
 
 /-- The morphism property in `C` associated to a morphism property in `Cᵒᵖ` -/
-@[simp]
+@[simp, implicit_reducible]
 def unop (P : MorphismProperty Cᵒᵖ) : MorphismProperty C := fun _ _ f => P f.op
 
 theorem unop_op (P : MorphismProperty C) : P.op.unop = P :=
