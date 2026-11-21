@@ -45,7 +45,11 @@ variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type
   [∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
   [c : (forget C).ChosenCorepresentation] {Z Y : C}
 
+/-- The chosen universal element, that co-represents `𝟙 (forget C).coreprObj`. -/
 def couniv : CC (forget C).coreprObj := c.coreprBy.homEquiv (𝟙 _)
+
+/-- The unique morphism `(forget C).coreprObj ⟶ Z` corresponding to an element `z : ↥Z`. This
+generalizes the function `fun ⟨⟩ ↦ z` for the case of `PUnit` in `TypeCat`.  -/
 def homOfElement (x : CC Z) : (forget C).coreprObj ⟶ Z := c.coreprBy.homEquiv.symm x
 
 @[simp] lemma homOfElement_apply (x : CC Z) : homOfElement x couniv = x :=
@@ -55,7 +59,7 @@ def homOfElement (x : CC Z) : (forget C).coreprObj ⟶ Z := c.coreprBy.homEquiv.
     (x : CC Z) (u : CC (forget C).coreprObj) : homOfElement x u = x :=
   (forget C).map_homOfElement_apply' x u
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[simp, reassoc, elementwise (attr := simp)]
 lemma homOfElement_comp (x : CC Z) (g : Z ⟶ Y) : homOfElement x ≫ g = homOfElement (g x) :=
   c.coreprBy.homEquiv_symm_comp ..
 

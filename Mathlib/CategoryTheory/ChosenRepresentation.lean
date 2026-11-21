@@ -129,7 +129,7 @@ def couniv : F.obj F.coreprObj := c.coreprBy.homEquiv (𝟙 _)
 /-- The unique morphism `F.coreprObj ⟶ Z` induced by an element `z : F.obj Z`. -/
 def homOfElement {Z : C} (z : F.obj Z) : F.coreprObj ⟶ Z := c.coreprBy.homEquiv.symm z
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[simp, reassoc, elementwise (attr := simp)]
 lemma homOfElement_comp {X Y : C} (x : F.obj X) (f : X ⟶ Y) :
     F.homOfElement x ≫ f = F.homOfElement (F.map f x) :=
   c.coreprBy.homEquiv_symm_comp ..
