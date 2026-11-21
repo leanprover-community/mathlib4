@@ -268,8 +268,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
         simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           smul_eq_mul, mul_one]
-        rw [← ENNReal.toReal_one]
-        exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
+        exact ENNReal.toReal_le_one_of_le_one prob_le_one
   have B : ∀ a b, ℙ {ω | X ω ∈ Set.Ioc a b} = ENNReal.ofReal (∫ _ in Set.Ioc a b, (1 : ℝ) ∂ρ) := by
     intro a b
     rw [ofReal_setIntegral_one ρ _,
