@@ -363,7 +363,7 @@ def ofWithBot (boxes : Finset (WithBot (Box ι)))
   boxes := Finset.eraseNone boxes
   le_of_mem' J hJ := by
     rw [mem_eraseNone] at hJ
-    simpa only [WithBot.some_eq_coe, WithBot.coe_le_coe] using le_of_mem _ hJ
+    simpa only [WithBot.optionSome_eq_some, WithBot.coe_le_coe] using le_of_mem _ hJ
   pairwiseDisjoint J₁ h₁ J₂ h₂ hne := by
     simp only [mem_coe, mem_eraseNone] at h₁ h₂
     exact Box.disjoint_coe.1 (pairwise_disjoint h₁ h₂ (mt Option.some_inj.1 hne))
@@ -462,7 +462,7 @@ theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict 
   refine Finset.image_biUnion.trans ?_
   refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
   intro J' hJ'
-  rw [inf_of_le_right, ← WithBot.some_eq_coe, Option.toFinset_some]
+  rw [inf_of_le_right, ← WithBot.optionSome_eq_some, Option.toFinset_some]
   exact WithBot.coe_le_coe.2 ((π.le_of_mem hJ').trans h)
 
 @[simp]
