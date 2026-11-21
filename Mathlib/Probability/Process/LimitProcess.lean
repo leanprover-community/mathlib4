@@ -300,10 +300,11 @@ end Preserved
 /-- If a stochastic process is bounded in `Lp` then its limit is in `Lp`. -/
 theorem memLp_limitProcess_of_eLpNorm_bdd {p : ℝ≥0∞} {F : Type*} [SeminormedAddGroup F]
     {𝓕 : Filtration ℕ mΩ} {X : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (X n) P)
-    (hbdd : ⨆ n, eLpNorm (X n) p P < ∞) : MemLp (limitProcess X 𝓕 P) p P := by
+    (hbdd : ⨆ n, eLpNorm (X n) p P < ∞) (hp : p ≠ 0) : MemLp (limitProcess X 𝓕 P) p P := by
   rw [limitProcess]
   split_ifs with h
   swap; · exact .zero
+  rw [memLp_iff_eLpNorm_of_ne_zero hp]
   refine (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ ?_ (Classical.choose_spec h).2).trans_lt ?_
   · exact StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ ↦ hn ▸ 𝓕.le _))

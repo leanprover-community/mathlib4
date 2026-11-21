@@ -241,7 +241,6 @@ noncomputable
 def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
   uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
-omit [BorelSpace E] in
 lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
     (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) p μ) : MemLp id p μ := by
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
@@ -254,18 +253,30 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   `0` by our choice of junk value), so `‖x‖ ^ (1/p)` is in `L^p`.
   The constant `c` is controlled by `2 ‖x - c‖` close to `0` (say when `‖x‖ ≤ ‖c‖ / 2`)
   and by a multiple of `‖x‖ ^ (1/p)` away from `0`. Those two functions
-  are in `L^p` by assumptions, so the constant `c` also is. -/
-  by_cases hx : c = 0
-  · simp [hx]
+  are in `L^p` by assumptions, so the constant `c` also is.
+  The case `p = 0` is handled separately by a similar argument. -/
+  by_cases hc : c = 0
+  · simp [hc]
+  have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
+    apply Integrable.norm
+    contrapose hc
+    exact integral_undef hc
   rcases eq_or_ne p 0 with rfl | hp0
-  · simp [aestronglyMeasurable_const]
+  · have B : (Function.support fun x ↦ ‖x - c‖ₑ) = {c}ᶜ := by ext; simp [sub_eq_zero]
+    simp only [memLp_zero_iff, B] at h_Lp
+    have C : μ {c} < ∞ := by
+      have := I.restrict (s := {c})
+      simp only [Integrable, Measure.restrict_singleton, HasFiniteIntegral, eNorm_norm,
+        lintegral_smul_measure, lintegral_dirac, smul_eq_mul, ENNReal.mul_lt_top_iff, eNorm_lt_top,
+        and_true, eNorm_eq_zero, hc, or_false] at this
+      rcases this.2 with h | h <;> simp [h]
+    have A : Function.support (fun (x : E) ↦ ‖c‖ₑ) = Set.univ := by ext; simp [hc]
+    simp only [memLp_zero_iff, aestronglyMeasurable_const, A, true_and]
+    apply lt_of_le_of_lt ?_ (ENNReal.add_lt_add h_Lp.2 C)
+    exact (measure_mono (by simp)).trans (measure_union_le _ _)
   rcases eq_or_ne p ∞ with rfl | hptop
   · exact memLp_top_const c
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
-  have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
-    apply Integrable.norm
-    contrapose hx
-    exact integral_undef hx
   have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
   apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
   filter_upwards [] with y

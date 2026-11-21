@@ -172,7 +172,8 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply, comp_apply _, toLpCLM_apply,
     lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
   apply integral_congr_ae
-  filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
+  have : (1 - p⁻¹)⁻¹ ≠ 0 := by simp
+  filter_upwards [g.coeFn_toLp this μ] with x hg
   rw [hg]
 
 /-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`. -/
@@ -186,7 +187,7 @@ theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0�
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
   apply integral_congr_ae
-  filter_upwards [f.coeFn_toLp p μ] with x hf
+  filter_upwards [f.coeFn_toLp (zero_lt_one.trans_le hp.out).ne' μ] with x hf
   rw [hf]
 
 set_option backward.isDefEq.respectTransparency false in

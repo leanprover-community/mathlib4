@@ -168,7 +168,8 @@ theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
       Lp 𝕜 1 μ := by
-  simp_rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_aeeqFun]; exact eLpNorm_inner_lt_top f g
+  simp_rw [mem_Lp_iff_eLpNorm_lt_top_of_pos zero_lt_one, eLpNorm_aeeqFun]
+  exact eLpNorm_inner_lt_top f g
 
 theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
   (integrable_congr

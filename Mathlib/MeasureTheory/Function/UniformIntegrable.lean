@@ -88,12 +88,19 @@ theorem unifIntegrable_iff :
 
 namespace UniformIntegrable
 
-protected theorem memLp (hf : UniformIntegrable f p μ) (i : ι) : MemLp (f i) p μ :=
+protected theorem eLpNorm_lt_top (hf : UniformIntegrable f p μ) (i : ι) :
+    eLpNorm (f i) p μ < ∞ :=
   (le_iSup _ i).trans_lt hf.iSup_eLpNorm_lt
 
+protected theorem memLp (hf : UniformIntegrable f p μ) (hp : p ≠ 0) (i : ι) : MemLp (f i) p μ := by
+  rw [memLp_iff_eLpNorm_of_ne_zero hp]
+  exact hf.eLpNorm_lt_top i
+
 protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
-    AEStronglyMeasurable (f i) μ :=
-  (hf.memLp i).aestronglyMeasurable
+    AEStronglyMeasurable (f i) μ := by
+  have := hf.eLpNorm_lt_top i
+  contrapose this
+  simp [eLpNorm, this]
 
 end UniformIntegrable
 
@@ -704,7 +711,7 @@ theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ 
   rcases isEmpty_or_nonempty ι with _ | ⟨⟨i⟩⟩
   · simp
   · rw [← iSup_univ, finite_univ.ciSup_lt_iff ⟨i, mem_univ i, by simp⟩]
-    exact fun i _ ↦ hf i
+    exact fun i _ ↦ (hf i).eLpNorm_lt_top
 
 /-- A single function is uniformly integrable in the probability sense. -/
 theorem uniformIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
@@ -716,8 +723,7 @@ theorem uniformIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp' : p ≠ ∞)
     UniformIntegrable (fun _ : ι ↦ g) p μ := by
   rcases isEmpty_or_nonempty ι
   · simp
-  rw [MemLp] at hg
-  exact ⟨unifIntegrable_const hp hp' hg, by simp [hg]⟩
+  exact ⟨unifIntegrable_const hp hp' hg, by simp [hg.eLpNorm_lt_top]⟩
 
 /-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
@@ -866,9 +872,9 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
 `UniformIntegrable`, then `g` is in `Lp`. -/
 lemma UniformIntegrable.memLp_of_tendstoInMeasure {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β}
-    (hUI : UniformIntegrable f p μ) (htends : TendstoInMeasure μ f u g) :
+    (hUI : UniformIntegrable f p μ) (htends : TendstoInMeasure μ f u g) (hp : p ≠ 0) :
     MemLp g p μ := by
-  simpa using (hUI.uniformIntegrable_of_tendstoInMeasure u).memLp ⟨g, ⟨fun n => n, htends⟩⟩
+  simpa using (hUI.uniformIntegrable_of_tendstoInMeasure u).memLp hp ⟨g, ⟨fun n => n, htends⟩⟩
 
 /-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
 `UniformIntegrable`, then `g` is integrable. -/
@@ -876,7 +882,7 @@ lemma UniformIntegrable.integrable_of_tendstoInMeasure {κ : Type*} {u : Filter 
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β}
     (hUI : UniformIntegrable f 1 μ) (htends : TendstoInMeasure μ f u g) :
     Integrable g μ :=
-  memLp_one_iff_integrable.mp (hUI.memLp_of_tendstoInMeasure htends)
+  memLp_one_iff_integrable.mp (hUI.memLp_of_tendstoInMeasure htends one_ne_zero)
 
 /-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
 `UniformIntegrable`. -/
@@ -896,9 +902,9 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
 `UniformIntegrable`, then `g` is in `Lp`. -/
 lemma UniformIntegrable.memLp_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f p μ)
-    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) (hp : p ≠ 0) :
     MemLp g p μ := by
-  simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp ⟨g, ⟨fun n => n, htends⟩⟩
+  simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp hp ⟨g, ⟨fun n => n, htends⟩⟩
 
 /-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
 `UniformIntegrable`, then `g` is integrable. -/
@@ -906,7 +912,7 @@ lemma UniformIntegrable.integrable_of_ae_tendsto {κ : Type*} {u : Filter κ} [N
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f 1 μ)
     (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
     Integrable g μ :=
-  memLp_one_iff_integrable.mp (hUI.memLp_of_ae_tendsto htends)
+  memLp_one_iff_integrable.mp (hUI.memLp_of_ae_tendsto htends one_ne_zero)
 
 end UniformIntegrable
 

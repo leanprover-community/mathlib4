@@ -119,11 +119,16 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : MemLp (fun x => g x • c) p μ := by
+    rcases eq_or_ne p 0 with rfl | hp
+    · refine memLp_zero_iff.2 ⟨g.continuous.aestronglyMeasurable.smul_const _, ?_⟩
+      apply lt_of_le_of_lt (measure_mono ?_) hμv
+      simpa using gc_support
     refine MemLp.smul ?_ (memLp_top_const _) (p := p) (q := ∞)
     have hv : MeasurableSet v := u_open.measurableSet.inter V_open.measurableSet
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ∞ :=
       (eLpNorm_indicator_const_le _ _ hv.nullMeasurableSet).trans_lt <| by
         simp [lt_top_iff_ne_top, hμv.ne]
+    rw [memLp_iff_eLpNorm_of_ne_zero hp]
     refine (eLpNorm_mono g.continuous.aestronglyMeasurable fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,

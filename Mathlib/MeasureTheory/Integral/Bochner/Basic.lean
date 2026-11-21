@@ -395,7 +395,8 @@ lemma tendsto_integral_of_L1' {ι} (f : α → G)
     have ⟨i, hi, h'i⟩ := (((tendsto_order.1 hF).2 1 zero_lt_one).and hFi).exists
     have : MemLp f 1 μ := by
       rw [show f = F i - (F i - f) by abel]
-      apply (memLp_one_iff_integrable.mpr h'i).sub (hi.trans one_lt_top)
+      exact (memLp_one_iff_integrable.mpr h'i).sub
+        ((memLp_iff_eLpNorm_of_ne_zero one_ne_zero).2 (hi.trans one_lt_top))
     exact this.aestronglyMeasurable
   refine tendsto_integral_of_L1 f hfi hFi ?_
   apply hF.congr'
@@ -436,7 +437,8 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) {F : ι → α → G}
     have ⟨i, hi, h'i⟩ := (((tendsto_order.1 hF).2 1 zero_lt_one).and hFi).exists
     have : MemLp f 1 μ := by
       rw [show f = F i - (F i - f) by abel]
-      apply (memLp_one_iff_integrable.mpr h'i).sub (hi.trans one_lt_top)
+      exact (memLp_one_iff_integrable.mpr h'i).sub
+        ((memLp_iff_eLpNorm_of_ne_zero one_ne_zero).2 (hi.trans one_lt_top))
     exact this.aestronglyMeasurable
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   apply hF.congr'
@@ -974,7 +976,7 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
   · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
-  exact (lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf).ne
+  exact (lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.eLpNorm_lt_top).ne
 
 end NormedAddCommGroup
 

@@ -82,8 +82,9 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
   have B n : ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
     apply AEFinStronglyMeasurable.exists_set_sigmaFinite
     have : MemLp (f n) p μ := by
-      simpa [MemLp, hf] using lt_of_le_of_lt (le_tsum _ n) h'f.lt_top
-    exact this.aefinStronglyMeasurable (zero_lt_one.trans_le hp).ne' h'p.ne
+      simpa [memLp_iff_eLpNorm_of_pos (zero_lt_one.trans_le hp), hf]
+        using lt_of_le_of_lt (le_tsum _ n) h'f.lt_top
+    exact this.aefinStronglyMeasurable h'p.ne
   choose! s s_meas hs h's using B
   /- Covering `s n` by countably many sets of finite measure, we deduce using the above that
   the series of norms is ae finite on `s n`. -/

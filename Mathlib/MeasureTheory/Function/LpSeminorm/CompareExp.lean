@@ -138,10 +138,9 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
     (hpq : p ≤ q) : MemLp f p μ := by
   have hfq_m := hfq.aestronglyMeasurable
   have hfq_lt_top := hfq.eLpNorm_lt_top
-  by_cases hp0 : p = 0
-  · rwa [hp0, memLp_zero_iff_aestronglyMeasurable]
-  rw [← Ne] at hp0
-  rw [memLp_iff]
+  rcases eq_or_ne p 0 with rfl | hp0
+  · simp [hfq_m]
+  rw [memLp_iff_eLpNorm_of_ne_zero hp0]
   by_cases hp_top : p = ∞
   · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq
     rw [hp_top]
@@ -546,9 +545,24 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
     (h : ∀ᵐ (x : α) ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊)
     [hpqr : HolderTriple p q r] :
     MemLp (fun x ↦ b (f x) (g x)) r μ := by
-  apply (eLpNorm_le_eLpNorm_mul_eLpNorm b c hb
-    hf.aestronglyMeasurable hg.aestronglyMeasurable h (p := p) (q := q)).trans_lt
-  finiteness [hf, hg]
+  rcases ne_or_eq r 0 with hr | rfl
+  · rw [memLp_iff_eLpNorm_of_ne_zero hr]
+    apply (eLpNorm_le_eLpNorm_mul_eLpNorm b c hb
+      hf.aestronglyMeasurable hg.aestronglyMeasurable h (p := p) (q := q)).trans_lt
+    finiteness [hf, hg]
+  simp only [memLp_zero_iff,
+    hb.comp_aestronglyMeasurable₂ hf.aestronglyMeasurable hg.aestronglyMeasurable, true_and]
+  rcases HolderTriple.zero_iff.1 hpqr with rfl | rfl
+  · apply (measure_mono_ae ?_).trans_lt hf.measure_support_lt_top
+    filter_upwards [h] with x hx
+    simp only [Function.mem_support, ne_eq, eNorm_eq_zero, not_imp_not]
+    intro h'x
+    simpa [h'x] using hx
+  · apply (measure_mono_ae ?_).trans_lt hg.measure_support_lt_top
+    filter_upwards [h] with x hx
+    simp only [Function.mem_support, ne_eq, eNorm_eq_zero, not_imp_not]
+    intro h'x
+    simpa [h'x] using hx
 
 end Bilinear
 
@@ -644,8 +658,9 @@ protected lemma MemLp.prod (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
     MemLp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
   induction s using cons_induction with
   | empty =>
-    by_cases hμ : μ = 0 <;>
-      simp [MemLp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
+    simp only [prod_empty, sum_empty, ENNReal.inv_zero, ne_eq, top_ne_zero, not_false_eq_true,
+      memLp_iff_eLpNorm_of_ne_zero, eLpNorm, aestronglyMeasurable_one, ↓reduceIte]
+    by_cases hμ : μ = 0 <;> simp [eLpNormEssSup_const, hμ, Pi.one_def]
   | cons i s hi ih =>
     rw [prod_cons]
     exact (hf i <| mem_cons_self ..).mul (ih <| forall_of_forall_cons hf) (hpqr := ⟨by simp⟩)

@@ -134,11 +134,11 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   have hf : AEStronglyMeasurable[m] f μ :=
     mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp hf_meas
   change MemLp (hf.mk f) p (μ.trim hm)
-  rw [memLp_iff, eLpNorm_trim hm hf.stronglyMeasurable_mk]
-  have heq : eLpNorm (hf.mk f) p μ = eLpNorm (f : α → F) p μ :=
-    eLpNorm_congr_ae hf.ae_eq_mk.symm
+  rw [memLp_iff, inhmgELpNorm_trim hm hf.stronglyMeasurable_mk]
+  have heq : inhmgELpNorm (hf.mk f) p μ = inhmgELpNorm (f : α → F) p μ :=
+    inhmgELpNorm_congr_ae hf.ae_eq_mk.symm
   rw [heq]
-  exact Lp.eLpNorm_lt_top f
+  exact Lp.inhmgELpNorm_lt_top f
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/
@@ -321,10 +321,10 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α}
 /-- We do not get `ae_fin_strongly_measurable f (μ.trim hm)`, since we don't have
 `f =ᵐ[μ.trim hm] Lp_meas_to_Lp_trim F 𝕜 p μ hm f` but only the weaker
 `f =ᵐ[μ] Lp_meas_to_Lp_trim F 𝕜 p μ hm f`. -/
-theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
+theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ)
     (hp_ne_top : p ≠ ∞) :
     ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.val =ᵐ[μ] g :=
-  ⟨lpMeasSubgroupToLpTrim F p μ hm f, Lp.finStronglyMeasurable _ hp_ne_zero hp_ne_top,
+  ⟨lpMeasSubgroupToLpTrim F p μ hm f, Lp.finStronglyMeasurable _ hp_ne_top,
     (lpMeasSubgroupToLpTrim_ae_eq hm f).symm⟩
 
 /-- When applying the inverse of `lpMeasToLpTrimLie` (which takes a function in the Lp space of

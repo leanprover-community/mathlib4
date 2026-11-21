@@ -218,11 +218,26 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnNorm)
     p.toReal)
 
+theorem inhmgELpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
+    (p : ℝ≥0∞) : inhmgELpNorm f p μ = inhmgELpNorm g p ν := by
+  rcases ne_or_eq p 0 with hp | rfl
+  · simpa [inhmgELpNorm_eq_iff_eLpNorm_eq hp] using h.eLpNorm_eq p
+  by_cases hf : AEStronglyMeasurable f μ; swap
+  · have hg : ¬ AEStronglyMeasurable g ν := by simpa [h.aestronglyMeasurable_iff] using hf
+    simp [inhmgELpNorm, hf, hg]
+  simp only [inhmgELpNorm, hf, ↓reduceIte, h.aestronglyMeasurable_iff.1 hf]
+  have A : (fun x ↦ ‖f x‖ₑ) = (‖·‖ₑ) ∘ f := rfl
+  have B : (fun x ↦ ‖g x‖ₑ) = (‖·‖ₑ) ∘ g := rfl
+  rw [A, Function.support_comp_eq_preimage, ← Measure.map_apply₀ h.aemeasurable_fst,
+    B, Function.support_comp_eq_preimage, ← Measure.map_apply₀ h.aemeasurable_snd, h.map_eq]
+  · apply AEStronglyMeasurable.nullMeasurableSet_support
+    exact Measurable.aestronglyMeasurable (by fun_prop)
+  · apply AEStronglyMeasurable.nullMeasurableSet_support
+    exact Measurable.aestronglyMeasurable (by fun_prop)
+
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
-  rw [memLp_iff]
-  rw [← h.eLpNorm_eq]
-  exact hf
+  rwa [memLp_iff, ← h.inhmgELpNorm_eq]
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=

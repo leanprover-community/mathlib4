@@ -169,13 +169,22 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
+lemma ae_isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, IsFiniteMeasure (κ ω') := by
+  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
+  simpa [integrable_const_iff] using h
+
+lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
+    IsFiniteMeasure (κ ∘ₘ ν) := by
+  simpa [integrable_const_iff] using h.integrable_exp_mul 0
+
 lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
-  filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
-  rw [memLp_iff]
-  by_cases hp : p = 0
-  · simp [hp, eLpNorm_exponent_zero (hi t).1]
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp) (by simp) (hi t).1,
+  filter_upwards [h.ae_forall_integrable_exp_mul, h.ae_isFiniteMeasure] with ω' hi hfin t
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp [(hi t).1]
+  rw [memLp_iff_eLpNorm_of_ne_zero (by simpa using hp),
+    eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp) (by simp) (hi t).1,
     ENNReal.coe_toReal]
   have hf := (hi (p * t)).lintegral_lt_top
   convert! hf using 3 with ω
@@ -185,9 +194,10 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
-  by_cases hp0 : p = 0
-  · simpa [hp0] using (h.integrable_exp_mul t).1
-  rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp0) (by simp)
+  rcases eq_or_ne p 0 with rfl | hp0
+  · simpa [h.isFiniteMeasure] using (h.integrable_exp_mul t).1
+  rw [memLp_iff_eLpNorm_of_ne_zero (mod_cast hp0),
+    eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp0) (by simp)
     (h.integrable_exp_mul t).1]
   simp only [ENNReal.coe_toReal]
   have h' := (h.integrable_exp_mul (p * t)).2
@@ -210,14 +220,9 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     · exact h t
   _ ≤ c * t ^ 2 / 2 := by rw [log_exp]
 
-lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
-    ∀ᵐ ω' ∂ν, IsFiniteMeasure (κ ω') := by
-  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
-  simpa [integrable_const_iff] using h
-
 lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
-  filter_upwards [h.isFiniteMeasure, h.mgf_le] with ω' h h_mgf
+  filter_upwards [h.ae_isFiniteMeasure, h.mgf_le] with ω' h h_mgf
   suffices (κ ω').real Set.univ ≤ 1 by
     rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
   simpa [mgf] using h_mgf 0
@@ -318,7 +323,8 @@ section ChernoffBound
 
 lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
     ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω').real {ω | ε ≤ X ω} ≤ exp (-t * ε + c * t ^ 2 / 2) := by
-  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul, h.isFiniteMeasure] with ω' h1 h2 _ t ht
+  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul, h.ae_isFiniteMeasure]
+    with ω' h1 h2 _ t ht
   calc (κ ω').real {ω | ε ≤ X ω}
   _ ≤ exp (-t * ε) * mgf X (κ ω') t := measure_ge_le_exp_mul_mgf ε ht (h2 t)
   _ ≤ exp (-t * ε + c * t ^ 2 / 2) := by
@@ -357,7 +363,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
     · intro ⟨q, h1, h2⟩
       exact lt_of_lt_of_le (q.cast_pos.2 h1) h2
   have hb (ε : ℚ) : ∀ᵐ ω' ∂ν, 0 < ε → (κ ω') {ω | ε ≤ X ω} = 0 := by
-    filter_upwards [h.measure_ge_le_exp_add ε, h.isFiniteMeasure] with ω' hm _ hε
+    filter_upwards [h.measure_ge_le_exp_add ε, h.ae_isFiniteMeasure] with ω' hm _ hε
     simp only [neg_mul, NNReal.coe_zero, zero_mul, zero_div, add_zero] at hm
     suffices (κ ω').real {ω | ε ≤ X ω} = 0 by simpa [Measure.real, ENNReal.toReal_eq_zero_iff]
     have hl : Filter.Tendsto (fun t ↦ rexp (-(t * ε))) Filter.atTop (𝓝 0) := by

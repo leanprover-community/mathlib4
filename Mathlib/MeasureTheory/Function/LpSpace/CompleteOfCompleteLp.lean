@@ -47,34 +47,13 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
 variable (E p μ) in
 lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
   obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
-  have hfne : ¬ (f =ᵐ[μ] 0) := by
-    contrapose hf
-    ext
-    grw [hf, Lp.coeFn_zero E p μ]
-  rcases eq_top_or_lt_top p with rfl | h'p
-  · apply nontrivial_of_ne ((memLp_top_const (1 : ℝ)).toLp _) 0
-    contrapose hfne
-    have := Lp.ext_iff.1 hfne
-    grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
-    filter_upwards [this] with x hx using by simp at hx
-  rcases eq_or_ne p 0 with rfl | hp
-  · have : MemLp (fun (_ : α) ↦ (1 : ℝ)) 0 μ := by simpa using aestronglyMeasurable_const
-    apply nontrivial_of_ne (this.toLp _) 0
-    contrapose hfne
-    have := Lp.ext_iff.1 hfne
-    grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
-    filter_upwards [this] with x hx using by simp at hx
-  · have h'f : AEFinStronglyMeasurable f μ :=
-      MemLp.aefinStronglyMeasurable (Lp.memLp f) hp h'p.ne
-    obtain ⟨s, s_meas, s_pos, s_top⟩ : ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ :=
-      h'f.exists_measurableSet_measure_pos_lt_top hfne
-    apply nontrivial_of_ne (indicatorConstLp p s_meas s_top.ne 1) 0
-    intro hzero
-    have : ‖indicatorConstLp p s_meas s_top.ne (1 : ℝ)‖ = ‖(0 : Lp ℝ p μ)‖ := by rw [hzero]
-    simp only [norm_indicatorConstLp hp h'p.ne, norm_one, one_div, one_mul, Lp.norm_zero] at this
-    rw [Real.rpow_eq_zero (by positivity) (by simp [ENNReal.toReal_eq_zero_iff, hp, h'p.ne]),
-      measureReal_eq_zero_iff] at this
-    order
+  have A : MemLp (fun x ↦ ‖f x‖) p μ := (Lp.memLp f).norm
+  refine ⟨0, A.toLp, ?_⟩
+  rw [ne_eq, eq_comm]
+  contrapose hf
+  rw [Lp.eq_zero_iff_ae_eq_zero] at hf ⊢
+  filter_upwards [hf, A.coeFn_toLp] with x hx h'x
+  simpa [h'x] using hx
 
 variable [NormedSpace ℝ E]
 

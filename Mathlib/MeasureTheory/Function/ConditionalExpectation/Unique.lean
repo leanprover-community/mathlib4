@@ -47,11 +47,11 @@ section UniquenessOfConditionalExpectation
 /-! ## Uniqueness of the conditional expectation -/
 
 theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
-    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+    (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn (f : Lp E' p μ) s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, (f : Lp E' p μ) x ∂μ = 0) :
     f =ᵐ[μ] (0 : α → E') := by
-  obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
+  obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_top
   refine hfg.trans ?_
   refine ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim hm ?_ ?_ hg_sm
   · intro s hs hμs
@@ -67,7 +67,7 @@ variable (𝕜)
 
 include 𝕜 in
 theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' p μ)
-    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+    (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf_meas : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] 0 := by
@@ -75,11 +75,11 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas]
   refine hf_f_meas.trans ?_
   exact lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
-    hm f_meas hp_ne_zero hp_ne_top hf_int_finite hf_zero
+    hm f_meas hp_ne_top hf_int_finite hf_zero
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
-theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
+theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
@@ -96,7 +96,7 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     intro s hs hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae (Lp.coeFn_sub f g))]
     exact (hf_int_finite s hs hμs).sub (hg_int_finite s hs hμs)
-  exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
+  exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_top hfg_int hfg'
     <| (hf_meas.sub hg_meas).congr (Lp.coeFn_sub f g).symm
 
 variable {𝕜}
