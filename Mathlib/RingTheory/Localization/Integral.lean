@@ -659,7 +659,7 @@ theorem normalizedPrimPartIntegerNormalization_C_mul {a : S} (ha : a ≠ 0) :
   let y := (sec M a).2
   let z := (sec M a).1
   have : b * y ≠ 0 := mul_ne_zero (nonZeroDivisors.ne_zero (hM hbM))
-    (nonZeroDivisors.ne_zero (hM y.2))
+    (nonZeroDivisors.ne_zero (hM y.property))
   apply (associated_primPart_C_mul _ this).symm.trans
   have : Associated (C (b * (y : R)) * integerNormalization M (C a * p)).primPart
       (C (c * z) * integerNormalization M p).primPart := by
@@ -736,7 +736,7 @@ theorem normalizedPrimPartIntegerNormalization_irreducible (hpdeg : p.natDegree 
   obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
   have hc0 : c ≠ 0 := by grind
   have hmapq : ¬IsUnit (q.map (algebraMap R S)) := by
-    contrapose! hpdeg
+    contrapose hpdeg
     rw [hc, natDegree_mul (C_ne_zero.mpr hc0) hpdeg.ne_zero, natDegree_C,
       natDegree_eq_zero_of_isUnit hpdeg, add_zero]
   refine ⟨fun h ↦ hmapq (h.map (mapRingHom _)), fun a b hab ↦ ?_⟩
