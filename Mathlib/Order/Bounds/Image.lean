@@ -365,6 +365,7 @@ theorem isLUB_prod {s : Set (α × β)} {p : α × β} :
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 
+@[to_dual]
 lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
