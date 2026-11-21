@@ -105,8 +105,8 @@ noncomputable def homeomorph (U : Opens X)
     (hF_bij : ∀ (x : X) (hx : x ∈ U), Bijective (F.germ U x hx))
     (x : X) (hx : x ∈ U) :
     (base (F := F) ⁻¹' U) ≃ₜ U × WithDiscreteTopology (ToType (F.stalk x)) where
-  toFun s := (⟨s.1.base, s.2⟩,
-    .toTopology ⊥ <| F.germ U x hx <| surjInv (hF_bij s.1.base s.2).surjective s.1.germ)
+  toFun s := (⟨s.val.base, s.property⟩,
+    .toTopology ⊥ <| F.germ U x hx <| surjInv (hF_bij s.val.base s.property).surjective s.val.germ)
   invFun
   | (⟨y, hy⟩, .toTopology _ g) => ⟨⟨y, F.germ U y hy <| surjInv (hF_bij x hx).surjective g⟩, hy⟩
   left_inv := by

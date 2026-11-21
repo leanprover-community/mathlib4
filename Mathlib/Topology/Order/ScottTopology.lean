@@ -177,7 +177,7 @@ theorem closure_subset_setOfPred_isLUB (s : Set α) :
   · rw [isClosed_iff_dirSupClosed]
     intro d hd hd₀ _ x hx
     choose f hfs hf₀ hf using hd
-    refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
+    refine ⟨⋃ y : d, f y.property, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
     · simpa
     · aesop
     · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy

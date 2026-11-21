@@ -777,12 +777,12 @@ theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p]
   refine measurable_pi_iff.2 fun j => ?_
   by_cases hj : p j
   · simp only [hj, dite_eq_left, Equiv.piEquivPiSubtypeProd_symm_apply]
-    have : Measurable fun (f : ∀ i : { x // p x }, X i.1) => f ⟨j, hj⟩ :=
-      measurable_pi_apply (X := fun i : {x // p x} => X i.1) ⟨j, hj⟩
+    have : Measurable fun (f : ∀ i : { x // p x }, X i.val) => f ⟨j, hj⟩ :=
+      measurable_pi_apply (X := fun i : {x // p x} => X i.val) ⟨j, hj⟩
     exact Measurable.comp this measurable_fst
   · simp only [hj, Equiv.piEquivPiSubtypeProd_symm_apply, dite_eq_right, not_false_iff]
-    have : Measurable fun (f : ∀ i : { x // ¬p x }, X i.1) => f ⟨j, hj⟩ :=
-      measurable_pi_apply (X := fun i : {x // ¬p x} => X i.1) ⟨j, hj⟩
+    have : Measurable fun (f : ∀ i : { x // ¬p x }, X i.val) => f ⟨j, hj⟩ :=
+      measurable_pi_apply (X := fun i : {x // ¬p x} => X i.val) ⟨j, hj⟩
     exact Measurable.comp this measurable_snd
 
 @[fun_prop]

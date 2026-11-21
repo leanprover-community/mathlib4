@@ -84,7 +84,7 @@ abbrev Under := StructuredArrow (Functor.elementsMk _ _ s) (Functor.whiskerRight
 satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
     (h : IsChain (fun x y ↦ Nonempty (y ⟶ x)) c) : ∃ ub, ∀ a ∈ c, Nonempty (ub ⟶ a) := by
-  let f : c → (Opens X) := fun x => x.1.right.obj.unop
+  let f : c → (Opens X) := fun x => x.val.right.obj.unop
   obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.val) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
@@ -95,10 +95,10 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
       dsimp
       rw [← Functor.map_comp_apply]
       rfl
-  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.hom.unop
+  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.val.hom.hom.unop
   have le₂ : ∀ i, i ∈ c → unop i.right.obj ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
   use StructuredArrow.mk (Functor.Elements.homMk (homOfLE le₁).op (eq_app_of_locally_eq ht
-      (fun i ↦ leOfHom i.1.hom.hom.unop) (fun i ↦ (i.1.hom.map_val).symm)).symm :
+      (fun i ↦ leOfHom i.val.hom.hom.unop) (fun i ↦ (i.val.hom.map_val).symm)).symm :
       Functor.elementsMk _ _ s ⟶ (Functor.whiskerRight g.hom
       (CategoryTheory.forget AddCommGrpCat)).mapElements.obj (Functor.elementsMk _ _ t))
   exact fun i hi => Nonempty.intro (StructuredArrow.homMk (Functor.Elements.homMk

@@ -202,7 +202,8 @@ theorem Metric.unitSphere.coe_inv [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 instance Metric.unitSphere.instDiv [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜) 1) where
   div x y := .mk (x / y) <| mem_sphere_zero_iff_norm.2 <| by
-    rw [norm_div, mem_sphere_zero_iff_norm.1 x.2, mem_sphere_zero_iff_norm.1 y.coe_prop, div_one]
+    rw [norm_div, mem_sphere_zero_iff_norm.1 x.property, mem_sphere_zero_iff_norm.1 y.coe_prop,
+      div_one]
 
 @[simp, norm_cast]
 protected theorem Metric.unitSphere.coe_div [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :

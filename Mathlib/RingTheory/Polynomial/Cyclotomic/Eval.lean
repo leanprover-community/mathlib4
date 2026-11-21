@@ -6,9 +6,10 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Analysis.Complex.Arg
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Evaluating cyclotomic polynomials

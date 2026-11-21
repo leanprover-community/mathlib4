@@ -907,7 +907,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
     simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
-    exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2
+    exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.property
 
 theorem _root_.stronglyMeasurable_of_restrict_of_restrict_compl {_ : MeasurableSpace α}
     [TopologicalSpace β] {f : α → β} {s : Set α} (hs : MeasurableSet s)
@@ -1085,7 +1085,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
     exact ⟨s ∩ u, hs u (hs_m.inter hu), by simp⟩
   refine stronglyMeasurable_of_restrict_of_restrict_compl hs_m₂ ?_ ?_
   · exact (hf.comp_measurable (comap_measurable _)).mono h_sub
-  · exact stronglyMeasurable_const' fun x y ↦ by simp [hf_zero _ x.2, hf_zero _ y.2]
+  · exact stronglyMeasurable_const' fun x y ↦ by simp [hf_zero _ x.property, hf_zero _ y.property]
 
 /-- If a function `f` is strongly measurable w.r.t. a sub-σ-algebra `m` and the measure is σ-finite
 on `m`, then there exists spanning measurable sets with finite measure on which `f` has bounded
