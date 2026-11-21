@@ -164,9 +164,8 @@ theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
 
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     (f.limsup fun x : α => a * u x) = a * f.limsup u := by
-  by_cases ha₀ : a = 0
-  · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
-    exact limsup_const_bot
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp_rw [zero_mul, ← bot_eq_zero, limsup_const_bot]
   let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
     ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
   exact g_iso.limsup_apply.symm
@@ -189,9 +188,8 @@ theorem liminf_mul_const_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ�
 
 theorem liminf_const_mul_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     f.liminf (fun x : α => a * u x) = a * f.liminf u := by
-  by_cases ha₀ : a = 0
-  · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
-    apply liminf_const
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp
   exact liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
 
 theorem liminf_mul_const_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
@@ -204,9 +202,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
   · exact limsup_const_mul_of_ne_top ha_top
   by_cases hu : u =ᶠ[f] 0
   · have hau : (a * u ·) =ᶠ[f] 0 := hu.mono fun x hx => by simp [hx]
-    simp only [limsup_congr hu, limsup_congr hau, Pi.zero_def, ← ENNReal.bot_eq_zero,
-      limsup_const_bot]
-    simp
+    simp [limsup_congr hu, limsup_congr hau, Pi.zero_def]
   · have hu_mul : ∃ᶠ x : α in f, ⊤ ≤ ite (u x = 0) (0 : ℝ≥0∞) ⊤ := by
       rw [EventuallyEq, not_eventually] at hu
       exact hu.mono fun x hx => by simpa

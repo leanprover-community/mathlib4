@@ -187,13 +187,9 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
   have : ∫ x : Ω, exp (t * X x) ∂μ = ∫ x : Ω in Set.univ, exp (t * X x) ∂μ := by
     simp only [Measure.restrict_univ]
   rw [this, setIntegral_pos_iff_support_of_nonneg_ae _ _]
-  · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ := by
-      ext1 x
-      simp only [Function.mem_support, Set.mem_univ, iff_true]
-      exact (exp_pos _).ne'
-    rw [h_eq_univ, Set.inter_univ _]
-    refine Ne.bot_lt ?_
-    simp only [hμ, ENNReal.bot_eq_zero, Ne, Measure.measure_univ_eq_zero, not_false_iff]
+  · suffices Function.support (fun x : Ω => exp (t * X x)) = .univ by simp [this, hμ]
+    ext
+    simp
   · filter_upwards with x
     rw [Pi.zero_apply]
     exact (exp_pos _).le

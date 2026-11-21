@@ -137,7 +137,7 @@ variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
 theorem isLittleOTVS_iff_tendsto_div :
     f =o[𝕜; l] g ↔ ∀ U ∈ 𝓝 0, ∃ V ∈ 𝓝 0,
       Tendsto (fun x ↦ egauge 𝕜 U (f x) / egauge 𝕜 V (g x)) l (𝓝 0) := by
-  simp only [isLittleOTVS_iff, ← ENNReal.coe_zero, ENNReal.nhds_coe, ← NNReal.bot_eq_zero,
+  simp only [isLittleOTVS_iff, ← ENNReal.coe_zero, ENNReal.nhds_coe, ← bot_eq_zero (α := ℝ≥0),
     (nhds_bot_basis_Iic.map _).tendsto_right_iff]
   simp +contextual [ENNReal.div_le_iff_le_mul, pos_iff_ne_zero, EventuallyLE]
 
