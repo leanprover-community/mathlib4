@@ -232,4 +232,17 @@ instance Pi.instAlexandrovDiscreteOfFinite {ι : Type*} [Finite ι] {X : ι → 
   simp_rw [alexandrovDiscrete_iff_nhds, nhds_pi, ← principal_nhdsKer_singleton,
     pi_principal, nhdsKer_singleton_pi, forall_true_iff]
 
+
+/-- A function out of an `AlexandrovDiscrete` space is continuous iff it is monotone with respect
+to the specialization preorder. -/
+lemma AlexandrovDiscrete.continuous_iff_spec_monotone
+    {X Y} [TopologicalSpace X] [AlexandrovDiscrete X] [TopologicalSpace Y] {f : X → Y} :
+    Continuous f ↔ ∀ x y, x ⤳ y → (f x) ⤳ (f y) where
+  mp hf x y hxy := hxy.map hf
+  mpr hf := by
+    constructor; intro s hs
+    rw [isOpen_iff_forall_specializes]
+    intro x y hxy hy
+    exact hf x y hxy |>.mem_open hs hy
+
 end

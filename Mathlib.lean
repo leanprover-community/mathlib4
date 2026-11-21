@@ -1,6 +1,7 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
 public import Mathlib.CategoryTheory.ChosenRepresentation
+public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
