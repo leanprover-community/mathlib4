@@ -50,7 +50,7 @@ instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
-@[simps!] def singleton (a : α) : RelSeries r where
+@[simps, implicit_reducible] def singleton (a : α) : RelSeries r where
   length := 0
   toFun _ := a
   step := Fin.elim0
@@ -86,7 +86,7 @@ lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
 series of `s`
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def ofLE (x : RelSeries r) {s : SetRel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
@@ -114,7 +114,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
-@[simps]
+@[simps, implicit_reducible]
 def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) : RelSeries r where
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
@@ -263,7 +263,6 @@ lemma toList_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain
     (fromListIsChain l l_ne_nil hl).toList = l :=
   Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
     (fromListIsChain l l_ne_nil hl).head = l.head l_ne_nil := by
@@ -282,7 +281,7 @@ If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ b
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by lia)
@@ -311,7 +310,6 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
 
-set_option backward.defeqAttrib.useBackward true in
 lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (p.length + 1)) :
     p.append q connect
@@ -321,7 +319,6 @@ lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
   simp only [Function.comp_apply]
   convert! Fin.append_left _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
     p.append q connect
@@ -333,8 +330,6 @@ lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (p.append q connect).head = p.head :=
   append_apply_left p q connect 0
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma last_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).last = q.last := by
   delta last
@@ -343,7 +338,6 @@ set_option backward.isDefEq.respectTransparency false in
   dsimp
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.last ~[r] w.head) :
     (p.append q hpq).append w (by simpa) = p.append (q.append w hqw) (by simpa) := by
   ext
@@ -351,7 +345,6 @@ lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.las
     lia
   · simp [append, Fin.append_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).toList = p.toList ++ q.toList := by
@@ -363,7 +356,7 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 `r`-series can be pushed out to an `s`-series by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
-@[simps length]
+@[simps length, implicit_reducible]
 def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
   length := p.length
   toFun := f.toFun.comp p
@@ -376,14 +369,13 @@ def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
 
 @[simp] lemma last_map (p : RelSeries r) (f : r.Hom s) : (p.map f).last = f p.last := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
 `a₀ -r→ a₁ -r→ ... -r→ aᵢ -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
-@[simps]
+@[simps, implicit_reducible]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : p (Fin.castSucc i) ~[r] a) (connect_next : a ~[r] p i.succ) : RelSeries r where
   length := p.length + 1
@@ -393,9 +385,11 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · obtain ⟨m, rfl⟩ := m.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hm)
       simp only [Fin.castSucc_lt_castSucc_iff] at hm
       rw [Fin.insertNth_apply_below (by simpa using hm.le), Fin.insertNth_apply_below (by simpa)]
-      simpa [← Fin.castSucc_succ] using p.step m
+      rewrite! [Fin.castSucc_succ, Fin.castPred_castSucc, eq_rec_constant, eq_rec_constant]
+      exact p.step m
     · rw [Fin.insertNth_apply_below (by simp)]
-      simpa
+      rewrite! [Fin.castSucc_succ, Fin.castPred_castSucc, eq_rec_constant, Fin.insertNth_apply_same]
+      exact prev_connect
     · obtain ⟨m, rfl⟩ := m.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hm)
       simp only [Fin.castSucc_lt_succ_iff] at hm
       obtain rfl | hm := hm.eq_or_lt
@@ -408,7 +402,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
 A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
 by reversing the series `aₙ ←r- aₙ₋₁ ←r- ... ←r- a₁ ←r- a₀`.
 -/
-@[simps length]
+@[simps length, implicit_reducible]
 def reverse (p : RelSeries r) : RelSeries r.inv where
   length := p.length
   toFun := p ∘ Fin.rev
@@ -424,16 +418,12 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
   simp [RelSeries.last, RelSeries.head]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma reverse_reverse {r : SetRel α α} (p : RelSeries r) : p.reverse.reverse = p := by
   ext <;> simp
 
@@ -441,30 +431,28 @@ set_option backward.isDefEq.respectTransparency false in
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) : RelSeries r :=
-  (singleton r newHead).append p rel
+  (singleton r newHead).append p (by simpa)
 
 @[simp] lemma head_cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) :
     (p.cons newHead rel).head = newHead := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) :
     (p.cons newHead rel).last = p.last := by
   delta cons
   rw [last_append]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cons_cast_succ (s : RelSeries r) (a : α) (h : a ~[r] s.head) (i : Fin (s.length + 1)) :
-    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
-  simp [cons, Fin.append, Fin.addCases, Fin.subNat]
+    (s.cons a h) (.cast (show _ by simp) (.succ i)) = s i := by
+  rw! [cons]
+  simp [Fin.append, Fin.addCases, Fin.subNat]
 
 @[simp]
 lemma append_singleton_left (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (singleton r x).append p hx = p.cons x hx :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (p.cons x hx).toList = x :: p.toList := by
@@ -478,21 +466,19 @@ lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
   apply toList_injective
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last ~[r] q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
-  simp only [cons]
-  rw [append_assoc]
+  rw! [cons, append_assoc (hqw := hq), cons]
+  rfl
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
 -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) : RelSeries r :=
-  p.append (singleton r newLast) rel
+  p.append (singleton r newLast) (by simpa)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma head_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).head = p.head := by
   delta snoc; rw [head_append]
@@ -529,7 +515,7 @@ lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x :
 /--
 If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
 -/
-@[simps]
+@[simps, implicit_reducible]
 def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   length := p.length - 1
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
@@ -552,7 +538,6 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   simp only [Fin.val_succ, Fin.val_last]
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
   refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
@@ -566,8 +551,11 @@ lemma tail_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
   apply toList_injective
   simp
 
+-- use `by exact` to wrap the proof (which   defeq) in the statement, or the proof may be long
+-- to make it type-correctness w.r.t. `implicit` transparency. A type-correct but long proof is:
+-- `by simpa [head, Fin.tail_def, Fin.succ_cast_eq, ← Fin.mk_one] using p.3 ⟨0, pos_of_ne_zero hp⟩`
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
-    (p.tail hp).cons p.head (p.step ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
+    (p.tail hp).cons p.head (by exact p.step ⟨0, pos_of_ne_zero hp⟩) = p := by
   apply toList_injective
   simp [← head_toList]
 
@@ -600,7 +588,6 @@ def inductionOn (motive : RelSeries r → Sort*)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).toList = p.toList ++ [newLast] := by
@@ -609,7 +596,7 @@ lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
-@[simps]
+@[simps, implicit_reducible]
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
   toFun i := p ⟨i, lt_of_lt_of_le i.isLt (Nat.succ_le_succ (Nat.sub_le _ _))⟩
@@ -620,7 +607,6 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
 lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.last ~[r] p.last := by
@@ -628,7 +614,6 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
   convert! p.step ⟨p.length - 1, by lia⟩
   simp only [Fin.succ_mk]; lia
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
     p.eraseLast.toList = p.toList.dropLast := by
@@ -670,7 +655,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
 -/
-@[simps length]
+@[simps length, implicit_reducible]
 def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
   toFun := Fin.addCases (m := p.length) (n := q.length + 1) (p ∘ Fin.castSucc) q
@@ -720,7 +705,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
   rw [← Fin.natAdd_last, Fin.addCases_right]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def take {r : SetRel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by lia⟩
@@ -735,7 +720,7 @@ lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
-@[simps! length]
+@[simps! length, implicit_reducible]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
@@ -876,15 +861,13 @@ lemma head_le (x : LTSeries α) (n : Fin (x.length + 1)) : x.head ≤ x n :=
 lemma head_le_last (x : LTSeries α) : x.head ≤ x.last := x.head_le _
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
-@[simps]
+@[simps, implicit_reducible]
 def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
     LTSeries α where
   length := length
   toFun := toFun
   step i := strictMono <| lt_add_one i.val
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An injection from the type of strictly monotone functions with limited length to `LTSeries`. -/
 def injStrictMono (n : ℕ) :
     {f : (l : Fin n) × (Fin (l + 1) → α) // StrictMono f.2} ↪ LTSeries α where
@@ -906,7 +889,7 @@ For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a str
 can be pushed out to a strict chain of `β` by
 `a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
@@ -922,7 +905,7 @@ strict series of `β` can be pulled back to a strict chain of `α` by
 `b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
 preimage of `f⁻¹ {bᵢ}`.
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def comap (p : LTSeries β) (f : α → β)
     (comap : ∀ ⦃x y⦄, f x < f y → x < y)
     (surjective : Function.Surjective f) :
@@ -944,7 +927,6 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
 in a bidirectionally well-founded order. -/
 theorem exists_relSeries_covBy
@@ -959,7 +941,7 @@ theorem exists_relSeries_covBy
     obtain ⟨t₂, h₁, m, h₂, ht₂⟩ :=
       exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le (h (.last _)).le
     let t₃ : RelSeries {(a, b) : α × α | a ⋖ b} := ⟨m, (t₂ ·), fun i ↦ by simpa using! ht₂ i⟩
-    have H : t₁.last = t₂ 0 := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
+    have H : t₁.last = t₃.head := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
     refine ⟨t₁.smash t₃ H, ⟨Fin.snoc (Fin.castLE (by simp) ∘ i) (.last _), ?_⟩, ?_, ?_, ?_⟩
     · refine Fin.lastCases (Fin.lastCases (fun _ ↦ rfl) fun j eq ↦ ?_) fun j ↦ Fin.lastCases
         (fun eq ↦ ?_) fun k eq ↦ Fin.ext (congr_arg Fin.val (by simpa using! eq) :)
