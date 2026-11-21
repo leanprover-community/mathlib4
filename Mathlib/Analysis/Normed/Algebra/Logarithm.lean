@@ -40,7 +40,7 @@ the series and the relation to `NormedSpace.exp` are left to later files.
 * Ultrametric convergence: if `K` is a complete ultrametric normed field of characteristic zero
   then the series converges on the whole disc `‖x - 1‖ < 1` (no choice of prime is needed: the
   natural numbers of norm `< 1` form a prime ideal of `ℕ`, and if it is `pℕ` then
-  `‖n‖ = ‖p‖ ^ padicValNat p n`).
+  `‖n‖ = ‖p‖ ^ multiplicity p n`).
 * If moreover `‖(p : K)‖ < 1` for a prime `p`, Iwasawa's formula
   `log x = lim (x ^ p ^ k - 1) / p ^ k` gives `log (x * y) = log x + log y` on that disc, hence
   `log_inv`, `log_pow`, `log_zpow` etc.
