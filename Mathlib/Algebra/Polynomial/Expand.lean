@@ -47,8 +47,11 @@ variable {R}
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
-  simp [expand, eval₂_eq_sum]
+theorem expand_eq_sum_coeff {f : R[X]} :
+    expand R p f = f.coeff.sum fun e a => C a * (X ^ p) ^ e := by
+  simp [expand, eval₂_eq_sum_coeff]
+
+@[deprecated (since := "2026-11-02")] alias expand_eq_sum := expand_eq_sum_coeff
 
 @[simp]
 theorem expand_C (r : R) : expand R p (C r) = C r :=
@@ -89,8 +92,8 @@ theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
 
 theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff n = if p ∣ n then f.coeff (n / p) else 0 := by
-  simp only [expand_eq_sum]
-  simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, Finsupp.single_apply, sum]
+  simp only [expand_eq_sum_coeff, Finsupp.sum, ← pow_mul, C_mul_X_pow_eq_monomial, Finset.sum_apply,
+    AddMonoidAlgebra.coeff_sum, coeff_monomial, Finsupp.coe_finsetSum, Finsupp.single_apply]
   split_ifs with h
   · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, ite_eq_left rfl]
     · intro b _ hb2

@@ -226,7 +226,8 @@ variable {K : Type*} [Semifield K]
 
 lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 → K) (hx : x 1 ≠ 0) :
     MvPolynomial.eval x (p.homogenize n) = p.eval (x 0 / x 1) * x 1 ^ n := by
-  simp only [homogenize, Polynomial.eval_eq_sum_range' (Nat.lt_succ_iff.mpr hn),
+  simp only [homogenize, Polynomial.eval_eq_sum_range'
+      (degree_le_natDegree.trans_lt <| mod_cast Nat.lt_succ_iff.mpr hn),
     Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Finset.sum_mul, MvPolynomial.eval_sum]
   refine Finset.sum_congr rfl fun k hk ↦ ?_
   rw [MvPolynomial.eval_monomial, Finsupp.update_eq_add_single, Finsupp.prod_add_index',
@@ -279,9 +280,8 @@ lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ �
 /-- Summing a function over the coefficients of the homogenization of a polynomial `p`
 (of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
 lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
-    (AddMonoidAlgebra.coeff <| p.homogenize p.natDegree).sum (fun _ c ↦ f c) =
-      p.sum fun _ c ↦ f c := by
-  rw [MvPolynomial.sum_def, sum_def p]
+    (p.homogenize p.natDegree).coeff.sum (fun _ c ↦ f c) = p.coeff.sum fun _ c ↦ f c := by
+  rw [MvPolynomial.sum_def, Finsupp.sum]
   -- We set up a bijection between the sets indexing the terms on both sides
   -- and show that it maps the terms in the one sum to those in the other.
   refine Finset.sum_nbij' (fun s ↦ s 0) (fun n ↦ fun₀ | 0 => n | 1 => p.natDegree - n)

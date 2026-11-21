@@ -75,7 +75,7 @@ protected lemma isNilpotent_iff :
     IsNilpotent P ↔ ∀ i, IsNilpotent (coeff P i) := by
   refine
     ⟨P.recOnHorner (by simp) (fun p r hp₀ _ hp hpr i ↦ ?_) (fun p _ hnp hpX i ↦ ?_), fun h ↦ ?_⟩
-  · rw [← sum_monomial_eq P]
+  · rw [← P.sum_coeff_monomial]
     exact isNilpotent_sum (fun i _ ↦ by simpa only [isNilpotent_monomial_iff] using h i)
   · have hr : IsNilpotent (C r) := by
       obtain ⟨k, hk⟩ := hpr
