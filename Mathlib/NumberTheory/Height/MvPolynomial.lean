@@ -543,7 +543,8 @@ lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d]
     mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
   convert! mulHeight_comp_equiv finProdFinEquiv _ with i
-  fin_cases i <;> simp [finProdFinEquiv]
+  fin_cases i <;> rw [Function.comp_apply, finProdFinEquiv_apply] <;>
+    simp [Fin.mkDivMod, Nat.mkDivMod_def]
 
 open MvPolynomial
 
