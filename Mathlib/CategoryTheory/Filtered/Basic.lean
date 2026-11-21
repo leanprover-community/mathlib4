@@ -6,7 +6,8 @@ Authors: Reid Barton, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.Data.Fin.VecNotation
+
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Filtered categories

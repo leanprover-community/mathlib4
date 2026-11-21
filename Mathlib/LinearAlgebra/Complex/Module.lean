@@ -252,7 +252,7 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
     invFun := conj
     left_inv := star_star
     right_inv := star_star
-    commutes' := conj_ofReal }
+    map_smul' := by simp }
 
 @[simp]
 theorem conjAe_coe : ⇑conjAe = conj :=

@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.RingTheory.Polynomial.Vieta
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+
+import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # Polynomials and limits

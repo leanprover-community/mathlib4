@@ -5,9 +5,10 @@ Authors: Devon Tuma
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -675,7 +676,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   rw [RingHom.comp_assoc] at this
   convert this
   refine RingHom.ext fun x => ?_
-  exact ((renameEquiv R e).commutes' x).symm
+  exact ((renameEquiv R e).commutes x).symm
 
 end MvPolynomial
 
@@ -732,4 +733,4 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     (f : K →+* L) (g : L →+* A) (hfg : (g.comp f).FiniteType) :
     f.Finite := by
   algebraize [f, (g.comp f)]
-  exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
+  exact finite_of_algHom_finiteType_of_isJacobsonRing { toRingHom := g, commutes' _ := rfl }

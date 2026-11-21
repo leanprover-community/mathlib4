@@ -5,13 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
+import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Interval.Set.ProjIcc
 
 /-!
