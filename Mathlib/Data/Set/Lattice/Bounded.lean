@@ -203,10 +203,12 @@ lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t
   fun _ ⟨t, htx, hxt⟩ ↦ ⟨f t, mem_image_of_mem f htx, hf t hxt⟩
 
 /-- `sUnion` is monotone under taking a superset of each set. -/
-lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
+lemma sUnion_mono_supersets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
     ⋃₀ (f '' s) ⊆ ⋃₀ s :=
   -- If t ∈ f '' s is arbitrary; t = f u for some u : Set α.
   fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (hut ▸ hf u) hxt⟩
+
+@[deprecated (since := "2026-09-28")] alias sUnion_mono_supsets := sUnion_mono_supersets
 
 theorem subset_sInter {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆ t') : t ⊆ ⋂₀ S :=
   le_sInf h
