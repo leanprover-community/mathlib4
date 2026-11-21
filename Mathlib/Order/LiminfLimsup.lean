@@ -284,6 +284,12 @@ theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f =
   rw [limsup_eq, eq_bot_iff]
   exact sInf_le (Eventually.of_forall fun _ => le_rfl)
 
+@[simp]
+theorem limsup_const_zero [Zero α] [IsBotZeroClass α] {f : Filter β} :
+    limsup (fun _ : β => (0 : α)) f = (0 : α) := by
+  rw [limsup_eq, ← nonpos_iff_eq_zero]
+  exact sInf_le (Eventually.of_forall fun _ => le_rfl)
+
 @[to_dual]
 theorem HasBasis.limsSup_eq_iInf_sSup {ι} {p : ι → Prop} {s} {f : Filter α} (h : f.HasBasis p s) :
     limsSup f = ⨅ (i) (_ : p i), sSup (s i) :=
