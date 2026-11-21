@@ -921,6 +921,23 @@ lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
   ext (i | i) (j | j) <;> simp [toMatrix]
 
+section IsCompl
+
+variable {S M : Type*} [CommRing S] [AddCommGroup M] [Module S M] {p q : Submodule S M}
+  [DecidableEq m]
+
+lemma LinearMap.toMatrix_ofIsCompl (h : IsCompl p q) (bp : Basis n S p) (bq : Basis m S q)
+    (f : Module.End S M) (hp : f ∈ p.compatibleMaps p) (hq : f ∈ q.compatibleMaps q) :
+    LinearMap.toMatrix (Basis.ofIsCompl h bp bq) (Basis.ofIsCompl h bp bq) f =
+      Matrix.fromBlocks (LinearMap.toMatrix bp bp (f.restrict hp)) 0 0
+        (LinearMap.toMatrix bq bq (f.restrict hq)) := by
+  have := Submodule.prodEquivOfIsCompl_symm_conj h f hp hq
+  rw [LinearEquiv.conj_apply, LinearEquiv.symm_symm, LinearMap.comp_assoc] at this
+  rw [Basis.ofIsCompl, LinearMap.toMatrix_map_left, LinearMap.toMatrix_map_right, this,
+    LinearMap.toMatrix_prodMap]
+
+end IsCompl
+
 end ToMatrix
 
 namespace Algebra
