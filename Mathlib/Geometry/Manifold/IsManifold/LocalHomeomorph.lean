@@ -94,24 +94,6 @@ theorem isManifold_of_rightInverse [IsManifold I n M]
 
 /-! ### Smoothness of `f` -/
 
--- TODO: this and the lemma below use a very similar argument. can this be simplified?
-/-- If `g` is a right inverse of `f`, the local inverse of `f` at `g y` is `C^n` at `y`. -/
-lemma contMDiffAt_localInverseAt_rightInverse (y : M') :
-    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    CMDiffAt n (hf.localInverseAt (g y)) y := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  rw [contMDiffAt_iff]
-  constructor
-  · apply OpenPartialHomeomorph.continuousAt
-    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
-  · rw [show hf.localInverseAt (g y) y = g y by
-      simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
-    have hc : chartAt H y = hf.localInverseAt (g y) ≫ₕ chartAt H (g y) := rfl
-    rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
-    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ (Set.mem_range_self _)
-    filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
-    exact (extChartAt I y).right_inv hz
-
 /-- If `g` is a right inverse of `f`, `f` is `C^n` at `g y`. -/
 lemma contMDiffAt_of_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -149,6 +131,24 @@ variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'}
+
+-- TODO: this and `contMDiffAt_of_rightInverse` use a very similar argument. can this be simplified?
+/-- If `g` is a right inverse of `f`, the local inverse of `f` at `g y` is `C^n` at `y`. -/
+lemma contMDiffAt_localInverseAt_rightInverse (y : M') :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    CMDiffAt n (hf.localInverseAt (g y)) y := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  rw [contMDiffAt_iff]
+  constructor
+  · apply OpenPartialHomeomorph.continuousAt
+    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
+  · rw [show hf.localInverseAt (g y) y = g y by
+      simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
+    have hc : chartAt H y = hf.localInverseAt (g y) ≫ₕ chartAt H (g y) := rfl
+    rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
+    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ (Set.mem_range_self _)
+    filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
+    exact (extChartAt I y).right_inv hz
 
 /-- If `g` is a right inverse of `f` and `φ ∘ f` is `C^n` at `g y`,
 then `φ : M' → N` is `C^n` at `y`. -/
