@@ -120,7 +120,7 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   refine ⟨fun hγ ↦ ?_, heq ▸ fun hγ ↦ hγ.comp_mul a⟩
   have hs : {t | t * a⁻¹ ∈ a⁻¹ • s} = s := by
     ext t
-    rw [mem_ofPred_eq, mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha,
+    rw [mem_ofPred, mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha,
       smul_inv_smul₀ ha]
   convert hs ▸ hγ.comp_mul a⁻¹
   · ext t
@@ -136,7 +136,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
   refine ⟨ε / |a|, by positivity, ?_⟩
   have hs : {t | t * a ∈ Metric.ball t₀ ε} = Metric.ball (t₀ / a) (ε / |a|) := by
     ext t
-    rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
+    rw [mem_ofPred, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
       lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
   exact hs ▸ h.comp_mul a
 

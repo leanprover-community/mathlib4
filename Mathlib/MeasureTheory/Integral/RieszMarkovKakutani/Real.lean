@@ -99,7 +99,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
-  simp_rw [Set.mem_ofPred_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  simp_rw [Set.mem_ofPred, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]

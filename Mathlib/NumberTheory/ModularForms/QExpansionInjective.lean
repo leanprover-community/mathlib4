@@ -171,7 +171,7 @@ theorem gradedCoe_injective_of_exists_smul_infty_ne_infty [Fact (IsCusp ∞ Γ)]
       Nat.cast_inj]
   · have hmem (n : ℕ) : γ₀ * upperRightHom (n * h) ∈ Γ :=
       Γ.mul_mem hγ₀ (Γ.mem_strictPeriods_iff.mp (by simpa [nsmul_eq_mul] using nsmul_mem hΓ n))
-    rw [Set.mem_ofPred_eq, ← LaurentPolynomial.eval₂_eq_smeval, Algebra.algebraMap_self,
+    rw [Set.mem_ofPred, ← LaurentPolynomial.eval₂_eq_smeval, Algebra.algebraMap_self,
       weightLaurent_eval z (hmem n) F, hF, Pi.zero_apply]
 
 /-- **The `q`-expansion homomorphism on the graded ring of modular forms is injective**, provided

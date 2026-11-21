@@ -144,7 +144,7 @@ theorem dual_isBase_iff' : M✶.IsBase B ↔ M.IsBase (M.E \ B) ∧ B ⊆ M.E :=
 
 theorem setOfPred_dual_isBase_eq : {B | M✶.IsBase B} = (fun X ↦ M.E \ X) '' {B | M.IsBase B} := by
   ext B
-  simp only [mem_ofPred_eq, mem_image, dual_isBase_iff']
+  simp only [mem_ofPred, mem_image, dual_isBase_iff']
   refine ⟨fun h ↦ ⟨_, h.1, sdiff_sdiff_cancel_left h.2⟩,
     fun ⟨B', hB', h⟩ ↦ ⟨?_,h.symm.trans_subset sdiff_subset⟩⟩
   rwa [← h, sdiff_sdiff_cancel_left hB'.subset_ground]

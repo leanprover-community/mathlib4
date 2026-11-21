@@ -159,7 +159,7 @@ lemma ran_coe (f : α → β) : (↑f : α →. β).ran = Set.range f := by
 
 @[simp]
 lemma ran_eq_empty_iff_dom_eq_empty (f : α →. β) : f.ran = ∅ ↔ f.Dom = ∅ := by
-  simp only [ran, Set.ext_iff, Set.mem_ofPred_eq, Set.mem_empty_iff_false, mem_dom]
+  simp only [ran, Set.ext_iff, Set.mem_ofPred, Set.mem_empty_iff_false, mem_dom]
   grind
 
 /-- Restrict a partial function to a smaller domain. -/
