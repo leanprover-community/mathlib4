@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
@@ -199,7 +202,7 @@ namespace Equiv
 from `e ⁻¹' s` to `s`. -/
 @[simps, implicit_reducible]
 def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
-  toFun a := ⟨e a, Finset.mem_preimage.1 a.2⟩
+  toFun a := ⟨e a, Finset.mem_preimage.1 a.property⟩
   invFun b := ⟨e.symm b, by simp⟩
   left_inv _ := by simp
   right_inv _ := by simp

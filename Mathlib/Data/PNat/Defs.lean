@@ -14,6 +14,9 @@ public import Mathlib.Tactic.Lift
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The positive natural numbers
 
@@ -69,7 +72,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 
 @[simp]
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
-  Subtype.ext <| succ_pred_eq_of_pos n.2
+  Subtype.ext <| succ_pred_eq_of_pos n.property
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -111,7 +114,7 @@ theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
 
 @[simp]
 theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
-  n.2
+  n.property
 
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.ext
@@ -121,7 +124,7 @@ theorem coe_injective : Function.Injective PNat.val :=
 
 @[simp]
 theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
-  n.2.ne'
+  n.property.ne'
 
 instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
@@ -136,11 +139,11 @@ theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
 
 @[deprecated "use `one_le`" (since := "2026-05-07")]
 protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
-  n.2
+  n.property
 
 @[deprecated "use `not_lt_one`" (since := "2026-05-07")]
 protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_ge n.2
+  not_lt_of_ge n.property
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩
@@ -164,7 +167,7 @@ instance : WellFoundedRelation ℕ+ :=
 /-- Strong induction on `ℕ+`. -/
 def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
-termination_by n.1
+termination_by n.val
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
   except that when `m = n * k` we take `m % k = k` and

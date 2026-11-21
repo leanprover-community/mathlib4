@@ -7,13 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
-
 # Filtered colimits in the category of `R`-algebras
 
 In this file we show that the forgetful functor from `R`-algebras to rings

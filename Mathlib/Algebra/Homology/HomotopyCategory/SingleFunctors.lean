@@ -17,7 +17,6 @@ along with their compatibilities with shifts into the definition
 `CochainComplex.singleFunctors C : SingleFunctors C (CochainComplex C ℤ) ℤ`.
 Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
-
 -/
 
 @[expose] public section
@@ -34,7 +33,6 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
 their compatibilities with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/
@@ -68,7 +66,6 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
     Functor.Linear R ((singleFunctors C).functor n) where
   map_smul f r := by

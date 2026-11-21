@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods in topological groups
 

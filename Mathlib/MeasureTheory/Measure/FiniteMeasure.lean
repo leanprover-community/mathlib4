@@ -80,7 +80,6 @@ considerations:
 ## Tags
 
 weak convergence of measures, finite measure
-
 -/
 
 @[expose] public section
@@ -315,9 +314,9 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
   ext t ht
-  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
+  simp only [restrict_measure_eq, toMeasure_sum, sum_apply]
   rw [Measure.restrict_biUnion_finset hd hm]
-  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finsetSum, Finset.sum_apply]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, sum_apply]
   conv_rhs => rw [← Finset.sum_attach]
 
 @[simp]
@@ -351,8 +350,8 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
-      ((Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
-      ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
+      ((Measure.measurable_coe Hu).comp (measurable_subtypeVal.comp measurable_fst))
+      ((Measure.measurable_coe Hv).comp (measurable_subtypeVal.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
@@ -463,7 +462,7 @@ theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →�
      _ ≤ g ω + nndist (f ω) (g ω) := NNReal.le_add_nndist (f ω) (g ω)
      _ ≤ g ω + nndist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
   have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
-    simpa only [← ENNReal.coe_add] using (by exact_mod_cast le')
+    simpa only [← ENNReal.coe_add] using (mod_cast le')
   rwa [coe_nnreal_ennreal_nndist] at le
 
 theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
@@ -755,11 +754,12 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
   · rw [← integral_re_add_im (integrable μ f)]
     simp_rw [← integral_re_add_im (integrable (μs _) f)]
     refine Tendsto.add ?_ ?_
-    · exact (RCLike.continuous_ofReal.tendsto _).comp (h (f.comp RCLike.re RCLike.lipschitzWith_re))
+    · exact (RCLike.continuous_ofReal.tendsto _).comp
+        (h (f.comp RCLike.re RCLike.lipschitzWith_one_re))
     · exact (Tendsto.comp (RCLike.continuous_ofReal.tendsto _)
-        (h (f.comp RCLike.im RCLike.lipschitzWith_im))).mul_const _
+        (h (f.comp RCLike.im RCLike.lipschitzWith_one_im))).mul_const _
   · specialize h ((RCLike.ofRealAm (K := 𝕜)).compLeftContinuousBounded ℝ
-      RCLike.lipschitzWith_ofReal f)
+      RCLike.lipschitzWith_one_ofReal f)
     simp only [AlgHom.compLeftContinuousBounded_apply_apply, RCLike.ofRealAm_coe,
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h
@@ -1015,7 +1015,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
       simp only [toMeasure_comap]
       rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
-        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2)
+        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.property)
       · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
       · exact hf.continuous.measurable hs }
   exact A.comp B.isEmbedding

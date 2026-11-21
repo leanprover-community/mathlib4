@@ -256,18 +256,15 @@ theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![]
   funext fun _ => empty_eq _
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
   ext i j
   refine Fin.cases ?_ ?_ j <;> simp
 
-@[simp]
 theorem head_transpose (A : Matrix m' (Fin n.succ) α) :
     vecHead (of.symm Aᵀ) = vecHead ∘ of.symm A :=
   rfl
 
-@[simp]
 theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
   ext i j
   rfl

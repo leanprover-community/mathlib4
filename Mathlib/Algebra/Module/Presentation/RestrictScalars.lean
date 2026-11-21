@@ -18,7 +18,6 @@ a presentation of `B` as a `A`-module (and some additional data).
 ## TODO
 * deduce that if `B` is a finitely presented as an `A`-module and `M` is
   finitely presented as an `B`-module, then `M` is finitely presented as an `A`-module
-
 -/
 
 @[expose] public section

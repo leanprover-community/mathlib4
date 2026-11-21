@@ -127,7 +127,7 @@ theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
   rfl
 
 @[simp]
-theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
+theorem lift.tmul' (x y) : (lift f').toAddHom (x ⊗ₜ y) = f' x y :=
   rfl
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=

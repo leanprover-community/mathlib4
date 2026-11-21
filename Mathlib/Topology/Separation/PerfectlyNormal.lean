@@ -16,7 +16,6 @@ This file proves some properties of a perfectly normal space.
 ## TODO
 
 Prove that the product of a perfectly normal space and a metric space is perfectly normal.
-
 -/
 
 public section

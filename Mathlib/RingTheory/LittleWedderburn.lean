@@ -27,7 +27,7 @@ A couple simple generalisations are possible:
 * A finite ring is commutative iff all its nilpotents lie in the center.
   [Chintala, Vineeth, *Sorry, the Nilpotents Are in the Center*][chintala2020]
 * A ring is commutative if all its elements have finite order.
-  [Dolan, S. W., *A Proof of Jacobson's Theorem*][dolan1975]
+  [Dolan, S. W., *A Proof of Jacobson's Theorem*][dolan1976]
 
 When alternativity is added to Mathlib, one could formalise the Artin-Zorn theorem, which states
 that any finite alternative division ring is in fact a field.
@@ -36,7 +36,6 @@ https://en.wikipedia.org/wiki/Artin%E2%80%93Zorn_theorem
 If interested, generalisations to semifields could be explored. The theory of semi-vector spaces is
 not clear, but assuming that such a theory could be found where every module considered in the
 below proof is free, then the proof works nearly verbatim.
-
 -/
 
 open scoped Polynomial
@@ -61,7 +60,7 @@ def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
-    mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
+    mul_comm := fun x y ↦ Subtype.ext <| hD hR x.property y.property }
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
@@ -113,7 +112,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   -- therefore `|Zxˣ| = q ^ d - 1`, where `d` is the dimension of `D` as a vector space over `Z`.
   -- We therefore get that `|x| = (q ^ n - 1) / (q ^ d - 1)`, and as `d` is a strict divisor of `n`,
   -- we do have that `Φₙ(q) | (q ^ n - 1) / (q ^ d - 1)`; extending this over the whole sum
-  -- gives us the desired contradiction..
+  -- gives us the desired contradiction.
   rw [Set.toFinset_card, ConjClasses.card_carrier, ← card_congr
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
@@ -135,10 +134,10 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   refine map_dvd (evalRingHom ↑q) (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
   rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
-  obtain ⟨b, -, hb⟩ := IsConcreteLE.exists_of_lt hZx.lt_top
+  obtain ⟨b, -, hb⟩ := exists_mem_notMem_of_lt hZx.lt_top
   refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
-  exact hb b.2
+  exact hb b.property
 
 end InductionHyp
 

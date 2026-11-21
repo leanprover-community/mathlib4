@@ -21,7 +21,6 @@ public import Mathlib.Topology.UnitInterval
 * `polynomialFunctions (X : Set R) : Subalgebra R C(X, R)`: polynomial functions as a subalgebra.
 * `polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints`:
   the polynomial functions separate points.
-
 -/
 
 @[expose] public section
@@ -193,8 +192,8 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
         field
       · rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)
-        have w₂ : 0 ≤ (x : ℝ) - a := sub_nonneg.mpr x.2.1
-        have w₃ : (x : ℝ) - a ≤ b - a := sub_le_sub_right x.2.2 a
+        have w₂ : 0 ≤ (x : ℝ) - a := sub_nonneg.mpr x.property.1
+        have w₃ : (x : ℝ) - a ≤ b - a := sub_le_sub_right x.property.2 a
         fconstructor
         · exact mul_nonneg w₂ (le_of_lt w₁)
         · rw [← div_eq_mul_inv, div_le_one (sub_pos.mpr h)]

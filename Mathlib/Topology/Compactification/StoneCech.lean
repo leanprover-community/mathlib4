@@ -5,8 +5,9 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.DenseEmbedding
+
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -62,7 +63,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
-      simp [inter_subset_right],
+      simp,
     eq_univ_of_univ_subset <| subset_sUnion_of_mem ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
     rfl⟩
 
@@ -347,8 +348,8 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
   not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit T2Quotient.mk
-  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact Quot.mk_surjective
+  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) :=
+    Quot.mk_surjective
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension
