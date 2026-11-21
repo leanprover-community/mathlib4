@@ -167,14 +167,13 @@ abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ 
 
 namespace ChainComplex
 
-variable {α : Type*}
-
 @[to_dual (attr := simp)]
-theorem prev [AddRightCancelSemigroup α] [One α] (i : α) : (ComplexShape.down α).prev i = i + 1 :=
+theorem prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
+    (ComplexShape.down α).prev i = i + 1 :=
   (ComplexShape.down α).prev_eq' rfl
 
 @[to_dual (attr := simp)]
-theorem next [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
+theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
   (ComplexShape.down α).next_eq' <| sub_add_cancel _ _
 
 @[to_dual (attr := simp)]
@@ -184,12 +183,8 @@ theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   exact Nat.add_one_ne_zero
 
 @[to_dual (attr := simp)]
-theorem next_add_one [AddRightCancelSemigroup α] [One α] (i : α) :
-    (ComplexShape.down α).next (i + 1) = i :=
-  (ComplexShape.down α).next_eq' rfl
-
-@[to_dual (attr := deprecated (since := "2026-09-14")) prev_nat_succ]
-alias next_nat_succ := next_add_one
+theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
+  (ComplexShape.down ℕ).next_eq' rfl
 
 end ChainComplex
 
