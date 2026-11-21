@@ -45,7 +45,8 @@ def getAllFiles (git : Bool) (dir : System.FilePath) : IO (Array System.FilePath
   allModules.filterM fun modPath => modPath.pathExists
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. The resulting array is sorted.
+i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. The resulting array is sorted
+alphabetically.
 
 `srcDir` is the part of the path that is not part of the module name, and should be specified when
 not using a top-level directory in order to peel off the correct number of components from the path
