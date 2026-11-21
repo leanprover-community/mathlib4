@@ -6,9 +6,10 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.Final.Connected
 public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
+
+import Mathlib.CategoryTheory.Limits.Final.Connected
 
 /-!
 # Final functors with filtered (co)domain
