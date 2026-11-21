@@ -243,3 +243,43 @@ instance : ENormSMulClass ℝ≥0∞ ℝ≥0∞ where
 
 instance : ENormSMulClass ℝ≥0 ℝ≥0∞ where
   eNorm_smul _ _ := rfl
+
+namespace NNReal
+
+section NormSMulClass
+
+variable {E : Type*}
+
+instance instNormSMulClass [Norm E] [SMul ℝ E] [NormSMulClass ℝ E] : NormSMulClass ℝ≥0 E where
+  norm_smul r x := by rw [smul_def, norm_smul, norm_eq, norm_eq_coe]
+
+variable [SeminormedAddGroup E] [SMul ℝ E] [NormSMulClass ℝ E]
+
+@[simp]
+protected theorem nnNorm_smul (r : ℝ≥0) (x : E) : ‖r • x‖₊ = r * ‖x‖₊ :=
+  NNReal.eq <| by simp [norm_smul]
+
+instance instENormSMulClass : ENormSMulClass ℝ≥0 E where
+  eNorm_smul r x := by simp [eNorm_eq_nnNorm]
+
+end NormSMulClass
+
+section Module
+
+variable {E : Type*} [SeminormedAddCommGroup E] [Module ℝ E] [NormSMulClass ℝ E]
+
+@[simp]
+protected theorem dist_smul (r : ℝ≥0) (x y : E) : dist (r • x) (r • y) = r * dist x y := by
+  simp [smul_def, dist_smul₀]
+
+@[simp]
+protected theorem nndist_smul (r : ℝ≥0) (x y : E) : nndist (r • x) (r • y) = r * nndist x y :=
+  NNReal.eq <| NNReal.dist_smul r x y
+
+@[simp]
+protected theorem edist_smul (r : ℝ≥0) (x y : E) : edist (r • x) (r • y) = r * edist x y := by
+  simp only [edist_nndist, NNReal.nndist_smul, ENNReal.coe_mul]
+
+end Module
+
+end NNReal
