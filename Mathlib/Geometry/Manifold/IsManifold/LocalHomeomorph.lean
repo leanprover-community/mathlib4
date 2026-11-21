@@ -179,7 +179,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
       simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
     filter_upwards [hT] with x hx
     simp [hf.apply_localInverseAt_of_mem hx]
-  refine ContMDiffAt.contMDiffWithinAt (ContMDiffAt.congr_of_eventuallyEq ?_ this)
+  refine (ContMDiffAt.congr_of_eventuallyEq ?_ this).contMDiffWithinAt
   refine ContMDiffAt.comp y ?_ (contMDiffAt_localInverseAt_rightInverse hf hg y)
   rw [show hf.localInverseAt (g y) y = g y by
     simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
