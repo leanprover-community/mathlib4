@@ -81,8 +81,8 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M] (h : Foo I n
     ← (hf.localInverseAt (g x)).symm.trans_assoc]
   refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
-    (contMDiffOn_localInverseAt_symm_trans hf h _ _)
-    (contMDiffOn_localInverseAt_symm_trans hf h _ _)
+    (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
+    (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
 
 -- TODO: this and the lemma below use a very similar argument. can this be simplified?
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
@@ -132,13 +132,13 @@ lemma IsLocalHomeomorph.isContMDiffOfRightInverse
   intro p
   obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h.exists_contMDiffAt p (g (f p)) (hg (f p)).symm
   have : f =ᶠ[𝓝 p] (hf.localInverseAt (g (f p))).symm ∘ σ := by
-    apply Filter.EventuallyEq.trans hσ3.symm
+    refine hσ3.symm.trans ?_
     have : f =ᶠ[𝓝 (g (f p))] (hf.localInverseAt (g (f p))).symm := by simp
     exact this.comp_tendsto (hσ1.symm ▸ hσ2.continuousAt.tendsto)
   refine ContMDiffAt.congr_of_eventuallyEq ?_ this
   refine ContMDiffAt.comp p ?_ hσ2
   rw [hσ1]
-  exact contMDiffAt_localInverseAt_symm_rightInverse hf hg (f p)
+  exact hf.contMDiffAt_localInverseAt_symm_rightInverse hg (f p)
 
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -158,7 +158,7 @@ lemma IsLocalHomeomorph.contMDiffAt_of_contMDiffAt_comp {φ : M' → N} {y : M'}
     filter_upwards [hT] with x hx
     simp [hf.apply_localInverseAt_of_mem hx]
   refine ContMDiffAt.congr_of_eventuallyEq ?_ this
-  refine ContMDiffAt.comp y ?_ (contMDiffAt_localInverseAt_rightInverse hf hg y)
+  refine ContMDiffAt.comp y ?_ (hf.contMDiffAt_localInverseAt_rightInverse hg y)
   rwa [show hf.localInverseAt (g y) y = g y by
     simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
 
@@ -174,7 +174,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
     (hF : ∀ p q, f p = f q → F p = F q) (hF' : CMDiff n F) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n (F ∘ g) :=
-  IsLocalHomeomorph.contMDiff_of_contMDiff_comp hf hg <| hF'.congr (fun y ↦ hF _ _ (hg (f y)))
+  hf.contMDiff_of_contMDiff_comp hg <| hF'.congr (fun y ↦ hF _ _ (hg (f y)))
 
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
@@ -185,7 +185,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro y hy
   refine (hf.contMDiffAt_of_contMDiffAt_comp hg ?_).contMDiffWithinAt
-  simpa using (contMDiffOn_localInverseAt_symm_trans hf h (g y) x).contMDiffAt
+  simpa using (hf.contMDiffOn_localInverseAt_symm_trans h (g y) x).contMDiffAt
     <| (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
