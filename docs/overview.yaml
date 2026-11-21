@@ -423,7 +423,7 @@ Probability Theory:
     martingale: 'MeasureTheory.Martingale'
     optional stopping theorem: 'MeasureTheory.submartingale_iff_expected_stoppedValue_mono'
     stopping time: 'MeasureTheory.IsStoppingTime'
-    hitting time: 'MeasureTheory.hittingBtwn'
+    hitting time: 'Function.hittingBtwn'
     Gaussian processes: 'ProbabilityTheory.IsGaussianProcess'
 
 Geometry:
