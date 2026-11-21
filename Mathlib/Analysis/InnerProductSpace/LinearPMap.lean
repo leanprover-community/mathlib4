@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
@@ -159,6 +160,9 @@ theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((inne
 
 variable {T}
 
+/-- A vector `y` belongs to the domain of the adjoint if the functional `x ↦ ⟪y, T x⟫`
+on `T.domain` can be represented as an inner product with a vector of `E`.
+See `mem_adjoint_domain_iff_exists` for the converse. -/
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
   obtain ⟨w, hw⟩ := h
@@ -197,6 +201,27 @@ theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
       ⟨S ⟨x, hx⟩, h.symm ⟨x, hx⟩⟩,-- Equality on `S.domain` follows from equality
   -- `⟪v, S x⟫ = ⟪v, T.adjoint y⟫` for all `v : T.domain`:
   fun _ _ hxy => (adjoint_apply_eq hT _ fun _ => by rw [h.symm, hxy]).symm⟩
+
+/-- A vector `y` belongs to the domain of the adjoint if and only if the
+functional `x ↦ ⟪y, T x⟫` on `T.domain` can be represented as an inner product with
+a vector of `E`. -/
+theorem mem_adjoint_domain_iff_exists {T : E →ₗ.[𝕜] F} (y : F) :
+    y ∈ T.adjoint.domain ↔ ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫ := by
+  constructor
+  · intro hy
+    let ℓ := T.adjointDomainMkCLM ⟨y, hy⟩
+    let D := T.domain.topologicalClosure
+    let i := Submodule.inclusionL T.domain.le_topologicalClosure
+    let ℓExt := ℓ.extend i
+    use ((InnerProductSpace.toDual 𝕜 D).symm ℓExt : E)
+    intro x
+    change ⟪(InnerProductSpace.toDual 𝕜 D).symm ℓExt, i x⟫ = ℓ x
+    rw [InnerProductSpace.toDual_symm_apply]
+    apply ContinuousLinearMap.extend_eq
+    · apply (denseRange_inclusion_iff T.domain.le_topologicalClosure).2
+      simp
+    · exact (isUniformEmbedding_set_inclusion T.domain.le_topologicalClosure).isUniformInducing
+  · exact LinearPMap.mem_adjoint_domain_of_exists y
 
 end LinearPMap
 
