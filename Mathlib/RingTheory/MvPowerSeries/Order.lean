@@ -636,20 +636,19 @@ protected theorem IsWeightedHomogeneous.mul {f g : MvPowerSeries σ R} {p q : �
   apply hd
   rw [← hx, map_add, hp, hq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
 def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff d f else 0
   map_add' f g := by
     ext d
-    simp only [map_add, coeff_apply]
-    split_ifs with h
-    · rfl
-    · rw [add_zero]
+    refine (coeff_apply _ d).trans ?_
+    rw [map_add]
+    exact ite_add_zero
   map_smul' a f := by
     ext d
-    simp only [map_smul,
-      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
+    refine (coeff_apply _ d).trans ?_
+    rw [map_smul]
+    exact (smul_ite_zero _ _ _).symm
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :
     coeff d (weightedHomogeneousComponent w p f) =
