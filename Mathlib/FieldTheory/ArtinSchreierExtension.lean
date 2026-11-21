@@ -26,9 +26,8 @@ theory).
 -/
 
 public section
-universe u
 
-variable {F : Type u} [CommRing F]
+variable {F : Type*} [CommRing F]
 
 open IntermediateField Polynomial
 
@@ -48,7 +47,7 @@ lemma artinSchreierPoly_taylor (p : ℕ) [ExpChar F p] (a c : F) :
   · simp [add_pow_expChar]; ring
   · simp
 
-lemma artinSchreierPoly_map (p : ℕ) [ExpChar F p] (a : F) {K : Type u}
+lemma artinSchreierPoly_map (p : ℕ) [ExpChar F p] (a : F) {K : Type*}
     [CommRing K] [ExpChar K p] (f : F →+* K) :
     (artinSchreierPoly a).map f = artinSchreierPoly (f a) := by
   simp [artinSchreierPoly_def p]
@@ -63,7 +62,7 @@ lemma artinSchreierPoly_isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Pri
   · compute_degree <;> grind [one_ne_zero, hp.elim.one_lt]
   · monicity <;> grind [hp.elim.one_lt]
 
-variable {F : Type u} (p : ℕ) [Field F] [ExpChar F p]
+variable {F : Type*} (p : ℕ) [Field F] [ExpChar F p]
 
 open AdjoinRoot Multiset
 
