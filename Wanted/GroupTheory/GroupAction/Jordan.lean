@@ -46,7 +46,7 @@ contains the alternating group. -/
 proof_wanted alternatingGroup_le_of_isPreprimitive_of_isCycle_mem
   (hG : IsPreprimitive G α)
   {p : ℕ} (hp : p.Prime) (hp' : p + 3 ≤ Nat.card α)
-  {g : Perm α} (hgc : g.IsCycle) (hgp : g.support.card = p)
+  {g : Perm α} (hgc : g.IsCycle) (hgp : g.supportFinset.card = p)
   (hg : g ∈ G) : alternatingGroup α ≤ G
 
 end Equiv.Perm
