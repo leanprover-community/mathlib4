@@ -997,4 +997,3 @@ def costructuredArrowSndAdjunction (b : B) :
 end Comma
 
 end CategoryTheory
-#lint
