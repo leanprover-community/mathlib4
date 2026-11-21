@@ -21,7 +21,7 @@ the number of elements of word length at most `n`.
 
 * `Group.Generators.wordBall`: the closed ball of radius `n` in the word metric.
 * `Group.Generators.growth`: the growth function `n ↦ #(wordBall n)`.
-* `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ f (α * n)` for some `α`.
+* `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ C * f (α * n)` for some `C, α`.
 * `Function.GrowthEquivalent`: mutual domination of two functions.
 * `Group.Generators.growth_growthEquivalent`: the growth function is independent of the
   finite generating family, up to `GrowthEquivalent`.
@@ -31,8 +31,8 @@ the number of elements of word length at most `n`.
 * `wordBall` is defined via `wordLength`, so it is compatible with the existing word metric API.
 * When the index type is finite, `wordBall n` is a finite set, hence `growth n` is the actual
   cardinality.
-* Growth comparison uses a linear rescaling of the argument. Open the `Growth` locale for the
-  notations `f ≽ᵍ g` and `f ∼ᵍ g`.
+* Growth comparison uses a multiplicative constant and a linear rescaling of the argument. Open
+  the `Growth` locale for the notations `f ≽ᵍ g` and `f ∼ᵍ g`.
 
 ## Tags
 
@@ -45,9 +45,10 @@ open Set
 
 namespace Function
 
-/-- `f` dominates `g` (written `f ≽ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
+/-- `f` dominates `g` (written `f ≽ᵍ g`) if `g` is bounded by a constant multiple of a
+rescaling of `f`. -/
 def GrowthDominates (f g : ℕ → ℕ) : Prop :=
-  ∃ α : ℕ, ∀ n, g n ≤ f (α * n)
+  ∃ C α : ℕ, ∀ n, g n ≤ C * f (α * n)
 
 /-- Two functions are growth-equivalent (written `f ∼ᵍ g`) if each dominates the other. -/
 def GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
@@ -56,14 +57,14 @@ def GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
 namespace GrowthDominates
 
 lemma refl (f : ℕ → ℕ) : f.GrowthDominates f :=
-  ⟨1, by simp⟩
+  ⟨1, 1, by simp⟩
 
 lemma trans {f g h : ℕ → ℕ} (hfg : f.GrowthDominates g)
     (hgh : g.GrowthDominates h) : f.GrowthDominates h := by
-  obtain ⟨α₁, h₁⟩ := hfg
-  obtain ⟨α₂, h₂⟩ := hgh
-  refine ⟨α₁ * α₂, fun n ↦ ?_⟩
-  grw [h₂ n, h₁ (α₂ * n), mul_assoc]
+  obtain ⟨C₁, α₁, h₁⟩ := hfg
+  obtain ⟨C₂, α₂, h₂⟩ := hgh
+  refine ⟨C₂ * C₁, α₁ * α₂, fun n ↦ ?_⟩
+  grw [h₂ n, h₁ (α₂ * n), mul_assoc, mul_assoc]
 
 end GrowthDominates
 
@@ -165,7 +166,8 @@ finite generating family. -/]
 lemma growthDominates_growth [Finite ι] [Finite ι'] (Q : Group.Generators G ι') :
     P.growth.GrowthDominates Q.growth := by
   obtain ⟨α, hα⟩ := P.exists_mul_le_wordLength Q
-  refine ⟨α, fun n ↦ ?_⟩
+  refine ⟨1, α, fun n ↦ ?_⟩
+  rw [one_mul]
   refine ncard_le_ncard (fun g hg ↦ ?_) (P.finite_wordBall (α * n))
   rw [mem_wordBall] at hg ⊢
   grw [hα, hg]
