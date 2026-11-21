@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
-import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
 
 /-!

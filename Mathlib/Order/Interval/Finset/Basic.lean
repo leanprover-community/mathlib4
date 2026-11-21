@@ -59,15 +59,9 @@ variable [LocallyFiniteOrder α]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
-@[to_dual self, aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
-
 @[to_dual (attr := simp) (rename := a ↔ b)]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
-
-@[to_dual (rename := a ↔ b) (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
-alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered;
 -- See `not_lt_of_denselyOrdered_of_locallyFinite`
@@ -309,10 +303,6 @@ theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
 
 @[to_dual (attr := simp)] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
 
-@[to_dual (attr := simp)]
-lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by
-  contrapose!; exact Ioi_eq_empty
-
 @[to_dual]
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
@@ -322,11 +312,10 @@ theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
 
 @[to_dual (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[to_dual]
+@[to_dual (attr := simp)]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
-@[to_dual (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
-alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
+@[deprecated (since := "2026-11-05")] alias Ioi_nonempty := nonempty_Ioi
 
 @[to_dual (attr := simp, gcongr)]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by

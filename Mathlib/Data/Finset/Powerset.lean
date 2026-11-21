@@ -48,7 +48,7 @@ theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
 theorem mem_powerset_self (s : Finset α) : s ∈ powerset s := by simp
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
   ⟨∅, empty_mem_powerset _⟩
 
@@ -291,7 +291,6 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, powersetCard_nonempty_of_le⟩ := powersetCard_nonempty
 
 @[simp]

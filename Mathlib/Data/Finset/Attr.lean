@@ -16,6 +16,8 @@ import Mathlib.Init
 This file defines `finsetNonempty`, an aesop rule set to prove that a given finset is nonempty.
 -/
 
+deprecated_module "use `simp [*]` instead of `finsetNonempty`" (since := "2026-11-05")
+
 -- `finsetNonempty` rules try to prove that a given finset is nonempty,
 -- for use in positivity extensions.
 declare_aesop_rule_sets [finsetNonempty] (default := true)

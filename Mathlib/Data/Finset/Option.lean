@@ -77,7 +77,7 @@ theorem some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s �
 
 lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
 
 @[simp]
