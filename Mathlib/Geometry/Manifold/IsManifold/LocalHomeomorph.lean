@@ -183,12 +183,8 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
   refine ContMDiffAt.comp y ?_ (contMDiffAt_localInverseAt_rightInverse hf hg y)
   rw [show hf.localInverseAt (g y) y = g y by
     simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
-  have aux := foo hf h (g y) x
-  simp at aux
-  refine aux.contMDiffAt <| IsOpen.mem_nhds ?_ ?_
-  · exact (hf.localInverseAt (g y)).open_target.inter
-      ((hf.localInverseAt x).open_source.preimage hf.continuous)
-  · exact ⟨hf.self_mem_localInverseAt_target, by simpa [hg y] using hy⟩
+  simpa using (foo hf h (g y) x).contMDiffAt
+    <| (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
 lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
