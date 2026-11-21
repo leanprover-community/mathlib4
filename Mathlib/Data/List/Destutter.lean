@@ -113,6 +113,31 @@ theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsCh
 theorem destutter'_ne_nil : l.destutter' R a ≠ [] :=
   ne_nil_of_mem <| l.mem_destutter' R a
 
+lemma destutter'_head : (l.destutter' R a).head (l.destutter'_ne_nil R) = a := by
+  induction l generalizing a with
+  | nil => simp
+  | cons b k IH =>
+    rw! [destutter'_cons]
+    split_ifs
+    · exact head_cons
+    · exact IH
+
+lemma destutter'_neq_getLast [DecidableEq α] :
+    (l.destutter' (· ≠ ·) a |>.getLast (l.destutter'_ne_nil (· ≠ ·)))
+    = (a :: l).getLast (cons_ne_nil a l) := by
+  induction l using twoStepInduction generalizing a with
+  | nil => simp
+  | singleton b =>
+    simp; split_ifs
+    · simpa
+    · simp
+  | cons_cons b c k _ IH =>
+    rw! [List.destutter'_cons, getLast_cons (cons_ne_nil _ _)]
+    split_ifs with h
+    · rw [List.getLast_cons (destutter'_ne_nil _ (· ≠ ·))]
+      exact IH c
+    · exact IH c
+
 @[simp]
 theorem destutter_nil : ([] : List α).destutter R = [] :=
   rfl
@@ -156,6 +181,17 @@ theorem destutter_idem : (l.destutter R).destutter R = l.destutter R :=
 theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
   | [] => Iff.rfl
   | _ :: l => ⟨fun h => absurd h <| l.destutter'_ne_nil R, fun h => nomatch h⟩
+
+lemma destutter_head {l : List α} (l0 : l ≠ []) (R : α → α → Prop) [DecidableRel R] :
+    (l.destutter R |>.head (destutter_eq_nil R |>.ne.mpr l0)) = l.head l0 := by
+  rw! [← cons_head_tail l0, head_cons, destutter_cons', destutter'_head]; rfl
+
+lemma destutter_neq_getLast {l : List α} (l0 : l ≠ []) [DecidableEq α] :
+    (l.destutter (· ≠ ·)|>.getLast (destutter_eq_nil (· ≠ ·) |>.ne.mpr l0)) = l.getLast l0 := by
+  rw! [← cons_head_tail l0, destutter_cons']
+  by_cases h : l.tail = []
+  · simp [h]
+  · exact destutter'_neq_getLast _
 
 variable {R}
 
