@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Linear Functors

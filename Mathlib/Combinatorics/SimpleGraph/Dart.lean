@@ -6,7 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Data.Fintype.Sigma
+
+import Mathlib.Data.Fintype.Sigma
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

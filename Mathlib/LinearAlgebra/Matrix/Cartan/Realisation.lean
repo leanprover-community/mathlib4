@@ -5,13 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
-public import Mathlib.LinearAlgebra.RootSystem.Irreducible
-public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
+import Mathlib.LinearAlgebra.Matrix.Block
+import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.RootSystem.Irreducible
+import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # Realisations of Cartan Matrices
