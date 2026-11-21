@@ -303,7 +303,7 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   obtain ⟨n, b'⟩ := Submodule.basisOfPid b ⊥
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
-  exact Sigma.eq rfl (Basis.ext finZeroElim)
+  exact Sigma.eq rfl (Basis.eq_of_apply_eq finZeroElim)
 
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.

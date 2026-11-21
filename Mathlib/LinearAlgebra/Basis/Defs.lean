@@ -41,10 +41,10 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 ## Main results
 
-* `Basis.ext` states that two bases are equal if they have the same basis vectors.
 * `Basis.ext_linearMap` states that two linear maps are equal if they coincide on a basis.
   A similar result is available for linear equivs (`Basis.ext_linearEquiv`),
   for elements (if their coordinates coincide), and for the functions `b.repr` and `⇑b`.
+* `Basis.eq_of_apply_eq` states that two bases are equal if they have the same basis vectors.
 
 ## Implementation notes
 
@@ -317,6 +317,8 @@ theorem ext_linearMap {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) 
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
   simp only [map_sum, map_smulₛₗ, h]
 
+@[deprecated (since := "2026-11-21")] alias ext := ext_linearMap
+
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext_linearEquiv {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
@@ -367,11 +369,8 @@ theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i
 
 /-- Two bases are equal if their basis vectors are the same. -/
 @[ext]
-theorem ext {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
+theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
   DFunLike.ext _ _
-
-@[deprecated (since := "2026-11-21")] alias eq_of_apply_eq := ext
-@[deprecated (since := "2026-11-21")] alias eq_of_apply_eq_iff := Basis.ext_iff
 
 end Ext
 
