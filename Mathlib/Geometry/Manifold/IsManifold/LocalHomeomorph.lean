@@ -45,8 +45,10 @@ variable {M : Type*} [TopologicalSpace M]
 
 open scoped ContDiff Manifold Topology
 
--- TODO: find proper name for this
-lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
+/-- If `f` satisfies the condition, the transition map between two local inverses of `f`
+is `C^n` on its source. -/
+lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
     (p q : M) :
     ContMDiffOn I I n ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q)
       ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q).source := by
@@ -79,7 +81,8 @@ lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M]
     ← (hf.localInverseAt (g x)).symm.trans_assoc]
   refine symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
-    (foo hf h _ _) (foo hf h _ _)
+    (contMDiffOn_localInverseAt_symm_trans hf h _ _)
+    (contMDiffOn_localInverseAt_symm_trans hf h _ _)
 
 -- TODO: this and the lemma below use a very similar argument. can this be simplified?
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
@@ -182,7 +185,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro y hy
   refine (hf.contMDiffAt_of_contMDiffAt_comp hg ?_).contMDiffWithinAt
-  simpa using (foo hf h (g y) x).contMDiffAt
+  simpa using (contMDiffOn_localInverseAt_symm_trans hf h (g y) x).contMDiffAt
     <| (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
