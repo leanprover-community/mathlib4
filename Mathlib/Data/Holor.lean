@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.CompleteLattice.Defs
 
 /-!
 # Basic properties of holors
@@ -125,6 +126,88 @@ instance [Mul α] : SMul α (Holor α ds) :=
 
 instance [Semiring α] : Module α (Holor α ds) :=
   inferInstanceAs <| Module α (HolorIndex ds → α)
+
+instance [LE α] : LE (Holor α ds) :=
+  ⟨fun x y ↦ ∀ t, x t ≤ y t⟩
+
+instance [LT α] : LT (Holor α ds) :=
+  ⟨fun x y ↦ ∀ t, x t < y t⟩
+
+instance [Preorder α] : Preorder (Holor α ds) :=
+  inferInstanceAs <| Preorder (HolorIndex ds → α)
+
+instance [PartialOrder α] : PartialOrder (Holor α ds) :=
+  inferInstanceAs <| PartialOrder (HolorIndex ds → α)
+
+@[to_dual]
+instance [SemilatticeSup α] : SemilatticeSup (Holor α ds) where
+  sup x y t := x t ⊔ y t
+  le_sup_left _ _ _ := le_sup_left
+  le_sup_right _ _ _ := le_sup_right
+  sup_le _ _ _ hxy hyz t := sup_le (hxy t) (hyz t)
+
+@[to_dual]
+instance [SupSet α] : SupSet (Holor α ds) where
+  sSup s t := SupSet.sSup (s.image fun x ↦ x t)
+
+@[to_dual]
+lemma isLUB_app_of_isLUB [LE α] {s : Set (Holor α ds)} {x : Holor α ds}
+    (hsx : IsLUB s x) (t : HolorIndex ds) : IsLUB (s.image fun y ↦ y t) (x t) := by
+  classical
+  constructor
+  · rintro _ ⟨y, hy, rfl⟩
+    exact hsx.left hy t
+  · intro a ha
+    let z : Holor α ds := fun u ↦ if u = t then a else x u
+    have hz : ∀ y ∈ s, y ≤ z := by
+      intro y hy u
+      by_cases h : u = t
+      · subst u
+        simp only [z, reduceIte]
+        exact ha (s.mem_image_of_mem (fun w ↦ w t) hy)
+      · have := hsx.left hy u
+        simp only [h, reduceIte, ge_iff_le, z]
+        exact hsx.left hy u
+    simpa [z] using hsx.right hz t
+
+@[to_dual]
+instance [Preorder α] [OrderSupSet α] : OrderSupSet (Holor α ds) where
+  isLUB_sSup_of_isLUB s x hsx := by
+    have ht (t : HolorIndex ds) := OrderSupSet.isLUB_sSup_of_isLUB _ _ (isLUB_app_of_isLUB hsx t)
+    constructor
+    · intro y hy t
+      refine (ht t).left (s.mem_image_of_mem _ hy)
+    · intro y hy t
+      apply (ht t).right
+      rintro x ⟨z, hz, rfl⟩
+      exact hy hz t
+
+@[to_dual]
+instance [CompleteSemilatticeSup α] : CompleteSemilatticeSup (Holor α ds) where
+  isLUB_sSup s := by
+    constructor
+    · intro x hx t
+      exact (isLUB_sSup (s.image fun y ↦ y t)).left ⟨x, hx, rfl⟩
+    · intro x hx t
+      apply (isLUB_sSup (s.image fun y ↦ y t)).right
+      rintro y ⟨z, hz, rfl⟩
+      exact hx hz t
+
+instance [Lattice α] : Lattice (Holor α ds) :=
+  inferInstanceAs <| Lattice (HolorIndex ds → α)
+
+@[to_dual]
+instance [Top α] : Top (Holor α ds) :=
+  ⟨fun _ => ⊤⟩
+
+@[to_dual]
+instance [LE α] [OrderTop α] : OrderTop (Holor α ds) :=
+  inferInstanceAs <| OrderTop (HolorIndex ds → α)
+
+instance [LE α] [BoundedOrder α] : BoundedOrder (Holor α ds) :=
+  inferInstanceAs <| BoundedOrder (HolorIndex ds → α)
+
+instance [CompleteLattice α] : CompleteLattice (Holor α ds) where
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
