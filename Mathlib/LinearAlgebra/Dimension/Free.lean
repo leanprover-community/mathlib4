@@ -407,17 +407,25 @@ theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
   simp only [hc, map_smul, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   rw [← this]
 
-/-- Endomorphisms of a free module of rank one are homotheties. -/
+/-- Endomorphisms of a free module of rank one are homotheties.
+
+This is an equivalence version of `Algebra.lsmul`, with only one ring. -/
 @[simps apply]
-noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
-    R ≃ₗ[R] (M →ₗ[R] M) where
-  toFun := fun c ↦ c • LinearMap.id
+noncomputable def _root_.Algebra.lsmulEquivOfFinrankEqOne (d1 : Module.finrank R M = 1) :
+    R ≃ₐ[R] Module.End R M where
+  toFun c := c • LinearMap.id
   map_add' c d := by ext; simp [add_smul]
-  map_smul' c d := by ext; simp [mul_smul]
+  map_mul' c d := by ext; simp [← mul_smul, mul_comm]
+  commutes' c := by ext; simp
   invFun u := (u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose
   left_inv c := by
     simp [← (LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one d1 _).choose_spec.2 c]
   right_inv u := ((u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose_spec.1).symm
+
+@[deprecated Algebra.lsmulEquivOfFinrankEqOne +typeChanged (since := "2026-11-21")]
+noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
+    R ≃ₗ[R] (M →ₗ[R] M) :=
+  Algebra.lsmulEquivOfFinrankEqOne d1
 
 end Module
 

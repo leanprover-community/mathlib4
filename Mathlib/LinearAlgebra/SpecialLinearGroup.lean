@@ -78,10 +78,9 @@ theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R 
       simp [this u, this v]
     intro u
     ext x
-    set c := (LinearEquiv.smul_id_of_finrank_eq_one d1).symm u with hc
-    rw [LinearEquiv.eq_symm_apply] at hc
-    suffices c = 1 by
-      simp [← hc, LinearEquiv.smul_id_of_finrank_eq_one, this]
+    set c := (Algebra.lsmulEquivOfFinrankEqOne d1).symm u with hc
+    rw [AlgEquiv.eq_symm_apply] at hc
+    suffices c = 1 by simp [← hc, this]
     have hu := u.prop
     simpa [← Units.val_inj, LinearEquiv.coe_det, ← hc,
       LinearEquiv.smul_id_of_finrank_eq_one, d1] using hu
