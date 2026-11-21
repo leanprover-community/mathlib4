@@ -50,8 +50,12 @@ in particular sense for `V = W = ℝ`.
 
 ## Main results
 
-At present the only nontrivial lemma we prove is `fourierIntegral_continuous`, stating that the
-Fourier transform of an integrable function is continuous (under mild assumptions).
+* `VectorFourier.fourierIntegral_continuous`: the Fourier transform of an integrable function is
+  continuous (under mild assumptions).
+* `VectorFourier.fourierIntegral_smul_addChar`: modulation by a character translates the Fourier
+  integral in frequency.
+* `Real.fourier_smul_fourierChar`: the modulation identity for the Fourier transform on a real
+  inner product space.
 -/
 
 @[expose] public section
@@ -114,6 +118,16 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊)
   congr 1 with v
   rw [← smul_assoc, smul_eq_mul, ← Circle.coe_mul, ← e.map_add_eq_mul, ← LinearMap.neg_apply,
     ← sub_eq_add_neg, ← LinearMap.sub_apply, map_sub, neg_sub]
+
+/-- Modulation by a character translates the Fourier integral in frequency. -/
+theorem fourierIntegral_smul_addChar (e : AddChar 𝕜 Circle) (μ : Measure V)
+    (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w₀ w : W) :
+    fourierIntegral e μ L (fun v ↦ e (L v w₀) • f v) w =
+      fourierIntegral e μ L f (w - w₀) := by
+  unfold fourierIntegral
+  apply integral_congr_ae
+  filter_upwards with v
+  rw [← mul_smul, ← e.map_add_eq_mul, map_sub, neg_sub, sub_eq_neg_add]
 
 end Defs
 
@@ -359,6 +373,13 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd 𝕜] (e : AddChar 𝕜 �
     fourierIntegral e μ (f ∘ fun v ↦ v + v₀) = fun w ↦ e (v₀ * w) • fourierIntegral e μ f w :=
   VectorFourier.fourierIntegral_comp_add_right _ _ _ _ _
 
+/-- Modulation by a character translates the Fourier integral in frequency. -/
+theorem fourierIntegral_smul_addChar (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
+    (f : 𝕜 → E) (w₀ w : 𝕜) :
+    fourierIntegral e μ (fun v ↦ e (v * w₀) • f v) w =
+      fourierIntegral e μ f (w - w₀) :=
+  VectorFourier.fourierIntegral_smul_addChar _ _ _ _ _ _
+
 end Defs
 
 end Fourier
@@ -438,6 +459,12 @@ lemma fourier_eq' (f : V → E) (w : V) :
     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourier_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul]
 
+/-- Multiplication by the Fourier character of frequency `w₀` translates the Fourier transform
+by `w₀` in frequency. -/
+theorem fourier_smul_fourierChar (f : V → E) (w₀ w : V) :
+    𝓕 (fun v ↦ 𝐞 ⟪v, w₀⟫ • f v) w = 𝓕 f (w - w₀) :=
+  VectorFourier.fourierIntegral_smul_addChar 𝐞 volume (innerₗ V) f w₀ w
+
 theorem norm_fourier_le_integral_norm (f : V → E) (w : V) :
     ‖𝓕 f w‖ ≤ ∫ v, ‖f v‖ :=
   VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) f w
@@ -463,6 +490,12 @@ lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W)
 lemma fourierInv_eq_fourier_neg (f : V → E) (w : V) :
     𝓕⁻ f w = 𝓕 f (-w) := by
   simp [fourier_eq, fourierInv_eq]
+
+/-- Multiplication by the Fourier character of frequency `w₀` translates the inverse Fourier
+transform by `-w₀` in frequency. -/
+theorem fourierInv_smul_fourierChar (f : V → E) (w₀ w : V) :
+    𝓕⁻ (fun v ↦ 𝐞 ⟪v, w₀⟫ • f v) w = 𝓕⁻ f (w + w₀) := by
+  simp only [fourierInv_eq_fourier_neg, fourier_smul_fourierChar, neg_add, sub_eq_add_neg]
 
 lemma fourierInv_eq_fourier_comp_neg (f : V → E) :
     𝓕⁻ f = 𝓕 (fun x ↦ f (-x)) := by
