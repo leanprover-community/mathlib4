@@ -727,6 +727,21 @@ end Ring
 
 section CommRing
 
+namespace Submodule
+
+variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p q : Submodule R E}
+
+/-- Conjugating an endomorphism that preserves two complementary submodules `p` and `q` by
+`(p.prodEquivOfIsCompl q h).symm` gives the product of its restrictions to `p` and `q`. -/
+theorem conj_symm_prodEquivOfIsCompl (h : IsCompl p q) {f : Module.End R E}
+    (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    (prodEquivOfIsCompl p q h).symm.conj f = (f.restrict hp).prodMap (f.restrict hq) := by
+  refine LinearMap.prod_ext (LinearMap.ext fun x ↦ ?_) (LinearMap.ext fun y ↦ ?_)
+  · simp [LinearEquiv.conj_apply, ← LinearMap.coe_restrict_apply hp]
+  · simp [LinearEquiv.conj_apply, ← LinearMap.coe_restrict_apply hq]
+
+end Submodule
+
 namespace LinearMap
 
 variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p : Submodule R E}
