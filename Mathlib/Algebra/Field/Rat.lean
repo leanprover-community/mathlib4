@@ -55,13 +55,13 @@ end Rat
 namespace NNRat
 
 instance instInv : Inv ℚ≥0 where
-  inv x := ⟨x⁻¹, Rat.inv_nonneg x.property⟩
+  inv x := ⟨x⁻¹, Rat.inv_nonneg x.val_nonneg⟩
 
 instance instDiv : Div ℚ≥0 where
-  div x y := ⟨x / y, Rat.div_nonneg x.property y.property⟩
+  div x y := ⟨x / y, Rat.div_nonneg x.val_nonneg y.val_nonneg⟩
 
 instance instZPow : Pow ℚ≥0 ℤ where
-  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.property⟩
+  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.val_nonneg⟩
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl

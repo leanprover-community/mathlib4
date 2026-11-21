@@ -849,11 +849,10 @@ variable (F)
 
 /-- `Subfield.extendScalars.orderIso` bundles `Subfield.extendScalars`
 into an order isomorphism from
-`{ E : Subfield L // F ≤ E }` to `IntermediateField F L`. Its inverse is
+`Ici F` to `IntermediateField F L`. Its inverse is
 `IntermediateField.toSubfield`. -/
 @[simps apply symm_apply]
-def extendScalars.orderIso :
-    { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
+def extendScalars.orderIso : Set.Ici F ≃o IntermediateField F L where
   toFun E := extendScalars E.property
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
@@ -861,7 +860,7 @@ def extendScalars.orderIso :
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.property :=
+    Function.Injective fun E : Set.Ici F ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end Subfield
@@ -900,10 +899,10 @@ variable (F)
 
 /-- `IntermediateField.extendScalars.orderIso` bundles `IntermediateField.extendScalars`
 into an order isomorphism from
-`{ E : IntermediateField K L // F ≤ E }` to `IntermediateField F L`. Its inverse is
+`Ici F` to `IntermediateField F L`. Its inverse is
 `IntermediateField.restrictScalars`. -/
 @[simps]
-def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
+def extendScalars.orderIso : Set.Ici F ≃o IntermediateField F L where
   toFun E := extendScalars E.property
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
@@ -911,7 +910,7 @@ def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o Inter
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.property :=
+    Function.Injective fun E : Set.Ici F ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end IntermediateField

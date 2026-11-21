@@ -206,17 +206,17 @@ theorem setToL1_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''}
     (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1 hT f := by
-  suffices ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f from
-    this (⟨f, hf⟩ : { g : α →₁[μ] G' // 0 ≤ g })
+  suffices ∀ f : Nonneg (α →₁[μ] G'), 0 ≤ setToL1 hT f from
+    this (⟨f, hf⟩ : Nonneg (α →₁[μ] G'))
   refine fun g =>
-    @isClosed_property { g : α →₁ₛ[μ] G' // 0 ≤ g } { g : α →₁[μ] G' // 0 ≤ g } _ _
+    @isClosed_property (Nonneg (α →₁ₛ[μ] G')) (Nonneg (α →₁[μ] G')) _ _
       (fun g => 0 ≤ setToL1 hT g)
       (denseRange_coeSimpleFuncNonnegToLpNonneg 1 μ G' one_ne_top) ?_ ?_ g
   · exact (isClosed_Ici (a := 0)).preimage ((setToL1 hT).continuous.comp continuous_induced_dom)
   · intro g
     have : (coeSimpleFuncNonnegToLpNonneg 1 μ G' g : α →₁[μ] G') = (g : α →₁ₛ[μ] G') := rfl
     rw [this, setToL1_eq_setToL1SCLM]
-    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.property
+    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.val_nonneg
 
 theorem setToL1_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)

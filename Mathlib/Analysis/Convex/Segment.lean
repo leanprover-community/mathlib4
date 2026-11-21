@@ -605,7 +605,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y : 𝕜}
 protected lemma Icc_subset_segment {x y : Nonneg 𝕜} :
     Icc x y ⊆ segment (Nonneg 𝕜) x y := by
   intro a ⟨hxa, hay⟩
-  rw [← Subtype.coe_le_coe] at hxa hay
+  rw [← Nonneg.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
   refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa

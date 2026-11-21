@@ -217,7 +217,7 @@ instance quasispectrum.instCompactSpaceNNReal (a : A) [CompactSpace (σₙ ℝ a
     CompactSpace (σₙ ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage ‹_›
+  exact NNReal.isClosedEmbedding_coe.isCompact_preimage ‹_›
 
 @[simp]
 theorem quasispectrum.isCompact_nnReal (a : A) [CompactSpace (σₙ ℝ a)] :
@@ -432,7 +432,7 @@ instance spectrum.instCompactSpaceNNReal (a : A) [CompactSpace (σ ℝ a)] :
     CompactSpace (σ ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+  exact NNReal.isClosedEmbedding_coe.isCompact_preimage <| by assumption
 
 @[simp]
 theorem spectrum.isCompact_nnReal (a : A) [CompactSpace (σ ℝ a)] :

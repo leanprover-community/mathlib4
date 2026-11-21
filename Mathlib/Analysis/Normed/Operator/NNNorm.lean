@@ -76,10 +76,10 @@ alias opNNNorm_le_of_lipschitz := opNNNorm_le_of_lipschitzWith
 
 theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖₊ ≤ M * ‖x‖₊)
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
-  Subtype.ext <| opNorm_eq_of_bounds (zero_le (a := M)) h_above <| Subtype.forall'.mpr h_below
+  Nonneg.ext <| opNorm_eq_of_bounds (zero_le (a := M)) h_above fun N hN h ↦ h_below ⟨N, hN⟩ h
 
 theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
-  opNorm_le_iff C.property
+  opNorm_le_iff C.val_nonneg
 
 theorem isLeast_opNNNorm (f : E →SL[σ₁₂] F) : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using! isLeast_Ici
