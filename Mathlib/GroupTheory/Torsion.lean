@@ -476,19 +476,19 @@ variable (G H)
 /-- The free rank of a finitely generated abelian group is the rank of its free part. -/
 @[to_additive
 /-- The free rank of a finitely generated abelian group is the rank of its free part. -/]
-noncomputable def freeRank [Group.FG G] : ℕ := Group.rank (G ⧸ torsion G)
+noncomputable def freeRank [IsMulFG G] : ℕ := Group.rank (G ⧸ torsion G)
 
 @[to_additive]
-theorem freeRank_def [Group.FG G] : freeRank G = Group.rank (G ⧸ torsion G) := rfl
+theorem freeRank_def [IsMulFG G] : freeRank G = Group.rank (G ⧸ torsion G) := rfl
 
 variable {G H}
 
 @[to_additive]
-theorem freeRank_eq_zero_iff [Group.FG G] : freeRank G = 0 ↔ IsMulTorsion G := by
+theorem freeRank_eq_zero_iff [IsMulFG G] : freeRank G = 0 ↔ IsMulTorsion G := by
   rw [freeRank, Group.rank_eq_zero_iff, QuotientGroup.subsingleton_iff, torsion_eq_top_iff]
 
 @[to_additive]
-theorem freeRank_eq_zero (hG : IsMulTorsion G) [Group.FG G] : freeRank G = 0 :=
+theorem freeRank_eq_zero (hG : IsMulTorsion G) [IsMulFG G] : freeRank G = 0 :=
   freeRank_eq_zero_iff.mpr hG
 
 @[to_additive]
@@ -496,13 +496,13 @@ theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
   freeRank_eq_zero isMulTorsion_of_finite
 
 @[to_additive]
-theorem freeRank_congr [Group.FG G] [Group.FG H] (e : G ≃* H) : freeRank G = freeRank H :=
+theorem freeRank_congr [IsMulFG G] [IsMulFG H] (e : G ≃* H) : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
 
 -- TODO: Prove monotonicity of `freeRank` along injective homomorphisms. This would require proving
 -- monotonicity of `rank` along injective homomorphism of abelian groups.
 @[to_additive]
-theorem freeRank_ge_of_surjective [Group.FG G] [Group.FG H] (e : G →* H)
+theorem freeRank_ge_of_surjective [IsMulFG G] [IsMulFG H] (e : G →* H)
     (he : Function.Surjective e) : freeRank H ≤ freeRank G :=
   Group.rank_le_of_surjective _ <| QuotientGroup.map_surjective_of_surjective
     (torsion G) (torsion H) e (QuotientGroup.mk_surjective.comp he) (le_comap_torsion e)

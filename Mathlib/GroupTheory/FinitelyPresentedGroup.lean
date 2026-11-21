@@ -54,8 +54,8 @@ protected theorem map {N : Subgroup G} (hN : N.IsFinitelyNormallyGenerated)
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 @[to_additive]
-theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsFinitelyNormallyGenerated := by
-  obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
+theorem of_FG (N : Subgroup G) [N.Normal] [h : IsMulFG N] : N.IsFinitelyNormallyGenerated := by
+  obtain ⟨S, hS, rfl⟩ := Subgroup.isMulFG_iff_finite.mp h
   exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
 
 open Function Set Subgroup in
