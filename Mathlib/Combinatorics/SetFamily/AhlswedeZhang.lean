@@ -200,6 +200,31 @@ set_option backward.privateInPublic.warn false in
 def truncatedInf (s : Finset α) (a : α) : α :=
   if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (inf_aux h) id else ⊥
 
+lemma toDual_truncatedSup {α} [SemilatticeSup α] [DecidableLE α] [BoundedOrder α]
+    (s : Finset α) (a : α) :
+    OrderDual.toDual (s.truncatedSup a) =
+    (s.map OrderDual.toDual.toEmbedding).truncatedInf (OrderDual.toDual a) := by
+  simp_rw [truncatedSup, apply_dite OrderDual.toDual, toDual_sup', OrderDual.toDual_top,
+    truncatedInf]
+  refine dite_congr (by simp) (fun _ ↦ ?_) (by grind)
+  change Finset.inf' _ _ (id ∘ OrderDual.toDual.toEmbedding) = _
+  rw [inf'_comp_eq_map]
+  congr
+  ext
+  simp [OrderDual.le_toDual]
+
+lemma toDual_truncatedInf (s : Finset α) (a : α) :
+    OrderDual.toDual (s.truncatedInf a) =
+    (s.map OrderDual.toDual.toEmbedding).truncatedSup (OrderDual.toDual a) := by
+  simp_rw [truncatedInf, apply_dite OrderDual.toDual, toDual_inf', OrderDual.toDual_bot,
+    truncatedSup]
+  refine dite_congr (by simp) (fun _ ↦ ?_) (by grind)
+  change Finset.sup' _ _ (id ∘ OrderDual.toDual.toEmbedding) = _
+  rw [sup'_comp_eq_map]
+  congr
+  ext
+  simp [OrderDual.toDual_le]
+
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
@@ -298,10 +323,19 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [DecidableLE α]
 
 @[simp] lemma compl_truncatedSup (s : Finset α) (a : α) :
-    (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := map_truncatedSup (OrderIso.compl α) _ _
+    (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := by
+  rw [← OrderDual.ofDual_toDual (truncatedSup _ _), toDual_truncatedSup]
+  change (OrderIso.compl α).symm _ = _
+  rw [map_truncatedInf, map_map]
+  rfl
+
 
 @[simp] lemma compl_truncatedInf (s : Finset α) (a : α) :
-    (truncatedInf s a)ᶜ = truncatedSup sᶜˢ aᶜ := map_truncatedInf (OrderIso.compl α) _ _
+    (truncatedInf s a)ᶜ = truncatedSup sᶜˢ aᶜ := by
+  rw [← OrderDual.ofDual_toDual (truncatedInf _ _), toDual_truncatedInf]
+  change (OrderIso.compl α).symm _ = _
+  rw [map_truncatedSup, map_map]
+  rfl
 
 end BooleanAlgebra
 

@@ -239,7 +239,7 @@ meaning in this case `0` will not be mapped to `⊤`.
 noncomputable
 def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
   toFun x := if x ∈ nonZeroDivisors R
-             then (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x))
+             then (ENat.recTopCoe 0 (WithZero.some <| Multiplicative.ofAdd ·) (Ring.ord R x))
              else 0
   map_zero' := by simp [nonZeroDivisors, exists_ne]
   map_one' := by simp [nonZeroDivisors]
@@ -271,7 +271,7 @@ of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 -/
 theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
-  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dite_eq_left h
+  (ENat.recTopCoe 0 (WithZero.some <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dite_eq_left h
 
 lemma ordMonoidWithZeroHom_eq_coe
     [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :

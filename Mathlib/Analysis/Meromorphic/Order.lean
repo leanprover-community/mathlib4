@@ -130,7 +130,7 @@ theorem meromorphicOrderAt_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : Merom
     meromorphicOrderAt f z₀ ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
       f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ ((meromorphicOrderAt f z₀).untop₀) • g z :=
   ⟨fun h ↦ (meromorphicOrderAt_eq_int_iff hf).1 (WithTop.coe_untop₀_of_ne_top h).symm,
-    fun h ↦ Option.ne_none_iff_exists'.2
+    fun h ↦ WithTop.ne_top_iff_exists'.2
       ⟨(meromorphicOrderAt f z₀).untopD 0, (meromorphicOrderAt_eq_int_iff hf).2 h⟩⟩
 
 /--

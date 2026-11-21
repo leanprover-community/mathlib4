@@ -41,6 +41,7 @@ class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
 `⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
 `⊓:L×L → L` is continuous.
 -/
+@[to_dual existing]
 class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
@@ -70,7 +71,7 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
 
 variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
-@[continuity]
+@[to_dual (attr := continuity)]
 theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 
@@ -78,10 +79,6 @@ theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => 
 theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prodMk hg :)
-
-@[continuity]
-theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
-  ContinuousSup.continuous_sup
 
 @[continuity, fun_prop]
 theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
@@ -94,21 +91,15 @@ section SupInf
 
 variable {α : Type*} {l : Filter α} {f g : α → L} {x y : L}
 
+@[to_dual]
 lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊔ g) l (𝓝 (x ⊔ y)) :=
   (continuous_sup.tendsto _).comp (hf.prodMk_nhds hg)
 
+@[to_dual]
 lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_nhds' hg
-
-lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (f ⊓ g) l (𝓝 (x ⊓ y)) :=
-  (continuous_inf.tendsto _).comp (hf.prodMk_nhds hg)
-
-lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
-  hf.inf_nhds' hg
 
 end SupInf
 
@@ -116,6 +107,7 @@ open Finset
 
 variable {ι α : Type*} {s : Finset ι} {f : ι → α → L} {l : Filter α} {g : ι → L}
 
+@[to_dual]
 lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (s.sup' hne f) l (𝓝 (s.sup' hne g)) := by
@@ -126,20 +118,11 @@ lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     simp only [sup'_cons, hne]
     exact hs.1.sup_nhds (ihs hs.2)
 
+@[to_dual]
 lemma finset_sup'_nhds_apply [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (fun a ↦ s.sup' hne (f · a)) l (𝓝 (s.sup' hne g)) := by
   simpa only [← Finset.sup'_apply] using finset_sup'_nhds hne hs
-
-lemma finset_inf'_nhds [SemilatticeInf L] [ContinuousInf L]
-    (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
-    Tendsto (s.inf' hne f) l (𝓝 (s.inf' hne g)) :=
-  finset_sup'_nhds (L := Lᵒᵈ) hne hs
-
-lemma finset_inf'_nhds_apply [SemilatticeInf L] [ContinuousInf L]
-    (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
-    Tendsto (fun a ↦ s.inf' hne (f · a)) l (𝓝 (s.inf' hne g)) :=
-  finset_sup'_nhds_apply (L := Lᵒᵈ) hne hs
 
 lemma finset_sup_nhds [SemilatticeSup L] [OrderBot L] [ContinuousSup L]
     (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) : Tendsto (s.sup f) l (𝓝 (s.sup g)) := by

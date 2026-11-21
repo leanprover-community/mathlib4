@@ -93,7 +93,8 @@ inductive IsPivotedList [Zero α] : List (Fin n) → List (List α) → Prop
 
 /-- The pivot function of the list of pivot columns. `WithTop (Fin n)` is `Option (Fin n)`, so
 the lookup `cols[i]?` is the value. -/
-@[expose] def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) := cols[i]?
+@[expose] def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) :=
+  (WithTop.toOption (Fin n)).symm cols[i]?
 
 /-- Lookup specification for `IsPivotedList`. -/
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
@@ -103,7 +104,8 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
   induction h generalizing i with
   | nil hz =>
     simp only [List.map_const'] at hz
-    grind [pivotOfList, WithTop.none_eq_top, WithTop.coe_lt_top]
+    simp [pivotOfList]
+    grind
   | @cons k ks row rows d suffix hrow hd h ih =>
     cases i with
     | zero =>
@@ -116,8 +118,10 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
 
 theorem pivotOfList_lt_pivotOfList {cols : List (Fin n)} (hsorted : cols.SortedLT) {i j : ℕ}
     (hij : i < j) (hj : pivotOfList cols j ≠ ⊤) : pivotOfList cols i < pivotOfList cols j := by
-  grind [pivotOfList, List.SortedLT.getElem_lt_getElem_iff, WithTop.coe_lt_coe, WithTop.some_eq_coe,
-    WithTop.none_eq_top]
+  simp only [pivotOfList, ne_eq, WithTop.symm_toOption_eq_top_iff, getElem?_eq_none_iff, not_lt,
+    not_le] at hj
+  simpa [pivotOfList, List.getElem?_eq_getElem (hij.trans hj), List.getElem?_eq_getElem hj]
+    using hsorted.getElem_lt_getElem_of_lt hij
 
 theorem pivotOfList_mono_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
     Monotone (pivotOfList cols) := by

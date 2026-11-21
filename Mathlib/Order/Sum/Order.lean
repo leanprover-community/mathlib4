@@ -761,15 +761,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, fun {a b} => by
+  ⟨(toOption α).trans <| (Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex,
+    fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
-    cases a <;> cases b
-    · simp only [elim_inr, lex_inl_inl, bot_le]
-    · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
-    · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
-      exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, coe_le_coe]
+    cases a <;> cases b <;> simp
   ⟩
 
 @[simp]
@@ -797,15 +793,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
+  ⟨(toOption α).trans <| (Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Lex.toLex_le_toLex, le_refl]
-    cases a <;> cases b
-    · simp only [lex_inr_inr, le_top]
-    · simp only [lex_inr_inl, false_iff]
-      exact not_top_le_coe _
-    · simp only [Lex.sep, le_top]
-    · simp only [lex_inl_inl, coe_le_coe]⟩
+    cases a <;> cases b <;> simp⟩
 
 @[simp]
 theorem orderIsoSumLexPUnit_top : @orderIsoSumLexPUnit α _ ⊤ = toLex (inr PUnit.unit) :=

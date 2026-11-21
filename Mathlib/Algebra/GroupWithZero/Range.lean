@@ -215,12 +215,12 @@ lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ 
   intro x
   match x with
   | 0 => use 0; simp
-  | some ⟨u, hu⟩ =>
+  | .some ⟨u, hu⟩ =>
     change u ∈ (valueGroup f : Set Bˣ) at hu
     rw [← valueMonoid_eq_valueGroup'] at hu
     obtain ⟨v, hv⟩ := hu
     use v
-    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+    simp [restrict₀_apply, hv, Units.ne_zero]
 
 open Function
 
@@ -327,7 +327,7 @@ theorem zero_or_exists_mk (x : ValueGroup₀ f) :
   · left; rfl
   · rw [mem_valueGroup_iff_of_comm'] at hx
     obtain ⟨r, hr, s, hs, hrs⟩ := hx
-    refine .inr ⟨r, s, hr, hs, Option.some_inj.mpr <| by
+    refine .inr ⟨r, s, hr, hs, WithZero.coe_inj.mpr <| by
       simp only [valueGroup.mk, Subtype.mk.injEq]
       rw [eq_inv_mul_iff_mul_eq]
       simp [← hrs, mul_comm]⟩

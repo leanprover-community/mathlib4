@@ -435,7 +435,7 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
   apply continuousOn_sub.comp (by fun_prop)
   rintro _ h (_ | _)
-  exact h none_eq_top
+  exact h top_eq_top
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
