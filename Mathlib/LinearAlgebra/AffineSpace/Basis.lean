@@ -395,3 +395,31 @@ theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b 
 end DivisionRing
 
 end AffineBasis
+
+namespace Module.Basis
+
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+/-- Turning a basis `b` of a module `V` indexed by `ι` into an affine basis of an affine space `P`
+over `V` indexed by `Option ι` by mapping `none` to some distinguished point `p` and `some i` to
+`b i +ᵥ p`. -/
+noncomputable def toAffineBasis (b : Basis ι k V) (p : P) : AffineBasis (Option ι) k P where
+  toFun o := o.elim p (b · +ᵥ p)
+  ind' := by
+    rw [affineIndependent_iff_linearIndependent_vsub k _ none]
+    refine (linearIndependent_equiv' ((Equiv.subtypeEquivRight fun _ ↦
+      Option.ne_none_iff_isSome).trans (Equiv.optionIsSomeEquiv ι)) ?_).2 b.linearIndependent
+    ext ⟨(_ | j), hj⟩ <;> simp at hj ⊢
+  tot' := by
+    rw [AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P
+      ⟨_, mem_range_self none⟩, vectorSpan_range_eq_span_range_vsub_right k _ none, Option.range_eq]
+    simp [Submodule.span_insert_zero, Function.comp_def, b.span_eq]
+
+@[simp]
+lemma toAffineBasis_apply_none (b : Basis ι k V) (p : P) : b.toAffineBasis p none = p := rfl
+
+@[simp]
+lemma toAffineBasis_apply_some (b : Basis ι k V) (p : P) (i : ι) :
+    b.toAffineBasis p (some i) = b i +ᵥ p := rfl
+
+end Module.Basis
