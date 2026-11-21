@@ -215,6 +215,10 @@ lemma toReal_zero : toReal 0 = 0 := by
   simp [toReal]
 
 @[simp]
+lemma toReal_one : toReal 1 = 1 := by
+  simp [toReal]
+
+@[simp]
 lemma toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     toReal (ofNat(n) : Dyadic) = (ofNat(n) : ℝ) := by
   rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := ℝ)]
