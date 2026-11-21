@@ -142,22 +142,29 @@ variable {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'}
 
+/-- Given `φ : M' → N` and `y : M'`, if `φ ∘ f` is `C^n` at `g y` then `φ` is `C^n` at `y`. -/
+lemma IsLocalHomeomorph.contMDiffAt_of_contMDiffAt_comp {φ : M' → N} {y : M'}
+    (hφ : ContMDiffAt I J n (φ ∘ f) (g y)) :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffAt I J n φ y := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  have : φ =ᶠ[𝓝 y] (φ ∘ f) ∘ hf.localInverseAt (g y) := by
+    have hT : (hf.localInverseAt (g y)).source ∈ 𝓝 y := by
+      refine (hf.localInverseAt (g y)).open_source.mem_nhds ?_
+      simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
+    filter_upwards [hT] with x hx
+    simp [hf.apply_localInverseAt_of_mem hx]
+  refine ContMDiffAt.congr_of_eventuallyEq ?_ this
+  refine ContMDiffAt.comp y ?_ (contMDiffAt_localInverseAt_rightInverse hf hg y)
+  rwa [show hf.localInverseAt (g y) y = g y by
+    simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
+
 /-- Given `φ : M' → N`, if `φ ∘ f` is `C^n` then so is `φ`. -/
 lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiff I J n φ := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  intro x'
-  have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
-    have hT : (hf.localInverseAt (g x')).source ∈ 𝓝 x' := by
-      refine (hf.localInverseAt (g x')).open_source.mem_nhds ?_
-      simpa [hg x'] using hf.apply_self_mem_localInverseAt_source (x := g x')
-    filter_upwards [hT] with x hx
-    simp [hf.apply_localInverseAt_of_mem hx]
-  refine ContMDiffAt.congr_of_eventuallyEq ?_ this
-  refine ContMDiffAt.comp x' hφ.contMDiffAt ?_
-  exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
+    ContMDiff I J n φ :=
+  fun y ↦ hf.contMDiffAt_of_contMDiffAt_comp hg (hφ (g y))
 
 /-- If `F : M → N` is `C^n` and invariant under `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
@@ -174,17 +181,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     ContMDiffOn I I n ((hf.localInverseAt x)) (hf.localInverseAt x).source := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro y hy
-  -- note: this whole argument is repeated above
-  have : hf.localInverseAt x =ᶠ[𝓝 y] (hf.localInverseAt x ∘ f) ∘ (hf.localInverseAt (g y)) := by
-    have hT : (hf.localInverseAt (g y)).source ∈ 𝓝 y := by
-      refine (hf.localInverseAt (g y)).open_source.mem_nhds ?_
-      simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
-    filter_upwards [hT] with x hx
-    simp [hf.apply_localInverseAt_of_mem hx]
-  refine (ContMDiffAt.congr_of_eventuallyEq ?_ this).contMDiffWithinAt
-  refine ContMDiffAt.comp y ?_ (contMDiffAt_localInverseAt_rightInverse hf hg y)
-  rw [show hf.localInverseAt (g y) y = g y by
-    simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
+  refine (hf.contMDiffAt_of_contMDiffAt_comp hg ?_).contMDiffWithinAt
   simpa using (foo hf h (g y) x).contMDiffAt
     <| (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
