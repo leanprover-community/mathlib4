@@ -117,6 +117,12 @@ theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
   ext fun x => by simp
 
+theorem prod_ext {f g : M × N →* P}
+    (hl : f.comp (inl M N) = g.comp (inl M N)) (hr : f.comp (inr M N) = g.comp (inr M N)) :
+    f = g := by
+  rw [← noncommCoprod_unique f, ← noncommCoprod_unique g]
+  simp_rw [hl, hr]
+
 section group
 
 open Subgroup
