@@ -299,7 +299,7 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) where
 @[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
 @[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
 
-@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp, norm_cast] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
     (m : WithTop α) = ofNat(n) ↔ m = ofNat(n) :=
