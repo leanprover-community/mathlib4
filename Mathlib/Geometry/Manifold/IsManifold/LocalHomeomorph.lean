@@ -79,14 +79,13 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   · rw [show hf.localInverseAt (g y) y = g y by
       simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
-    rw [extChartAt_coe, extChartAt_coe_symm, hc]
-    simp only [OpenPartialHomeomorph.coe_trans_symm]
+    rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
     refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
       (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
     filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
     simp only [Function.comp_apply, id]
-    rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
-    rw [Set.mem_inter_iff, Set.mem_preimage] at hx
+    rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target, Set.mem_inter_iff,
+      Set.mem_preimage] at hx
     obtain ⟨⟨h1, h2⟩, h3⟩ := hx
     rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
 
