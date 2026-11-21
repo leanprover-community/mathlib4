@@ -175,7 +175,8 @@ lemma iff_of_algEquiv [Algebra R T] (e : S ≃ₐ[R] T) : IsLocalIso R S ↔ IsL
 
 instance [Algebra R T] [IsLocalIso R S] : IsLocalIso T (T ⊗[R] S) := by
   rw [iff_span_isStandardOpenImmersion_eq_top, _root_.eq_top_iff,
-    ← Ideal.map_top Algebra.TensorProduct.includeRight, ← span_isStandardOpenImmersion_eq_top R S,
+    ← Ideal.map_top (RingHomClass.toRingHom Algebra.TensorProduct.includeRight),
+    ← span_isStandardOpenImmersion_eq_top R S,
     Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span

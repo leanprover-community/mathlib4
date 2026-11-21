@@ -119,7 +119,7 @@ variable [Group M] [Semiring R] [MulSemiringAction M R]
 open scoped Pointwise
 
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
-    a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm.toRingHom := by
+    a • S = S.comap (MulSemiringAction.toRingAut M R a).symm := by
   ext
   simp [pointwise_smul_def]
   rfl

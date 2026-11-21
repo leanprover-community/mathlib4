@@ -121,7 +121,7 @@ then so is `B`. -/
 theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f)
     (hker : (RingHom.ker f.toRingHom).FG)
     [FinitePresentation R A] : FinitePresentation R B :=
-  letI : FinitePresentation R (A ⧸ f.toRingHom.ker) := FinitePresentation.quotient hker
+  letI : FinitePresentation R (A ⧸ RingHom.ker (f : A →+* B)) := FinitePresentation.quotient hker
   equiv (Ideal.quotientKerAlgEquivOfSurjective hf)
 
 theorem iff :
@@ -236,7 +236,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     let I := (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).toRingHom.ker
     change Ideal.span s₀ = I
     have leI : Ideal.span ((MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g) ≤
-      (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).toRingHom.ker := by
+      RingHom.ker (RingHomClass.toRingHom <| MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
       rw [SetLike.mem_coe, RingHom.mem_ker]

@@ -65,7 +65,7 @@ lemma isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG)
     (m.map (algebraMap R (AdicCompletion I R))).IsMaximal := by
   have mapeq : m.map (algebraMap R (AdicCompletion I R)) = (m.map (Ideal.Quotient.mk I)).comap
     (AdicCompletion.evalOneₐ I).toRingHom := by
-    rw [← AdicCompletion.evalOneₐ_comp_algebraMap_eq_mk, ← Ideal.map_map,
+    rw [← AdicCompletion.evalOneₐ_comp_algebraMap_eq_mk, RingHom.coe_comp, ← Ideal.map_map,
       Ideal.comap_map_of_surjective' (evalOneₐ I).toRingHom (evalOneₐ_surjective I),
       eq_comm, sup_eq_left, AdicCompletion.ker_evalOneₐ_eq_map I fg]
     exact Ideal.map_mono le

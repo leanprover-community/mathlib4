@@ -295,7 +295,7 @@ lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetheria
 
 /-- Use `RingEquiv.height_comap` instead, which does not assume `IsPrime`. -/
 private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R ≃+* S)
-    (p : Ideal S) [p.IsPrime] : (p.comap e).height = p.height := by
+    (p : Ideal S) [p.IsPrime] : (p.comap (e : R →+* S)).height = p.height := by
   rw [height_eq_primeHeight, height_eq_primeHeight, primeHeight, primeHeight,
     ← Order.height_orderIso (PrimeSpectrum.comapEquiv e.symm) ⟨p, ‹_›⟩]
   have := p.map_comap_of_equiv e.symm
@@ -303,15 +303,14 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
 
 @[simp]
 lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal S) :
-    (I.comap e).height = I.height := by
+    (I.comap (e : R →+* S)).height = I.height := by
   refine (Equiv.iInf_congr e.idealComapOrderIso fun J ↦ (Equiv.iInf_congr ?_ fun h ↦ ?_).symm).symm
   · refine .ofIff ?_
     rw [← Ideal.comap_coe,
       Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
     exact e.idealComapOrderIso.injective.mem_set_image.symm
   · have : J.IsPrime := h.isPrime
-    simp only [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
-      ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
+    simp [← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
 @[simp]
 lemma RingEquiv.height_map {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal R) :

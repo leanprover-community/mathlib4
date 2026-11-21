@@ -62,11 +62,12 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
 
 theorem span_X_image_eq_ker_aeval_ite_mem (s : Set σ) [DecidablePred (· ∈ s)] :
     Ideal.span (X '' s : Set (MvPolynomial σ R)) =
-      RingHom.ker (aeval (fun x ↦ if x ∈ sᶜ then X (R := R) x else 0)) := by
+      RingHom.ker
+        (RingHomClass.toRingHom <| aeval (fun x ↦ if x ∈ sᶜ then X (R := R) x else 0)) := by
   classical
   refine Submodule.span_eq_of_le _ (fun _ ⟨_, hx⟩ ↦ by simp [← hx.2, hx.1]) (fun _ hx ↦ ?_)
   refine mem_ideal_span_X_image.mpr fun y _ ↦ ?_
-  rw [RingHom.mem_ker, aeval_ite_mem_eq, eq_zero_iff] at hx
+  rw [RingHom.mem_ker, RingHom.coe_coe, aeval_ite_mem_eq, eq_zero_iff] at hx
   specialize hx y
   rw [coeff_sum, Finset.sum_eq_single y] at hx
   all_goals grind [AddMonoidAlgebra.coeff_eq_zero, coeff_monomial]

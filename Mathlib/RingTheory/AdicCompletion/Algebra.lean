@@ -401,7 +401,7 @@ def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n),
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
     A →ₐ[R] AdicCompletion I S where
-  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; congrm $(hf hle) x
+  __ := liftRingHom I (fun n ↦ (f n)) <| fun hle ↦ by ext x; congrm $(hf hle) x
   commutes' r := ext_evalₐ fun n ↦ by simp
 
 variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
@@ -472,9 +472,9 @@ variable {A : Type*} [CommRing A] [Algebra R A] [Algebra R S]
 /-- The canonical projection from the `I`-adic completion of `S` to `S ⧸ I`. Defined
 in terms of a surjective map `S →ₐ[R] A`. -/
 noncomputable def kerProj {f : S →ₐ[R] A} (hf : Function.Surjective f) :
-    AdicCompletion (RingHom.ker f.toRingHom) S →ₐ[R] A :=
+    AdicCompletion (RingHom.ker (f : S →+* A)) S →ₐ[R] A :=
   (Ideal.quotientKerAlgEquivOfSurjective hf).toAlgHom.comp <|
-    (AdicCompletion.evalOneₐ <| RingHom.ker f.toRingHom).restrictScalars R
+    (AdicCompletion.evalOneₐ <| RingHom.ker (f : S →+* A)).restrictScalars R
 
 @[simp]
 lemma kerProj_of {f : S →ₐ[R] A} (hf : Function.Surjective f) (x : S) :

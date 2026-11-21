@@ -352,7 +352,7 @@ theorem comp_aeval (ha : HasEval a)
   rw [← RingHom.coe_coe,
     comp_eval₂ (continuous_algebraMap R S) ha (show Continuous (ε : S →+* T) from hε), coe_aeval]
   congr!
-  rw [← AlgHom.toRingHom_eq_coe ε, AlgHom.comp_algebraMap_of_tower]
+  simp only [AlgHom.comp_algebraMap_of_tower]
 
 end Evaluation
 

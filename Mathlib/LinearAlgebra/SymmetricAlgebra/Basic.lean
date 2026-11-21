@@ -98,7 +98,8 @@ variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 R-algebra homomorphism from `SymmetricAlgebra R M` to `A`. -/
 def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) :=
   let equiv : (TensorAlgebra R M →ₐ[R] A) ≃
-    {f : TensorAlgebra R M →ₐ[R] A // TensorAlgebra.symRingCon R M ≤ RingCon.ker f.toRingHom} :=
+    {f : TensorAlgebra R M →ₐ[R] A //
+      TensorAlgebra.symRingCon R M ≤ RingCon.ker (f : TensorAlgebra R M →+* A)} :=
       (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
   (TensorAlgebra.lift R).trans <| equiv.trans <| RingCon.liftₐEquiv (symRingCon R M)
 where finally

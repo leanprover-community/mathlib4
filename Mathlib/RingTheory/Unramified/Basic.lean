@@ -90,7 +90,8 @@ theorem iff_comp_injective_of_small [Small.{w} A] :
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
       intro B _ _ _ I hI f g e
-      simpa [DFunLike.ext_iff] using H (B := Shrink B) (I.comap (Shrink.ringEquiv _))
+      simpa [DFunLike.ext_iff] using
+        H (B := Shrink B) (I.comap (RingHomClass.toRingHom <| Shrink.ringEquiv _))
         (by rw [← Ideal.map_symm, ← Ideal.map_pow, hI]; simp)
         (a₁ := (Shrink.algEquiv _ _).symm.toAlgHom.comp f)
         (a₂ := (Shrink.algEquiv _ _).symm.toAlgHom.comp g)

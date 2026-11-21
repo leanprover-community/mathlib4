@@ -764,6 +764,7 @@ def toRingHom (e : R ≃+* S) : R →+* S :=
 theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
   RingEquiv.ext (RingHom.ext_iff.1 h)
 
+@[simp]
 theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 
@@ -772,11 +773,11 @@ theorem coe_toRingHom (f : R ≃+* S) : ⇑f.toRingHom = f :=
   rfl
 
 @[simp]
-theorem comp_symm (e : R ≃+* S) : e.toRingHom.comp e.symm.toRingHom = RingHom.id S :=
+theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
   RingHom.ext e.apply_symm_apply
 
 @[simp]
-theorem symm_comp (e : R ≃+* S) : e.symm.toRingHom.comp e.toRingHom = RingHom.id R :=
+theorem symm_comp (e : R ≃+* S) : (e.symm : S →+* R).comp (e : R →+* S) = RingHom.id R :=
   RingHom.ext e.symm_apply_apply
 
 theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]

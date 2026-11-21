@@ -37,7 +37,8 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
     rw [Ideal.map] at hb
     induction hb using Submodule.span_induction generalizing i with
     | zero => simp
-    | add => simp [*, Ideal.add_mem]
+    | add => simp only [DirectSum.decompose_add, DirectSum.add_apply, AddMemClass.coe_add,
+      Ideal.add_mem, *]
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
       rw [GradedRingHom.coe_toRingHom, ← f.map_directSumDecompose]

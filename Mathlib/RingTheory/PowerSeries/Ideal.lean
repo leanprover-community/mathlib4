@@ -59,7 +59,7 @@ section X_mem
 
 theorem map_constantCoeff_le_self_of_X_mem (hXI : X ∈ I) :
     I.map (C.comp constantCoeff) ≤ I := by
-  suffices ∀ x ∈ I, C (constantCoeff x) ∈ I by simpa [Ideal.map_le_iff_le_comap]
+  suffices ∀ x ∈ I, C (constantCoeff x) ∈ I by simpa [← RingHom.coe_comp, Ideal.map_le_iff_le_comap]
   intro f hf
   rw [← sub_eq_iff_eq_add'.mpr f.eq_X_mul_shift_add_const]
   exact sub_mem hf (I.mul_mem_right _ hXI)
@@ -69,7 +69,8 @@ theorem map_constantCoeff_le_self_of_X_mem (hXI : X ∈ I) :
 theorem eq_span_insert_X_of_X_mem_of_span_eq (hXI : X ∈ I) (hSI : span S = I.map constantCoeff) :
     I = span (insert X (C '' S)) := by
   rw [Ideal.span_insert, ← Ideal.map_span, hSI, Ideal.map_map]
-  refine le_antisymm ?_ (by simp [Ideal.span_le, hXI, map_constantCoeff_le_self_of_X_mem])
+  refine le_antisymm ?_ (by simp [← RingHom.coe_comp, Ideal.span_le, hXI,
+    map_constantCoeff_le_self_of_X_mem])
   exact fun f hf ↦ mem_span_singleton_sup.mpr
     ⟨_, _, mem_map_of_mem _ hf, f.eq_shift_mul_X_add_const.symm⟩
 

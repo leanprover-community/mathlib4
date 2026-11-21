@@ -415,6 +415,7 @@ attribute [coe] RingHom.toMonoidHom
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
+@[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 

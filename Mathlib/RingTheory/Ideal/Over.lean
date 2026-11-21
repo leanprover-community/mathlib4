@@ -170,10 +170,10 @@ instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).Lies
 
 variable (P) (Q)
 
-instance comap_liesOver [Q.LiesOver p] (f : B →ₐ[A] C) : (Q.comap f.toRingHom).LiesOver p :=
+instance comap_liesOver [Q.LiesOver p] (f : B →ₐ[A] C) : (Q.comap (f : B →+* C)).LiesOver p :=
   LiesOver.of_eq_comap p f rfl
 
-instance map_equiv_liesOver [P.LiesOver p] (σ : B ≃ₐ[A] C) : (P.map σ.toRingHom).LiesOver p :=
+instance map_equiv_liesOver [P.LiesOver p] (σ : B ≃ₐ[A] C) : (P.map (σ : B →+* C)).LiesOver p :=
   LiesOver.of_eq_map_equiv p σ rfl
 
 end Semiring
@@ -214,7 +214,7 @@ theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Alge
     [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
     map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
   apply le_comap_of_map_le
-  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+  rw [map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
     IsScalarTower.algebraMap_eq A B D, ← comap_comap]
   exact comap_mono le_comap_map
 

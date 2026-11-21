@@ -120,7 +120,7 @@ The bare function `A[X] → A ⊗[R] R[X]`.
 (We don't need to show that it's an algebra map, thankfully --- just that it's an inverse.)
 -/
 def invFun (p : A[X]) : A ⊗[R] R[X] :=
-  p.eval₂ (includeLeft : A →ₐ[R] A ⊗[R] R[X]).toRingHom ((1 : A) ⊗ₜ[R] (X : R[X]))
+  p.eval₂ (includeLeft : A →ₐ[R] A ⊗[R] R[X]) ((1 : A) ⊗ₜ[R] (X : R[X]))
 
 @[simp]
 theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := by

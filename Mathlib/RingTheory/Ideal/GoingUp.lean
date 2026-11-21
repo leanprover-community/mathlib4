@@ -93,7 +93,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
   ext
-  simp
+  simp_rw [RingHom.coe_comp, Function.comp_apply, quotientMap_mk, coe_mapRingHom, map_C]
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
