@@ -346,7 +346,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   rw [Filter.eventually_iff, AlgEquiv.mem_nhds_one_iff']
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
-    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
+    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.out.one_le]) hk⟩
   refine ⟨(K⟮ζ k⟯), IntermediateField.fg_adjoin_of_finite (Set.finite_singleton _), ?_⟩
   intro σ hσ
   refine lt_of_le_of_lt ?_ hk
