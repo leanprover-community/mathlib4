@@ -132,4 +132,18 @@ theorem card_SL_field [NeZero n] :
 
 end field
 
+section IsLocalHom
+
+variable {n R S : Type*} [Fintype n] [DecidableEq n] [CommRing R] [CommRing S]
+  (f : R →+* S) [IsLocalHom f]
+
+/-- If `f : R →+* S` is surjective and local, then
+`Nat.card (GL n R) = Nat.card (RingHom.ker f) ^ (n ^ 2) *  Nat.card (GL n S)`. -/
+theorem card_GL_eq_of_isLocalHom (hf : Function.Surjective f) :
+    Nat.card (GL n R) = Nat.card (RingHom.ker f) ^ (Nat.card n ^ 2) *  Nat.card (GL n S) := by
+  rw [← Subgroup.card_ker_mul_card_of_surjective (GeneralLinearGroup.map_surjective _ hf),
+    Nat.card_congr (GeneralLinearGroup.kerMapEquivMatrixKer _), card_matrix, sq]
+
+end IsLocalHom
+
 end Matrix
