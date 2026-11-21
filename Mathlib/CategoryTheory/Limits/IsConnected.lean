@@ -92,12 +92,9 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the
 same element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
-    (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
-  induction h with
-  | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
-  | refl _ => exact Zigzag.refl _
-  | symm _ _ _ ih => exact ih.symm
-  | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+    (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 :=
+  (InvImage.equivalence _ _ zigzag_equivalence).eqvGen_le
+    (fun _ _ h ↦ Zigzag.of_hom <| Exists.choose h) _ _ h
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/

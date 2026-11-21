@@ -444,18 +444,9 @@ namespace Final
 
 theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
     (t : Relation.EqvGen (Functor.ColimitTypeRel (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
-    Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
-  induction t with
-  | rel x y r =>
-    obtain ⟨f, w⟩ := r
-    fconstructor
-    swap
-    · fconstructor
-    left; fconstructor
-    exact StructuredArrow.homMk f
-  | refl => fconstructor
-  | symm x y _ ih => exact ih.symm
-  | trans x y z _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+    Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) :=
+  (InvImage.equivalence _ (fun f : Σ X, d ⟶ F.obj X ↦ StructuredArrow.mk f.2)
+    zigzag_equivalence).eqvGen_le (fun _ _ ⟨f, _⟩ ↦ .of_hom (StructuredArrow.homMk f)) _ _ t
 
 end Final
 
