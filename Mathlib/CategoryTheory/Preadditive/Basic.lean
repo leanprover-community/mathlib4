@@ -166,7 +166,7 @@ theorem nsmul_comp (n : ℕ) : (n • f) ≫ g = n • f ≫ g :=
 theorem zsmul_comp (n : ℤ) : (n • f) ≫ g = n • f ≫ g :=
   map_zsmul (rightComp P g) n f
 
-@[to_dual (attr := reassoc) comp_sum]
+@[to_dual (attr := reassoc) (reorder := f g) comp_sum]
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
