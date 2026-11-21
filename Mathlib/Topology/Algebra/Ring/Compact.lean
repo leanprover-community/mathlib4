@@ -13,7 +13,7 @@ import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Compact
-import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.Topology.Algebra.Ring.Ideal.Basic
 
 /-!
 # Compact Hausdorff Rings
