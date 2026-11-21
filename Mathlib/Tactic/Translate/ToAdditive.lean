@@ -295,6 +295,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("magma", ["Add", "Magma"]),
   ("haar", ["Add", "Haar"]),
   ("prehaar", ["Add", "Prehaar"]),
+  ("circle", ["Additive", "Circle"]),
   ("unit", ["Add", "Unit"]),
   ("units", ["Add", "Units"]),
   ("cyclic", ["Add", "Cyclic"]),
