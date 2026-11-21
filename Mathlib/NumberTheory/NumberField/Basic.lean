@@ -273,8 +273,10 @@ theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   refine ⟨P, hPm, ?_⟩
   rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
 
-instance [NumberField K] : IsFractionRing (𝓞 K) K :=
-  integralClosure.isFractionRing_of_finite_extension ℚ _
+/-- If `K` is an algebraic extension of `ℚ`, then `K` is the fraction field of `𝓞 K`. -/
+instance [CharZero K] [h : Algebra.IsAlgebraic ℚ K] : IsFractionRing (𝓞 K) K :=
+  have : Algebra.IsAlgebraic ℤ K := IsFractionRing.comap_isAlgebraic_iff.mpr h
+  integralClosure.isFractionRing_of_algebraic <| by simp
 
 instance : IsIntegralClosure (𝓞 K) ℤ K :=
   integralClosure.isIntegralClosure _ _
