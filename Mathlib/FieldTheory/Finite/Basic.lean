@@ -685,13 +685,13 @@ theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^
 
 section prime_subfield
 
-variable {F : Type*} [Field F]
+section DivisionRing
+variable (F : Type*) [DivisionRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
 
-theorem mem_bot_iff_intCast (p : ℕ) [Fact p.Prime] (K) [DivisionRing K] [CharP K p] {x : K} :
-    x ∈ (⊥ : Subfield K) ↔ ∃ n : ℤ, n = x := by
+include p in
+theorem mem_bot_iff_intCast {x : F} :
+    x ∈ (⊥ : Subfield F) ↔ ∃ n : ℤ, n = x := by
   simp [← fieldRange_castHom_eq_bot p, ZMod.intCast_surjective.exists]
-
-variable (F) (p : ℕ) [Fact p.Prime] [CharP F p]
 
 theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
   rw [← fieldRange_castHom_eq_bot p,
@@ -737,6 +737,25 @@ theorem Polynomial.primeSubfieldFinset_eq_univ [Subsingleton (Subfield F)] [Fint
   ext
   simp [this]
 
+instance : Finite (⊥ : Subfield F) := (Subfield.fintypeBot F p).finite
+
+instance (K : Type*) [DivisionRing K] (p : ℕ) [ExpChar K p] :
+    PerfectRing (⊥ : Subfield K) p := by
+  cases id ‹ExpChar K p› with
+  | zero => exact .one (⊥ : Subfield K)
+  | prime prime =>
+    have := Fact.mk prime
+    exact .ofFiniteOfIsReduced p (⊥ : Subfield K)
+
+instance (K : Type*) [Field K] : PerfectField (⊥ : Subfield K) :=
+  have := ringExpChar.expChar K
+  PerfectRing.toPerfectField (⊥ : Subfield K) (ringExpChar K)
+
+end DivisionRing
+
+section Field
+variable (F : Type*) [Field F] (p : ℕ) [Fact p.Prime] [CharP F p]
+
 open Polynomial
 
 theorem Subfield.roots_X_pow_char_sub_X_bot [Fintype (⊥ : Subfield F)] :
@@ -768,6 +787,8 @@ theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ 
   rw [← Polynomial.mem_primeSubfieldFinset, ← mem_val, ← roots_X_pow_char_sub_X, mem_roots]
   · simp [sub_eq_zero]
   · exact X_pow_sub_X_ne_zero (Nat.Prime.one_lt Fact.out)
+
+end Field
 
 end prime_subfield
 
