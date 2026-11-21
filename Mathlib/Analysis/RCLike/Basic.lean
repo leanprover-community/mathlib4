@@ -517,6 +517,12 @@ theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
 
 lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
 
+lemma conj_div_norm (z : K) : conj (z / ‖z‖) = ‖z‖ / z := by
+  grind [conj_div, conj_ofReal, conj_mul]
+
+lemma conj_norm_div (z : K) : conj (‖z‖ / z) = z / ‖z‖ := by
+  rw [← conj_div_norm, conj_conj]
+
 --TODO: Do we rather want the map as an explicit definition?
 lemma exists_norm_eq_mul_self (x : K) : ∃ c, ‖c‖ = 1 ∧ ↑‖x‖ = c * x := by
   obtain rfl | hx := eq_or_ne x 0
