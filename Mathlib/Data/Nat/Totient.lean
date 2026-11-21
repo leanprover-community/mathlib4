@@ -34,7 +34,8 @@ open Finset
 namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
-coprime with `n`. -/
+coprime with `n`. See `ArithmeticFunction.totient` for the bundled version, as an arithmetic
+function. -/
 @[oeis A000010 "the sequence skips `n = 0`"]
 def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 
