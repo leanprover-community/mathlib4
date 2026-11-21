@@ -54,6 +54,9 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
       {d with decls := d.decls.insertKeyValue e.path e}
   }
 
+-- Registered in `Mathlib.Tactic.FunProp.Types`.
+allow_unregistered_trace_class Meta.Tactic.fun_prop.attr
+
 /-- Register new function property. -/
 def addFunPropDecl (declName : Name) : MetaM Unit := do
 
