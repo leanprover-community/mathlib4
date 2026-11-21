@@ -1025,7 +1025,7 @@ theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
 
 lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
-    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
+    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.property
     rw [← sub_nonneg]
     #adaptation_note /-- 2025-03-29 need beta reduce for https://github.com/leanprover/lean4/issues/7717 -/
     beta_reduce at h
@@ -1135,7 +1135,7 @@ def conjAe : K ≃ₐ[ℝ] K :=
     invFun := conj
     left_inv := conj_conj
     right_inv := conj_conj
-    commutes' := conj_ofReal }
+    map_smul' := conj_smul }
 
 @[simp, rclike_simps]
 theorem conjAe_coe : (conjAe : K → K) = conj :=

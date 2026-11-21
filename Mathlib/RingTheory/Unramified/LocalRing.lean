@@ -169,7 +169,7 @@ namespace Localization
 
 lemma localRingHom_injective_of_primesOver_eq_singleton
     [Algebra.IsIntegral R S] [FaithfulSMul R S] :
-    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.1) := by
+    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.over) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
@@ -227,20 +227,20 @@ lemma exists_awayMap_injective_of_localRingHom_injective
     ∃ r ∉ p, ∀ r', r ∣ r' → Function.Injective (awayMap (algebraMap R S) r') := by
   classical
   obtain ⟨s, hs⟩ := hRS
-  have (x : s) : algebraMap R (Localization.AtPrime p) x.1 = 0 := by
+  have (x : s) : algebraMap R (Localization.AtPrime p) x.val = 0 := by
     apply H
     simp [localRingHom_to_map, -FaithfulSMul.algebraMap_eq_zero_iff,
-      show algebraMap R S _ = 0 from hs.le (Ideal.subset_span x.2)]
+      show algebraMap R S _ = 0 from hs.le (Ideal.subset_span x.property)]
   choose m hm using fun x ↦ (IsLocalization.map_eq_zero_iff p.primeCompl _ _).mp (this x)
   have H : RingHom.ker (algebraMap R S) ≤ RingHom.ker
-      (algebraMap R (Localization.Away (∏ i, m i).1)) := by
+      (algebraMap R (Localization.Away (∏ i, m i).val)) := by
     rw [← hs, Ideal.span_le]
     intro x hxs
-    refine (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mpr ⟨⟨_, 1, rfl⟩, ?_⟩
+    refine (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mpr ⟨⟨_, 1, rfl⟩, ?_⟩
     simp only [pow_one]
     rw [Fintype.prod_eq_mul_prod_compl ⟨x, hxs⟩, Submonoid.coe_mul, mul_assoc, mul_left_comm, hm,
       mul_zero]
-  refine ⟨_, (∏ i : s, m i).2, ?_⟩
+  refine ⟨_, (∏ i : s, m i).property, ?_⟩
   rintro r' ⟨s, e⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
@@ -249,7 +249,8 @@ lemma exists_awayMap_injective_of_localRingHom_injective
     IsLocalization.mk'_eq_zero_iff] at hx
   obtain ⟨⟨_, n, rfl⟩, hn⟩ := hx
   simp only [← map_pow, ← map_mul] at hn
-  obtain ⟨⟨_, k, rfl⟩, hk⟩ := (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mp (H hn)
+  obtain ⟨⟨_, k, rfl⟩, hk⟩ :=
+    (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).val) _ _).mp (H hn)
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr ⟨⟨_, k + n, rfl⟩, ?_⟩
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]

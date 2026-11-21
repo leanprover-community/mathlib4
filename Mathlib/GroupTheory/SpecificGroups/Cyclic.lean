@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.GroupTheory.Exponent
@@ -14,6 +13,7 @@ public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
 
 import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Order.Hom.TypeTags
 import Mathlib.Tactic.Group
 
 /-!
@@ -71,10 +71,10 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
         (@Fintype.card_le_of_injective (zpowers a)
           (({b : α | b ^ orderOf a = 1} : Finset _) : Set α) (id _) (id _)
           (fun b =>
-            ⟨b.1,
+            ⟨b.val,
               mem_filter.2
                 ⟨mem_univ _, by
-                  let ⟨i, hi⟩ := b.2
+                  let ⟨i, hi⟩ := b.property
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.ext (Subtype.mk.inj h))
@@ -161,8 +161,8 @@ lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd 
 theorem isSimpleGroup_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α = p) : IsSimpleGroup α := by
   subst h
-  have : Finite α := Nat.finite_of_card_ne_zero hp.1.ne_zero
-  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp hp.1.one_lt
+  have : Finite α := Nat.finite_of_card_ne_zero hp.out.ne_zero
+  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp hp.out.one_lt
   exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
 
 end Cyclic
@@ -282,7 +282,7 @@ theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Sub
   rw [isCyclic_iff_exists_zpowers_eq_top]
   obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
   · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
-  · refine IsConcreteLE.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
+  · refine exists_mem_notMem_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
     by_contra hne
     obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
     exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))

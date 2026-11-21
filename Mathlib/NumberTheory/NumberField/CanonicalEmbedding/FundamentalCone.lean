@@ -7,7 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.RingTheory.ClassGroup.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipal
+
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Fundamental Cone
@@ -441,17 +442,17 @@ def integerSetEquivNorm (n : ℕ) :
       {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=
   calc
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} × torsion K //
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} × torsion K //
           absNorm (I.1 : Ideal (𝓞 K)) = n} :=
       Equiv.subtypeEquiv (integerSetEquiv K) fun _ ↦ by simp_rw [← intNorm_coe, intNorm,
         Nat.cast_inj, integerSetEquiv_apply_fst, absNorm_span_singleton]
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} // absNorm (I.1 : Ideal (𝓞 K)) = n} ×
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} // absNorm (I.val : Ideal (𝓞 K)) = n} ×
           torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
-      (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} ↦ absNorm (I : Ideal (𝓞 K)) = n)
+      (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} ↦ absNorm (I : Ideal (𝓞 K)) = n)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
           absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) := Equiv.prodCongrLeft fun _ ↦
       (Equiv.subtypeSubtypeEquivSubtypeInter
-        (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1) (fun I ↦ absNorm I.1 = n))
+        (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.val) (fun I ↦ absNorm I.val = n))
 
 @[simp]
 theorem integerSetEquivNorm_apply_fst {n : ℕ}
@@ -541,31 +542,32 @@ def idealSetEquivNorm (n : ℕ) :
       {I : (Ideal (𝓞 K))⁰ // (J : Ideal (𝓞 K)) ∣ I ∧ IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=
   calc
-    _ ≃ {a : {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1} //
-            mixedEmbedding.norm a.1.1 = n} := by
+    _ ≃ {a : {a : integerSet K // (preimageOfMemIntegerSet a).val ∈ J.val} //
+            mixedEmbedding.norm a.val.val = n} := by
         convert! (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
         rw [idealSetEquiv_symm_apply]
-    _ ≃ {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1 ∧
-          mixedEmbedding.norm a.1 = n} := Equiv.subtypeSubtypeEquivSubtypeInter
-        (fun a : integerSet K ↦ (preimageOfMemIntegerSet a).1 ∈ J.1)
-        (fun a ↦ mixedEmbedding.norm a.1 = n)
-    _ ≃ {a : {a :integerSet K // mixedEmbedding.norm a.1 = n} //
-          (preimageOfMemIntegerSet a.1).1 ∈ J.1} := ((Equiv.subtypeSubtypeEquivSubtypeInter
-        (fun a : integerSet K ↦ mixedEmbedding.norm a.1 = n)
-        (fun a ↦ (preimageOfMemIntegerSet a).1 ∈ J.1)).trans
+    _ ≃ {a : integerSet K // (preimageOfMemIntegerSet a).val ∈ J.val ∧
+          mixedEmbedding.norm a.val = n} := Equiv.subtypeSubtypeEquivSubtypeInter
+        (fun a : integerSet K ↦ (preimageOfMemIntegerSet a).val ∈ J.val)
+        (fun a ↦ mixedEmbedding.norm a.val = n)
+    _ ≃ {a : {a :integerSet K // mixedEmbedding.norm a.val = n} //
+          (preimageOfMemIntegerSet a.val).val ∈ J.val} := ((Equiv.subtypeSubtypeEquivSubtypeInter
+        (fun a : integerSet K ↦ mixedEmbedding.norm a.val = n)
+        (fun a ↦ (preimageOfMemIntegerSet a).val ∈ J.val)).trans
         (Equiv.subtypeEquivRight (fun _ ↦ by simp [and_comm]))).symm
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} × (torsion K) //
-          J.1 ∣ I.1.1} := by
-      convert! Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val ∧ absNorm I.val = n} × (torsion K) //
+          J.val ∣ I.1.val} := by
+      convert! Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.val ∣ I.1) (integerSetEquivNorm K n)
       rw [integerSetEquivNorm_apply_fst, dvd_span_singleton]
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} // J.1 ∣ I.1} ×
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val ∧ absNorm I.val = n} // J.val ∣ I.val} ×
         (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd
-        (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} ↦ J.1 ∣ I.1)
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 = n) ∧ J.1 ∣ I.1} × (torsion K) :=
+        (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val ∧ absNorm I.val = n} ↦ J.val ∣ I.val)
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.val ∧ absNorm I.val = n) ∧ J.val ∣ I.val} ×
+        (torsion K) :=
       Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
-        (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 = n)
-        (fun I ↦ J.1 ∣ I.1))
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = n} ×
+        (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.val ∧ absNorm I.val = n)
+        (fun I ↦ J.val ∣ I.val))
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // J.val ∣ I.val ∧ IsPrincipal I.val ∧ absNorm I.val = n} ×
           (Units.torsion K) :=
       Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by rw [and_comm]
 
@@ -580,24 +582,24 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
   · simp_rw [← intNorm_idealSetEquiv_apply, ← Nat.le_floor_iff hs]
     rw [torsionOrder, ← Nat.card_prod]
     refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
-      (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
-      (fun a ↦ ⟨intNorm (idealSetEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_
+      (fun I ↦ ⟨absNorm I.1.val.val, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
+      (fun a ↦ ⟨intNorm (idealSetEquiv K J a.val).val, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_
     simp_rw [Subtype.mk.injEq]
-    calc _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // _ ∧ _ ∧ _} // absNorm I.1.1 = i} × torsion K :=
+    calc _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // _ ∧ _ ∧ _} // absNorm I.val.val = i} × torsion K :=
         Equiv.prodSubtypeFstEquivSubtypeProd
-      _ ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.val ≤ ⌊s⌋₊) ∧ absNorm I.val = i}
             × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
-        (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
-        (q := fun I ↦ absNorm I.1 = i))
-      _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
+        (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.val ∣ I.val ∧ IsPrincipal I.val ∧ absNorm I.val ≤ ⌊s⌋₊)
+        (q := fun I ↦ absNorm I.val = i))
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // J.val ∣ I.val ∧ IsPrincipal I.val ∧ absNorm I.val = i}
             × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by grind
       _ ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
             (idealSetEquivNorm K J i).symm
-      _ ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by
+      _ ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).val = i} := by
         simp_rw [← intNorm_idealSetEquiv_apply, Nat.cast_inj]
         rfl
-      _ ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
-            intNorm (idealSetEquiv K J b).1 = i} :=
+      _ ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).val ≤ ⌊s⌋₊} //
+            intNorm (idealSetEquiv K J b).val = i} :=
         (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
   · simp_rw [lt_iff_not_ge.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_ge.mp
       (lt_of_lt_of_le hs (mixedEmbedding.norm_nonneg _)), and_false, Nat.card_of_isEmpty,
