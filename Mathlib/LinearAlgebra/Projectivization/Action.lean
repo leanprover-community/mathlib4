@@ -24,7 +24,6 @@ Prove that these actions are 2-transitive.
 ## TODO
 
 Generalize to the special linear group over a division ring.
-
 -/
 
 @[expose] public section
@@ -198,16 +197,16 @@ lemma SL_mulAction_ker :
       by_cases hv : v = 0
       · simp [hv, linearIndependent_fin2]
       · simpa [LinearIndependent.pair_iff' hv, mk_eq_mk_iff'] using! hm (.mk K v hv)
-    have hscalar : m.1 = Matrix.scalar ι a := calc
-      m.1 = LinearMap.toMatrix' f := by
+    have hscalar : m.val = Matrix.scalar ι a := calc
+      m.val = LinearMap.toMatrix' f := by
         rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, LinearMap.toMatrix'_toLin']
       _ = (algebraMap K (Module.End K (ι → K)) a).toMatrix' := congrArg LinearMap.toMatrix' ha
       _ = Matrix.scalar ι a := LinearMap.toMatrix'_algebraMap a
-    exact ⟨a, by simpa [hscalar] using m.2, hscalar.symm⟩
+    exact ⟨a, by simpa [hscalar] using m.property, hscalar.symm⟩
   · induction l using Projectivization.ind with | _ v hv =>
     simp only [smul_mk, mk_eq_mk_iff']
     use r
-    change _ = m.1 • v
+    change _ = m.val • v
     simp [← hr2]
 
 /-- The action of the special linear group on `ℙ F (ι → F)` factors through the

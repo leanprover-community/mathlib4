@@ -23,7 +23,6 @@ We show that the following properties of continuous maps are local at the target
 We show that the following properties of continuous maps are local at the source:
 - `IsOpenMap`
 - `GeneralizingMap`
-
 -/
 
 public section
@@ -45,20 +44,20 @@ alias Topology.IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
 
 theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
     IsEmbedding (s.restrictPreimage f) :=
-  ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
+  ⟨h.toIsInducing.restrictPreimage s, h.injective.restrictPreimage s⟩
 
 alias Topology.IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
 
 theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f) :
     IsOpenEmbedding (s.restrictPreimage f) :=
-  ⟨h.1.restrictPreimage s,
-    (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.isOpen_range⟩
+  ⟨h.toIsEmbedding.restrictPreimage s,
+    (s.range_restrictPreimage f).symm ▸ continuous_subtypeVal.isOpen_preimage _ h.isOpen_range⟩
 
 alias Topology.IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
 
 theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbedding f) :
     IsClosedEmbedding (s.restrictPreimage f) :=
-  ⟨h.1.restrictPreimage s,
+  ⟨h.toIsEmbedding.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ IsInducing.subtypeVal.isClosed_preimage _ h.isClosed_range⟩
 
 alias Topology.IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
@@ -82,7 +81,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
 lemma GeneralizingMap.restrictPreimage (H : GeneralizingMap f) (s : Set β) :
     GeneralizingMap (s.restrictPreimage f) := by
   intro x y h
-  obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtype_val (p := (· ∈ s)))
+  obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtypeVal (p := (· ∈ s)))
   use ⟨a, by simp [hy]⟩
   simp [hy, subtype_specializes_iff, ha]
 
@@ -113,7 +112,8 @@ theorem isOpen_iff_inter :
 
 theorem isOpen_iff_coe_preimage :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
-  simp [hU.isOpen_iff_inter (s := s), (U _).2.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
+  simp [hU.isOpen_iff_inter (s := s),
+    (U _).is_open'.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
     image_preimage_eq_inter_range]
 
 theorem isClosed_iff_coe_preimage {s : Set β} :
@@ -127,27 +127,27 @@ theorem isLocallyClosed_iff_coe_preimage {s : Set β} :
   simp [isLocallyClosed_iff_isOpen_coborder, hU.isOpen_iff_coe_preimage, this]
 
 theorem isOpenMap_iff_restrictPreimage :
-    IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) := by
+    IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).carrier.restrictPreimage f) := by
   refine ⟨fun h i ↦ h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isOpen_iff_coe_preimage]
   intro i
-  convert! H i _ (hs.preimage continuous_subtype_val)
+  convert! H i _ (hs.preimage continuous_subtypeVal)
   ext ⟨x, hx⟩
   suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by simpa [← Subtype.coe_inj]
   exact ⟨fun ⟨a, b, c⟩ ↦ ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
 
 theorem isClosedMap_iff_restrictPreimage :
-    IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
+    IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).carrier.restrictPreimage f) := by
   refine ⟨fun h i => h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isClosed_iff_coe_preimage]
   intro i
-  convert! H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
+  convert! H i _ ⟨⟨_, hs.isOpen_compl, eq_compl_comm.mpr rfl⟩⟩
   ext ⟨x, hx⟩
   suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by simpa [← Subtype.coe_inj]
   exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
 
 theorem isInducing_iff_restrictPreimage (h : Continuous f) :
-    IsInducing f ↔ ∀ i, IsInducing ((U i).1.restrictPreimage f) := by
+    IsInducing f ↔ ∀ i, IsInducing ((U i).carrier.restrictPreimage f) := by
   simp_rw [← IsInducing.subtypeVal.of_comp_iff, isInducing_iff_nhds, restrictPreimage,
     MapsTo.coe_restrict, domRestrict_eq, ← Filter.comap_comap]
   constructor
@@ -155,16 +155,16 @@ theorem isInducing_iff_restrictPreimage (h : Continuous f) :
     rw [Function.comp_apply, ← H, ← IsInducing.subtypeVal.nhds_eq_comap]
   · intro H x
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show f x ∈ iSup U by simp [hU.iSup_eq_top])
-    simpa [← ((h.1 _ (U i).2).isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩, H i ⟨x, hi⟩,
-      subtype_coe_map_comap] using preimage_mem_comap ((U i).2.mem_nhds hi)
+    simpa [← ((h.isOpen_preimage _ (U i).is_open').isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩,
+      H i ⟨x, hi⟩, subtypeVal_map_comap] using preimage_mem_comap ((U i).is_open'.mem_nhds hi)
 
 theorem isEmbedding_iff_restrictPreimage (h : Continuous f) :
-    IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).1.restrictPreimage f) := by
+    IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).carrier.restrictPreimage f) := by
   simpa [isEmbedding_iff, forall_and] using and_congr (hU.isInducing_iff_restrictPreimage h)
     (injective_iff_injective_of_iUnion_eq_univ hU.iSup_set_eq_univ)
 
 theorem isOpenEmbedding_iff_restrictPreimage (h : Continuous f) :
-    IsOpenEmbedding f ↔ ∀ i, IsOpenEmbedding ((U i).1.restrictPreimage f) := by
+    IsOpenEmbedding f ↔ ∀ i, IsOpenEmbedding ((U i).carrier.restrictPreimage f) := by
   simp_rw [isOpenEmbedding_iff, forall_and]
   apply and_congr
   · exact hU.isEmbedding_iff_restrictPreimage h
@@ -172,7 +172,7 @@ theorem isOpenEmbedding_iff_restrictPreimage (h : Continuous f) :
     exact hU.isOpen_iff_coe_preimage
 
 theorem isClosedEmbedding_iff_restrictPreimage (h : Continuous f) :
-    IsClosedEmbedding f ↔ ∀ i, IsClosedEmbedding ((U i).1.restrictPreimage f) := by
+    IsClosedEmbedding f ↔ ∀ i, IsClosedEmbedding ((U i).carrier.restrictPreimage f) := by
   simp_rw [isClosedEmbedding_iff, forall_and]
   apply and_congr
   · exact hU.isEmbedding_iff_restrictPreimage h
@@ -180,17 +180,17 @@ theorem isClosedEmbedding_iff_restrictPreimage (h : Continuous f) :
     exact hU.isClosed_iff_coe_preimage
 
 theorem isHomeomorph_iff_restrictPreimage (h : Continuous f) :
-    IsHomeomorph f ↔ ∀ i, IsHomeomorph ((U i).1.restrictPreimage f) := by
+    IsHomeomorph f ↔ ∀ i, IsHomeomorph ((U i).carrier.restrictPreimage f) := by
   simp_rw [isHomeomorph_iff_isEmbedding_surjective, forall_and,
     ← isEmbedding_iff_restrictPreimage hU h,
     surjective_iff_surjective_of_iUnion_eq_univ hU.iSup_set_eq_univ, Opens.carrier_eq_coe]
 
 omit [TopologicalSpace α] in
 theorem denseRange_iff_restrictPreimage :
-    DenseRange f ↔ ∀ i, DenseRange ((U i).1.restrictPreimage f) := by
+    DenseRange f ↔ ∀ i, DenseRange ((U i).carrier.restrictPreimage f) := by
   simp_rw [denseRange_iff_closure_range, Set.range_restrictPreimage,
-    ← (U _).2.isOpenEmbedding_subtypeVal.isOpenMap.preimage_closure_eq_closure_preimage
-      continuous_subtype_val]
+    ← (U _).is_open'.isOpenEmbedding_subtypeVal.isOpenMap.preimage_closure_eq_closure_preimage
+      continuous_subtypeVal]
   simp only [Opens.carrier_eq_coe, SetLike.coe_sort_coe, preimage_eq_univ_iff,
     Subtype.range_coe_subtype, SetLike.mem_coe]
   rw [← iUnion_subset_iff, ← Set.univ_subset_iff, iff_iff_eq]
@@ -198,11 +198,11 @@ theorem denseRange_iff_restrictPreimage :
   exact hU.iSup_set_eq_univ.symm
 
 lemma generalizingMap_iff_restrictPreimage :
-    GeneralizingMap f ↔ ∀ i, GeneralizingMap ((U i).1.restrictPreimage f) := by
+    GeneralizingMap f ↔ ∀ i, GeneralizingMap ((U i).carrier.restrictPreimage f) := by
   refine ⟨fun hf ↦ fun i ↦ hf.restrictPreimage _, fun hf ↦ fun x y h ↦ ?_⟩
   obtain ⟨i, hx⟩ := hU.exists_mem (f x)
-  have h : (⟨y, (U i).2.stableUnderGeneralization h hx⟩ : U i) ⤳
-    (U i).1.restrictPreimage f ⟨x, hx⟩ := by rwa [subtype_specializes_iff]
+  have h : (⟨y, (U i).is_open'.stableUnderGeneralization h hx⟩ : U i) ⤳
+    (U i).carrier.restrictPreimage f ⟨x, hx⟩ := by rwa [subtype_specializes_iff]
   obtain ⟨a, ha, heq⟩ := hf i h
   refine ⟨a, ?_, congr(($heq).val)⟩
   rwa [subtype_specializes_iff] at ha
@@ -252,15 +252,15 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
   wlog hU' : iSup U = ⊤
   · let f₀ : X → Set.range f := fun x ↦ ⟨f x, ⟨x, rfl⟩⟩
     suffices IsEmbedding f₀ from IsEmbedding.subtypeVal.comp this
-    have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
+    have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtypeVal⟩ :
         Opens (Set.range f)) = ⊤ := by
       rw [← top_le_iff]
-      simpa [Set.range_subset_iff, IsConcreteLE.le_iff] using hU
+      simpa [Set.range_subset_iff, le_iff_mem_imp_mem] using hU
     refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
     · fun_prop
     · rw [hU'']; simp
     · exact hV
-    · exact fun i ↦ IsEmbedding.of_comp (by fun_prop) continuous_subtype_val (hV' i)
+    · exact fun i ↦ IsEmbedding.of_comp (by fun_prop) continuous_subtypeVal (hV' i)
   rw [(IsOpenCover.mk hU').isEmbedding_iff_restrictPreimage h]
   intro i
   let f' := (Subtype.val ∘ (f ⁻¹' U i).restrictPreimage (iV i))
@@ -269,7 +269,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
   have hf' : Set.range f' = f ⁻¹' U i := by
     simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
   let e := this.toHomeomorph.trans (Homeomorph.setCongr hf')
-  refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
+  refine IsEmbedding.of_comp (by fun_prop) continuous_subtypeVal ?_
   convert! ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
   ext x
   obtain ⟨x, rfl⟩ := e.surjective x

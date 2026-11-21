@@ -104,7 +104,7 @@ Given a formal multilinear series `p` and a point `x` in its ball of convergence
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
 the series `p.changeOriginSeries k`. -/
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) := fun l =>
-  ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
+  ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.property
 
 theorem nnNorm_changeOriginSeries_le_tsum (k l : ℕ) :
     ‖p.changeOriginSeries k l‖₊ ≤
@@ -163,7 +163,7 @@ def changeOriginIndexEquiv :
 
 lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     let s := changeOriginIndexEquiv.symm ⟨n, t⟩
-    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
+    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.property (fun _ ↦ x) (fun _ ↦ y) =
     p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
       p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
@@ -280,7 +280,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     refine mem_eball_zero_iff.2 (lt_of_le_of_lt ?_ h)
     exact mod_cast nnNorm_add_le x y
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
-    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
+    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.property (fun _ => x) fun _ => y
   have hsf : Summable f := by
     refine .of_nnNorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
     rintro ⟨k, l, s, hs⟩
@@ -340,7 +340,7 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
         rw [insert_eq_of_mem hy] at this
         apply this
         simpa [add_assoc] using h'z
-      exact mem_eball_zero_iff.2 (lt_of_le_of_lt (enorm_add_le _ _) hz)
+      exact mem_eball_zero_iff.2 (lt_of_le_of_lt (eNorm_add_le _ _) hz)
     rw [this]
     apply (p.changeOrigin y).hasSum
     refine Metric.eball_subset_eball (le_trans ?_ p.changeOrigin_radius) hz
@@ -359,7 +359,7 @@ it is analytic at every point of this ball. -/
 theorem HasFPowerSeriesWithinOnBall.analyticWithinAt_of_mem
     (hf : HasFPowerSeriesWithinOnBall f p s x r)
     (h : y ∈ insert x s ∩ Metric.eball x r) : AnalyticWithinAt 𝕜 f s y := by
-  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_enorm_sub] using! h.2
+  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [eDist_eq_eNorm_sub] using! h.2
   have := hf.changeOrigin this (by simpa using! h.1)
   rw [add_sub_cancel] at this
   exact this.analyticWithinAt

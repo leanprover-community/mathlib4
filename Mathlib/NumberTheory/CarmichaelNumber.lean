@@ -32,7 +32,6 @@ by leveraging Korselt's criterion.
 ## References
 
 https://en.wikipedia.org/wiki/Carmichael_number
-
 -/
 
 public section

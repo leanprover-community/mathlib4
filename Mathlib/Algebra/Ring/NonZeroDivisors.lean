@@ -62,7 +62,7 @@ theorem IsRightRegular.isUnit_of_finite (h : IsRightRegular r) : IsUnit r := by
   rwa [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
 
 theorem isRegular_iff_isUnit_of_finite : IsRegular r ↔ IsUnit r where
-  mp h := h.1.isUnit_of_finite
+  mp h := h.left.isUnit_of_finite
   mpr h := h.isRegular
 
 end Monoid
@@ -81,11 +81,11 @@ lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegula
 
 lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by
-  simp_rw [IsConcreteLE.le_iff, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
+  simp_rw [le_iff_mem_imp_mem, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
 
 lemma le_nonZeroDivisorsRight_iff_isRightRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsRight R ↔ ∀ s : S, IsRightRegular (s : R) := by
-  simp_rw [IsConcreteLE.le_iff, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
+  simp_rw [le_iff_mem_imp_mem, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
 
 lemma le_nonZeroDivisors_iff_isRegular {S : Submonoid R} :
     S ≤ R⁰ ↔ ∀ s : S, IsRegular (s : R) := by

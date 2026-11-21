@@ -38,7 +38,6 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -482,7 +481,7 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 
 @[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
-  simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty
@@ -592,12 +591,12 @@ def Finset.union (s t : Finset α) (h : Disjoint s t) :
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.property⟩ :=
   rfl
 
 @[simp]
 theorem Finset.union_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.property⟩ :=
   rfl
 
 @[simp]
@@ -617,12 +616,14 @@ def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) =
+      ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.property⟩ :=
   rfl
 
 @[simp]
 theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) =
+      ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.property⟩ :=
   rfl
 
 @[simp]
@@ -662,8 +663,8 @@ lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finse
 
 /-- A finset is equivalent to its coercion as a set. -/
 def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
-  toFun a := ⟨a.1, mem_coe.2 a.2⟩
-  invFun a := ⟨a.1, mem_coe.1 a.2⟩
+  toFun a := ⟨a.val, mem_coe.2 a.property⟩
+  invFun a := ⟨a.val, mem_coe.1 a.property⟩
 
 end Equiv
 

@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 # Operator norm as an `NNNorm`
 
 Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
-
 -/
 
 public section
@@ -47,6 +46,10 @@ theorem nnNorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
   NNReal.eq f.opNorm_subsingleton
 
+@[simp, nontriviality]
+theorem opENorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖ₑ = 0 := by
+  simpa only [eNorm_eq_nnNorm, ENNReal.coe_zero] using congr(($(f.opNNNorm_subsingleton) : ℝ≥0∞))
+
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
   opNorm_le_bound f (zero_le (a := M)) hM
@@ -76,7 +79,7 @@ theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above 
   Subtype.ext <| opNorm_eq_of_bounds (zero_le (a := M)) h_above <| Subtype.forall'.mpr h_below
 
 theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
-  opNorm_le_iff C.2
+  opNorm_le_iff C.property
 
 theorem isLeast_opNNNorm (f : E →SL[σ₁₂] F) : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using! isLeast_Ici
@@ -85,17 +88,17 @@ theorem opNNNorm_comp_le (h : F →SL[σ₂₃] G) (f : E →SL[σ₁₂] F) : �
   opNorm_comp_le h f
 
 lemma opENorm_comp_le (h : F →SL[σ₂₃] G) (f : E →SL[σ₁₂] F) : ‖h.comp f‖ₑ ≤ ‖h‖ₑ * ‖f‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_mul] using opNNNorm_comp_le h f
+  simpa [eNorm, ← ENNReal.coe_mul] using opNNNorm_comp_le h f
 
 theorem le_opNNNorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
   f.le_opNorm x
 
 lemma le_opENorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
-  dsimp [enorm]; exact mod_cast le_opNNNorm ..
+  dsimp [eNorm]; exact mod_cast le_opNNNorm ..
 
 @[deprecated (since := "2026-06-27")] alias le_opNorm_enorm := le_opENorm
 
-/-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
+/-- If one controls the eNorm of every `f x`, then one controls the eNorm of `f`. -/
 theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
     ‖f‖ₑ ≤ M := by
   rcases eq_top_or_lt_top M with rfl | h'M

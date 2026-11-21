@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
+
+import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
 /-!
 # Bounded below cochain complexes
@@ -17,7 +18,6 @@ of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
 This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexMinus.lean`.
-
 -/
 
 @[expose] public section
@@ -166,7 +166,7 @@ is induced by a functor (which preserves zero morphisms). -/
 @[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
-    obtain ⟨i, hi⟩ := K.2
+    obtain ⟨i, hi⟩ := K.property
     refine ⟨i, ?_⟩
     dsimp [CochainComplex.Plus.ι]
     infer_instance)

@@ -273,10 +273,25 @@ section submoduleOf
 def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
-/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+theorem map_subtype_submoduleOf (p q : Submodule R M) :
+    map q.subtype (p.submoduleOf q) = p ⊓ q := by
+  ext; simp [submoduleOf]
+
+/-- `p` as a submodule of `q` is isomorphic to `q ⊓ p`. -/
+def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓ p :) where
+  toFun m := ⟨m.val, m.val.property, m.property⟩
+  invFun m := ⟨⟨m.val, m.property.1⟩, m.property.2⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+-- TODO: we would like to implement this by casting `submoduleOfEquivInf p q`
+-- using `LinearEquiv.ofEq`, but currently that's not possible due to import cycles.
+-- We can change to this once that's earlier in the import hierarchy:
+--   := submoduleOfEquivInf p q |>.trans <| .ofEq _ _ (by simp)
+/-- If `p ≤ q`, then `p` as a submodule of `q` is isomorphic to `p`. -/
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
-  toFun m := ⟨m.1, m.2⟩
-  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  toFun m := ⟨m.val, m.property⟩
+  invFun m := ⟨⟨m.val, h m.property⟩, m.property⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -456,7 +471,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[�
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
-  ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
+  inf_comm p p' ▸ map_subtype_submoduleOf ..
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
   | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
@@ -531,12 +546,14 @@ section Module
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
+-- NOTE: this is identical to `submoduleOfEquivOfLe` above, but using
+-- it directly creates bad `simps!` lemmas because of the defeq abuse
 /-- If `s ≤ t`, then we can view `s` as a submodule of `t` by taking the comap
 of `t.subtype`. -/
 @[simps apply_coe symm_apply]
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p where
-  toFun x := ⟨x, x.2⟩
-  invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
+  toFun x := ⟨x, x.property⟩
+  invFun x := ⟨⟨x, hpq x.property⟩, x.property⟩
   left_inv x := by simp
   right_inv x := by simp
   map_add' _ _ := rfl
@@ -588,7 +605,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [le_iff_mem_imp_mem, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -609,7 +626,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
+  simp only [le_iff_mem_imp_mem, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
@@ -660,7 +677,7 @@ def submoduleComap (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂) : 
 theorem submoduleComap_surjective_of_surjective (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂)
     (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
-  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.property)⟩
   apply Subtype.val_injective
   simp [hx]
 

@@ -365,8 +365,8 @@ automorphism of `H`. -/
   automorphism of `H`. -/]
 def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
   toFun φ :=
-    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
-      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.property⟩
+      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.property⟩
       left_inv h := Subtype.ext (φ.symm_apply_apply h)
       right_inv h := Subtype.ext (φ.apply_symm_apply h)
       map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
@@ -706,6 +706,14 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- In a commutative group, the normal closure of a set is its subgroup closure. -/
+@[to_additive (attr := simp)
+/-- In a commutative additive group, the normal closure of a set is its additive subgroup
+closure. -/]
+theorem normalClosure_eq_closure {G : Type*} [CommGroup G] (s : Set G) :
+    normalClosure s = closure s :=
+  le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure
+
 /-- The normal closure of an empty set is the trivial subgroup. -/
 @[to_additive (attr := simp)]
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
@@ -932,7 +940,7 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
       ``` -/]
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
-  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
+  toFun g := f.liftOfRightInverseAux f_inv hf g.val g.property
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
@@ -953,8 +961,8 @@ noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x : G₁) :
-    (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
+    (f.liftOfRightInverse f_inv hf g) (f x) = g.val x :=
+  f.liftOfRightInverseAux_comp_apply f_inv hf g.val g.property x
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
@@ -1043,17 +1051,17 @@ section SubgroupNormal
 theorem normal_subgroupOf_iff {H K : Subgroup G} (hHK : H ≤ K) :
     (H.subgroupOf K).Normal ↔ ∀ h k, h ∈ H → k ∈ K → k * h * k⁻¹ ∈ H :=
   ⟨fun hN h k hH hK => hN.conj_mem ⟨h, hHK hH⟩ hH ⟨k, hK⟩, fun hN =>
-    { conj_mem := fun h hm k => hN h.1 k.1 hm k.2 }⟩
+    { conj_mem := fun h hm k => hN h.val k.val hm k.property }⟩
 
 @[to_additive prod_addSubgroupOf_prod_normal]
 instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}
     [h₁ : (H₁.subgroupOf K₁).Normal] [h₂ : (H₂.subgroupOf K₂).Normal] :
     ((H₁.prod H₂).subgroupOf (K₁.prod K₂)).Normal where
   conj_mem n hgHK g :=
-    ⟨h₁.conj_mem ⟨(n : G × N).fst, (mem_prod.mp n.2).1⟩ hgHK.1
-        ⟨(g : G × N).fst, (mem_prod.mp g.2).1⟩,
-      h₂.conj_mem ⟨(n : G × N).snd, (mem_prod.mp n.2).2⟩ hgHK.2
-        ⟨(g : G × N).snd, (mem_prod.mp g.2).2⟩⟩
+    ⟨h₁.conj_mem ⟨(n : G × N).fst, (mem_prod.mp n.property).1⟩ hgHK.1
+        ⟨(g : G × N).fst, (mem_prod.mp g.property).1⟩,
+      h₂.conj_mem ⟨(n : G × N).snd, (mem_prod.mp n.property).2⟩ hgHK.2
+        ⟨(g : G × N).snd, (mem_prod.mp g.property).2⟩⟩
 
 @[to_additive prod_normal]
 instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :

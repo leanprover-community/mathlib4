@@ -5,10 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
-public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
@@ -16,6 +14,9 @@ public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.Order.Setoid.Basic
+
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Subgroup.Map
 
 /-!
 # Basic properties of group actions
@@ -30,7 +31,6 @@ of `•` belong elsewhere.
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section
@@ -365,7 +365,8 @@ theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :
 @[to_additive (attr := simp)]
 theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
     (stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
-  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
+  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul,
+    commute_iff_eq]
 
 @[to_additive]
 theorem orbit_range_conj_eq_conjugatesOf (g : G) :

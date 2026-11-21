@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
-
 # Normed space structure on `ℂ`.
 
 This file gathers basic facts of analytic nature on the complex numbers.
@@ -37,7 +36,6 @@ namespace `Complex`.
 |`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
-
 -/
 
 @[expose] public section

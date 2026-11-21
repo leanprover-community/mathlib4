@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Congruence.Basic
 
 This file defines the order isomorphism between the congruences on a ring `R` and the congruences on
 the opposite ring `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section

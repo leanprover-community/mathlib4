@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
-
 # Relative rank of subfields and intermediate fields
 
 This file contains basics about the relative rank of subfields and intermediate fields.
@@ -24,7 +23,6 @@ This file contains basics about the relative rank of subfields and intermediate 
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
   This is similar to `Subgroup.relIndex`.
-
 -/
 
 @[expose] public section
@@ -125,7 +123,7 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
-    IntermediateField.topEquiv.toLinearEquiv.rank_eq]
+    (IntermediateField.topEquiv (F := A) (E := E)).toLinearEquiv.rank_eq]
 
 @[simp]
 theorem relfinrank_top_right : relfinrank A ⊤ = finrank A E := by

@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
   essentially of finite type if it is the localization of an algebra of finite type.
 - `Algebra.EssFiniteType.algHom_ext`: The algebra homomorphisms out from an algebra essentially of
   finite type is determined by its values on a finite set.
-
 -/
 
 @[expose] public section
@@ -53,7 +52,7 @@ abbrev EssFiniteType.subalgebra [EssFiniteType R S] : Subalgebra R S :=
   Algebra.adjoin R (finset R S : Set S)
 
 lemma EssFiniteType.adjoin_mem_finset [EssFiniteType R S] :
-    adjoin R { x : subalgebra R S | x.1 ∈ finset R S } = ⊤ := adjoin_adjoin_coe_preimage
+    adjoin R { x : subalgebra R S | x.val ∈ finset R S } = ⊤ := adjoin_adjoin_coe_preimage
 
 instance [EssFiniteType R S] : Algebra.FiniteType R (EssFiniteType.subalgebra R S) := by
   constructor
@@ -75,7 +74,7 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ
   · intro s
-    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.1.2 s
+    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.toIsLocalizationMap.surj s
     exact ⟨t, ht, ht', h ▸ hx⟩
   · constructor; constructor
     · exact fun y ↦ y.prop
@@ -239,7 +238,7 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   apply IsLocalization.ringHom_ext (EssFiniteType.submonoid R S)
   suffices f.comp (IsScalarTower.toAlgHom R _ S) = g.comp (IsScalarTower.toAlgHom R _ S) by
     ext; congrm $this _
-  apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
+  apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.val ∈ finset R S })
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
@@ -282,7 +281,7 @@ lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
     (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
   algebraize [f, g₁.comp f]
   ext x
-  congrm $(Algebra.EssFiniteType.algHom_ext T
-   ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+  congrm $(Algebra.EssFiniteType.algHom_ext T { g₁ with commutes' _ := rfl }
+    { g₂ with commutes' := DFunLike.congr_fun h₁.symm } h₂) x
 
 end RingHom
