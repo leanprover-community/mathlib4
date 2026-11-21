@@ -98,11 +98,15 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
   constructor
   · apply OpenPartialHomeomorph.continuousAt
     simp
-  ·
-    rw [show (hf.localInverseAt (g y)).symm (g y) = y by
-      sorry]
-
-    sorry
+  · rw [show (hf.localInverseAt (g y)).symm (g y) = y by simpa using hg y]
+    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ (Set.mem_range_self _)
+    have hy : extChartAt I (g y) (g y) ∈ (extChartAt I y).target := by
+      have := mem_extChartAt_target (I := I) y
+      change extChartAt I (g y) (hf.localInverseAt (g y) y) ∈ _ at this
+      rwa [show hf.localInverseAt (g y) y = g y by
+        simpa [hg y] using hf.localInverseAt_apply_self (x := g y)] at this
+    filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hy] with x hx
+    exact (extChartAt I y).right_inv hx
 
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
