@@ -289,8 +289,8 @@ theorem toZModPow_toFun (n : ℕ) :
   simp [modularCyclotomicCharacter, modularCyclotomicCharacter', modularCyclotomicCharacter.toFun]
 
 theorem toFun_spec (g : L ≃+* L) {n : ℕ} (t : rootsOfUnity (p ^ n) L) :
-    g (t : Lˣ) = t.1 ^ ((χ p g).toZModPow n).val := by
-  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.2)]
+    g (t : Lˣ) = t.val ^ ((χ p g).toZModPow n).val := by
+  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.property)]
 
 end cyclotomicCharacter
 

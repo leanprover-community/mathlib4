@@ -124,7 +124,7 @@ theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
-  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
+  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.property⟩
 
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
 the standard one. -/
@@ -283,16 +283,16 @@ theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.val.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.val.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
-decreasing_by rename_i x; exact x.2
+decreasing_by rename_i x; exact x.property
 
 /-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
@@ -389,7 +389,7 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
   toFun o := ⟨_, isOrdinal_toZFSet o⟩
-  invFun x := rank x.1
+  invFun x := rank x.val
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp

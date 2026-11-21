@@ -204,9 +204,9 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   fst X Y := BinaryFan.fst (ℬ X Y).cone
   snd X Y := BinaryFan.snd (ℬ X Y).cone
   tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).val)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).property.1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).property.2)
     (fun f g m hf hg ↦
       BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
   fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
@@ -231,15 +231,15 @@ open MonoidalCategory
 Constructs a morphism to the product given its two components.
 -/
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).val
 
 @[reassoc (attr := simp)]
 lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = f :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).property.1
 
 @[reassoc (attr := simp)]
 lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = g :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.2
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).property.2
 
 instance mono_lift_of_mono_left {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
     [Mono f] : Mono (lift f g) :=

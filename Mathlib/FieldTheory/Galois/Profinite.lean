@@ -159,7 +159,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     intro y hy
     have := AlgEquiv.restrictNormal_commutes x L y
     dsimp at this
-    rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
+    rw [hx y.val ((IntermediateField.mem_lift y).mpr hy)] at this
     exact SetLike.coe_eq_coe.mp this
   · exact ⟨IntermediateField.isOpen_fixingSubgroup (IntermediateField.lift L'), one_mem _⟩
 
@@ -185,7 +185,7 @@ lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupF
 lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : L)
     (L' : FiniteGaloisIntermediateField k K) (h : L ≤ L') :
-    (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
+    (proj L g x).val = (proj L' g ⟨x, h x.property⟩).val := by
   induction L with | _ L => ?_
   induction L' with | _ L' => ?_
   let : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
@@ -198,7 +198,7 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
 lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K)
     (h : x ∈ L.toIntermediateField) :
-    (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
+    (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.property⟩).val :=
   proj_of_le _ g y _ _
 
 set_option backward.privateInPublic true in
@@ -237,40 +237,43 @@ set_option backward.privateInPublic.warn false in
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
 noncomputable def limitToAlgEquiv [IsGalois k K]
-    (g : limit (asProfiniteGaloisGroupFunctor k K)) : Gal(K/k) where
-  toFun := toAlgEquivAux g
-  invFun := toAlgEquivAux g⁻¹
-  left_inv x := by
-    let L := adjoin k {x, toAlgEquivAux g x}
-    have hx : x ∈ L.toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
-    have hx' : toAlgEquivAux g x ∈ L.toIntermediateField :=
-      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
-      mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
-  right_inv x := by
-    let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
-    have hx : x ∈ L.toIntermediateField :=
-      subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
-    have hx' : toAlgEquivAux g⁻¹ x ∈ L.toIntermediateField :=
-      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
-      AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
-  map_mul' x y := by
-    have hx : x ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
-      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
-      toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
-      toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
-  map_add' x y := by
-    have hx : x ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
-      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
-      toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
-      toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add]
-  commutes' x := by
-    simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
+    (g : limit (asProfiniteGaloisGroupFunctor k K)) : Gal(K/k) :=
+  .ofCommutes
+    { toFun := toAlgEquivAux g
+      invFun := toAlgEquivAux g⁻¹
+      left_inv x := by
+        let L := adjoin k {x, toAlgEquivAux g x}
+        have hx : x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
+        have hx' : toAlgEquivAux g x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
+          mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
+      right_inv x := by
+        let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
+        have hx : x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
+        have hx' : toAlgEquivAux g⁻¹ x ∈ L.toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
+          AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
+      map_mul' x y := by
+        have hx : x ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {y})
+        have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
+          toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
+          toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
+      map_add' x y := by
+        have hx : x ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert x {y})
+        have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+          subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+        simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
+          toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
+          toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add] }
+  fun x ↦ by simp [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/
@@ -286,10 +289,10 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.val :=
       AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
-    exact proj_adjoin_singleton_val _ _ _ _ x.2
+    exact proj_adjoin_singleton_val _ _ _ _ x.property
 
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k)) :

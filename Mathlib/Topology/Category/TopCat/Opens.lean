@@ -58,7 +58,7 @@ instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
-lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
+lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.property⟩ := rfl
 
 @[simp] lemma apply_mk (f : U ⟶ V) (x : X) (hx) : f ⟨x, hx⟩ = ⟨x, f.le hx⟩ := rfl
 
@@ -104,7 +104,7 @@ noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
 -- We do not mark this as a simp lemma because it breaks open `x`.
 -- Nevertheless, it is useful in `SheafOfFunctions`.
 theorem infLELeft_apply (U V : Opens X) (x) :
-    (infLELeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
+    (infLELeft U V) x = ⟨x.val, (@inf_le_left _ _ U V : _ ≤ _) x.property⟩ :=
   rfl
 
 @[simp]
@@ -122,7 +122,7 @@ realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
   obj U := ↧U
-  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
+  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.val, i.le x.property⟩,
     IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
 @[simp]
@@ -136,7 +136,7 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
   TopCat.ofHom
   { toFun := _
-    continuous_toFun := continuous_subtype_val }
+    continuous_toFun := continuous_subtypeVal }
 
 @[simp]
 theorem coe_inclusion' {X : TopCat.{u}} {U : Opens X} :
@@ -485,7 +485,7 @@ lemma set_range_inclusion' {X : TopCat.{u}} (U : Opens X) :
   ext x
   constructor
   · rintro ⟨x, rfl⟩
-    exact x.2
+    exact x.property
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
 

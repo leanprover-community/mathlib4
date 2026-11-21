@@ -250,7 +250,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.property)
 
 end TendstoLemmas
 
@@ -283,11 +283,11 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine ⟨g, g.2, ?_⟩
+  refine ⟨g, g.property, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
-    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.property))
   exact hg ⟨g1, this⟩
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by

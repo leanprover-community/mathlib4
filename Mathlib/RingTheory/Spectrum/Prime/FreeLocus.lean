@@ -117,7 +117,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-      refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
+      refine ⟨algebraMap _ _ s.val, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
   let : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
@@ -141,7 +141,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-      refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
+      refine ⟨algebraMap _ _ s.val, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
   rw [mem_freeLocus_of_isLocalization (R := Localization S) p Rₚ Mₚ l]
@@ -180,13 +180,13 @@ def rankAtStalk (p : PrimeSpectrum R) : ℕ :=
   Module.finrank (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M)
 
 lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
-    IsLocallyConstant (fun x : freeLocus R M ↦ rankAtStalk M x.1) := by
+    IsLocallyConstant (fun x : freeLocus R M ↦ rankAtStalk M x.val) := by
   refine (IsLocallyConstant.iff_exists_open _).mpr fun ⟨x, hx⟩ ↦ ?_
   have : Module.Free _ _ := hx
   obtain ⟨f, hf, hf', hf''⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).is_open'.preimage continuous_subtype_val,
+  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).is_open'.preimage continuous_subtypeVal,
     hf, ?_⟩
   rintro ⟨p, hp''⟩ hp
   let p' := Algebra.algebraMapSubmonoid (Localization (.powers f)) p.asIdeal.primeCompl

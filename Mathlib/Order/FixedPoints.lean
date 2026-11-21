@@ -189,7 +189,7 @@ theorem le_nextFixed {x : α} (hx : x ≤ f x) : x ≤ f.nextFixed x hx :=
 
 theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y) :
     f.nextFixed x hx ≤ y :=
-  Subtype.coe_le_coe.1 <| lfp_le _ <| sup_le h y.2.le
+  Subtype.coe_le_coe.1 <| lfp_le _ <| sup_le h y.property.le
 
 @[simp]
 theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
@@ -207,7 +207,7 @@ theorem le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤
 
 theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
   calc
-    (x ⊔ y : α) = f x ⊔ f y := congr($(x.2.symm) ⊔ $(y.2.symm))
+    (x ⊔ y : α) = f x ⊔ f y := congr($(x.property.symm) ⊔ $(y.property.symm))
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
 -- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
@@ -235,8 +235,8 @@ variable [CompleteLattice α] (f : α →o α)
 instance : BoundedOrder (fixedPoints f) where
   top := ⟨f.gfp, f.isFixedPt_gfp⟩
   bot := ⟨f.lfp, f.isFixedPt_lfp⟩
-  le_top x := f.le_gfp x.2.ge
-  bot_le x := f.lfp_le x.2.le
+  le_top x := f.le_gfp x.property.ge
+  bot_le x := f.lfp_le x.property.le
 
 instance : SemilatticeSup (fixedPoints f) where
   sup x y := f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
@@ -254,13 +254,13 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   sSup s :=
     f.nextFixed (sSup (Subtype.val '' s))
       (f.le_map_sSup_subset_fixedPoints (Subtype.val '' s)
-        fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
+        fun _ ⟨x, hx⟩ => hx.2 ▸ x.property)
   isLUB_sSup _ :=
     ⟨fun _ hx ↦ (le_sSup <| Set.mem_image_of_mem _ hx).trans (f.le_nextFixed _),
       fun _ hx ↦ f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx⟩
   sInf s :=
     f.prevFixed (sInf (Subtype.val '' s))
-      (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
+      (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.property)
   isGLB_sInf _ :=
     ⟨fun _ hx ↦ (f.prevFixed_le _).trans (sInf_le <| Set.mem_image_of_mem _ hx),
       fun _ hx ↦ f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx⟩

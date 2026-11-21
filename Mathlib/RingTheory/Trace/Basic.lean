@@ -62,7 +62,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.val + j.val)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots
@@ -199,7 +199,7 @@ lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A�
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
-  let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  let e' : B₁ ≃ₐ[A₁] B₂ := .ofCommutes e₂ fun _ ↦ rfl
   rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
     RingEquiv.symm_apply_apply]
   rfl
@@ -497,8 +497,7 @@ then `traceForm` is nondegenerate. -/
 @[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
-  BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (Module.finBasis K L))
+  .of_det_ne_zero (traceForm K L) _ (det_traceForm_ne_zero (Module.finBasis K L))
 
 @[stacks 0BIL]
 theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :

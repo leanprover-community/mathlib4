@@ -793,7 +793,7 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).property.trans (enc a).property.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction l₂ generalizing l₁ l₂' with
@@ -819,8 +819,8 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
-    exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
-      (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
+    exact this n f (L.flatMap (fun x => (enc x).val.reverse) _)
+      (R.flatMap (fun x => (enc x).val) _) [] _ (enc a).property
   clear f L a R
   rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with

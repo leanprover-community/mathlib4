@@ -112,7 +112,7 @@ def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePar
 /-- A construction of the equalizer fork. -/
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
   Fork.ofι (P := ↧{ a // f a = g a }) (equalizerι f g)
-    (ContinuousHom.ext _ _ fun x => x.2)
+    (ContinuousHom.ext _ _ fun x => x.property)
 
 /-- The equalizer fork is a limit. -/
 def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=

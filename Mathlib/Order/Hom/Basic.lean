@@ -600,14 +600,10 @@ abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
 theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
   rfl
 
-@[simp]
-theorem id_comp (f : α ↪o β) : (id α).comp f = f := by
-  ext
+theorem id_comp (f : α ↪o β) : (id α).comp f = f :=
   rfl
 
-@[simp]
-theorem comp_id (f : α ↪o β) : f.comp (id β) = f := by
-  ext
+theorem comp_id (f : α ↪o β) : f.comp (id β) = f :=
   rfl
 
 theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
@@ -1401,17 +1397,11 @@ theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α
   exact f.symm.strictMono.isMax_of_apply
 
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
+@[to_dual /-- Note that this goal could also be stated `(Codisjoint on f) a b` -/]
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) (ha : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff_inf_le, ← f.map_inf, ← f.map_bot]
   exact f.monotone ha.le_bot
-
-/-- Note that this goal could also be stated `(Codisjoint on f) a b` -/
-@[to_dual existing] -- We can remove this use of `existing` once we get https://github.com/leanprover-community/mathlib4/pull/32438
-theorem Codisjoint.map_orderIso [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
-    {a b : α} (f : α ≃o β) (ha : Codisjoint a b) : Codisjoint (f a) (f b) := by
-  rw [codisjoint_iff_le_sup, ← f.map_sup, ← f.map_top]
-  exact f.monotone ha.top_le
 
 @[to_dual (attr := simp)]
 theorem disjoint_map_orderIso_iff [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
