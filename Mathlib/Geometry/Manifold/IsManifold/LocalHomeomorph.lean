@@ -100,11 +100,11 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_ <|
       Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y)
     filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
-    simp only [Function.comp_apply, id]
     rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target, Set.mem_inter_iff,
       Set.mem_preimage] at hz
     obtain ⟨⟨h1, h2⟩, h3⟩ := hz
-    rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
+    simp_rw [Function.comp_apply, id, (hf.localInverseAt (g y)).right_inv h2,
+      (chartAt H (g y)).right_inv h1, I.right_inv h3]
 
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
