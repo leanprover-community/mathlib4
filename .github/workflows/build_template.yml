@@ -1208,6 +1208,175 @@ jobs:
           lint-bib-file: true
           checkout: false
 
+  # Bors requires these checks on `staging` and `trying`.
+  # Other runs report rule violations as warnings so PRs can test unmerged changes.
+  merge_checks:
+    name: Merge checks
+    runs-on: ubuntu-latest
+    # Read PR files from `pr-branch/` and load local actions from the workflow commit.
+    # The job does not execute PR code.
+    permissions:
+      contents: read
+    env:
+      STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          path: pr-branch
+          sparse-checkout: .github
+          # Keep the read-only token out of the untrusted checkout.
+          persist-credentials: false
+          # The job reads fork PR files without executing their code.
+          allow-unsafe-pr-checkout: true
+
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      # Require mathlib-ci pins from its master history.
+      # Unmerged commits can expose mathlib4 secrets when other jobs execute them.
+      # Output the get-mathlib-ci default commit as `sha`.
+      - name: Check mathlib-ci pins
+        id: pins
+        if: ${{ !cancelled() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            process.chdir(`${process.env.GITHUB_WORKSPACE}/pr-branch`);
+
+            const strict = process.env.STRICT === 'true';
+            let failed = false;
+            function report(file, line, message) {
+              const location = { file, startLine: line };
+              if (strict) core.error(message, location);
+              else core.warning(message, location);
+              failed = true;
+            }
+
+            let defaultPin;
+            const comparisons = new Map();
+            const defaultAction = '.github/actions/get-mathlib-ci/action.yml';
+            const actionPin = /leanprover-community\/mathlib-ci[^@\s]*@([0-9a-f]{40})/g;
+            const defaultRef = /default: ([0-9a-f]{40})/g;
+
+            for (const name of fs.readdirSync('.github', { recursive: true }).sort()) {
+              const file = `.github/${name}`;
+              if (!/\.ya?ml$/.test(file) || !fs.statSync(file).isFile()) continue;
+              const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+              for (const [index, text] of lines.entries()) {
+                const line = index + 1;
+                const pins = Array.from(text.matchAll(actionPin), match => match[1]);
+                if (file === defaultAction) {
+                  for (const match of text.matchAll(defaultRef)) {
+                    defaultPin = match[1];
+                    pins.push(defaultPin);
+                  }
+                }
+                for (const sha of pins) {
+                  core.info(`${file}:${line}:${sha}`);
+                  if (!comparisons.has(sha)) {
+                    try {
+                      const { data } = await github.rest.repos.compareCommits({
+                        owner: 'leanprover-community', repo: 'mathlib-ci', base: sha, head: 'master',
+                      });
+                      comparisons.set(sha, data.status);
+                    } catch {
+                      comparisons.set(sha, 'unknown commit or API error');
+                    }
+                  }
+                  const comparison = comparisons.get(sha);
+                  if (comparison !== 'ahead' && comparison !== 'identical') {
+                    report(file, line, `mathlib-ci commit ${sha} is not on mathlib-ci master (${comparison}).`);
+                  }
+                }
+              }
+            }
+
+            if (defaultPin) core.setOutput('sha', defaultPin);
+            else report(defaultAction, undefined, 'get-mathlib-ci has no default commit.');
+            if (strict && failed) core.setFailed('The mathlib-ci pin check failed.');
+
+      # Check script paths against the PR's default mathlib-ci commit.
+      - name: Get mathlib-ci
+        id: get_mathlib_ci
+        if: ${{ !cancelled() && steps.pins.outputs.sha }}
+        # Outside bors, allow checkout failure after the pin check reports a warning.
+        continue-on-error: ${{ env.STRICT != 'true' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ steps.pins.outputs.sha }}
+
+      - name: Check mathlib-ci usage in workflows
+        if: ${{ !cancelled() && steps.get_mathlib_ci.outcome == 'success' }}
+        env:
+          PIN: ${{ steps.pins.outputs.sha }}
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            const path = require('node:path');
+            process.chdir(`${process.env.GITHUB_WORKSPACE}/pr-branch`);
+
+            const strict = process.env.STRICT === 'true';
+            let failed = false;
+            function report(file, line, message) {
+              const location = { file, startLine: line };
+              if (strict) core.error(message, location);
+              else core.warning(message, location);
+              failed = true;
+            }
+
+            const pin = process.env.PIN;
+            const scriptsDir = process.env.CI_SCRIPTS_DIR;
+            const scriptPath = /\$\{?CI_SCRIPTS_DIR\}?\/([A-Za-z0-9._/-]+)/g;
+
+            // Check literal script paths before the first `#` on each line.
+            // Dynamic paths are outside this check.
+            for (const name of fs.readdirSync('.github/workflows', { recursive: true }).sort()) {
+              const file = `.github/workflows/${name}`;
+              if (!/\.ya?ml$/.test(file) || !fs.statSync(file).isFile()) continue;
+              const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+              for (const [index, text] of lines.entries()) {
+                const code = text.split('#', 1)[0];
+                for (const match of code.matchAll(scriptPath)) {
+                  const script = match[1];
+                  if (script.split('/').includes('..') || !fs.existsSync(path.join(scriptsDir, script))) {
+                    report(file, index + 1, `The mathlib-ci scripts at ${pin} have no file \`${script}\`.`);
+                  }
+                }
+              }
+            }
+
+            // Require workflows to use get-mathlib-ci for mathlib-ci checkouts.
+            // Invalid YAML fails this step.
+            const query = `
+              .jobs[].steps[]?
+              | select((.uses // "") | test("^actions/checkout@"))
+              | select((.with.repository // "") | test("/mathlib-ci$"))
+              | filename + ":" + (.with.repository | line | to_string)
+            `;
+            const workflows = fs.readdirSync('.github/workflows').sort()
+              .filter(name => /\.y.*ml$/.test(name))
+              .map(name => `.github/workflows/${name}`);
+            const { stdout } = await exec.getExecOutput('yq', ['ea', query, ...workflows], { silent: true });
+            for (const checkout of stdout.trim().split('\n').filter(Boolean)) {
+              const separator = checkout.lastIndexOf(':');
+              const file = checkout.slice(0, separator);
+              const line = Number(checkout.slice(separator + 1));
+              report(file, line, 'The step checks out mathlib-ci with actions/checkout.\n' +
+                'Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.');
+            }
+
+            if (strict && failed) core.setFailed('The mathlib-ci usage check failed.');
+
   final:
     name: Post-CI job
     # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
