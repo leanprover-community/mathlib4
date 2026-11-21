@@ -321,7 +321,7 @@ theorem tendsto_prod_top_iff {c : β} :
   exact tendsto_prod_filter_iff
 
 /-- Uniform convergence on the empty set is vacuously true -/
-theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := fun u _ => by simp
+@[simp] theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := fun u _ => by simp
 
 /-- Uniform convergence on a singleton is equivalent to regular convergence -/
 theorem tendstoUniformlyOn_singleton_iff_tendsto :
