@@ -100,16 +100,43 @@ theorem IsReduced.append_flatten_replicate_append (h₁ : IsCyclicallyReduced L�
       rw [← flatten_concat, ← replicate_succ']
       exact (h₁.flatten_replicate _).isReduced
 
+/-- The number of leading positions at which the letter of `L₂` is the inverse of the letter of
+`L₁`, stopping at the first position where it isn't. -/
+def cancelPrefixLength [DecidableEq α] : List (α × Bool) → List (α × Bool) → ℕ
+  | a :: L₁, b :: L₂ =>
+    if a.1 = b.1 ∧ a.2 ≠ b.2 then cancelPrefixLength L₁ L₂ + 1 else 0
+  | _, _ => 0
+
+theorem min_cancelPrefixLength_append [DecidableEq α] {L₁ L₂ : List (α × Bool)}
+    (s t : List (α × Bool)) {n : ℕ} (h₁ : n ≤ L₁.length) (h₂ : n ≤ L₂.length) :
+    min n (cancelPrefixLength (L₁ ++ s) (L₂ ++ t)) = min n (cancelPrefixLength L₁ L₂) := by
+  induction L₁ generalizing L₂ n with
+  | nil => simp_all
+  | cons a L₁ ih =>
+    rcases L₂ with _ | ⟨b, L₂⟩
+    · simp_all
+    rcases n with _ | n
+    · simp
+    simp only [cons_append, cancelPrefixLength]
+    split
+    · simp only [length_cons, Nat.add_le_add_iff_right] at h₁ h₂
+      rw [Nat.add_min_add_right, Nat.add_min_add_right, ih h₁ h₂]
+    · rfl
+
 /-- This function produces a subword of a word `L` by cancelling the first and last letters of `L`
-as long as possible. If `L` is reduced, the resulting word will be cyclically reduced. -/
+as long as possible. If `L` is reduced, the resulting word will be cyclically reduced.
+
+It is computed in a single pass: if `k` outer pairs of letters cancel, drop `k` letters from each
+end. This uses only structural recursion, so `decide` can evaluate it. -/
 @[to_additive /-- This function produces a subword of a word `L` by cancelling the first and last
 letters of `L` as long as possible. If `L` is reduced, the resulting word will be cyclically
-reduced. -/]
-def reduceCyclically [DecidableEq α] : List (α × Bool) → List (α × Bool) :=
-  List.bidirectionalRec
-    (nil := [])
-    (singleton := fun x => [x])
-    (cons_append := fun a L b rC => if b.1 = a.1 ∧ (!b.2) = a.2 then rC else a :: L ++ [b])
+reduced.
+
+It is computed in a single pass: if `k` outer pairs of letters cancel, drop `k` letters from each
+end. This uses only structural recursion, so `decide` can evaluate it. -/]
+def reduceCyclically [DecidableEq α] (L : List (α × Bool)) : List (α × Bool) :=
+  let k := min (L.length / 2) (cancelPrefixLength L L.reverse)
+  (L.drop k).take (L.length - 2 * k)
 
 namespace reduceCyclically
 variable [DecidableEq α]
@@ -124,8 +151,22 @@ protected theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by
 @[to_additive]
 protected theorem cons_append {a b : α × Bool} (L : List (α × Bool)) :
     reduceCyclically (a :: (L ++ [b])) =
-    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically L else a :: L ++ [b] := by
-  simp [reduceCyclically]
+    if a.1 = b.1 ∧ a.2 ≠ b.2 then reduceCyclically L else a :: L ++ [b] := by
+  have hrev : (a :: (L ++ [b])).reverse = b :: (L.reverse ++ [a]) := by simp
+  have hlen : (a :: (L ++ [b])).length = L.length + 2 := by simp
+  unfold reduceCyclically
+  simp only [hrev, hlen, cancelPrefixLength]
+  split
+  · generalize hk : min (L.length / 2) (cancelPrefixLength L L.reverse) = k
+    have hk' : min ((L.length + 2) / 2)
+        (cancelPrefixLength (L ++ [b]) (L.reverse ++ [a]) + 1) = k + 1 := by
+      rw [show (L.length + 2) / 2 = L.length / 2 + 1 by lia, Nat.add_min_add_right,
+        min_cancelPrefixLength_append _ _ (by lia) (by simp; lia), hk]
+    have hkle : 2 * k ≤ L.length := by lia
+    rw [hk', show L.length + 2 - 2 * (k + 1) = L.length - 2 * k by lia,
+      drop_succ_cons, drop_append_of_le_length (by lia),
+      take_append_of_le_length (by simp; lia)]
+  · simp
 
 
 @[to_additive]
@@ -139,7 +180,7 @@ theorem isCyclicallyReduced (h : IsReduced L) : IsCyclicallyReduced (reduceCycli
     case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
     case isFalse h' =>
       rw [isCyclicallyReduced_cons_append_iff]
-      exact ⟨h, by simpa using h'⟩
+      exact ⟨h, by grind⟩
 
 /-- Partner function to `reduceCyclically`.
 See `reduceCyclically.conj_conjugator_reduceCyclically`. -/
@@ -149,7 +190,7 @@ def conjugator : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
     (singleton := fun _ => [])
-    (cons_append := fun a _ b rCC => if b.1 = a.1 ∧ (!b.2) = a.2 then a :: rCC else [] )
+    (cons_append := fun a _ b rCC => if a.1 = b.1 ∧ a.2 ≠ b.2 then a :: rCC else [] )
 
 @[to_additive (attr := simp)]
 protected theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := by simp [conjugator]
@@ -159,7 +200,7 @@ protected theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] :=
 
 @[to_additive]
 protected theorem conjugator.cons_append {a b : α × Bool} (L : List (α × Bool)) :
-    conjugator (a :: (L ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator L else [] := by
+    conjugator (a :: (L ++ [b])) = if a.1 = b.1 ∧ a.2 ≠ b.2 then a :: conjugator L else [] := by
   simp [conjugator]
 
 @[to_additive]
@@ -173,7 +214,7 @@ theorem conj_conjugator_reduceCyclically (L : List (α × Bool)) :
     split
     case isTrue h =>
       nth_rw 4 [← eq]
-      simp [invRev, h.1.symm, h.2.symm]
+      simp [invRev, h.1, Prod.ext_iff, Bool.eq_not_iff.mpr h.2.symm]
     case isFalse => simp
 
 @[to_additive]
