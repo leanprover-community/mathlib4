@@ -88,7 +88,6 @@ alias ⟨_, IsBoundedAtImInfty.neg⟩ := isBoundedAtImInfty_neg_iff
 
 alias ⟨_, IsZeroAtImInfty.neg⟩ := isZeroAtImInfty_neg_iff
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
   simp only [atImInfty, tendsto_comap_iff, Function.comp_def]

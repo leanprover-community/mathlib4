@@ -54,7 +54,7 @@ theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
   rfl
 
 @[simp]
-theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
+theorem product_val : (s ×ˢ t).val = s.val ×ˢ t.val :=
   rfl
 
 @[simp, grind =]
@@ -72,8 +72,8 @@ theorem coe_product (s : Finset α) (t : Finset β) :
 /-- The product `s ×ˢ t` of two finsets, viewed as a subtype, is equivalent to the product of the
 subtypes `s × t`. The `Finset` analogue of `Equiv.Set.prod`. -/
 def _root_.Equiv.Finset.prod (s : Finset α) (t : Finset β) : ↥(s ×ˢ t) ≃ s × t where
-  toFun x := ⟨⟨x.1.1, (mem_product.mp x.2).1⟩, ⟨x.1.2, (mem_product.mp x.2).2⟩⟩
-  invFun x := ⟨⟨x.1.1, x.2.1⟩, mem_product.mpr ⟨x.1.2, x.2.2⟩⟩
+  toFun x := ⟨⟨x.val.1, (mem_product.mp x.property).1⟩, ⟨x.val.2, (mem_product.mp x.property).2⟩⟩
+  invFun x := ⟨⟨x.1.val, x.2.val⟩, mem_product.mpr ⟨x.1.property, x.2.property⟩⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -252,7 +252,7 @@ def diag : Finset (α × α) := s.map ⟨Function.diag, Function.diag_injective�
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
 def offDiag : Finset (α × α) :=
-  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.1) <| by
+  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.val) <| by
     rcases s with ⟨⟨s⟩, hs⟩
     exact hs.offDiag
 

@@ -550,7 +550,7 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
   apply hD.union
   apply isClosed_iUnion_of_finite
   intro ⟨m, mlt⟩
-  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.1)]
+  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.val)]
   exact isClosed_iUnion_of_finite (fun ⟨j, _⟩ ↦ hn m (Nat.le_of_lt_succ mlt) j)
 
 lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
@@ -718,7 +718,7 @@ lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set
   SetLike.coe_injective hF
 
 lemma union (E : Subcomplex C) :
-    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.1 = E := by
+    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.val = E := by
   rw [E.union']
   rfl
 

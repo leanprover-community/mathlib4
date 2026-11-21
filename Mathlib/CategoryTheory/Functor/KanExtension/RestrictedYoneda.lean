@@ -6,8 +6,9 @@ Authors: Joël Riou, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.RestrictedYoneda
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 /-!
 # Pointwise left Kan extension along the Yoneda embedding
@@ -61,14 +62,14 @@ noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
       Cocone (((π P).leftOp ⋙ shrinkYoneda.{w, v₁, u₁}) ⋙ L) :=
       { pt := s.pt
         ι.app x :=
-          inv (α.app x.unop.1.unop) ≫ s.ι.app (CostructuredArrow.mk
+          inv (α.app x.unop.obj.unop) ≫ s.ι.app (CostructuredArrow.mk
             (shrinkYonedaEquiv.symm x.unop.val))
         ι.naturality x y f := by
           let φ : CostructuredArrow.mk (shrinkYonedaEquiv.symm x.unop.val) ⟶
-              CostructuredArrow.mk (shrinkYonedaEquiv.symm y.unop.2) :=
-            CostructuredArrow.homMk f.unop.1.unop
+              CostructuredArrow.mk (shrinkYonedaEquiv.symm y.unop.val) :=
+            CostructuredArrow.homMk f.unop.hom.unop
               (by simp [← shrinkYonedaEquiv_symm_map.{w}])
-          simp [dsimp% [φ] s.w φ, ← dsimp% α.naturality_assoc f.unop.1.unop]}
+          simp [dsimp% [φ] s.w φ, ← dsimp% α.naturality_assoc f.unop.hom.unop]}
     { desc s := (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).desc (c s)
       fac s j := by
         obtain ⟨X, f, rfl⟩ := CostructuredArrow.mk_surjective j
