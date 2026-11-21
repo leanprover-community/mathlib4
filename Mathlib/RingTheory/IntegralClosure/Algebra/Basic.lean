@@ -121,7 +121,7 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
     change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
-    have : s.1 • a = 0 := congr($hs ⟨a, ha₁⟩)
+    have : s.val • a = 0 := congr($hs ⟨a, ha₁⟩)
     exact Subtype.ext ((smul_eq_zero_iff_left ha₂).1 this)
   change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
@@ -133,7 +133,7 @@ variable {f}
 @[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
-  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial
+  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.fg_top _ trivial
 
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 
@@ -259,7 +259,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.isIntegral s) (fun _ _ ↦ .add)
 
 end TensorProduct
 
@@ -269,7 +269,7 @@ variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
   [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
 
 instance : MulSemiringAction G (integralClosure R K) where
-  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  smul := fun g x ↦ ⟨g • (x : K), x.property.map (MulSemiringAction.toAlgHom R K g)⟩
   one_smul x := by ext; exact one_smul G (x : K)
   mul_smul g h x := by ext; exact mul_smul g h (x : K)
   smul_zero g := by ext; exact smul_zero g

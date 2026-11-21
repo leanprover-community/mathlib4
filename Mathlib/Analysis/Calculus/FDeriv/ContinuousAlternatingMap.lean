@@ -69,7 +69,7 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_compContinuousLinearMap
       fg := by
   rw [← hasStrictFDerivAt_toContinuousMultilinearMap_comp_iff]
   have H₁ := ContinuousMultilinearMap.hasStrictFDerivAt_compContinuousLinearMap
-    (fg.1.1, fun _ : ι ↦ fg.2)
+    (fg.1.toContinuousMultilinearMap, fun _ : ι ↦ fg.2)
   have H₂ := ((toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt (x := fg.1))
   have H₃ := hasStrictFDerivAt_pi.mpr fun i : ι ↦ hasStrictFDerivAt_id (𝕜 := 𝕜) fg.2
   exact H₁.comp fg (H₂.prodMap fg H₃)
@@ -163,14 +163,15 @@ variable [Fintype ι] [DecidableEq ι]
 namespace ContinuousAlternatingMap
 
 theorem hasStrictFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) :
-    HasStrictFDerivAt f (f.1.linearDeriv x) x :=
-  f.1.hasStrictFDerivAt x
+    HasStrictFDerivAt f (f.toContinuousMultilinearMap.linearDeriv x) x :=
+  f.toContinuousMultilinearMap.hasStrictFDerivAt x
 
-theorem hasFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) : HasFDerivAt f (f.1.linearDeriv x) x :=
-  f.1.hasFDerivAt x
+theorem hasFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) :
+    HasFDerivAt f (f.toContinuousMultilinearMap.linearDeriv x) x :=
+  f.toContinuousMultilinearMap.hasFDerivAt x
 
 theorem hasFDerivWithinAt (f : E [⋀^ι]→L[𝕜] F) (s : Set (ι → E)) (x : ι → E) :
-    HasFDerivWithinAt f (f.1.linearDeriv x) s x :=
+    HasFDerivWithinAt f (f.toContinuousMultilinearMap.linearDeriv x) s x :=
   (f.hasFDerivAt x).hasFDerivWithinAt
 
 end ContinuousAlternatingMap

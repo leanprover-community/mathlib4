@@ -50,7 +50,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
       Submonoid.coe_one, one_mul, IsLocalization.eq_iff_exists P.primeCompl] at ha
     obtain ⟨c, hc⟩ := ha
     simp only [← mul_assoc] at hc
-    exact ⟨_, _, _, c.2, t.2, hc.symm⟩
+    exact ⟨_, _, _, c.property, t.property, hc.symm⟩
   · refine fun H y ↦ Localization.ind (fun ⟨y, t, h⟩ ↦ ?_) y
     simp only
     obtain ⟨yx, ys, yc, hyc, hy, ey⟩ := H y

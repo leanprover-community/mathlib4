@@ -247,7 +247,7 @@ noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
 lemma norm_holderL_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
     (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     ‖holderL (p := p) (q := q) r B hBK‖ ≤ K :=
-  LinearMap.mkContinuous₂_norm_le _ K.2 _
+  LinearMap.mkContinuous₂_norm_le _ K.property _
 
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] [CompleteSpace H]
 

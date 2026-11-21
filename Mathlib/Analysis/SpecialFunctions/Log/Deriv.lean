@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.SpecialFunctions.Artanh
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
@@ -347,6 +348,16 @@ lemma log_div_le_sum_range_add {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) 
   have h₁ := sum_range_sub_log_div_le (by rwa [abs_of_nonneg h₀]) n
   rwa [abs_of_nonneg (sub_nonneg_of_le (sum_range_le_log_div h₀ h n)), abs_of_nonneg h₀,
     sub_le_iff_le_add'] at h₁
+
+lemma sum_range_le_artanh {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
+    ∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1) ≤ artanh x := by
+  rw [artanh_eq_half_log <| by grind]
+  exact sum_range_le_log_div h₀ h n
+
+lemma artanh_le_sum_range_add {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
+    artanh x ≤ (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)) + x ^ (2 * n + 1) / (1 - x ^ 2) := by
+  rw [artanh_eq_half_log <| by grind]
+  exact log_div_le_sum_range_add h₀ h n
 
 /-- Power series expansion of the logarithm around `1`. -/
 theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :

@@ -95,12 +95,12 @@ lemma accumulate_last {i n m : ℕ} (hin : i < n) (hmi : m = i + 1) (t : Fin n �
 
 lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulate n m) := by
   refine fun t s he ↦ funext fun i ↦ ?_
-  obtain h | h := lt_or_ge (i.1 + 1) m
-  · have := accumulate_rec i.2 h s
-    rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
-  · have := h.antisymm (i.2.nat_succ_le.trans hnm)
-    rw [← accumulate_last i.2 this t, ← accumulate_last i.2 this s, he]
-    iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_ge hj).elim }
+  obtain h | h := lt_or_ge (i.val + 1) m
+  · have := accumulate_rec i.isLt h s
+    rwa [← he, accumulate_rec i.isLt h t, add_right_cancel_iff] at this
+  · have := h.antisymm (i.isLt.nat_succ_le.trans hnm)
+    rw [← accumulate_last i.isLt this t, ← accumulate_last i.isLt this s, he]
+    iterate 2 { intro j hj; exact ((j.isLt.trans_le hnm).not_ge hj).elim }
 
 lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Antitone s) :
     accumulate n m (invAccumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by
@@ -155,7 +155,7 @@ noncomputable def esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
 variable {i : Fin n} {r : R}
 
 lemma isSymmetric_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
-    (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2
+    (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).property
 
 lemma esymmAlgHomMonomial_single :
     esymmAlgHomMonomial σ (Finsupp.single i k) r = C r * esymm σ R (i + 1) ^ k := by
@@ -221,8 +221,8 @@ lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
   | zero => rw [esymmAlgHom_zero, leadingCoeff_toLex_C]
   | add_single i _ _ _ _ ih =>
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
-        ((monic_esymm <| i.2.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
-        ih]
+      ((monic_esymm <| i.isLt.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
+      ih]
     exacts [toLex.injective, toLex_add]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -232,7 +232,7 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
   induction t using Finsupp.induction₂ with
   | zero => simp_rw [esymmAlgHom_zero, supDegree_toLex_C, ofLex_zero, Finsupp.coe_zero, map_zero]
   | add_single i _ _ _ _ ih =>
-    have := i.2.trans_le hnm
+    have := i.isLt.trans_le hnm
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
         Monic.supDegree_mul_of_ne_zero_left toLex.injective toLex_add, ofLex_add, Finsupp.coe_add,
         ih, Finsupp.coe_add, map_add, Monic.supDegree_pow rfl toLex_add toLex.injective, ofLex_smul,
@@ -326,7 +326,7 @@ lemma esymmAlgHom_fin_surjective (h : m ≤ n) :
     rw [map_mul]
     apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]
-    refine ⟨X ⟨i, i.2.trans_le h⟩, ?_⟩
+    refine ⟨X ⟨i, i.isLt.trans_le h⟩, ?_⟩
     simp_rw [esymmAlgHom, aeval_X]
 
 lemma esymmAlgHom_surjective (hn : Fintype.card σ ≤ n) :
