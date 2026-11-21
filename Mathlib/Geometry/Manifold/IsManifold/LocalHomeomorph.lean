@@ -48,7 +48,7 @@ variable {M : Type*} [TopologicalSpace M]
 -- TODO: find a proper name for `Foo`
 variable (I n f) in
 structure Foo : Prop where
-  exists_contMDiffAt (x y : M) (hxy : f x = f y) :
+  exists_contMDiffAt {x y : M} (hxy : f x = f y) :
     ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
 /-- If `f` satisfies the condition, the transition map between two local inverses of `f`
@@ -63,7 +63,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
       hf.localInverseAt_symm] at hz
     simpa [τ] using hf.apply_localInverseAt_of_mem hz.2
   intro z hz
-  obtain ⟨σ, hσz, hσ, hfσ⟩ := h.exists_contMDiffAt z (τ z) (hτ hz).symm
+  obtain ⟨σ, hσz, hσ, hfσ⟩ := h.exists_contMDiffAt (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
   have ht : (hf.localInverseAt y).target ∈ 𝓝 (σ z) :=
     (hf.localInverseAt y).open_target.mem_nhds (hσz ▸ (τ.map_source hz).1)
@@ -130,7 +130,7 @@ theorem IsLocalHomeomorph.contMDiff_of_rightInverse
     CMDiff n f := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro x
-  obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt x (g (f x)) (hg (f x)).symm
+  obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt (hg (f x)).symm
   have : f =ᶠ[𝓝 x] (hf.localInverseAt (g (f x))).symm ∘ σ := by
     refine hfσ.symm.trans ?_
     have : f =ᶠ[𝓝 (g (f x))] (hf.localInverseAt (g (f x))).symm := by simp
@@ -169,17 +169,16 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     CMDiff n φ :=
   fun y ↦ hf.contMDiffAt_of_contMDiffAt_comp hg (hφ (g y))
 
-/-- If `F : M → N` is `C^n` and invariant under `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
+/-- If `F : M → N` is `C^n` and factors through `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
-    (hFf : ∀ x y, f x = f y → F x = F y) (hF : CMDiff n F) :
+    (hFf : F.FactorsThrough f) (hF : CMDiff n F) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n (F ∘ g) :=
-  hf.contMDiff_of_contMDiff_comp hg <| hF.congr fun x ↦ hFf _ _ (hg (f x))
+  hf.contMDiff_of_contMDiff_comp hg <| hF.congr fun x ↦ hFf (hg (f x))
 
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
-theorem IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
-    (h : Foo I n f) :
+theorem IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (h : Foo I n f) (x : M) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff[(hf.localInverseAt x).source] n (hf.localInverseAt x) := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
