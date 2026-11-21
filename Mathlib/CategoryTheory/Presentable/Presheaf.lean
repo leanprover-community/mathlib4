@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+public import Mathlib.CategoryTheory.Presentable.Adjunction
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 /-!
 # Categories of presheaves are locally presentable
@@ -17,7 +18,6 @@ If `A` is a locally `κ`-presentable category and `C` is a small category,
 we show that `Cᵒᵖ ⥤ A` is also locally `κ`-presentable, under the
 additional assumption that `A` has pullbacks (a condition which should
 be automatically satisfied (TODO)).
-
 -/
 
 public section
@@ -59,7 +59,7 @@ lemma isStrongGenerator
     {A : Type u'} [Category.{v'} A] {P : ObjectProperty A} (hP : P.IsStrongGenerator)
     [HasCoproducts.{w} A] [HasPullbacks A] (C : Type w) [SmallCategory C] :
     (ObjectProperty.ofObj (fun (T : C × (Subtype P)) ↦
-      freeYoneda T.1 T.2.1)).IsStrongGenerator := by
+      freeYoneda T.1 T.2.val)).IsStrongGenerator := by
   rw [ObjectProperty.isStrongGenerator_iff] at hP ⊢
   obtain ⟨hP₁, hP₂⟩ := hP
   refine ⟨Presheaf.isSeparating (C := C) (ι := Subtype P) (S := Subtype.val)
@@ -71,7 +71,7 @@ lemma isStrongGenerator
   obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
   obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
     (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
-      freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
+      freeYoneda T.1 T.2.val) ⟨X, G, hG⟩) y
   exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
 
 instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -87,9 +87,23 @@ instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   rw [isCardinalPresentable_iff] at this ⊢
   infer_instance
 
+instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalLocallyPresentable A κ] [HasPullbacks A]
+    (C : Type*) [Category* C] [EssentiallySmall.{w} C] :
+    IsCardinalLocallyPresentable (C ⥤ A) κ :=
+  ((opOpEquivalence ..).trans
+    (equivSmallModel.{w} C).symm).congrLeft.isCardinalLocallyPresentable κ
+
 instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullbacks A]
     (C : Type w) [SmallCategory C] :
     IsLocallyPresentable.{w} (Cᵒᵖ ⥤ A) where
+  exists_cardinal := by
+    obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
+    exact ⟨κ, inferInstance, inferInstance⟩
+
+instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullbacks A]
+    (C : Type*) [Category* C] [EssentiallySmall.{w} C] :
+    IsLocallyPresentable.{w} (C ⥤ A) where
   exists_cardinal := by
     obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
     exact ⟨κ, inferInstance, inferInstance⟩

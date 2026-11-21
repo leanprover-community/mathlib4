@@ -6,8 +6,9 @@ Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
+
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -37,7 +38,6 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 - `EuclideanDomain.divRadical`: For an element `a` in a Euclidean domain, `a / radical a`.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
-
 -/
 
 @[expose] public noncomputable section

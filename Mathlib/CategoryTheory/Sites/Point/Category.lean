@@ -17,7 +17,6 @@ morphism `Φ₂.fiber ⟶ Φ₁.fiber` (SGA 4 IV 3.2).
 ## References
 * [Alexander Grothendieck and Jean-Louis Verdier, *Exposé IV : Topos*,
   SGA 4 IV 3.2][sga-4-tome-1]
-
 -/
 
 @[expose] public section

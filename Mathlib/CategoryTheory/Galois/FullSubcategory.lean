@@ -7,16 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 /-!
 # Full subcategories of Galois categories
 
 Given a Galois category `C`, we introduce a typeclass `P.IsGaloisSubcategory`
 which allows to show that `P.FullSubcategory` is also a Galois category.
-
 -/
 
 universe w v u
@@ -78,7 +77,7 @@ instance [PreGaloisCategory C] [MonoCoprod C]
     have : Mono i.hom := inferInstanceAs (Mono (P.ι.map i))
     obtain ⟨Z, u, ⟨h⟩⟩ := monoInducesIsoOnDirectSummand i.hom
     refine ⟨⟨Z, ?_⟩, ObjectProperty.homMk u,
-      ⟨isColimitOfReflects P.ι ((isColimitMapCoconeBinaryCofanEquiv ..).2 h)⟩⟩
+      ⟨isColimitOfReflects P.ι ((isColimitMapCoconeBinaryCofanEquiv ..).invFun h)⟩⟩
     have : Mono u := MonoCoprod.binaryCofan_inr _ h
     exact P.prop_of_mono u Y.property
   hasFiniteCoproducts := ⟨inferInstance⟩

@@ -21,7 +21,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 * `Algebra.IsQuadraticExtension.normal`: the instance that a quadratic extension, given as a class
   `Algebra.IsQuadraticExtension`, is normal.
-
 -/
 
 @[expose] public section
@@ -96,8 +95,8 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal. -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
-  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).toIsAlgebraic, splits' := fun x => ?_ }
+  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).toIsAlgebraic) x.property
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
     have : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
@@ -108,7 +107,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
   have hE : E ≤ ⨆ i, t i := by
     refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
     rw [adjoin_le_iff, ← ((h i.1).splits i.2).image_rootSet (t i.1).val]
-    exact fun _ ⟨a, _, h⟩ => h ▸ a.2
+    exact fun _ ⟨a, _, h⟩ => h ▸ a.property
   have := hF.splits ⟨x, hx⟩
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
   have := this.map (inclusion hE).toRingHom -- necessary for performance reasons
@@ -123,7 +122,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
     (hx : x ∈ adjoin F S) : ((minpoly F x).map (algebraMap F L)).Splits := by
   let E : IntermediateField F L := ⨆ x : S, adjoin F ((minpoly F x.val).rootSet L)
   have normal : Normal F E := normal_iSup (h := fun x ↦
-    Normal.of_isSplittingField (hFEp := adjoin_rootSet_isSplittingField (splits x x.2).2))
+    Normal.of_isSplittingField (hFEp := adjoin_rootSet_isSplittingField (splits x x.property).2))
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
@@ -253,7 +252,7 @@ theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : Group.IsSolvable (K₁
       map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
   refine
     Group.isSolvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
-      ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
+      ⟨.ofCommutes ϕ fun x => ?_, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 
 end lift

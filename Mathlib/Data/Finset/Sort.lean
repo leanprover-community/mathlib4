@@ -8,9 +8,9 @@ module
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Multiset.Sort
-public import Mathlib.Order.RelIso.Set
 
 import Mathlib.Data.List.Pairwise
+import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.
@@ -33,7 +33,7 @@ section sort
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
     [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
-  Multiset.sort s.1 r
+  Multiset.sort s.val r
 
 section
 
@@ -50,12 +50,12 @@ theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
 @[simp]
-theorem sort_eq : ↑(sort s r) = s.1 :=
+theorem sort_eq : ↑(sort s r) = s.val :=
   Multiset.sort_eq _ _
 
 @[simp]
 theorem sort_nodup : (sort s r).Nodup :=
-  (by rw [sort_eq]; exact s.2 : @Multiset.Nodup α (sort s r))
+  (by rw [sort_eq]; exact s.nodup : @Multiset.Nodup α (sort s r))
 
 @[simp]
 theorem sort_toFinset [DecidableEq α] : (sort s r).toFinset = s :=
@@ -95,6 +95,14 @@ theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) 
   intro h
   rw [← h]
   exact pairwise_sort _ r
+
+theorem _root_.List.SortedLT.sort_toFinset [LinearOrder α] {l : List α} (hl : l.SortedLT) :
+    l.toFinset.sort (· ≤ ·) = l :=
+  (List.toFinset_sort _ hl.nodup).2 hl.sortedLE.pairwise
+
+theorem _root_.List.SortedGT.sort_toFinset [LinearOrder α] {l : List α} (hl : l.SortedGT) :
+    l.toFinset.sort (· ≥ ·) = l :=
+  (List.toFinset_sort _ hl.nodup).2 hl.sortedGE.pairwise
 
 end
 
@@ -205,13 +213,13 @@ theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x :
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
-    s.orderEmbOfFin h i = s.sort[i]'(by rw [length_sort, h]; exact i.2) :=
+    s.orderEmbOfFin h i = s.sort[i]'(by rw [length_sort, h]; exact i.isLt) :=
   rfl
 
 @[simp]
 theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
     s.orderEmbOfFin h i ∈ s :=
-  (s.orderIsoOfFin h i).2
+  (s.orderIsoOfFin h i).property
 
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -322,7 +330,7 @@ end SortLinearOrder
 unsafe instance [Repr α] : Repr (Finset α) where
   reprPrec s _ :=
     -- multiset uses `0` not `∅` for empty sets
-    if s.card = 0 then "∅" else repr s.1
+    if s.card = 0 then "∅" else repr s.val
 
 end Finset
 

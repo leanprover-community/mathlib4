@@ -21,7 +21,6 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 - `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
 - `ZLattice.tsum_norm_rpow_le`:
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
-
 -/
 
 @[expose] public section
@@ -48,17 +47,18 @@ lemma exists_forall_abs_repr_le_norm :
     have inst : IsZLattice ℝ L' :=
       ⟨Submodule.map_injective_of_injective E'.subtype_injective (by simp [E', L'])⟩
     obtain ⟨ε, hε, H⟩ := this (b.map e.symm) inst
-    exact ⟨ε, hε, fun x i ↦ by simpa using! H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
+    exact ⟨ε, hε, fun x i ↦ by
+      simpa using! H ⟨⟨x.val, Submodule.subset_span x.property⟩, x.property⟩ i⟩
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))
-  have := e.continuous.1 (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
+  have := e.continuous.isOpen_preimage (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
     (isOpen_set_pi Set.finite_univ fun _ _ ↦ isOpen_Ioo)
   obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp this 0 (by simp)
   refine ⟨ε / 2, by positivity, fun x i ↦ ?_⟩
   by_cases hx : x = 0
   · simp [hx]
-  have hx : ‖x.1‖ ≠ 0 := by simpa
+  have hx : ‖x.val‖ ≠ 0 := by simpa
   have : |ε / 2 * (‖↑x‖⁻¹ * (b.repr x) i)| < 1 := by
     simpa [e, b', ← abs_lt] using! @hε' ((ε / 2) • ‖x‖⁻¹ • x)
       (by simpa [norm_smul, inv_mul_cancel₀ hx, abs_eq_self.mpr hε.le]) i trivial
@@ -248,14 +248,14 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
   by_cases ht₁ : ‖t‖ = 0
   · simp [show t = 0 by simpa using ht₁]
   by_cases ht₂ : ‖t - x‖ = 0
-  · simpa [show t = x by simpa [sub_eq_zero] using ht₂, two_mul] using t.2
+  · simpa [show t = x by simpa [sub_eq_zero] using ht₂, two_mul] using t.property
   have : 0 < Module.finrank ℤ L := Module.finrank_pos
   have : ‖t - x‖ < 2⁻¹ * ‖t‖ := by
     rw [← Real.rpow_lt_rpow_iff_of_neg (by positivity) (by positivity) (hr.trans (by simpa))]
     simpa [Real.mul_rpow, abs_eq_self.mpr (show 0 ≤ ‖t - x‖ ^ r by positivity)] using ht
   have := (norm_sub_norm_le _ _).trans_lt this
   rw [sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', AddSubgroupClass.coe_norm] at this
-  simpa using show ‖t.1‖ ≤ 2 * ‖x‖ by linarith
+  simpa using show ‖t.val‖ ≤ 2 * ‖x‖ by linarith
 
 lemma summable_norm_sub_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ n :=

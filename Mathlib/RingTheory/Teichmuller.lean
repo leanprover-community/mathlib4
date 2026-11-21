@@ -17,7 +17,6 @@ Let `R` be an `I`-adically complete ring, and `p` be a prime number with `p ∈ 
 Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall call
 `Perfection.teichmuller`, such that it composed with the quotient map `R →+* R ⧸ I` is the
 "0-th coefficient" map `Perfection (R ⧸ I) p →+* R ⧸ I`.
-
 -/
 
 @[expose] public section
@@ -51,7 +50,7 @@ variable [IsPrecomplete I R]
 
 theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
     ∃ y : R, ∀ n, teichmullerAux x n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
-  IsPrecomplete.prec' _ (teichmullerCauchy x).2
+  IsPrecomplete.prec' _ (teichmullerCauchy x).property
 
 /-- Given an `I`-adically **pre**complete ring `R`, where `p ∈ I`, this is the underlying function
 of the Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of

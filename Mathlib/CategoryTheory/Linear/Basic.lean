@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Linear categories
@@ -29,7 +30,6 @@ This makes for longer signatures than would be ideal.
 
 It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
-
 -/
 
 @[expose] public section

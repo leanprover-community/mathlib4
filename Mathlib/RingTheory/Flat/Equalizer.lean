@@ -14,7 +14,6 @@ import Mathlib.Algebra.Module.SnakeLemma
 
 We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
-
 -/
 
 @[expose] public section
@@ -38,6 +37,14 @@ lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
       LinearMap.range (AlgebraTensorModule.lTensor S M (LinearMap.ker f).subtype) := by
   rw [← LinearMap.exact_iff]
   exact Module.Flat.lTensor_exact M (LinearMap.exact_subtype_ker_map f)
+
+lemma LinearMap.ker_baseChange [Module.Flat R S] :
+    (f.baseChange S).ker = f.ker.baseChange S := Module.Flat.ker_lTensor_eq ..
+
+lemma Submodule.baseChange_comap [Module.Flat R S] (p : Submodule R P) :
+    (p.comap f).baseChange S = (p.baseChange S).comap (f.baseChange S) := by
+  simp_rw [← p.ker_mkQ, ← LinearMap.ker_comp, ← LinearMap.ker_baseChange, LinearMap.baseChange_comp,
+    LinearMap.ker_comp]
 
 lemma Module.Flat.eqLocus_lTensor_eq [Module.Flat R M] :
     LinearMap.eqLocus (AlgebraTensorModule.lTensor S M f)
@@ -241,7 +248,7 @@ def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
 @[simp]
 lemma LinearMap.tensorKerEquivOfSurjective_symm_tmul [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] (a y) :
-    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
+    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).val = a ⊗ₜ y.val := rfl
 
 end Module
 
@@ -297,7 +304,7 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
-    rfl (AlgHom.tensorEqualizerAux_mul S T f g)
+    (AlgHom.tensorEqualizerAux_mul S T f g)
 
 @[simp]
 lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
@@ -318,7 +325,7 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
   let φ : A ⊗[R] S →ₐ[A] A ⊗[R] T :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   let ePp : A ⊗[R] S ≃ₐ[S] S ⊗[R] A :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
   let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
     (LinearMap.kerLTensorEquivOfSurjective (IsScalarTower.toAlgHom R S T).toLinearMap
       h₁ A).restrictScalars R
@@ -342,7 +349,7 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
         rw [smul_tmul']
         ext1
         dsimp [e₄', ePp, φ]
-        change ((r * x) ⊗ₜ[R] ((s * z) * y.1)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.1))
+        change ((r * x) ⊗ₜ[R] ((s * z) * y.val)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.val))
         rw [Algebra.TensorProduct.tmul_mul_tmul, mul_assoc] }
   exact e₄.symm
 
@@ -350,8 +357,8 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma Algebra.kerTensorProductMapIdToAlgHomEquiv_symm_apply [Module.Flat R T]
     (h₁ : Function.Surjective (algebraMap S T)) (x y z) :
-    ((kerTensorProductMapIdToAlgHomEquiv R S T A h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).1 =
-      x ⊗ₜ (y * z.1) := rfl
+    ((kerTensorProductMapIdToAlgHomEquiv R S T A h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).val =
+      x ⊗ₜ (y * z.val) := rfl
 
 end Algebra
 

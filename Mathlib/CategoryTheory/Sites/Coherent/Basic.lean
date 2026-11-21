@@ -37,7 +37,6 @@ from the coproduct to the target.
 ## References:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
 - [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
-
 -/
 
 @[expose] public section
