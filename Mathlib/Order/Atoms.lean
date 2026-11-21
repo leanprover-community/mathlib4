@@ -84,9 +84,13 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 @[to_dual isCoatom_iff_ge_of_le]
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
-  and_congr Iff.rfl <|
-    forall_congr' fun b => by
-      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
+  and_congr_right' <|
+    forall_congr' fun b ↦ by
+      simp [@not_imp_comm (b = ⊥), lt_iff_le_not_ge]
+
+@[to_dual]
+theorem minimal_ne_bot_iff : Minimal (· ≠ ⊥) a ↔ IsAtom a := by
+  rw [Minimal, isAtom_iff_le_of_ge]
 
 @[to_dual]
 lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
@@ -143,6 +147,14 @@ theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
 @[to_dual covBy_top] alias ⟨_, IsAtom.bot_covBy⟩ := bot_covBy_iff
 
 @[deprecated (since := "2026-09-01")] alias CovBy.is_atom := CovBy.isAtom
+
+@[to_dual maximal_lt_top_iff]
+theorem minimal_bot_lt_iff : Minimal (⊥ < ·) a ↔ IsAtom a := by
+  simpa [bot_lt_iff_ne_bot] using minimal_ne_bot_iff
+
+@[to_dual]
+theorem minimal_not_isMin_iff : Minimal (¬IsMin ·) a ↔ IsAtom a := by
+  simpa using minimal_ne_bot_iff
 
 end PartialOrder
 
