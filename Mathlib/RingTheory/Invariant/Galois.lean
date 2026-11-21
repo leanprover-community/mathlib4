@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 public import Mathlib.RingTheory.Invariant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant Extensions of Rings and Galois Theory
 
@@ -63,7 +66,7 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
 /-- A variant of `Algebra.isInvariant_of_isGalois`, replacing `Gal(L/K)` by `Aut(B/A)`. -/
 theorem Algebra.isInvariant_of_isGalois' [FiniteDimensional K L] [IsGalois K L] :
     Algebra.IsInvariant A B (B ≃ₐ[A] B) :=
-  ⟨fun b h ↦ (isInvariant_of_isGalois A K L B).1 b (fun g ↦ h (galRestrict A K L B g))⟩
+  ⟨fun b h ↦ (isInvariant_of_isGalois A K L B).isInvariant b (fun g ↦ h (galRestrict A K L B g))⟩
 
 end Galois
 

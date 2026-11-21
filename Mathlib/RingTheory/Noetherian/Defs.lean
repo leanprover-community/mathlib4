@@ -46,7 +46,6 @@ is proved in `RingTheory.Polynomial`.
 ## Tags
 
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
-
 -/
 
 public section
@@ -135,7 +134,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     constructor
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
-      WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
+      WellFounded.has_min H { N' : α | N'.val ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
     refine (e.antisymm ?_).symm
     by_contra h₃
@@ -170,8 +169,7 @@ theorem Module.End.eventually_disjoint_ker_pow_range_pow (f : End R M) :
   rw [← hn _ hm, Submodule.eq_bot_iff]
   rintro - ⟨hx, ⟨x, rfl⟩⟩
   apply pow_map_zero_of_le hm
-  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
-    simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
+  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by simpa [pow_add]
   rwa [← hn _ (n.le_add_right m)] at hx
 
 lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :

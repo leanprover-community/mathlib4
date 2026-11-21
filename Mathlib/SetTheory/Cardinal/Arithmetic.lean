@@ -167,6 +167,14 @@ theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
   rw [mul_comm]
   exact le_mul_left h
 
+theorem le_of_dvd {a b : Cardinal} (hb : b ≠ 0) : a ∣ b → a ≤ b := by
+  rintro ⟨b, rfl⟩
+  apply le_mul_right
+  simp_all
+
+theorem dvd_of_le_of_aleph0_le {a b : Cardinal} (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
+  ⟨b, (mul_eq_right hb h ha).symm⟩
+
 theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ b ≠ 0 ∨ b = 1 ∨ a = 0 := by
   rw [max_le_iff]
   refine ⟨fun h => ?_, ?_⟩
@@ -210,6 +218,20 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
     all_goals simp
+
+@[simp, norm_cast]
+theorem natCast_dvd_iff {m n : ℕ} : (n : Cardinal) ∣ m ↔ n ∣ m := by
+  refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
+  intro ⟨k, hk⟩
+  have : m < ℵ₀ := natCast_lt_aleph0
+  rw [hk, mul_lt_aleph0_iff] at this
+  rcases this with (h | h | ⟨-, hk'⟩)
+  · simp_all
+  · simp_all
+  · lift k to ℕ using hk'
+    exact ⟨k, mod_cast hk⟩
+
+@[deprecated (since := "2026-09-20")] alias nat_coe_dvd_iff := natCast_dvd_iff
 
 end mul
 
@@ -318,7 +340,7 @@ theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
 
 theorem mk_Iic_lt {α : Type*} [LinearOrder α] [WellFoundedLT α] (i : α)
     (h : ord #α = typeLT α) (hα : ℵ₀ ≤ #α) : #(Iic i) < #α := by
-  rw [← Iio_insert, mk_insert self_notMem_Iio]
+  rw [← insert_Iio, mk_insert self_notMem_Iio]
   exact add_one_lt_of_lt hα (mk_Iio_lt i h)
 
 theorem mk_Ici_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α)
@@ -775,7 +797,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     by_cases h' : ∃ z : s, g z = y
     · rw [dite_eq_left h'] at h
       cases Sum.inl.inj h
-      exact (Classical.choose h').2
+      exact (Classical.choose h').property
     · rw [dite_eq_right h'] at h
       cases h
   · intro h
@@ -785,7 +807,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     rw [dite_eq_left this]
     congr
     suffices Classical.choose this = ⟨x, h⟩ from congr($(this).val)
-    apply g.2
+    apply g.inj'
     exact Classical.choose_spec this
 
 theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
@@ -804,7 +826,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
   refine ⟨.codRestrict {t : Set s | #t ≤ c} ?_ ?_⟩
-  · use fun t => (↑) ⁻¹' t.1
+  · use fun t => (↑) ⁻¹' t.val
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.ext
     dsimp only at h ⊢
@@ -889,7 +911,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
   have := h; obtain ⟨g⟩ := this
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
-      ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
+      ((sumCongr (Equiv.ofInjective f f.inj') g).trans (Set.sumCompl (range f)))
   refine ⟨h, ?_⟩; rintro ⟨x, hx⟩; simp [h, Set.sumCompl_symm_apply_of_mem, hx]
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
@@ -897,7 +919,7 @@ theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set 
   apply extend_function.{u, v} f
   rw [← lift_mk_eq'] at h
   rw [← lift_mk_eq', mk_compl_eq_mk_compl_finite_lift h]
-  rw [mk_range_eq_of_injective]; exact f.2
+  rw [mk_range_eq_of_injective]; exact f.inj'
 
 theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by

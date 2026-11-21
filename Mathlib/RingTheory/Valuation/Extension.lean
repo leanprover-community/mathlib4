@@ -48,7 +48,6 @@ without first determining the normalizations once and for all.
 
 ## Tags
 Valuation, Extension of Valuations
-
 -/
 
 public section
@@ -133,7 +132,7 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
 
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
-    Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
+    Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.property) a.property⟩
   algebraMap := (algebraMap R A).restrict vR.integer vA.integer
     (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
   commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
@@ -192,7 +191,7 @@ local notation "L₀" => Valuation.valuationSubring vL
 lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := by
   rw [mem_valuationSubring_iff, ← _root_.map_one vL, ← _root_.map_one (algebraMap K L),
     val_map_le_iff (vR := vK), _root_.map_one]
-  exact x.2
+  exact x.property
 
 instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
   inferInstanceAs (Algebra vK.integer vL.integer)

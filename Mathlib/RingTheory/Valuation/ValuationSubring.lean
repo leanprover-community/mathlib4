@@ -11,13 +11,11 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
-
 # Valuation subrings of a field
 
 ## Projects
 
 The order structure on `ValuationSubring K`.
-
 -/
 
 @[expose] public section
@@ -173,7 +171,7 @@ theorem valuation_le_one (a : A) : A.valuation a ≤ 1 :=
 
 theorem mem_of_valuation_le_one (x : K) (h : A.valuation x ≤ 1) : x ∈ A :=
   let ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
-  ha ▸ a.2
+  ha ▸ a.property
 
 @[simp]
 theorem valuation_le_one_iff (x : K) : A.valuation x ≤ 1 ↔ x ∈ A :=
@@ -334,7 +332,7 @@ theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
 theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
     ofPrime R (idealOfLE R S h) = S := by
   ext x; constructor
-  · rintro ⟨a, r, hr, rfl⟩; apply mul_mem; · exact h a.2
+  · rintro ⟨a, r, hr, rfl⟩; apply mul_mem; · exact h a.property
     · rw [← valuation_le_one_iff, map_inv₀, ← inv_one, inv_le_inv₀]
       · exact not_lt.1 ((not_iff_not.2 <| valuation_lt_one_iff S _).1 hr)
       · simpa [Valuation.pos_iff] using fun hr₀ ↦ hr₀ ▸ hr <| Ideal.zero_mem (R.idealOfLE S h)
@@ -373,7 +371,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
 @[simps apply]
 def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
-  invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
+  invFun S := ⟨idealOfLE _ S S.property, inferInstance⟩
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
@@ -389,12 +387,12 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
 
 instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
-  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
+  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => le_total x y⟩
   exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
-  le_total := (le_total_ideal A).1
+  le_total := (le_total_ideal A).total
   max_def a b := congr($sup_eq_maxDefault a b)
   toDecidableLE := _
 
@@ -696,8 +694,8 @@ the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :
     A.principalUnitGroup ≃* (Units.map (IsLocalRing.residue A).toMonoidHom).ker where
   toFun x :=
-    ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.2⟩,
-      A.coe_mem_principalUnitGroup_iff.1 x.2⟩
+    ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.property⟩,
+      A.coe_mem_principalUnitGroup_iff.1 x.property⟩
   invFun := fun ⟨x, hx⟩ ↦
     ⟨A.unitGroupMulEquiv.symm x, by
       rw [A.coe_mem_principalUnitGroup_iff]
@@ -882,7 +880,7 @@ theorem smul_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) {x : K} (hx 
 /-- If `A.valuation` is trivial on `k`, then the image of `k` under `algebraMap k K` lies in `A`,
 turning `A` into a `k`-algebra. The scalar action is the restriction of the action of `k` on `K`. -/
 instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A where
-  smul c x      := ⟨c • (x : K), A.smul_mem_of_isTrivialOn c x.2⟩
+  smul c x      := ⟨c • (x : K), A.smul_mem_of_isTrivialOn c x.property⟩
   algebraMap    := (algebraMap k K).codRestrict A A.algebraMap_mem_of_isTrivialOn
   commutes' _ _ := Subtype.ext <| Algebra.commutes ..
   smul_def' _ _ := Subtype.ext <| Algebra.smul_def ..

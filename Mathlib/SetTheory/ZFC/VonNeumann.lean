@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.ZFC.Class
+public import Mathlib.SetTheory.ZFC.Ordinal
 
 /-!
 # Von Neumann hierarchy
@@ -38,7 +38,7 @@ namespace ZFSet
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
   ⋃ a : Set.Iio o, powerset (vonNeumann a)
 termination_by o
-decreasing_by exact a.2
+decreasing_by exact a.property
 
 @[inherit_doc]
 scoped notation "V_ " => vonNeumann
@@ -143,15 +143,15 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
   | zero => simp
   | add_one o ih => simp [ih]
   | limit o ho ih =>
-    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
+    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.property,
       vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
     apply iSup_card_le_card_iUnion.antisymm'
     rw [← lift_le.{u + 1}]
     apply lift_card_iUnion_le_sum_card.trans
     refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
-    · rw [mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+    · rw [Ordinal.cardinalMk_Iio, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
       exact Ordinal.omega0_le_of_isSuccLimit ho
-    · rw [mk_Iio_ordinal, lift_lift, lift_le]
+    · rw [Ordinal.cardinalMk_Iio, lift_lift, lift_le]
       by_contra! h
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_

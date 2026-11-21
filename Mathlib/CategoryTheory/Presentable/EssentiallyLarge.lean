@@ -14,7 +14,6 @@ If a category `C` satisfies `HasCardinalFilteredGenerator C κ` for `κ : Cardin
 (e.g. it is locally `κ`-presentable or `κ`-accessible),
 then `C` is equivalent to a `w`-large category, i.e. a category whose type
 of objects is in `Type (w + 1)` and whose types of morphisms are in `Type w`.
-
 -/
 
 public section
@@ -51,7 +50,7 @@ lemma essentiallyLarge_top :
   have : HasColimit p.diag := ⟨_, p.isColimit⟩
   have := hasColimit_of_iso iso
   let i : ι := ⟨J, inferInstance, G ⋙ e.functor, inferInstance⟩
-  exact ⟨_, ⟨i⟩, ⟨((IsColimit.precomposeHomEquiv iso _).2
+  exact ⟨_, ⟨i⟩, ⟨((IsColimit.precomposeHomEquiv iso _).invFun
     (p.isColimit)).coconePointUniqueUpToIso (colimit.isColimit _)⟩⟩
 
 end ObjectProperty.IsCardinalFilteredGenerator

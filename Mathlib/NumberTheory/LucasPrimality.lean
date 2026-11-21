@@ -19,7 +19,6 @@ and `a^d ≠ 1 (mod n)` for any divisor `d | n - 1`. This test is the basis of t
 certificate.
 
 ## TODO
-- Write a tactic that uses this theorem to generate Pratt primality certificates
 - Integrate Pratt primality certificates into the `norm_num` primality verifier
 
 ## Implementation notes
@@ -46,7 +45,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
   rw [Nat.prime_iff_card_units]
   apply (Nat.card_units_zmod_lt_sub_one hp1).antisymm
   let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a _ (by rwa [← pow_succ', tsub_add_eq_add_tsub hp1])
-  calc p - 1 = orderOf a := (orderOf_eq_of_pow_and_pow_div_prime (tsub_pos_of_lt hp1) ha hd).symm
+  calc p - 1 = orderOf a := (orderOf_eq_of_pow_and_pow_div_prime ha hd).symm
     _ = orderOf a' := orderOf_injective (Units.coeHom _) Units.val_injective a'
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
 

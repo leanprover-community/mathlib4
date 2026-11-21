@@ -17,8 +17,6 @@ then `0 → (M3 →ₗ[R] N) → (M2 →ₗ[R] N) → (M1 →ₗ[R] N)` is exact
 show the exactness at `M2 →ₗ[R] N` (`exact_lcomp_of_exact_of_surjective`);
 the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
 `Mathlib.LinearAlgebra.BilinearMap`.
-
-
 -/
 
 public section

@@ -65,7 +65,6 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 ## References
 
 [Rudin, *Real and Complex Analysis* (Theorem 2.24)][rudin1987]
-
 -/
 
 public section
@@ -108,7 +107,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           FunLike.coe_zero, Set.piecewise_eq_indicator,
-          SimpleFunc.coe_piecewise, le_zero_iff]
+          SimpleFunc.coe_piecewise, nonpos_iff_eq_zero]
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
       simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const,
@@ -172,7 +171,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   choose g f_le_g gcont hg using this
   refine ⟨fun x => ∑' n, g n x, fun x => ?_, ?_, ?_⟩
   · rw [← tsum_eapproxDiff f hf]
-    exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
+    exact tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine lowerSemicontinuous_tsum fun n => ?_
     exact
       ENNReal.continuous_coe.comp_lowerSemicontinuous (gcont n) fun x y hxy =>
@@ -180,8 +179,8 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, ((∫⁻ x, eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
-      _ = ∑' n, ∫⁻ x, eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
+      _ ≤ ∑' n, ((∫⁻ x, eapproxDiff f n x ∂μ) + δ n) := tsum_le_tsum hg
+      _ = ∑' n, ∫⁻ x, eapproxDiff f n x ∂μ + ∑' n, δ n := tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine add_le_add ?_ hδ.le
         rw [← lintegral_tsum]

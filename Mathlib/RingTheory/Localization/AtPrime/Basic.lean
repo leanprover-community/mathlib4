@@ -62,7 +62,7 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
-    exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
+    exact t.property (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
@@ -82,8 +82,8 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
       simp only [mul_one, one_mul, Submonoid.coe_mul] at ht
       suffices (t : R) * (sx * sy * sz) ∈ P from
-        not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.2 sy.2) sz.2
-          (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)
+        not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.property sy.property) sz.property
+          (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.property)
       rw [← ht]
       exact
         P.mul_mem_left _ <| P.mul_mem_right _ <|
@@ -149,7 +149,8 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
 order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.property.1⟩, p.property.2⟩, fun p ↦ ⟨p.val.asIdeal, p.val.isPrime, p.property⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
@@ -242,7 +243,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
       IsLocalization.mk' (Localization.AtPrime J) (f x)
-        (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
+        (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.property⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
 @[simp]
@@ -356,8 +357,6 @@ noncomputable def algebraOfLiesOver
     (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
   (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
-
-@[deprecated (since := "2026-04-24")] alias instAlgebraOfLiesOver := algebraOfLiesOver
 
 /-- A deprecated predicate on the algebra map between two localizations. -/
 @[deprecated "Use `IsScalarTower` instead." (since := "2026-06-27")]
@@ -484,7 +483,7 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
   have := hp.1.1
   have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
-    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.val.isPrime i.property⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
 
 open Ideal in
@@ -555,7 +554,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable
 def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
   refine AlgEquiv.ofAlgHom (Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) ?_) ?_ ?_ ?_
-  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← IsConcreteLE.le_iff]
+  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← le_iff_mem_imp_mem]
     rw [← Quotient.mk_comp_algebraMap, ← RingHom.comap_ker, mk_ker, ← under_def,
       under_maximalIdeal_pow p]
   · refine Ideal.Quotient.liftₐ _
@@ -697,6 +696,6 @@ end isomorphisms
 lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]
     (hle : ¬ I ≤ p) : Ideal.map (algebraMap R S) I = ⊤ := by
   apply IsLocalization.map_eq_top_of_not_subset p.primeCompl
-  simpa [IsConcreteLE.le_iff, Set.not_subset_iff_exists_mem_notMem] using hle
+  simpa [le_iff_mem_imp_mem, Set.not_subset_iff_exists_mem_notMem] using hle
 
 end IsLocalization.AtPrime

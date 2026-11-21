@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
-
 # Exactness of functors for change of rings.
 
 In this file we provide exactness of restrictScalars for general universe level using it preserves
@@ -17,7 +16,6 @@ short exact sequences.
 Note : previously exactness of `ModuleCat.restrictScalars` is synthesized via being adjoint functor,
 however this needs the universe level to be some `max u v`, where `u` is the universe level
 of the ring.
-
 -/
 
 public section

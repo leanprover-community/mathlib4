@@ -651,8 +651,8 @@ variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f :=
+  f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
@@ -714,7 +714,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
       else 0)
     (fun K K_sub_Ω f ↦ by
       split_ifs with h
-      · simp [h.integrableOn_compact_subset K_sub_Ω K.2]
+      · simp [h.integrableOn_compact_subset K_sub_Ω K.isCompact']
       · simp)
 
 open scoped Classical in
