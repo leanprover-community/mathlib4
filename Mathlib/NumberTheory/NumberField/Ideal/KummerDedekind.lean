@@ -126,15 +126,15 @@ theorem mem_monicFactorsMod_iff {Q : (ZMod p)[X]} :
 
 theorem irreducible_monicFactorsMod (Q : monicFactorsMod θ p) :
     Irreducible (Q : (ZMod p)[X]) :=
-  (mem_monicFactorsMod_iff.mp Q.2).1
+  (mem_monicFactorsMod_iff.mp Q.property).1
 
 theorem monic_monicFactorsMod (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]).Monic :=
-  (mem_monicFactorsMod_iff.mp Q.2).2.1
+  (mem_monicFactorsMod_iff.mp Q.property).2.1
 
 theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
-  (mem_monicFactorsMod_iff.mp Q.2).2.2
+  (mem_monicFactorsMod_iff.mp Q.property).2.2
 
 end monicFactorsMod
 
@@ -296,7 +296,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ expon
     inertiaDeg (P : Ideal (𝓞 K)) ℤ =
       natDegree (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X]) := by
   simpa using inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
-    (primesOverSpanEquivMonicFactorsMod hp P).2
+    (primesOverSpanEquivMonicFactorsMod hp P).property
 
 /--
 The ramification index of a prime above `p` is the multiplicity of the corresponding factor of
@@ -309,7 +309,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ 
         ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
     ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
-      (primesOverSpanEquivMonicFactorsMod hp P).2
+      (primesOverSpanEquivMonicFactorsMod hp P).property
 
 end NumberField.Ideal
 

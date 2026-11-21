@@ -115,9 +115,7 @@ theorem LinearMap.rank_comap (f : M →ₗ[R] M₁) (p : Submodule R M₁) :
 theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     lift.{v} (Module.rank R (comap f p)) ≤
       lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
-  rw [lift_rank_comap]
-  gcongr
-  exact lift_le.mpr <| rank_mono (by simp)
+  grw [lift_rank_comap, Submodule.rank_mono inf_le_right]
 
 omit [HasRankNullity.{u} R] in
 lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]
@@ -293,8 +291,9 @@ lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finr
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=
     exists_finset_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N) le_rfl
-  obtain ⟨v, hv⟩ : s.Nonempty := by rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero,
-    hs, finrank_quotient, tsub_eq_zero_iff_le, not_le]
+  obtain ⟨v, hv⟩ : s.Nonempty := by
+    rwa [← Finset.ne_empty_iff_nonempty, ne_eq, ← Finset.card_eq_zero, hs, finrank_quotient,
+      tsub_eq_zero_iff_le, not_le]
   obtain ⟨v, rfl⟩ := N.mkQ_surjective v
   refine ⟨v, fun r hr ↦ mt ?_ hr⟩
   have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)

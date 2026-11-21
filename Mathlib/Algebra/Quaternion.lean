@@ -88,13 +88,13 @@ open scoped Quaternion
 /-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]
 def equivProd {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
-  toFun a := ⟨a.1, a.2, a.3, a.4⟩
+  toFun a := ⟨a.re, a.imI, a.imJ, a.imK⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
 
 /-- The equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
 @[simps symm_apply]
 def equivTuple {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
-  toFun a := ![a.1, a.2, a.3, a.4]
+  toFun a := ![a.re, a.imI, a.imJ, a.imK]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
   right_inv _ := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 
@@ -104,7 +104,7 @@ theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃ : R) (x : ℍ[R,c₁,c₂,c
   rfl
 
 @[simp]
-theorem mk.eta {R : Type*} {c₁ c₂ c₃} (a : ℍ[R,c₁,c₂,c₃]) : mk a.1 a.2 a.3 a.4 = a := rfl
+theorem mk.eta {R : Type*} {c₁ c₂ c₃} (a : ℍ[R,c₁,c₂,c₃]) : mk a.re a.imI a.imJ a.imK = a := rfl
 
 variable {S T R : Type*} {c₁ c₂ c₃ : R} (r x y : R) (a b : ℍ[R,c₁,c₂,c₃])
 
@@ -173,6 +173,8 @@ instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
 
+@[simp] lemma mk_zero : ⟨0, 0, 0, 0⟩ = (0 : ℍ[R,c₁,c₂,c₃]) := rfl
+
 instance : Inhabited ℍ[R,c₁,c₂,c₃] := ⟨0⟩
 
 section One
@@ -186,13 +188,16 @@ instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
 
+@[simp] lemma mk_one : ⟨1, 0, 0, 0⟩ = (1 : ℍ[R,c₁,c₂,c₃]) := rfl
+
 end One
 end Zero
 section Add
 variable [Add R]
 
 @[simps]
-instance : Add ℍ[R,c₁,c₂,c₃] where add a b := ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩
+instance : Add ℍ[R,c₁,c₂,c₃] where add a b :=
+  ⟨a.re + b.re, a.imI + b.imI, a.imJ + b.imJ, a.imK + b.imK⟩
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -235,7 +240,7 @@ section Neg
 variable [Neg R]
 
 @[simps]
-instance : Neg ℍ[R,c₁,c₂,c₃] where neg a := ⟨-a.1, -a.2, -a.3, -a.4⟩
+instance : Neg ℍ[R,c₁,c₂,c₃] where neg a := ⟨-a.re, -a.imI, -a.imJ, -a.imK⟩
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -253,7 +258,8 @@ variable [AddGroup R]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
 @[simps]
-instance : Sub ℍ[R,c₁,c₂,c₃] where sub a b := ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩
+instance : Sub ℍ[R,c₁,c₂,c₃] where sub a b :=
+  ⟨a.re - b.re, a.imI - b.imI, a.imJ - b.imJ, a.imK - b.imK⟩
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -296,11 +302,12 @@ variable [Ring R]
 * `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
 @[simps]
 instance : Mul ℍ[R,c₁,c₂,c₃] where
-  mul a b :=
-    ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
-      a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
-      a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
-      a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩
+  mul a b := ⟨
+    a.re * b.re + c₁ * a.imI * b.imI + c₃ * a.imJ * b.imJ + c₂ * c₃ * a.imJ * b.imK -
+      c₁ * c₃ * a.imK * b.imK,
+    a.re * b.imI + a.imI * b.re + c₂ * a.imI * b.imI - c₃ * a.imJ * b.imK + c₃ * a.imK * b.imJ,
+    a.re * b.imJ + c₁ * a.imI * b.imK + a.imJ * b.re + c₂ * a.imJ * b.imI - c₁ * a.imK * b.imI,
+    a.re * b.imK + a.imI * b.imJ + c₂ * a.imI * b.imK - a.imJ * b.imI + a.imK * b.re⟩
 
 @[simp]
 theorem mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -318,7 +325,7 @@ section SMul
 variable [SMul S R] [SMul T R] (s : S)
 
 @[simps]
-instance : SMul S ℍ[R,c₁,c₂,c₃] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
+instance : SMul S ℍ[R,c₁,c₂,c₃] where smul s a := ⟨s • a.re, s • a.imI, s • a.imJ, s • a.imK⟩
 
 instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c₃] where
   smul_assoc s t x := by ext <;> exact smul_assoc _ _ _
@@ -390,6 +397,8 @@ theorem im_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
+@[simp, norm_cast] lemma mk_natCast (n : ℕ) : ⟨n, 0, 0, 0⟩ = (n : ℍ[R,c₁,c₂,c₃]) := rfl
+
 @[simp, norm_cast]
 theorem re_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
@@ -428,6 +437,8 @@ theorem im_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
   rfl
+
+@[simp, norm_cast] lemma mk_intCast (z : ℤ) : ⟨z, 0, 0, 0⟩ = (z : ℍ[R,c₁,c₂,c₃]) := rfl
 
 end AddCommGroupWithOne
 
@@ -537,13 +548,13 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c�
   quaternion algebra if `c₂` is 0. -/
 @[simps]
 def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
-  toFun t := ⟨t.1, t.3, t.2, -t.4⟩
-  invFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  toFun t := ⟨t.re, t.imJ, t.imI, -t.imK⟩
+  invFun t := ⟨t.re, t.imJ, t.imI, -t.imK⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_mul' _ _ := by ext <;> simp <;> ring
   map_add' _ _ := by ext <;> simp [add_comm]
-  commutes' _ := by simp [algebraMap_eq]
+  map_smul' _ := by simp
 
 end
 
@@ -574,7 +585,7 @@ theorem smul_coe : x • (y : ℍ[R,c₁,c₂,c₃]) = ↑(x * y) := by rw [coe_
 
 /-- Quaternion conjugate. -/
 instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂,c₃] where
-  star a := ⟨a.1 + c₂ * a.2, -a.2, -a.3, -a.4⟩
+  star a := ⟨a.re + c₂ * a.imI, -a.imI, -a.imJ, -a.imK⟩
 
 @[simp] theorem re_star : (star a).re = a.re + c₂ * a.imI := rfl
 
@@ -671,7 +682,7 @@ def starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₁,c₂,c₃]ᵐᵒᵖ wher
   toFun := op ∘ star
   invFun := star ∘ unop
   map_mul' x y := by simp
-  commutes' r := by simp
+  map_smul' r := by simp
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] _) = op ∘ star :=
@@ -838,6 +849,14 @@ theorem imK_mul : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a
 @[simp, norm_cast]
 theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
 
+lemma mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
+    (⟨a₁, a₂, a₃, a₄⟩ : ℍ[R]) * ⟨b₁, b₂, b₃, b₄⟩ =
+    ⟨a₁ * b₁ - a₂ * b₂ - a₃ * b₃ - a₄ * b₄,
+     a₁ * b₂ + a₂ * b₁ + a₃ * b₄ - a₄ * b₃,
+     a₁ * b₃ - a₂ * b₄ + a₃ * b₁ + a₄ * b₂,
+     a₁ * b₄ + a₂ * b₃ - a₃ * b₂ + a₄ * b₁⟩ := by
+  ext; exacts [re_mul .., imI_mul .., imJ_mul .., imK_mul ..]
+
 @[norm_cast, simp]
 theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
   QuaternionAlgebra.coe_pow x n
@@ -961,6 +980,8 @@ theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
 theorem star_coe : star (x : ℍ[R]) = x :=
   QuaternionAlgebra.star_coe x
 
+lemma star_mk (a₁ a₂ a₃ a₄ : R) : star (⟨a₁, a₂, a₃, a₄⟩ : ℍ[R]) = ⟨a₁, -a₂, -a₃, -a₄⟩ := by simp
+
 @[simp]
 theorem star_im : star a.im = -a.im := by ext <;> simp
 
@@ -1015,7 +1036,7 @@ def normSq : ℍ[R] →*₀ R where
 
 theorem normSq_def : normSq a = (a * star a).re := rfl
 
-theorem normSq_def' : normSq a = a.1 ^ 2 + a.2 ^ 2 + a.3 ^ 2 + a.4 ^ 2 := by
+theorem normSq_def' : normSq a = a.re ^ 2 + a.imI ^ 2 + a.imJ ^ 2 + a.imK ^ 2 := by
   simp only [normSq_def, sq, mul_neg, sub_neg_eq_add, re_mul, re_star, imI_star, imJ_star,
     imK_star]
 

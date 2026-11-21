@@ -11,8 +11,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 # Decomposing walks
 
 ## Main definitions
-- `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
-- `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
+- `takeUntil`: The walk obtained by taking edges of an existing walk until a given vertex.
+- `dropUntil`: The walk obtained by dropping edges of an existing walk until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
 
@@ -30,7 +30,7 @@ section WalkDecomp
 
 variable [DecidableEq V]
 
-/-- Given a vertex in the support of a path, give the path up until (and including) that vertex. -/
+/-- Given a vertex in the support of a walk, give the walk up until (and including) that vertex. -/
 def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
@@ -72,8 +72,8 @@ lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).length = p.support.idxOf w := by
   simp [takeUntil_eq_take, Nat.le_iff_lt_add_one, ← length_support, List.idxOf_lt_length_of_mem h]
 
-/-- Given a vertex in the support of a path, give the path from (and including) that vertex to
-the end. In other words, drop vertices from the front of a path until (and not including)
+/-- Given a vertex in the support of a walk, give the walk from (and including) that vertex to
+the end. In other words, drop vertices from the front of a walk until (and not including)
 that vertex. -/
 def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk u w
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
@@ -321,10 +321,10 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {x : V}
   rw [← takeUntil_takeUntil p hw hx]
   intro hw'
   have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length
-      < ((p.takeUntil w hw).takeUntil x hx).length := by
-    exact length_takeUntil_lt_length _ h.symm
-  have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
-    exact length_takeUntil_lt_length _ h
+      < ((p.takeUntil w hw).takeUntil x hx).length :=
+    length_takeUntil_lt_length _ h.symm
+  have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length :=
+    length_takeUntil_lt_length _ h
   simp only [takeUntil_takeUntil] at h1 h2
   lia
 

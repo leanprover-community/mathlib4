@@ -91,6 +91,6 @@ lemma DependsOn.mono {s t : Set ι} (hst : s ⊆ t) (hf : DependsOn f s) : Depen
 lemma DependsOn.empty (hf : DependsOn f ∅) (x y : Π i, α i) : f x = f y := hf (by simp)
 
 lemma Set.dependsOn_domRestrict (s : Set ι) : DependsOn (s.domRestrict (π := α)) s :=
-  fun _ _ h ↦ funext fun i ↦ h i.1 i.2
+  fun _ _ h ↦ funext fun i ↦ h i.val i.property
 
 @[deprecated (since := "2026-07-19")] alias Set.dependsOn_restrict := Set.dependsOn_domRestrict

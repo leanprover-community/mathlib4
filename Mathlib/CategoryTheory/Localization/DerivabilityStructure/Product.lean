@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GuitartExact.Prod
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-public import Mathlib.CategoryTheory.Localization.Prod
+
+import Mathlib.CategoryTheory.GuitartExact.Prod
+import Mathlib.CategoryTheory.Localization.Prod
 
 /-!
 # Product of derivability structures

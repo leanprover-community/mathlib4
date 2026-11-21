@@ -101,7 +101,7 @@ instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 
 /-- The underlying function of a `Poly` is a polynomial -/
-protected theorem isPoly (f : Poly α) : IsPoly f := f.2
+protected theorem isPoly (f : Poly α) : IsPoly f := f.property
 
 /-- Extensionality for `Poly α` -/
 @[ext]
@@ -127,19 +127,19 @@ instance : One (Poly α) := ⟨const 1⟩
 
 instance : IsOneApply (Poly α) where
 
-instance : Neg (Poly α) := ⟨fun f => ⟨-f, f.2.neg⟩⟩
+instance : Neg (Poly α) := ⟨fun f => ⟨-f, f.property.neg⟩⟩
 
 instance : IsNegApply (Poly α) where
 
-instance : Add (Poly α) := ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+instance : Add (Poly α) := ⟨fun f g => ⟨f + g, f.property.add g.property⟩⟩
 
 instance : IsAddApply (Poly α) where
 
-instance : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+instance : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.property.sub g.property⟩⟩
 
 instance : IsSubApply (Poly α) where
 
-instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
+instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.property.mul g.property⟩⟩
 
 instance : IsMulApply (Poly α) where
 
@@ -147,7 +147,7 @@ instance {R : Type*} [SMul R ℤ] [IsScalarTower R ℤ ℤ] : SMul R (Poly α) w
   smul c f := ⟨c • f, by
     have : c • ⇑f = (fun _ ↦ c • 1) * ⇑f := by ext; simp
     rw [this]
-    exact (IsPoly.const _).mul f.2⟩
+    exact (IsPoly.const _).mul f.property⟩
 
 instance {R : Type*} [SMul R ℤ] [IsScalarTower R ℤ ℤ] : IsSMulApply R (Poly α) where
 
@@ -155,7 +155,7 @@ instance : Pow (Poly α) ℕ where
   pow f n := ⟨f ^ n, by
     induction n with
     | zero => simpa using .const 1
-    | succ n h => rw [pow_succ]; exact h.mul f.2⟩
+    | succ n h => rw [pow_succ]; exact h.mul f.property⟩
 
 instance : IsPowApply ℕ (Poly α) where
 

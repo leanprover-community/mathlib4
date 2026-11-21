@@ -54,6 +54,8 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
 
+to_dual_for uncurry_obj_map := by simp
+
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
 @[implicit_reducible]

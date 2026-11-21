@@ -6,9 +6,10 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Basic.SetLike.Basic
-public import Mathlib.Data.Set.Image
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
+
+import Mathlib.Data.Set.Image
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -148,17 +149,17 @@ lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
     IsUpperSet s ↔ IsRelUpperSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
-    exact ⟨a.2, fun b x y ↦ by simpa [h (show a ≤ ⟨b, y⟩ by exact x) ma]⟩
-  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
-    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.2
+    exact ⟨a.property, fun b x y ↦ by simpa [h (show a ≤ ⟨b, y⟩ by exact x) ma]⟩
+  · have ma : a.val ∈ Subtype.val '' s := by simp [a.property, y]
+    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.property
 
 lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
     IsLowerSet s ↔ IsRelLowerSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
-    exact ⟨a.2, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
-  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
-    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.2
+    exact ⟨a.property, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
+  · have ma : a.val ∈ Subtype.val '' s := by simp [a.property, y]
+    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.property
 
 instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier

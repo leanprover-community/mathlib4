@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Tactic.DSimpPercent
 
 /-!
@@ -448,6 +448,10 @@ theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bij
 theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
+
+-- TODO: Make simp once `toEquiv` is simp nf
+lemma toEquiv_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+    (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
 
 @[simp]
 lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :

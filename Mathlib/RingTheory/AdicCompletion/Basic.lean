@@ -148,7 +148,7 @@ theorem isPrecomplete_iff :
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.prec', fun h => ⟨h⟩⟩
 
 theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
@@ -368,21 +368,21 @@ def of : M →ₗ[R] AdicCompletion I M where
   map_smul' _ _ := rfl
 
 @[simp]
-theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
+theorem of_apply (x : M) (n : ℕ) : (of I M x).val n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
   rfl
 
 /-- Linearly evaluating a sequence in the completion at a given input. -/
 def eval (n : ℕ) : AdicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) where
-  toFun f := f.1 n
+  toFun f := f.val n
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_eval (n : ℕ) :
-    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.1 n :=
+    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.val n :=
   rfl
 
-theorem eval_apply (n : ℕ) (f : AdicCompletion I M) : eval I M n f = f.1 n :=
+theorem eval_apply (n : ℕ) (f : AdicCompletion I M) : eval I M n f = f.val n :=
   rfl
 
 theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ (I ^ n • ⊤ : Submodule R M) x :=
@@ -647,8 +647,9 @@ theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M :
     rw [← mkQ_apply _ x, ← eval_of, hx]
     simp [u]
   · intro h u
-    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
-    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.2 hmn, ← hx]; simp)
+    choose x hx using
+      (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.val n))
+    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.property hmn, ← hx]; simp)
     use a
     ext n
     simpa [SModEq, ← eval_of, ha, ← hx] using (ha n).symm
@@ -661,7 +662,7 @@ theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
   ⟨fun h ↦
     { toIsHausdorff := of_injective_iff.mp h.1,
       toIsPrecomplete := of_surjective_iff.mp h.2 },
-   fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
+   fun h ↦ ⟨of_injective_iff.mpr h.toIsHausdorff, of_surjective_iff.mpr h.toIsPrecomplete⟩⟩
 
 variable (I M)
 
@@ -872,7 +873,7 @@ end StrictMono
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
-  h.1.subsingleton
+  h.toIsHausdorff.subsingleton
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 
