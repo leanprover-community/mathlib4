@@ -89,10 +89,12 @@ syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped :=
   ident (notFollowedBy(":" "(" "scoped") precedence)? (":" "(" "scoped " ident " => " term ")")?
+/-- `notation3` argument forbidding whitespace before the next item. -/
+syntax noWsItem := &"noWS"
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
-syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
+syntax notation3Item := strLit <|> bindersItem <|> noWsItem <|> identOptScoped <|> foldAction
 
 /-! ### Expression matching
 
@@ -516,6 +518,9 @@ notation3 "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" =>
 By default notation is unable to mention any variables defined using `variable`, but
 `local notation3` is able to use such local variables.
 
+The item `noWs` forbids whitespace before the next item, as in `syntax`. For example,
+`notation3:max μ noWs "[|" s "]" => cond μ s` parses `μ[|s]` but not `μ [|s]`.
+
 Use `notation3 (prettyPrint := false)` to keep the command from generating a pretty printer
 for the notation.
 
@@ -552,6 +557,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let mut hasScoped := false
   for item in items do
     match item with
+    | `(notation3Item| noWs) =>
+      -- `noWs` does not produce a syntax node, so there is nothing to add to the pattern
+      syntaxArgs := syntaxArgs.push (← `(stx| noWs))
     | `(notation3Item| $lit:str) =>
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
