@@ -186,7 +186,7 @@ def main (args : List String) : IO Unit := do
     | some cs => cacheFromOverride.set (some cs)
 
   -- Parse `--container=NAME`. Validation is unconditional; `put` requires the
-  -- flag where the backend needs it (`uploadLocation`).
+  -- flag (`uploadLocation`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with
@@ -230,7 +230,7 @@ def main (args : List String) : IO Unit := do
         return (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!))
     return
   | "put-staged" :: _ =>
-    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR --container=NAME \
       [--repo=OWNER/REPO] [--scope=REF] [--backend=NAME]"
     Process.exit 1
   | _ => pure ()
