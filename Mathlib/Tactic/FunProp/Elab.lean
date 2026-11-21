@@ -82,7 +82,7 @@ def funPropTac : Tactic
             if let some n := type.getAppFn.constName?
             then s!" Consider marking `{n}` with `@[fun_prop]`."
             else ""
-          throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
+          throwError "`{type}` is not a `fun_prop` goal!{hint}"
 
       let cfg ← elabFunPropConfig cfg
 
