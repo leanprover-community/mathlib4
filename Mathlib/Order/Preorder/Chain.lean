@@ -122,11 +122,12 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
 
 lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
-  hf.dual_left.isChain_image hs.symm
+  hs.symm.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
 
 theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    IsChain (· ≤ ·) (range f) :=
-  hf.dual_left.isChain_range
+    IsChain (· ≤ ·) (range f) := by
+  rw [← image_univ]
+  exact hf.isChain_image (isChain_of_trichotomous _)
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦

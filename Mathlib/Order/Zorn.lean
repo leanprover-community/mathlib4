@@ -156,12 +156,12 @@ theorem zorn_subset_nonempty (S : Set (Set α))
 
 theorem zorn_superset (S : Set (Set α))
     (h : ∀ c ⊆ S, IsChain (· ⊆ ·) c → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) : ∃ m, Minimal (· ∈ S) m :=
-  (@zorn_le₀ (Set α)ᵒᵈ _ S) fun c cS hc => h c cS hc.symm
+  zorn_ge₀ S fun _ cS hc ↦ h _ cS hc.symm
 
 theorem zorn_superset_nonempty (S : Set (Set α))
     (H : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) (x) (hx : x ∈ S) :
     ∃ m, m ⊆ x ∧ Minimal (· ∈ S) m :=
-  @zorn_le_nonempty₀ (Set α)ᵒᵈ _ S (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx
+  zorn_ge_nonempty₀ _ (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx
 
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/

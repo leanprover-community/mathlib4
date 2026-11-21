@@ -24,30 +24,46 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [MulZeroClass α] : MulZeroClass αᵒᵈ := inferInstanceAs <| MulZeroClass α
+instance [MulZeroClass α] : MulZeroClass αᵒᵈ where
+  zero_mul _ := by rw [toDual_inj]; exact zero_mul _
+  mul_zero _ := by rw [toDual_inj]; exact mul_zero _
 
-instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := inferInstanceAs <| MulZeroOneClass α
+instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ where
 
-instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ :=
-  inferInstanceAs <| NoZeroDivisors α
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ where
+  eq_zero_or_eq_zero_of_mul_eq_zero h := by
+    rw [toDual_inj, ofDual_mul] at h
+    rw [toDual_inj, toDual_inj]
+    exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
-instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := inferInstanceAs <| SemigroupWithZero α
+instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ where
 
-instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ := inferInstanceAs <| MonoidWithZero α
+instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ where
 
-instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ :=
-  inferInstanceAs <| IsLeftCancelMulZero α
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ where
+  mul_left_cancel_of_ne_zero {a} ha x y e := by
+    replace ha : ofDual a ≠ 0 := fun hc ↦ ha (ofDual_inj.mp hc)
+    rw [toDual_inj] at e ⊢
+    exact mul_left_cancel₀ ha e
 
-instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ :=
-  inferInstanceAs <| IsRightCancelMulZero α
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ where
+  mul_right_cancel_of_ne_zero {a} ha x y e := by
+    replace ha : ofDual a ≠ 0 := fun hc ↦ ha (ofDual_inj.mp hc)
+    rw [toDual_inj] at e ⊢
+    exact mul_right_cancel₀ ha e
 
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵒᵈ where
 
-instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := inferInstanceAs <| CommMonoidWithZero α
+instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ where
 
-instance [GroupWithZero α] : GroupWithZero αᵒᵈ := inferInstanceAs <| GroupWithZero α
+instance [GroupWithZero α] : GroupWithZero αᵒᵈ where
+  inv_zero := by rw [toDual_inj]; simp
+  mul_inv_cancel a ha := by
+    replace ha : ofDual a ≠ 0 := fun hc ↦ ha (ofDual_inj.mp hc)
+    rw [toDual_inj]
+    exact mul_inv_cancel₀ ha
 
-instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := inferInstanceAs <| CommGroupWithZero α
+instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ where
 
 end OrderDual
 
