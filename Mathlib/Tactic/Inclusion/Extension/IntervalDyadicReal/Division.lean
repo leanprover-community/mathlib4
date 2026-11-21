@@ -35,24 +35,23 @@ attribute [local grind =] inv_nonneg inv_nonpos inv_le_inv₀ inv_le_inv_of_neg
 
 section DyadicDiv
 
-variable (a b : Dyadic) (prec : ℕ)
+variable (a b : Dyadic) (prec : ℤ)
 
-/-- Divide two dyadic numbers, rounding the quotient downward to the `2⁻prec` grid.
-
-The current implementation goes through `ℚ` (core's `Dyadic.divAtPrec`) and is a placeholder.
-TODO: replace this with a division that stays in `Dyadic`. -/
+/-- TODO doc -/
 @[expose]
-def Dyadic.fdiv : Dyadic := divAtPrec a b prec
+def Dyadic.fdiv : Dyadic :=
+  match a, b with
+  | ofOdd m p _, ofOdd n q _ => match prec + q - p with
+    | .ofNat k => .ofIntWithPrec ((m <<< k).fdiv n) prec
+    | .negSucc k => .ofIntWithPrec (m.fdiv (n <<< k)) prec
+  | _, _ => 0
 
-/-- Divide two dyadic numbers, rounding the quotient upward to the `2⁻prec` grid.
-
-The current implementation goes through `ℚ` (via `fdiv`) and is a placeholder.
-TODO: replace this with a division that stays in `Dyadic`. -/
+/-- TODO doc -/
 @[expose]
 def Dyadic.cdiv : Dyadic := -fdiv (-a) b prec
 
 theorem fdiv_le : (fdiv a b prec).toRat ≤ a.toRat / b.toRat := by
-  cases b <;> simp [fdiv, divAtPrec, Rat.toRat_toDyadic_le]
+  sorry
 
 theorem le_cdiv : a.toRat / b.toRat ≤ (cdiv a b prec).toRat := by
   rw [cdiv, ← neg_neg a.toRat, toRat_neg, neg_div, neg_le_neg_iff, ← toRat_neg]
