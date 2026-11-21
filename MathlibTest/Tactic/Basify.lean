@@ -1,4 +1,5 @@
 module
+
 import Mathlib.Tactic.Basify
 import Mathlib.Tactic
 
@@ -117,6 +118,100 @@ example (a : ℕ∞) (h : a ≠ ⊤) : 2 * a = a + a := by
   basify
   lia
 
+example (a : ℕ∞) : a + ∞ = ∞ := by
+  basify
+
+example (a : ℕ∞) : ∞ + a = ∞ := by
+  basify
+
+example (a : ℕ∞) : 2 ≤ a + 3 := by
+  basify
+  lia
+
+example (a : ℕ∞) : (a + 1) + 1 ≤ a + 3 := by
+  basify
+  lia
+
+/-! ## Operations on `WithTop ℕ∞` -/
+
+section
+
+local notation "ℕ∞ω" => WithTop ℕ∞
+local notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+variable {k : WithTop ℕ∞}
+
+/--
+warning: declaration uses `sorry`
+---
+warning: Unused tactic linter: `basify` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : k ≤ k + 2 := by
+  -- TODO: basify doesn't do anything yet
+  basify
+  sorry
+
+example : k + 1 ≤ k + 2 := by
+  -- basify makes no progress
+  gcongr
+  simp
+
+set_option warn.sorry false in
+example (hk : k ≠ ⊤) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
+  -- TODO: basify should reduce the goal to ℕ∞ (at least)
+  sorry -- TODO: basify makes no progress; would want it to reduce to ℕ∞ (at least)
+
+set_option warn.sorry false in
+example : k + 1 + 1 ≤ k + 2 := by
+  sorry -- TODO: neither basify nor norm_cast helps!
+
+set_option warn.sorry false in
+example : 2 ≤ k + 3 := by
+  sorry -- TODO: basify does nothing yet
+
+-- Analogous tests for something in ℕ∞ being cast to WithTop: these are already handled well.
+example (k : ℕ∞) : (k : ℕ∞ω) ≤ k + 2 := by
+  basify
+  -- TODO: investigate why norm_cast is not idempotent, and how to fix this
+  norm_cast; norm_cast; lia
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 ≤ k + 2 := by
+  basify
+  -- TODO: investigate why norm_cast is not idempotent, and how to fix this
+  norm_cast; norm_cast; lia
+
+example (k : ℕ∞) : k + 1 ≤ (k : ℕ∞ω) + 1 + 1 := by
+  basify
+  norm_cast; lia
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 2 ≤ k + 3 := by
+  basify
+  norm_cast; norm_cast; lia -- TODO: why is norm_cast not idempotent?
+
+example (k : ℕ∞) : (k + 2 : ℕ∞ω) + 1 ≤ k + 3 := by
+  basify
+  norm_cast
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 2 := by
+  basify
+  norm_cast
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 3 := by
+  basify
+  norm_cast; norm_cast; lia -- TODO: why is norm_cast not idempotent?
+
+example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
+  basify
+  norm_cast; norm_cast; lia
+
+example (k : ℕ∞) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
+  basify <;> norm_cast
+
+end
+
 /-! ## Operations of `ℕ+` -/
 
 example (a : ℕ+) : 1 ≤ a := by
@@ -125,7 +220,6 @@ example (a : ℕ+) : 1 ≤ a := by
 
 example (a : ℕ+) (h : a = 2) : 2 ≤ a := by
   basify
-  lia
 
 example (a b : ℕ+) : a < a + b := by
   basify
@@ -157,12 +251,11 @@ example (f : ℕ → ℝ≥0∞) : f two' ≤ f 2 + f two' := by
 def foo : ℝ≥0∞ := 1
 def bar : ℝ≥0∞ := foo
 
-/-- `foo` and `bar` are definitionally equal, but we collect atoms up to `instanses` transparency -/
+/-- `foo` and `bar` are definitionally equal, but we collect atoms up to `instance` transparency -/
 example : foo ≤ bar := by
   fail_if_success (basify; linarith)
   unfold bar
   basify
-  linarith
 
 /-- Atom under a binder -/
 example (a b c : ℝ≥0∞) (hc : c ≠ ⊤) (h : a + c = b + c) : ∀ _ : ℕ, a = b := by
