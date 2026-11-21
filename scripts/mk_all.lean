@@ -191,7 +191,7 @@ def handleRoot (cfg : Config) (root : Root)
   -- Preserve the runtime/elaboration boundary when regenerating an aggregator.
   let metaImports := existing?.map (·.2.imports.filter (·.isMeta) |>.map (·.module)) |>.getD #[]
   let newFileContent := s!"\
-    {if useModule then "module -- shake: keep-all --deprecated_module: ignore\n\n" else ""}\
+    {if useModule then "module -- shake: keep-all -- deprecated_module: ignore\n\n" else ""}\
     {"\n".intercalate <| Array.toList <| allMods.map fun mod => s!"\
       {if useModule then "public " else ""}\
       {if metaImports.contains mod then "meta " else ""}\
