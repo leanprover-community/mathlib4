@@ -50,8 +50,7 @@ theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 
   have : Fact (Nat.Prime 5) := ⟨prime_five⟩
   have : 3 < π := pi_gt_three
   apply isPrincipalIdealRing_of_abs_discr_lt
-  rw [discr_prime 5 K, finrank 5 K, nrComplexPlaces_eq_totient_div_two 5,
-    totient_prime Nat.prime_five]
+  rw [discr_prime 5, finrank 5, nrComplexPlaces_eq_totient_div_two 5, totient_prime prime_five]
   norm_num
   field_simp
   dyadic_interval
