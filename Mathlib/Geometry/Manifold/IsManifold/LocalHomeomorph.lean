@@ -22,7 +22,7 @@ TODO: rewrite this
 
 If this condition holds:
 
-* `IsLocalHomeomorph.isManifoldOfRightInverse`: `M'` is a smooth manifold.
+* `IsLocalHomeomorph.isManifold_of_rightInverse`: `M'` is a smooth manifold.
 * `f` is `C^n` as a map between maninfolds.
 * `hf.localInverseAt` is `C^n` on its source.
 * `f` is a local diffeomorphism.
@@ -71,7 +71,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
     with r' hr' hσr' hfσr'
   exact hf.injOn_localInverseAt_target (τ.map_source hr').1 hσr' ((hτ hr').trans hfσr'.symm)
 
-lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M] (h : Foo I n f) :
+lemma IsLocalHomeomorph.isManifold_of_rightInverse [IsManifold I n M] (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -124,7 +124,7 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hy] with x hx
     exact (extChartAt I y).right_inv hx
 
-lemma IsLocalHomeomorph.isContMDiffOfRightInverse
+lemma IsLocalHomeomorph.contMDiff_of_rightInverse
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n f := by
@@ -194,6 +194,6 @@ lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n φ ↔ CMDiff n (φ ∘ f) :=
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  ⟨fun hφ ↦ hφ.comp (hf.isContMDiffOfRightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
+  ⟨fun hφ ↦ hφ.comp (hf.contMDiff_of_rightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
 
 end
