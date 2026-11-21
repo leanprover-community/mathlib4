@@ -53,9 +53,7 @@ theorem conj_mem_inner {g : G} : conj g ∈ inner G := ⟨g, rfl⟩
 /-- The inner automorphism group is normal in the full automorphism group. -/
 @[to_additive /-- The inner automorphism group is normal in the full automorphism group. -/]
 instance : (inner G).Normal where
-  conj_mem _ hn h := by
-    obtain ⟨g, rfl⟩ := mem_inner_iff.mp hn
-    exact conj_conj h g ▸ conj_mem_inner (g := h g)
+  conj_mem _ := fun ⟨g, hg⟩ h ↦ hg ▸ ⟨h g, (conj_conj h g).symm⟩
 
 @[to_additive]
 theorem inner_eq_bot_iff : inner G = ⊥ ↔ IsMulCommutative G :=
