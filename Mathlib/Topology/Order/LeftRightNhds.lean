@@ -30,6 +30,16 @@ section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α]
 
+/-- A point of a subset `s` is isolated on the right in the subspace `↥s` exactly when it is
+isolated on the right within `s`. -/
+@[to_dual nhdsLT_subtype_eq_bot_iff /-- A point of a subset `s` is isolated on the left in the
+subspace `↥s` exactly when it is isolated on the left within `s`. -/]
+theorem nhdsGT_subtype_eq_bot_iff {s : Set α} {x : α} (hx : x ∈ s) :
+    𝓝[>] (⟨x, hx⟩ : s) = ⊥ ↔ 𝓝[s ∩ Ioi x] x = ⊥ := by
+  have : ((↑) : s → α) ⁻¹' Ioi x = Ioi ⟨x, hx⟩ := rfl
+  rw [← this, nhdsWithin_subtype_eq_bot_iff, nhdsWithin, inf_assoc, inf_principal, inter_comm,
+    ← nhdsWithin]
+
 section OrderTopology
 
 variable [OrderTopology α]
