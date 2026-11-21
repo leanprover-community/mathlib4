@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
+import Mathlib.Algebra.FiniteSupport.Basic
+
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
 
@@ -69,19 +71,77 @@ variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K] [IsFractio
 
 variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
+namespace Ideal
+
+variable (P : Ideal R) [P.IsPrime] (I : Ideal R)
+
+/-- The number of times a prime ideal `P` occurs in the factorization of `I` is
+`multiplicity P I`. -/
+@[simp]
+lemma count_normalizedFactors_eq_multiplicity :
+    Multiset.count P (normalizedFactors I) = multiplicity P I := by
+  obtain rfl | hP := eq_or_ne P 0
+  · rw [multiplicity_zero_left, Multiset.count_eq_zero]
+    exact zero_notMem_normalizedFactors I
+  rw [multiplicity_eq_count_normalizedFactors (prime_of_isPrime hP inferInstance).irreducible,
+    normalize_eq]
+
+/-- The exponent of a prime ideal `P` in the factorization of `I` is `multiplicity P I`. -/
+@[simp]
+lemma factorization_eq_multiplicity : factorization I P = multiplicity P I := by
+  rw [factorization_eq_count, count_normalizedFactors_eq_multiplicity]
+
+/-- The count of a prime ideal `P` in the factors of `Associates.mk I` is `multiplicity P I`. -/
+lemma count_associates_factors_eq_multiplicity :
+    (Associates.mk P).count (Associates.mk I).factors = multiplicity P I := by
+  obtain rfl | hP := eq_or_ne P 0
+  · rw [Associates.mk_zero, multiplicity_zero_left, Associates.count,
+      dite_eq_right not_irreducible_zero, Pi.zero_apply]
+  obtain rfl | hI := eq_or_ne I 0
+  · rw [Associates.mk_zero, Associates.factors_zero, multiplicity_zero_right, Associates.count_top]
+  rw [count_associates_factors_eq hI inferInstance hP, count_normalizedFactors_eq_multiplicity]
+
+end Ideal
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+@[deprecated Ideal.count_normalizedFactors_eq_multiplicity +typeChanged (since := "2026-11-14")]
+lemma count_normalizedFactors_eq_multiplicity {I : Ideal R} (_hI : I ≠ ⊥)
+    (p : HeightOneSpectrum R) :
+    Multiset.count p.asIdeal (normalizedFactors I) = multiplicity p.asIdeal I :=
+  Ideal.count_normalizedFactors_eq_multiplicity p.asIdeal I
+
+@[deprecated Ideal.factorization_eq_multiplicity +typeChanged (since := "2026-11-14")]
+lemma factorization_eq_multiplicity {I : Ideal R} (_hI : I ≠ ⊥) (p : HeightOneSpectrum R) :
+    factorization I p.asIdeal = multiplicity p.asIdeal I :=
+  Ideal.factorization_eq_multiplicity p.asIdeal I
+
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
   power of `v` dividing `I`. -/
-def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
-  v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
+def maxPowDividing (I : Ideal R) : Ideal R :=
+  v.asIdeal ^ multiplicity v.asIdeal I
 
-open Associates in
-theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
-    {I : Ideal R} (hI : I ≠ 0) :
-    maxPowDividing v I =
-      v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
-  rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
-    ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtypeVal_factors',
-    factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
+omit [IsDedekindDomain R] in
+/-- The ideal `p.maxPowDividing I` is `p ^ multiplicity p I`. -/
+lemma maxPowDividing_eq_pow_multiplicity (I : Ideal R) (p : HeightOneSpectrum R) :
+    p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I :=
+  rfl
+
+theorem maxPowDividing_eq_pow_multiset_count (I : Ideal R) :
+    maxPowDividing v I = v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
+  rw [maxPowDividing, Ideal.count_normalizedFactors_eq_multiplicity]
+
+theorem maxPowDividing_ne_one_iff (I : Ideal R) :
+    v.maxPowDividing I ≠ 1 ↔ v.asIdeal ∈ normalizedFactors I := by
+  rw [maxPowDividing_eq_pow_multiplicity]
+  obtain rfl | hI := eq_or_ne I 0
+  · simp [-Submodule.zero_eq_bot, -Ideal.zero_eq_bot]
+  rw [ne_eq, Ideal.one_eq_top, Ideal.pow_eq_top_iff, not_or, Ideal.mem_normalizedFactors_iff hI,
+    and_iff_right v.isPrime.ne_top, and_iff_right v.isPrime, ← ne_eq, multiplicity_ne_zero,
+    Ideal.dvd_iff_le]
+  exact Ideal.finiteMultiplicity v.isPrime.ne_top hI
+
+end IsDedekindDomain.HeightOneSpectrum
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
@@ -93,8 +153,17 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   intro v w hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext (by simpa using hvw))
 
+/-- For every ideal `I` of `R`, the multiplicity of `v` in `I` is zero for all but
+finitely many maximal ideals `v`. -/
+@[fun_prop]
+theorem Ideal.hasFiniteSupport_multiplicity (I : Ideal R) :
+    (fun v : HeightOneSpectrum R ↦ multiplicity v.asIdeal I).HasFiniteSupport := by
+  simp_rw [← Ideal.count_normalizedFactors_eq_multiplicity]
+  exact (normalizedFactors I).hasFiniteSupport_count.comp_of_injective asIdeal_injective
+
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
   multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
+@[deprecated Ideal.hasFiniteSupport_multiplicity +typeChanged (since := "2026-11-12")]
 theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite,
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) = 0 := by
@@ -108,62 +177,73 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
 
 namespace Ideal
 
-/-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
+/-- For every ideal `I` of `R`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
-theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
+theorem hasFiniteMulSupport (I : Ideal R) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I :=
-  haveI h_subset : {v : HeightOneSpectrum R | v.maxPowDividing I ≠ 1} ⊆
-      {v : HeightOneSpectrum R |
-        ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
-    intro v hv h_zero
-    have hv' : v.maxPowDividing I = 1 := by
-      rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.natCast_eq_zero.mp h_zero,
-        pow_zero _]
-    exact hv hv'
-  Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
+  (hasFiniteSupport_multiplicity I).subset fun v hv h ↦ by
+    simp_all [mem_mulSupport, IsDedekindDomain.HeightOneSpectrum.maxPowDividing]
+
+/-- For every ideal `I` of `R`, there are finitely many maximal ideals `v` such that
+`v ^ multiplicity v I`, regarded as a fractional ideal, is not `(1)`. -/
+@[fun_prop]
+theorem hasFiniteMulSupport_zpow_multiplicity (I : Ideal R) :
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      (multiplicity v.asIdeal I : ℤ) := by
+  rw [HasFiniteMulSupport, mulSupport]
+  simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
+  exact hasFiniteMulSupport I
+
+/-- For every ideal `I` of `R`, there are finitely many maximal ideals `v` such that
+`v ^ (-multiplicity v I)` is not the unit ideal. -/
+@[fun_prop]
+theorem hasFiniteMulSupport_zpow_neg_multiplicity (I : Ideal R) :
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      (-(multiplicity v.asIdeal I : ℤ)) := by
+  simpa [HasFiniteMulSupport] using hasFiniteMulSupport_zpow_multiplicity I
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
-@[fun_prop]
-theorem hasFiniteMulSupport_coeIdeal {I : Ideal R} (hI : I ≠ 0) :
+@[fun_prop,
+  deprecated hasFiniteMulSupport_zpow_multiplicity +typeChanged (since := "2026-11-12")]
+theorem hasFiniteMulSupport_coeIdeal {I : Ideal R} (_hI : I ≠ 0) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) := by
-  rw [HasFiniteMulSupport, mulSupport]
-  simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
-  exact hasFiniteMulSupport hI
+  simp_rw [count_associates_factors_eq_multiplicity]
+  exact hasFiniteMulSupport_zpow_multiplicity I
 
-@[deprecated (since := "2026-11-10")] alias hasFiniteMulSupport_coe := hasFiniteMulSupport_coeIdeal
+@[deprecated hasFiniteMulSupport_zpow_multiplicity +typeChanged (since := "2026-11-10")]
+alias hasFiniteMulSupport_coe := hasFiniteMulSupport_coeIdeal
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
-@[fun_prop]
-theorem hasFiniteMulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
+@[fun_prop,
+  deprecated hasFiniteMulSupport_zpow_neg_multiplicity +typeChanged (since := "2026-11-12")]
+theorem hasFiniteMulSupport_inv {I : Ideal R} (_hI : I ≠ 0) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) := by
-  rw [HasFiniteMulSupport, mulSupport]
-  simp_rw [zpow_neg, Ne, inv_eq_one]
-  exact hasFiniteMulSupport_coeIdeal hI
+  simp_rw [count_associates_factors_eq_multiplicity]
+  exact hasFiniteMulSupport_zpow_neg_multiplicity I
 
-/-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
-theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
-    ¬v.asIdeal ^ ((Associates.mk v.asIdeal).count (Associates.mk I).factors + 1) ∣
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
+private theorem pow_multiplicity_add_one_not_dvd_finprod (I : Ideal R) :
+    ¬v.asIdeal ^ (multiplicity v.asIdeal I + 1) ∣
         ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
   classical
-  have hf := hasFiniteMulSupport hI
+  have hf := hasFiniteMulSupport I
   have h_ne_zero : v.maxPowDividing I ≠ 0 := pow_ne_zero _ v.ne_bot
   rw [← mul_finprod_cond_ne v hf, pow_add, pow_one, finprod_cond_ne _ _ hf]
   intro h_contr
-  have hv_prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
   obtain ⟨w, hw, hvw'⟩ :=
-    Prime.exists_mem_finset_dvd hv_prime ((mul_dvd_mul_iff_left h_ne_zero).mp h_contr)
-  have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.isPrime
-  have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
-  rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
+    v.prime.exists_mem_finset_dvd ((mul_dvd_mul_iff_left h_ne_zero).mp h_contr)
+  have hvw := v.prime.dvd_of_dvd_pow hvw'
+  rw [v.prime.dvd_prime_iff_associated w.prime, associated_iff_eq] at hvw
   exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext hvw.symm)
 
 end Ideal
 
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
 theorem Associates.finprod_ne_zero (I : Ideal R) :
     Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) ≠ 0 := by
   classical
@@ -176,34 +256,47 @@ theorem Associates.finprod_ne_zero (I : Ideal R) :
 
 namespace Ideal
 
-/-- The multiplicity of `v` in `∏_v v^(val_v(I))` equals `val_v(I)`. -/
-theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).count
-    (Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I)).factors =
-    (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
-  have h_ne_zero := Associates.finprod_ne_zero I
-  have hv : Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
-  have h_dvd := finprod_mem_dvd v (hasFiniteMulSupport hI)
-  have h_not_dvd := Ideal.finprod_not_dvd v I hI
-  simp only [IsDedekindDomain.HeightOneSpectrum.maxPowDividing] at h_dvd h_ne_zero h_not_dvd
-  rw [← Associates.mk_dvd_mk] at h_dvd h_not_dvd
-  simp only [Associates.dvd_eq_le] at h_dvd h_not_dvd
-  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le h_ne_zero hv] at h_dvd h_not_dvd
-  rw [not_le] at h_not_dvd
-  apply Nat.eq_of_le_of_lt_succ h_dvd h_not_dvd
+@[deprecated "Only used by deprecated lemmas." (since := "2026-11-20")]
+private theorem multiplicity_finprod_maxPowDividing (I : Ideal R) :
+    multiplicity v.asIdeal (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) =
+      multiplicity v.asIdeal I := by
+  have hfin : FiniteMultiplicity v.asIdeal (∏ᶠ w : HeightOneSpectrum R, w.maxPowDividing I) :=
+    FiniteMultiplicity.of_prime_left v.prime
+      (Associates.mk_ne_zero.mp (Associates.finprod_ne_zero I))
+  refine le_antisymm ?_ (hfin.pow_dvd_iff_le_multiplicity.mp
+    (finprod_mem_dvd v (hasFiniteMulSupport I)))
+  rw [← Nat.lt_succ_iff, ← not_le, ← hfin.pow_dvd_iff_le_multiplicity]
+  exact pow_multiplicity_add_one_not_dvd_finprod v I
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
-  rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
-  apply Associates.eq_of_eq_counts
-  · apply Associates.finprod_ne_zero I
-  · apply Associates.mk_ne_zero.mpr hI
-  intro v hv
-  obtain ⟨J, hJv⟩ := Associates.exists_rep v
-  rw [← hJv, Associates.irreducible_mk] at hv
-  rw [← hJv]
-  apply Ideal.finprod_count
-    ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
+  rw [finprod_eq_prod _ (hasFiniteMulSupport I),
+    Finset.prod_congr rfl fun v _ ↦ maxPowDividing_eq_pow_multiset_count v I,
+    ← Finset.prod_image (f := fun J ↦ J ^ Multiset.count J (normalizedFactors I))
+      asIdeal_injective.injOn, Finset.prod_congr _ fun _ _ ↦ rfl,
+    ← Finset.prod_multiset_count, prod_normalizedFactors_eq_self hI]
+  ext
+  simp only [Finset.mem_image, (hasFiniteMulSupport I).mem_toFinset, mem_mulSupport,
+    maxPowDividing_ne_one_iff, Multiset.mem_toFinset]
+  refine ⟨fun ⟨v, hv, h⟩ ↦ h ▸ hv, fun h ↦ ⟨⟨_, isPrime_of_prime (prime_of_normalized_factor _ h),
+    ne_zero_of_mem_normalizedFactors h⟩, h, rfl⟩⟩
+
+/-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
+@[deprecated finprod_heightOneSpectrum_factorization +typeChanged (since := "2026-11-12")]
+theorem finprod_not_dvd (I : Ideal R) (_hI : I ≠ 0) :
+    ¬v.asIdeal ^ ((Associates.mk v.asIdeal).count (Associates.mk I).factors + 1) ∣
+        ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
+  rw [count_associates_factors_eq_multiplicity]
+  exact pow_multiplicity_add_one_not_dvd_finprod v I
+
+/-- The multiplicity of `v` in `∏_v v^(val_v(I))` equals `val_v(I)`. -/
+@[deprecated finprod_heightOneSpectrum_factorization +typeChanged (since := "2026-11-12")]
+theorem finprod_count (I : Ideal R) (_hI : I ≠ 0) : (Associates.mk v.asIdeal).count
+    (Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I)).factors =
+    (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
+  rw [count_associates_factors_eq_multiplicity, count_associates_factors_eq_multiplicity,
+    multiplicity_finprod_maxPowDividing v I]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
@@ -211,7 +304,7 @@ theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
     ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
   nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
   classical
-  rw [finprod_def, dite_eq_left (Ideal.hasFiniteMulSupport h0),
+  rw [finprod_def, dite_eq_left (Ideal.hasFiniteMulSupport I),
     Ideal.prod_eq_iInf_of_pairwise_isCoprime]
   · ext x
     constructor
@@ -222,17 +315,30 @@ theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
   · intro x hx y hy hxy
     apply IsDedekindDomain.HeightOneSpectrum.isCoprime_pow_of_ne _ _ hxy
 
+/-- A nonzero ideal `I` is the product `∏_v v ^ multiplicity v I`. -/
+lemma finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
+    ∏ᶠ p : HeightOneSpectrum R, p.asIdeal ^ multiplicity p.asIdeal I = I :=
+  finprod_heightOneSpectrum_factorization hI
+
 variable (K)
+
+/-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
+ideals of `R`. -/
+theorem finprod_heightOneSpectrum_zpow_multiplicity {I : Ideal R} (hI : I ≠ 0) :
+    (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
+      (multiplicity v.asIdeal I : ℤ)) = I := by
+  conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization hI]
+  rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
+  simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
+    zpow_natCast]
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
 ideals of `R`. -/
 theorem finprod_heightOneSpectrum_factorization_coeIdeal {I : Ideal R} (hI : I ≠ 0) :
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
-  conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization hI]
-  rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
-  simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
-    zpow_natCast]
+  simp_rw [count_associates_factors_eq_multiplicity]
+  exact finprod_heightOneSpectrum_zpow_multiplicity K hI
 
 @[deprecated (since := "2026-11-10")]
 alias finprod_heightOneSpectrum_factorization_coe :=
@@ -848,57 +954,12 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
     refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
     have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.isPrime.ne_top]
-    simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx_eq_factors_count p v h]
+    simp [maxPowDividing_eq_pow_multiset_count, ramificationIdx_eq_factors_count p v h]
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
-      Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
+      multiplicity_eq_zero (FiniteMultiplicity.of_prime_left v.prime h)] using hv
 
 end primesOver
-
-/-!
-### Conversion between various multiplicities
-
-We provide some lemmas that convert various ways of expressing the multiplicity of
-a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
--/
-
-section conversion
-
-variable {R : Type*} [CommRing R] [IsDedekindDomain R]
-
-namespace IsDedekindDomain.HeightOneSpectrum
-
-variable {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R)
-include hI
-
-open UniqueFactorizationMonoid in
-/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
-as `multiplicity p.asIdeal I`. -/
-@[simp]
-lemma count_normalizedFactors_eq_multiplicity :
-    Multiset.count p.asIdeal (normalizedFactors I) = multiplicity p.asIdeal I := by
-  have := emultiplicity_eq_count_normalizedFactors (irreducible p) hI
-  rw [normalize_eq p.asIdeal] at this
-  apply_fun ((↑) : ℕ → ℕ∞) using CharZero.cast_injective
-  rw [← this]
-  exact (finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity
-
-/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
-as `multiplicity p.asIdeal I`. -/
-lemma maxPowDividing_eq_pow_multiplicity :
-    p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
-  rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
-
-/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
-as `multiplicity p.asIdeal I`. -/
-@[simp]
-lemma factorization_eq_multiplicity :
-    factorization I p.asIdeal = multiplicity p.asIdeal I := by
-  rw [factorization_eq_count, count_normalizedFactors_eq_multiplicity hI]
-
-end IsDedekindDomain.HeightOneSpectrum
-
-end conversion
 
 /-!
 ### Lemmas about multiplicities
@@ -916,27 +977,22 @@ lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) : emult
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
-lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
-    ∏ᶠ p : HeightOneSpectrum R, p.asIdeal ^ multiplicity p.asIdeal I = I := by
-  simpa only [maxPowDividing_eq_pow_multiplicity hI]
-    using finprod_heightOneSpectrum_factorization hI
-
 namespace IsDedekindDomain.HeightOneSpectrum
 
 variable (p : HeightOneSpectrum R) {I J : Ideal R}
 
 lemma multiplicity_le_of_ideal_ge (h : J ≤ I) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal I ≤ multiplicity p.asIdeal J := by
-  rw [← count_normalizedFactors_eq_multiplicity hJ,
-    ← count_normalizedFactors_eq_multiplicity <| ne_bot_of_le_ne_bot hJ h]
+  rw [← Ideal.count_normalizedFactors_eq_multiplicity _ J,
+    ← Ideal.count_normalizedFactors_eq_multiplicity _ I]
   exact Ideal.count_le_of_ideal_ge h hJ _
 
 open UniqueFactorizationMonoid Multiset in
 lemma multiplicity_sup (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
-  rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
-    ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
-  case h => exact prod_inter_normalizedFactors_ne_zero I J
+  rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← Ideal.count_normalizedFactors_eq_multiplicity,
+    ← Ideal.count_normalizedFactors_eq_multiplicity _ I,
+    ← Ideal.count_normalizedFactors_eq_multiplicity _ J]
   rw [normalizedFactors_prod_inter_eq_inter]
   exact count_inter ..
 

@@ -123,6 +123,11 @@ theorem count_some (hp : Irreducible p) (s : Multiset _) :
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
   simp only [count, dite_eq_left hp, bcount, Multiset.count_zero]
 
+@[simp]
+theorem count_top : count p (⊤ : FactorSet α) = 0 := by
+  rw [count]
+  split_ifs <;> simp [bcount]
+
 theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dite_eq_right hp
 
 end count
@@ -534,7 +539,7 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     {p : Associates α} (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {k : ℕ}
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
-  · simpa [*] using habk
+  · simp [ha]
   rcases count_of_coprime hab hp with hz | h
   · rw [hz]
     exact dvd_zero k
