@@ -841,6 +841,27 @@ theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0
 theorem det_fin_two_of (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c :=
   det_fin_two _
 
+/-- The two-by-two determinant formula for a matrix indexed by the sum of two subsingleton types,
+given an index in each. -/
+theorem det_subsingleton_sum_subsingleton {ι m R : Type*}
+    [Subsingleton ι] [Subsingleton m] [DecidableEq ι] [DecidableEq m]
+    [Fintype ι] [Fintype m] [CommRing R]
+    (M : Matrix (ι ⊕ m) (ι ⊕ m) R) (i : ι) (j : m) :
+    M.det = M (.inl i) (.inl i) * M (.inr j) (.inr j) -
+      M (.inl i) (.inr j) * M (.inr j) (.inl i) := by
+  let : Unique ι := uniqueOfSubsingleton i
+  let : Unique m := uniqueOfSubsingleton j
+  let e : (ι ⊕ m) ≃ Fin 2 :=
+    (Equiv.sumCongr
+      (Equiv.ofUnique ι (Fin 1))
+      (Equiv.ofUnique m (Fin 1))).trans finSumFinEquiv
+  calc
+    M.det = (Matrix.reindex e e M).det :=
+      (Matrix.det_reindex_self e M).symm
+    _ = _ := by
+      rw [Matrix.det_fin_two]
+      rfl
+
 /-- Determinant of 3x3 matrix -/
 theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
     det A =

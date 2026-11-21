@@ -38,8 +38,10 @@ Developing the proof in two steps is helpful, since the local ring hypothesis al
 construct the desired `X` in step 1 at the residue field level, and lift back to the ring while
 keeping the upper-left block invertible.
 
-## TODO
-* For `n = 1` the symplectic group coincides with the special linear group.
+## Further results
+
+The identification of the symplectic group on 2 × 2 matrices with `SL(2, R)` is proved
+in `Mathlib.LinearAlgebra.SymplecticGroup.SpecialLinearGroup`.
 -/
 
 @[expose] public section
