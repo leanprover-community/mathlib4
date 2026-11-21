@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.Gavrilovich.Elab.Full
 public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
+public import Mathlib.Tactic.Gavrilovich.Relabel
 public import Mathlib.Topology.Gavrilovich.Model
 public import Mathlib.Topology.Gavrilovich.Space
 

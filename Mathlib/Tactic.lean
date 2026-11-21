@@ -161,6 +161,7 @@ public import Mathlib.Tactic.Gavrilovich.Elab.Basic
 public import Mathlib.Tactic.Gavrilovich.Elab.Full
 public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
+public import Mathlib.Tactic.Gavrilovich.Relabel
 public import Mathlib.Tactic.Gavrilovich.Tactics
 public import Mathlib.Tactic.Generalize
 public import Mathlib.Tactic.GrindAttrs
