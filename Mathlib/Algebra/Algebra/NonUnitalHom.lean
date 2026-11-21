@@ -257,10 +257,7 @@ variable {R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module R B]
 
 /-- Interpret a `NonUnitalAlgHom` as a `LinearMap`. -/
-protected def toLinearMap (f : A →ₙₐ[R] B) : A →ₗ[R] B where
-  toFun := f.toFun
-  map_add' := f.map_add
-  map_smul' := f.map_smul
+protected def toLinearMap (f : A →ₙₐ[R] B) : A →ₗ[R] B where __ := f
 
 @[simp] lemma coe_toLinearMap (f : A →ₙₐ[R] B) : ⇑f.toLinearMap = f := rfl
 
