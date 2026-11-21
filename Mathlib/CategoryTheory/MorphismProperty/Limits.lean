@@ -28,7 +28,7 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 
 @[expose] public section
 
-universe w w' v u
+universe w w'
 
 namespace CategoryTheory
 
@@ -36,7 +36,7 @@ open Category Limits
 
 namespace MorphismProperty
 
-variable {C : Type u} [Category.{v} C]
+variable {C D : Type*} [Category* C] [Category* D]
 
 section
 
@@ -91,6 +91,18 @@ instance : P.pullbacks.RespectsIso :=
     rintro q q' e ⟨X, Y, p, f, g, hp, h⟩
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
+
+lemma map_pushouts {X Y : C} {f : X ⟶ Y}
+    (hf : P.pushouts f) (F : C ⥤ D) [PreservesColimitsOfShape WalkingSpan F] :
+    (P.map F).pushouts (F.map f) := by
+  obtain ⟨_, _, l, _, _, hl, sq⟩ := hf
+  exact ⟨_, _, _, _, _, P.map_mem_map F l hl, sq.map F⟩
+
+lemma map_pushouts_le (F : C ⥤ D) [PreservesColimitsOfShape WalkingSpan F] :
+    P.pushouts.map F ≤ (P.map F).pushouts := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact P.map_pushouts hf F
 
 /-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
@@ -572,6 +584,29 @@ lemma colimitsOfShape.of_isColimit
         rw [Category.id_comp, ← Functor.map_comp]
         rfl } h _ (by simp)
 
+variable {J} in
+lemma map_colimitsOfShape {X Y : C} {f : X ⟶ Y} (hf : W.colimitsOfShape J f) (F : C ⥤ D)
+    [PreservesColimitsOfShape J F] :
+    (W.map F).colimitsOfShape J (F.map f) := by
+  obtain ⟨_, _, c₁, c₂, hc₁, hc₂, φ, hφ⟩ := hf
+  let hc₁' := isColimitOfPreserves F hc₁
+  have : F.map (hc₁.desc { pt := _, ι := φ ≫ c₂.ι }) =
+    hc₁'.desc { pt := _, ι := Functor.whiskerRight φ F ≫ (F.mapCocone c₂).ι } :=
+      hc₁'.hom_ext (fun j ↦ by
+        rw [IsColimit.fac]
+        dsimp
+        rw [← F.map_comp, IsColimit.fac, NatTrans.comp_app, Functor.map_comp])
+  rw [this]
+  exact ⟨_, _, _, _, _, isColimitOfPreserves F hc₂, _,
+    fun j ↦ W.map_mem_map F (φ.app j) (hφ j)⟩
+
+lemma map_colimitsOfShape_le (F : C ⥤ D)
+    (J : Type*) [Category* J] [PreservesColimitsOfShape J F] :
+    (W.colimitsOfShape J).map F ≤ (W.map F).colimitsOfShape J := by
+  rintro X Y f ⟨_, _, g, hg, ⟨e⟩⟩
+  rw [← ((W.map F).colimitsOfShape J).arrow_mk_iso_iff e]
+  exact W.map_colimitsOfShape hg F
+
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
 class IsStableUnderColimitsOfShape : Prop where
@@ -609,6 +644,15 @@ instance IsStableUnderColimitsOfShape.isomorphisms :
       h₁.hom_ext (fun j ↦ by simp [reassoc_of% (hφ j)]),
       h₂.hom_ext (by simp [hφ])⟩
 
+instance (W : MorphismProperty D) [W.RespectsIso] [W.IsStableUnderColimitsOfShape J]
+    (F : C ⥤ D) [PreservesColimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderColimitsOfShape J := by
+  rw [isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
+  intro X Y f hf
+  have hW := W.map_inverseImage_le F
+  rw [W.isoClosure_eq_self] at hW
+  exact W.colimitsOfShape_le _ (colimitsOfShape_monotone hW J _ (map_colimitsOfShape _ hf F))
+
 end ColimitsOfShape
 
 /-- The condition that a property of morphisms is stable by filtered colimits. -/
@@ -637,6 +681,12 @@ lemma colimitsOfShape_le_coproducts (J : Type w) :
 lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
   simp only [coproducts, iSup_iff]
+
+instance (W : MorphismProperty C) : (coproducts.{w} W).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun f g e hf ↦ by
+    rw [coproducts_iff] at hf ⊢
+    obtain ⟨J, hf⟩ := hf
+    exact ⟨J, (MorphismProperty.arrow_mk_iso_iff _ e).mp hf⟩)
 
 lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
     (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :
@@ -670,6 +720,20 @@ lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := by
   obtain ⟨J, hf⟩ := hf
   exact W₂.colimitsOfShape_le_coproducts J _
     (colimitsOfShape_monotone h _ _ hf)
+
+lemma map_coproducts {X Y : C} {f : X ⟶ Y}
+    (hf : coproducts.{w} W f) (F : C ⥤ D)
+    [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    coproducts.{w} (W.map F) (F.map f) := by
+  rw [coproducts_iff] at hf ⊢
+  obtain ⟨J, hf⟩ := hf
+  exact ⟨J, W.map_colimitsOfShape hf F⟩
+
+lemma map_coproducts_le (F : C ⥤ D) [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    (coproducts.{w} W).map F ≤ coproducts.{w} (W.map F) := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact W.map_coproducts hf F
 
 end Coproducts
 
@@ -770,6 +834,10 @@ lemma coproducts_le_iff {P Q : MorphismProperty C} [IsStableUnderCoproducts.{w} 
   · exact le_trans P.le_coproducts
   · intro h
     exact le_trans (coproducts_monotone h) Q.coproducts_le
+
+instance (W : MorphismProperty D) [W.RespectsIso] [IsStableUnderCoproducts.{w} W] (F : C ⥤ D)
+    [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    IsStableUnderCoproducts.{w} (W.inverseImage F) where
 
 end Products
 
