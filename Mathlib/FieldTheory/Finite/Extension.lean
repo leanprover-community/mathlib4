@@ -215,4 +215,19 @@ theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 
     · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mpr (advd.trans hfdvd)
     · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mp dvd_rfl
 
+/-- **Rabin's irreducibility test**: a polynomial `f` of degree `n > 0` over a finite field of
+cardinality `q` is irreducible if and only if `f` divides `X ^ q ^ n - X` and
+`f` is coprime to `X ^ q ^ (n / p) - X` for every prime `p` dividing `n`. -/
+theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime' {f : k[X]} (hd : 0 < f.natDegree) :
+    Irreducible f ↔ f ∣ X ^ Nat.card k ^ f.natDegree - X ∧
+      ∀ p, p.Prime → p ∣ f.natDegree → IsCoprime f (X ^ Nat.card k ^ (f.natDegree / p) - X) := by
+  rw [irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime hd]
+  refine and_congr_right' ?_
+  constructor
+  · intro hm p hp hpdvd
+    exact hm (f.natDegree / p) (Nat.div_dvd_of_dvd hpdvd) (Nat.div_lt_self hd hp.one_lt).ne
+  · intro h m hmdvd hmne
+    obtain ⟨p, hp, hpdvd, hmdvd⟩ := Nat.exists_prime_and_dvd_and_dvd_div hmdvd hmne
+    exact (h p hp hpdvd).of_isCoprime_of_dvd_right (dvd_pow_pow_sub_self_of_dvd hmdvd)
+
 end Polynomial
