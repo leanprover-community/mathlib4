@@ -82,8 +82,8 @@ This is a version of `Module.rank_eq_zero_iff_forall_exists_smul_eq_zero`
 that works for semirings. -/
 lemma rank_eq_zero_iff_not_injective :
     Module.rank R M = 0 ↔ ∀ x : M, ¬Injective (· • x : R → M) := by
-  simp_rw [Module.rank_def, ← le_zero_iff, ciSup_le_iff' bddAbove_of_small, Subtype.forall,
-    le_zero_iff, Cardinal.mk_eq_zero_iff, Set.isEmpty_coe_sort,
+  simp_rw [Module.rank_def, ← nonpos_iff_eq_zero, ciSup_le_iff' bddAbove_of_small, Subtype.forall,
+    nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, Set.isEmpty_coe_sort,
     ← linearIndepOn_singleton_iff_injective (v := (·))]
   constructor
   · intro h x hx
@@ -124,8 +124,8 @@ instance (priority := 100) Free.rankZeroSubsingleton [Module.Free R M] :
     cases subsingleton_or_nontrivial R
     · exact Module.subsingleton R M
     have b := Free.chooseBasis R M
-    have := b.linearIndependent.cardinal_lift_le_rank
-    rw [h, lift_zero, le_zero_iff, lift_eq_zero, mk_eq_zero_iff] at this
+    have : IsEmpty (ChooseBasisIndex R M) := by
+      simpa [h, mk_eq_zero_iff] using b.linearIndependent.cardinal_le_rank
     exact b.repr.subsingleton
 
 protected lemma exists_mem_ne_zero_of_rank_pos [Nontrivial R] {s : Submodule R M}
