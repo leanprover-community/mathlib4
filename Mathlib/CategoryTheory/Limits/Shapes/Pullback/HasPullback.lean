@@ -328,7 +328,7 @@ section PullbackSymmetry
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
--- In lean4, this could be made into a global instance.
+-- TODO: consider making this a global instance.
 @[to_dual]
 theorem hasPullback_symmetry [HasPullback f g] : HasPullback g f :=
   ⟨⟨⟨_, PullbackCone.flipIsLimit (pullbackIsPullback f g)⟩⟩⟩
@@ -394,13 +394,11 @@ instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Catego
     [HasWidePullbacks.{w} D] : HasPullbacks.{v, u} D :=
   hasWidePullbacks_shrink WalkingPair
 
-@[to_dual]
+@[to_dual (attr := deprecated hasPullback_symmetry +typeChanged (since := "2026-11-21"))
+  hasPushouts_symmetry_of_hasPushoutsAlong]
 theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f]
     {g : Y ⟶ S} : HasPullback f g :=
   hasPullback_symmetry g f
-
-@[deprecated (since := "2026-11-19")]
-alias hasPushouts_symmetry_of_hasPushoutsAlong := hasPushout_symmetry_of_hasPushoutsAlong
 
 section Products
 
