@@ -88,10 +88,10 @@ notation "I(" a ", " b ")" => Ioo a b
 notation "I(" a ", " b "]" => Ioc a b
 notation "I[" a ", " b ")" => Ico a b
 notation "I[" a ", " b "]" => Icc a b
-notation "I(" ", " b ")" => Iio b
-notation "I(" ", " b "]" => Iic b
-notation "I(" a ", " ")" => Ioi a
-notation "I[" a ", " ")" => Ici a
+notation "I(" "…" ", " b ")" => Iio b
+notation "I(" "…" ", " b "]" => Iic b
+notation "I(" a ", " "…" ")" => Ioi a
+notation "I[" a ", " "…" ")" => Ici a
 
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
