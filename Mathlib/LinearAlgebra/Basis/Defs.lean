@@ -367,7 +367,10 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
 theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i = b₂.repr x i) : b₁ = b₂ :=
   repr_injective <| by ext; apply h
 
-/-- Two bases are equal if their basis vectors are the same. -/
+/-- Two bases are equal if their basis vectors are the same.
+
+TODO: once the deprecated alias `Basis.ext` is removed, rename this theorem to `ext`.
+-/
 @[ext]
 theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
   DFunLike.ext _ _
