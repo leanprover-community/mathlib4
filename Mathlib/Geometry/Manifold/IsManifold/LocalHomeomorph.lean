@@ -89,9 +89,9 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   rw [contMDiffAt_iff]
   constructor
   · apply OpenPartialHomeomorph.continuousAt
-    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
+    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x := g y)
   · rw [show hf.localInverseAt (g y) y = g y by
-      simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
+      simpa [hg y] using (hf.localInverseAt_apply_self (x := g y))]
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
     rw [extChartAt_coe, extChartAt_coe_symm, hc, OpenPartialHomeomorph.coe_trans_symm]
     refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
