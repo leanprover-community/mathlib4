@@ -59,11 +59,15 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
         ← ENat.card_eq_coe_natCard, ENat.natCast_add]
   · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
 
-theorem exists_embedding_disjoint_range_of_add_le_Nat_card
+theorem exists_embedding_disjoint_range_of_add_le_natCard
     [Finite α] (hs : s.ncard + n ≤ Nat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by
   apply exists_embedding_disjoint_range_of_add_le_ENat_card
   rwa [← ENat.natCast_add, ENat.card_eq_coe_natCard, ENat.natCast_le_natCast]
+
+@[deprecated (since := "2026-10-27")]
+alias exists_embedding_disjoint_range_of_add_le_Nat_card :=
+  exists_embedding_disjoint_range_of_add_le_natCard
 
 theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
     Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by

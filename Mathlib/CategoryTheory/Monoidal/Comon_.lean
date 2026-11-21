@@ -422,7 +422,7 @@ attribute [local instance] obj.instComonObj
     Δ[F.obj X] = F.map Δ ≫ δ F _ _ :=
   rfl
 
-instance map.instIsComon_Hom
+instance map.instIsComonHom
     (F : C ⥤ D) [F.OplaxMonoidal]
     {X Y : C} [ComonObj X] [ComonObj Y] (f : X ⟶ Y) [IsComonHom f] :
     IsComonHom (F.map f) where
