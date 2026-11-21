@@ -1242,15 +1242,11 @@ per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
 parses. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
-  let dest : Location :=
-    { root := "https://example.invalid/mathlib4-master"
-      label := "master"
-      scope? := none }
-  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
+  let cfg := mkPutConfigContent
+    #[("/tmp/00000000deadbeef.ltar", "https://example.invalid/a/00000000deadbeef.art")]
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
-  assertTrue "addresses {root}/{filesDir}/{name}"
-    ((cfg.splitOn
-      "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
+  assertTrue "addresses the given URL"
+    ((cfg.splitOn "url = https://example.invalid/a/00000000deadbeef.art").length == 2)
   assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
