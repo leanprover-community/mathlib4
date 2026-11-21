@@ -151,3 +151,41 @@ theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f 
     filter_upwards [h.nhdsNE_deriv] using by simp +contextual
   · rw [accPt_iff_frequently_nhdsNE, not_frequently] at hacc
     filter_upwards [hacc] using by grind
+
+/-!
+## Vanishing along `codiscreteWithin`
+
+A function meromorphic on `U` vanishes along `codiscreteWithin U` iff it vanishes in a punctured
+neighborhood of every point of `U`. If `U` is preperfect, this is equivalent to having infinite
+order at every point of `U`; if `U` is preconnected with at least two points, infinite order at a
+single point suffices.
+-/
+
+namespace MeromorphicOn
+
+/--
+A function meromorphic on a preperfect set `U` vanishes along `codiscreteWithin U` iff it has
+infinite order at every point of `U`.
+-/
+theorem eventuallyEq_zero_codiscreteWithin_iff_forall_meromorphicOrderAt_eq_top
+    (hf : MeromorphicOn f U) (hU : Preperfect U) :
+    f =ᶠ[codiscreteWithin U] 0 ↔ ∀ x ∈ U, meromorphicOrderAt f x = ⊤ := by
+  refine ⟨fun h x hx ↦ meromorphicOrderAt_eq_top_iff.2
+    ((hf x hx).eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin hx (hU x hx) h),
+    fun h ↦ eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE.2 fun x hx ↦ ?_⟩
+  exact (meromorphicOrderAt_eq_top_iff.1 (h x hx)).mono fun _ hy _ ↦ hy
+
+/--
+A function meromorphic on a preconnected set `U` with at least two points vanishes along
+`codiscreteWithin U` iff it has infinite order at one point of `U`.
+-/
+theorem eventuallyEq_zero_codiscreteWithin_iff_exists_meromorphicOrderAt_eq_top
+    (hf : MeromorphicOn f U) (h₁U : IsPreconnected U) (h₂U : U.Nontrivial) :
+    f =ᶠ[codiscreteWithin U] 0 ↔ ∃ x ∈ U, meromorphicOrderAt f x = ⊤ := by
+  rw [hf.eventuallyEq_zero_codiscreteWithin_iff_forall_meromorphicOrderAt_eq_top
+    (h₁U.preperfect_of_nontrivial h₂U)]
+  refine ⟨fun h ↦ h₂U.nonempty.imp fun x hx ↦ ⟨hx, h x hx⟩, ?_⟩
+  rintro ⟨x, h₁x, h₂x⟩ y hy
+  exact hf.meromorphicOrderAt_eq_top_of_isPreconnected h₁U h₁x hy h₂x
+
+end MeromorphicOn
