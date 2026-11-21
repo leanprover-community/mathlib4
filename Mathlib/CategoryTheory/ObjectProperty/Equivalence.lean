@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Equivalence of full subcategories
@@ -17,11 +18,22 @@ by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 
 @[expose] public section
 
-universe v v' u u'
+namespace CategoryTheory
 
-namespace CategoryTheory.ObjectProperty
+variable {C D : Type*} [Category* C] [Category* D]
 
-variable {C : Type u} [Category.{v} C] {P Q : ObjectProperty C} (h : P ≤ Q)
+lemma Functor.isEquivalence_iff_essImage_of_full_of_faithful
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] :
+    F.IsEquivalence ↔ F.essImage = ⊤ := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · rw [← F.essSurj_iff_essImage_eq_top]
+    infer_instance
+  · exact { essSurj := by rwa [F.essSurj_iff_essImage_eq_top] }
+
+namespace ObjectProperty
+
+variable {P Q : ObjectProperty C} (h : P ≤ Q)
 
 lemma essSurj_ιOfLE_iff : (ιOfLE h).EssSurj ↔ Q ≤ P.isoClosure := by
   refine ⟨fun _ X hX ↦ ?_, fun hPQ ↦ ⟨fun ⟨Y, hY⟩ ↦ ?_⟩⟩
@@ -52,21 +64,22 @@ lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
 
 lemma isEquivalence_lift_iff {D : Type*} [Category* D]
     (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms]
-    (F : C ⥤ D) [F.Full] [F.Faithful] (hF : (∀ (X : C), P (F.obj X))) :
-    (P.lift F hF).IsEquivalence ↔ F.essImage = P := by
-  refine ⟨fun h ↦ le_antisymm (fun _ ⟨_, ⟨e⟩⟩ ↦ P.prop_of_iso e (hF _))
-    (fun X hX ↦ ⟨_, ⟨P.ι.mapIso ((P.lift F hF).objObjPreimageIso ⟨X, hX⟩)⟩⟩),
-    fun h ↦ { essSurj.mem_essImage := fun ⟨X, hX⟩ ↦ ?_ } ⟩
-  rw [← h] at hX
-  obtain ⟨Y, ⟨e⟩⟩ := hX
-  exact ⟨Y, ⟨ObjectProperty.isoMk _ e⟩⟩
+    (F : C ⥤ D) [F.Full] [F.Faithful] (hF : ∀ (X : C), P (F.obj X)) :
+    (P.lift F hF).IsEquivalence ↔ F.essImage = P.isoClosure := by
+  suffices H : F.essImage.inverseImage P.ι = ⊤ ↔ (F.essImage = P.isoClosure) by
+    rwa [Functor.isEquivalence_iff_essImage_of_full_of_faithful, essImage_lift]
+  simp only [← map_eq_map_iff_of_isClosedUnderIsomorphisms P.ι,
+    map_inverseImage, ObjectProperty.map_top,
+    essImage_ι, le_antisymm_iff, inf_le_right, le_inf_iff,
+    le_refl, and_true, true_and, iff_and_self]
+  rintro hx X ⟨Y, ⟨e⟩⟩
+  exact prop_isoClosure (hF Y) e.hom
 
-end CategoryTheory.ObjectProperty
+end ObjectProperty
 
-namespace CategoryTheory.Equivalence
+namespace Equivalence
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  {P : ObjectProperty C} {Q : ObjectProperty D} (e : C ≌ D)
+variable {P : ObjectProperty C} {Q : ObjectProperty D} (e : C ≌ D)
 
 /-- The equivalence of categories between two fullsubcategories `P` and `Q`
 of categories `C` and `D` that is induced by an equivalence `e : C ≌ D`
@@ -85,4 +98,6 @@ def congrFullSubcategory [Q.IsClosedUnderIsomorphisms] (h : Q.inverseImage e.fun
   functor_unitIso_comp X :=
     ObjectProperty.hom_ext _ (e.functor_unit_comp X.obj)
 
-end CategoryTheory.Equivalence
+end Equivalence
+
+end CategoryTheory

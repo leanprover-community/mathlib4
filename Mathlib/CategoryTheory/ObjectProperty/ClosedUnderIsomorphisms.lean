@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-! # Properties of objects which are closed under isomorphisms
@@ -110,6 +111,33 @@ lemma map_le_iff (P : ObjectProperty C) (Q : ObjectProperty D)
     [Q.IsClosedUnderIsomorphisms] (F : C ⥤ D) :
     P.map F ≤ Q ↔ P ≤ Q.inverseImage F := by
   rw [← isoClosure_strictMap, isoClosure_le_iff, strictMap_le_iff]
+
+lemma map_le_map_iff (P Q : ObjectProperty C)
+    {D : Type*} [Category* D] (F : C ⥤ D) [F.Full] [F.Faithful] :
+    P.map F ≤ Q.map F ↔ P.isoClosure ≤ Q.isoClosure := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [isoClosure_le_iff]
+    intro X hX
+    obtain ⟨Y, hY, ⟨e⟩⟩ : Q.map F (F.obj X) := h _ (P.prop_map_obj F hX)
+    exact ⟨Y, hY, ⟨F.preimageIso e.symm⟩⟩
+  · simpa only [← P.map_isoClosure, ← Q.map_isoClosure] using map_monotone h F
+
+lemma map_eq_map_iff {D : Type*} [Category* D] (F : C ⥤ D) [F.Full] [F.Faithful]
+    (P Q : ObjectProperty C) :
+    P.map F = Q.map F ↔ P.isoClosure = Q.isoClosure := by
+  simp [le_antisymm_iff, map_le_map_iff]
+
+lemma map_le_map_iff_of_isClosedUnderIsomorphisms (P Q : ObjectProperty C)
+    [Q.IsClosedUnderIsomorphisms]
+    {D : Type*} [Category* D] (F : C ⥤ D) [F.Full] [F.Faithful] :
+    P.map F ≤ Q.map F ↔ P ≤ Q := by
+  rw [map_le_map_iff, isoClosure_le_iff, Q.isoClosure_eq_self]
+
+lemma map_eq_map_iff_of_isClosedUnderIsomorphisms
+    {D : Type*} [Category* D] (F : C ⥤ D) [F.Full] [F.Faithful]
+    (P Q : ObjectProperty C) [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
+    P.map F = Q.map F ↔ P = Q := by
+  simp [le_antisymm_iff, map_le_map_iff_of_isClosedUnderIsomorphisms]
 
 end ObjectProperty
 
