@@ -411,8 +411,8 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
       · apply ball_subset_ball' _ hy
         simp only [hz, norm_smul, abs_of_nonneg Dpos.le, abs_of_nonneg B.le, dist_zero_right,
           Real.norm_eq_abs, abs_div]
-        field_simp
-        linarith only
+        apply le_of_eq
+        field
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
           · field

@@ -82,7 +82,7 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
   obtain ⟨g, hg, z, ⟨y, rfl⟩, rfl⟩ := Set.mem_mul.mp <| H₁ ▸ Set.mem_univ x
   have H' : h y < h (g * f y) := by
     suffices a * h (g * f y) + 2 * c < b * h (g * f y) by nlinarith [H₂ g hg (f y), H₃ y]
-    suffices 2 * c / (b - a) < h (g * f y) by field_simp [sub_pos.mpr H₀] at this; grind
+    suffices 2 * c / (b - a) < h (g * f y) by field_simp at this; grind
     suffices g * f y ∉ S by grind
     exact notMem_of_notMem_closure hx₁
   -- To obtain a contradiction, we do cases on whether `y ∈ U`.
