@@ -71,7 +71,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
     with z' hz' hσz' hfσz'
   exact hf.injOn_localInverseAt_target (τ.map_source hz').1 hσz' ((hτ hz').trans hfσz'.symm)
 
-lemma IsLocalHomeomorph.isManifold_of_rightInverse [IsManifold I n M] (h : Foo I n f) :
+theorem IsLocalHomeomorph.isManifold_of_rightInverse [IsManifold I n M] (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -124,7 +124,7 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hgy] with z hz
     exact (extChartAt I y).right_inv hz
 
-lemma IsLocalHomeomorph.contMDiff_of_rightInverse
+theorem IsLocalHomeomorph.contMDiff_of_rightInverse
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n f := by
@@ -178,7 +178,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
 
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
-lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
+theorem IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff[(hf.localInverseAt x).source] n (hf.localInverseAt x) := by
@@ -189,7 +189,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
-lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
+theorem IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
     (h : Foo I n f) {φ : M' → N} :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n φ ↔ CMDiff n (φ ∘ f) :=
