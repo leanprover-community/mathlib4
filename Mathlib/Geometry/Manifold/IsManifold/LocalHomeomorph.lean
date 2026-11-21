@@ -46,13 +46,15 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-! ### The Foo condition -/
 
--- TODO: find a proper name for `Foo`
+-- TODO: find a proper name for `Foo` and add a docstring.
 variable (I n f) in
 structure Foo : Prop where
   exists_contMDiffAt {x y : M} (hxy : f x = f y) :
     ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
 namespace IsLocalHomeomorph
+
+-- TODO: when `Foo` has a name/description change "if `f` satisfies the condition" in the docs
 
 /-- If `f` satisfies the condition, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
@@ -74,6 +76,8 @@ lemma contMDiffOn_localInverseAt_symm_trans
 
 /-! ### Manifold structure -/
 
+/-- If `M` is a `C^n` manifold and `f` satisfies the condition, then `M'` is a `C^n` manifold
+for the charts `hf.chartedSpaceOfRightInverse hg` pushed forward from `M`. -/
 theorem isManifold_of_rightInverse [IsManifold I n M]
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -91,6 +95,7 @@ theorem isManifold_of_rightInverse [IsManifold I n M]
 /-! ### Smoothness of `f` -/
 
 -- TODO: this and the lemma below use a very similar argument. can this be simplified?
+/-- If `g` is a right inverse of `f`, the local inverse of `f` at `g y` is `C^n` at `y`. -/
 lemma contMDiffAt_localInverseAt_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiffAt n (hf.localInverseAt (g y)) y := by
@@ -126,6 +131,7 @@ lemma contMDiffAt_of_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hgy] with z hz
     exact (extChartAt I y).right_inv hz
 
+/-- If `f` satisfies the condition, then `f` is `C^n`. -/
 theorem contMDiff_of_rightInverse (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n f := by
@@ -144,7 +150,8 @@ variable {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'}
 
-/-- Given `φ : M' → N` and `y : M'`, if `φ ∘ f` is `C^n` at `g y` then `φ` is `C^n` at `y`. -/
+/-- If `g` is a right inverse of `f` and `φ ∘ f` is `C^n` at `g y`,
+then `φ : M' → N` is `C^n` at `y`. -/
 lemma contMDiffAt_of_contMDiffAt_comp {φ : M' → N} {y : M'} (hφ : CMDiffAt n (φ ∘ f) (g y)) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiffAt n φ y := by
@@ -160,7 +167,7 @@ lemma contMDiffAt_of_contMDiffAt_comp {φ : M' → N} {y : M'} (hφ : CMDiffAt n
   rwa [show hf.localInverseAt (g y) y = g y by
     simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
 
-/-- Given `φ : M' → N`, if `φ ∘ f` is `C^n` then so is `φ`. -/
+/-- If `φ ∘ f` is `C^n`, then so is `φ : M' → N`. -/
 lemma contMDiff_of_contMDiff_comp {φ : M' → N} (hφ : CMDiff n (φ ∘ f)) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n φ :=
@@ -174,7 +181,8 @@ theorem contMDiff_iff_contMDiff_comp
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   ⟨fun hφ ↦ hφ.comp (hf.contMDiff_of_rightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
 
-/-- If `F : M → N` is `C^n` and factors through `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
+/-- If `F : M → N` is `C^n` and factors through `f`, then `F ∘ g : M' → N` is `C^n`,
+for `g` a right inverse of `f`. -/
 lemma contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
     (hFf : F.FactorsThrough f) (hF : CMDiff n F) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -183,8 +191,8 @@ lemma contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
 
 /-! ### Smoothness of the local inverses of `f` -/
 
-/-- If `f` satisfies the condition, for any point `x` in `M` the local inverse of `f` at `x`
-is `C^n` on its source -/
+/-- If `f` satisfies the condition, then for every `x : M` the local inverse of `f` at `x` is `C^n`
+on its source. -/
 theorem contMDiffOn_localInverseAt_rightInverse
     (h : Foo I n f) (x : M) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
