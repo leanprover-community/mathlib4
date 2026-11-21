@@ -107,10 +107,12 @@ lemma contMDiffAt_localInverseAt_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin y] with z hz
     exact (extChartAt I y).right_inv hz
 
-lemma contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
+/-- If `g` is a right inverse of `f`, `f` is `C^n` at `g y`. -/
+lemma contMDiffAt_of_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    CMDiffAt n (hf.localInverseAt (g y)).symm (g y) := by
+    CMDiffAt n f (g y) := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  suffices CMDiffAt n (hf.localInverseAt (g y)).symm (g y) by rwa [hf.localInverseAt_symm] at this
   rw [contMDiffAt_iff]
   constructor
   · exact OpenPartialHomeomorph.continuousAt _ (by simp)
@@ -130,13 +132,10 @@ theorem contMDiff_of_rightInverse (h : Foo I n f) :
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro x
   obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt (hg (f x)).symm
-  have : f =ᶠ[𝓝 x] (hf.localInverseAt (g (f x))).symm ∘ σ := by
-    rw [hf.localInverseAt_symm]
-    exact hfσ.symm
-  refine ContMDiffAt.congr_of_eventuallyEq ?_ this
+  refine ContMDiffAt.congr_of_eventuallyEq ?_ hfσ.symm
   refine ContMDiffAt.comp x ?_ hσ
   rw [hσx]
-  exact hf.contMDiffAt_localInverseAt_symm_rightInverse hg (f x)
+  exact hf.contMDiffAt_of_rightInverse hg (f x)
 
 /-! ### Maps out of `M'` -/
 
