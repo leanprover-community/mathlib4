@@ -307,14 +307,14 @@ instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
       refine EMetric.mk_uniformity_basis (fun _ _ ↦ by positivity) fun ε hε ↦
         ⟨ε ^ α, by positivity, ?_⟩
       rw [ENNReal.rpow_rpow_inv hα₀.ne']
-    simp (disch := positivity) [uniformity_comap, H.eq_biInf, ENNReal.rpow_lt_rpow_iff]
+    simp (disch := positivity) [uniformity_comap, H.eq_biInf, ENNReal.rpow_lt_rpow_iff_left]
 
 @[simp]
 theorem preimage_ofSnowflaking_eball (x : X) (r : ℝ≥0∞) :
     ofSnowflaking ⁻¹' Metric.eball x r =
       Metric.eball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [ENNReal.rpow_lt_rpow_iff]
+  simp (disch := positivity) [ENNReal.rpow_lt_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_eball (x : X) (r : ℝ≥0∞) :
@@ -338,7 +338,7 @@ theorem preimage_ofSnowflaking_closedEBall (x : X) (r : ℝ≥0∞) :
     ofSnowflaking ⁻¹' Metric.closedEBall x r =
       Metric.closedEBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [ENNReal.rpow_le_rpow_iff]
+  simp (disch := positivity) [ENNReal.rpow_le_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_closedEBall (x : X) (r : ℝ≥0∞) :
@@ -439,7 +439,7 @@ theorem dist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) 
 theorem preimage_ofSnowflaking_ball (x : X) {r : ℝ} (hr : 0 ≤ r) :
     ofSnowflaking ⁻¹' ball x r = ball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [Real.rpow_lt_rpow_iff]
+  simp (disch := positivity) [Real.rpow_lt_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_ball (x : X) {r : ℝ} (hr : 0 ≤ r) :
@@ -462,7 +462,7 @@ theorem preimage_ofSnowflaking_closedBall (x : X) {r : ℝ} (hr : 0 ≤ r) :
     ofSnowflaking ⁻¹' closedBall x r =
       closedBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [Real.rpow_le_rpow_iff]
+  simp (disch := positivity) [Real.rpow_le_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_closedBall (x : X) {r : ℝ} (hr : 0 ≤ r) :

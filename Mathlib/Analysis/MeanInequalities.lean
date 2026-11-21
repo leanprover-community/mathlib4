@@ -693,7 +693,7 @@ theorem Lr_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTri
     (∑ i ∈ s, (f i * g i) ^ r) ^ (1 / r) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   convert
-    rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos' : 0 < 1 / r) |>.mpr <|
+    rpow_le_rpow_iff_left (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos' : 0 < 1 / r) |>.mpr <|
       Lr_rpow_le_Lp_mul_Lq s f g hpqr
   have hr := hpqr.pos'.ne'
   simp only [← rpow_mul, mul_rpow]
@@ -789,7 +789,7 @@ theorem Lr_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : ℝ} (hpqr : p.Hold
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
     (∑' i, (f i * g i) ^ r) ^ (1 / r) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   convert
-    rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos') |>.mpr <|
+    rpow_le_rpow_iff_left (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos') |>.mpr <|
       Lr_rpow_le_Lp_mul_Lq_tsum hpqr hf hg
   have hr := hpqr.pos'.ne'
   simp only [← rpow_mul, mul_rpow]
@@ -830,7 +830,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 �
     ring
   simpa only [NNReal.mul_rpow, ← NNReal.rpow_mul, hp₁, hq, one_mul, one_rpow, rpow_one,
     Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
-    NNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
+    NNReal.rpow_le_rpow_left (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 
 /-- The `L_p` seminorm of a vector `f` is the greatest value of the inner product
 `∑ i ∈ s, f i * g i` over functions `g` of `L_q` seminorm less than or equal to one. -/
@@ -964,9 +964,9 @@ theorem Lp_add_le (hp : 1 ≤ p) :
   have := NNReal.coe_le_coe.2
     (NNReal.Lp_add_le s (fun i => .mk _ (abs_nonneg (f i))) (fun i => .mk _ (abs_nonneg (g i))) hp)
   push_cast at this
-  refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
+  refine le_trans (rpow_le_rpow_left ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
-      rpow_le_rpow]
+      rpow_le_rpow_left]
 
 variable {f g}
 
@@ -1072,7 +1072,7 @@ theorem Lr_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple q r) (hf : ∀ i, 
   have hg' : 0 ≤ ∑' i, g i ^ q := tsum_nonneg fun i ↦ rpow_nonneg (hg i) q
   have hr := hpqr.pos'
   convert
-    rpow_le_rpow_iff (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
+    rpow_le_rpow_iff_left (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
           (inv_eq_one_div r ▸ inv_pos.mpr hr) |>.mpr <|
       Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum
   rw [mul_rpow (rpow_nonneg hf' _) (rpow_nonneg hg' _), ← Real.rpow_mul hg', ← Real.rpow_mul hf']
@@ -1245,7 +1245,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     ring
   simpa only [ENNReal.mul_rpow_of_nonneg _ _ hpq.nonneg, ← ENNReal.rpow_mul, hp₁, hq, coe_one,
     one_mul, one_rpow, rpow_one, Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
-    ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
+    ENNReal.rpow_le_rpow_left (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞`-valued nonnegative
