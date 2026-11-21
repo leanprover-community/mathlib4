@@ -94,8 +94,8 @@ def descFSucc {Y Z : C} (I : InjectiveResolution Y) (J : InjectiveResolution Z) 
 /-- A morphism in `C` descends to a cochain map between injective resolutions. -/
 def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex ⟶ I.cocomplex :=
-  CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
-    fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
+  CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J)
+    fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w).1, (descFSucc I J n g g' w).2⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
