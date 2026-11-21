@@ -381,10 +381,8 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   let := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   have : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
-  let e : B₁ ≃ₐ[A₂] B₂ :=
-    { e₂ with
-      commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r)) }
+  let e : B₁ ≃ₐ[A₂] B₂ := .ofCommutes e₂ fun r ↦ by
+    simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r))
   have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 

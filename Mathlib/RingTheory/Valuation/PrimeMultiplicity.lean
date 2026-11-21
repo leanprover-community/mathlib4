@@ -5,8 +5,9 @@ Authors: Robert Y. Lewis, Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.RingTheory.Multiplicity
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -178,8 +179,8 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     apply ((not_hasEigenvalue_zero_tfae G).out 3 6).mpr
     intro x hx
     apply Subtype.ext
-    suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
-    suffices x.1 ∈ V from ⟨this, x.2⟩
+    suffices x.val ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
+    suffices x.val ∈ V from ⟨this, x.property⟩
     simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V]
     use 1
     rw [pow_one]
