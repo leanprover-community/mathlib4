@@ -4053,6 +4053,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.DedekindCut
@@ -7330,6 +7331,7 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RegularLocalRing.Polynomial
 public import Mathlib.RingTheory.RingHom.Bijective
