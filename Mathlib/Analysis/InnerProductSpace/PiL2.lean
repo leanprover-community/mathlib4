@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
 
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!

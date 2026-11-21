@@ -5,12 +5,13 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.ContinuousOn
+
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Flows and invariant sets

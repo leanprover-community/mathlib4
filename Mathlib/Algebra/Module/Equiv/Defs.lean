@@ -6,8 +6,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.LinearMap.Defs
+
+import Mathlib.Algebra.Group.IsApply
 
 /-!
 # (Semi)linear equivalences
