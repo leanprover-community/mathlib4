@@ -129,6 +129,37 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   ext
   simp
 
+variable {N N' : Type*} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N']
+
+/-- The morphism of symmetric algebras induced by a linear map. -/
+def map (f : M →ₗ[R] N) : SymmetricAlgebra R M →ₐ[R] SymmetricAlgebra R N :=
+  lift (ι R N ∘ₗ f)
+
+@[simp]
+theorem map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R M = ι R N ∘ₗ f :=
+  lift_comp_ι _
+
+@[simp]
+theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R M m) = ι R N (f m) :=
+  lift_ι_apply _ _
+
+@[simp]
+theorem map_id : map LinearMap.id = AlgHom.id R (SymmetricAlgebra R M) := by
+  simp [map]
+
+@[simp]
+theorem lift_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] A) : (lift g).comp (map f) = lift (g ∘ₗ f) :=
+  algHom_ext <| LinearMap.ext fun x => by simp
+
+@[simp]
+theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') : (map g).comp (map f) = map (g ∘ₗ f) :=
+  lift_comp_map f (ι R N' ∘ₗ g)
+
+@[simp]
+theorem ι_range_map_map (f : M →ₗ[R] N) :
+    (LinearMap.range (ι R M)).map (map f).toLinearMap = (LinearMap.range f).map (ι R N) := by
+  simp only [← LinearMap.range_comp, map_comp_ι]
+
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
