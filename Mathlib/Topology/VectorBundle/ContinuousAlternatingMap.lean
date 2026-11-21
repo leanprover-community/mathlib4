@@ -101,6 +101,27 @@ theorem inCoordinates_eq_of_mem_baseSet₂ {x₀ x : B₁} {y₀ y : B₂} {ϕ :
   ext
   simp [inCoordinates, *, Function.comp_def]
 
+@[simp]
+lemma inCoordinates_add [∀ y, ContinuousAdd (E₂ y)] {x₀ x : B₁} {y₀ y : B₂}
+    (ϕ ψ : E₁ x [⋀^ι]→L[𝕜] E₂ y) :
+    inCoordinates F₁ F₂ x₀ x y₀ y (ϕ + ψ) =
+      inCoordinates F₁ F₂ x₀ x y₀ y ϕ + inCoordinates F₁ F₂ x₀ x y₀ y ψ := by
+  ext
+  simp [inCoordinates]
+
+@[simp]
+lemma inCoordinates_neg [∀ y, IsTopologicalAddGroup (E₂ y)] {x₀ x : B₁} {y₀ y : B₂}
+    (ϕ : E₁ x [⋀^ι]→L[𝕜] E₂ y) :
+    inCoordinates F₁ F₂ x₀ x y₀ y (-ϕ) = - inCoordinates F₁ F₂ x₀ x y₀ y ϕ := by
+  ext
+  simp [inCoordinates]
+
+@[simp]
+lemma inCoordinates_zero {x₀ x : B₁} {y₀ y : B₂} :
+    inCoordinates F₁ F₂ x₀ x y₀ y (0 : E₁ x [⋀^ι]→L[𝕜] E₂ y) = 0 := by
+  ext
+  simp [inCoordinates]
+
 end ContinuousAlternatingMap
 
 open ContinuousAlternatingMap (inCoordinates)
