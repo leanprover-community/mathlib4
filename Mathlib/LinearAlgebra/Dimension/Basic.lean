@@ -66,7 +66,7 @@ for a finite-dimensional vector space (but 0 for an infinite-dimensional vector 
 -/
 @[stacks 09G3 "first part"]
 protected def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
+  ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.val)
 
 alias Module.rank_def := Module.rank.eq_def
 
@@ -140,7 +140,7 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
     contrapose! le
     rw [← natCast_add_one_le_iff, ← Nat.cast_add_one] at le
     have ⟨t, ht⟩ := exists_finset_eq_card le
-    exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
+    exact ⟨t.map (.subtype _), by simpa using ht.symm, s.property.mono <| by simp⟩
   mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
 
 theorem le_rank_iff {n : ℕ} : n ≤ Module.rank R M ↔ ∃ v : Fin n → M, LinearIndependent R v := by

@@ -298,10 +298,10 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
     let r : ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
-      Submodule.mem_span_singleton.1 (b ha).2 |>.choose
+      Submodule.mem_span_singleton.1 (b ha).property |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
         r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>
-      Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).2 |>.choose_spec.symm
+      Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).property |>.choose_spec.symm
     -- Since `M` is flat and `E -> N1` is injective, we only need to check that x = 0
     -- in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
@@ -399,6 +399,25 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
 lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
     Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
   simp [Function.Bijective]
+
+@[simp] lemma _root_.LinearMap.baseChange_injective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Injective (f.baseChange A) ↔ Function.Injective f :=
+  lTensor_injective_iff_injective R A f
+
+@[simp] lemma _root_.LinearMap.baseChange_surjective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Surjective (f.baseChange A) ↔ Function.Surjective f :=
+  lTensor_surjective_iff_surjective R A f
+
+@[simp] lemma _root_.LinearMap.baseChange_bijective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Bijective (f.baseChange A) ↔ Function.Bijective f :=
+  lTensor_bijective_iff_bijective R A f
+
+@[simp] lemma _root_.LinearMap.isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] M} : IsUnit (f.baseChange A) ↔ IsUnit f := by
+  simp [End.isUnit_iff]
 
 end
 

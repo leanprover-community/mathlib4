@@ -469,27 +469,27 @@ open Subtype
 is equivalent to a `Sigma`-type of subtypes. -/
 def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
     { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
-  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  toFun := fun x => ⟨⟨x.val.1, x.property.1⟩, ⟨x.val.2, x.property.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.val, x.2.val⟩, ⟨x.1.property, x.2.property⟩⟩
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
     { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
-  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  toFun := fun x => ⟨⟨x.val.1, x.property.1⟩, ⟨x.val.2, x.property.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.val, x.2.val⟩, ⟨x.1.property, x.2.property⟩⟩
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/
 def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
     {s : α × β // p s.1} ≃ {a // p a} × β where
-  toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
-  invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
+  toFun x := ⟨⟨x.val.1, x.property⟩, x.val.2⟩
+  invFun x := ⟨⟨x.1.val, x.2⟩, x.1.property⟩
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
     { x : α × β // p x.1 x.2 } ≃ Σ a, { b : β // p a b } where
-  toFun x := ⟨x.1.1, x.1.2, x.property⟩
+  toFun x := ⟨x.val.1, x.val.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
 
 /-- The type `∀ (i : α), β i` can be split as a product by separating the indices in `α`

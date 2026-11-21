@@ -26,6 +26,8 @@ variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
 
 section Product
 
+instance [HasProducts.{w} C] : HasProducts.{w} (D ⥤ C) where
+
 variable [HasLimitsOfShape (Discrete α) C]
 
 /-- Evaluating a product of functors amounts to taking the product of the evaluations. -/
@@ -46,6 +48,8 @@ theorem piObjIso_inv_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
 end Product
 
 section Coproduct
+
+instance [HasCoproducts.{w} C] : HasCoproducts.{w} (D ⥤ C) where
 
 variable [HasColimitsOfShape (Discrete α) C]
 

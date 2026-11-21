@@ -142,12 +142,12 @@ variable (F E K)
 
 /-- The separable closure of `F` in `E` is algebraic over `F`. -/
 instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
-  ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.property).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 @[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using! x.2⟩
+  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using! x.property⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
@@ -252,13 +252,13 @@ abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
     have : IsScalarTower K L E := .of_algebraMap_eq' rfl
     exact hx.tower_top _
   · obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
-    exact x.2
+    exact x.property
 
 lemma isClosed_restrictScalars_separableClosure [Algebra K E] [IsScalarTower F K E] :
     (separableClosureOperator F E).IsClosed ((separableClosure K E).restrictScalars F) :=
   ClosureOperator.isClosed_iff_closure_le.mpr fun x hx ↦ by
     obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
-    exact x.2
+    exact x.property
 
 lemma separableClosure_le_separableClosure_iff
     [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
