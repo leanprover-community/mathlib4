@@ -103,6 +103,20 @@ theorem gelfandRadiusNormAux_map (f : F) (x : L) :
   let := (AlgHom.ofClass f).toAlgebra
   gelfandRadiusNormAux_algebraMap K M x
 
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusNormAux {f : AlgebraNorm K L} (hf : IsPowMul f) (x : L) :
+    f x ≤ gelfandRadiusNormAux K L x := by
+  let b := Module.finBasis K L
+  let C := ‖⇑(b.repr 1)‖ * ∑ i, f (b i)
+  have hC x : f x ≤ C * ‖Algebra.leftMulMatrix b x‖ := by
+    conv_lhs => rw [← b.linearCombination_repr x, ← mul_one x]
+    grw [Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ (by simp), Finset.map_sum_le_sum]
+    simp_rw [map_smul_eq_mul]
+    grw [norm_le_pi_norm, ← Finset.mul_sum, ← Algebra.leftMulMatrix_mulVec_repr,
+      Matrix.linfty_opNorm_mulVec, mul_assoc, mul_comm]
+  refine le_gelfandRadius_of_bound _ (C := C) fun n ↦ ?_
+  grw [← hf.map_pow, hC, map_pow]
+
 end
 
 public section
@@ -292,6 +306,15 @@ theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
     contrapose hx
     exact hx.of_pow hk
 
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusNorm {f : AlgebraNorm K L} (hf : IsPowMul f) {x : L}
+    (hx : IsIntegral K x) : f x ≤ gelfandRadiusNorm K L x := by
+  have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
+  rw [hx.gelfandRadiusNorm_eq]
+  let g : AlgebraNorm K K⟮x⟯ := f.restriction K⟮x⟯.toSubalgebra
+  have hg : IsPowMul g := hf.restriction K⟮x⟯.toSubalgebra
+  exact hg.le_gelfandRadiusNormAux (AdjoinSimple.gen K x)
+
 end gelfandRadiusNorm
 
 section gelfandRadiusAlgNorm
@@ -341,6 +364,11 @@ theorem gelfandRadiusAlgNorm_eq_norm (x : K) : gelfandRadiusAlgNorm K K x = ‖x
 /-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
+
+variable {K L} in
+theorem IsPowMul.le_gelfandRadiusAlgNorm {f : AlgebraNorm K L} (hf : IsPowMul f) (x : L) :
+    f x ≤ gelfandRadiusAlgNorm K L x :=
+  hf.le_gelfandRadiusNorm (Algebra.IsIntegral.isIntegral x)
 
 end gelfandRadiusAlgNorm
 
