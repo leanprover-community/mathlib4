@@ -126,8 +126,8 @@ theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
       fun x hx => exp_log (Gamma_pos_of_pos hx)
   rw [convex_iff_isPreconnected]
   refine isPreconnected_Ioi.image _ fun x hx => ContinuousAt.continuousWithinAt ?_
-  refine (differentiableAt_Gamma fun m => ?_).continuousAt.log (Gamma_pos_of_pos hx).ne'
-  exact (neg_lt_iff_pos_add.mpr (add_pos_of_pos_of_nonneg (mem_Ioi.mp hx) (Nat.cast_nonneg m))).ne'
+  exact (differentiableAt_Gamma (ne_neg_natCast_of_pos hx)).continuousAt.log
+    (Gamma_pos_of_pos hx).ne'
 
 end Convexity
 
