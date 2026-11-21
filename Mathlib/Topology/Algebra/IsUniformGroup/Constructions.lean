@@ -86,4 +86,20 @@ section DiscreteUniformity
 instance [UniformSpace G] [DiscreteUniformity G] : IsUniformGroup G where
   uniformContinuous_div := DiscreteUniformity.uniformContinuous (G × G) fun p ↦ p.1 / p.2
 
+@[to_additive]
+theorem IsLeftUniformGroup.discreteUniformity_iff [UniformSpace G] [IsLeftUniformGroup G] :
+    DiscreteUniformity G ↔ DiscreteTopology G := by
+  refine ⟨fun _ => inferInstance, fun _ => ?_⟩
+  rw [discreteUniformity_iff_eq_principal_setRelId, IsLeftUniformGroup.uniformity_eq,
+    nhds_discrete, Filter.comap_pure, Filter.principal_injective.eq_iff, Set.preimage_singleton]
+  simp [SetRel.id, inv_mul_eq_one]
+
+@[to_additive]
+theorem IsRightUniformGroup.discreteUniformity_iff [UniformSpace G] [IsRightUniformGroup G] :
+    DiscreteUniformity G ↔ DiscreteTopology G := by
+  refine ⟨fun _ => inferInstance, fun _ => ?_⟩
+  rw [discreteUniformity_iff_eq_principal_setRelId, IsRightUniformGroup.uniformity_eq,
+    nhds_discrete, Filter.comap_pure, Filter.principal_injective.eq_iff, Set.preimage_singleton]
+  simp [SetRel.id, mul_inv_eq_one, eq_comm]
+
 end DiscreteUniformity
