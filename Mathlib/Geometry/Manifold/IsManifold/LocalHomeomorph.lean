@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Pepa Montero. All rights reserved.
+Copyright (c) 2026 Pepa Montero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pepa Montero
 -/
@@ -14,24 +14,43 @@ import Mathlib.Geometry.Manifold.Notation
 /-!
 # Manifold structure induced by a local homeomorphism
 
-Let `M` be a `C^n` manifold and let `f : M → M'` be a local homeomorphism with a right inverse.
+Let `M` be a `C^n` manifold and let `f : M → M'` be a local homeomorphism with a right inverse`g`.
 
-This file gives a condition under which this makes `M'` a `C^n` manifold.
+Pushing the charts of `M` forward along `f` gives a charted space structure
+`IsLocalHomeomorph.chartedSpaceOfRightInverse` on `M'`, where the chart at `y : M'` is the local
+inverse of `f` at `g y : M`, followed by the chart of `M` at `g y`.
+
+This file shows that, for this structure, if `f` satisfies a certain condition `Foo I n f`, then
+`M'` is a `C^n` manifold. It also shows that `f` and its local inverses are then `C^n`, and
+characterizes the `C^n` maps out of `M'`.
+
+## Main definitions
+
+* `Foo I n f`: any two points `x`, `y` with `f x = f y` are related by a map `σ : M → M` with
+  `σ x = y` which preserves `f` near `x` and is `C^n` at `x`.
 
 ## Main results
 
-TODO: rewrite this
+All results are for the charted space structure `hf.chartedSpaceOfRightInverse hg` on `M'`:
 
-If this condition holds:
+* `IsLocalHomeomorph.isManifold_of_rightInverse`: if `M` is a `C^n` manifold and `Foo I n f`
+  holds, then `M'` is a `C^n` manifold.
+* `IsLocalHomeomorph.contMDiff_of_rightInverse`: if `Foo I n f` holds, then `f` is `C^n`.
+* `IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse`: if `Foo I n f` holds, then the
+  local inverses of `f` are `C^n` on their sources.
+* `IsLocalHomeomorph.contMDiff_iff_contMDiff_comp`: if `Foo I n f` holds, then a map
+  `φ : M' → N` is `C^n` if and only if `φ ∘ f : M → N` is.
 
-* `IsLocalHomeomorph.isManifold_of_rightInverse`: `M'` is a smooth manifold.
-* `f` is `C^n` as a map between maninfolds.
-* `hf.localInverseAt` is `C^n` on its source.
-* `f` is a local diffeomorphism.
+## TODO
+
+* Show that `f` is a local diffeomorphism. This follows from the results above, but the current
+  API for `IsLocalDiffeomorphAt` is limited I believe.
+* I believe the converse is true: if `f` is a `C^n` local diffeomorphism for this structure,
+  then `Foo I n f` holds.
 
 ## Tags
 
-smooth manifold, local homeomorphism
+smooth manifold, local homeomorphism, charted space
 -/
 
 public noncomputable section
