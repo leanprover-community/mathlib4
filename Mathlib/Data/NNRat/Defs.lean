@@ -73,9 +73,9 @@ variable {p q : ℚ≥0}
 instance instNontrivial : Nontrivial ℚ≥0 where exists_pair_ne := ⟨1, 0, by decide⟩
 instance instOrderBot : OrderBot ℚ≥0 where
   bot := 0
-  bot_le q := q.2
+  bot_le q := q.property
 
-@[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
+@[simp] lemma val_eq_cast (q : ℚ≥0) : q.val = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
   cast_injective a b hab := by simpa using! congr(num $hab)
@@ -118,7 +118,7 @@ open Rat (toNNRat)
 
 @[simp]
 theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
-  q.2
+  q.property
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
 @[simp] lemma num_zero : num 0 = 0 := rfl
@@ -177,7 +177,7 @@ theorem toNNRat_mono : Monotone toNNRat :=
 
 @[simp]
 theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
-  ext <| max_eq_left q.2
+  ext <| max_eq_left q.property
 
 @[simp]
 theorem toNNRat_natCast (n : ℕ) : toNNRat n = n :=
@@ -208,8 +208,10 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 
 @[norm_cast]
-theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
+theorem coe_nsmul (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
+
+@[deprecated (since := "2026-11-16")] alias nsmul_coe := coe_nsmul
 
 theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ BddAbove s :=
   ⟨fun ⟨b, hb⟩ ↦
@@ -218,7 +220,7 @@ theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ Bdd
     fun ⟨b, hb⟩ ↦ ⟨b, fun _ ⟨_, hx, Eq⟩ ↦ Eq ▸ hb hx⟩⟩
 
 theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' s) :=
-  ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
+  ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.property⟩
 
 @[norm_cast]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
@@ -233,12 +235,12 @@ theorem sub_def (p q : ℚ≥0) : p - q = toNNRat (p - q) :=
 
 @[simp]
 theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
-  abs_of_nonneg q.2
+  abs_of_nonneg q.property
 
 -- See note [specialised high priority simp lemma]
 @[simp high]
 theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
-  ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
+  ⟨fun h => le_antisymm h q.property, fun h => h.symm ▸ q.property⟩
 
 end NNRat
 

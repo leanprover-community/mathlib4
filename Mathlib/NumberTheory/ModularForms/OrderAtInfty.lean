@@ -6,10 +6,11 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Data.EReal.Inv
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Data.EReal.Inv
 
 /-!
 # Order at infinity
@@ -131,7 +132,7 @@ lemma orderAtInfty_comp_equiv (e : ℍ ≃ ℍ) {a : ℝ} (ha : 0 < a) (he : ∀
       grind
   refine le_antisymm (iSup_le fun t ↦ ?_) ?_
   · rw [← EReal.div_le_iff_le_mul (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_div]
-    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.2)
+    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.property)
   · rw [EReal.mul_comm, ← EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a)]
     refine iSup_le fun ⟨s, hs⟩ ↦ ?_
     rw [EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_mul]
@@ -150,7 +151,7 @@ variable {F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {g : 
 
 lemma _root_.Asymptotics.IsBigO.orderAtInfty_le (hfg : f =O[atImInfty] g) :
     orderAtInfty g ≤ orderAtInfty f :=
-  iSup_le fun t ↦ le_orderAtInfty_of_isBigO (hfg.trans t.2)
+  iSup_le fun t ↦ le_orderAtInfty_of_isBigO (hfg.trans t.property)
 
 lemma _root_.Asymptotics.IsTheta.orderAtInfty_eq (hfg : f =Θ[atImInfty] g) :
     orderAtInfty f = orderAtInfty g :=
@@ -236,7 +237,7 @@ theorem isTheta_analyticOrderAt (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex)
         (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne) |>.comp_tendsto
           (qParam_tendsto_atImInfty hh)
   convert! htheta.norm_right using 2
-  simp [Periodic.norm_qParam, ← exp_nat_mul, field]
+  simp [Periodic.norm_qParam, ← exp_natCast_mul, field]
 
 /-- The order at infinity is the order of the cusp function divided by the period. -/
 lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)

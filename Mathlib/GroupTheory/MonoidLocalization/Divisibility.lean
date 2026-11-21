@@ -28,7 +28,7 @@ public theorem map_isUnit_iff {m : M} : IsUnit (f m) ↔ ∃ s ∈ S, m ∣ s :=
   replace hrs := congr(f m * $hrs)
   rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrs
   have ⟨s', eq⟩ := f.eq_iff_exists.mp hrs
-  exact ⟨s' * s, mul_mem s'.2 s.2, _, mul_left_comm _ m _ ▸ eq⟩
+  exact ⟨s' * s, mul_mem s'.property s.property, _, mul_left_comm _ m _ ▸ eq⟩
 
 public theorem map_dvd_map {m₁ m₂ : M} : f m₁ ∣ f m₂ ↔ ∃ s ∈ S, m₁ ∣ s * m₂ where
   mp := fun ⟨n, eq⟩ ↦ by
@@ -36,8 +36,8 @@ public theorem map_dvd_map {m₁ m₂ : M} : f m₁ ∣ f m₂ ↔ ∃ s ∈ S, 
     replace hn := congr(f m₁ * $hn)
     rw [← mul_assoc, ← eq, ← map_mul, ← map_mul] at hn
     have ⟨s', hs'⟩ := f.eq_iff_exists.mp hn
-    refine ⟨_, mul_mem s'.2 s.2, s' * m, ?_⟩
-    rwa [mul_left_comm, mul_assoc, mul_comm s.1]
+    refine ⟨_, mul_mem s'.property s.property, s' * m, ?_⟩
+    rwa [mul_left_comm, mul_assoc, mul_comm s.val]
   mpr := fun ⟨s, hs, dvd⟩ ↦ (f.map_units ⟨s, hs⟩).dvd_mul_left.mp (map_mul f .. ▸ map_dvd f dvd)
 
 end Submonoid.LocalizationMap
