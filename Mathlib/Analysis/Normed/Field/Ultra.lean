@@ -141,3 +141,11 @@ theorem isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
     [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
   ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
       IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one⟩
+
+/-- A real absolute value on a field is nonarchimedean if and only if it is bounded by `1` on
+the natural numbers. -/
+theorem AbsoluteValue.isNonarchimedean_iff_forall_natCast_le_one {K : Type*} [Field K]
+    {v : AbsoluteValue K ℝ} : IsNonarchimedean v ↔ ∀ n : ℕ, v n ≤ 1 :=
+  letI := v.toNormedField
+  IsUltrametricDist.isUltrametricDist_iff_isNonarchimedean_norm.symm.trans
+    isUltrametricDist_iff_forall_norm_natCast_le_one
