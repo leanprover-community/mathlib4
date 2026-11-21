@@ -122,10 +122,7 @@ of the natural transformation `L ⟶ G` are epimorphisms iff all components of t
 transformation `R ⟶ F` are monomorphisms. -/
 lemma epi_leftTriple_leftToRight_app_iff_mono_rightTriple_rightToLeft_app :
     (∀ X, Epi (q.leftTriple.leftToRight.app X)) ↔ ∀ X, Mono (q.rightTriple.rightToLeft.app X) := by
-  have h := q.op.epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app
-  rw [← (Opposite.equivToOpposite (α := C)).forall_congr_right] at h
-  rw [← (Opposite.equivToOpposite (α := D)).forall_congr_right] at h
-  simpa using h.symm
+  simpa using q.op.epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app.symm
 
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful and their domain
 and codomain have all pullbacks resp. pushouts, the natural transformation `L ⟶ G` is an
