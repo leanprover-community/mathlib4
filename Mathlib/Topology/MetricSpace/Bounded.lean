@@ -452,6 +452,13 @@ theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist
     ediam s ≤ ENNReal.ofReal C :=
   ediam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
 
+/-- The emetric diameter of a closed ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
+theorem ediam_closedBall_le {r : ℝ} : ediam (closedBall x r) ≤ 2 * ENNReal.ofReal r := calc
+  ediam (closedBall x r) ≤ .ofReal (2 * r) := ediam_le_of_forall_dist_le fun a ha b hb ↦ by
+    rw [mem_closedBall] at ha hb
+    grw [dist_triangle_right a b x, ha, hb, two_mul]
+  _ = 2 * .ofReal r := by simp
+
 /-- If the distance between any two points in a set is bounded by some non-negative constant,
 this constant bounds the diameter. -/
 theorem diam_le_of_forall_dist_le {C : ℝ} (h₀ : 0 ≤ C) (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
