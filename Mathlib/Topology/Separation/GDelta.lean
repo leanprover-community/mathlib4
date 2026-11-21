@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Inseparable
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties of topological spaces.
@@ -22,7 +19,6 @@ public import Mathlib.Topology.GDelta.Basic
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
-
 -/
 
 public section
@@ -55,7 +51,7 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
     IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+  exact .biInter (to_countable {_n : ℕ | True}) fun n _ => (hU n).2.isGδ
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=
@@ -79,9 +75,9 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     exact t.hasSeparatingCover_empty_left
   obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
-    apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
+    apply normal_exists_closure_subset t_cl (T_open (g n).val (g n).property)
     rw [T_int]
-    exact sInter_subset_of_mem (g n).2
+    exact sInter_subset_of_mem (g n).property
   have clg'_int : t = ⋂ i, closure (g' i) := by
     apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
     rw [T_int]
@@ -96,7 +92,7 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
   · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
-    exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
+    exact subset_closure.trans <| (clt_sub_g' n).trans (g'_open n).subset_interior_closure
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where

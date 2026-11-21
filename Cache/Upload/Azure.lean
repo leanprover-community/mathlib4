@@ -1,0 +1,74 @@
+/-
+Copyright (c) 2026 Marcelo Lynch. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Marcelo Lynch
+-/
+module
+
+public import Cache.Upload.Curl
+
+/-!
+# The Azure Blob Storage backend
+
+The azure upload path: the credential (`azureAuthFrom`), the request signing
+(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The tool always
+uploads with curl on this backend, because rclone signs only S3 requests.
+-/
+
+public section
+
+namespace Cache.Requests
+
+open System (FilePath)
+
+/-- The api-version header that every bearer-authenticated Azure request
+sends. Bearer authentication requires an api-version that supports OAuth. -/
+def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
+
+/-- The `x-ms-date` header that every bearer-authenticated Azure request
+sends: the current time, in the RFC 1123 format Azure requires. -/
+def getAzureDateHeader : IO String := do
+  let out ← IO.Process.output
+    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
+  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
+
+/--
+The curl arguments for an upload authenticated with an Azure OAuth bearer
+token: the `x-ms-blob-type` header a blob PUT requires, the api-version and
+date headers, and the token itself. The argument list carries the token, so
+callers should print curl failures without the argument list.
+-/
+def azureBearerCurlArgs (token : String) : IO (Array String) := do
+  return #["-H", "x-ms-blob-type: BlockBlob",
+    "-H", azureBearerApiVersionHeader, "-H", ← getAzureDateHeader,
+    "--oauth2-bearer", token]
+
+/--
+The azure upload credential, from the raw environment value: the OAuth
+bearer token `MATHLIB_CACHE_AZURE_BEARER_TOKEN` (`bearer?`).
+
+Pure so the policy is testable; `getAzureAuth` wires the environment in.
+-/
+def azureAuthFrom (bearer? : Option String) : Except String String :=
+  match bearer? with
+  | some token => .ok token
+  | none => .error
+      "the azure backend needs an Azure OIDC bearer token: \
+      set MATHLIB_CACHE_AZURE_BEARER_TOKEN"
+
+/-- Retrieves the azure upload credential from the environment via
+`azureAuthFrom`. -/
+def getAzureAuth : IO String := do
+  IO.ofExcept <| azureAuthFrom (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
+
+/--
+The staged put on the azure backend: the curl tool against `dest`, each
+request signed with the bearer token (`azureBearerCurlArgs`).
+-/
+def azurePutStaged (dest : Location) (token : String) (srcDir : FilePath)
+    (fileNames : Array String) (overwrite : Bool) : IO Unit :=
+  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite
+
+end Cache.Requests

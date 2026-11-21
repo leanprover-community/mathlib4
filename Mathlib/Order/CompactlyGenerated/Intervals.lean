@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
@@ -26,7 +25,6 @@ theorem isCompactElement {a : α} {b : Iic a} (h : IsCompactElement (b : α)) :
   obtain ⟨t, ht⟩ := h ι ((↑) ∘ s) hb
   exact ⟨t, (by simpa using ht : (b : α) ≤ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
     IsCompactlyGenerated (Iic a) := by
   refine ⟨fun ⟨x, (hx : x ≤ a)⟩ ↦ ?_⟩
@@ -36,7 +34,7 @@ instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
   refine ⟨range f, ?_, ?_⟩
   · rintro - ⟨⟨y, hy⟩, hy', rfl⟩
     exact isCompactElement (hs _ hy)
-  · rw [Subtype.ext_iff]
+  · rw [isLUB_iff_sSup_eq, Subtype.ext_iff]
     change sSup (((↑) : Iic a → α) '' (range f)) = sSup s
     congr
     ext b

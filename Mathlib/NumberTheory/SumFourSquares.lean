@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange's four square theorem
 
@@ -60,7 +63,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
 
 theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by
-  rcases hp.1.eq_two_or_odd' with (rfl | hodd)
+  rcases hp.out.eq_two_or_odd' with (rfl | hodd)
   · use 1, 0, 1; simp
   rcases Nat.sq_add_sq_zmodEq p (-1) with ⟨a, b, ha, hb, hab⟩
   rcases Int.modEq_iff_dvd.1 hab.symm with ⟨k, hk⟩
@@ -75,8 +78,8 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   refine lt_of_sum_four_squares_eq_mul hk ?_ ?_ ?_ ?_
   · exact (mul_le_mul' le_rfl ha).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
-  · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
-  · exact hp.1.pos
+  · exact lt_of_le_of_ne hp.out.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
+  · exact hp.out.pos
 
 end Int
 
@@ -183,7 +186,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     replace hr : (f b) ^ 2 + (f a) ^ 2 + (f d) ^ 2 + (-f c) ^ 2 = ↑(m * r) := by
       rw [← natAbs_iff, natAbs_neg, ← hr]
       ac_rfl
-    have := congr_arg₂ (· * Nat.cast ·) hr habcd
+    have := congr($hr * $habcd)
     simp only [← _root_.euler_four_squares, Nat.cast_add, Nat.cast_pow] at this
     refine ⟨_, _, _, _, ?_, ?_, ?_, ?_, this⟩
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]

@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+
+import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
+import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
 # Any simplicial set is the colimit of its monogenous subcomplexes
@@ -16,7 +17,6 @@ Let `X` be a simplicial set. The definition `SSet.isColimitCoconeN`
 shows that `X` is the colimit of the monogenous subcomplexes of `X`
 (the index category of this colimit is the partially ordered
 type `X.N` of nondegenerate simplices of `X`).
-
 -/
 
 universe u
@@ -68,8 +68,8 @@ noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
             (s.ι.app u).app _ ⟨t.simplex, h⟩ =
             (s.ι.app t).app _ ⟨t.simplex, Subcomplex.mem_ofSimplex_obj _⟩ :=
           ConcreteCategory.congr_hom
-            (NatTrans.congr_app (s.w (homOfLE (by
-              rwa [N.le_iff, Subcomplex.ofSimplex_le_iff]))) _)
+            congr($(s.w (homOfLE (by
+              rwa [N.le_iff, Subcomplex.ofSimplex_le_iff]))).app _)
             ⟨t.simplex, Subcomplex.mem_ofSimplex_obj _⟩
         refine le_antisymm (Subfunctor.equalizer_le _ _) ?_
         rw [Subcomplex.le_iff_contains_nonDegenerate]

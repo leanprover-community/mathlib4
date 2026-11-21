@@ -5,10 +5,11 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
-public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # The colon construction on preradicals
@@ -77,7 +78,6 @@ noncomputable def shortComplex : ShortComplex (C ⥤ C) where
   f := Φ.ι
   g := Φ.π
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Mono Φ.shortComplex.f := by dsimp; infer_instance
 instance : Epi Φ.shortComplex.g := by dsimp; infer_instance
 
@@ -163,7 +163,7 @@ lemma toColon_hom_left_colonπ :
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colonπ_app (X : C) :
     (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
-  NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
+  congr($(toColon_hom_left_colonπ Φ Ψ).app X)
 
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colon_ι_app (X : C) :

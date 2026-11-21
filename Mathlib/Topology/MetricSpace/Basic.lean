@@ -5,14 +5,13 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
+public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
-public import Mathlib.Topology.MetricSpace.Defs
 
 /-!
 # Basic properties of metric spaces, and instances.
-
 -/
 
 public section
@@ -129,7 +128,7 @@ instance : MetricSpace ℝ≥0 :=
   inferInstanceAs <| MetricSpace (Subtype _)
 
 theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
-  isUniformEmbedding_subtype_val
+  isUniformEmbedding_subtypeVal
 
 theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
   isUniformEmbedding_coe.isEmbedding

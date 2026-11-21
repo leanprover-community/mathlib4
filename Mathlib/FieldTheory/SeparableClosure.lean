@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
-
 # Separable closure
 
 This file contains basics about the (relative) separable closure of a field extension.
@@ -58,7 +57,6 @@ This file contains basics about the (relative) separable closure of a field exte
 ## Tags
 
 separable degree, degree, separable closure
-
 -/
 
 @[expose] public section
@@ -144,12 +142,12 @@ variable (F E K)
 
 /-- The separable closure of `F` in `E` is algebraic over `F`. -/
 instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
-  ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.property).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 @[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using! x.2⟩
+  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using! x.property⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
@@ -180,6 +178,13 @@ theorem separableClosure.normalClosure_eq_self :
     have : Algebra.IsSeparable F i.fieldRange :=
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
+
+/-- If `K / F` is separable, then the normal closure of `K` over `F` in `E`
+is separable over `F`. -/
+instance IntermediateField.normalClosure.isSeparable [Algebra.IsSeparable F K] :
+    Algebra.IsSeparable F (normalClosure F K E) := by
+  simp_rw [← le_separableClosure_iff, normalClosure_le_iff, le_separableClosure_iff]
+  exact fun f ↦ AlgEquiv.Algebra.isSeparable f.equivFieldRange
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
@@ -247,13 +252,13 @@ abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
     have : IsScalarTower K L E := .of_algebraMap_eq' rfl
     exact hx.tower_top _
   · obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
-    exact x.2
+    exact x.property
 
 lemma isClosed_restrictScalars_separableClosure [Algebra K E] [IsScalarTower F K E] :
     (separableClosureOperator F E).IsClosed ((separableClosure K E).restrictScalars F) :=
   ClosureOperator.isClosed_iff_closure_le.mpr fun x hx ↦ by
     obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
-    exact x.2
+    exact x.property
 
 lemma separableClosure_le_separableClosure_iff
     [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
@@ -406,7 +411,7 @@ variable {F}
 @[simp]
 theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
-  simpa only [Cardinal.toNat_lift] using! congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
+  simpa only [Cardinal.toNat_lift] using! congr($(lift_insepDegree_bot' F E K).toNat)
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
@@ -477,4 +482,4 @@ theorem Algebra.IsSeparable.insepDegree_eq [Algebra.IsSeparable F E] : insepDegr
 
 /-- A separable extension has finite inseparable degree one. -/
 theorem Algebra.IsSeparable.finInsepDegree_eq [Algebra.IsSeparable F E] : finInsepDegree F E = 1 :=
-  Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
+  Cardinal.one_toNat ▸ congr($(insepDegree_eq F E).toNat)

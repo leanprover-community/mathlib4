@@ -5,11 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Basic.Unique
-public import Mathlib.Data.Prod.Basic
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Order.Defs.LinearOrder
+
+import Mathlib.Data.Prod.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Nontrivial types
