@@ -131,12 +131,14 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
     exact (measurable_measure_prodMk_left hs).const_mul _
   · rintro f g - hf - h2f h2g
     simp only [Pi.add_apply]
-    conv => enter [1, x]; erw [lintegral_add_left (hf.comp m)]
+    conv =>
+      enter [1, x]
+      rw [lintegral_add_left (by exact hf.comp m) (fun a ↦ g (x, a))]
     exact h2f.add h2g
   · intro f hf h2f h3f
     have : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    conv => enter [1, x]; erw [lintegral_iSup (fun n => (hf n).comp m) (this x)]
-    exact .iSup h3f
+    convert! Measurable.iSup h3f with x
+    exact lintegral_iSup (fun n => (hf n).comp m) (this x)
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable.
