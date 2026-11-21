@@ -176,7 +176,7 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
     _ = (η ∘ₖ κ) a sᶜ := by
         rw [η.comp_apply' _ _ hs.compl]
     _ = 0 := by
-      rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
+      rw [measure_compl hs (by simp), measure_univ, h₁, tsub_self]
 
 instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
   by_contra hκ
