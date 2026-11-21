@@ -195,21 +195,23 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
+omit [DecidableRel r] in
+/-- If a list `l` satisfies a pairwise relation `r`, then `l.orderedInsert s a` will preserve that
+relation if `s` satisfies `∀ x y : α, (s y x → s x y) → r x y`. -/
+theorem Pairwise.orderedInsert'
+    {s : α → α → Prop}
+    [DecidableRel s] [IsTrans α r]
+    {l : List α} {a : α}
+    (h : ∀ x y : α, (s y x → s x y) → r x y) :
+    Pairwise r l ↔ Pairwise r (l.orderedInsert s a) := by
+  induction l <;> grind [mem_orderedInsert s, pairwise_cons]
+
 section TotalAndTransitive
 
 variable [Std.Total r] [IsTrans α r]
 
-theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l)
-  | [], _ => pairwise_singleton _ a
-  | b :: l, h => by
-    by_cases h' : a ≼ b
-    · grind
-    · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
-        simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
-      intro b' bm
-      rcases (mem_orderedInsert r).mp bm with rfl | bm
-      · exact (total_of r _ _).resolve_left h'
-      · exact rel_of_pairwise_cons h bm
+theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l) := by
+  grind [orderedInsert', total_of r]
 
 variable (r)
 
@@ -620,6 +622,20 @@ protected alias ⟨SortedGT.map_toDual, SortedLT.of_map_toDual⟩ := sortedGT_ma
 end ToDual
 
 end Dual
+
+section OrderedInsert
+
+variable [DecidableLT α] [@Std.Total α LE.le]
+
+theorem sortedLE_orderedInsert_lt {a : α} :
+    SortedLE l ↔ SortedLE (l.orderedInsert (· < ·) a) := by
+  grind [Pairwise.orderedInsert', lt_iff_le_not_ge, Std.Total]
+
+theorem sortedGE_orderedInsert_gt {a : α} :
+    SortedGE l ↔ SortedGE (l.orderedInsert (· > ·) a) := by
+  grind [Pairwise.orderedInsert', lt_iff_le_not_ge, Std.Total]
+
+end OrderedInsert
 
 end Preorder
 
