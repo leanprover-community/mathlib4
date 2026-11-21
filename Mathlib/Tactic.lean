@@ -156,6 +156,7 @@ public import Mathlib.Tactic.GCongr.ForwardAttr
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
+public import Mathlib.Tactic.Gavrilovich.Elab.Basic
 public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
 public import Mathlib.Tactic.Generalize
