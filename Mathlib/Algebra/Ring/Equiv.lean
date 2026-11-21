@@ -101,16 +101,19 @@ instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
-/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
-`RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
-@[coe]
-def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] (f : F) :
-    α ≃+* β :=
-  { (f : α ≃* β), (f : α ≃+ β) with }
-
 end RingEquivClass
 
 namespace RingEquiv
+
+/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
+`RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
+@[coe]
+def ofClass [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β]
+    [RingEquivClass F α β] (f : F) :
+    α ≃+* β :=
+  { (f : α ≃* β), (f : α ≃+ β) with }
+
+@[deprecated (since := "2026-11-21")] alias RingEquivClass.toRingEquiv := ofClass
 
 section Basic
 
