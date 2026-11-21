@@ -60,10 +60,15 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
   · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
 
 theorem exists_embedding_disjoint_range_of_add_le_Nat_card
-    [Finite α] (hs : s.ncard + n ≤ Nat.card α) :
+    (hs : s.ncard + n ≤ Nat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by
-  apply exists_embedding_disjoint_range_of_add_le_ENat_card
-  rwa [← ENat.natCast_add, ENat.card_eq_coe_natCard, ENat.natCast_le_natCast]
+  rcases finite_or_infinite α with hα | hα
+  · apply exists_embedding_disjoint_range_of_add_le_ENat_card
+    rwa [← ENat.natCast_add, ENat.card_eq_coe_natCard, ENat.natCast_le_natCast]
+  · obtain rfl : n = 0 := by
+      rw [Nat.card_eq_zero_of_infinite] at hs
+      lia
+    exact ⟨Function.Embedding.ofIsEmpty, by rw [Set.range_eq_empty]; exact disjoint_empty _⟩
 
 theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
     Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by

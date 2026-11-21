@@ -376,7 +376,8 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
     obtain rfl | rfl := le_one_iff.1 hb <;> simpa
   · rw [opow_le_iff_le_log hb hx]
 
-theorem log_pos {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) : 0 < log b o := by
+theorem log_pos {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o) : 0 < log b o := by
+  have ho : o ≠ 0 := (zero_lt_one.trans (hb.trans_le hbo)).ne'
   rwa [← add_one_le_iff, zero_add, ← opow_le_iff_le_log hb ho, opow_one]
 
 theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
@@ -419,7 +420,7 @@ theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o
     log b (o % (b ^ log b o)) < log b o := by
   rcases eq_or_ne (o % (b ^ log b o)) 0 with h | h
   · rw [h, log_zero_right]
-    exact log_pos hb (one_le_iff_ne_zero.1 (hb.le.trans hbo)) hbo
+    exact log_pos hb hbo
   · rw [← lt_opow_iff_log_lt hb h]
     exact mod_lt _ (opow_pos _ hb.pos).ne'
 
