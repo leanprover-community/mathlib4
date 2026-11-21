@@ -227,6 +227,11 @@ theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b :=
 theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c :=
   (isPrincipal_add_omega0_opow b).add_eq_right_of_le h₁ h₂
 
+theorem add_of_lt_omega0_opow_log (hlt : a < ω ^ log ω o) : a + o = o := by
+  rcases eq_or_ne o 0 with (rfl | h0)
+  · simpa using hlt
+  exact add_of_omega0_opow_le hlt <| opow_log_le_self ω h0
+
 /-- For `a ≠ 0`, the largest power of `ω` which is less or equal to it is also the smallest ordinal
 `b` with `a - b < a`. -/
 theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) : IsLeast {b | a - b < a} (ω ^ log ω a) := by
