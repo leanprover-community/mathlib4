@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
+import Mathlib.GroupTheory.Perm.Support.Finset.Card
 import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.Tactic.Abel
 

@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.GroupTheory.Perm.Support.Finset.Card
 
 import Mathlib.Algebra.Order.Group.Nat
 
