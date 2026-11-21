@@ -144,7 +144,7 @@ def localization (P : Extension.{w} R S) : Extension R S' where
   σ s := Localization.mk (P.σ (IsLocalization.sec M s).1) ⟨P.σ (IsLocalization.sec M s).2, by simp⟩
   algebraMap_σ s := by
     simp [RingHom.algebraMap_toAlgebra, Localization.mk_eq_mk', IsLocalization.lift_mk',
-    Function.comp_apply, algebraMap_σ, RingHom.toMonoidHom_eq_coe, Units.mul_inv_eq_iff_eq_mul, IsUnit.coe_liftRight, IsLocalization.sec_spec]
+      algebraMap_σ, Units.mul_inv_eq_iff_eq_mul, IsUnit.coe_liftRight, IsLocalization.sec_spec]
 
 end Localization
 

@@ -107,7 +107,8 @@ lemma FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat
   let fT := Algebra.TensorProduct.map (.id T T) f
   refine .of_surjective hf (.of_FG_map_of_faithfullyFlat (S := T ⊗[R] MvPolynomial (Fin n) R) ?_)
   have : (RingHom.ker f.toRingHom).map
-      (algebraMap (MvPolynomial (Fin n) R) (T ⊗[R] MvPolynomial (Fin n) R)) = RingHom.ker fT :=
+      (algebraMap (MvPolynomial (Fin n) R) (T ⊗[R] MvPolynomial (Fin n) R)) =
+      RingHom.ker (RingHomClass.toRingHom <| fT) :=
     (Algebra.TensorProduct.lTensor_ker f hf).symm
   rw [this]
   apply ker_fG_of_surjective

@@ -449,7 +449,8 @@ theorem eq_prime_pow_mul_coprime {I : Ideal T} (hI : I ≠ ⊥)
 theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
     (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
   rw [prime_iff_isPrime h] at hI
-  exact (prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
+  exact (prime_iff_isPrime <|
+    (I.map_eq_bot_iff_of_injective (f := (f : T →+* R)) f.injective).not.2 h).2
     (map_isPrime_of_equiv _)
 
 end Ideal
@@ -582,7 +583,6 @@ def equivOfRingEquiv (e : R ≃+* S) : (HeightOneSpectrum R) ≃ (HeightOneSpect
     ext
     rw [← Ideal.map_comap_eq_self_of_equiv e x.asIdeal]
     simp only [comap_asIdeal, Ideal.mem_comap, RingHom.coe_coe, Ideal.symm_apply_mem_of_equiv_iff]
-    exact Iff.rfl
 
 theorem RingEquiv.nontrivial_heightOneSpectrum {R S : Type*} [CommRing R] [CommRing S]
     [Nontrivial (HeightOneSpectrum S)] (e : R ≃+* S) : Nontrivial (HeightOneSpectrum R) :=
@@ -631,10 +631,10 @@ theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
-        comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
-        RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
-        sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
+      simp only [idealFactorsFunOfQuotHom, RingHom.coe_id, map_id,
+        comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective,
+        ← RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker, OrderHom.coe_mk,
+        sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta, OrderHom.id_coe, id])
 
 variable {B : Type*} [CommRing B] [IsDedekindDomain B] {L : Ideal B}
 
@@ -646,7 +646,7 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
   rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
     OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
-    Ideal.Quotient.mk_surjective, map_map]
+    Ideal.Quotient.mk_surjective, map_map, RingHom.coe_comp]
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 

@@ -32,7 +32,7 @@ namespace ProjectiveSpectrum
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of points. -/
 @[simps] def comapFun (p : ProjectiveSpectrum ℬ) : ProjectiveSpectrum 𝒜 where
   asHomogeneousIdeal := p.asHomogeneousIdeal.comap f
-  isPrime := p.isPrime.comap f
+  isPrime := p.isPrime.comap (f : A →+* B)
   not_irrelevant_le le := p.not_irrelevant_le <| hf.trans <| map_le_of_le_comap _ le
 
 /-- The underlying continuous function of `Proj ℬ ⟶ Proj 𝒜` on the level of points. -/

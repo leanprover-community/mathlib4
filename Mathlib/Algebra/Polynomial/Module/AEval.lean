@@ -113,7 +113,7 @@ def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N
   right_inv x := by simp [LinearMap.ofAEval]
 
 lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
-    annihilator R[X] (AEval R M a) = (aeval a).toRingHom.ker  := by
+    annihilator R[X] (AEval R M a) = (RingHomClass.toRingHom <| aeval a).ker  := by
   ext p
   simp_rw [mem_annihilator, RingHom.mem_ker]
   change (∀ m : M, aeval a p • m = 0) ↔ _
