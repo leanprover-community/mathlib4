@@ -84,7 +84,7 @@ theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.s
 theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)} :
     m.sup.Nodup ↔ ∀ a : Multiset α, a ∈ m → a.Nodup := by
   induction m using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons _ _ h => simp [h]
 
 end Multiset

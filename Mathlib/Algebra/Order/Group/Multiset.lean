@@ -199,7 +199,7 @@ theorem le_card_smul_iff_subset {s t : Multiset α} : s ≤ s.card • t ↔ s �
 lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
   ext s
   induction s using Multiset.induction_on with
-  | empty => simp only [_root_.map_zero]
+  | zero => simp only [_root_.map_zero]
   | cons a s ih => simp only [← singleton_add, _root_.map_add, ih, h]
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=

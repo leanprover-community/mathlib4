@@ -110,7 +110,7 @@ theorem prod_induction (p : M → Prop) (s : Multiset M) (p_mul : ∀ a b, p a �
 theorem prod_induction_nonempty (p : M → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
     (p_s : ∀ a ∈ s, p a) : p s.prod := by
   induction s using Multiset.induction_on with
-  | empty => simp at hs
+  | zero => simp at hs
   | cons a s hsa =>
     rw [prod_cons]
     by_cases hs_empty : s = ∅

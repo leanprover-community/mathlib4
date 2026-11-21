@@ -473,7 +473,7 @@ theorem cons_induction {α : Type*} {motive : Finset α → Prop} (empty : motiv
     (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), motive s → motive (cons a s h)) : ∀ s, motive s
   | ⟨s, nd⟩ => by
     induction s using Multiset.induction with
-    | empty => exact empty
+    | zero => exact empty
     | cons a s IH =>
       rw [mk_cons nd]
       exact cons a _ _ (IH _)
