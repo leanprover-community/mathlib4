@@ -27,6 +27,10 @@ again inner (`MulAut.conj_conj`).
 * `MulAut.normal_inner` : `MulAut.inner G` is a normal subgroup of `MulAut G`. This is the
   foundational fact behind the outer automorphism group `MulAut G ⧸ MulAut.inner G`.
 * `MulAut.inner_eq_bot_iff` : `MulAut.inner G` is trivial iff `G` is commutative.
+
+Since the kernel of `MulAut.conj` is the center (`Subgroup.ker_conj`), the first isomorphism
+theorem gives the standard isomorphism `MulAut.inner G ≃* G ⧸ Subgroup.center G`; this is not
+stated as a separate declaration.
 -/
 
 @[expose] public section
