@@ -29,6 +29,45 @@ namespace ENat
 
 variable {a b c m n : ℕ∞}
 
+/-- Version of `ENat.ofNat_eq_natCast_ofNat` also allowing m to be zero or one. -/
+lemma ofNat_eq_natCast_ofNat' {m : ℕ} : (ofNat(m) : ℕ∞) = Nat.cast ofNat(m) := by
+  simp [Lean.Grind.Semiring.ofNat_eq_natCast]
+
+lemma ofNat_withTop_eq_natCast_ofNat {n : ℕ} : (ofNat(n) : WithTop ℕ∞) = Nat.cast ofNat(n) := by
+  simp_rw [Lean.Grind.Semiring.ofNat_eq_natCast]
+  norm_cast
+
+lemma ofNat_add {n m : ℕ} : (ofNat(n + m) : ℕ∞) = ofNat(n) + ofNat(m) := by
+  simp_rw [ENat.ofNat_eq_natCast_ofNat']
+  norm_cast
+
+lemma ofNat_withTop_add_eq_ofNat_add {n m : ℕ} :
+    (ofNat(n + m) : WithTop ℕ∞) = ofNat(n) + ofNat(m) := by
+  simp [ENat.ofNat_withTop_eq_natCast_ofNat]
+  norm_cast
+
+section
+
+local notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+@[simp, basify_simp]
+lemma withTop_some_top_add_eq (a : ℕ) : WithTop.some (⊤ : ℕ∞) + (ofNat(a) : WithTop ℕ∞) = ∞ := by
+  rw [ENat.ofNat_withTop_eq_natCast_ofNat]
+  norm_cast
+
+@[simp, basify_simp]
+lemma ofNat_add_withTopSome_top (a : ℕ) : (ofNat(a) : WithTop ℕ∞) + WithTop.some (⊤ : ℕ∞) = ∞ := by
+  rw [add_comm]; simp
+
+-- NB: the LHS is not in simp normal form, but still in `basify_simp` normal form.
+@[basify_simp]
+lemma ofNat_withTop_le_some_top (a : ℕ) : ofNat(a) ≤ (∞ : WithTop ℕ∞) := by
+  fail_if_success simp only [basify_simp]
+  rw [ENat.ofNat_withTop_eq_natCast_ofNat]
+  norm_cast; simp
+
+end
+
 @[simp, basify_op ←] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
