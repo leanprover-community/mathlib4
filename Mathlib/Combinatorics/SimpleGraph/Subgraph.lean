@@ -238,6 +238,15 @@ theorem neighborSet_subset_verts (G' : Subgraph G) (v : V) : G'.neighborSet v �
 @[simp]
 theorem mem_neighborSet (G' : Subgraph G) (v w : V) : w ∈ G'.neighborSet v ↔ G'.Adj v w := Iff.rfl
 
+theorem neighborSet_eq_empty_of_notMem_verts {v : V} (hv : v ∉ G'.verts) :
+    G'.neighborSet v = ∅ := by
+  grind [mem_neighborSet, Adj.fst_mem]
+
+theorem mem_verts_of_nonempty_neighborSet {v : V} (h : (G'.neighborSet v).Nonempty) :
+    v ∈ G'.verts := by
+  contrapose! h
+  exact neighborSet_eq_empty_of_notMem_verts h
+
 /-- A subgraph as a graph has equivalent neighbor sets. -/
 def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
     G'.coe.neighborSet v ≃ G'.neighborSet v where
@@ -829,12 +838,15 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
     (G'.neighborSet v).toFinset.card = G'.degree v := by
   rw [degree, Set.toFinset_card]
 
-theorem degree_of_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
-    (h : v ∉ G'.verts) : G'.degree v = 0 := by
-  rw [degree, Fintype.card_eq_zero_iff, isEmpty_subtype]
-  intro w
-  by_contra hw
-  exact h hw.fst_mem
+variable (G') in
+@[simp]
+theorem ncard_neighborSet (v : V) [Fintype <| G'.neighborSet v] :
+    (G'.neighborSet v).ncard = G'.degree v := by
+  simp_rw [Set.ncard_eq_toFinset_card', Subgraph.finset_card_neighborSet_eq_degree]
+
+theorem degree_of_notMem_verts {v : V} [Fintype (G'.neighborSet v)] (h : v ∉ G'.verts) :
+    G'.degree v = 0 := by
+  simp [← ncard_neighborSet, neighborSet_eq_empty_of_notMem_verts h]
 
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
@@ -854,7 +866,7 @@ theorem coe_degree (G' : Subgraph G) (v : G'.verts) [Fintype (G'.coe.neighborSet
 @[simp]
 theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
-  simp [← card_neighborSet_eq_degree, degree]
+  simp [← SimpleGraph.ncard_neighborSet, degree, -ncard_neighborSet]
 
 theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
