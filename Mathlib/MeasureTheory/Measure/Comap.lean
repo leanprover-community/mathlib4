@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Filter
 public import Mathlib.MeasureTheory.Measure.Map
+public import Mathlib.MeasureTheory.Measure.Sum
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -165,6 +166,14 @@ lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg 
     rw [comap_apply _ hf hf' _ hs, comap_apply _ hg hg' _ (hf' _ hs),
       comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
   · rw [comap, dite_eq_right <| mt And.left hf, comap, dite_eq_right fun h ↦ hf h.1.of_comp]
+
+theorem comap_sum {ι : Type*} [Countable ι] {μ : ι → Measure β}
+    (hf : ∀ i s, MeasurableSet s → NullMeasurableSet (f '' s) (μ i)) :
+    comap f (sum μ) = sum fun i ↦ comap f (μ i) := by
+  by_cases hfi : Injective f
+  · ext1 s hs
+    simp +contextual [sum_apply_of_countable, comap_apply₀, hs.nullMeasurableSet, hfi, hf]
+  · simp [comap_undef, hfi]
 
 lemma comap_smul {μ : Measure β} (c : ℝ≥0∞) : comap f (c • μ) = c • comap f μ := by
   obtain rfl | hc := eq_or_ne c 0
