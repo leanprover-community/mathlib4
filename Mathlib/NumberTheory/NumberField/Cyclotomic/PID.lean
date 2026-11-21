@@ -40,8 +40,7 @@ variable (K : Type u) [Field K] [NumberField K]
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have : 3 < π := pi_gt_three
   apply isPrincipalIdealRing_of_abs_discr_lt
-  rw [discr_prime 3 K, finrank 3 K, nrComplexPlaces_eq_totient_div_two 3,
-    totient_prime Nat.prime_three]
+  rw [discr_prime 3, finrank 3, nrComplexPlaces_eq_totient_div_two 3, totient_prime prime_three]
   norm_num
   field_simp
   dyadic_interval
