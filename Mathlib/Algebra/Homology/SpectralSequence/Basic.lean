@@ -61,6 +61,12 @@ def pageXIsoOfEq (E : SpectralSequence C c r₀) (pq : κ) (r r' : ℤ) (h : r =
     (E.page r).X pq ≅ (E.page r').X pq :=
   eqToIso (by subst h; rfl)
 
+@[simp]
+lemma pageXIsoOfEq_eq_refl
+    (E : SpectralSequence C c r₀) (pq : κ) (r : ℤ)
+    (hr : r₀ ≤ r := by lia) :
+    E.pageXIsoOfEq pq r r rfl hr = Iso.refl _ := rfl
+
 attribute [reassoc (attr := simp)] Hom.comm
 
 @[simps! id_hom comp_hom]
