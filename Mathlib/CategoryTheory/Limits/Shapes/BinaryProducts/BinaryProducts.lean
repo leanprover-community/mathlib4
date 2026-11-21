@@ -89,9 +89,12 @@ abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
   limit.lift _ (BinaryFan.mk f g)
 
 /-- diagonal arrow of the binary product in the category `fam I` -/
-@[to_dual /-- codiagonal arrow of the binary coproduct -/]
-abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
+@[to_dual codiagonal /-- codiagonal arrow of the binary coproduct -/]
+abbrev prod.diagonal (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
+
+@[deprecated (since := "2026-09-06")] alias diag := prod.diagonal
+@[deprecated (since := "2026-09-06")] alias codiag := coprod.codiagonal
 
 @[to_dual (attr := reassoc) inl_desc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
@@ -139,11 +142,13 @@ section ProdLemmas
 theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
     f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by ext <;> simp
 
-@[to_dual codiag_comp]
-theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
-    f ≫ diag Y = prod.lift f f := by simp
+@[to_dual codiagonal_comp]
+theorem prod.comp_diagonal {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
+    f ≫ prod.diagonal Y = prod.lift f f := by simp
 
-@[deprecated (since := "2026-09-26")] alias coprod.diag_comp := coprod.codiag_comp
+@[deprecated (since := "2026-09-06")] alias prod.comp_diag := prod.comp_diagonal
+@[deprecated (since := "2026-10-14")] alias coprod.codiag_comp := coprod.codiagonal_comp
+@[deprecated (since := "2026-09-26")] alias coprod.diag_comp := coprod.codiagonal_comp
 
 @[to_dual (attr := reassoc (attr := simp)) inl_map]
 theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
@@ -227,21 +232,44 @@ instance prod.map_mono {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g 
     · rw [← cancel_mono g]
       simpa using congr($h ≫ prod.snd)⟩
 
-@[to_dual (attr := reassoc) map_codiag]
-theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
-    diag X ≫ prod.map f f = f ≫ diag Y := by simp
+@[to_dual (attr := reassoc) map_codiagonal]
+theorem prod.diagonal_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
+    prod.diagonal X ≫ prod.map f f = f ≫ prod.diagonal Y := by simp
 
-@[to_dual (attr := reassoc) map_inl_inr_codiag]
-theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
-    diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
+@[deprecated (since := "2026-09-06")] alias prod.diag_map := prod.diagonal_map
+@[deprecated (since := "2026-09-06")] alias coprod.map_codiag := coprod.map_codiagonal
+@[deprecated (since := "2026-09-06")] alias prod.diag_map_assoc := prod.diagonal_map_assoc
+@[deprecated (since := "2026-09-06")] alias coprod.map_codiag_assoc := coprod.map_codiagonal_assoc
 
-@[to_dual (attr := reassoc) map_comp_inl_inr_codiag]
-theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
+@[to_dual (attr := reassoc) map_inl_inr_codiagonal]
+theorem prod.diagonal_map_fst_snd {X Y : C} [HasBinaryProduct X Y]
+    [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
+    prod.diagonal (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
+
+@[deprecated (since := "2026-09-06")] alias prod.diag_map_fst_snd := prod.diagonal_map_fst_snd
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_inl_inr_codiag := coprod.map_inl_inr_codiagonal
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_assoc := prod.diagonal_map_fst_snd_assoc
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_inl_inr_codiag_assoc := coprod.map_inl_inr_codiagonal_assoc
+
+@[to_dual (attr := reassoc) map_comp_inl_inr_codiagonal]
+theorem prod.diagonal_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
-    diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
+    prod.diagonal (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
+
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_comp := prod.diagonal_map_fst_snd_comp
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_comp_inl_inr_codiag := coprod.map_comp_inl_inr_codiagonal
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_comp_assoc := prod.diagonal_map_fst_snd_comp_assoc
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_comp_inl_inr_codiag_assoc := coprod.map_comp_inl_inr_codiagonal_assoc
 
 @[to_dual]
-instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
+instance {X : C} [HasBinaryProduct X X] : IsSplitMono (prod.diagonal X) :=
   IsSplitMono.mk' { retraction := prod.fst }
 
 end ProdLemmas
