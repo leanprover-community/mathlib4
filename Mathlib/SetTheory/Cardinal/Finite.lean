@@ -355,7 +355,7 @@ lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α)
   exact and_congr (card_le_one_iff_subsingleton α) (one_le_card_iff_nonempty α)
 
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
-  rw [← Cardinal.one_lt_iff_nontrivial]
+  rw [← Cardinal.one_lt_mk_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat]
   simp only [ENat.card, Nat.cast_one]

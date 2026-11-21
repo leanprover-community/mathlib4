@@ -138,6 +138,9 @@ lemma not_uncountable [Countable α] : ¬Uncountable α := not_uncountable_iff.2
 @[simp]
 lemma not_countable [Uncountable α] : ¬Countable α := Uncountable.not_countable
 
+theorem countable_or_uncountable (α : Sort*) : Countable α ∨ Uncountable α := by
+  rw [← not_countable_iff]; exact em _
+
 protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
     Uncountable β :=
   ⟨fun _ ↦ not_countable hf.countable⟩
