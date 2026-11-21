@@ -185,7 +185,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
   suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
-  obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
+  obtain ⟨α, -, hα⟩ := exists_mem_notMem_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦
@@ -203,7 +203,8 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     Finset.coe_biUnion, Finset.coe_univ, Set.mem_univ, Set.iUnion_true, Set.iUnion_subset_iff] at hθ
   have : ϕ.carrier⟮α⟯.restrictScalars F ≤ θ.carrier := by
     rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
-  exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
+  exact hS { (θ.emb.comp <| inclusion this).toRingHom with commutes' := hθϕ.2 } θ
+    ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/

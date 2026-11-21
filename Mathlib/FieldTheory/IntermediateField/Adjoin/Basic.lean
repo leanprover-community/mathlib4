@@ -66,7 +66,7 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
     (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
-  simpa [-adjoin_le_iff, Set.subset_def, IsConcreteLE.le_iff,
+  simpa [-adjoin_le_iff, Set.subset_def, le_iff_mem_imp_mem,
     FixedBy.intermediateField_mem_iff] using
     adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
@@ -551,7 +551,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
       contrapose! hnfd
       rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
-      exact topEquiv.toLinearEquiv.finiteDimensional
+      exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
     let L' := L ⊔ F⟮x⟯
     have := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
     refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩

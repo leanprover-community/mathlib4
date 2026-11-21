@@ -209,7 +209,7 @@ private theorem fixed_of_fixed1_aux1 :
     rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩
     exact (Finset.mem_filter.mp hg1).2 (smul_eq_of_smul_le hg2)
-  obtain ⟨b, hbP, hbQ⟩ := IsConcreteLE.not_le_iff_exists.mp h1
+  obtain ⟨b, hbP, hbQ⟩ := not_le_iff_exists_mem_notMem.mp h1
   replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
     fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
   let f := MulSemiringAction.charpoly G b
@@ -365,7 +365,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
   let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.property))
+    (AlgEquiv.ofCommutes (e := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.property))
   exact ⟨g, by rw [AlgEquiv.ext_iff] at hg ⊢; assumption⟩
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
@@ -527,13 +527,12 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
   · intro g hg
     obtain ⟨g, rfl⟩ : ∃ g' : stabilizer G q, f g' = g := by
       simpa using h_stab.ge (p.inertia_le_stabilizer hg)
-    let φ : (S ⧸ q) ≃ₐ[R ⧸ p] (S ⧸ q) :=
-    { __ := Quotient.stabilizerHom q (q.under ℤ) G g
-      commutes' x := by
+    let φ : (S ⧸ q) ≃ₐ[R ⧸ p] (S ⧸ q) := .ofCommutes (Quotient.stabilizerHom q (q.under ℤ) G g)
+      fun x ↦ by
         obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
         specialize hg x
         rw [Submodule.mem_toAddSubgroup, over_def q p, mem_under, map_sub, hf, ← Quotient.eq] at hg
-        simpa }
+        simpa
     obtain ⟨g', hg'⟩ := Quotient.stabilizerHom_surjective H p q φ
     let v : stabilizer G q := ⟨g', g'.property⟩⁻¹ * g
     refine ⟨v, ?_, by simp [v, hf_ker]⟩
