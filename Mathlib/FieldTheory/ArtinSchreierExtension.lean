@@ -27,6 +27,8 @@ theory).
 
 public section
 
+section CommRing
+
 variable {F : Type*} [CommRing F]
 
 open IntermediateField Polynomial
@@ -62,9 +64,13 @@ lemma artinSchreierPoly_isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Pri
   · compute_degree <;> grind [one_ne_zero, hp.elim.one_lt]
   · monicity <;> grind [hp.elim.one_lt]
 
+end CommRing
+
+section Field
+
 variable {F : Type*} (p : ℕ) [Field F] [ExpChar F p]
 
-open AdjoinRoot Multiset
+open AdjoinRoot Multiset IntermediateField Polynomial
 
 lemma artinSchreierPoly_splits {a c : F} (hr : (artinSchreierPoly a).IsRoot c) :
     Splits (artinSchreierPoly a) := by
@@ -118,3 +124,5 @@ lemma artinSchreierPoly_irreducible_or_splits (a : F) :
       exact artinSchreierPoly_splits hc.2
   · right
     simp [artinSchreierPoly_def p, hp1]
+
+end Field
