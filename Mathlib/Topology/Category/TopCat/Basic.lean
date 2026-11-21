@@ -267,10 +267,11 @@ namespace TopCat
 lemma Hom.continuous {X Y : TopCat} (f : X ⟶ Y) : Continuous f := f.hom.continuous
 
 @[simps -isSimp]
+/-- We choose `of PUnit` as the canonical corepresenting object of the forgetful functor in
+`TopCat`. -/
 instance : (forget TopCat).ChosenCorepresentation where
   obj := ↧PUnit
   coreprBy.homEquiv := { toFun f := f ⟨⟩, invFun y := TopCat.ofHom <| .const _ y }
-
 
 instance : Unique ((forget TopCat.{u}).coreprObj) where
   default := PUnit.unit
