@@ -59,4 +59,18 @@ theorem tendsto_sum_pi_div_four :
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h
 
+/-- The error in the Leibniz approximation to `π / 4` is at most the first omitted term. -/
+theorem abs_pi_div_four_sub_sum_le (n : ℕ) :
+    |π / 4 - ∑ i ∈ range n, (-1 : ℝ) ^ i / (2 * i + 1)| ≤
+      1 / (2 * (n : ℝ) + 1) := by
+  have hfa : Antitone (fun i : ℕ ↦ 1 / (2 * (i : ℝ) + 1)) := by
+    intro a b hab
+    dsimp only
+    gcongr
+  have hfl : Tendsto
+      (fun n ↦ ∑ i ∈ range n, (-1 : ℝ) ^ i * (1 / (2 * (i : ℝ) + 1)))
+      atTop (𝓝 (π / 4)) := by
+    simpa [div_eq_mul_inv] using tendsto_sum_pi_div_four
+  simpa only [mul_one_div] using hfa.abs_sub_le_alternating_series hfl n
+
 end Real
