@@ -6,6 +6,7 @@ Authors: Chris Hughes, Yakov Pechersky
 module
 
 public import Mathlib.Data.List.Infix
+public import Mathlib.Data.List.TFAE
 public import Mathlib.Data.Quot
 
 import Mathlib.Data.List.Nodup
@@ -167,6 +168,18 @@ theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
 @[simp]
 theorem nodup_rotate {l : List α} {n : ℕ} : Nodup (l.rotate n) ↔ Nodup l :=
   (rotate_perm l n).nodup_iff
+
+@[simp]
+theorem tfae_rotate {l : List Prop} {n : ℕ} : TFAE (l.rotate n) ↔ TFAE l :=
+  (rotate_perm l n).tfae_iff
+
+alias ⟨TFAE.of_rotate, TFAE.rotate⟩ := tfae_rotate
+
+@[simp]
+theorem tfae_rotate' {l : List Prop} {n : ℕ} : TFAE (l.rotate' n) ↔ TFAE l := by
+  rw [← rotate_eq_rotate', tfae_rotate]
+
+alias ⟨TFAE.of_rotate', TFAE.rotate'⟩ := tfae_rotate'
 
 @[simp]
 theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] := by
@@ -413,6 +426,9 @@ theorem IsRotated.perm (h : l ~r l') : l ~ l' :=
 
 theorem IsRotated.nodup_iff (h : l ~r l') : Nodup l ↔ Nodup l' :=
   h.perm.nodup_iff
+
+theorem IsRotated.tfae_iff {l l' : List Prop} (h : l ~r l') : TFAE l ↔ TFAE l' :=
+  h.perm.tfae_iff
 
 theorem IsRotated.mem_iff (h : l ~r l') {a : α} : a ∈ l ↔ a ∈ l' :=
   h.perm.mem_iff
