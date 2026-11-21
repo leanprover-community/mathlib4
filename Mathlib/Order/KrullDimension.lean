@@ -850,7 +850,7 @@ If `α` is `Nonempty`, then `krullDim_eq_iSup_height_of_nonempty`, with the coer
 -/
 lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   cases isEmpty_or_nonempty α with
-  | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
+  | inl h => rw [krullDim_eq_bot, iSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
 /--
@@ -862,7 +862,7 @@ If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the co
 @[to_dual existing krullDim_eq_iSup_height]
 lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), ↑(coheight a) := by
   cases isEmpty_or_nonempty α with
-  | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
+  | inl h => rw [krullDim_eq_bot, iSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left

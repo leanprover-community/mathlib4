@@ -56,7 +56,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
   | h => by
     rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne
     · simp [he] at h
-    · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩
+    · refine ⟨hne, (isLUB_of_mem_closure ?_ h).sSup_eq⟩
       exact fun x hx => hx.2
   tfae_have 3 → 4
   | h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩

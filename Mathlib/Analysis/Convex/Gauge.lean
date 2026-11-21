@@ -546,7 +546,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpx₂),
       inv_mul_lt_iff₀ hpx₂, mul_one]
     exact lt_mul_of_one_lt_left hpx one_lt_two
-  refine IsGLB.csInf_eq ⟨fun r => ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩ hp
+  refine IsGLB.sInf_eq ⟨fun r => ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩
   · rintro ⟨hr, y, hy, rfl⟩
     rw [p.mem_ball_zero] at hy
     rw [map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos hr]

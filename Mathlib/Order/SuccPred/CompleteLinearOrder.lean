@@ -23,7 +23,19 @@ variable [ConditionallyCompleteLattice α] {x : α}
 
 @[to_dual]
 theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
-  h.isLUB_Iio.csSup_eq <| Set.Iio_nonempty.mpr h.not_isMin
+  h.isLUB_Iio.sSup_eq
+
+@[to_dual]
+theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x :=
+  h.isLUB_Iio.sSup_eq
+
+@[to_dual]
+theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.val = x := by
+  rw [← sSup_eq_iSup', h.sSup_Iio]
+
+@[to_dual]
+theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.val = x :=
+  h.isSuccPrelimit.iSup_Iio
 
 end ConditionallyCompleteLattice
 
@@ -49,7 +61,7 @@ lemma exists_eq_ciSup_of_not_isSuccLimit (hbdd : BddAbove (range f))
 @[to_dual]
 lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit (hs : IsLUB s x) (hne : s.Nonempty)
     (hx : ¬ IsSuccLimit x) : x ∈ s :=
-  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
+  hs.sSup_eq ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.sSup_eq ▸ hx)
 
 @[to_dual]
 lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccLimit x) :
@@ -67,24 +79,13 @@ lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup
   · simp [isSuccPrelimit_bot] at hlim
   · apply csSup_mem_of_not_isSuccLimit hs _ <| mt IsSuccLimit.isSuccPrelimit hlim
     contrapose hlim
-    rw [csSup_of_not_bddAbove hlim, csSup_empty]
+    rw [csSup_of_not_bddAbove hlim, sSup_empty]
     exact isSuccPrelimit_bot
 
 /-- See `exists_eq_ciSup_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccPrelimit (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit hf'
-
-theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
-  obtain rfl | hx := eq_bot_or_bot_lt x
-  · simp
-  · exact h.isLUB_Iio.csSup_eq ⟨⊥, hx⟩
-
-theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.val = x := by
-  rw [← sSup_eq_iSup', h.sSup_Iio]
-
-theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.val = x :=
-  h.isSuccPrelimit.iSup_Iio
 
 theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimit x := by
   refine ⟨fun h ↦ ?_, IsSuccPrelimit.sSup_Iio⟩

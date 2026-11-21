@@ -122,7 +122,7 @@ lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
 
 /-- A variant of `ciSup_of_empty` but with `0` on the RHS for convenience -/
 protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f = 0 :=
-  ciSup_of_empty f
+  iSup_of_empty f
 
 @[simp]
 theorem lift_sInf (s : Set Cardinal) : lift.{u, v} (sInf s) = sInf (lift.{u, v} '' s) := by

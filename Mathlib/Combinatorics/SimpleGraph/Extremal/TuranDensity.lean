@@ -94,8 +94,7 @@ theorem isGLB_turanDensity (H : SimpleGraph W) :
 
 theorem turanDensity_eq_csInf (H : SimpleGraph W) :
     turanDensity H = sInf { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } :=
-  have h := isGLB_turanDensity H
-  (h.csInf_eq h.nonempty).symm
+  (isGLB_turanDensity H).sInf_eq.symm
 
 theorem turanDensity_le_extremalNumber_div_choose_two (H : SimpleGraph W) {n : ℕ} (hn : 2 ≤ n) :
     turanDensity H ≤ extremalNumber n H / n.choose 2 := by
