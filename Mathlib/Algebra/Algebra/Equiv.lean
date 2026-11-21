@@ -672,7 +672,7 @@ lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a
 
 @[simp]
 lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
-    (ofBijective f hf).toLinearMap = f := rfl
+    (ofBijective f hf).toLinearMap = f.toLinearMap := rfl
 
 @[simp]
 lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :

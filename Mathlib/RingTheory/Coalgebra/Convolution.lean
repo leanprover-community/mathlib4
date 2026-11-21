@@ -114,8 +114,8 @@ variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower
 lemma nonUnitalAlgHom_comp_convMul_distrib
     [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
     (h : A →ₙₐ[R] B) (f g : WithConv (C →ₗ[R] A)) :
-    (h : A →ₗ[R] B).comp (f * g).ofConv =
-      (toConv ((h : A →ₗ[R] B).comp f.ofConv) * toConv ((h : A →ₗ[R] B).comp g.ofConv)).ofConv := by
+    h.toLinearMap ∘ₗ (f * g).ofConv =
+      (toConv (h.toLinearMap ∘ₗ f.ofConv) * toConv (h.toLinearMap ∘ₗ g.ofConv)).ofConv := by
   simp [convMul_def, map_comp, ← comp_assoc, NonUnitalAlgHom.comp_mul']
 
 lemma convMul_comp_coalgHom_distrib [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
@@ -168,7 +168,7 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 
 @[simp]
 lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
-    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ h.toLinearMap = (1 : WithConv (B →ₗ[R] A)).ofConv := by
   ext; simp
 
 variable [Semiring B] [Algebra R B]
@@ -265,7 +265,7 @@ variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
 @[expose, simps]
 def convPrecomp (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
-  toFun f := toConv (f.ofConv.comp (h : B →ₗ[R] C))
+  toFun f := toConv (f.ofConv.comp h.toLinearMap)
   map_one' := WithConv.ext (convOne_comp_coalgHom h)
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
   map_zero' := WithConv.ext (by ext; simp)

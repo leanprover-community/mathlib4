@@ -73,11 +73,12 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
     FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
   refine LinearMap.isClosedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
-    (F := Matrix n n 𝕜) (f := hA.cfcAux) <| LinearMap.ker_eq_bot'.mpr fun f hf ↦ ?_
+    (F := Matrix n n 𝕜) (f := hA.cfcAux.toLinearMap) <| LinearMap.ker_eq_bot'.mpr fun f hf ↦ ?_
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
         = (0 : Matrix n n 𝕜) := by
-    simp only [LinearMap.coe_ofClass, cfcAux_apply, conjStarAlgAut_apply] at hf
+    simp only [AlgHom.toLinearMap_apply, StarAlgHom.coe_toAlgHom, cfcAux_apply,
+      conjStarAlgAut_apply] at hf
     replace hf := congr($hf * (hA.eigenvectorUnitary : Matrix n n 𝕜))
     simp only [mul_assoc, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $hf)

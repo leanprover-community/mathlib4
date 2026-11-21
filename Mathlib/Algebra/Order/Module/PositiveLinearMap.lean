@@ -48,7 +48,7 @@ variable {F R E₁ E₂ : Type*} [Semiring R]
 
 /-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
 def PositiveLinearMap.ofClass (f : F) : E₁ →ₚ[R] E₂ :=
-  { (f : E₁ →ₗ[R] E₂), (f : E₁ →o E₂) with }
+  { LinearMap.ofClass f, (f : E₁ →o E₂) with }
 
 @[deprecated (since := "2026-06-10")]
 alias PositiveLinearMapClass.toPositiveLinearMap := PositiveLinearMap.ofClass

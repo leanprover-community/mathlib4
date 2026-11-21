@@ -370,11 +370,11 @@ theorem isOrtho_span {s t : Set E} :
     mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton_iff, forall_eq]
 
 theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) :
-    U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) := by
+    U.map f.toLinearMap ⟂ V.map f.toLinearMap := by
   aesop (add simp [isOrtho_iff_inner_eq])
 
 theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U ⟂ V) :
-    U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) := by
+    U.comap f.toLinearMap ⟂ V.comap f.toLinearMap := by
   rw [isOrtho_iff_inner_eq] at *
   simp_rw [mem_comap, ← f.inner_map_map]
   intro u hu v hv
@@ -385,7 +385,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
     U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
   refine ⟨fun h ↦ ?_, IsOrtho.map f.toLinearIsometry⟩
   have hf : ∀ p : Submodule 𝕜 E,
-      (p.map (f : E →ₗ[𝕜] F)).comap (f.toLinearIsometry : E →ₗ[𝕜] F) = p :=
+      (p.map (f : E →ₗ[𝕜] F)).comap f.toLinearIsometry.toLinearMap = p :=
     comap_map_eq_of_injective f.injective
   simpa only [hf] using h.comap f.toLinearIsometry
 

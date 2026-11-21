@@ -64,7 +64,7 @@ theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : WithConv (E →ₗ[R] F)) 
 @[simp]
 protected theorem _root_.IntrinsicStar.StarHomClass.isSelfAdjoint {S : Type*} [FunLike S E F]
     [LinearMapClass S R E F] [StarHomClass S E F] {f : S} :
-    IsSelfAdjoint (toConv (f : E →ₗ[R] F) : WithConv (E →ₗ[R] F)) :=
+    IsSelfAdjoint (toConv (.ofClass f) : WithConv (E →ₗ[R] F)) :=
   IntrinsicStar.isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
 
 variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]

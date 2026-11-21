@@ -882,7 +882,7 @@ variable [CommSemiring R] [DecidableEq n]
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
   __ := prodRingEquiv n α β
-  __ := AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl
+  map_smul' := map_smul (AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl)
 
 @[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     prodAlgEquiv n R α β = prodRingEquiv n α β := rfl

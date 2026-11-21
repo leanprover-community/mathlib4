@@ -154,15 +154,13 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-@[simp, norm_cast]
-theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
+@[simp]
+theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑f.toCoalgHom = f :=
   rfl
 
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
-@[simp, norm_cast]
-theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
-  rfl
+theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑f.toLinearMap = f := by simp
 
 /-- Turn a bialgebra homomorphism into an algebra homomorphism. -/
 @[coe]
@@ -179,7 +177,7 @@ theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
 theorem toAlgHom_toLinearMap (f : A →ₐc[R] B) :
-    ((f : A →ₐ[R] B) : A →ₗ[R] B) = f := by
+    (f : A →ₐ[R] B).toLinearMap = f.toLinearMap := by
   rfl
 
 variable (φ : A →ₐc[R] B)
@@ -200,7 +198,7 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
 
 @[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
+theorem coe_linearMap_injective : Function.Injective (fun (f : A →ₐc[R] B) ↦ f.toLinearMap) :=
   CoalgHom.linearMapOfClass_injective.comp coe_coalgHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=

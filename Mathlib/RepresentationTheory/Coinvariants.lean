@@ -125,13 +125,13 @@ lemma hom_ext {f g : Coinvariants ρ →ₗ[k] W} (H : f ∘ₗ mk ρ = g ∘ₗ
 the representations induces a `k`-linear map between the coinvariants. -/
 noncomputable def map (f : IntertwiningMap ρ τ) :
     Coinvariants ρ →ₗ[k] Coinvariants τ :=
-  lift _ (mk _ ∘ₗ f) fun g => LinearMap.ext fun x => (mk_eq_iff _).2 <|
+  lift _ (mk _ ∘ₗ f.toLinearMap) fun g => LinearMap.ext fun x => (mk_eq_iff _).2 <|
     mem_ker_of_eq g (f x) _ <| by simpa using congr($((f.isIntertwining' g).symm) x)
 
 variable {ρ τ}
 
 @[simp]
-lemma map_comp_mk (f : IntertwiningMap ρ τ) : map ρ τ f ∘ₗ mk ρ = mk τ ∘ₗ f := rfl
+lemma map_comp_mk (f : IntertwiningMap ρ τ) : map ρ τ f ∘ₗ mk ρ = mk τ ∘ₗ f.toLinearMap := rfl
 
 @[simp]
 lemma map_mk (f : IntertwiningMap ρ τ) (x : V) : map ρ τ f (mk _ x) = mk _ (f x) := rfl

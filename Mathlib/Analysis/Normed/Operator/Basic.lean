@@ -59,7 +59,7 @@ variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
     (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
-  absorbent_ball (by simpa) |>.subset_range_iff_surjective (f := (f : E →ₛₗ[σ₁₂] F))
+  absorbent_ball (by simpa) |>.subset_range_iff_surjective (f := .ofClass f)
 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
@@ -67,7 +67,7 @@ theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕}
   rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_ofClass]
   simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
   intro _ _
-  rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
+  rw [← Submodule.add_mem_iff_left (LinearMap.ofClass f).range (h _ <| mem_ball_self hr)]
   apply h
   simp_all
 
@@ -84,7 +84,7 @@ theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x
   refine ⟨fun h ↦ ?_, by simp_all⟩
   grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x r,
     convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
-  exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
+  exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) (.ofClass f)
 
 end
 
