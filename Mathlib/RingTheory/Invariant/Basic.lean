@@ -62,7 +62,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
-    simpa [mul_smul] using! congr(g • $(x.property ⟨_, ‹H.Normal›.conj_mem' _ h.property g⟩))⟩) (by
+    simpa [mul_smul] using!
+      congr(g • $(x.property ⟨_, ‹H.Normal›.conj_inv_mem _ h.property g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
     simpa [mul_smul] using! congr(a • $(c.property ⟨b, hb⟩)))

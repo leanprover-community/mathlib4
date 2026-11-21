@@ -151,7 +151,7 @@ lemma le_comap_invariants (g : G) :
     (invariants <| ρ.comp S.subtype) ≤
       (invariants <| ρ.comp S.subtype).comap (ρ g) :=
   fun x hx ⟨s, hs⟩ => by
-    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
+    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_inv_mem ‹_› s hs g⟩))
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
