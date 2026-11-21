@@ -280,11 +280,12 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
 
 /-- Isomorphic rings have isomorphic localizations. -/
 @[simps]
-noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P) (hIJ : I = J.comap f) :
+noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P)
+    (hIJ : I = J.comap f.toRingHom) :
     Localization.AtPrime I ≃+* Localization.AtPrime J where
-  __ := localRingHom I J f hIJ
-  invFun := localRingHom J I f.symm
-    (by rw [hIJ, ← Ideal.comap_coe f, Ideal.comap_comap, RingEquiv.comp_symm, Ideal.comap_id])
+  __ := localRingHom I J f.toRingHom hIJ
+  invFun := localRingHom J I f.symm.toRingHom
+    (by rw [hIJ, ← Ideal.comap_coe f.toRingHom, Ideal.comap_comap]; simp)
   left_inv x := by simp [localRingHom, map_map]
   right_inv x := by simp [localRingHom, map_map]
 
@@ -294,7 +295,7 @@ variable {S} in
 
 See `localAlgHom'` for a variant where the base ring `R` is also localized. -/
 noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
-    (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f.toRingHom) :
     Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
   __ := localRingHom I J f.toRingHom hIJ
   commutes' r := by
