@@ -8,7 +8,6 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Topology.Covering.Quotient
 
-
 /-!
 # Manifold structure induced by a local homeomorphism
 
