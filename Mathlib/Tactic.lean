@@ -159,6 +159,7 @@ public import Mathlib.Tactic.GRewrite.Elab
 public import Mathlib.Tactic.Gavrilovich.Elab.Basic
 public import Mathlib.Tactic.Gavrilovich.Grid
 public import Mathlib.Tactic.Gavrilovich.Parser
+public import Mathlib.Tactic.Gavrilovich.Tactics
 public import Mathlib.Tactic.Generalize
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Group
