@@ -5,6 +5,7 @@ Authors: Chris Hughes, Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Dynamics.PeriodicPts.Defs
@@ -110,6 +111,16 @@ theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (g : G) (q : G ⧸ H
     q.out⁻¹ * g ^ Function.minimalPeriod (g • ·) q * q.out ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
+
+theorem smul_sum_quotient_of_fixed {M : Type*} [AddCommMonoid M] [DistribMulAction G M]
+    [Fintype (G ⧸ H)] (x : M) (hx : ∀ h : H, h • x = x) (g : G) :
+    g • (∑ q : G ⧸ H, q.out • x) = ∑ q : G ⧸ H, q.out • x := by
+  classical
+  rw [Finset.smul_sum]
+  refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
+  obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
+  rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
+  rw [toPerm_apply, hh, mul_smul, ← smul_def, hx, smul_assoc]
 
 end QuotientAction
 
