@@ -806,9 +806,9 @@ theorem one_apply (a : A) : (1 : A →*[M] A) a = a :=
   rfl
 
 @[deprecated (since := "2026-11-21")]
-alias _root_.DistriMulActionHom.coe_zero := DistribMulActionHom.coe_zero
+protected alias _root_.DistriMulActionHom.coe_zero := DistribMulActionHom.coe_zero
 @[deprecated (since := "2026-11-21")]
-alias _root_.DistriMulActionHom.zero_apply := DistribMulActionHom.zero_apply
+protected alias _root_.DistriMulActionHom.zero_apply := DistribMulActionHom.zero_apply
 
 instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] :
