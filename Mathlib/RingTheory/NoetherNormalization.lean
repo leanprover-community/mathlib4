@@ -130,7 +130,7 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
     (finSuccEquiv k n <| varChange f <| monomial v <| f.coeff v).leadingCoeff =
     algebraMap k _ (f.coeff v) := by
   rw [monomial_eq, Finsupp.prod_fintype]
-  · simp only [map_mul, map_prod, leadingCoeff_mul, leadingCoeff_prod]
+  · simp only [map_mul, map_prod, Polynomial.leadingCoeff_mul, leadingCoeff_prod]
     rw [AlgEquiv.ofAlgHom_apply, algHom_C, algebraMap_eq, finSuccEquiv_apply,
       eval₂Hom_C, coe_comp]
     simp only [AlgEquiv.ofAlgHom_apply, Function.comp_apply, leadingCoeff_C, map_pow,
