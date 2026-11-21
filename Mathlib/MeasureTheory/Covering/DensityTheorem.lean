@@ -46,78 +46,66 @@ variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ
 
 open scoped Topology
 
-/-- A Vitali family in a space with a uniformly locally doubling measure, designed so that the sets
-at `x` contain all `closedBall y r` when `dist x y ≤ K * r`. -/
-def vitaliFamily (K : ℝ) : VitaliFamily μ := by
-  /- the Vitali covering theorem gives a family that works well at small scales, thanks to the
-    doubling property. We enlarge this family to add large sets, to make sure that all balls and not
-    only small ones belong to the family, for convenience. -/
-  let R := scalingScaleOf μ (max (4 * K + 3) 3)
-  have Rpos : 0 < R := scalingScaleOf_pos _ _
-  have A : ∀ x : α, ∃ᶠ r in 𝓝[>] (0 : ℝ),
-      μ (closedBall x (3 * r)) ≤ scalingConstantOf μ (max (4 * K + 3) 3) * μ (closedBall x r) := by
-    intro x
-    apply frequently_iff.2 fun {U} hU => ?_
-    obtain ⟨ε, εpos, hε⟩ := mem_nhdsGT_iff_exists_Ioc_subset.1 hU
-    refine ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, ?_⟩
-    exact measure_mul_le_scalingConstantOf_mul μ
-      ⟨zero_lt_three, le_max_right _ _⟩ (min_le_right _ _)
-  exact (Vitali.vitaliFamily μ (scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
-    (by linarith)
+omit [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] in
+/-- A uniformly locally doubling measure is doubling at all small enough scales around every point,
+with a uniform constant. -/
+private theorem frequently_measure_closedBall_three_mul_le (x : α) :
+    ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ scalingConstantOf μ 3 * μ (closedBall x r) :=
+  Eventually.frequently <| by
+    filter_upwards [Ioc_mem_nhdsGT (scalingScaleOf_pos μ 3)] with r hr
+    exact measure_mul_le_scalingConstantOf_mul μ ⟨zero_lt_three, le_rfl⟩ hr.2
 
-/-- In the Vitali family `IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`
-contain all balls `closedBall y r` when `dist x y ≤ K * r`. -/
-theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ} (h : dist x y ≤ K * r)
-    (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
-  let R := scalingScaleOf μ (max (4 * K + 3) 3)
-  simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_ofPred_eq,
-    isClosed_closedBall, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
-    measurableSet_closedBall]
-  /- The measure is doubling on scales smaller than `R`. Therefore, we treat differently small
-    and large balls. For large balls, this follows directly from the enlargement we used in the
-    definition. -/
-  by_cases H : closedBall y r ⊆ closedBall x (R / 4)
-  swap; · exact Or.inr H
-  left
-  /- For small balls, there is the difficulty that `r` could be large but still the ball could be
-    small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
-    and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
-  rcases le_or_gt r R with (hr | hr)
-  · refine ⟨(K + 1) * r, ?_⟩
-    constructor
-    · apply closedBall_subset_closedBall'
-      rw [dist_comm]
-      linarith
-    · have I1 : closedBall x (3 * ((K + 1) * r)) ⊆ closedBall y ((4 * K + 3) * r) := by
-        apply closedBall_subset_closedBall'
-        linarith
-      have I2 : closedBall y ((4 * K + 3) * r) ⊆ closedBall y (max (4 * K + 3) 3 * r) := by
-        gcongr
-        exact le_max_left ..
-      apply (measure_mono (I1.trans I2)).trans
-      exact measure_mul_le_scalingConstantOf_mul _
-        ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
-  · refine ⟨_, H, ?_⟩
-    grw [scalingConstantOf, ← le_max_right, ENNReal.coe_one, one_mul,
-      closedBall_subset_closedBall' (y := y)]
-    have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
-    have B := mem_closedBall'.1 (H A)
+/-- A Vitali family in a space with a uniformly locally doubling measure, given by
+`Vitali.vitaliFamily`. For any `K`, the closed balls `closedBall y r` with `dist x y ≤ K * r`
+tend to `filterAt x` as `r → 0`, see `IsUnifLocDoublingMeasure.tendsto_closedBall_filterAt`. -/
+def vitaliFamily : VitaliFamily μ :=
+  Vitali.vitaliFamilyOfForall μ (fun _ ↦ scalingConstantOf μ 3)
+    (frequently_measure_closedBall_three_mul_le μ)
+
+omit [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] in
+/-- Auxiliary lemma for `tendsto_closedBall_filterAt`: if `dist x y ≤ K * r` and `r` is small
+enough, then `closedBall y r` is one of the sets at `x` used to define the Vitali family
+`IsUnifLocDoublingMeasure.vitaliFamily`, with doubling constant
+`scalingConstantOf μ (max (4 * K + 3) 3)`. -/
+private theorem closedBall_mem_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ}
+    (h : dist x y ≤ K * r) (rpos : 0 < r) (hr : r ≤ scalingScaleOf μ (max (4 * K + 3) 3)) :
+    IsClosed (closedBall y r) ∧ (interior (closedBall y r)).Nonempty ∧
+      ∃ r', closedBall y r ⊆ closedBall x r' ∧
+        μ (closedBall x (3 * r')) ≤
+          scalingConstantOf μ (max (4 * K + 3) 3) * μ (closedBall y r) := by
+  refine ⟨isClosed_closedBall, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
+    (K + 1) * r, ?_, ?_⟩
+  · apply closedBall_subset_closedBall'
+    rw [dist_comm]
     linarith
+  · have I1 : closedBall x (3 * ((K + 1) * r)) ⊆ closedBall y ((4 * K + 3) * r) := by
+      apply closedBall_subset_closedBall'
+      linarith
+    have I2 : closedBall y ((4 * K + 3) * r) ⊆ closedBall y (max (4 * K + 3) 3 * r) := by
+      gcongr
+      exact le_max_left ..
+    apply (measure_mono (I1.trans I2)).trans
+    exact measure_mul_le_scalingConstantOf_mul _
+      ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
 
+/-- The closed balls `closedBall (w j) (δ j)` tend to `(vitaliFamily μ).filterAt x`
+whenever `δ j → 0⁺` and eventually `x ∈ closedBall (w j) (K * δ j)`. -/
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
-    Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
-  refine (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨?_, fun ε hε => ?_⟩
-  · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
-    exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
+    Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ).filterAt x) := by
+  rw [vitaliFamily, Vitali.filterAt_vitaliFamily_of_exists _ _
+    ⟨_, frequently_measure_closedBall_three_mul_le μ x⟩]
+  refine Tendsto.mono_right ?_ (le_iSup _ (scalingConstantOf μ (max (4 * K + 3) 3)))
+  rw [tendsto_inf, tendsto_principal, nhds_basis_closedBall.smallSets.tendsto_right_iff]
+  have δpos := eventually_mem_of_tendsto_nhdsWithin δlim
+  replace δlim := tendsto_nhds_of_tendsto_nhdsWithin δlim
+  refine ⟨fun ε hε => ?_, ?_⟩
   · rcases l.eq_or_neBot with rfl | h
     · simp
     have hK : 0 ≤ K := by
-      rcases (xmem.and (δlim self_mem_nhdsWithin)).exists with ⟨j, hj, h'j⟩
+      rcases (xmem.and δpos).exists with ⟨j, hj, h'j⟩
       have : 0 ≤ K * δ j := nonempty_closedBall.1 ⟨x, hj⟩
       exact (mul_nonneg_iff_left_nonneg_of_pos (mem_Ioi.1 h'j)).1 this
-    have δpos := eventually_mem_of_tendsto_nhdsWithin δlim
-    replace δlim := tendsto_nhds_of_tendsto_nhdsWithin δlim
     replace hK : 0 < K + 1 := by linarith
     apply (((Metric.tendsto_nhds.mp δlim _ (div_pos hε hK)).and δpos).and xmem).mono
     rintro j ⟨⟨hjε, hj₀ : 0 < δ j⟩, hx⟩ y hy
@@ -125,6 +113,15 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
       simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff₀' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
+  · filter_upwards [xmem, δpos, δlim.eventually (gt_mem_nhds (scalingScaleOf_pos μ _))]
+      with j hj h'j h''j
+    exact closedBall_mem_of_dist_le_mul μ hj h'j h''j.le
+
+/-- Closed balls centered at `x` tend to `(vitaliFamily μ).filterAt x`
+as their radius tends to `0`. -/
+theorem tendsto_closedBall_filterAt_self (x : α) :
+    Tendsto (closedBall x) (𝓝[>] 0) ((vitaliFamily μ).filterAt x) :=
+  tendsto_closedBall_filterAt μ (K := 0) (fun _ ↦ x) id tendsto_id (by simp)
 
 end
 
@@ -141,7 +138,7 @@ theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.res
     ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
       (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by
-  filter_upwards [(vitaliFamily μ K).ae_tendsto_measure_inter_div S] with x hx ι l w δ δlim
+  filter_upwards [(vitaliFamily μ).ae_tendsto_measure_inter_div S] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
@@ -150,7 +147,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
       (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
-  filter_upwards [(vitaliFamily μ K).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
+  filter_upwards [(vitaliFamily μ).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
@@ -160,7 +157,7 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
       ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
         (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
         Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
-  filter_upwards [(vitaliFamily μ K).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
+  filter_upwards [(vitaliFamily μ).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
     hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 
 end Applications

@@ -41,7 +41,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → E} (hf : LocallyIn
   have hg (x y : ℝ) : IntervalIntegrable f volume x y :=
     intervalIntegrable_iff.mpr <|
       (hf.integrableOn_isCompact isCompact_uIcc).mono_set uIoc_subset_uIcc
-  have LDT := (vitaliFamily volume 1).ae_tendsto_average hf
+  have LDT := (vitaliFamily volume).ae_tendsto_average hf
   have h {a b : ℝ} : ∫ (t : ℝ) in Ioc a b, f t = ∫ (t : ℝ) in Icc a b, f t :=
     integral_Icc_eq_integral_Ioc (x := a) (y := b) (X := ℝ) |>.symm
   filter_upwards [LDT] with x hx
