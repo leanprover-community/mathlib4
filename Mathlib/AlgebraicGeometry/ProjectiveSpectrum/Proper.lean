@@ -97,13 +97,14 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
     ← MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion) e₂.inv]
-  let F : Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1 →+* Away 𝒜 (i.2.1 * j.2.1) :=
-    (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _))
-      (fun _ _ ↦ .all _ _)).toRingHom
-  have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
+  let F : Away 𝒜 i.2.val ⊗[𝒜 0] Away 𝒜 j.2.val →+* Away 𝒜 (i.2.val * j.2.val) :=
+    (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.property rfl)
+      (awayMapₐ 𝒜 i.2.property (mul_comm _ _)) (fun _ _ ↦ .all _ _)).toRingHom
+  have : Function.Surjective F :=
+    lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.property j.2.property rfl i.1.property
   convert
     IsClosedImmersion.spec_of_surjective
-      (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
+      (CommRingCat.ofHom (R := Away 𝒜 i.2.val ⊗[𝒜 0] Away 𝒜 j.2.val) F) this using 1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
@@ -114,7 +115,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     congr 1
     ext x : 2
     congrm $((Algebra.TensorProduct.lift_comp_includeLeft
-     (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x
+     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _))
+     (fun _ _ ↦ .all _ _)).symm) x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁]
@@ -123,7 +125,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     congr 1
     ext x : 2
     congrm $((Algebra.TensorProduct.lift_comp_includeRight
-     (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm) x
+     (awayMapₐ 𝒜 j.2.property rfl) (awayMapₐ 𝒜 i.2.property (mul_comm _ _))
+     (fun _ _ ↦ .all _ _)).symm) x
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MC]
@@ -139,12 +142,14 @@ instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
   rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
-    (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx))]
+    (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩)
+      (by simpa using hx))]
   intro i
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType)
-    (Proj.basicOpenIsoSpec 𝒜 (i : A) (hxd _ i.2) (hd _ i.2).bot_lt).inv, ← Category.assoc,
-    ← Proj.awayι, Proj.awayι_toSpecZero, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
-  exact HomogeneousLocalization.Away.finiteType _ _ (hxd _ i.2)
+    (Proj.basicOpenIsoSpec 𝒜 (i : A) (hxd _ i.property) (hd _ i.property).bot_lt).inv,
+    ← Category.assoc, ← Proj.awayι, Proj.awayι_toSpecZero,
+    HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
+  exact HomogeneousLocalization.Away.finiteType _ _ (hxd _ i.property)
 
 end LocallyOfFiniteType
 
@@ -155,11 +160,11 @@ instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) :
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).1 := by
-    rw [← Proj.opensRange_awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt]
-    exact isCompact_range (Proj.awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt).continuous
+  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).carrier := by
+    rw [← Proj.opensRange_awayι _ _ (hxd _ i.property) (hd _ i.property).bot_lt]
+    exact isCompact_range (Proj.awayι _ _ (hxd _ i.property) (hd _ i.property).bot_lt).continuous
   have := congr($(Proj.iSup_basicOpen_eq_top' 𝒜
-    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).1)
+    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩) (by simpa using hx)).carrier)
   simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
     TopologicalSpace.Opens.coe_mk, TopologicalSpace.Opens.coe_top] at this
   rw [← isCompact_univ_iff, ← this]
@@ -216,8 +221,8 @@ theorem valuativeCriterion_existence_aux
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
-    refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    refine pos_of_ne_zero fun hKmax ↦ ?_
+    have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
@@ -319,10 +324,12 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
   have : i₁ (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
-  rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx),
+  rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.property⟩)
+      (by simpa using hx),
     TopologicalSpace.Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
-  have : Set.range i₁ ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
+  have : Set.range i₁ ⊆
+      (Proj.awayι 𝒜 _ (hxd i i.property) (hd i i.property).bot_lt).opensRange := by
     rw [Proj.opensRange_awayι]
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
@@ -332,19 +339,21 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective
     simp only [Spec.map_comp, Spec.map_preimage, ← w.w]
-    rw [← Proj.awayι_toSpecZero _ _ (hxd i i.2), IsOpenImmersion.lift_fac_assoc]
-    exact Nat.zero_lt_of_ne_zero (hd i i.2)
+    rw [← Proj.awayι_toSpecZero _ _ (hxd i i.property), IsOpenImmersion.lift_fac_assoc]
+    exact Nat.zero_lt_of_ne_zero (hd i i.property)
   obtain ⟨i₀, φ', hφ, hφ'⟩ :=
     valuativeCriterion_existence_aux 𝒜 (Spec.preimage i₂).hom x (↑) (by simpa using hx) i
       (O := O) (K := K) (Spec.preimage φ).hom congr(($H).hom)
-      (fun i ↦ d _ i.2) (fun i ↦ (hd _ i.2).bot_lt) (fun i ↦ hxd _ i.2)
+      (fun i ↦ d _ i.property) (fun i ↦ (hd _ i.property).bot_lt) (fun i ↦ hxd _ i.property)
   let e : O ≃+* (algebraMap O K).range :=
     (AlgEquiv.ofInjective (Algebra.ofId O K) (IsFractionRing.injective _ _)).toRingEquiv
   let φ'' := e.symm.toRingHom.comp ((Subring.inclusion hφ').comp (RingHom.rangeRestrict _))
-  have hφ'' : (algebraMap O K).comp φ'' = φ'.comp (awayMap 𝒜 (hxd _ i.2) (mul_comm _ _)) := by
+  have hφ'' : (algebraMap O K).comp φ'' =
+      φ'.comp (awayMap 𝒜 (hxd _ i.property) (mul_comm _ _)) := by
     ext x
     exact congr_arg Subtype.val (e.apply_symm_apply _)
-  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.2) (hd _ _).bot_lt, ?_, ?_⟩⟩
+  refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.property) (hd _ _).bot_lt,
+    ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
     convert IsOpenImmersion.lift_fac _ _ this using 1
     change _ = φ ≫ _
@@ -358,7 +367,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply IsFractionRing.injective O K
     refine congr($hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.2) rfl,
+    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.property) rfl,
       ← RingHom.comp_apply, hφ]
     congrm $H.symm x
 
