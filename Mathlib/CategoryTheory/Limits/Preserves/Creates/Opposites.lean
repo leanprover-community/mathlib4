@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` and `F.rightOp`
 create certain (co)limits and vice versa.
-
 -/
 
 public section

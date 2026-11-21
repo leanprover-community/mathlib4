@@ -21,7 +21,6 @@ the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
 pushforward functors. Similar results are obtained for sheaves of modules
 in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
-
 -/
 
 @[expose] public section

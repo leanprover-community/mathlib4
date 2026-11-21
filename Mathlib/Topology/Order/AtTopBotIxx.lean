@@ -98,7 +98,7 @@ theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a 
     (hb : IsSuccPrelimit b := by exact .of_dense _) :
     map ((↑) : s → X) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
-  · have : IsEmpty s := ⟨fun x => hb'.subset (hsb x.2)⟩
+  · have : IsEmpty s := ⟨fun x => hb'.subset (hsb x.property)⟩
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
   · rw [← comap_coe_nhdsLT_of_Ioo_subset hsb (fun _ => hs a ha) hb, map_comap_of_mem]
     rw [Subtype.range_val]

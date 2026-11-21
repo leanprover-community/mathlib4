@@ -55,10 +55,10 @@ section Preorder
 variable [Zero R] [One R] [Preorder R]
 
 theorem coe_nonneg (x : Icc (0 : R) 1) : 0 ≤ (x : R) :=
-  x.2.1
+  x.property.1
 
 theorem coe_le_one (x : Icc (0 : R) 1) : (x : R) ≤ 1 :=
-  x.2.2
+  x.property.2
 
 end Preorder
 
@@ -110,11 +110,11 @@ instance instNeZeroOne [NeZero (1 : R)] : NeZero (1 : Icc (0 : R) 1) :=
 
 /-- like `coe_nonneg`, but with the inequality in `Icc (0:R) 1`. -/
 theorem nonneg {t : Icc (0 : R) 1} : 0 ≤ t :=
-  t.2.1
+  t.property.1
 
 /-- like `coe_le_one`, but with the inequality in `Icc (0:R) 1`. -/
 theorem le_one {t : Icc (0 : R) 1} : t ≤ 1 :=
-  t.2.2
+  t.property.2
 
 end ZeroLEOneClass
 
@@ -122,10 +122,11 @@ section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
 instance instMul : Mul (Icc (0 : R) 1) where
-  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+  mul p q := ⟨p * q, ⟨mul_nonneg p.property.1 q.property.1,
+    by grw [p.property.2, one_mul, q.property.2]; exact q.property.1⟩⟩
 
 instance instPow : Pow (Icc (0 : R) 1) ℕ where
-  pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one₀ p.2.1 p.2.2⟩⟩
+  pow p n := ⟨p.val ^ n, ⟨pow_nonneg p.property.1 n, pow_le_one₀ p.property.1 p.property.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Icc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
@@ -136,16 +137,16 @@ theorem coe_pow (x : Icc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance instMulLeftMono : MulLeftMono (Icc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.2.1)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.property.1)
 
 instance instMulRightMono : MulRightMono (Icc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.property.1)
 
 theorem mul_le_left {x y : Icc (0 : R) 1} : x * y ≤ x :=
-  (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq (mul_one _)
+  (mul_le_mul_of_nonneg_left y.property.2 x.property.1).trans_eq (mul_one _)
 
 theorem mul_le_right {x y : Icc (0 : R) 1} : x * y ≤ y :=
-  (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
+  (mul_le_mul_of_nonneg_right x.property.2 y.property.1).trans_eq (one_mul _)
 
 instance instMonoidWithZero : MonoidWithZero (Icc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
@@ -185,9 +186,9 @@ theorem one_sub_mem {t : R} (ht : t ∈ Icc (0 : R) 1) : 1 - t ∈ Icc (0 : R) 1
 theorem mem_iff_one_sub_mem {t : R} : t ∈ Icc (0 : R) 1 ↔ 1 - t ∈ Icc (0 : R) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
-theorem one_sub_nonneg (x : Icc (0 : R) 1) : 0 ≤ 1 - (x : R) := by simpa using x.2.2
+theorem one_sub_nonneg (x : Icc (0 : R) 1) : 0 ≤ 1 - (x : R) := by simpa using x.property.2
 
-theorem one_sub_le_one (x : Icc (0 : R) 1) : 1 - (x : R) ≤ 1 := by simpa using x.2.1
+theorem one_sub_le_one (x : Icc (0 : R) 1) : 1 - (x : R) ≤ 1 := by simpa using x.property.1
 
 end OrderedAddCommGroup
 
@@ -202,10 +203,10 @@ section Preorder
 variable [Zero R] [One R] [Preorder R]
 
 theorem coe_nonneg (x : Ico (0 : R) 1) : 0 ≤ (x : R) :=
-  x.2.1
+  x.property.1
 
 theorem coe_lt_one (x : Ico (0 : R) 1) : (x : R) < 1 :=
-  x.2.2
+  x.property.2
 
 end Preorder
 
@@ -232,7 +233,7 @@ theorem coe_ne_zero {x : Ico (0 : R) 1} : (x : R) ≠ 0 ↔ x ≠ 0 :=
 
 /-- like `coe_nonneg`, but with the inequality in `Ico (0:R) 1`. -/
 theorem nonneg {t : Ico (0 : R) 1} : 0 ≤ t :=
-  t.2.1
+  t.property.1
 
 instance instIsBotZeroClass : IsBotZeroClass (Ico (0 : R) 1) where isBot_zero := coe_nonneg
 
@@ -243,17 +244,18 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
 instance instMul : Mul (Ico (0 : R) 1) where
   mul p q :=
-    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+    ⟨p * q, ⟨mul_nonneg p.property.1 q.property.1,
+      by grw [p.property.2, one_mul, q.property.2]; exact q.property.1⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance instMulLeftMono : MulLeftMono (Ico (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.2.1)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.property.1)
 
 instance instMulRightMono : MulRightMono (Ico (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.property.1)
 
 instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
@@ -295,10 +297,10 @@ section Preorder
 variable [Zero R] [One R] [Preorder R]
 
 theorem coe_pos (x : Ioc (0 : R) 1) : 0 < (x : R) :=
-  x.2.1
+  x.property.1
 
 theorem coe_le_one (x : Ioc (0 : R) 1) : (x : R) ≤ 1 :=
-  x.2.2
+  x.property.2
 
 end Preorder
 
@@ -325,7 +327,7 @@ theorem coe_ne_one {x : Ioc (0 : R) 1} : (x : R) ≠ 1 ↔ x ≠ 1 :=
 
 /-- like `coe_le_one`, but with the inequality in `Ioc (0:R) 1`. -/
 theorem le_one {t : Ioc (0 : R) 1} : t ≤ 1 :=
-  t.2.2
+  t.property.2
 
 end ZeroLEOneClass
 
@@ -333,10 +335,11 @@ section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance instMul : Mul (Ioc (0 : R) 1) where
-  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1.le⟩⟩
+  mul p q := ⟨p.val * q.val, ⟨mul_pos p.property.1 q.property.1,
+    by grw [p.property.2, one_mul, q.property.2]; exact q.property.1.le⟩⟩
 
 instance instPow : Pow (Ioc (0 : R) 1) ℕ where
-  pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
+  pow p n := ⟨p.val ^ n, ⟨pow_pos p.property.1 n, pow_le_one₀ (le_of_lt p.property.1) p.property.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
@@ -347,10 +350,10 @@ theorem coe_pow (x : Ioc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance instMulLeftStrictMono : MulLeftStrictMono (Ioc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.2.1)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.property.1)
 
 instance instMulRightStrictMono : MulRightStrictMono (Ioc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.2.1)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.property.1)
 
 instance instMulLeftMono : MulLeftMono (Ioc (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
 
@@ -412,10 +415,10 @@ section Preorder
 variable [Zero R] [One R] [Preorder R]
 
 theorem pos (x : Ioo (0 : R) 1) : 0 < (x : R) :=
-  x.2.1
+  x.property.1
 
 theorem lt_one (x : Ioo (0 : R) 1) : (x : R) < 1 :=
-  x.2.2
+  x.property.2
 
 end Preorder
 
@@ -424,17 +427,18 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance instMul : Mul (Ioo (0 : R) 1) where
   mul p q :=
-    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+    ⟨p.val * q.val, ⟨mul_pos p.property.1 q.property.1,
+      by grw [p.property.2, one_mul, q.property.2]; exact q.property.1⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance instMulLeftStrictMono : MulLeftStrictMono (Ioo (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.2.1)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.property.1)
 
 instance instMulRightStrictMono : MulRightStrictMono (Ioo (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.2.1)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.property.1)
 
 instance instMulLeftMono : MulLeftMono (Ioo (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
 
@@ -474,9 +478,9 @@ theorem one_sub_mem {t : R} (ht : t ∈ Ioo (0 : R) 1) : 1 - t ∈ Ioo (0 : R) 1
 theorem mem_iff_one_sub_mem {t : R} : t ∈ Ioo (0 : R) 1 ↔ 1 - t ∈ Ioo (0 : R) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
-theorem one_sub_pos (x : Ioo (0 : R) 1) : 0 < 1 - (x : R) := by simpa using x.2.2
+theorem one_sub_pos (x : Ioo (0 : R) 1) : 0 < 1 - (x : R) := by simpa using x.property.2
 
-theorem one_sub_lt_one (x : Ioo (0 : R) 1) : 1 - (x : R) < 1 := by simpa using x.2.1
+theorem one_sub_lt_one (x : Ioo (0 : R) 1) : 1 - (x : R) < 1 := by simpa using x.property.1
 
 @[deprecated (since := "2026-10-06")] alias one_minus_pos := one_sub_pos
 @[deprecated (since := "2026-10-06")] alias one_minus_lt_one := one_sub_lt_one

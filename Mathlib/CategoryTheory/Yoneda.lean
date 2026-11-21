@@ -63,7 +63,7 @@ for the category of types. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
-/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) ≃ ULift (Y ⟶ X)`. -/
+/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) = ULift (Y ⟶ X)`. -/
 unif_hint uliftYoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -103,17 +103,17 @@ for the category of types. -/
 @[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
 
-/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (Y ⟶ X)`. -/
+/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (X ⟶ Y)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
-  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (Y' ⟶ X')
+  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (X' ⟶ Y')
 
-/-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop Y ⟶ X)`. -/
+/-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop X ⟶ Y)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom' (X X' : Cᵒᵖ) (Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
-  (uliftCoyoneda.{w}.obj X).obj Y ≟ ULift (Y' ⟶ unop X')
+  (uliftCoyoneda.{w}.obj X).obj Y ≟ ULift (unop X' ⟶ Y')
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
@@ -1248,7 +1248,7 @@ functor. -/
 def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
     F.sections ≃ ((const _).obj X ⟶ F) where
   toFun s :=
-    { app j := ↾fun _ ↦ s.1 j
+    { app j := ↾fun _ ↦ s.val j
       naturality _ _ _ := by ext x; simp }
   invFun τ := by
     refine ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ ?_⟩

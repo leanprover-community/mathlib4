@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.ZMod
 
 /-!
-
 # Relating `ℤ_[p]` to `ZMod (p ^ n)`, aka `ℤ/p^nℤ`.
 
 In this file we establish connections between the `p`-adic integers `ℤ_[p]`
@@ -39,7 +38,6 @@ there is a unique limit `R → ℤ_[p]`
 
 The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
-
 -/
 
 @[expose] public section
@@ -76,10 +74,10 @@ variable {p}
 theorem modPart_lt_p : modPart p r < p := by
   convert! Int.emod_lt_abs _ _
   · simp
-  · exact mod_cast hp_prime.1.ne_zero
+  · exact mod_cast hp_prime.out.ne_zero
 
 theorem modPart_nonneg : 0 ≤ modPart p r :=
-  Int.emod_nonneg _ <| mod_cast hp_prime.1.ne_zero
+  Int.emod_nonneg _ <| mod_cast hp_prime.out.ne_zero
 
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
@@ -94,7 +92,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
   apply Coprime.symm
-  apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
+  apply (coprime_or_dvd_of_prime hp_prime.out _).resolve_right
   rw [← Int.natCast_dvd_natCast, ← norm_int_lt_one_iff_dvd, not_lt]
   apply ge_of_eq
   rw [← isUnit_iff]
@@ -154,7 +152,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
     calc
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
       _ ≤ _ := Padic.nonarchimedean _ _
-      _ ≤ _ := max_le (le_of_lt hr) x.2
+      _ ≤ _ := max_le (le_of_lt hr) x.property
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
   lift n to ℕ using hzn
   use n
@@ -319,7 +317,7 @@ This coercion is only a ring homomorphism if it coerces into a ring whose charac
 theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
-  rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
+  rcases Nat.exists_eq_add_of_lt hp_prime.out.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
   rw [Nat.cast_inj]
   apply mod_eq_of_lt
@@ -368,7 +366,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
     simp only [appr, map_natCast, ZMod.natCast_self, map_pow, Int.natAbs, map_mul]
-    have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
+    have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.out.one_lt n.lt_add_one
     split_ifs with h
     · apply lt_trans (ih _) hp
     · calc
@@ -422,7 +420,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       simp only [mul_zero] at hc
       contradiction
     conv_rhs =>
-      congr
+      enter [1]
       simp only [hc]
     rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
     rw [valuation_p_pow_mul _ _ hc', Nat.cast_add, add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
@@ -582,7 +580,7 @@ theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   change _ < _ at hε
   use 1
   intro j hj
-  have : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by lia) hp_prime.1.one_lt⟩
+  have : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by lia) hp_prime.out.one_lt⟩
   suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 
@@ -663,7 +661,7 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
     lift f_compat r - (f n r).val ∈ (Ideal.span {(p : ℤ_[p]) ^ n}) := by
   obtain ⟨k, hk⟩ :=
     limNthHom_spec f_compat r _
-      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.1.pos) _)
+      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.out.pos) _)
   have := le_of_lt (hk (max n k) (le_max_right _ _))
   rw [norm_le_pow_iff_mem_span_pow] at this
   dsimp [lift]

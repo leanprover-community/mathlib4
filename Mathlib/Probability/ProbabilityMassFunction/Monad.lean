@@ -17,7 +17,6 @@ and then sampling from `pb a : PMF β` to get a final result `b : β`.
 
 `bindOnSupport` generalizes `bind` to allow binding to a partial function,
 so that the second argument only needs to be defined on the support of the first argument.
-
 -/
 
 @[expose] public section

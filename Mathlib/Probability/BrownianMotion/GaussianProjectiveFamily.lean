@@ -58,15 +58,15 @@ def covMatrix (I : Finset ℝ≥0) : Matrix I I ℝ := .of fun s t ↦ min s t
 
 @[simp]
 lemma covMatrix_apply (s t : I) :
-    covMatrix I s t = min s.1 t.1 := rfl
+    covMatrix I s t = min s.val t.val := rfl
 
 lemma covMatrix_submatrix (hJI : J ⊆ I) :
-    (covMatrix I).submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩) =
-    covMatrix J := rfl
+    (covMatrix I).submatrix (fun i : J ↦ ⟨i.val, hJI i.property⟩)
+      (fun i : J ↦ ⟨i.val, hJI i.property⟩) = covMatrix J := rfl
 
 lemma posSemidef_covMatrix (I : Finset ℝ≥0) :
     (covMatrix I).PosSemidef := by
-  have : covMatrix I = .of fun s t ↦ volume.real ((Icc 0 s.1.1) ∩ (Icc 0 t.1.1)) := by
+  have : covMatrix I = .of fun s t ↦ volume.real ((Icc 0 s.val.val) ∩ (Icc 0 t.val.val)) := by
     ext; simp [Icc_inter_Icc]
   rw [this]
   exact posSemidef_matrix_measure_inter (fun _ ↦ measurableSet_Icc)
@@ -143,7 +143,7 @@ lemma integral_eval_projectiveFamily (I : Finset ℝ≥0) (s : I) :
   exact IsGaussian.integrable_id
 
 lemma covariance_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
-    cov[fun x ↦ x s, fun x ↦ x t; projectiveFamily I] = min s.1 t.1 := by
+    cov[fun x ↦ x s, fun x ↦ x t; projectiveFamily I] = min s.val t.val := by
   rw [covariance_fun_projectiveFamily,
     covariance_eval_multivariateGaussian (posSemidef_covMatrix I),
     covMatrix_apply]
@@ -167,7 +167,7 @@ lemma measurePreserving_eval_projectiveFamily (s : I) :
 is the centered Gaussian with variance `t - s`. -/
 lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     MeasurePreserving (fun x ↦ x s - x t) (projectiveFamily I)
-      (gaussianReal 0 (nndist s.1 t.1)) where
+      (gaussianReal 0 (nndist s.val t.val)) where
   measurable := by fun_prop
   map_eq := by
     rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub,
