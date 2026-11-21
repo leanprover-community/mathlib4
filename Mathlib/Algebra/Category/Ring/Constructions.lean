@@ -146,9 +146,8 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     congr($((CommRingCat.isPushout_tensorProduct R R' S).inl_isoPushout_hom).hom r)
   have h3 (x : R') := congr($h.inl_isoPushout_inv x)
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h3
-  let e' : R' ⊗[R] S ≃ₐ[R'] S' := {
-    __ := e
-    commutes' r := by simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3] }
+  let e' : R' ⊗[R] S ≃ₐ[R'] S' := .ofCommutes e fun r ↦ by
+    simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3]
   refine Algebra.IsPushout.of_equiv e' ?_
   ext s
   have h1 : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
@@ -469,7 +468,7 @@ def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
     rfl
   · intro s m e₁ e₂
     refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
-    change (m x).1 = (_, _)
+    change (m x).val = (_, _)
     have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]

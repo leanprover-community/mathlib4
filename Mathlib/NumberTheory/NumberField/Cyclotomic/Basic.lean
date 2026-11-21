@@ -137,7 +137,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
-    refine adjoin_mono ?_ y.2
+    refine adjoin_mono ?_ y.property
     simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
@@ -188,7 +188,7 @@ abbrev toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : 𝓞 K :=
 
 end CharZero
 
-lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
+lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.val = ζ := rfl
 
 @[simp]
 lemma toInteger_coe {k : ℕ} [NeZero k] {x : 𝓞 K} (hx : IsPrimitiveRoot (x : K) k) :
@@ -449,12 +449,12 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   have := pB.basis_eq_pow ⟨1, hdim⟩
   rw [hζ.integralPowerBasisOfPrimePow_gen] at this
   simp only [PowerBasis.coe_basis, pow_one] at this
-  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩ : Fin pB.dim).val by simp, ← pB.basis_eq_pow,
     pB.basis.repr_self_apply] at h
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     map_smul, ← zsmul_one, ← pB.basis.coord_apply, map_smul,
-    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).val by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.out])).not_dvd_one ⟨_, h⟩
@@ -811,7 +811,7 @@ theorem cyclotomicRing_isIntegralClosure :
   have hζ := zeta_spec n ℚ (CyclotomicField n ℚ)
   refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
-    refine adjoin_mono ?_ y.2
+    refine adjoin_mono ?_ y.property
     simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩

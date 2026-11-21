@@ -102,7 +102,7 @@ lemma IsPreBrownianReal.eval_zero_ae_eq_zero (hB : IsPreBrownianReal B P) :
   exact this.ae_eq_of_dirac
 
 lemma IsPreBrownianReal.hasLaw_sub (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
-    HasLaw (B s - B t) (gaussianReal 0 (nndist s.1 t.1)) P :=
+    HasLaw (B s - B t) (gaussianReal 0 (nndist s.val t.val)) P :=
   (measurePreserving_eval_sub_eval_projectiveFamily
     {s, t} ⟨s, by simp⟩ ⟨t, by simp⟩).hasLaw.comp (hB.hasLaw _)
 
@@ -155,7 +155,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
       rw [PiLp.coe_symm_continuousLinearEquiv, covarianceBilin_apply_pi, covarianceBilin_apply_pi]
       · congrm ∑ i, ∑ j, _ * ?_
         rw [covariance_eval_projectiveFamily, covariance_map]
-        · wlog hij : i.1 ≤ j.1 generalizing i j
+        · wlog hij : i.val ≤ j.val generalizing i j
           · rw [covariance_comm, this j i (by grind), min_comm]
           rw [min_eq_left hij]
           exact h3 i j hij

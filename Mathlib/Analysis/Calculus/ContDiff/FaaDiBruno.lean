@@ -213,7 +213,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
   rw [Finset.prod_sigma']
   exact Fintype.prod_equiv c.equivSigma _ _ (fun p ↦ rfl)
 
-lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
+lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).isLt
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
   ⟨(c.length_pos pos').ne'⟩

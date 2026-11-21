@@ -116,7 +116,7 @@ protected theorem isFractional (I : FractionalIdeal S P) : IsFractional S (I : S
 /-- An element of `S` such that `I.den • I = I.num`, see `FractionalIdeal.num` and
 `FractionalIdeal.den_mul_self_eq_num`. -/
 noncomputable def den (I : FractionalIdeal S P) : S :=
-  ⟨I.2.choose, I.2.choose_spec.1⟩
+  ⟨I.property.choose, I.property.choose_spec.1⟩
 
 /-- An ideal of `R` such that `I.den • I = I.num`, see `FractionalIdeal.den` and
 `FractionalIdeal.den_mul_self_eq_num`. -/
@@ -128,7 +128,7 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
   rw [den, num, Submodule.map_comap_eq]
   refine (inf_of_le_right ?_).symm
   rintro _ ⟨a, ha, rfl⟩
-  exact I.2.choose_spec.2 a ha
+  exact I.property.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
 defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.den` is injective. -/

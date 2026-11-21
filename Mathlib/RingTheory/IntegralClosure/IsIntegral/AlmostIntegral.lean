@@ -73,7 +73,7 @@ lemma IsIntegral.isAlmostIntegral_of_isLocalization
     {s : S} (H : IsIntegral R s) (M : Submonoid R) (hM : M ≤ R⁰) [IsLocalization M S] :
     IsAlmostIntegral R s := by
   obtain ⟨s, t, rfl⟩ := IsLocalization.exists_mk'_eq M s
-  exact H.isAlmostIntegral_of_exists_smul_mem_range ⟨t, hM t.2, by simp⟩
+  exact H.isAlmostIntegral_of_exists_smul_mem_range ⟨t, hM t.property, by simp⟩
 
 @[stacks 00GX "Part 2"]
 lemma IsIntegral.isAlmostIntegral [IsFractionRing R S]
