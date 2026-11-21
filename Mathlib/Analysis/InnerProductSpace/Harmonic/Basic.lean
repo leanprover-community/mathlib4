@@ -177,6 +177,37 @@ Scalar multiples of harmonic functions are harmonic.
 theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
     HarmonicOnNhd (c • f) s := fun x hx ↦ (h x hx).const_smul
 
+/-- Right addition by a constant preserves harmonicity at a point. -/
+theorem harmonicAt_comp_add_const_iff {k : E} :
+    HarmonicAt (fun y ↦ f (y + k)) x ↔ HarmonicAt f (x + k) := by
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_const_iff.mp h₁, ?_⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_const_iff.mpr h₁, ?_⟩⟩
+  · have h : (fun y ↦ Δ (fun z ↦ f (z + k)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + k)) :=
+      Filter.univ_mem' (fun _ ↦ laplacian_comp_add_const)
+    rw [← map_add_right_nhds k x, Filter.eventuallyEq_map, Pi.zero_comp]
+    exact h.symm.trans h₂
+  · have h : Δ (fun y ↦ f (y + k)) = fun y ↦ Δ f (y + k) := funext fun _ ↦ laplacian_comp_add_const
+    exact h ▸ h₂.comp_tendsto (Continuous.tendsto (by fun_prop) x)
+
+/-- Left addition by a constant preserves harmonicity at a point. -/
+theorem harmonicAt_comp_const_add_iff {k : E} :
+    HarmonicAt (fun y ↦ f (k + y)) x ↔ HarmonicAt f (k + x) := by
+  simpa [add_comm] using harmonicAt_comp_add_const_iff (f := f) (x := x) (k := k)
+
+open scoped Pointwise in
+/-- Right addition by a constant preserves harmonicity on a set. -/
+theorem harmonicOnNhd_comp_add_const_iff {k : E} :
+    HarmonicOnNhd (fun y ↦ f (y + k)) s ↔ HarmonicOnNhd f (s + {k}) := by
+  refine ⟨fun h x hx ↦ ?_, fun h x _ ↦ harmonicAt_comp_add_const_iff.mpr (h (x + k) (by simpa))⟩
+  specialize h (x - k) <| by simpa [sub_eq_add_neg] using hx
+  rwa [harmonicAt_comp_add_const_iff, sub_add_cancel] at h
+
+open scoped Pointwise in
+/-- Left addition by a constant preserves harmonicity on a set. -/
+theorem harmonicOnNhd_comp_const_add_iff {k : E} :
+    HarmonicOnNhd (fun y ↦ f (k + y)) s ↔ HarmonicOnNhd f ({k} + s) := by
+  simpa [add_comm] using harmonicOnNhd_comp_add_const_iff (f := f) (s := s) (k := k)
+
 /-!
 ## Compatibility with Linear Maps
 -/

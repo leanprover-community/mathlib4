@@ -31,7 +31,7 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 @[expose] public section
 
-open scoped NNReal Nat ContDiff
+open scoped NNReal Nat ContDiff Pointwise
 
 universe u uE uF uG
 
@@ -324,6 +324,52 @@ theorem ContDiffOn.sub {s : Set E} {f g : E → F} (hf : ContDiffOn 𝕜 n f s)
 @[fun_prop]
 theorem ContDiff.sub {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x - g x := by simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+/-- Right addition by a constant preserves `C^n` regularity within a set at a point. -/
+theorem contDiffWithinAt_comp_add_const_iff {k : E} :
+    ContDiffWithinAt 𝕜 n (fun y ↦ f (y + k)) s x ↔ ContDiffWithinAt 𝕜 n f (s + {k}) (x + k) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.comp x (by fun_prop) <| fun _ _ ↦ by simpa⟩
+  rw [show f = (fun y ↦ f (y + k)) ∘ fun z ↦ (z - k) by simp [Function.comp_def]]
+  exact .comp (x + k) (by simpa) (by fun_prop) <| fun _ h ↦ by simpa [sub_eq_add_neg] using h
+
+/-- Left addition by a constant preserves `C^n` regularity within a set at a point. -/
+theorem contDiffWithinAt_comp_const_add_iff {k : E} :
+    ContDiffWithinAt 𝕜 n (fun y ↦ f (k + y)) s x ↔
+      ContDiffWithinAt 𝕜 n f ({k} + s) (k + x) := by
+  simpa [add_comm] using contDiffWithinAt_comp_add_const_iff (f := f) (x := x) (k := k)
+
+/-- Right addition by a constant preserves `C^n` regularity at a point. -/
+theorem contDiffAt_comp_add_const_iff {k : E} :
+    ContDiffAt 𝕜 n (fun y ↦ f (y + k)) x ↔ ContDiffAt 𝕜 n f (x + k) := by
+  simp [← contDiffWithinAt_univ, contDiffWithinAt_comp_add_const_iff,
+    univ_add (singleton_nonempty k)]
+
+/-- Left addition by a constant preserves `C^n` regularity at a point. -/
+theorem contDiffAt_comp_const_add_iff {k : E} :
+    ContDiffAt 𝕜 n (fun y ↦ f (k + y)) x ↔ ContDiffAt 𝕜 n f (k + x) := by
+  simpa [add_comm] using contDiffAt_comp_add_const_iff (f := f) (x := x) (k := k)
+
+/-- Right addition by a constant preserves `C^n` regularity on a domain. -/
+theorem contDiffOn_comp_add_const_iff {k : E} :
+    ContDiffOn 𝕜 n (fun y ↦ f (y + k)) s ↔ ContDiffOn 𝕜 n f (s + {k}) := by
+  refine ⟨fun h x hx ↦ ?_, fun h x _ ↦ ?_⟩
+  · simpa [contDiffWithinAt_comp_add_const_iff] using h (x - k) (by simpa [sub_eq_add_neg] using hx)
+  · simpa [contDiffWithinAt_comp_add_const_iff] using h (x + k) (by simpa)
+
+/-- Left addition by a constant preserves `C^n` regularity on a domain. -/
+theorem contDiffOn_comp_const_add_iff {k : E} :
+    ContDiffOn 𝕜 n (fun y ↦ f (k + y)) s ↔ ContDiffOn 𝕜 n f ({k} + s) := by
+  simpa [add_comm] using contDiffOn_comp_add_const_iff (f := f) (k := k)
+
+/-- Right addition by a constant preserves `C^n` regularity. -/
+theorem contDiff_comp_add_const_iff {k : E} :
+    ContDiff 𝕜 n (fun y ↦ f (y + k)) ↔ ContDiff 𝕜 n f := by
+  simp [← contDiffOn_univ, contDiffOn_comp_add_const_iff, univ_add (singleton_nonempty k)]
+
+/-- Left addition by a constant preserves `C^n` regularity. -/
+theorem contDiff_comp_const_add_iff {k : E} :
+    ContDiff 𝕜 n (fun y ↦ f (k + y)) ↔ ContDiff 𝕜 n f := by
+  simpa [add_comm] using contDiff_comp_add_const_iff (f := f) (k := k)
 
 variable {i : ℕ}
 
