@@ -312,6 +312,27 @@ theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
     (f : E →ₐ[F] K).fieldRange = ⊤ :=
   AlgHom.fieldRange_eq_top.mpr f.surjective
 
+theorem adjoin_le_fieldEqualizer (φ₁ φ₂ : E →ₐ[F] K) {s : Set E} (h : s.EqOn φ₁ φ₂) :
+    adjoin F s ≤ φ₁.fieldEqualizer φ₂ :=
+  adjoin_le_iff.2 h
+
+theorem ext_of_adjoin_eq_top {s : Set E} (h : adjoin F s = ⊤) ⦃φ₁ φ₂ : E →ₐ[F] K⦄
+    (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
+  AlgHom.ext fun _ => adjoin_le_fieldEqualizer φ₁ φ₂ hs <| h.symm ▸ mem_top
+
+/-- Two field morphisms fixing `F` are equal on `F⟮s⟯` iff they are equal on `s`. -/
+theorem eqOn_adjoin_iff {φ ψ : E →ₐ[F] K} {s : Set E} :
+    Set.EqOn φ ψ (adjoin F s) ↔ Set.EqOn φ ψ s := by
+  rw [← AlgHom.le_fieldEqualizer, adjoin_le_iff]
+  rfl
+
+@[simp]
+theorem _root_.AlgHom.fieldEqualizer_eq_top {φ ψ : E →ₐ[F] K} : φ.fieldEqualizer ψ = ⊤ ↔ φ = ψ := by
+  simp [IntermediateField.ext_iff, DFunLike.ext_iff]
+
+@[simp]
+theorem _root_.AlgHom.fieldEqualizer_self (φ : E →ₐ[F] K) : φ.fieldEqualizer φ = ⊤ := by simp
+
 end Lattice
 
 section AdjoinDef
