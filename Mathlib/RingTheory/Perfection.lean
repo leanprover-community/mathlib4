@@ -603,14 +603,14 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP O p} (hx : x ^ p ≠ 0) (hy : y
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
   rw [← v_p_lt_val hv] at hx hy ⊢
-  rw [map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
+  rw [map_pow, v.map_pow, ← rpow_lt_rpow_iff_left h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.out.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le zero_le)
   obtain hvp | hvp := eq_zero_or_pos (v p)
   · rw [hvp]; exact zero_le
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
-  refine rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.map_le_one _) ?_
+  refine rpow_le_rpow_right_of_le_one hvp (map_natCast (algebraMap O K) p ▸ hv.map_le_one _) ?_
   rw [← add_div, div_le_one (Nat.cast_pos.2 hp.out.pos : 0 < (p : ℝ))]; exact mod_cast hp.out.two_le
 
 end Classical
