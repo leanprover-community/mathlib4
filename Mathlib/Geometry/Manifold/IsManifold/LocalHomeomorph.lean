@@ -44,6 +44,8 @@ variable {M : Type*} [TopologicalSpace M]
   {f : M → M'} (hf : IsLocalHomeomorph f)
   {g : M' → M} (hg : Function.RightInverse g f)
 
+/-! ### The Foo condition -/
+
 -- TODO: find a proper name for `Foo`
 variable (I n f) in
 structure Foo : Prop where
@@ -70,6 +72,8 @@ lemma contMDiffOn_localInverseAt_symm_trans
     with z' hz' hσz' hfσz'
   exact hf.injOn_localInverseAt_target (τ.map_source hz').1 hσz' ((hτ hz').trans hfσz'.symm)
 
+/-! ### Manifold structure -/
+
 theorem isManifold_of_rightInverse [IsManifold I n M]
     (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -83,6 +87,8 @@ theorem isManifold_of_rightInverse [IsManifold I n M]
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
     (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
     (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
+
+/-! ### Smoothness of `f` -/
 
 -- TODO: this and the lemma below use a very similar argument. can this be simplified?
 lemma contMDiffAt_localInverseAt_rightInverse (y : M') :
@@ -132,6 +138,8 @@ theorem contMDiff_of_rightInverse (h : Foo I n f) :
   rw [hσx]
   exact hf.contMDiffAt_localInverseAt_symm_rightInverse hg (f x)
 
+/-! ### Maps out of `M'` -/
+
 variable {H' : Type*} [TopologicalSpace H']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -159,6 +167,14 @@ lemma contMDiff_of_contMDiff_comp {φ : M' → N} (hφ : CMDiff n (φ ∘ f)) :
     CMDiff n φ :=
   fun y ↦ hf.contMDiffAt_of_contMDiffAt_comp hg (hφ (g y))
 
+/-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
+theorem contMDiff_iff_contMDiff_comp
+    (h : Foo I n f) {φ : M' → N} :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    CMDiff n φ ↔ CMDiff n (φ ∘ f) :=
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  ⟨fun hφ ↦ hφ.comp (hf.contMDiff_of_rightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
+
 /-- If `F : M → N` is `C^n` and factors through `f`, the map `F ∘ g : M' → N` is also `C^n`. -/
 lemma contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
     (hFf : F.FactorsThrough f) (hF : CMDiff n F) :
@@ -166,7 +182,9 @@ lemma contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
     CMDiff n (F ∘ g) :=
   hf.contMDiff_of_contMDiff_comp hg <| hF.congr fun x ↦ hFf (hg (f x))
 
-/-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
+/-! ### Smoothness of the local inverses of `f` -/
+
+/-- If `f` satisfies the condition, for any point `x` in `M` the local inverse of `f` at `x`
 is `C^n` on its source -/
 theorem contMDiffOn_localInverseAt_rightInverse
     (h : Foo I n f) (x : M) :
@@ -177,14 +195,6 @@ theorem contMDiffOn_localInverseAt_rightInverse
   refine (hf.contMDiffAt_of_contMDiffAt_comp hg ?_).contMDiffWithinAt
   simpa using (hf.contMDiffOn_localInverseAt_symm_trans h (g y) x).contMDiffAt <|
     (OpenPartialHomeomorph.open_source _).mem_nhds (by simpa [hg y] using hy)
-
-/-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
-theorem contMDiff_iff_contMDiff_comp
-    (h : Foo I n f) {φ : M' → N} :
-    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    CMDiff n φ ↔ CMDiff n (φ ∘ f) :=
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  ⟨fun hφ ↦ hφ.comp (hf.contMDiff_of_rightInverse hg h), hf.contMDiff_of_contMDiff_comp hg⟩
 
 end IsLocalHomeomorph
 
