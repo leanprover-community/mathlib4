@@ -129,20 +129,13 @@ lemma IsLocalHomeomorph.isContMDiffOfRightInverse
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I I n f := by
   intro _ p
-  set q := g (f p)
-  have aux : f p = f q := by
-    simp [q, hg (f p)]
-  specialize h p q aux
-  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h
-  have h' : f =ᶠ[𝓝 p] (hf.localInverseAt q).symm ∘ σ := by
-    apply Filter.EventuallyEq.trans (g:= f ∘ σ) hσ3.symm
-    have h1 : f =ᶠ[𝓝 q] (hf.localInverseAt q).symm := by
-      simp
-    refine h1.comp_tendsto ?_
-    have := hσ2.continuousAt.tendsto
-    rwa [← hσ1]
-  apply ContMDiffAt.congr_of_eventuallyEq (h₁:=h')
-  refine ContMDiffAt.comp (I':=I) p ?_ hσ2
+  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h p (g (f p)) (hg (f p)).symm
+  have : f =ᶠ[𝓝 p] (hf.localInverseAt (g (f p))).symm ∘ σ := by
+    apply Filter.EventuallyEq.trans hσ3.symm
+    have : f =ᶠ[𝓝 (g (f p))] (hf.localInverseAt (g (f p))).symm := by simp
+    exact this.comp_tendsto (hσ1.symm ▸ hσ2.continuousAt.tendsto)
+  refine ContMDiffAt.congr_of_eventuallyEq ?_ this
+  refine ContMDiffAt.comp p ?_ hσ2
   rw [hσ1]
   exact contMDiffAt_localInverseAt_symm_rightInverse hf hg (f p)
 
