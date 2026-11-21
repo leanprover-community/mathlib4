@@ -1,6 +1,5 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
-public import Mathlib.CategoryTheory.Endomorphism.FinEnum
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
@@ -2815,6 +2814,7 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
 public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Endomorphism.FinEnum
 public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.EnrichedCat
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
