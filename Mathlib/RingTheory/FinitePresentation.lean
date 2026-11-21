@@ -492,7 +492,7 @@ lemma polynomial_induction
   | succ n IH =>
     let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] MvPolynomial (Fin n) R[X] :=
       (MvPolynomial.renameEquiv R (finSuccEquiv n)).trans (MvPolynomial.optionEquivRight R (Fin n))
-    have he : (ker (g'.comp <| RingHomClass.toRingHom e.symm)).FG := by
+    have he : (ker (g'.comp <| RingHom.ofClass e.symm)).FG := by
       rw [← RingHom.comap_ker]
       convert hg'.map e.toAlgHom.toRingHom using 1
       exact Ideal.comap_symm e.toRingEquiv

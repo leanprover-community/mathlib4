@@ -222,7 +222,7 @@ theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : 
   extMonoid h
 
 @[simp] lemma pthRoot_eq_symm_frobeniusEquiv :
-    pthRoot R p = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
+    pthRoot R p = RingHom.ofClass (frobeniusEquiv _ p).symm := by
   ext : 1
   simpa [RingEquiv.eq_symm_apply] using ext <| coeffMonoidHom_pow_p' _
 
@@ -234,7 +234,7 @@ lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ 
 lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := rfl
 
 lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
-    ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
+    ⇑(pthRootMonoidHom R p) = RingHom.ofClass (frobeniusEquiv _ p).symm := by
   simp
 
 lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R p n := rfl

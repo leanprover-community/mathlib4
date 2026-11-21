@@ -49,7 +49,7 @@ lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :
     ((Ideal.fiberIsoOfBijectiveResidueField H).symm Q).1.comap
-      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) = Q.1 := by
+      (RingHom.ofClass Algebra.TensorProduct.includeRight) = Q.1 := by
   ext x
   simp [Ideal.fiberIsoOfBijectiveResidueField,
     PrimeSpectrum.primesOverOrderIsoFiber, PrimeSpectrum.preimageOrderIsoFiber,

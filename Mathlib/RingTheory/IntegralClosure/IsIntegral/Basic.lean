@@ -73,7 +73,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   rw [IsIntegral, ← ((AlgHom.ofClass f).restrictScalars R).comp_algebraMap]
-  exact .map hb (RingHomClass.toRingHom f)
+  exact .map hb (RingHom.ofClass f)
 
 section
 
