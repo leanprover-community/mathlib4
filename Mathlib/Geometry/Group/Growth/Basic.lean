@@ -10,6 +10,8 @@ public import Mathlib.Geometry.Group.WordMetric
 
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite.List
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Growth function of a finitely generated group
@@ -138,6 +140,60 @@ lemma growth_eq_ncard (n : ℕ) : P.growth n = (P.wordBall n).ncard :=
 @[to_additive (attr := simp)]
 lemma growth_zero : P.growth 0 = 1 := by
   simp [growth_eq_ncard]
+
+@[to_additive]
+lemma monotone_growth [Finite ι] : Monotone P.growth := by
+  intro m n hmn
+  refine ncard_le_ncard (fun g hg ↦ ?_) (P.finite_wordBall n)
+  exact hg.trans hmn
+
+@[to_additive]
+lemma exists_one_lt_growth [Infinite G] [Finite ι] : ∃ n, 1 < P.growth n := by
+  obtain ⟨g, hg⟩ := exists_ne (1 : G)
+  refine ⟨P.wordLength g, ?_⟩
+  have hsubset : ({1, g} : Set G) ⊆ P.wordBall (P.wordLength g) := by
+    intro x hx
+    simp only [mem_insert_iff, mem_singleton_iff] at hx
+    rcases hx with rfl | rfl
+    · exact P.one_mem_wordBall _
+    · simp [wordBall]
+  have : 2 ≤ ({1, g} : Set G).ncard := by
+    rw [ncard_insert_of_notMem (by simp [hg.symm]), ncard_singleton]
+  exact lt_of_lt_of_le (by decide : 1 < 2)
+    (this.trans (ncard_le_ncard hsubset (P.finite_wordBall _)))
+
+/-- The growth function of an infinite finitely generated group is unbounded. -/
+@[to_additive]
+lemma exists_lt_growth [Infinite G] [Finite ι] (N : ℕ) : ∃ n, N < P.growth n := by
+  by_contra! h
+  have hr : (Set.range P.growth).Nonempty := ⟨P.growth 0, 0, rfl⟩
+  have hf : (Set.range P.growth).Finite :=
+    (Set.finite_Iic N).subset fun x hx ↦ by
+      obtain ⟨n, rfl⟩ := hx
+      exact h n
+  obtain ⟨n, hn⟩ : ∃ n, P.growth n = sSup (Set.range P.growth) := by
+    have : sSup (Set.range P.growth) ∈ Set.range P.growth := Nat.sSup_mem hr hf.bddAbove
+    simpa [Set.mem_range] using this
+  have hEq : ∀ m ≥ n, P.wordBall m = P.wordBall n := by
+    intro m hm
+    refine (eq_of_subset_of_ncard_le (fun g hg ↦ (hg : P.wordLength g ≤ n).trans hm)
+      ?_ (P.finite_wordBall m)).symm
+    have hle : P.growth m ≤ P.growth n := by
+      rw [hn]
+      exact le_csSup hf.bddAbove ⟨m, rfl⟩
+    have hge : P.growth n ≤ P.growth m := P.monotone_growth hm
+    simpa [growth] using (hle.antisymm hge).le
+  have huniv : (Set.univ : Set G) = P.wordBall n := by
+    ext g
+    constructor
+    · intro _
+      by_cases hg : P.wordLength g ≤ n
+      · exact hg
+      · have : g ∈ P.wordBall (P.wordLength g) := by simp [wordBall]
+        rwa [hEq _ (le_of_not_ge hg)] at this
+    · intro; trivial
+  have hfin : (Set.univ : Set G).Finite := huniv ▸ P.finite_wordBall n
+  exact hfin.not_infinite Set.infinite_univ
 
 @[to_additive]
 lemma wordLength_le_mul {Q : Group.Generators G ι'} {α : ℕ}
