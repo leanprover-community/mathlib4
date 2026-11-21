@@ -137,54 +137,48 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     ((u_open.measurableSet.inter V_open.measurableSet).diff
       s_closed.measurableSet).nullMeasurableSet
 
+omit [NormalSpace α] in
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
 theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
     [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     (hp : p ≠ ∞) {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ := by
-  suffices H :
-      ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ ∧ HasCompactSupport g by
-    rcases H with ⟨g, hg, g_cont, g_mem, g_support⟩
-    exact ⟨g, g_support, hg, g_cont, g_mem⟩
-  -- It suffices to check that the set of functions we consider approximates characteristic
-  -- functions, is stable under addition and consists of ae strongly measurable functions.
-  -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ hε
-  rotate_left
-  -- stability under addition
-  · rintro f g ⟨f_cont, f_mem, hf⟩ ⟨g_cont, g_mem, hg⟩
-    exact ⟨f_cont.add g_cont, f_mem.add g_mem, hf.add hg⟩
-  -- We are left with approximating characteristic functions.
-  -- This follows from `exists_continuous_eLpNorm_sub_le_of_closed`.
-  intro c t ht htμ ε hε
-  rcases exists_Lp_half E μ p hε with ⟨δ, δpos, hδ⟩
-  obtain ⟨η, ηpos, hη⟩ :
-      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → NullMeasurableSet s μ →
-          eLpNorm (s.indicator fun _x => c) p μ ≤ δ :=
-    exists_eLpNorm_indicator_le hp c δpos.ne'
-  have hη_pos' : (0 : ℝ≥0∞) < η := ENNReal.coe_pos.2 ηpos
-  obtain ⟨s, st, s_compact, s_closed, μs⟩ :
-      ∃ s, s ⊆ t ∧ IsCompact s ∧ IsClosed s ∧ μ (t \ s) < η :=
-    ht.exists_isCompact_isClosed_sdiff_lt htμ.ne hη_pos'.ne'
-  have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
-  have I1 : eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
-    rw [← eLpNorm_neg, neg_sub, ← indicator_sdiff st]
-    exact hη _ μs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
-  obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
-    exists_compact_superset s_compact
-  rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
-    with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
-  have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert (hδ _ _ I2 I1).le using 2
-    ext x
-    simp
-  refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
-  rw [← Function.notMem_support]
-  contrapose hx
-  exact interior_subset (f_support hx)
+  rsuffices ⟨g, hg, g_cont, g_mem, g_support⟩ : ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧
+      Continuous g ∧ MemLp g p μ ∧ HasCompactSupport g
+  · exact ⟨g, g_support, hg, g_cont, g_mem⟩
+  -- It suffices to approximate `t.indicator fun _ ↦ c` for `t` measurable of finite measure.
+  refine hf.induction_dense hp _ (fun c t ht htμ ε hε ↦ ?_)
+    (fun _ _ ⟨hf, hf', hf''⟩ ⟨hg, hg', hg''⟩ ↦ ⟨hf.add hg, hf'.add hg', hf''.add hg''⟩) hε
+  obtain ⟨δ, δpos, hδ⟩ := exists_Lp_half E μ p hε
+  obtain ⟨η, ηpos, hη⟩ := exists_eLpNorm_indicator_le (μ := μ) hp c δpos.ne'
+  have hη' : (η : ℝ≥0∞) ≠ 0 := ENNReal.coe_ne_zero.mpr ηpos.ne'
+  -- Approximate `t` from inside by a compact closed set `s`, and `s` from outside by an open `V`.
+  obtain ⟨s, st, s_compact, s_closed, hs⟩ := ht.exists_isCompact_isClosed_sdiff_lt htμ.ne hη'
+  obtain ⟨V, sV, V_open, -, hV⟩ :=
+    s_closed.measurableSet.exists_isOpen_sdiff_lt (measure_ne_top_of_subset st htμ.ne) hη'
+  -- By Urysohn's lemma, there is a compactly supported `g` with `1_s ≤ g ≤ 1_V`.
+  obtain ⟨g, hgs, hgV, g_support, hg_range⟩ := exists_continuous_one_zero_of_isCompact s_compact
+    V_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr sV)
+  have gc_cont : Continuous fun x ↦ g x • c := by fun_prop
+  have gc_support : HasCompactSupport fun x ↦ g x • c := g_support.smul_right
+  have gc_bd x : ‖g x • c - s.indicator (fun _ ↦ c) x‖ ≤ ‖(V \ s).indicator (fun _ ↦ c) x‖ := by
+    by_cases hxs : x ∈ s
+    · simp [hgs hxs, hxs]
+    by_cases hxV : x ∈ V
+    · simpa [hxs, hxV, norm_smul, abs_of_nonneg (hg_range x).1] using
+        mul_le_of_le_one_left (norm_nonneg c) (hg_range x).2
+    · simp [hgV hxV, hxs, hxV]
+  have I1 : eLpNorm ((fun x ↦ g x • c) - s.indicator fun _ ↦ c) p μ ≤ δ :=
+    (eLpNorm_mono (by fun_prop (disch := exact s_closed.measurableSet)) gc_bd).trans
+      (hη _ hV.le (V_open.measurableSet.diff s_closed.measurableSet).nullMeasurableSet)
+  have I2 : eLpNorm ((s.indicator fun _ ↦ c) - t.indicator fun _ ↦ c) p μ ≤ δ := by
+    rw [eLpNorm_sub_comm, ← indicator_sdiff st]
+    exact hη _ hs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
+  exact ⟨fun x ↦ g x • c, by simpa only [sub_add_sub_cancel] using (hδ _ _ I1 I2).le,
+    gc_cont, gc_cont.memLp_of_hasCompactSupport gc_support, gc_support⟩
 
-
+omit [NormalSpace α] in
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
 theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
@@ -206,7 +200,7 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
-
+omit [NormalSpace α] in
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/
 theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
@@ -222,6 +216,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
       ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
     hg_cont, memLp_one_iff_integrable.1 hg_mem⟩
 
+omit [NormalSpace α] in
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫`. -/
 theorem Integrable.exists_hasCompactSupport_integral_sub_le
