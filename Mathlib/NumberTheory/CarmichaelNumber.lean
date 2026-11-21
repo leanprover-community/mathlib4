@@ -186,16 +186,11 @@ def korseltAux (n fuel m d : ℕ) (c : Bool) : Bool :=
         ((n - 1) % (d - 1)).beq 0 && !(m / d % d).beq 0 && korseltAux n fuel (m / d) (d + 2) true
       else korseltAux n fuel m (d + 2) c
 
-/-- If all prime factors of `m` are at least `d`, where `d ≥ 3` is odd, and `d ∤ m`, then all prime
-factors of `m` are at least `d + 2`. -/
+/-- If all prime factors of `m` are at least `d`, where `d ≥ 3` is odd, and `d` does not divide `m`,
+then all prime factors of `m` are at least `d + 2`. -/
 private lemma add_two_le_of_forall_prime_dvd {m d : ℕ} (hd : 3 ≤ d) (hdo : d % 2 = 1)
-    (hm : ∀ p, p.Prime → p ∣ m → d ≤ p) (hdm : ¬ d ∣ m) :
-    ∀ p, p.Prime → p ∣ m → d + 2 ≤ p := by
-  intro p hp hpm
-  have := hm p hp hpm
-  have : p ≠ d := by rintro rfl; exact hdm hpm
-  have : p ≠ d + 1 := by rintro rfl; have := hp.eq_two_or_odd; lia
-  lia
+    (hm : ∀ p, p.Prime → p ∣ m → d ≤ p) (hdm : ¬ d ∣ m) (p : ℕ) (hp : p.Prime) (hpm : p ∣ m) :
+    d + 2 ≤ p := by grind [hp.eq_two_or_odd]
 
 theorem korseltAux_iff {n fuel m d : ℕ} {c : Bool} (hd : 3 ≤ d) (hdo : d % 2 = 1)
     (hm : ∀ p, p.Prime → p ∣ m → d ≤ p) (hfuel : m < fuel + d) :
@@ -205,12 +200,12 @@ theorem korseltAux_iff {n fuel m d : ℕ} {c : Bool} (hd : 3 ≤ d) (hdo : d % 2
   | zero | succ fuel ih =>
   simp only [korseltAux, Bool.cond_eq_ite, Nat.ble_eq, Nat.blt_eq, Nat.beq_eq]
   split_ifs with h₁ h₂
-  · obtain rfl | rfl : m = 0 ∨ m = 1 := by lia
-    all_goals simp +contextual [not_prime_one, Prime.ne_one]
+  · obtain rfl | rfl : m = 0 ∨ m = 1 := (by lia) <;>
+      simp +contextual [not_prime_one, Prime.ne_one]
   · have hmp : m.Prime := by
       by_contra hmp
       have h := hm _ (minFac_prime (by lia)) (minFac_dvd m)
-      have := (Nat.mul_le_mul h h).trans ((sq _).symm.trans_le (minFac_sq_le_self (by lia) hmp))
+      have : d * d ≤ m := by grw [h, ← sq, minFac_sq_le_self _ hmp]; lia
       lia
     simp +contextual [← Nat.dvd_iff_mod_eq_zero, hmp, hmp.prime, prime_dvd_prime_iff_eq,
      forall_comm]
@@ -250,21 +245,16 @@ theorem korseltAux_iff {n fuel m d : ℕ} {c : Bool} (hd : 3 ≤ d) (hdo : d % 2
 
 This instance is suitable both for `#eval` and for `decide`. -/
 instance : DecidablePred IsCarmichael := fun n ↦
-  decidable_of_iff (2 < n ∧ n % 2 = 1 ∧ korseltAux n n n 3 false) <| by
-    have (h : n % 2 = 1) : korseltAux n n n 3 false ↔
-        ¬ n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
+  decidable_of_iff (2 < n ∧ Odd n ∧ korseltAux n n n 3 false) <| by
+    have (h : n % 2 = 1) :
+        korseltAux n n n 3 false ↔
+          ¬ n.Prime ∧ Squarefree n ∧ ∀ p, p.Prime → p ∣ n → p - 1 ∣ n - 1 := by
       rw [korseltAux_iff le_rfl rfl _ (by lia)]
       · simp
       intro p hp hpn
       have : p ≠ 2 := by rintro rfl; lia
       grind [hp.two_le]
-    rw [isCarmichael_iff_korselt]
-    constructor
-    · rintro ⟨h2, hn, h⟩
-      exact ⟨h2, (this hn).1 h⟩
-    · rintro ⟨h2, h⟩
-      have hn := Nat.odd_iff.1 (isCarmichael_iff_korselt.2 ⟨h2, h⟩).odd
-      exact ⟨h2, hn, (this hn).2 h⟩
+    constructor <;> grind [isCarmichael_iff_korselt, IsCarmichael.odd]
 
 end Nat
 
@@ -274,22 +264,22 @@ namespace Mathlib.Meta.NormNum
 open Lean Meta Qq Nat
 variable {n m m' a : ℕ}
 
-/-- A predicate representing partial progress in a proof that `n` is a Carmichael number.
+/-- The invariant in the algorithm coming from Korselt's criterion.
 
-`KorseltHelper n m a` asserts that, provided `a` is prime, `m` is squarefree and all prime factors
+`KorseltInvt n m a` asserts that, provided `a` is prime, `m` is squarefree and all prime factors
 `q` of `m` satisfy `a < q` and `q - 1 ∣ n - 1`. -/
-def KorseltHelper (n m a : ℕ) : Prop :=
+def KorseltInvt (n m a : ℕ) : Prop :=
   a.Prime → Squarefree m ∧ ∀ q, q.Prime → q ∣ m → a < q ∧ q - 1 ∣ n - 1
 
-lemma KorseltHelper.one (n a : ℕ) : KorseltHelper n (nat_lit 1) a :=
+lemma KorseltInvt.one (n a : ℕ) : KorseltInvt n (nat_lit 1) a :=
   fun _ ↦ ⟨squarefree_one, fun _ hq h ↦ (hq.not_dvd_one h).elim⟩
 
 /-! The argument explicitness here is chosen to make only the numerals in the factorisation appear
 in the proof term. -/
 
-lemma KorseltHelper.mul (b : ℕ) (h₁ : b * m' = m) (h₂ : a.blt b) (h₃ : IsNat (minFac b) b)
+lemma KorseltInvt.mul (b : ℕ) (h₁ : b * m' = m) (h₂ : a.blt b) (h₃ : IsNat (minFac b) b)
     (h₄ : ((n - 1) % (b - 1)).beq 0)
-    (H : KorseltHelper n m' b) : KorseltHelper n m a := fun ha ↦ by
+    (H : KorseltInvt n m' b) : KorseltInvt n m a := fun ha ↦ by
   have hab := Nat.blt_eq.mp h₂
   have hb : b.Prime := prime_def_minFac.2 ⟨by grind [ha.two_le], by simpa using h₃.out⟩
   obtain ⟨hsq, hm'⟩ := H hb
@@ -300,7 +290,7 @@ lemma KorseltHelper.mul (b : ℕ) (h₁ : b * m' = m) (h₂ : a.blt b) (h₃ : I
     exact ⟨hab, Nat.dvd_of_mod_eq_zero (by simpa using h₄)⟩
   · exact ⟨hab.trans (hm' q hq h).1, (hm' q hq h).2⟩
 
-lemma isCarmichael_of_korseltHelper (h₂ : Nat.blt 2 n) (hp : ¬ n.Prime) (H : KorseltHelper n n 2) :
+lemma isCarmichael_of_korseltInvt (h₂ : Nat.blt 2 n) (hp : ¬ n.Prime) (H : KorseltInvt n n 2) :
     IsCarmichael n := by
   obtain ⟨hsq, h⟩ := H prime_two
   exact isCarmichael_iff_korselt.2 ⟨Nat.blt_eq.mp h₂, hp, hsq, fun q hq hd ↦ (h q hq hd).2⟩
@@ -360,8 +350,8 @@ meta def evalNatIsCarmichael : NormNumExt where eval {_ _} e := do
     while (1).blt m do
       while (d * d).ble m && !(m % d).beq 0 do
         d := d + 2
-      let p' := if m % d = 0 then d else m
-      if p' = prev then
+      let p' := bif (m % d).beq 0 then d else m
+      if p'.beq prev then
         have ep : Q(ℕ) := mkRawNatLit p'
         have ek : Q(ℕ) := mkRawNatLit (n' / (p' * p'))
         let h : Q($ep * $ep * $ek = $nn) := (q(Eq.refl $nn) : Expr)
@@ -377,33 +367,33 @@ meta def evalNatIsCarmichael : NormNumExt where eval {_ _} e := do
       prev := p'
       m := m / p'
       factors := factors.push p'
-    if factors.size = 1 then
+    if factors.size.beq 1 then
       -- `n` is prime
       let hp : Q($(nn).Prime) ← deriveNatPrime nn
       return .isFalse q(Nat.Prime.not_isCarmichael $hp)
     -- `n` has at least two distinct prime factors, hence is composite. We build
-    -- the proof of `KorseltHelper n n 2` from the factors found, starting from the largest one.
+    -- the proof of `KorseltInvt n n 2` from the factors found, starting from the largest one.
     have elast : Q(ℕ) := mkRawNatLit factors.back!
     let mut em : Q(ℕ) := mkRawNatLit 1
-    let mut pf : Expr := q(KorseltHelper.one $nn $elast)
+    let mut pf : Expr := q(KorseltInvt.one $nn $elast)
     for i in [0:factors.size].toList.reverse do
       let b := factors[i]!
       have eb : Q(ℕ) := mkRawNatLit b
-      have ea : Q(ℕ) := mkRawNatLit (if i = 0 then 2 else factors[i - 1]!)
+      have ea : Q(ℕ) := mkRawNatLit (if i.beq 0 then 2 else factors[i - 1]!)
       have em' : Q(ℕ) := em
       have em'' : Q(ℕ) := mkRawNatLit (b * em'.natLit!)
-      let H : Q(KorseltHelper $nn $em' $eb) := pf
+      let H : Q(KorseltInvt $nn $em' $eb) := pf
       let h₁ : Q($eb * $em' = $em'') := (q(Eq.refl $em'') : Expr)
       let h₂ : Q(($ea).blt $eb) := (q(Eq.refl true) : Expr)
       let .isNat _ _lit (h₃ : Q(IsNat (minFac $eb) $eb)) ← evalMinFac.core eb eb q(.raw_refl _) b
         | failure
       let h₄ : Q((($nn - 1) % ($eb - 1)).beq 0) := (q(Eq.refl true) : Expr)
-      pf := q(KorseltHelper.mul (a := $ea) $eb $h₁ $h₂ $h₃ $h₄ $H)
+      pf := q(KorseltInvt.mul (a := $ea) $eb $h₁ $h₂ $h₃ $h₄ $H)
       em := em''
-    let H : Q(KorseltHelper $nn $nn 2) := pf
+    let H : Q(KorseltInvt $nn $nn 2) := pf
     let h₂ : Q((2).blt $nn) := (q(Eq.refl true) : Expr)
     let hp : Q(¬ ($nn).Prime) := deriveNotPrime n' factors[0]! nn
-    return .isTrue q(isCarmichael_of_korseltHelper $h₂ $hp $H)
+    return .isTrue q(isCarmichael_of_korseltInvt $h₂ $hp $H)
   match ← core with
   | .isTrue pf => return .isTrue q(isNat_isCarmichael $pn $pf)
   | .isFalse pf => return .isFalse q(isNat_not_isCarmichael $pn $pf)
