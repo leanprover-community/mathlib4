@@ -170,7 +170,7 @@ is `C^n` on its source -/
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
+    ContMDiffOn I I n ((hf.localInverseAt x)) (hf.localInverseAt x).source := by
   intro _ y hy
   -- note: this whole argument is repeated above
   have : hf.localInverseAt x =ᶠ[𝓝 y] (hf.localInverseAt x ∘ f) ∘ (hf.localInverseAt (g y)) := by
