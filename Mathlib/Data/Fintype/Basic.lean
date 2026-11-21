@@ -112,7 +112,8 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
 lemma Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) :=
   ⟨by rintro rfl; rfl, fin_two_eq_of_eq_zero_iff⟩
 
-instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
+-- This instance has a higher priority, because if it applies, it has the correct definional value.
+instance (priority := 1100) Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
