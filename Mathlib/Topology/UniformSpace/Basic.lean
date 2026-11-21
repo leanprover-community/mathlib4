@@ -377,13 +377,13 @@ theorem UniformSpace.gc_generateFilter_uniformity :
   · intro hf U hU
     choose desc hdesc using (@comp_mem_uniformity_sets α u)
     let seq (n : Nat) : 𝓤[u].sets :=
-      Nat.rec n (zero := ⟨U, hU⟩) (succ := fun n ih => ⟨desc ih.2, (hdesc ih.2).1⟩)
-    refine ⟨fun n => (seq n).1, rfl, fun n => ⟨?_, ?_⟩⟩
+      Nat.rec n (zero := ⟨U, hU⟩) (succ := fun n ih => ⟨desc ih.property, (hdesc ih.property).1⟩)
+    refine ⟨fun n => (seq n).val, rfl, fun n => ⟨?_, ?_⟩⟩
     · refine ⟨⟨?_, ?_⟩, ?_⟩
-      · exact hf (seq n).2
-      · exact Filter.map_mono hf (uniformity_le_symm (seq n).2)
-      · exact refl_le_uniformity (seq n).2
-    · exact (hdesc (seq n).2).2
+      · exact hf (seq n).property
+      · exact Filter.map_mono hf (uniformity_le_symm (seq n).property)
+      · exact refl_le_uniformity (seq n).property
+    · exact (hdesc (seq n).property).2
 
 /-- Galois insertion between `generateFilter` and `uniformity`. -/
 def UniformSpace.giGenerateFilter :
@@ -781,7 +781,7 @@ instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : Unifo
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
-    𝓤 (Subtype p) = comap (fun q : Subtype p × Subtype p => (q.1.1, q.2.1)) (𝓤 α) :=
+    𝓤 (Subtype p) = comap (fun q : Subtype p × Subtype p => (q.1.val, q.2.val)) (𝓤 α) :=
   rfl
 
 theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
@@ -793,9 +793,12 @@ theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
   rw [uniformity_setCoe, map_comap, range_prodMap, Subtype.range_val]
 
 @[fun_prop]
-theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
+theorem uniformContinuous_subtypeVal {p : α → Prop} [UniformSpace α] :
     UniformContinuous (Subtype.val : { a : α // p a } → α) :=
   uniformContinuous_comap
+
+@[deprecated (since := "2026-11-10")]
+alias uniformContinuous_subtype_val := uniformContinuous_subtypeVal
 
 @[fun_prop]
 theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [UniformSpace β] {f : β → α}
@@ -806,7 +809,7 @@ theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [Unifor
 theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : α → Prop}
     {q : β → Prop} {f : α → β} (hf : UniformContinuous f) (h : ∀ x, p x → q (f x)) :
     UniformContinuous (Subtype.map f h) :=
-  (hf.comp uniformContinuous_subtype_val).subtype_mk _
+  (hf.comp uniformContinuous_subtypeVal).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔ UniformContinuous (s.domRestrict f) := by
@@ -819,7 +822,7 @@ alias ⟨UniformContinuousOn.restrict, UniformContinuousOn.of_restrict⟩ :=
 theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β] {f : α → β}
     {s : Set α} {a : α} (hf : UniformContinuous fun x : s => f x.val) (ha : s ∈ 𝓝 a) :
     Tendsto f (𝓝 a) (𝓝 (f a)) := by
-  rw [(@map_nhds_subtype_coe_eq_nhds α _ (· ∈ s) a (mem_of_mem_nhds ha) ha).symm]
+  rw [(@map_nhds_subtypeVal_eq_nhds α _ (· ∈ s) a (mem_of_mem_nhds ha) ha).symm]
   exact tendsto_map' hf.continuous.continuousAt
 
 @[fun_prop]
@@ -984,6 +987,11 @@ theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : U
     (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
+
+@[simp]
+theorem uniformContinuous_prodMk {f₁ : α → β} {f₂ : α → γ} :
+    (UniformContinuous fun a => (f₁ a, f₂ a)) ↔ UniformContinuous f₁ ∧ UniformContinuous f₂ :=
+  ⟨fun h ↦ ⟨uniformContinuous_fst.comp h, uniformContinuous_snd.comp h⟩, fun h ↦ h.1.prodMk h.2⟩
 
 theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
     UniformContinuous fun a => f (a, b) :=

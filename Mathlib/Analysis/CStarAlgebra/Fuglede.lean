@@ -110,7 +110,7 @@ public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
   refine ⟨fun ha x ↦ ?_, fun ha ↦ ?_⟩
   /- If `a` is normal, then clearly `exp (x • a) * exp (- x • star a) = exp (I • x • 2 • ℑ a)`
   and the latter is clearly an exponential unitary. -/
-  · convert (selfAdjoint.expUnitary (x • (2 : ℝ) • ℑ a)).2
+  · convert (selfAdjoint.expUnitary (x • (2 : ℝ) • ℑ a)).property
     have hcomm := star_comm_self (x := a) |>.symm.smul_left x |>.smul_right (-x)
     rw [← exp_add_of_commute hcomm]
     simp [imaginaryPart_apply_coe, smul_comm (2 : ℝ) I, smul_comm x I, smul_smul I I, smul_add x,
@@ -194,6 +194,7 @@ public lemma Set.Pairwise.commute_star_left {s : Set A}
     s.Pairwise (fun x y ↦ Commute (star x) y) :=
   fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
 
+open scoped Pointwise in
 public lemma Set.Pairwise.commute_union_star_self_iff_of_isStarNormal {s : Set A}
     (hs : ∀ x ∈ s, IsStarNormal x) :
     (s ∪ star s).Pairwise Commute ↔ s.Pairwise Commute := by

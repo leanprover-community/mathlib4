@@ -387,7 +387,7 @@ lemma ObjectProperty.isCardinalFiltered {C : Type*} [Category* C] (P : ObjectPro
     (hP : P.ι.Final := by infer_instance) :
     IsCardinalFiltered P.FullSubcategory κ := by
   have := isFiltered_of_isCardinalFiltered C κ
-  rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+  rw [ObjectProperty.final_ι_iff_of_isFilteredOrEmpty] at hP
   rw [isCardinalFiltered_iff]
   refine ⟨fun ι X hι ↦ ?_, fun ι X Y f hι ↦ ?_⟩
   · let X' (i : ι) := (X i).obj
