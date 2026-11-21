@@ -160,7 +160,7 @@ instance (P : ObjectProperty C)
     let e : D' ⋙ P.ι ≅ ObjectProperty.ι _ ⋙ D := Iso.refl _
     have := isFiltered_of_isCardinalFiltered J κ
     have : (P.inverseImage D).ι.Final := by
-      rw [ObjectProperty.final_ι_iff_of_isFiltered]
+      rw [ObjectProperty.final_ι_iff_of_isFilteredOrEmpty]
       intro j
       have : IsCardinalPresentable (D.obj j) κ := by dsimp [D]; infer_instance
       let J' := CostructuredArrow (isCardinalPresentable P.FullSubcategory κ).ι ⟨F₂, hF₂⟩
@@ -284,25 +284,25 @@ lemma le_step :
 variable (κ) (hC : HasCardinalLT (Arrow C) κ) (hP : isCardinalPresentable _ κ = P.isoClosure)
 
 noncomputable def iter (a : κ.ord.ToType) : Subfunctor F :=
-  transfiniteIterate (step P) a S
+  supTransfiniteIterate (step P) a S
 
 lemma iter_succ (a : κ.ord.ToType) :
     iter κ P S (Order.succ a) = step P (iter κ P S a) := by
   have : NoMaxOrder κ.ord.ToType :=
     Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
-  exact transfiniteIterate_succ _ _ _ (not_isMax _)
+  exact supTransfiniteIterate_succ_of_not_isMax _ _ (not_isMax _)
 
 omit [Fact κ.IsRegular] in
 lemma iter_of_isSuccLimit (a : κ.ord.ToType) (ha : Order.IsSuccLimit a) :
     iter κ P S a = ⨆ (b : Set.Iio a), iter κ P S b :=
-  transfiniteIterate_limit _ _ _ ha
+  supTransfiniteIterate_limit _ _ ha
 
 omit [Fact κ.IsRegular] in
 lemma iter_monotone : Monotone (iter κ P S) := by
   intro j _ h
   have : Nonempty κ.ord.ToType := ⟨j⟩
   let : OrderBot (κ.ord.ToType) := WellFoundedLT.toOrderBot _
-  exact monotone_transfiniteIterate _ _ (le_step P) h
+  exact supTransfiniteIterate_monotone _ (le_step P) h
 
 noncomputable def subfunctor : Subfunctor F :=
   ⨆ (j : κ.ord.ToType), iter κ P S j
@@ -654,7 +654,7 @@ lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ'
     have hP {j k : P.FullSubcategory} (g : j ⟶ k) : IsCardinalPure κ g.hom.left.hom :=
       IsCardinalPure.of_fac κ _ _ _ g.hom.w
     have : P.ι.Final := by
-      rw [P.final_ι_iff_of_isFiltered]
+      rw [P.final_ι_iff_of_isFilteredOrEmpty]
       intro j
       obtain ⟨j', _, f', i, hi, fac⟩ := hC.exists_isCardinalPure j.hom
       exact ⟨CostructuredArrow.mk (Y := ⟨j', inferInstance⟩) (by exact i), by exact hi,

@@ -91,7 +91,7 @@ variable (F) in
 /-- The functor out of the category of elements which forgets the element. -/
 @[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
-  obj X := X.1
+  obj X := X.obj
   map f := f.hom
 
 @[simp]
@@ -401,7 +401,7 @@ instance essentiallySmall {C : Type u} [Category.{v} C]
   obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_small_le' (⊤ : ObjectProperty C)
   refine ⟨fun x ↦ P x.obj, ?_, fun y _ ↦ ?_⟩
   · exact small_of_surjective.{w} (α := Σ (Z : Subtype P), F.obj Z.val)
-      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.2⟩)
+      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.property⟩)
       (fun ⟨x, hx⟩ ↦ ⟨⟨⟨x.obj, hx⟩, x.val⟩, rfl⟩)
   · obtain ⟨Z, hZ, ⟨e⟩⟩ := hP y.obj (by simp)
     exact ⟨F.elementsMk Z (F.map e.hom y.val), hZ, ⟨isoMk e rfl⟩⟩
@@ -504,6 +504,7 @@ def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ
     φ.mapElements ≅ φ'.mapElements :=
   NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
 
+/-- Isomorphic functors have equivalent categories of elements. -/
 @[simps!, implicit_reducible]
 def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
     F.Elements ≌ G.Elements where
@@ -512,6 +513,7 @@ def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
   unitIso := NatTrans.congrMapElements e.hom_inv_id.symm
   counitIso := NatTrans.congrMapElements e.inv_hom_id
 
+/-- Isomorphic functors have isomorphic categories of elements. -/
 @[simps!, implicit_reducible]
 def Functor.Elements.isoCatOfIso {G : C ⥤ Type w} (e : F ≅ G) :
     IsoCat F.Elements G.Elements :=

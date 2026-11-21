@@ -44,8 +44,8 @@ theorem isLimit_iff (c : Cone F) :
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_hom (t.fac cs j) ⟨⟩,
       fun x hx ↦ congr_hom (CC := fun X ↦ X)
         (t.uniq cs (↾fun _ ↦ x) fun j ↦ by ext; exact hx j) ⟨⟩⟩
-  · have := fun c y ↦ h _ (sectionOfCone c y).2
-    choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
+  · have := fun c y ↦ h _ (sectionOfCone c y).property
+    choose x hx using fun c y ↦ h _ (sectionOfCone c y).property
     exact ⟨fun d ↦ ↾(x d), fun c j ↦ by ext y; exact (hx c y).1 j,
       fun c f hf ↦ by ext y; exact (hx c y).2 (f y) (fun j ↦ congr_hom (hf j) y)⟩
 
@@ -59,10 +59,10 @@ theorem isLimit_iff_bijective_sectionOfCone (c : Cone F) :
 noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
     c.pt ≃ F.sections where
   toFun := sectionOfCone c
-  invFun s := t.lift (coneOfSection s.2) ⟨⟩
+  invFun s := t.lift (coneOfSection s.property) ⟨⟩
   left_inv x := (congr_hom (t.uniq (coneOfSection _)
     (↾fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
-  right_inv s := Subtype.ext (funext fun j ↦ congr_hom (t.fac (coneOfSection s.2) j) ⟨⟩)
+  right_inv s := Subtype.ext (funext fun j ↦ congr_hom (t.fac (coneOfSection s.property) j) ⟨⟩)
 
 @[simp]
 theorem isLimitEquivSections_apply {c : Cone F} (t : IsLimit c) (j : J)

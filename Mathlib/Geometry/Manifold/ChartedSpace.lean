@@ -214,10 +214,10 @@ theorem coe_achart (x : M) : (achart H x : OpenPartialHomeomorph M H) = chartAt 
   rfl
 
 @[simp, mfld_simps]
-theorem achart_val (x : M) : (achart H x).1 = chartAt H x :=
+theorem achart_val (x : M) : (achart H x).val = chartAt H x :=
   rfl
 
-theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
+theorem mem_achart_source (x : M) : x ∈ (achart H x).val.source :=
   mem_chart_source H x
 
 open TopologicalSpace

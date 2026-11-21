@@ -198,7 +198,7 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
     refine ⟨inferInstance, ?_⟩
     simp only [initiallySmall_iff_of_isCofiltered] at h₁ ⊢
     choose Q _ hQ using h₁
-    simp only [ObjectProperty.initial_ι_iff_of_isCofiltered] at hQ ⊢
+    simp only [ObjectProperty.initial_ι_iff_of_isCofilteredOrEmpty] at hQ ⊢
     choose e he he' using hQ
     refine ⟨⨆ (j : J), (Q j).strictMap (p.ι.app j).mapElements, inferInstance,
       fun x ↦ ?_⟩

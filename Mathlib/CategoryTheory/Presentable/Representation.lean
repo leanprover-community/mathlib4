@@ -156,7 +156,8 @@ instance isEquivalence_toCardinalIndObject :
     (toCardinalIndObject C κ).IsEquivalence := by
   dsimp [toCardinalIndObject]
   rw [ObjectProperty.isEquivalence_lift_iff,
-    IsCardinalAccessibleCategory.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι]
+    IsCardinalAccessibleCategory.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι,
+    ObjectProperty.isoClosure_eq_self]
 
 lemma iff_nonempty_equivalence_cardinalInd
     (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
@@ -214,7 +215,7 @@ instance isEquivalence_toCardinalContinuousFunctor :
   dsimp [toCardinalContinuousFunctor]
   rw [ObjectProperty.isEquivalence_lift_iff,
     IsCardinalAccessibleCategory.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι,
-    isCardinalIndObject_eq_isCardinalContinuous]
+    isCardinalIndObject_eq_isCardinalContinuous, ObjectProperty.isoClosure_eq_self]
 
 include κ in
 lemma hasLimitsOfSize : HasLimitsOfSize.{w, w} C :=

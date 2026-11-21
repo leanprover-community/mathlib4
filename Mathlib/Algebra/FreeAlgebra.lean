@@ -488,7 +488,7 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 �
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.injective
 
--- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
+-- this proof is copied from the approach in `FreeAddCommGroup.of_injective`
 theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
   fun x y hoxy ↦
   by_contradiction <| by

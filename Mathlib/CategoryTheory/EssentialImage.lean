@@ -198,7 +198,7 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
   ext Y
   constructor
   · rintro ⟨X, ⟨e⟩⟩
-    exact ⟨X.1, X.2, ⟨e⟩⟩
+    exact ⟨X.obj, X.property, ⟨e⟩⟩
   · rintro ⟨X, hX, ⟨e⟩⟩
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 
@@ -218,6 +218,13 @@ lemma faithful_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     rw [← cancel_mono (L.objObjPreimageIso _).inv, ← cancel_epi (L.objObjPreimageIso _).hom]
     exact h _ _ (by simp [hfg])
 
+lemma essSurj_iff_essImage_eq_top (F : C ⥤ D) :
+    F.EssSurj ↔ F.essImage = ⊤ := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ⟨fun Y ↦ h.symm.le _ (by tauto)⟩⟩
+  rw [eq_top_iff]
+  intro X _
+  exact ⟨_, ⟨F.objObjPreimageIso X⟩⟩
+
 end Functor
 
 lemma ObjectProperty.map_top (F : C ⥤ D) :
@@ -228,5 +235,26 @@ lemma ObjectProperty.map_top (F : C ⥤ D) :
     exact ⟨X, ⟨e⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     exact ⟨X, by simp, ⟨e⟩⟩
+
+lemma ObjectProperty.map_inverseImage
+    (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms] (F : C ⥤ D) :
+    (P.inverseImage F).map F = P ⊓ F.essImage := by
+  refine le_antisymm (fun Y hY ↦ ?_) (fun Y ⟨hY, X, ⟨e⟩⟩ ↦ ?_)
+  · obtain ⟨X, hX, ⟨e⟩⟩ := hY
+    exact ⟨P.prop_of_iso e hX, ⟨_, ⟨e⟩⟩⟩
+  · exact ⟨X, P.prop_of_iso e.symm hY, ⟨e⟩⟩
+
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) :
+    P.ι.essImage = P.isoClosure := by
+  ext X
+  exact ⟨fun ⟨⟨Y, hY⟩, ⟨e⟩⟩ ↦ ⟨Y, hY, ⟨e.symm⟩⟩,
+    fun ⟨Y, hY, ⟨e⟩⟩ ↦ ⟨⟨Y, hY⟩, ⟨e.symm⟩⟩⟩
+
+lemma ObjectProperty.essImage_lift
+    (P : ObjectProperty D) (F : C ⥤ D) (hF : ∀ (X : C), P (F.obj X)) :
+    (P.lift F hF).essImage = F.essImage.inverseImage P.ι := by
+  ext X
+  exact ⟨fun ⟨Y, ⟨e⟩⟩ ↦ ⟨_, ⟨P.ι.mapIso e⟩⟩,
+    fun ⟨Y, ⟨e⟩⟩ ↦ ⟨Y, ⟨P.isoMk e⟩⟩⟩
 
 end CategoryTheory

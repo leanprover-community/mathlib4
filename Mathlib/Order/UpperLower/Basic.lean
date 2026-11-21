@@ -129,13 +129,9 @@ theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ic
 theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a ⊆ s :=
   Ioi_subset_Ici_self.trans <| h.Ici_subset ha
 
+@[to_dual]
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
-
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual existing]
-theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
-  ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
 @[to_dual]
 theorem IsUpperSet.preimage (hs : IsUpperSet s) {f : β → α} (hf : Monotone f) :
@@ -249,7 +245,7 @@ theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t
 theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
     s = ∅ ∨ ∃ a, s = Ici a := by
   refine or_iff_not_imp_left.2 fun ha ↦ ?_
-  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
+  obtain ⟨a, ha⟩ := Set.ne_empty_iff_nonempty.1 ha
   exact ⟨_, ext fun b ↦ ⟨WellFoundedLT.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 @[to_dual]
