@@ -185,8 +185,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
   have aux := foo hf h (g y) x
   simp at aux
-  apply aux.contMDiffAt
-  refine IsOpen.mem_nhds ?_ ?_
+  refine aux.contMDiffAt <| IsOpen.mem_nhds ?_ ?_
   · exact (hf.localInverseAt (g y)).open_target.inter
       ((hf.localInverseAt x).open_source.preimage hf.continuous)
   · exact ⟨hf.self_mem_localInverseAt_target, by simpa [hg y] using hy⟩
