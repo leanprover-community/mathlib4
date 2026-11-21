@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.End
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.List.Infix
 public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.SemidirectProduct
@@ -59,9 +58,6 @@ namespace TreeAut
 
 variable {α : Type*}
 
-@[ext] lemma ext {f g : TreeAut α} (h : ∀ v, f v = g v) : f = g :=
-  DFunLike.ext f g h
-
 @[simp] lemma map_isPrefix_iff (f : TreeAut α) {v w : InfiniteRegularTree α} :
     f v <+: f w ↔ v <+: w :=
   f.map_rel_iff
@@ -102,11 +98,14 @@ lemma apply_cons_ne_nil (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
   have := f.map_length (a :: w)
   simp [h] at this
 
+set_option backward.privateInPublic true in
 /-- The first letter of `f [a]`. This is the image of the child `a` of the root. -/
-def firstLetter (f : TreeAut α) (a : α) : α :=
+private def firstLetter (f : TreeAut α) (a : α) : α :=
   (f [a]).head (apply_cons_ne_nil f a [])
 
-lemma apply_singleton (f : TreeAut α) (a : α) : f [a] = [firstLetter f a] := by
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+private lemma apply_singleton (f : TreeAut α) (a : α) : f [a] = [firstLetter f a] := by
   have hne := apply_cons_ne_nil f a []
   have htail : (f [a]).tail = [] := by
     apply List.eq_nil_of_length_eq_zero
@@ -116,16 +115,9 @@ lemma apply_singleton (f : TreeAut α) (a : α) : f [a] = [firstLetter f a] := b
   conv_lhs => rw [← List.cons_head_tail hne, htail]
   rfl
 
-lemma firstLetter_injective (f : TreeAut α) : Function.Injective f.firstLetter := by
-  intro a b h
-  have : ([a] : InfiniteRegularTree α) = [b] :=
-    f.injective (by rw [apply_singleton, apply_singleton, h])
-  exact List.singleton_inj.mp this
-
-lemma firstLetter_surjective [Finite α] (f : TreeAut α) : Function.Surjective f.firstLetter :=
-  Finite.surjective_of_injective f.firstLetter_injective
-
-lemma firstLetter_symm (f : TreeAut α) (a : α) :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+private lemma firstLetter_symm (f : TreeAut α) (a : α) :
     firstLetter f.symm (firstLetter f a) = a := by
   have h : f.symm [firstLetter f a] = [a] := by
     rw [← apply_singleton f a]
@@ -133,6 +125,8 @@ lemma firstLetter_symm (f : TreeAut α) (a : α) :
   rw [apply_singleton] at h
   exact (List.cons_eq_cons.mp h).1
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The permutation of the children of the root induced by `f`. -/
 def rootPerm (f : TreeAut α) : Equiv.Perm α where
   toFun := firstLetter f
@@ -140,20 +134,30 @@ def rootPerm (f : TreeAut α) : Equiv.Perm α where
   left_inv := firstLetter_symm f
   right_inv := firstLetter_symm f.symm
 
-@[simp] lemma rootPerm_apply (f : TreeAut α) (a : α) : rootPerm f a = firstLetter f a :=
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+private lemma rootPerm_eq_firstLetter (f : TreeAut α) (a : α) :
+    rootPerm f a = firstLetter f a :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Action of `f` on the subtree hanging from the child `a` of the root. -/
-def restrictFun (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) : InfiniteRegularTree α :=
+private def restrictFun (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+    InfiniteRegularTree α :=
   (f (a :: w)).tail
 
-lemma apply_cons (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+private lemma apply_cons (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
     f (a :: w) = firstLetter f a :: restrictFun f a w := by
   have hpref : f [a] <+: f (a :: w) := (map_isPrefix_iff f).mpr (by simp [List.cons_prefix_cons])
   rw [apply_singleton] at hpref
   obtain ⟨s, hs⟩ := hpref
   simp [restrictFun, ← hs]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The section of `f` at the first-level vertex `a`. -/
 def restrict (f : TreeAut α) (a : α) : TreeAut α where
   toEquiv :=
@@ -186,16 +190,28 @@ def restrict (f : TreeAut α) (a : α) : TreeAut α where
     restrict f a w = (f (a :: w)).tail :=
   rfl
 
-lemma apply_cons_rootPerm (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
-    f (a :: w) = rootPerm f a :: restrict f a w :=
-  apply_cons f a w
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[simp] lemma apply_singleton_rootPerm (f : TreeAut α) (a : α) :
+    f [a] = [rootPerm f a] := by
+  rw [rootPerm_eq_firstLetter, apply_singleton]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+lemma apply_cons_rootPerm (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+    f (a :: w) = rootPerm f a :: restrict f a w := by
+  rw [rootPerm_eq_firstLetter]
+  exact apply_cons f a w
+
+set_option backward.privateInPublic true in
 /-- The map underlying `combine`: on the subtree rooted at `a`, apply `F a`. -/
-def combineFun (F : α → TreeAut α) : InfiniteRegularTree α → InfiniteRegularTree α
+private def combineFun (F : α → TreeAut α) : InfiniteRegularTree α → InfiniteRegularTree α
   | [] => []
   | a :: w => a :: F a w
 
-lemma combineFun_left_inv (F : α → TreeAut α) :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+private lemma combineFun_left_inv (F : α → TreeAut α) :
     (combineFun fun a ↦ (F a).symm).LeftInverse (combineFun F) := by
   intro v
   induction v with
@@ -203,6 +219,8 @@ lemma combineFun_left_inv (F : α → TreeAut α) :
   | cons a w ih =>
     simp [combineFun, RelIso.symm_apply_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Combine sections by acting independently on the subtrees of the root. -/
 def combine (F : α → TreeAut α) : TreeAut α where
   toEquiv :=
@@ -233,14 +251,14 @@ def combine (F : α → TreeAut α) : TreeAut α where
   rfl
 
 lemma combine_one : combine (fun _ : α ↦ (1 : TreeAut α)) = 1 :=
-  TreeAut.ext fun v ↦ by
+  RelIso.ext fun v ↦ by
     cases v with
     | nil => rfl
     | cons a w => rfl
 
 lemma combine_mul (F G : α → TreeAut α) :
     combine (fun a ↦ F a * G a) = combine F * combine G :=
-  TreeAut.ext fun v ↦ by
+  RelIso.ext fun v ↦ by
     cases v with
     | nil => rfl
     | cons a w => rfl
@@ -290,14 +308,14 @@ def ofRootPerm (σ : Equiv.Perm α) : TreeAut α where
   rfl
 
 lemma ofRootPerm_one : ofRootPerm (1 : Equiv.Perm α) = 1 :=
-  TreeAut.ext fun v ↦ by
+  RelIso.ext fun v ↦ by
     cases v with
     | nil => rfl
     | cons a w => rfl
 
 lemma ofRootPerm_mul (σ τ : Equiv.Perm α) :
     ofRootPerm (σ * τ) = ofRootPerm σ * ofRootPerm τ :=
-  TreeAut.ext fun v ↦ by
+  RelIso.ext fun v ↦ by
     cases v with
     | nil => rfl
     | cons a w => rfl
@@ -338,7 +356,7 @@ def permAction : Equiv.Perm α →* MulAut (α → TreeAut α) where
 
 lemma ofRootPerm_mul_combine (σ : Equiv.Perm α) (F : α → TreeAut α) :
     ofRootPerm σ * combine F = combine (permAction σ F) * ofRootPerm σ :=
-  TreeAut.ext fun v ↦ by
+  RelIso.ext fun v ↦ by
     cases v with
     | nil => rfl
     | cons a w =>
@@ -359,28 +377,28 @@ lemma combineHom_compat (σ : Equiv.Perm α) :
 lemma rootPerm_combine (F : α → TreeAut α) : rootPerm (combine F) = 1 := by
   refine Equiv.Perm.ext fun a ↦ ?_
   have h : combine F [a] = [a] := by
-    simp [combine_cons, map_root]
-  have := apply_singleton (combine F) a
+    rw [combine_cons, map_root]
+  have := apply_singleton_rootPerm (combine F) a
   rw [h] at this
-  simpa [rootPerm_apply] using (List.cons_eq_cons.mp this).1.symm
+  exact (List.cons_eq_cons.mp this).1.symm
 
 lemma rootPerm_combine_mul_ofRootPerm (F : α → TreeAut α) (σ : Equiv.Perm α) :
     rootPerm (combine F * ofRootPerm σ) = σ := by
   refine Equiv.Perm.ext fun a ↦ ?_
   have h : (combine F * ofRootPerm σ) [a] = [σ a] := by
-    simp [RelIso.mul_apply, combine_cons, map_root]
-  have := apply_singleton (combine F * ofRootPerm σ) a
+    rw [RelIso.mul_apply, ofRootPerm_cons, combine_cons, map_root]
+  have := apply_singleton_rootPerm (combine F * ofRootPerm σ) a
   rw [h] at this
-  simpa [rootPerm_apply] using (List.cons_eq_cons.mp this).1.symm
+  exact (List.cons_eq_cons.mp this).1.symm
 
 lemma restrict_combine (F : α → TreeAut α) (a : α) : restrict (combine F) a = F a :=
-  TreeAut.ext fun w ↦ by
+  RelIso.ext fun w ↦ by
     change (combine F (a :: w)).tail = F a w
     simp [combine_cons]
 
 lemma restrict_combine_mul_ofRootPerm (F : α → TreeAut α) (σ : Equiv.Perm α) (a : α) :
     restrict (combine F * ofRootPerm σ) a = F (σ a) :=
-  TreeAut.ext fun w ↦ by
+  RelIso.ext fun w ↦ by
     change ((combine F * ofRootPerm σ) (a :: w)).tail = F (σ a) w
     simp [RelIso.mul_apply, combine_cons]
 
@@ -405,7 +423,7 @@ noncomputable def equivSemidirect :
         · exact rootPerm_combine_mul_ofRootPerm F σ
       right_inv := by
         intro f
-        refine TreeAut.ext fun v ↦ ?_
+        refine RelIso.ext fun v ↦ ?_
         cases v with
         | nil =>
           rw [show f [] = [] from map_root f]
