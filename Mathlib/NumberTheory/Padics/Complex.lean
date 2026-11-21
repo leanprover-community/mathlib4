@@ -5,11 +5,14 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Analysis.Normed.Field.Dense
+import Mathlib.Analysis.Normed.Field.Separable
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -101,6 +104,10 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+/-- The norm of `p : PadicAlgCl p` is `p⁻¹`. -/
+theorem norm_p (p : ℕ) [Fact p.Prime] : ‖(p : PadicAlgCl p)‖ = (p : ℝ)⁻¹ := by
+  rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p)), norm_extends, Padic.norm_p]
+
 open MonoidWithZeroHom.ValueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -118,17 +125,23 @@ instance : RankOne (PadicAlgCl.valued p).v where
 instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
+/-- `PadicAlgCl p` is a densely normed field. -/
+instance denselyNormedField : DenselyNormedField (PadicAlgCl p) := inferInstance
+
 /-- The norm on `PadicAlgCl p` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
-  non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
-    use x
-    rw [PadicAlgCl.norm_extends]
-    exact hx
+instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) := inferInstance
 
 /-- `PadicAlgCl p` has characteristic zero. -/
 instance charZero : CharZero (PadicAlgCl p) :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] (PadicAlgCl p)).injective).mp inferInstance
+
+end PadicAlgCl
+
+namespace PadicAlgCl
+
+/-- `PadicAlgCl p` is a separable space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace (PadicAlgCl p) :=
+  inferInstance
 
 end PadicAlgCl
 
@@ -233,12 +246,11 @@ theorem nnNorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := b
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_extends' := nnNorm_extends'
 
+/-- `ℂ_[p]` is a densely normed field. -/
+instance denselyNormedField : DenselyNormedField ℂ_[p] := inferInstance
+
 /-- The norm on `ℂ_[p]` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
-  non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
-    use x
-    simpa only [norm_extends']
+instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] := inferInstance
 
 /-- `ℂ_[p]` has characteristic zero. -/
 instance charZero : CharZero ℂ_[p] :=
@@ -247,6 +259,9 @@ instance charZero : CharZero ℂ_[p] :=
 /-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
+
+/-- `ℂ_[p]` is a separable topological space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace ℂ_[p] := inferInstance
 
 end PadicComplex
 

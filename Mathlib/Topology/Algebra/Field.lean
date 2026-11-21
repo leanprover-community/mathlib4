@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.SetTheory.Cardinal.Subfield
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
@@ -217,3 +218,20 @@ instance Subfield.continuousSMul (M : Subfield F) : ContinuousSMul M X :=
   Subring.continuousSMul M.toSubring X
 
 end ContinuousSMul
+
+section SeparableSpace
+
+open TopologicalSpace
+
+variable (F : Type*) [Field F] [TopologicalSpace F]
+
+/-- Every field equipped with a separable topology contains a countable dense subfield. -/
+theorem exists_countable_dense_subfield [SeparableSpace F] :
+    ∃ F₀ : Subfield F, Countable ↥F₀ ∧ Dense (F₀ : Set F) := by
+  obtain ⟨s, hsc, hsd⟩ := exists_countable_dense F
+  refine ⟨Subfield.closure s, ?_, hsd.mono Subfield.subset_closure⟩
+  apply Cardinal.mk_le_aleph0_iff.mp
+  exact (Subfield.cardinalMk_closure_le_max s).trans
+    (max_le (Cardinal.le_aleph0_iff_set_countable.mpr hsc) le_rfl)
+
+end SeparableSpace
