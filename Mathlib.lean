@@ -1731,6 +1731,7 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Analytic.OfScalars
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Analytic.Pringsheim
 public import Mathlib.Analysis.Analytic.RadiusLiminf
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Analytic.WithLp
