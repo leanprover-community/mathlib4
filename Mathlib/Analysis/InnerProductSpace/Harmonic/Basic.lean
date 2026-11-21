@@ -192,7 +192,7 @@ theorem harmonicAt_comp_add_const_iff {k : E} :
 /-- Left addition by a constant preserves harmonicity at a point. -/
 theorem harmonicAt_comp_const_add_iff {k : E} :
     HarmonicAt (fun y ↦ f (k + y)) x ↔ HarmonicAt f (k + x) := by
-  simpa [add_comm] using @harmonicAt_comp_add_const_iff _ _ _ _ _ _ _ f x k
+  simpa [add_comm] using harmonicAt_comp_add_const_iff (f := f) (x := x) (k := k)
 
 open scoped Pointwise in
 /-- Right addition by a constant preserves harmonicity on a set. -/
@@ -206,7 +206,7 @@ open scoped Pointwise in
 /-- Left addition by a constant preserves harmonicity on a set. -/
 theorem harmonicOnNhd_comp_const_add_iff {k : E} :
     HarmonicOnNhd (fun y ↦ f (k + y)) s ↔ HarmonicOnNhd f ({k} + s) := by
-  simpa [add_comm] using @harmonicOnNhd_comp_add_const_iff _ _ _ _ _ _ _ f s k
+  simpa [add_comm] using harmonicOnNhd_comp_add_const_iff (f := f) (s := s) (k := k)
 
 /-!
 ## Compatibility with Linear Maps

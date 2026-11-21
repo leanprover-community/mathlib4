@@ -336,7 +336,7 @@ theorem contDiffWithinAt_comp_add_const_iff {k : E} :
 theorem contDiffWithinAt_comp_const_add_iff {k : E} :
     ContDiffWithinAt 𝕜 n (fun y ↦ f (k + y)) s x ↔
       ContDiffWithinAt 𝕜 n f ({k} + s) (k + x) := by
-  simpa [add_comm] using @contDiffWithinAt_comp_add_const_iff _ _ _ _ _ _ _ _ s f x n k
+  simpa [add_comm] using contDiffWithinAt_comp_add_const_iff (f := f) (x := x) (k := k)
 
 /-- Right addition by a constant preserves `C^n` regularity at a point. -/
 theorem contDiffAt_comp_add_const_iff {k : E} :
@@ -347,7 +347,7 @@ theorem contDiffAt_comp_add_const_iff {k : E} :
 /-- Left addition by a constant preserves `C^n` regularity at a point. -/
 theorem contDiffAt_comp_const_add_iff {k : E} :
     ContDiffAt 𝕜 n (fun y ↦ f (k + y)) x ↔ ContDiffAt 𝕜 n f (k + x) := by
-  simpa [add_comm] using @contDiffAt_comp_add_const_iff _ _ _ _ _ _ _ _ f x n k
+  simpa [add_comm] using contDiffAt_comp_add_const_iff (f := f) (x := x) (k := k)
 
 /-- Right addition by a constant preserves `C^n` regularity on a domain. -/
 theorem contDiffOn_comp_add_const_iff {k : E} :
@@ -359,7 +359,7 @@ theorem contDiffOn_comp_add_const_iff {k : E} :
 /-- Left addition by a constant preserves `C^n` regularity on a domain. -/
 theorem contDiffOn_comp_const_add_iff {k : E} :
     ContDiffOn 𝕜 n (fun y ↦ f (k + y)) s ↔ ContDiffOn 𝕜 n f ({k} + s) := by
-  simpa [add_comm] using @contDiffOn_comp_add_const_iff _ _ _ _ _ _ _ _ s f n k
+  simpa [add_comm] using contDiffOn_comp_add_const_iff (f := f) (k := k)
 
 /-- Right addition by a constant preserves `C^n` regularity. -/
 theorem contDiff_comp_add_const_iff {k : E} :
@@ -369,7 +369,7 @@ theorem contDiff_comp_add_const_iff {k : E} :
 /-- Left addition by a constant preserves `C^n` regularity. -/
 theorem contDiff_comp_const_add_iff {k : E} :
     ContDiff 𝕜 n (fun y ↦ f (k + y)) ↔ ContDiff 𝕜 n f := by
-  simpa [add_comm] using @contDiff_comp_add_const_iff _ _ _ _ _ _ _ _ f n k
+  simpa [add_comm] using contDiff_comp_add_const_iff (f := f) (k := k)
 
 variable {i : ℕ}
 

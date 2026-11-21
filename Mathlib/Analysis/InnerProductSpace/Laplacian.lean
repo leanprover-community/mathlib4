@@ -249,8 +249,8 @@ theorem laplacian_comp_add_const {k : E} :
 
 /-- Left addition by a constant preserves the Laplacian. -/
 theorem laplacian_comp_const_add {k : E} :
-    Δ (fun x ↦ f (x + k)) x = Δ f (x + k) := by
-  simpa [add_comm] using @laplacian_comp_add_const _ _ _ _ _ _ _ f x k
+    Δ (fun x ↦ f (k + x)) x = Δ f (k + x) := by
+  simpa [add_comm] using laplacian_comp_add_const (f := f) (x := x) (k := k)
 
 /-!
 ## Congruence Lemmata for Δ
