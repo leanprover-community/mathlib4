@@ -158,8 +158,7 @@ lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ex
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
-  simp only [nonempty_iff_ne_empty, Ne, filter_eq_empty_iff, Classical.not_not, not_forall,
-    exists_prop]
+  simp [← ne_empty_iff_nonempty]
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
 theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_self.2 h
@@ -171,9 +170,13 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
     (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
-@[congr]
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
-  eq_of_veq <| Multiset.filter_congr H
+  (eq_of_veq <| Multiset.filter_congr H)
+
+@[congr]
+theorem filter_congr' {s t : Finset α} (h : s = t) (H : ∀ x ∈ s, p x ↔ q x) :
+    filter p s = filter q t :=
+  h ▸ filter_congr H
 
 variable (p q)
 

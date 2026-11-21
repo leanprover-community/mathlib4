@@ -117,7 +117,7 @@ theorem enum_univ (x : α) : enum univ .univ x = ⟨x, mem_univ x⟩ := by
   rfl
 
 theorem enum_anti {hs : IsCofinal s} {t : Set α} {x : α} (h : s ⊆ t) :
-    enum t (hs.mono h) x ≤ (enum s hs x).1 := by
+    enum t (hs.mono h) x ≤ (enum s hs x).val := by
   induction x using WellFoundedLT.induction with | ind x IH
   exact enum_le_of_forall_lt (h (Subtype.prop _)) fun y hy ↦
     (IH y hy).trans_lt ((enum s hs).strictMono hy)
@@ -145,7 +145,7 @@ theorem enum_range {f : α → α} (hf : StrictMono f) :
 theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoundedLT α]
     [IsRegularCardinalOrder α] {s : Set α} {hs : IsCofinal s} : enum s hs ⊥ = sInf s := by
   let : Bot s := ⟨⟨sInf s, csInf_mem hs.nonempty⟩⟩
-  let : OrderBot s := .mk fun a ↦ csInf_le' a.2
+  let : OrderBot s := .mk fun a ↦ csInf_le' a.property
   rw [OrderIso.map_bot]
   rfl
 

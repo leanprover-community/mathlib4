@@ -87,7 +87,7 @@ with the `Over` category of `x` considered as an object of `F.Elements`. -/
 def fromOverFunctorElementsEquivalence :
     (fromOverFunctor F x).Elements ≌ Over (F.elementsMk X x) where
   functor.obj u :=
-    Over.mk (homMk (x := F.elementsMk u.obj.left u.val.1) u.obj.hom u.val.2)
+    Over.mk (homMk (x := F.elementsMk u.obj.left u.val.val) u.obj.hom u.val.property)
   functor.map f :=
     Over.homMk (homMk f.hom.left (Subtype.ext_iff.1 f.map_val))
   inverse.obj u :=

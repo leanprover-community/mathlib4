@@ -1052,7 +1052,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=
   @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // Partrec f} _
-    (fun f => ⟨f.val, f.2⟩)
+    (fun f => ⟨f.val, f.property⟩)
     (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 
 end Nat.Partrec.Code
