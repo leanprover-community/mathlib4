@@ -120,6 +120,84 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
+section OrderIso
+variable (N) {β : Type*} [LinearOrder β] [PartialOrder N] (eαβ : α ≃o β)
+
+/-- Given `f : α ≃o β`, lexographic powers of `M` indexed by `α` and `β` are also isomorphic:
+`Lex (α →₀ M) ≃o Lex (β →₀ M)`.
+
+This is the lexographic `OrderIso` version of `Finsupp.equivCongrLeft`. -/
+def _root_.OrderIso.finsuppLexCongrLeft :
+    Lex (α →₀ N) ≃o Lex (β →₀ N) where
+  toEquiv := (ofLex.trans (Finsupp.equivCongrLeft eαβ.toEquiv)).trans toLex
+  map_rel_iff' {a} {b} := by
+    simp_rw [le_iff_lt_or_eq, (Equiv.injective _).eq_iff, Lex.lt_iff,
+      ← eαβ.exists_congr_right, ← eαβ.forall_congr_right]
+    simp [equivMapDomain]
+
+/-- Given `f : α ≃o β`, colexographic powers of `M` indexed by `α` and `β` are also isomorphic:
+`Colex (α →₀ M) ≃o Colex (β →₀ M)`.
+
+This is the colexographic `OrderIso` version of `Finsupp.equivCongrLeft`. -/
+def _root_.OrderIso.finsuppColexCongrLeft :
+    Colex (α →₀ N) ≃o Colex (β →₀ N) where
+  toEquiv := (ofColex.trans (Finsupp.equivCongrLeft eαβ.toEquiv)).trans toColex
+  map_rel_iff' := by exact (eαβ.dual.finsuppLexCongrLeft N).map_rel_iff'
+
+variable {N}
+
+@[simp]
+theorem _root_.OrderIso.ofLex_finsuppLexCongrLeft_apply (x : Lex (α →₀ N)) :
+    ofLex (eαβ.finsuppLexCongrLeft N x) = Finsupp.equivCongrLeft eαβ.toEquiv (ofLex x) := rfl
+
+@[simp]
+theorem _root_.OrderIso.ofColex_finsuppColexCongrLeft_apply (x : Colex (α →₀ N)) :
+    ofColex (eαβ.finsuppColexCongrLeft N x) = Finsupp.equivCongrLeft eαβ.toEquiv (ofColex x) := rfl
+
+theorem _root_.OrderIso.finsuppLexCongrLeft_apply (x : Lex (α →₀ N)) :
+    eαβ.finsuppLexCongrLeft N x = toLex (Finsupp.equivCongrLeft eαβ.toEquiv (ofLex x)) := rfl
+
+theorem _root_.OrderIso.finsuppColexCongrLeft_apply (x : Colex (α →₀ N)) :
+    eαβ.finsuppColexCongrLeft N x = toColex (Finsupp.equivCongrLeft eαβ.toEquiv (ofColex x)) := rfl
+
+@[simp]
+theorem _root_.OrderIso.finsuppLexCongrLeft_refl :
+    (OrderIso.refl α).finsuppLexCongrLeft N = OrderIso.refl _ := by
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply]
+
+@[simp]
+theorem _root_.OrderIso.finsuppColexCongrLeft_refl :
+    (OrderIso.refl α).finsuppColexCongrLeft N = OrderIso.refl _ := by
+  ext
+  simp [OrderIso.finsuppColexCongrLeft_apply]
+
+@[simp]
+theorem _root_.OrderIso.trans_finsuppLexCongrLeft {γ : Type*} [LinearOrder γ] (eβγ : β ≃o γ) :
+    (eαβ.finsuppLexCongrLeft N).trans (eβγ.finsuppLexCongrLeft N) =
+      (eαβ.trans eβγ).finsuppLexCongrLeft N := by
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply, equivMapDomain_trans]
+
+@[simp]
+theorem _root_.OrderIso.trans_finsuppColexCongrLeft {γ : Type*} [LinearOrder γ] (eβγ : β ≃o γ) :
+    (eαβ.finsuppColexCongrLeft N).trans (eβγ.finsuppColexCongrLeft N) =
+      (eαβ.trans eβγ).finsuppColexCongrLeft N :=
+  eαβ.dual.trans_finsuppLexCongrLeft eβγ.dual
+
+@[simp]
+theorem _root_.OrderIso.symm_finsuppLexCongrLeft :
+    (eαβ.finsuppLexCongrLeft N).symm = eαβ.symm.finsuppLexCongrLeft N := by
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply, OrderIso.symm_apply_eq, ← equivMapDomain_trans]
+
+@[simp]
+theorem _root_.OrderIso.symm_finsuppColexCongrLeft :
+    (eαβ.finsuppColexCongrLeft N).symm = eαβ.symm.finsuppColexCongrLeft N :=
+  eαβ.dual.symm_finsuppLexCongrLeft
+
+end OrderIso
+
 set_option backward.isDefEq.respectTransparency false in
 theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
