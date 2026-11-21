@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
+Authors: Dagur Asgeirsson, Robert Maxton
 -/
 module
 
@@ -12,7 +12,8 @@ public import Mathlib.CategoryTheory.Yoneda
 /-!
 # Representable functors in concrete categories
 
-This file provides some API for the situation `(F ⋙ forget D).RepresentableBy Y`.
+This file provides some API for the situation `(F ⋙ forget D).RepresentableBy Y`, and in particular
+the case of `(forget D).RepresentableBy Y` itself.
 -/
 
 @[expose] public section
@@ -88,8 +89,6 @@ lemma hom_apply_eq_iff {X Y : C} (f g : X ⟶ Y) (x : CC X) :
     f x = g x ↔ homOfElement x ≫ f = homOfElement x ≫ g where
   mp h := by simp [h]
   mpr h := by simp_rw [homOfElement_comp, homOfElement_inj] at h; exact h
-
-
 
 alias ⟨_, hom_ext'⟩ := hom_ext_iff'
 

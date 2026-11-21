@@ -10,7 +10,35 @@ public import Mathlib.CategoryTheory.Yoneda
 /-!
 # Chosen (co)representations of functors to `Type`
 
-TODO(docstring)
+This file defines typeclasses for chosen (co)representations of functors to `Type*`.
+
+In **Type**, every element `x : X` of every type `X` can be uniquely represented as a morphism
+`homOfElement x : PUnit ⟶ X`. This can be thought of as a canonical choice of corepresenting object
+for the forgetful functor, which in the case of `Type*` is just the identity. Generalizing, we can
+define such a `homOfElement` any time we have a `ChosenCorepresentation` of a functor, and dually,
+we can define a `homFromElement` any time we have a `ChosenRepresentation` of a functor.
+
+This file provides typeclasses and convenience API for working with chosen (co)representations of
+arbitrary functors. See `Mathlib.CategoryTheory.ConcreteCategory.Representable` for a
+specialization to the important case where the category is concrete and the functor is the
+canonical forgetful functor to `Type*`.
+
+### Main definitions:
+* `Chosen(Co)Representation`: a data-carrying typeclass holding a canonical choice of
+(co)-representing object and its corresponding canonical assignment of elements to morphisms.
+* `F.(co)reprObj` and `F.(co)univ` : the chosen (co)-representing object and the corresponding
+universal element.
+* `F.homFromElement` and `F.homOfElement` : the canonical morphisms induced by elements via the
+chosen (co)representation.
+
+### Future work
+* Reimplement `CategoryTheory.homOfElement` using `(𝟭 TypeCat).homOfElement`.
+  * Provide instances for common categories, such as `Type*`, `TopCat`, `Cat`.
+* Refactor `Mathlib.Algebra.Category.Grp.ForgetCorepresentable` and the work that depends on it
+  to use `ChosenCorepresentation`.
+* Once the upstream `CategoryTheory` files have been `to_dual`-ified, we can refactor this file
+  to use `to_dual` as well.
+
 -/
 
 @[expose] public section
@@ -41,7 +69,10 @@ initialize_simps_projections ChosenRepresentation (obj → reprObj)
 section
 variable (F : Cᵒᵖ ⥤ Type*) [c : ChosenRepresentation F] {Z : C} (z z₁ z₂ : F.obj (op Z))
 
+/-- The chosen universal element, that represents `𝟙 F.reprObj`. -/
 def univ : F.obj (op F.reprObj) := c.reprBy.homEquiv (𝟙 _)
+
+/-- The unique morphism `F.obj (op Z) ⟶ F.reprObj` induced by an `z : F.obj (op Z)`. -/
 def homFromElement {Z : C} (z : F.obj (op Z)) : Z ⟶ F.reprObj := c.reprBy.homEquiv.symm z
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -65,6 +96,8 @@ lemma map_homFromElement_apply : F.map (op (F.homFromElement z)) F.univ = z := b
   rw [← homFromElement_comp, homFromElement_univ, Category.comp_id]
 
 @[simp]
+/-- Convenience version of `map_homFromElement_apply` in the case when `F.reprObj` is
+a unique type. -/
 lemma map_homFromElement_apply' [Unique (F.obj (op F.reprObj))]
     (a : F.obj (op F.reprObj)) : F.map (op (F.homFromElement z)) a = z := by
   rw [Unique.eq_default a, Unique.default_eq F.univ, map_homFromElement_apply]
@@ -90,7 +123,10 @@ initialize_simps_projections ChosenCorepresentation (obj → coreprObj)
 section
 variable (F : C ⥤ Type*) [c : ChosenCorepresentation F] {Z : C} (z z₁ z₂ : F.obj Z)
 
+/-- The chosen universal element, that co-represents `𝟙 F.coreprObj`. -/
 def couniv : F.obj F.coreprObj := c.coreprBy.homEquiv (𝟙 _)
+
+/-- The unique morphism `F.coreprObj ⟶ Z` induced by an element `z : F.obj Z`. -/
 def homOfElement {Z : C} (z : F.obj Z) : F.coreprObj ⟶ Z := c.coreprBy.homEquiv.symm z
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -114,6 +150,9 @@ lemma map_homOfElement_apply : F.map (F.homOfElement z) F.couniv = z := by
   rw [← homOfElement_comp, homOfElement_univ, Category.id_comp]
 
 @[simp]
+/-- Convenience version of `map_homOfElement_apply` in the common case when `F.coreprObj` is
+a unique type. In particular, this is true of `forget C` for many concrete categories `C`,
+including `Type` itself. -/
 lemma map_homOfElement_apply' [Unique (F.obj F.coreprObj)]
     (a : F.obj F.coreprObj) : F.map (F.homOfElement z) a = z := by
   rw [Unique.eq_default a, Unique.default_eq F.couniv, map_homOfElement_apply]
