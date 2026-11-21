@@ -78,6 +78,10 @@ Options:
 'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
 
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
+For a module outside the Mathlib cache, such as a downstream module, 'get' gets
+the cache for the modules that it imports and that 'Mathlib' also imports.
+Without arguments, 'get' gets the cache for 'Mathlib'. In a downstream project,
+'MATHLIB_NO_CACHE_ON_UPDATE=1 lake update' skips the 'get' of Mathlib's update hook.
 
 Valid arguments are:
 
@@ -237,11 +241,10 @@ def main (args : List String) : IO Unit := do
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
-    -- No arguments means to start from `Mathlib.lean`
-    -- TODO: could change this to the default-target of a downstream project
+    -- No arguments means to start from `Mathlib.lean`, also in a downstream project.
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
-    let sourceFile ← Lean.findLean sp mod
+    let sourceFile ← sp.findLeanSource mod
     roots := roots.insert mod sourceFile
 
   let hashMemo ← getHashMemo roots
@@ -249,7 +252,7 @@ def main (args : List String) : IO Unit := do
   let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
     else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    let hashMap := if args.isEmpty then hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
     -- read path, the non-default-scope warning, and the missing-files hint below.
     let cliOverride? ← cacheFromOverride.get
