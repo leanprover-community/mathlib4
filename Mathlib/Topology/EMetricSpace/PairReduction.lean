@@ -98,7 +98,6 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 * [V. Krätschmer, M. Urusov, *A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
   Applications to Limit Theorems for Banach-Valued Processes*][kratschmer_urusov2023]
 * [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
-
 -/
 
 @[expose] public section
@@ -396,7 +395,7 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
 lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
     (f : T → E) :
     ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
+        ≤ 2 * ⨆ p : pairSet J a c, edist (f p.val.1) (f p.val.2) := by
   rw [iSup_le_iff]; rintro ⟨s, hs⟩
   rw [iSup_le_iff]; rintro ⟨⟨t, ht⟩, hst⟩
   have hJ : J.Nonempty := ⟨s, hs⟩
@@ -452,7 +451,7 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
   have htP : ((logSizeBallSeq J hJ a c l).point, t) ∈ pairSetSeq J a c l := by
     simp [pairSetSeq, hJ, htB]
   have sup_bound {x y : T} (hxy : (x, y) ∈ pairSetSeq J a c l) :
-    edist (f x) (f y) ≤ ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
+    edist (f x) (f y) ≤ ⨆ p : pairSet J a c, edist (f p.val.1) (f p.val.2) := by
     simp only [iSup_subtype]
     apply le_iSup_of_le (i := (x, y))
     apply le_iSup_of_le
@@ -482,7 +481,7 @@ theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Ty
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
       ∧ (∀ f : T → E,
         ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) := by
+        ≤ 2 * ⨆ p : K, edist (f p.val.1) (f p.val.2)) := by
   classical
   rcases le_or_gt a 1 with ha1 | ha1
   · rcases isEmpty_or_nonempty J with hJ | hJ

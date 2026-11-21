@@ -133,7 +133,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
   map_mul_left_eq_self x := by
     ext A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
-    convert! measure_preimage_smul μ x₁ A using 1
+    convert measure_preimage_smul μ x₁ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
       simp [← MulAction.Quotient.coe_smul_out, ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
@@ -175,7 +175,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   symm
   suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
-  · convert! ENNReal.div_self ..
+  · convert ENNReal.div_self ..
     · exact trans hV.symm neZeroV
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
@@ -201,7 +201,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
   · rw [← h]
     simp
   · rw [← h]
-    convert! finiteCovol.ne
+    convert finiteCovol.ne
 
 end mulInvariantMeasure
 
@@ -364,7 +364,7 @@ lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
     ext g
     rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
     congr! 1
-    convert! QuotientGroup.mk_mul_of_mem g (γ⁻¹).2 using 1
+    convert QuotientGroup.mk_mul_of_mem g (γ⁻¹).property using 1
   exact MeasurableSet.preimage s_meas meas_π
 
 attribute [-instance] Quotient.instMeasurableSpace
@@ -404,8 +404,8 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
       = ∫ x : G ⧸ Γ, g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G → G ⧸ Γ := QuotientGroup.mk
   have meas_π : Measurable π := continuous_quotient_mk'.measurable
-  have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) := by
-    exact QuotientGroup.automorphize_smul_left f g
+  have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) :=
+    QuotientGroup.automorphize_smul_left f g
   calc ∫ (x : G), g (π x) * (f x) ∂μ =
         ∫ (x : G ⧸ Γ), QuotientGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G ⧸ Γ), g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
@@ -413,7 +413,7 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
     have : AEStronglyMeasurable (fun (x : G) ↦ g (x : (G ⧸ Γ))) μ :=
       (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
     refine Integrable.essSup_smul f_ℒ_1 this ?_
-    have hg' : AEStronglyMeasurable (‖g ·‖ₑ) μ_𝓕 := continuous_enorm.comp_aestronglyMeasurable hg
+    have hg' : AEStronglyMeasurable (‖g ·‖ₑ) μ_𝓕 := continuous_eNorm.comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientGroup_mk h𝓕 hg'.aemeasurable]
     exact g_ℒ_infinity
   have H₂ : AEStronglyMeasurable (QuotientGroup.automorphize ((g ∘ π) * f)) μ_𝓕 := by
@@ -455,7 +455,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     have : AEStronglyMeasurable (fun (x : G') ↦ g (x : (G' ⧸ Γ'))) μ' :=
       (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
     refine Integrable.essSup_smul f_ℒ_1 this ?_
-    have hg' : AEStronglyMeasurable (‖g ·‖ₑ) μ_𝓕 := continuous_enorm.comp_aestronglyMeasurable hg
+    have hg' : AEStronglyMeasurable (‖g ·‖ₑ) μ_𝓕 := continuous_eNorm.comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientAddGroup_mk h𝓕 hg'.aemeasurable]
     exact g_ℒ_infinity
   have H₂ : AEStronglyMeasurable (QuotientAddGroup.automorphize ((g ∘ π) * f)) μ_𝓕 := by

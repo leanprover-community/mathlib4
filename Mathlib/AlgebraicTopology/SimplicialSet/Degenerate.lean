@@ -18,14 +18,15 @@ Any simplex `x : X _⦋n⦌` can be written in a unique way as `X.map f.op y`
 for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y`
 (see lemmas `exists_nonDegenerate`, `unique_nonDegenerate_dim`,
 `unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -49,8 +50,10 @@ lemma degenerate_zero : X.degenerate 0 = ∅ := by
   simp at hm
 
 @[simp]
-lemma nondegenerate_zero : X.nonDegenerate 0 = Set.univ := by
+lemma nonDegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
+
+@[deprecated (since := "2026-10-13")] alias nondegenerate_zero := nonDegenerate_zero
 
 variable {n : ℕ}
 
@@ -76,7 +79,6 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
     opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
   simp only [mem_degenerate_iff]
@@ -261,8 +263,6 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
@@ -276,15 +276,11 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
       A.map (section_ f).op hx
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
   constructor
@@ -302,17 +298,16 @@ lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
   simpa using! le_iff_contains_nonDegenerate ⊤ A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_eq_top_iff (n : ℕ) :
     degenerate A n = ⊤ ↔ (X.degenerate n ⊓ A.obj _) = A.obj _ := by
   constructor
   · intro h
     ext x
-    simp only [Set.inf_eq_inter, Set.mem_inter_iff, and_iff_right_iff_imp]
+    simp only [Set.mem_inter_iff, and_iff_right_iff_imp]
     intro hx
     simp [← A.mem_degenerate_iff ⟨x, hx⟩, h, Set.top_eq_univ, Set.mem_univ]
   · intro h
-    simp only [Set.inf_eq_inter, Set.inter_eq_right] at h
+    simp only [Set.inter_eq_right] at h
     ext x
     simpa [A.mem_degenerate_iff] using h x.prop
 
@@ -335,6 +330,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
     f.app _ x ∈ Y.degenerate n := by
   obtain ⟨m, hm, g, y, rfl⟩ := hx
   exact ⟨m, hm, g, f.app _ y, by rw [NatTrans.naturality_apply]⟩
+
+lemma nonDegenerate_of_app_apply {n : ℕ} {x : X _⦋n⦌} (f : X ⟶ Y)
+    (hx : f.app _ x ∈ Y.nonDegenerate n) :
+    x ∈ X.nonDegenerate n :=
+  fun h ↦ hx (degenerate_app_apply h f)
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
     X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
@@ -369,7 +369,6 @@ def nonDegenerateEquivOfIso (e : X ≅ Y) {n : ℕ} :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 lemma degenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by

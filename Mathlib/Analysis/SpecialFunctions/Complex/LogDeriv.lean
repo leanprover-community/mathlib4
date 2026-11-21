@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Measurability
 
 /-!
 # Differentiability of the complex `log` function
-
 -/
 
 public section
@@ -61,7 +60,7 @@ open Complex
 
 open scoped Topology
 
-variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
     (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :

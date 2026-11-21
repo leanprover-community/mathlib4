@@ -64,6 +64,10 @@ instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast
 instance Int.hasSolidNorm : HasSolidNorm ℤ where
   solid x y h := by simpa [← Int.norm_cast_real, ← Int.cast_abs] using h
 
+instance {ι : Type*} [Fintype ι] : HasSolidNorm (ι → ℝ) where
+  solid {_ y} h := (pi_norm_le_iff_of_nonneg (norm_nonneg y)).2 fun i ↦
+    (HasSolidNorm.solid (h i)).trans (norm_le_pi_norm y i)
+
 end SolidNorm
 
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
@@ -132,9 +136,9 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine squeeze_zero (fun e => norm_nonneg _) this ?_
-  convert!
-    ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
-      ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
+  convert
+    ((continuous_fst.tendsto q).sub tendsto_const_nhds).norm.add
+      ((continuous_snd.tendsto q).sub tendsto_const_nhds).norm
   simp
 
 -- see Note [lower instance priority]

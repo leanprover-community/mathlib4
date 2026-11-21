@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.QuasiSeparated
 
 /-!
@@ -46,7 +45,7 @@ instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
+instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
@@ -137,14 +136,14 @@ theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
 @[simp]
-theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
-  nonempty_iff_ne_empty.trans coe_eq_empty.not
+theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ := by
+  simp [← ne_empty_iff_nonempty]
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
     (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
   refine Finset.cons_induction_on s rfl fun a s _ h => ?_
-  simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
+  simp_rw [Finset.sup_cons, coe_sup]
   congr
 
 @[simps]
@@ -166,6 +165,10 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+@[simp]
+theorem singleton_le_iff {x : α} {K : Compacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
+
 theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjoint K L where
   mp h := .of_orderEmbedding (.ofMapLEIff SetLike.coe (fun _ _ => SetLike.coe_subset_coe)) h
   mpr h := by
@@ -178,7 +181,7 @@ theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjo
 instance [Nonempty α] : Nontrivial (Compacts α) := by
   constructor
   obtain ⟨x⟩ := ‹Nonempty α›
-  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (Set.empty_ne_singleton x)⟩
+  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (by simp)⟩
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (Compacts α) ↔ IsEmpty α := by
@@ -192,7 +195,7 @@ theorem nontrivial_iff : Nontrivial (Compacts α) ↔ Nonempty α := by
 
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
-  ⟨f '' K.1, K.2.image hf⟩
+  ⟨f '' K.carrier, K.isCompact'.image hf⟩
 
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
@@ -263,7 +266,7 @@ theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
 instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
-  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
+  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.isCompact' L.isCompact' }
 
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
@@ -282,7 +285,7 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 
 -- todo: add `pi`
 
-open Topology
+open scoped Topology
 
 /-- The compacts neighbourhoods of a compact -/
 def compactNhds (K : Compacts α) : Set (Compacts α) :=
@@ -294,7 +297,7 @@ lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) 
 
 lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
-  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
+  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.property ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
 lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
@@ -308,7 +311,7 @@ def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
-  inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf L M := ⟨L.val ⊓ M.val, fun x ↦ Filter.inter_mem_iff.2 ⟨L.property x, M.property x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k :=
@@ -404,7 +407,7 @@ instance : SetLike (NonemptyCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α) α
+instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
@@ -508,6 +511,10 @@ theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts
 @[simp]
 theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
+
+@[simp]
+theorem singleton_le_iff {x : α} {K : NonemptyCompacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
@@ -649,7 +656,7 @@ instance : SetLike (PositiveCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α) α
+instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
@@ -779,7 +786,7 @@ instance : SetLike (CompactOpens α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α) α
+instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
@@ -837,7 +844,9 @@ variable [QuasiSeparatedSpace α]
 
 instance instInf : Min (CompactOpens α) where
   min U V :=
-    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
+    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.toCompacts.carrier V.toCompacts.carrier
+        U.isOpen' U.toCompacts.isCompact' V.isOpen' V.toCompacts.isCompact'⟩,
+      U.isOpen'.inter V.isOpen'⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 

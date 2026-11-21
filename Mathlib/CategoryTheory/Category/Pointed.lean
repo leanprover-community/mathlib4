@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # The category of pointed types
@@ -85,13 +85,14 @@ instance largeCategory : LargeCategory Pointed where
 @[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
+@[macro_inline]
 instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y where
   coe f := f
   coe_injective _ _ := Subtype.ext
 
 instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
-  hom f := ⟨f.1, f.2⟩
-  ofHom f := ⟨f.1, f.2⟩
+  hom f := ⟨f.toFun, f.map_point⟩
+  ofHom f := ⟨f.val, f.property⟩
 
 /-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/

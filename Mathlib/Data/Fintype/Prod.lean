@@ -10,7 +10,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
-
 -/
 
 public section
@@ -20,7 +19,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 

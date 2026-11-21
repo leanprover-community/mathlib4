@@ -5,13 +5,11 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.TopologicallyNilpotent
-public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.UniformRing
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-! # Evaluation of multivariate power series
 
@@ -38,14 +36,13 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 * `MvPowerSeries.uniformContinuous_eval₂`: uniform continuity of the evaluation
 * `MvPowerSeries.continuous_eval₂`: continuity of the evaluation
 * `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
-
 -/
 
 @[expose] public section
 
 namespace MvPowerSeries
 
-open Topology
+open scoped Topology
 
 open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 
@@ -304,7 +301,8 @@ variable [Algebra R S] [ContinuousSMul R S]
 noncomputable def aeval (ha : HasEval a) : MvPowerSeries σ R →ₐ[R] S where
   toRingHom := MvPowerSeries.eval₂Hom (continuous_algebraMap R S) ha
   commutes' r := by
-    simp only [toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
+    simp only [toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_ofClass]
     rw [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C]
 
 theorem coe_aeval (ha : HasEval a) :

@@ -6,8 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # A Cartesian closed category with zero object is trivial
@@ -18,7 +16,6 @@ object and one morphism.
 ## References
 
 * https://mathoverflow.net/a/136480
-
 -/
 
 @[expose] public section

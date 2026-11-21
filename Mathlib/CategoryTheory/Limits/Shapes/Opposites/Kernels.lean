@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 # Kernels and cokernels in `C` and `Cᵒᵖ`
 
 We construct kernels and cokernels in the opposite categories.
-
 -/
 
 @[expose] public section
@@ -29,7 +28,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 section HasZeroMorphisms
 

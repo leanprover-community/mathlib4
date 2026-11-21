@@ -5,10 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.CoverLifting
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 
 /-!
@@ -43,10 +40,9 @@ that factors through images of the functor for each object in `D`.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, ℱ. T. Johnstone: C2.2.
+* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
-
 -/
 
 @[expose] public section
@@ -55,9 +51,8 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/
@@ -134,13 +129,13 @@ variable {G}
 
 theorem functorPullback_pushforward_covering [G.IsCoverDense K] [G.IsLocallyFull K] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine K.transitive T.2 _ fun Y iYX hiYX ↦ ?_
+  refine K.transitive T.property _ fun Y iYX hiYX ↦ ?_
   apply K.transitive (G.is_cover_of_isCoverDense _ _) _
   rintro W _ ⟨Z, iWZ, iZY, rfl⟩
   rw [Sieve.pullback_comp]; apply K.pullback_stable; clear W iWZ
   apply K.superset_covering ?_ (G.functorPushforward_imageSieve_mem _ (iZY ≫ iYX))
   rintro W _ ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
-  exact ⟨_, iVX, iWV, by simpa [e] using T.1.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
+  exact ⟨_, iVX, iWV, by simpa [e] using T.val.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
 
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.
@@ -168,10 +163,10 @@ namespace Types
 variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K (Type v)} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
 
 theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
-    ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
+    ℱ'.obj.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
-      ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
-    exact ConcreteCategory.congr_hom (α.naturality i.op).symm x
+      ℱ'.obj.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
+    congrm $((α.naturality i.op).symm) x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
   simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
@@ -180,7 +175,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
 set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
-    α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
+    α.app _ ≫ ℱ'.obj.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
 
 /--
 (Implementation). Given a section of `ℱ` on `X`, we can obtain a family of elements valued in `ℱ'`
@@ -193,7 +188,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
@@ -210,7 +204,8 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
   suffices ∀ {Z W₁ W₂} (iWX₁ : G.obj W₁ ⟶ X) (iWX₂ : G.obj W₂ ⟶ X) (iZW₁ : Z ⟶ G.obj W₁)
       (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
-      ℱ'.1.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.1.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
+      ℱ'.obj.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) =
+        ℱ'.obj.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
     rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
     simp only [pushforwardFamily, ← Functor.map_comp_apply, ← op_comp]
     generalize Nonempty.some h₁ = l₁
@@ -346,7 +341,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
-    exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
+    congrm $(((sheafCoyonedaHom α).app X).naturality i) x
 
 /--
 Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -481,7 +476,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 
@@ -508,7 +503,6 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by
@@ -623,7 +617,7 @@ lemma mapPreimage_map_of_fac {X Y Z : C} (f : G.obj X ⟶ G.obj Y)
       rintro ⟨W₀, a, ha⟩
       dsimp at ha ⊢
       rw [Category.assoc, ← Functor.map_comp, ← op_comp, mapPreimage]
-      rw [F.2.amalgamate_map ⟨_, imageSieve_mem J K G f⟩
+      rw [F.property.amalgamate_map ⟨_, imageSieve_mem J K G f⟩
         (fun ⟨W₀, a, ha⟩ ↦ F.obj.map ha.choose.op) _ ⟨W₀, a ≫ p, ha⟩,
         ← Functor.map_comp, ← op_comp]
       apply map_eq_of_eq K G

@@ -36,7 +36,6 @@ The difference `-2πi/z` between these two orderings is precisely the correction
 
 2. For fixed `n`, the inner sum over `m` can be computed using the cotangent series expansion.
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
-
 -/
 
 open UpperHalfPlane hiding I σ
@@ -45,7 +44,7 @@ open Filter Complex Finset SummationFilter
 
 open scoped Interval Real Topology Nat ArithmeticFunction.sigma
 
-public noncomputable section
+public section
 
 namespace EisensteinSeries
 
@@ -64,7 +63,7 @@ private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summan
     Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_comm, mul_sum]
   congr with a
   have H2 := qExpansion_identity_pnat (k := 1) (by grind)
-    ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2⟩
+    ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.coe_im_pos⟩
   simp only [add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one] at H2
   simp_rw [zpow_ofNat, H2, ← tsum_mul_left, ← tsum_neg, ← exp_nsmul]
@@ -109,16 +108,20 @@ theorem hasSum_qExpansion_E2 :
   have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
   rw [← hasSum_nat_add_iff' 1]
-  convert! (hS.mul_left (-24)).hasSum using 1
+  convert (hS.mul_left (-24)).hasSum using 1
   · ext : 1
     simp [mul_assoc]
   · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]
     simp
 
+/-- `E2` tends to `1` at `i∞`. -/
+theorem tendsto_E2_atImInfty : Tendsto E2 atImInfty (𝓝 1) :=
+  tendsto_atImInfty_of_hasSum_qExpansion one_pos fun z ↦ by
+    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := z)
+
 /-- `E2` is bounded at `i∞`. -/
 theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=
-  isBoundedAtImInfty_of_hasSum_qExpansion one_pos fun τ ↦ by
-    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := τ)
+  tendsto_E2_atImInfty.isBigO_one ℝ
 
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)
@@ -176,9 +179,9 @@ private lemma aux_sum_Ico_S_identity (N : ℕ) :
 
 lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
-    (𝓝 ((z.1 ^ 2)⁻¹ * G2 (S • z))) := by
+    (𝓝 ((z.coe ^ 2)⁻¹ * G2 (S • z))) := by
   rw [G2_eq_tsum_symmetricIco, ← tsum_mul_left]
-  have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.1 ^ 2)⁻¹).hasSum
+  have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.coe ^ 2)⁻¹).hasSum
   simp only [HasSum, symmetricIco, tendsto_map'_iff, modular_S_smul, ← Nat.map_cast_int_atTop] at *
   apply this.congr (fun N ↦ ?_)
   simpa [e2Summand, eisSummand, ← mul_sum] using! aux_sum_Ico_S_identity z N

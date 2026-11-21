@@ -5,7 +5,6 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -26,7 +25,6 @@ and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : X ⟶
 such that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`.
 Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone is a colimit
 cocone.
-
 -/
 
 @[expose] public section
@@ -39,7 +37,6 @@ open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
-variable {J : Type w}
 universe uC' uC uD' uD
 variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
@@ -122,7 +119,7 @@ variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
 
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
 to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
-@[simps]
+@[simps, implicit_reducible]
 def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
     { pt := F.obj A.pt
@@ -152,7 +149,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
+    BinaryBiconeMorphism.ext f g <| F.map_injective congr(BinaryBiconeMorphism.hom $h)
 
 end BinaryBicones
 
@@ -333,11 +330,11 @@ def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.
     (eP : P ≅ P') (eQ : Q ≅ Q') :
     (b.ofIso eP eQ).IsBilimit where
   isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isLimit
+    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).toFun hb.isLimit
     exact BinaryFan.ext (Iso.refl _) (by simp [BinaryFan.fst])
       (by simp [BinaryFan.snd])
   isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isColimit
+    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).toFun hb.isColimit
     exact BinaryCofan.ext (Iso.refl _) (by simp [BinaryCofan.inl])
       (by simp [BinaryCofan.inr])
 
@@ -634,7 +631,6 @@ theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).inv = coprod.desc biprod.inl biprod.inr := by
   ext <;> simp [biprod.isoCoprod]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
@@ -756,7 +752,6 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
   rw [show biprod.map f g =

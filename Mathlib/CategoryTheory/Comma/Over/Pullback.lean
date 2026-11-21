@@ -7,11 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Mates
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Monad.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Monad.Products
 
 /-!
 # Adjunctions related to the over category
@@ -55,8 +53,6 @@ open Limits
 
 attribute [local instance] hasPullback_of_right_iso
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left, implicit_reducible]
@@ -67,7 +63,6 @@ def pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
@@ -120,7 +115,6 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
 `post F : Over Y ⥤ Over (G Y)`.
@@ -139,7 +133,6 @@ instance isLeftAdjoint_post [HasPullbacks C] {F : C ⥤ D} [F.IsLeftAdjoint] :
 
 open Limits
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The category over any object `X` factors through the category over the terminal object `T`. -/
 @[simps!]
 noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
@@ -163,13 +156,11 @@ Note that the binary products assumption is necessary: the existence of a right 
 def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma forgetAdjStar_counit_app (X Y : C) : (Over.forgetAdjStar X).counit.app Y = prod.snd := by
   simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma forgetAdjStar_unit_app_left (X : C) (Y : Over X) :
     ((Over.forgetAdjStar X).unit.app Y).left = prod.lift Y.hom (𝟙 _) := by
@@ -199,7 +190,6 @@ namespace Under
 
 attribute [local instance] hasPushout_of_right_iso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
@@ -263,7 +253,6 @@ instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open pushout in
 /-- If `G` is a right adjoint and its source category has pushouts, then so is
 `post G : Under Y ⥤ Under (G Y)`.

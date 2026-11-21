@@ -18,7 +18,7 @@ public import Mathlib.Data.Set.Image
 
 @[expose] public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv.Perm Function
 
@@ -61,15 +61,15 @@ theorem image_domRestrict (f : α → β) (s t : Set α) :
 @[simp]
 theorem domRestrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
-  funext fun a => dite_eq_left a.2
+    (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.property) :=
+  funext fun a => dite_eq_left a.property
 
 @[simp]
 theorem domRestrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
     (sᶜ.domRestrict fun a => if h : a ∈ s then f a h else g a h) =
-      (fun a : (sᶜ : Set α) => g a a.2) :=
-  funext fun a => dite_eq_right a.2
+      (fun a : (sᶜ : Set α) => g a a.property) :=
+  funext fun a => dite_eq_right a.property
 
 @[simp]
 theorem domRestrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
@@ -102,10 +102,10 @@ theorem domRestrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β 
 /-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
 @[simp]
 def domRestrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
-  fun x => f ⟨x.1, hst x.2⟩
+  fun x => f ⟨x.val, hst x.property⟩
 
 theorem domRestrict₂_def {s t : Set α} (hst : s ⊆ t) :
-    domRestrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+    domRestrict₂ (π := π) hst = fun f x ↦ f ⟨x.val, hst x.property⟩ := rfl
 
 theorem domRestrict₂_comp_domRestrict {s t : Set α} (hst : s ⊆ t) :
     (domRestrict₂ (π := π) hst) ∘ t.domRestrict = s.domRestrict := rfl
@@ -113,7 +113,7 @@ theorem domRestrict₂_comp_domRestrict {s t : Set α} (hst : s ⊆ t) :
 theorem domRestrict₂_comp_domRestrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
     (domRestrict₂ (π := π) hst) ∘ (domRestrict₂ htu) = domRestrict₂ (hst.trans htu) := rfl
 
-theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
+theorem range_extend_subset (f : ι → β) (g : ι → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
   rintro _ ⟨y, rfl⟩
@@ -121,7 +121,7 @@ theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
   split_ifs with h
   exacts [Or.inl (mem_range_self _), Or.inr (mem_image_of_mem _ h)]
 
-theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β → γ) :
+theorem range_extend {f : ι → β} (hf : Injective f) (g : ι → γ) (g' : β → γ) :
     range (extend f g g') = range g ∪ g' '' (range f)ᶜ := by
   refine (range_extend_subset _ _ _).antisymm ?_
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)
@@ -141,6 +141,23 @@ lemma _root_.Function.Injective.extend_injOn {f : α → β} {g : α → γ} {j 
     (hf : f.Injective) (hg : g.Injective) :
     (range f).InjOn (extend f g j) :=
   (hf.factorsThrough g).extend_injOn hg
+
+/-- If `f`, `g` and `j` are injective and `g` and `j` have disjoint ranges,
+then `extend f g j` is injective. -/
+lemma _root_.Function.Injective.extend_of_disjoint {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : f.Injective) (hg : g.Injective) (hj : j.Injective)
+    (hd : Disjoint (range g) (range j)) :
+    Injective (extend f g j) := by
+  intro x y h
+  obtain ⟨a, rfl⟩ | hx := em (∃ a, f a = x) <;> obtain ⟨b, rfl⟩ | hy := em (∃ a, f a = y)
+  · rw [hf.extend_apply, hf.extend_apply] at h
+    rw [hg h]
+  · rw [hf.extend_apply, extend_apply' _ _ _ hy] at h
+    exact absurd ⟨y, h.symm⟩ (disjoint_left.1 hd (mem_range_self a))
+  · rw [extend_apply' _ _ _ hx, hf.extend_apply] at h
+    exact absurd ⟨x, h⟩ (disjoint_left.1 hd (mem_range_self b))
+  · rw [extend_apply' _ _ _ hx, extend_apply' _ _ _ hy] at h
+    exact hj h
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
@@ -212,8 +229,7 @@ alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
 
 end domRestrict
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {p : Set γ} {f : α → β} {g : β → γ} {a : α} {b : β}
 
 section MapsTo
 
@@ -241,7 +257,7 @@ theorem codRestrict_domRestrict (h : ∀ x : s, f x ∈ t) :
 
 /-- Reverse of `Set.codRestrict_domRestrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
-    h.restrict f s t = codRestrict (s.domRestrict f) t fun x => h x.2 :=
+    h.restrict f s t = codRestrict (s.domRestrict f) t fun x => h x.property :=
   rfl
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
@@ -296,7 +312,7 @@ lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreim
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
 
 lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
-  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.property : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
 
 lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
@@ -311,7 +327,7 @@ end
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.domRestrict f) :=
-  ⟨fun H a b h => Subtype.ext <| H a.2 b.2 h, fun H a as b bs h =>
+  ⟨fun H a b h => Subtype.ext <| H a.property b.property h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective

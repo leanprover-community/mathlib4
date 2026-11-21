@@ -5,13 +5,14 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
+
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
 # Monoid actions continuous in the second variable
@@ -42,7 +43,6 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 ## Tags
 
 Hausdorff, discrete group, properly discontinuous, quotient space
-
 -/
 
 @[expose] public section
@@ -207,6 +207,30 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 
 end Monoid
 
+section Homeomorph
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- The tautological action by `X ≃ₜ X` on `X`.
+
+This generalizes `Equiv.Perm.applyMulAction`. -/
+instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+  smul f x := f x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
+
+/-- `Homeomorph.applyMulAction` is faithful. -/
+instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
+
+/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
+  ⟨fun h ↦ h.continuous⟩
+
+end Homeomorph
+
 section Group
 
 variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
@@ -237,6 +261,7 @@ theorem continuousAt_const_smul_iff (c : G) :
 theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
 @[to_additive (attr := simps!)]
@@ -487,7 +512,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
     (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
-  hf.of_comp_isQuotientMap <| by convert! hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
 
 theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
     [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]
@@ -548,8 +573,8 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
   obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
   let Γ₀ := {γ : Γ | ((γ • ·) '' V ∩ V).Nonempty ∧ γ • x ≠ x}
   have : Finite Γ₀ := (finite_disjoint_inter_image V_cpt V_cpt).subset fun _ ↦ And.left
-  choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.2.2
-  refine ⟨V ∩ ⋂ γ : Γ₀, (γ.1 • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
+  choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.property.2
+  refine ⟨V ∩ ⋂ γ : Γ₀, (γ.val • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
     inter_mem ((continuous_const_smul _).continuousAt <| hu γ) (hv γ)), fun γ hγ ↦ ?_⟩
   obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := hγ
   by_contra h

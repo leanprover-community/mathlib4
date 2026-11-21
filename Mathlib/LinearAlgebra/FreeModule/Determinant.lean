@@ -6,7 +6,9 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Determinants in free (finite) modules

@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Filter.Interval
 public import Mathlib.Order.Interval.Set.Pi
 public import Mathlib.Order.OrdContinuous
-public import Mathlib.Tactic.TFAE
-public import Mathlib.Tactic.NormNum
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!
@@ -175,8 +172,6 @@ lemma exists_countable_generateFrom_Ioi_Iio
   refine ⟨a '' t, t_count.image _, ?_⟩
   apply le_antisymm
   · apply le_generateFrom_iff_subset_isOpen.2
-    simp only [mem_image, exists_exists_and_eq_and, ofPred_subset_ofPred, forall_exists_index,
-      and_imp]
     grind [isOpen_Iio', isOpen_Ioi']
   · rw [ht]
     apply generateFrom_anti
@@ -209,9 +204,9 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
     grind
   have : Finite kl := k_fin.subset (by simp [k_eq])
   have : Finite kr := k_fin.subset (by simp [k_eq])
-  have Al : ∀ s : kl, ∃ a ∈ c, s = Ioi a := fun s ↦ s.2.2
+  have Al : ∀ s : kl, ∃ a ∈ c, s = Ioi a := fun s ↦ s.property.2
   choose al alc hal using Al
-  have Ar : ∀ s : kr, ∃ a ∈ c, s = Iio a := fun s ↦ s.2.2
+  have Ar : ∀ s : kr, ∃ a ∈ c, s = Iio a := fun s ↦ s.property.2
   choose ar arc har using Ar
   refine ⟨range al, by simp [range_subset_iff, alc], range ar,
     by simp [range_subset_iff, arc], finite_range _, finite_range _, ?_⟩
@@ -333,7 +328,8 @@ embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
-  ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+  ⟨⟨h.topology_eq_generate_intervals.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩,
+    hf.injective⟩
 
 /-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
 order-connected -/
@@ -364,7 +360,7 @@ theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopol
 @[to_dual nhdsLE_basis_of_exists_lt]
 theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal
+  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal (S := {u | a < u})
     (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
       Ico_subset_Ico_right (min_le_right _ _)⟩) ha
 
@@ -545,16 +541,10 @@ theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [SuccOrder α] {a : α} (ha : �
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
 
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc_of_exists_gt := PredOrder.hasBasis_nhds_Ico_of_exists_gt
-
 @[to_dual]
 theorem SuccOrder.hasBasis_nhds_Ioc [SuccOrder α] {a : α} [NoMinOrder α] :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
-
-@[deprecated (since := "2026-04-19")]
-alias PredOrder.hasBasis_nhds_Ioc := PredOrder.hasBasis_nhds_Ico
 
 variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
@@ -793,6 +783,9 @@ variable {f : X → Y} {x : X}
 
 /-- An order-theoretically left-continuous function is topologically left-continuous, assuming
 the function is between conditionally complete linear orders with order topologies. -/
+@[to_dual
+/-- An order-theoretically right-continuous function is topologically right-continuous, assuming
+the function is between conditionally complete linear orders with order topologies. -/]
 lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     ContinuousWithinAt f (Iic x) x := by
   rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
@@ -812,12 +805,6 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     exact ⟨f ⁻¹' Ioi z, u_eq ▸ isOpen_Ioi, hxz, fun _ h ↦ h.1⟩
   -- The case `V = Iio z`.
   · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
-
-/-- An order-theoretically right-continuous function is topologically right-continuous, assuming
-the function is between conditionally complete linear orders with order topologies. -/
-@[to_dual existing]
-lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
-    ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
 /-- A function that is order-theoretically both left- and right-continuous is continuous, assuming
 the function is between conditionally complete linear orders with order topologies. -/

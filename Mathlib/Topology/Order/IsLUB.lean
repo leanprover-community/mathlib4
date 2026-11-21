@@ -8,13 +8,17 @@ module
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
 
+import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Properties of LUB and GLB in an order topology
 -/
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
@@ -276,7 +280,7 @@ protected lemma IsClosed.upperClosure {s : Set α} (hs : IsClosed s) :
   · exact upperClosure_eq_bot h₂ ▸ isClosed_univ
 
 protected lemma IsClosed.lowerClosure {s : Set α} (hs : IsClosed s) :
-    IsClosed (lowerClosure s).1 :=
+    IsClosed (lowerClosure s).carrier :=
   IsClosed.upperClosure (α := αᵒᵈ) hs
 
 end ConditionallyCompleteLinearOrder

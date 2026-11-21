@@ -6,10 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Splitting
-public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
-public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
@@ -21,15 +20,16 @@ preadditive category `C` with coproducts). The `n`-chains of this complex
 identify to the coproduct of copies of `R` indexed by the nondegenerate
 `n`-simplices of `X`. In particular, we deduce that the homology is zero in degree `≥ d`
 when `X` has dimension `< d`.
-
 -/
 
 @[expose] public section
 
 universe w v u
 
-open CategoryTheory Limits HomologicalComplex Simplicial
+open CategoryTheory Limits HomologicalComplex
   AlgebraicTopology.DoldKan
+
+open scoped Simplicial
 
 namespace SSet
 
