@@ -320,21 +320,24 @@ the kernel of the map `A ⊗ S → A ⊗ T` is the base change of `I` along `S �
 -/
 def Algebra.kerTensorProductMapIdToAlgHomEquiv
     [Module.Flat R T] (h₁ : Function.Surjective (algebraMap S T)) :
-    RingHom.ker (Algebra.TensorProduct.map (.id A A) (IsScalarTower.toAlgHom R S T)) ≃ₗ[A ⊗[R] S]
+    RingHom.ker (RingHomClass.toRingHom <|
+        Algebra.TensorProduct.map (.id A A) (IsScalarTower.toAlgHom R S T)) ≃ₗ[A ⊗[R] S]
       (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) := by
   let φ : A ⊗[R] S →ₐ[A] A ⊗[R] T :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   let ePp : A ⊗[R] S ≃ₐ[S] S ⊗[R] A :=
     .ofCommutes (Algebra.TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
-  let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
+  let e₃ : (RingHom.ker (φ : A ⊗[R] S →+* A ⊗[R] T)) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
     (LinearMap.kerLTensorEquivOfSurjective (IsScalarTower.toAlgHom R S T).toLinearMap
       h₁ A).restrictScalars R
-  let e₄' : (RingHom.ker φ) ≃ₗ[R] (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) :=
+  let e₄' : (RingHom.ker (φ : A ⊗[R] S →+* A ⊗[R] T)) ≃ₗ[R]
+      (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) :=
     e₃ ≪≫ₗ _root_.TensorProduct.comm _ _ _ ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange _ _ S _ _).symm.restrictScalars R ≪≫ₗ
       (AlgebraTensorModule.congr (.refl S _) ePp.symm.toLinearEquiv).restrictScalars R ≪≫ₗ
       (_root_.TensorProduct.comm _ _ _).restrictScalars R
-  let e₄ : (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) ≃ₗ[A ⊗[R] S] (RingHom.ker φ) :=
+  let e₄ : (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) ≃ₗ[A ⊗[R] S]
+      (RingHom.ker (φ : A ⊗[R] S →+* A ⊗[R] T)) :=
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with

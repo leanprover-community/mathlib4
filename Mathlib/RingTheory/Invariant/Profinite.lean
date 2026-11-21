@@ -71,8 +71,8 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
         fun x hx n ↦ hx ⟨_, f.le n.property⟩
       obtain ⟨x, hx⟩ := x
       obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
-      simpa only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
-        (F := RingEquiv _ _)] using! congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
+      simpa only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap] using!
+        congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
   have (N : _) : Nonempty (F.obj N) := by
@@ -96,8 +96,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
   change x ∈ Q.under (B' N.toOpenSubgroup.toSubgroup) ↔
     x ∈ Ideal.under (B' N.toOpenSubgroup.toSubgroup) ((_ : G) • P)
   rw [(s N).property]
-  simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
-        (F := RingEquiv _ _)]
+  simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap]
   congr! 2
   ext y
   simp [← this]
@@ -126,9 +125,8 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
       FixedPoints.subalgebra A B N.toOpenSubgroup.toSubgroup :=
     fun x hx n ↦ hx ⟨_, e n.property⟩
   obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
-  replace hx := congr(Ideal.comap (Subalgebra.inclusion h) $hx)
-  simpa only [Ideal.pointwise_smul_eq_comap,
-    ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using! hx
+  replace hx := congr(Ideal.comap (RingHomClass.toRingHom <| Subalgebra.inclusion h) $hx)
+  simpa only [Ideal.pointwise_smul_eq_comap, Ideal.comap_comap] using! hx
 
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
@@ -204,8 +202,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     change x ∈ (a • Q).under (B' N.toOpenSubgroup.toSubgroup) ↔
       x ∈ Q.under (B' N.toOpenSubgroup.toSubgroup)
     rw [← (s N).val.property]
-    simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
-          (F := RingEquiv _ _)]
+    simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap]
     congr! 2
     ext y
     rw [← this]

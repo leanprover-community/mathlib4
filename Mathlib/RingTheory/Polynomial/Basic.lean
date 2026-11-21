@@ -569,7 +569,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
   · intro H
-    have := comap_isPrime C (map C P)
+    have := comap_isPrime (map C P) C
     convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
@@ -994,7 +994,8 @@ theorem ker_map (f : R →+* S) :
 
 lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+    RingHom.ker (RingHomClass.toRingHom <| MvPolynomial.mapAlgHom (σ := σ) f) =
+      Ideal.map MvPolynomial.C (RingHom.ker (f : S₁ →+* S₂)) :=
   MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
 
 end MvPolynomial

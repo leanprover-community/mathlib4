@@ -123,7 +123,7 @@ lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
 
 theorem isDPMorphism (hJ : IsSubDPIdeal hI J) :
     (IsSubDPIdeal.dividedPowers hI hJ).IsDPMorphism hI (RingHom.id A) := by
-  simpa only [isDPMorphism_iff, Ideal.map_id, RingHom.id_apply]
+  simpa [isDPMorphism_iff]
     using ⟨hJ.isSubideal, fun _ _ _ ha ↦ by rw [dpow_eq_of_mem _ _ ha]⟩
 
 end IsSubDPIdeal

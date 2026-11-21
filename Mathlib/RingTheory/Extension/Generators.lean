@@ -615,9 +615,8 @@ noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
-  simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
-  rfl
+lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (RingHomClass.toRingHom <| aeval P.val) := by
+  simp [ker, Extension.ker, algebraMap_eq]
 
 lemma ker_mvPolynomial : (mvPolynomial R ι).ker = ⊥ := by
   simp [ker_eq_ker_aeval_val, SetLike.ext_iff, aeval_X_left]
@@ -648,15 +647,16 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
     ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
-    P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
+    P.ker.map (Q.toComp P).toAlgHom =
+      RingHom.ker (RingHomClass.toRingHom (Q.ofComp P).toAlgHom) := by
   let : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
   apply le_antisymm
-  · rw [Ideal.map_le_iff_le_comap]
+  · rw [← AlgHom.coe_toRingHom, Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
     have : (Q.ofComp P).toAlgHom.comp (Q.toComp P).toAlgHom = IsScalarTower.toAlgHom R _ _ := by
       ext1; simp
-    simp only [Ideal.mem_comap,
-      RingHom.mem_ker, ← AlgHom.comp_apply, this, IsScalarTower.toAlgHom_apply]
+    simp only [Ideal.mem_comap, RingHom.mem_ker, RingHom.coe_coe, ← AlgHom.comp_apply, this,
+      IsScalarTower.toAlgHom_apply]
     rw [IsScalarTower.algebraMap_apply P.Ring S, hx, map_zero]
   · rintro x (h₂ : (Q.ofComp P).toAlgHom x = 0)
     let e : (ι' ⊕ ι →₀ ℕ) ≃+ (ι' →₀ ℕ) × (ι →₀ ℕ) :=
@@ -691,7 +691,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         intro j
         obtain ⟨j, rfl⟩ := e.surjective j
         simp_all
-      rw [Finset.sum_filter, ← finsum_eq_sum_of_support_subset _ (this x)]
+      rw [Finset.sum_filter, RingHom.coe_coe, ← finsum_eq_sum_of_support_subset _ (this x)]
       induction x using MvPolynomial.induction_on' with
       | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
@@ -731,9 +731,9 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
     exacts [Sum.inr, n.mapDomain Sum.inl]
   · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
     conv_rhs => rw [← aeval_val_eq_zero x.property, ← x.val.support_sum_monomial_coeff]
-    simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
-      Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Sum.elim_inl, one_mul]
+    simp only[Finsupp.sum, map_sum, map_mul, RingHom.coe_coe, aeval_rename, Function.comp_def,
+      comp_val, Sum.elim_inr, aeval_monomial, map_one,
+      Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl, one_mul]
     congr! with v i
     simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
 
@@ -754,28 +754,31 @@ lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x
 lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by
   ext x
-  rw [Ideal.mem_map_iff_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    simp only [ker_eq_ker_aeval_val,
-      RingHom.mem_ker] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom, algebraMap_self_apply]
-  · intro hx
-    exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).property, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
+  rw [← AlgHom.coe_toRingHom, Ideal.mem_map_iff_of_surjective]
+  · constructor
+    · rintro ⟨x, hx, rfl⟩
+      simp only [ker_eq_ker_aeval_val,
+        RingHom.mem_ker] at hx ⊢
+      rw [← hx, RingHom.coe_coe, RingHom.coe_coe, Hom.algebraMap_toAlgHom, algebraMap_self_apply,
+        RingHom.coe_coe]
+    · intro hx
+      exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).property, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
+  · exact toAlgHom_ofComp_surjective Q P
 
 lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.comp P).ker =
       Ideal.map (Q.toComp P).toAlgHom P.ker ⊔ Ideal.comap (Q.ofComp P).toAlgHom Q.ker := by
-  rw [← map_ofComp_ker Q P,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
-  rw [← sup_assoc, Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
-  apply le_antisymm (le_trans le_sup_right le_sup_left)
-  simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
-  intro x hx
-  simp only [RingHom.mem_ker] at hx
-  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
-    ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
-  rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+  rw [← map_ofComp_ker Q P, ← AlgHom.coe_toRingHom (Q.ofComp P).toAlgHom,
+    Ideal.comap_map_of_surjective]
+  · rw [← sup_assoc, Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
+    apply le_antisymm (le_trans le_sup_right le_sup_left)
+    simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
+    intro x hx
+    simp only [RingHom.mem_ker, RingHom.coe_coe] at hx
+    rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker, RingHom.coe_coe,
+      ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
+    rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+  · exact toAlgHom_ofComp_surjective Q P
 
 lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
     ((localizationAway T g).ofComp P).toAlgHom

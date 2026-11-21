@@ -144,7 +144,7 @@ lemma Ideal.image_subset_nonunits_valuationSubring {A : Subring K} (I : Ideal A)
   refine ⟨V, (LocalSubring.le_ofPrime ..).trans hV.1, ?_⟩
   rw [← V.image_maximalIdeal]
   refine .trans ?_ (Set.image_mono <| ((local_hom_tfae _).out 1 3).mp hV.2)
-  rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M, map_map]
+  rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M, map_map, ← RingHom.coe_comp]
   refine .trans ?_ (Set.image_mono <| map_mono le)
   rintro _ ⟨a, ha, rfl⟩
   exact ⟨_, mem_map_of_mem _ ha, rfl⟩

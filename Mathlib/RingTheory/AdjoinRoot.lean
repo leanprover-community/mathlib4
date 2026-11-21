@@ -948,7 +948,7 @@ for the isomorphism with `(R/I)[X] / (f mod I)`. -/
 def quotMapOfEquivQuotMapCMapMk :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
-  Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
+  Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, RingHom.coe_comp, Ideal.map_map])
 
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
@@ -993,7 +993,7 @@ def Polynomial.quotQuotEquivComm :
   quotientEquiv (span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
     (span {Ideal.Quotient.mk (I.map Polynomial.C) f}) (polynomialQuotientEquivQuotientPolynomial I)
     (by
-      rw [map_span, Set.image_singleton, RingEquiv.coe_toRingHom,
+      rw [map_span, Set.image_singleton, RingHom.coe_coe,
         polynomialQuotientEquivQuotientPolynomial_map_mk I f])
 
 @[simp]
@@ -1126,12 +1126,12 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
                   (by rw [Ideal.map_map,
-                      ← AlgEquiv.toRingHom_toAlgHom, ← AdjoinRoot.algebraMap_eq,
+                      ← AlgEquiv.toRingHom_toAlgHom, ← AdjoinRoot.algebraMap_eq, ← RingHom.coe_comp,
                       AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk,
-                    RingEquiv.coe_toRingHom, AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes,
+                    RingHom.coe_coe, AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes,
                     Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 
 -- This lemma should have the simp tag but this causes a lint issue.

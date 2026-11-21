@@ -135,8 +135,14 @@ noncomputable def mapEquiv (f : R ≃+* S) :
     IsLocalRing.ResidueField R ≃+* IsLocalRing.ResidueField S where
   toFun := map (f : R →+* S)
   invFun := map (f.symm : S →+* R)
-  left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
-  right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
+  left_inv x := by
+    rw [map_map]
+    convert map_id_apply x
+    ext; simp
+  right_inv x := by
+    rw [map_map]
+    convert map_id_apply x
+    ext; simp
   map_mul' := map_mul _
   map_add' := map_add _
 

@@ -211,7 +211,7 @@ end SplittingFieldAux
 @[stacks 09HV "The construction of the splitting field."]
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
-    RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
+    RingHom.ker (RingHomClass.toRingHom <| MvPolynomial.aeval (R := K) id)
 deriving Inhabited
 
 namespace SplittingField

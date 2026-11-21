@@ -176,9 +176,11 @@ def Algebra.tensorQuotientTensorEquiv (e : R' ⊗[R] S) :
   haveI hψφ : (ψ.restrictScalars R').comp φ =
       (Algebra.TensorProduct.includeRight.restrictScalars R').comp (Ideal.Quotient.mkₐ _ _) := by
     ext; simp [ψ, φ]
-  haveI heψ : Ideal.span {φ e} ≤ RingHom.ker ψ := by simpa [Ideal.span_le] using congr($hψφ e)
+  haveI heψ : Ideal.span {φ e} ≤ RingHom.ker (RingHomClass.toRingHom ψ) := by
+    simpa [Ideal.span_le] using congr($hψφ e)
   AlgEquiv.ofAlgHom (Algebra.TensorProduct.lift (Algebra.ofId _ _) (Ideal.quotientMapₐ _ φ
-    (Ideal.map_le_iff_le_comap.mp (by simp [Ideal.map_span, φ]))) fun _ _ ↦ .all _ _)
+    (Ideal.map_le_iff_le_comap.mp (by
+      simp only [Ideal.map_span, Set.image_singleton, φ]; simp))) fun _ _ ↦ .all _ _)
     (Ideal.Quotient.liftₐ _ ψ heψ) (by ext; simp [ψ, φ]) (by ext; simp [φ, ψ])
 
 @[simp]
