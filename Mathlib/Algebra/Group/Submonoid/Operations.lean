@@ -507,6 +507,63 @@ def prodEquiv (s : Submonoid M) (t : Submonoid N) : s.prod t ≃* s × t :=
   { (Equiv.Set.prod (s : Set M) (t : Set N)) with
     map_mul' := fun _ _ => rfl }
 
+section FstSnd
+
+-- Create a new section and re-declare the variables in the opposite order for legibility
+variable (M N : Type*) [MulOneClass M] [MulOneClass N]
+
+/-- `M` as a submonoid of `M × N`. Declared as `protected` to avoid conflict with `MonoidHom.fst`.
+-/
+@[to_additive
+  /-- `M` as a submonoid of `M × N`. Declared as `protected` to avoid conflict with
+  `AddMonoidHom.fst`. -/]
+protected def fst : Submonoid (M × N) :=
+  (⊥ : Submonoid N).comap (MonoidHom.snd M N)
+
+/-- `M` as a submonoid of `M × N` is isomorphic to `M`. -/
+@[to_additive (attr := simps)
+  /-- `M` as a submonoid of `M × N` is isomorphic to `M`. -/]
+def fstEquiv : Submonoid.fst M N ≃* M where
+  toFun x := x.val.1
+  invFun m := ⟨⟨m, 1⟩, rfl⟩
+  map_mul' := by simp
+  left_inv x := by aesop (add simp Submonoid.fst)
+
+@[to_additive]
+theorem fst_map_fst : (Submonoid.fst M N).map (MonoidHom.fst M N) = ⊤ := by
+  aesop
+
+@[to_additive]
+theorem fst_map_snd : (Submonoid.fst M N).map (MonoidHom.snd M N) = ⊥ := by
+  aesop (add simp Submonoid.fst)
+
+/-- `N` as a submonoid of `M × N`. Declared as `protected` to avoid conflict with `MonoidHom.snd`.
+-/
+@[to_additive
+  /-- `N` as a submonoid of `M × N`. Declared as `protected` to avoid conflict with
+  `AddMonoidHom.snd`. -/]
+protected def snd : Submonoid (M × N) :=
+  (⊥ : Submonoid M).comap (MonoidHom.fst M N)
+
+/-- `N` as a submonoid of `M × N` is isomorphic to `N`. -/
+@[to_additive (attr := simps)
+  /-- `N` as a submonoid of `M × N` is isomorphic to `N`. -/]
+def sndEquiv : Submonoid.snd M N ≃* N where
+  toFun x := x.val.2
+  invFun n := ⟨⟨1, n⟩, rfl⟩
+  map_mul' := by simp
+  left_inv x := by aesop (add simp Submonoid.snd)
+
+@[to_additive]
+theorem snd_map_fst : (Submonoid.snd M N).map (MonoidHom.fst M N) = ⊥ := by
+  aesop (add simp Submonoid.snd)
+
+@[to_additive]
+theorem snd_map_snd : (Submonoid.snd M N).map (MonoidHom.snd M N) = ⊤ := by
+  aesop
+
+end FstSnd
+
 open MonoidHom
 
 @[to_additive]
