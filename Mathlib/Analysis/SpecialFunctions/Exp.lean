@@ -235,6 +235,14 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
 
+/-- If `f : ℝ → E` has compact support and vanishes near `0`, then `f ∘ exp` has compact
+support. -/
+theorem _root_.HasCompactSupport.comp_exp {E : Type*} [Zero E] {f : ℝ → E}
+    (hf : HasCompactSupport f) (h : 0 ∉ tsupport f) : HasCompactSupport (f ∘ exp) := by
+  simp only [hasCompactSupport_iff_eventuallyEq, coclosedCompact_eq_cocompact,
+    cocompact_eq_atBot_atTop] at hf ⊢
+  exact ⟨tendsto_exp_atBot <| notMem_tsupport_iff_eventuallyEq.mp h, tendsto_exp_atTop hf.2⟩
+
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
     IsBoundedUnder (· ≥ ·) l fun x => exp (f x) :=

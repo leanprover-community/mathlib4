@@ -26,6 +26,9 @@ in `IsOpen.exists_contDiff_support_eq`.
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
+
+Finally, `Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo` provides smooth cutoffs on `ℝ`
+lying between the indicator functions of two nested intervals.
 -/
 
 @[expose] public section
@@ -526,3 +529,43 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 end ExistsContDiffBumpBase
 
 end
+
+/-- A smooth cutoff on `ℝ`: if `a < b ≤ c < d`, there is a smooth function `ψ` with compact
+support contained in `Ioo a d` such that `𝟙_[b, c] ≤ ψ ≤ 𝟙_(a, d)`. In particular,
+`c - b ≤ ∫ ψ ≤ d - a`. -/
+theorem Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo {a b c d : ℝ} (hab : a < b)
+    (hbc : b ≤ c) (hcd : c < d) :
+    ∃ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ tsupport ψ ⊆ Ioo a d ∧
+      (Icc b c).indicator 1 ≤ ψ ∧ ψ ≤ (Ioo a d).indicator 1 ∧
+      c - b ≤ ∫ x, ψ x ∧ ∫ x, ψ x ≤ d - a := by
+  have hδ : 0 < min (b - a) (d - c) := lt_min (by linarith) (by linarith)
+  have hδa := min_le_left (b - a) (d - c)
+  have hδd := min_le_right (b - a) (d - c)
+  let ψ : ContDiffBump ((b + c) / 2) :=
+    ⟨(c - b) / 2 + min (b - a) (d - c) / 3, (c - b) / 2 + 2 * min (b - a) (d - c) / 3,
+      by linarith, by linarith⟩
+  have hts : tsupport ψ ⊆ Ioo a d := by
+    rw [ψ.tsupport_eq, Real.closedBall_eq_Icc]
+    exact Icc_subset_Ioo (by simp [ψ]; linarith) (by simp [ψ]; linarith)
+  have hle : (Icc b c).indicator 1 ≤ ψ := fun x ↦ by
+    by_cases hx : x ∈ Icc b c
+    · rw [indicator_of_mem hx, Pi.one_apply, ψ.one_of_mem_closedBall]
+      rw [Real.closedBall_eq_Icc]
+      obtain ⟨hbx, hxc⟩ := hx
+      simp only [ψ, mem_Icc]
+      constructor <;> linarith
+    · simpa [indicator_of_notMem hx] using ψ.nonneg
+  have hle' : ⇑ψ ≤ (Ioo a d).indicator 1 := fun x ↦ by
+    by_cases hx : x ∈ Ioo a d
+    · rw [indicator_of_mem hx, Pi.one_apply]
+      exact ψ.le_one
+    · rw [indicator_of_notMem hx, image_eq_zero_of_notMem_tsupport fun h ↦ hx (hts h)]
+  have hint : Integrable ψ := ψ.continuous.integrable_of_hasCompactSupport ψ.hasCompactSupport
+  have hind {s : Set ℝ} (hs : MeasurableSet s) (hs' : volume s ≠ ⊤) :
+      Integrable (s.indicator (1 : ℝ → ℝ)) :=
+    (integrable_indicator_iff hs).2 (integrableOn_const hs' (by simp))
+  refine ⟨ψ, ψ.contDiff, ψ.hasCompactSupport, hts, hle, hle', ?_, ?_⟩
+  · rw [← volume_real_Icc_of_le hbc, ← integral_indicator_one measurableSet_Icc]
+    exact integral_mono (hind measurableSet_Icc (by simp)) hint hle
+  · rw [← volume_real_Ioo_of_le (by linarith), ← integral_indicator_one measurableSet_Ioo]
+    exact integral_mono hint (hind measurableSet_Ioo (by simp)) hle'
