@@ -127,8 +127,8 @@ lemma trace_comp_toEnd_genWeightSpace_eq (χ : L → R) :
 variable {R L M} in
 lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ ≠ ⊥) :
     0 < finrank R (genWeightSpace M χ) := by
-  rwa [← LieSubmodule.nontrivial_iff_ne_bot, ← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank,
-    Nat.cast_pos] at hχ
+  rwa [← LieSubmodule.nontrivial_iff_ne_bot, ← Module.rank_pos_iff_nontrivial (R := R),
+    ← finrank_eq_rank, Nat.cast_pos] at hχ
 
 /-- In characteristic zero, the weights of any finite-dimensional Lie module are linear and vanish
 on the derived ideal. -/

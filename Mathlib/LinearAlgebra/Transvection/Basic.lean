@@ -382,7 +382,7 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     · use 0, 0
       ext x
       suffices u x = 0 by simp [← hu, this]
-      rw [rank_zero_iff] at hr
+      rw [Module.rank_eq_zero_iff_subsingleton] at hr
       simpa [← Subtype.coe_inj] using Subsingleton.allEq (⟨u x , mem_range_self u x⟩ : range u) 0
     rw [← ne_eq, ← Cardinal.one_le_iff_ne_zero] at hr
     replace he : Module.rank K (range u) = 1 := le_antisymm he hr

@@ -55,7 +55,7 @@ theorem IsTranscendenceBasis.lift_rank_eq_max_lift
   rw [← rank_mul_rank F K E, lift_mul, ← hx.1.aevalEquivField.toLinearEquiv.lift_rank_eq,
     MvRatFunc.rank_eq_max_lift, lift_max, lift_max, lift_lift, lift_lift, lift_aleph0]
   refine mul_eq_left le_sup_right ((lift_le.2 ((rank_le_card K E).trans
-    (Algebra.IsAlgebraic.cardinalMk_le_max K E))).trans_eq ?_) (by simp [rank_pos.ne'])
+    (Algebra.IsAlgebraic.cardinalMk_le_max K E))).trans_eq ?_) (by simp [Module.rank_pos.ne'])
   simp [K, ← lift_mk_eq'.2 ⟨hx.1.aevalEquivField.toEquiv⟩]
 
 theorem Algebra.Transcendental.rank_eq_cardinalMk
