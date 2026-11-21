@@ -182,7 +182,6 @@ theorem map_map {F G T : Type*} [Semiring T] {I : Ideal R}
     (gc_map_comap ((RingHomClass.toRingHom g).comp (RingHomClass.toRingHom f))) fun _ =>
     comap_comap _ _
 
-@[deprecated map_map +typeChanged (since := "2026-11-20")]
 lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [Algebra R B] [Semiring C] [Algebra R C] {I : Ideal A} (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
     (I.map f).map g = I.map (g.comp f) :=

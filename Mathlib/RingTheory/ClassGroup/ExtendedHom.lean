@@ -116,10 +116,10 @@ noncomputable def mulEquiv (g : A ≃+* B) : ClassGroup A ≃* ClassGroup B wher
 
 theorem mulEquiv_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
     [IsDedekindDomain B] (g : A ≃+* B) (I : (Ideal A)⁰) :
-    mulEquiv g (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map g,
+    mulEquiv g (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map (g : A →+* B),
       mem_nonZeroDivisors_iff_ne_zero.mpr <| (Ideal.map_eq_bot_iff_of_injective g.injective).not.mpr
         (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩ := by
-  simp [map_mk0, Ideal.map_coe]
+  simp [map_mk0]
 
 end Map
 

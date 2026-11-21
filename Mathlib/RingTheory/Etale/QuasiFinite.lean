@@ -60,7 +60,7 @@ lemma Ideal.comap_fiberIsoOfBijectiveResidueField_apply
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : q.primesOver (R' ⊗[R] S)) :
     (Ideal.fiberIsoOfBijectiveResidueField H Q).val =
-      Q.val.comap Algebra.TensorProduct.includeRight := by
+      Q.val.comap (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) := by
   simpa using! (Ideal.comap_fiberIsoOfBijectiveResidueField_symm H
     (Ideal.fiberIsoOfBijectiveResidueField H Q)).symm
 
@@ -184,7 +184,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
       contrapose hq'q
       rw [← hq'q, Ideal.under, Ideal.comap_comap, AlgHom.toRingHom_eq_coe,
         AlgHom.comp_algebraMap, q's.over_def q'])
-    (inferInstanceAs ((q's.comap ((e.symm.toAlgHom.comp
+    (inferInstanceAs ((q's.comap (RingHomClass.toRingHom <| (e.symm.toAlgHom.comp
       (IsScalarTower.toAlgHom _ _ _)).restrictScalars R)).LiesOver _))
   have : e.symm (algebraMap S (Localization.Away
       ((integralClosure R S).val.toRingHom s₂)) s₁) ∈ q's := by
@@ -269,7 +269,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     exact Ideal.one_notMem _ this
   refine ⟨_, inferInstance, inferInstance, inferInstance, P, ‹_›, ‹_›, e, he, e₀, he₀, he₀e, P',
     inferInstance, P'.property.2, hP'q, heP', hP, fun P'' _ _ H ↦ ?_, fun P'' _ _ H ↦ ?_⟩
-  · have : (P'.val.comap φ.toRingHom).LiesOver P := inferInstanceAs ((P'.val.comap φ).LiesOver P)
+  · have : (P'.val.comap φ.toRingHom).LiesOver P :=
+      inferInstanceAs ((P'.val.comap (RingHomClass.toRingHom φ)).LiesOver P)
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hP
     simp only [Ideal.comap_comap, AlgHom.toRingHom_eq_coe,
       ← @AlgHom.coe_restrictScalars R R', ← AlgHom.comp_toRingHom,
@@ -335,7 +336,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     have := H (m.comap (Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap _ _)))
       inferInstance (m.comap_liesOver P (Algebra.TensorProduct.includeRight.comp
         (IsScalarTower.toAlgHom _ _ _)))
-        (Ideal.notMem_of_isUnit (m.comap Algebra.TensorProduct.includeRight)
+        (Ideal.notMem_of_isUnit (m.comap
+          (RingHomClass.toRingHom Algebra.TensorProduct.includeRight))
         (IsLocalization.Away.algebraMap_isUnit _))
     rw [← hP'q]
     exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm :))
@@ -482,17 +484,18 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
   let P'φ := (Ideal.fiberIsoOfBijectiveResidueField hpQ).symm
     (Ideal.fiberIsoOfBijectiveResidueField hpP ⟨P', ‹_›, ‹_›⟩)
   have : P'φ.val.LiesOver P := .trans _ Q _
-  have : (P'φ.val.comap φ.toRingHom).LiesOver P := inferInstanceAs ((P'φ.val.comap φ).LiesOver P)
-  have hP'φ : P'φ.val.comap φ.toRingHom = P' := by
+  have : (P'φ.val.comap (RingHomClass.toRingHom φ)).LiesOver P :=
+    inferInstanceAs ((P'φ.val.comap (RingHomClass.toRingHom φ)).LiesOver P)
+  have hP'φ : P'φ.val.comap (RingHomClass.toRingHom φ) = P' := by
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hpP
     rw [Ideal.comap_comap]
     convert Ideal.comap_fiberIsoOfBijectiveResidueField_symm hpQ _
     · ext; simp [φ]
-    · simp; rfl
+    · simp
   refine ⟨R'', inferInstance, _, .comp R R' R'', Q, ‹_›, .trans _ P _, _, _, he', Fin.cons P'φ
     Q', Fin.cases P'φ.property.1 ?_, Fin.cases P'φ.property.2 ?_, hpQ, Fin.cases ?_ ?_, ?_⟩
   · intro P'' _ _
-    by_cases heP'' : e ∈ P''.comap φ
+    by_cases heP'' : e ∈ P''.comap (RingHomClass.toRingHom φ)
     · obtain ⟨h₁, h₂⟩ := H' P'' (by simpa [he'0]) inferInstance inferInstance
       exact ⟨h₁, Fin.cases (fun h ↦ (h (by simpa [he'0])).elim) (by simpa)⟩
     · have : P''.LiesOver P := .trans _ Q _
@@ -507,7 +510,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
       have : (φ.restrictScalars _).comp Algebra.TensorProduct.includeRight =
           Algebra.TensorProduct.includeRight := by ext; simp [φ]
       rw [← this]
-      exact congr(($hP'φ).comap Algebra.TensorProduct.includeRight).symm
+      exact congr(($hP'φ).comap (RingHomClass.toRingHom Algebra.TensorProduct.includeRight)).symm
   · simp only [Fin.cons_succ]; infer_instance
   · simp only [Fin.cons_succ]; infer_instance
   · rw [← hP'φ] at heP'; simpa [he'0]
@@ -540,7 +543,8 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
           by simp⟩, nofun, nofun, nofun, ?_, nofun, ?_⟩
       · rw! [ofId_self, Ideal.ResidueField.mapₐ_id]; exact Function.bijective_id
       · exact fun P h₁ h₂ ↦ (this.le
-          ⟨show (P.comap Algebra.TensorProduct.includeRight.toRingHom).IsPrime from inferInstance,
+          ⟨show (P.comap (RingHomClass.toRingHom Algebra.TensorProduct.includeRight)).IsPrime from
+            inferInstance,
           ⟨by simp [P.over_def p, Ideal.under, Ideal.comap_comap]⟩⟩).elim
     | succ n =>
     obtain ⟨q, hq, hq'⟩ := Set.nonempty_of_ncard_ne_zero (h.trans_ne (by simp))
@@ -581,10 +585,10 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
         ← RingHom.ker_eq_comap_bot, this] using P''.over_def Q⟩
     have := H' ((P''.map (Ideal.Quotient.mk (.span {φ e}))).comap e₁) inferInstance
       (inferInstanceAs <| ((P''.map (Ideal.Quotient.mk (.span {φ e}))).comap
-        e₁.toAlgHom).LiesOver Q)
+       (RingHomClass.toRingHom e₁.toAlgHom)).LiesOver Q)
     have hP'' : (1 - φ e) ∉ P'' :=
       fun h ↦ ‹P''.IsPrime›.one_notMem (by convert add_mem heP'' h; ring)
-    simp only [Ideal.mem_comap, he''e'',
+    simp only [Ideal.mem_comap, RingHom.coe_coe, he''e'',
       Ideal.mem_map_span_singleton_iff_of_isIdempotentElem (he.map φ),
       Ideal.IsPrime.mul_mem_left_iff hP''] at this
     refine ⟨this.1, fun i hi ↦ (this.2 i hi).symm ▸ ?_⟩
@@ -627,4 +631,5 @@ lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq
     fun P'' _ _ ↦ ?_⟩
   have := H (P''.comap e₁.symm.toAlgHom) inferInstance inferInstance
   refine ⟨by simpa using this.1, fun i hi ↦ ?_⟩
-  simp [← this.2 i (by simpa), Ideal.comap_comapₐ]
+  simp only [← this.2 i (by simpa), Ideal.comap_comapₐ, AlgEquiv.symm_comp, AlgHom.id_toRingHom,
+    Ideal.comap_id]

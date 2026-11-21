@@ -88,20 +88,23 @@ If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ)
 def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
     (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ≃+*
       𝓞 K ⧸ span {(p : 𝓞 K)} :=
-  (quotientEquivAlgOfEq ℤ (by simp [Ideal.map_span, Polynomial.map_map])).toRingEquiv.trans
+  (quotientEquivAlgOfEq ℤ (by simp_rw [map_span, RingHom.coe_coe, mapEquiv_apply,
+      Set.image_singleton, Polynomial.map_map,
+      Int.quotientSpanNatEquivZMod_comp_Quotient_mk])).toRingEquiv.trans
     ((quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl).symm.trans
       ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
-        (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
+        (quotientEquivAlgOfEq ℤ (by simp only [algebraMap_int_eq, map_span, eq_intCast,
+          Set.image_singleton, Int.cast_natCast])).toRingEquiv))
 
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
     (ZModXQuotSpanEquivQuotSpan hp)
       (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
       (map (Int.castRingHom (ZMod p)) Q)) = Ideal.Quotient.mk (span {(p : 𝓞 K)}) (aeval θ Q) := by
-  simp only [ZModXQuotSpanEquivQuotSpan, algebraMap_int_eq,
-    RingEquiv.trans_apply, AlgEquiv.coe_toRingEquiv, quotientEquivAlgOfEq_mk,
-    quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
-    Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
-  exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
+  simp_rw [ZModXQuotSpanEquivQuotSpan, algebraMap_int_eq, RingEquiv.trans_apply, RingEquiv.coe_mk,
+    AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, quotientEquivAlgOfEq_mk, quotientEquiv_symm_apply,
+    quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply, Polynomial.map_map,
+    Int.quotientSpanNatEquivZMod_comp_castRingHom]
+  exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span, -Int.coe_castRingHom])) <|
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
 section monicFactorsMod
@@ -157,7 +160,8 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (Ideal.quotientEquiv
       (Ideal.map (Ideal.Quotient.mk _) (span {(Polynomial.map (Int.castRingHom (ZMod p)) Q)}))
       (Ideal.map (Ideal.Quotient.mk _) (span {aeval θ Q})) (ZModXQuotSpanEquivQuotSpan hp) (by
-        simp [map_span, ZModXQuotSpanEquivQuotSpan_mk_apply])).trans <|
+        simp_rw [map_span, Set.image_singleton, RingHom.coe_coe,
+          ZModXQuotSpanEquivQuotSpan_mk_apply])).trans <|
     (DoubleQuot.quotQuotEquivQuotSup _ _).trans (Ideal.quotEquivOfEq h_eq₂)
 
 end NumberField.RingOfIntegers

@@ -58,7 +58,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
   · have : p₀.map (algebraMap R S) = p := by
       subst hp
       exact le_bot_iff.mp (Ideal.map_comap_le)
-    rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, this,
+    rw [IsScalarTower.algebraMap_eq _ S, RingHom.coe_comp, ← Ideal.map_map, this,
       Localization.AtPrime.map_eq_maximalIdeal]
   rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hp Ideal.map_comap_le,
     ← not_ne_iff, Ideal.ramificationIdx'_ne_one_iff Ideal.map_comap_le]
@@ -67,7 +67,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
     (hp₀ ▸ Ideal.map_comap_le) (hP₂ hp) hP₁ h₂
   rw [← not_ne_iff, Ideal.ramificationIdx'_ne_one_iff (hp₀ ▸ Ideal.map_comap_le)] at this
   replace H := Ideal.map_mono (f := algebraMap S T) H
-  rw [Ideal.map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_pow] at H
+  rw [Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, Ideal.map_pow] at H
   refine this (H.trans (Ideal.pow_right_mono ?_ _))
   exact Ideal.map_le_iff_le_comap.mpr Ideal.LiesOver.over.le
 
@@ -92,9 +92,10 @@ lemma IsUnramifiedAt.of_liesOver
   use isSeparable_tower_bot_of_isSeparable p₀.ResidueField p.ResidueField P.ResidueField
   apply Ideal.map_injective_of_faithfullyFlat (B := Localization.AtPrime P)
   apply le_antisymm
-  · grw [IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, Ideal.map_comap_le,
+  · grw [IsScalarTower.algebraMap_eq R S, RingHom.coe_comp, ← Ideal.map_map, Ideal.map_comap_le,
       Localization.AtPrime.map_eq_maximalIdeal]
-  · grw [map_maximalIdeal_le, Ideal.map_map, ← IsScalarTower.algebraMap_eq, IsUnramifiedAt.map_eq]
+  · grw [map_maximalIdeal_le, Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
+      IsUnramifiedAt.map_eq]
 
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/

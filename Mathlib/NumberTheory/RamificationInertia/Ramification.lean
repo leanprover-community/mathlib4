@@ -166,13 +166,13 @@ variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
-    ramificationIdx' p (P.comap e) = ramificationIdx' p P := by
+    ramificationIdx' p (P.comap (e : S →+* S₁)) = ramificationIdx' p P := by
   dsimp only [ramificationIdx']
   congr 1
   ext n
   simp only [Set.mem_ofPred_eq, Ideal.map_le_iff_le_comap]
-  rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
-    ← map_comap_of_equiv, ← Ideal.map_pow, map_comap_of_equiv, ← comap_coe (RingEquiv.symm _),
+  rw [← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
+    ← map_comap_of_equiv, ← RingHom.coe_coe, ← Ideal.map_pow, RingHom.coe_coe, map_comap_of_equiv,
     comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
     AlgHom.comp_algebraMap]
 
@@ -219,7 +219,7 @@ lemma ramificationIdx'_eq_one_of_map_localization
   rw [← not_ne_iff (b := 1), Ideal.ramificationIdx'_ne_one_iff hpP]
   intro h₂
   replace h₂ := Ideal.map_mono («f» := algebraMap S (Localization.AtPrime P)) h₂
-  rw [Ideal.map_pow, Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map,
+  rw [Ideal.map_pow, Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map, ← RingHom.coe_comp,
     ← IsScalarTower.algebraMap_eq, H, pow_two] at h₂
   have : maximalIdeal (Localization.AtPrime P) = ⊥ :=
     Submodule.eq_bot_of_le_smul_of_le_jacobson _ _ (IsNoetherian.noetherian _) h₂
@@ -249,7 +249,7 @@ theorem ramificationIdx'_le_ramificationIdx' {T : Type*} [CommRing T] [Algebra R
     (h : ramificationIdx' p Q ≠ 0) : ramificationIdx' P Q ≤ ramificationIdx' p Q := by
   simp_rw [ramificationIdx', Ne] at *
   refine csSup_le_csSup' (h.imp_symm Nat.sSup_of_not_bddAbove) fun n hn ↦ ?_
-  simp_rw [hp, IsScalarTower.algebraMap_eq R S T, ← map_map, map_le_iff_le_comap]
+  simp_rw [hp, IsScalarTower.algebraMap_eq R S T, RingHom.coe_comp, ← map_map, map_le_iff_le_comap]
   exact comap_mono <| by rwa [← map_le_iff_le_comap]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_le_ramificationIdx :=
@@ -319,7 +319,7 @@ lemma ramificationIdx'_eq_one_iff
   intro H₁
   obtain ⟨a, ha⟩ : P ∣ p.map (algebraMap R S) := Ideal.dvd_iff_le.mpr hpP
   have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
-  rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
+  rw [IsScalarTower.algebraMap_eq _ S, RingHom.coe_comp, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
   convert Ideal.mul_top _
   on_goal 2 => infer_instance
@@ -401,7 +401,7 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     ramificationIdx' p Q =
     ramificationIdx' p P * ramificationIdx' P Q := by
   have hf0 : map (algebraMap R S) p ≠ ⊥ := by
-    rw [IsScalarTower.algebraMap_eq R S T, ← map_map] at hfg
+    rw [IsScalarTower.algebraMap_eq R S T, RingHom.coe_comp, ← map_map] at hfg
     exact ne_bot_of_map_ne_bot hfg
   have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
   have hq0 : Q ≠ ⊥ := ne_bot_of_le_ne_bot hg0 hg
@@ -409,7 +409,7 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
   rw [IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hf0 hpm hp0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hg0 hqm hq0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hfg hqm hq0,
-    IsScalarTower.algebraMap_eq R S T, ← map_map]
+    IsScalarTower.algebraMap_eq R S T, RingHom.coe_comp, ← map_map]
   rcases eq_prime_pow_mul_coprime hf0 P with ⟨I, hcp, heq⟩
   have hcp : ⊤ = map (algebraMap S T) P ⊔ map (algebraMap S T) I := by rw [← map_sup, hcp, map_top]
   have hntq : ¬ ⊤ ≤ Q := fun ht ↦ IsPrime.ne_top hqm (Iff.mpr (eq_top_iff_one Q) (ht trivial))

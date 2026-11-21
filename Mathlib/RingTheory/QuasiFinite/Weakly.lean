@@ -178,12 +178,12 @@ lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
   have hφ₂ : RingHom.ker φ.toRingHom = (q.under A).map (algebraMap _ _) := by
     refine (Algebra.TensorProduct.map_ker _ _
       Ideal.Quotient.mk_surjective Ideal.Quotient.mk_surjective).trans ?_
-    rw [← RingHom.ker_coe_toRingHom, ← RingHom.ker_coe_toRingHom (F := AlgHom _ _ _),
-      ← Ideal.map_coe, ← Ideal.map_coe (F := AlgHom _ _ _)]
     simp only [Ideal.under, Ideal.Quotient.mkₐ_ker, hq, AlgHom.toRingHom_eq_coe, Ideal.comap_comap,
-      AlgHom.comp_algebraMap_of_tower, Ideal.map_map]
+      AlgHom.comp_algebraMap_of_tower, Ideal.map_map, ← RingHom.coe_coe TensorProduct.includeRight,
+      ← RingHom.coe_comp]
     refine sup_eq_left.mpr ?_
-    simp only [← TensorProduct.includeLeft.comp_algebraMap, ← Ideal.map_map, ← Ideal.comap_comap]
+    simp only [← TensorProduct.includeLeft.comp_algebraMap, ← Ideal.map_map, ← Ideal.comap_comap,
+      RingHom.coe_comp]
     exact Ideal.map_mono Ideal.map_comap_le
   have hφ₃ : φ.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom =
       Algebra.TensorProduct.includeRight.toRingHom.comp (Ideal.Quotient.mk _) := rfl
@@ -199,10 +199,9 @@ lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
   have : QuasiFiniteAt A (q.map φ.toRingHom) := .trans _ (A ⧸ q.under A) _
   let e := (Ideal.quotientEquivAlg ((q.under A).map (algebraMap _ _)) _ (.refl) (by simpa)).trans
     (Ideal.quotientKerAlgEquivOfSurjective hφ₁)
-  refine .of_surjectiveOnStalks (q.map φ.toRingHom) e.symm.toAlgHom
+  refine .of_surjectiveOnStalks (q.map φ) e.symm.toAlgHom
     e.symm.toRingEquiv.surjectiveOnStalks _ ?_
-  erw [Ideal.comap_symm] -- This should be fixed once `Ideal.map` does not take homclasses.
-  rw [← Ideal.map_coe e.toRingEquiv, Ideal.map_map]
+  rw [AlgEquiv.toRingHom_toAlgHom, AlgEquiv.symm_toRingEquiv, Ideal.comap_symm, Ideal.map_map]
   rfl
 
 open _root_.TensorProduct in
@@ -238,7 +237,7 @@ lemma of_quasiFiniteAt_residueField [p.IsPrime] [q.LiesOver p]
   let φ₁ : p.ResidueField →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
     Ideal.quotientMapₐ _ (IsScalarTower.toAlgHom _ _ _) (by
     rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p, Ideal.map_le_iff_le_comap,
-      ← Ideal.comap_coe (F := AlgHom _ _ _), Ideal.comap_comap]
+      Ideal.comap_comap]
     simpa [← IsScalarTower.algebraMap_eq] using Ideal.le_comap_map)
   let φ₂ : p.Fiber S →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
     Algebra.TensorProduct.lift φ₁ (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _

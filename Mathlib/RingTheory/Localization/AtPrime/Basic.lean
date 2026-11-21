@@ -295,7 +295,7 @@ variable {S} in
 
 See `localAlgHom'` for a variant where the base ring `R` is also localized. -/
 noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
-    (f : S →ₐ[R] P) (hIJ : I = J.comap f.toRingHom) :
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
   __ := localRingHom I J f.toRingHom hIJ
   commutes' r := by

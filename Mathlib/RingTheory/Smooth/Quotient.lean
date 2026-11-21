@@ -127,7 +127,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
   have surjPP' : Function.Surjective (algebraMap P.Ring P'.Ring) :=
     MvPolynomial.map_surjective _ surj
   have ISeq : IS = IP.map (algebraMap P.Ring S) := by
-    simp [IP, IS, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
+    simp [IP, IS, Ideal.map_map, ← IsScalarTower.algebraMap_eq, ← RingHom.coe_comp]
   classical
   have surjP : Function.Surjective (algebraMap P.Ring S) := fun x ↦ ⟨P.σ x, P.algebraMap_σ x⟩
   apply (Algebra.FormallySmooth.iff_split_injection surjP).mpr

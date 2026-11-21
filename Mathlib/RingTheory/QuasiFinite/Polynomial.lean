@@ -65,11 +65,11 @@ lemma map_under_lt_comap_of_quasiFiniteAt
 lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
-    ¬ RingHom.ker f ≤ (P.under R).map C := by
+    ¬ RingHom.ker (f : R[X] →+* S) ≤ (P.under R).map C := by
   intro H
   algebraize [f.toRingHom]
   let p := P.under R
-  have H' : (RingHom.ker f).map (mapRingHom (algebraMap R p.ResidueField)) = ⊥ := by
+  have H' : (RingHom.ker (f : R[X] →+* S)).map (mapRingHom (algebraMap R p.ResidueField)) = ⊥ := by
     rw [← le_bot_iff, Ideal.map_le_iff_le_comap]
     intro x hx
     simpa [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, Ideal.mem_map_C_iff, p] using H hx
@@ -90,7 +90,7 @@ For usability, we replace `I` by the kernel of a surjective map `R[X] →ₐ[R] 
 lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] :
-    ¬ RingHom.ker f ≤ (P.under R).map C :=
+    ¬ RingHom.ker (f : R[X] →+* S) ≤ (P.under R).map C :=
   not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt f hf P
 
 end Polynomial

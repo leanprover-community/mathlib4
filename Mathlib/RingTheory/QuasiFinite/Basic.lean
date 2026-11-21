@@ -393,11 +393,11 @@ set_option backward.isDefEq.respectTransparency false in
 omit [Algebra S T] in
 lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
     (f : S →ₐ[R] T) (hf : f.SurjectiveOnStalks) (q : Ideal T) [q.IsPrime]
-    (hq : p = q.comap f.toRingHom) :
+    (hq : p = q.comap (f : S →+* T)) :
     QuasiFiniteAt R q := by
   subst hq
   refine .of_surjective_algHom
-    { Localization.localRingHom _ q f.toRingHom rfl with commutes' := ?_ }
+    { Localization.localRingHom _ q (f : S →+* T) rfl with commutes' := ?_ }
     (hf q ‹_›)
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]

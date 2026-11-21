@@ -257,9 +257,7 @@ lemma equivPiOfIsSepClosed_comap {B : Type*} [CommRing B] [EssFiniteType K A] [F
     apply FaithfulSMul.algebraMap_injective K (B ⧸ p.asIdeal)
     rw [← ofId_apply, ← ofId_apply]
     nth_rw 1 [heq]
-    simp only [AlgHom.coe_comp, Function.comp_apply, AlgEquiv.ofBijective_apply_symm_apply]
-    convert h
-    apply AlgEquiv.ofBijective_apply_symm_apply
+    simpa only [AlgHom.coe_comp, Function.comp_apply, AlgEquiv.ofBijective_apply_symm_apply]
   simp
 
 end Algebra.FormallyEtale

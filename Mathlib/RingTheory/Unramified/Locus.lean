@@ -78,7 +78,7 @@ theorem IsUnramifiedAt.residueField
     (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
     [Algebra.IsUnramifiedAt R Q]
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
-    (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
+    (hQ' : Q = Q'.comap (RingHomClass.toRingHom Algebra.TensorProduct.includeRight)) :
     IsUnramifiedAt P.ResidueField Q' := by
   let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
     Localization.localAlgHom Q Q' _ hQ'

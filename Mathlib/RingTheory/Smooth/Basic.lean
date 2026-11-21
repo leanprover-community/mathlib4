@@ -168,14 +168,14 @@ noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
+    (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
   conv_rhs => rw [← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply,
     ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
-  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk, RingHom.coe_coe]
+  simp only [liftOfSurjective, RingHom.kerLift_mk, RingHom.coe_coe]
 
 @[simp]
 theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -205,7 +205,7 @@ def homInfinitesimal (P₁ P₂ : Extension R A) [FormallySmooth R P₁.Ring] :
     ⟨2, show P₂.infinitesimal.ker ^ 2 = ⊥ by
       rw [ker_infinitesimal]; exact Ideal.cotangentIdeal_square _⟩
   { toRingHom := (Ideal.Quotient.liftₐ (P₁.ker ^ 2) lift (by
-        change P₁.ker ^ 2 ≤ RingHom.ker lift
+        change P₁.ker ^ 2 ≤ RingHom.ker (RingHomClass.toRingHom <| lift)
         rw [pow_two, Ideal.mul_le]
         have : ∀ r ∈ P₁.ker, lift r ∈ P₂.infinitesimal.ker :=
           fun r hr ↦ (FormallySmooth.liftOfSurjective_apply _

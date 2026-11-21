@@ -101,7 +101,9 @@ theorem natGenerator_dvd_iff (v : HeightOneSpectrum R) {n : ℕ} :
 
 theorem prime_natGenerator (v : HeightOneSpectrum R) : Nat.Prime (natGenerator v) :=
   Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
-    ((Ideal.map_eq_bot_iff_of_injective (IsIntegralClosure.intEquiv R).injective).not.2 v.ne_bot)
+    ((Ideal.map_eq_bot_iff_of_injective
+      (f := RingHomClass.toRingHom <| IsIntegralClosure.intEquiv R)
+      (IsIntegralClosure.intEquiv R).injective).not.2 v.ne_bot)
 
 variable [IsDedekindDomain R] [IsFractionRing R ℚ]
 
@@ -116,13 +118,14 @@ noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   left_inv v := by
     simp only [Ideal.map_symm]
     congr
-    rw [← v.asIdeal.comap_map_of_bijective _ (IsIntegralClosure.intEquiv R).bijective,
-      ← span_natGenerator]
+    rw [← v.asIdeal.comap_map_of_bijective (RingHomClass.toRingHom <| IsIntegralClosure.intEquiv R)
+      (IsIntegralClosure.intEquiv R).bijective, RingHom.coe_coe, ← span_natGenerator]
   right_inv p := by
     simp only [Ideal.map_symm, natGenerator, HeightOneSpectrum.ofPrime_asIdeal]
     congr
-    simp [Ideal.map_comap_of_surjective _ (IsIntegralClosure.intEquiv R).surjective,
-      Int.associated_iff_natAbs.1 (Submodule.IsPrincipal.associated_generator_span_self _)]
+    rw! [← RingHom.coe_coe,
+      Ideal.map_comap_of_surjective _ (IsIntegralClosure.intEquiv R).surjective]
+    simp [Int.associated_iff_natAbs.1 (Submodule.IsPrincipal.associated_generator_span_self _)]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem valuation_equiv_padicValuation (v : HeightOneSpectrum R) :

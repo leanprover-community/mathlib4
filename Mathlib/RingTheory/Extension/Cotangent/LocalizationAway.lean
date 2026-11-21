@@ -48,12 +48,13 @@ lemma comp_localizationAway_ker (P : Generators R S ι) (f : P.Ring)
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
   have : (localizationAway T g).ker = Ideal.map ((localizationAway T g).ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
-    rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway,
-      Hom.toAlgHom_X, toAlgHom_ofComp_rename, h, ofComp_val, Sum.elim_inl]
-  rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective _ P), ← RingHom.ker_eq_comap_bot,
-    ← sup_assoc]
-  simp
+    rw [← RingHom.coe_coe, Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one,
+      ker_localizationAway, RingHom.coe_coe, Hom.toAlgHom_X, toAlgHom_ofComp_rename, h, ofComp_val,
+      Sum.elim_inl]
+  rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this, ← RingHom.coe_coe,
+    Ideal.comap_map_of_surjective, ← RingHom.ker_eq_comap_bot, ← sup_assoc]
+  · simp
+  · exact toAlgHom_ofComp_surjective _ P
 
 variable (T) in
 /-- If `R[X] → S` generates `S`, `T` is the localization of `S` away from `g` and
@@ -93,7 +94,7 @@ lemma compLocalizationAwayAlgHom_relation_eq_zero :
 
 lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     ((localizationAway T g).comp P).ker ^ 2 ≤
-      RingHom.ker (compLocalizationAwayAlgHom T g P) := by
+      RingHom.ker (RingHomClass.toRingHom <| compLocalizationAwayAlgHom T g P) := by
   have hsple {x} (hx : x ∈ Ideal.span {(rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1}) :
         (compLocalizationAwayAlgHom T g P) x = 0 := by
     obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hx
@@ -102,9 +103,9 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     Ideal.mul_sup]
   apply sup_le
   · apply sup_le
-    · rw [← Ideal.map_mul, Ideal.map_le_iff_le_comap, ← sq]
+    · rw [← RingHom.coe_coe, ← Ideal.map_mul, Ideal.map_le_iff_le_comap, ← sq]
       intro x hx
-      simp only [Ideal.mem_comap, RingHom.mem_ker,
+      simp only [Ideal.mem_comap, RingHom.coe_coe, RingHom.mem_ker,
         compLocalizationAwayAlgHom_toAlgHom_toComp (T := T) g P x]
       rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _),
         Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem.mpr hx, map_zero]

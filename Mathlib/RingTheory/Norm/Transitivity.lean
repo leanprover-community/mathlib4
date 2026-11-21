@@ -114,10 +114,11 @@ lemma eval_zero_det_det : eval 0 (f.polyToMatrix (cornerAddX M k).det).det = (f 
 lemma eval_zero_comp_det :
     eval 0 (comp m m n n R[X] <| (cornerAddX M k).map f.polyToMatrix).det =
       (comp m m n n R <| M.map f).det := by
-  simp_rw [← coe_evalRingHom, RingHom.map_det, ← compRingEquiv_apply, ← RingEquiv.coe_toRingHom,
-    ← RingHom.mapMatrix_apply, ← RingHom.comp_apply, ← RingHom.comp_assoc,
-    evalRingHom_mapMatrix_comp_compRingEquiv, RingHom.comp_assoc, RingHom.mapMatrix_comp,
-    evalRingHom_mapMatrix_comp_polyToMatrix, ← RingHom.mapMatrix_comp, RingHom.comp_apply]
+  simp_rw [← coe_evalRingHom, RingHom.map_det, ← compRingEquiv_apply,
+    ← RingHom.coe_coe (compRingEquiv ..), ← RingHom.mapMatrix_apply, ← RingHom.comp_apply,
+    ← RingHom.comp_assoc, evalRingHom_mapMatrix_comp_compRingEquiv, RingHom.comp_assoc,
+    RingHom.mapMatrix_comp, evalRingHom_mapMatrix_comp_polyToMatrix, ← RingHom.mapMatrix_comp,
+    RingHom.comp_apply]
   congr with i j
   simp [cornerAddX, diagonal, apply_ite]
 
