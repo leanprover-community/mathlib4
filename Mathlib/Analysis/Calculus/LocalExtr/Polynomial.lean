@@ -24,6 +24,8 @@ Namely, we prove the following facts.
   the number of roots of a real polynomial
   is at most the number of roots of its derivative plus one.
 * `Polynomial.card_roots_le_derivative`: same, but the roots are counted with multiplicities.
+* `Polynomial.Splits.derivative_of_real`: the derivative of a real polynomial that splits
+  also splits.
 
 ## Keywords
 
@@ -95,5 +97,14 @@ theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p :
     Fintype.card (p.rootSet ℝ) ≤ Fintype.card (p.derivative.rootSet ℝ) + 1 := by
   simpa only [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, derivative_map] using
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))
+
+/-- If a real polynomial splits, i.e. all of its roots are real, then so does its derivative.
+This follows from Rolle's theorem in the form of `Polynomial.card_roots_le_derivative`. -/
+theorem Splits.derivative_of_real {p : ℝ[X]} (hp : p.Splits) : p.derivative.Splits := by
+  rw [splits_iff_card_roots] at hp ⊢
+  have h1 := card_roots_le_derivative p
+  have h2 := card_roots' p.derivative
+  have h3 := natDegree_derivative_le p
+  omega
 
 end Polynomial
