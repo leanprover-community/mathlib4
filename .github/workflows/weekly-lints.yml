@@ -79,6 +79,8 @@ jobs:
         # The description links to the linter set, this workflow and the reporting script.
         blob="https://github.com/${REPO}/blob/${SHA}"
         INFO=true \
+        BY_LINTER=true \
+        LOCATIONS=true \
         SUCCESS="${build_success}" \
         LOCATIONS_MAX_COUNT=2 \
         MAX_ROWS=20 \
