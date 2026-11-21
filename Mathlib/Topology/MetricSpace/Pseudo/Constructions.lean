@@ -273,7 +273,8 @@ protected lemma UniformContinuous.nnDist [UniformSpace β] {f g : β → α} (hf
     (hg : UniformContinuous g) : UniformContinuous fun b => nnDist (f b) (g b) :=
   uniformContinuous_nnDist.comp (hf.prodMk hg)
 
-@[deprecated (since := "2026-11-07")] alias UniformContinuous.nndist := UniformContinuous.nnDist
+@[deprecated (since := "2026-11-07")]
+protected alias UniformContinuous.nndist := UniformContinuous.nnDist
 
 lemma continuous_nnDist : Continuous fun p : α × α => nnDist p.1 p.2 :=
   uniformContinuous_nnDist.continuous
