@@ -358,6 +358,34 @@ instance t3_quotient_of_isClosed [IsTopologicalAddGroup M] [IsClosed (S : Set M)
   letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
   QuotientAddGroup.instT3Space S.toAddSubgroup
 
+namespace Quotient
+
+variable [IsTopologicalAddGroup M] [ContinuousConstSMul R M] {S}
+
+protected theorem indiscreteTopology_iff :
+    IndiscreteTopology (M ⧸ S) ↔ S.topologicalClosure = ⊤ := by
+  rw [← dense_iff_topologicalClosure_eq_top]
+  exact (QuotientAddGroup.indiscreteTopology_iff (N := S.toAddSubgroup)).trans
+    AddSubgroup.dense_iff_topologicalClosure_eq_top.symm
+
+alias ⟨_, indiscreteTopology⟩ := Submodule.Quotient.indiscreteTopology_iff
+
+variable (S) in
+theorem topologicalClosure_eq_top [IndiscreteTopology (M ⧸ S)] : S.topologicalClosure = ⊤ :=
+  Submodule.Quotient.indiscreteTopology_iff.mp ‹_›
+
+protected theorem nontrivialTopology_iff :
+    NontrivialTopology (M ⧸ S) ↔ S.topologicalClosure ≠ ⊤ := by
+  rw [← TopologicalSpace.not_indiscrete_iff, Submodule.Quotient.indiscreteTopology_iff]
+
+alias ⟨_, nontrivialTopology⟩ := Submodule.Quotient.nontrivialTopology_iff
+
+variable (S) in
+theorem topologicalClosure_ne_top [NontrivialTopology (M ⧸ S)] : S.topologicalClosure ≠ ⊤ :=
+  Submodule.Quotient.nontrivialTopology_iff.mp ‹_›
+
+end Quotient
+
 end Submodule
 
 end Quotient

@@ -47,6 +47,15 @@ theorem Subgroup.topologicalClosure_coe {s : Subgroup G} :
     (s.topologicalClosure : Set G) = _root_.closure s :=
   rfl
 
+/-- A subgroup of a topological group is dense if and only if its topological closure is the
+entire group. -/
+@[to_additive /-- An additive subgroup of a topological group is dense if and only if its
+topological closure is the entire group. -/]
+theorem Subgroup.dense_iff_topologicalClosure_eq_top {s : Subgroup G} :
+    Dense (s : Set G) ↔ s.topologicalClosure = ⊤ := by
+  rw [← SetLike.coe_set_eq, dense_iff_closure_eq]
+  simp
+
 @[to_additive]
 theorem Subgroup.le_topologicalClosure (s : Subgroup G) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
