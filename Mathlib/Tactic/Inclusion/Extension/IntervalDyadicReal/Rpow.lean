@@ -17,17 +17,15 @@ This file implements `Real.rpow` extension for the tactic `dyadic_interval`.
 
 public section
 
-open Real
+open Inclusion.IntervalDyadicReal.Dyadic Real
 
-namespace Inclusion
-
-namespace IntervalDyadicReal
+namespace Inclusion.IntervalDyadicReal
 
 /-- Computes an enclosure of `log x` at precision `prec` for `x ∈ I` with `0 < x`. -/
 @[expose]
 def logPos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := if 0 < I.lb then I.lb.map (lowerLog · prec) else ⊥
-  ub := I.ub.map (upperLog · prec)
+  ub := I.ub.map (lowerLog · prec + step prec)
 
 theorem log_mem_logPos {x : ℝ} {I : Interval Dyadic}
     (hx : x ∈ I) (hx₀ : 0 < x) (prec : ℕ) :
@@ -36,18 +34,17 @@ theorem log_mem_logPos {x : ℝ} {I : Interval Dyadic}
   rw [logPos]
   refine mem_iff_mem_map.mpr <| Interval.mem_map_iff Dyadic.toReal |>.mpr
     ⟨fun lb hlb => ?_, fun ub hub => ?_⟩
-  · by_cases hl : 0 < I.lb
-    · rw [ite_eq_left hl, WithBot.map_eq_some_iff] at hlb
-      obtain ⟨lb, hlb, rfl⟩ : ∃ lb' : Dyadic, I.lb = lb' ∧ lowerLog lb' prec = lb := hlb
-      have hlb₀ : 0 < Dyadic.toReal lb := by
-        rw [← Dyadic.toReal_zero, Dyadic.toReal_lt_toReal]
-        aesop
-      simpa [Dyadic.toReal] using lowerLog_le lb prec |>.trans (log_le_log hlb₀ (hxl lb hlb))
-    · rw [ite_eq_right hl] at hlb
-      cases hlb
+  · split_ifs at hlb with hl
+    case neg => cases hlb
+    rw [WithBot.map_eq_some_iff] at hlb
+    obtain ⟨lb, hlb, rfl⟩ : ∃ lb' : Dyadic, I.lb = lb' ∧ lowerLog lb' prec = lb := hlb
+    have hlb₀ : 0 < Dyadic.toReal lb := by
+      rw [← Dyadic.toReal_zero, Dyadic.toReal_lt_toReal]
+      aesop
+    simpa [Dyadic.toReal] using lowerLog_spec lb prec |>.left.trans (log_le_log hlb₀ (hxl lb hlb))
   · rw [WithTop.map_eq_some_iff] at hub
-    obtain ⟨ub, hub, rfl⟩ : ∃ ub' : Dyadic, I.ub = ub' ∧ upperLog ub' prec = ub := hub
-    simpa [Dyadic.toReal] using log_le_log hx₀ (hxu ub hub) |>.trans <| le_upperLog ub prec
+    obtain ⟨ub, hub, rfl⟩ : ∃ ub' : Dyadic, I.ub = ub' ∧ lowerLog ub' prec + step prec = ub := hub
+    simpa [Dyadic.toReal] using (log_le_log hx₀ (hxu ub hub)).trans (lowerLog_spec ub prec).right
 
 /-- Reserved for an enclosure of `x ^ y` for `x < 0`. -/
 @[expose]
@@ -106,12 +103,15 @@ theorem rpow_mem_zeroRpow {y : ℝ} {J : Interval Dyadic} (hy : y ∈ J) :
     exact Interval.mem_map_singleton 1 Dyadic.toReal
   by_cases hJ2 : 0 < J.lb ∨ J.ub < 0
   · simp only [zeroRpow, hJ1, hJ2, ↓reduceIte]
-    rcases hJ2 with hJ2 | hJ2 <;> [
+    rcases hJ2 with hJ2 | hJ2
+    on_goal 1 =>
       have : WithBot.some (Dyadic.toReal 0) < y :=
-        hy.left.trans_lt' <| Dyadic.toRealOrderEmbedding.withBotMap.lt_iff_lt.mpr hJ2;
+        hy.left.trans_lt' <| Dyadic.toRealOrderEmbedding.withBotMap.lt_iff_lt.mpr hJ2
+    on_goal 2 =>
       have : y < WithTop.some (Dyadic.toReal 0) :=
-        hy.right.trans_lt <| Dyadic.toRealOrderEmbedding.withTopMap.lt_iff_lt.mpr hJ2] <;>
-      rw [zero_rpow (by simp at this; grind), ← Dyadic.toReal_zero] <;>
+        hy.right.trans_lt <| Dyadic.toRealOrderEmbedding.withTopMap.lt_iff_lt.mpr hJ2
+    all_goals
+      rw [zero_rpow (by grind [toReal_zero]), ← Dyadic.toReal_zero]
       exact Interval.mem_map_singleton 0 Dyadic.toReal
   · simp only [zeroRpow, hJ1, hJ2, ↓reduceIte]
     apply Interval.mem_map_Icc
@@ -127,10 +127,11 @@ theorem rpow_mem_posRpow {x y : ℝ} {I J : Interval Dyadic}
 @[inclusion_op interval_dyadic_real]
 theorem rpow_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) (prec : ℕ) :
     x ^ y ∈ rpow I J prec := by
+  set f : Dyadic ↪o ℝ := Dyadic.toRealOrderEmbedding
   rcases lt_trichotomy I.ub 0 with hIub | hIub | hIub
   · simp only [rpow, hIub, ↓reduceIte]
     have : x < WithTop.some (Dyadic.toReal 0) :=
-      hx.right.trans_lt <| Dyadic.toRealOrderEmbedding.withTopMap.lt_iff_lt.mpr hIub
+      hx.right.trans_lt <| f.withTopMap.lt_iff_lt.mpr hIub
     exact rpow_mem_negRpow hx (by simpa) hy prec
   · simp only [rpow, hIub, lt_self_iff_false, ↓reduceIte]
     have hx₀' : x ≤ WithTop.some (Dyadic.toReal 0) :=
@@ -139,41 +140,36 @@ theorem rpow_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ 
     rcases lt_trichotomy I.lb 0 with hIlb | hIlb | hIlb
     · simp only [hIlb, ↓reduceIte]
       rcases eq_or_lt_of_le (by simpa) with rfl | hx₀
-      · exact Interval.hull_mem_right Dyadic.toRealOrderEmbedding <| rpow_mem_zeroRpow hy
-      · exact Interval.hull_mem_left Dyadic.toRealOrderEmbedding <| rpow_mem_negRpow hx hx₀ hy prec
+      · exact Interval.hull_mem_right f <| rpow_mem_zeroRpow hy
+      · exact Interval.hull_mem_left f <| rpow_mem_negRpow hx hx₀ hy prec
     · simp only [hIlb, lt_self_iff_false, ↓reduceIte]
       have : WithBot.some (Dyadic.toReal 0) ≤ x :=
         hx.left.trans_eq' <| congrArg (WithTop.map Dyadic.toReal) hIlb
       exact le_antisymm (by simpa) hx₀' ▸ rpow_mem_zeroRpow hy
     · simp only [hIlb.not_gt, ↓reduceIte]
       have : WithBot.some (Dyadic.toReal 0) < x :=
-        hx.left.trans_lt' <| Dyadic.toRealOrderEmbedding.withBotMap.lt_iff_lt.mpr hIlb
+        hx.left.trans_lt' <| f.withBotMap.lt_iff_lt.mpr hIlb
       simp [hx₀'.not_gt] at this
   · simp only [rpow, hIub.not_gt, hIub.ne', ↓reduceIte]
     rcases lt_trichotomy I.lb 0 with hIlb | hIlb | hIlb
     · simp only [hIlb, ↓reduceIte]
       rcases lt_trichotomy x 0 with hx₀ | rfl | hx₀
-      · exact Interval.hull_mem_left Dyadic.toRealOrderEmbedding <|
-          Interval.hull_mem_left Dyadic.toRealOrderEmbedding <| rpow_mem_negRpow hx hx₀ hy prec
-      · exact Interval.hull_mem_left Dyadic.toRealOrderEmbedding <|
-          Interval.hull_mem_right Dyadic.toRealOrderEmbedding <| rpow_mem_zeroRpow hy
-      · refine Interval.hull_mem_right Dyadic.toRealOrderEmbedding <|
-          rpow_mem_posRpow ?_ (by simpa) hy prec
-        apply Interval.inter_mem Dyadic.toRealOrderEmbedding hx ⟨?_, le_top⟩
+      · exact Interval.hull_mem_left f <|
+          Interval.hull_mem_left f <| rpow_mem_negRpow hx hx₀ hy prec
+      · exact Interval.hull_mem_left f <| Interval.hull_mem_right f <| rpow_mem_zeroRpow hy
+      · refine Interval.hull_mem_right f <| rpow_mem_posRpow ?_ (by simpa) hy prec
+        apply Interval.inter_mem f hx ⟨?_, le_top⟩
         change WithBot.map Dyadic.toReal 0 ≤ x
         simpa using hx₀.le
     · simp only [hIlb, lt_self_iff_false, ↓reduceIte]
       have : WithBot.some (Dyadic.toReal 0) ≤ x :=
         hx.left.trans_eq' <| congrArg (WithTop.map Dyadic.toReal) hIlb
       rcases eq_or_lt_of_le (by simpa) with rfl | hx₀
-      · exact Interval.hull_mem_left Dyadic.toRealOrderEmbedding <| rpow_mem_zeroRpow hy
-      · exact Interval.hull_mem_right Dyadic.toRealOrderEmbedding <|
-          rpow_mem_posRpow hx (by simpa) hy prec
+      · exact Interval.hull_mem_left f <| rpow_mem_zeroRpow hy
+      · exact Interval.hull_mem_right f <| rpow_mem_posRpow hx (by simpa) hy prec
     · simp only [hIlb.not_gt, hIlb.ne', ↓reduceIte]
       have : WithBot.some (Dyadic.toReal 0) < x :=
-        hx.left.trans_lt' <| Dyadic.toRealOrderEmbedding.withBotMap.lt_iff_lt.mpr hIlb
+        hx.left.trans_lt' <| f.withBotMap.lt_iff_lt.mpr hIlb
       exact rpow_mem_posRpow hx (by simpa) hy prec
 
-end IntervalDyadicReal
-
-end Inclusion
+end Inclusion.IntervalDyadicReal

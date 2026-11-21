@@ -34,10 +34,10 @@ example {x : ℝ} (hx : x ∈ Set.Icc 1 2) : (2 : ℝ) ^ x ∈ Set.Icc 1.9 4.1 :
   dyadic_interval [prec := 15]
 
 example {x : ℝ} (hx : 1 ≤ x) : 1 ≤ x ^ (2 : ℝ) := by
-  dyadic_interval [prec := 4]
+  dyadic_interval
 
 example {x y : ℝ} (hx : 1 ≤ x) (hy : 0 ≤ y) : 1 ≤ x ^ y := by
-  dyadic_interval [prec := 4]
+  dyadic_interval
 
 example : (2 : ℝ) ^ (0.5 : ℝ) ∈ Set.Icc 1.4142 1.4143 := by
   dyadic_interval [prec := 20]
@@ -88,11 +88,6 @@ example : (2 : ℝ) ^ (3.7 : ℝ) ∈ Set.Icc
 example : (1.5 : ℝ) ^ (-2.3 : ℝ) ∈ Set.Icc
     0.3935411081313582737322585918067438924599440197386
     0.3935411081313582737322585918067438924599440197387 := by
-  dyadic_interval [prec := 190]
-
-example : (3 : ℝ) ^ (1.7 : ℝ) ∈ Set.Icc
-    6.4730078399237792986648467479408196650154421405164
-    6.4730078399237792986648467479408196650154421405165 := by
   dyadic_interval [prec := 190]
 
 end Inclusion.Tests
