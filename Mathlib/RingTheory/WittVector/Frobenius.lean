@@ -5,9 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 import Mathlib.Algebra.Algebra.ZMod
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # The Frobenius operator
