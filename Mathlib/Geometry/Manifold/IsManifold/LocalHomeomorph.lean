@@ -35,19 +35,15 @@ smooth manifold, local homeomorphism
 public noncomputable section
 
 variable {M : Type*} [TopologicalSpace M]
-  --[T2Space M] [LocallyCompactSpace M]
   {H : Type*} [TopologicalSpace H] [ChartedSpace H M]
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
-
-variable {M' : Type*} [TopologicalSpace M']
+  {M' : Type*} [TopologicalSpace M']
+  {f : M → M'} (hf : IsLocalHomeomorph f)
+  {g : M' → M} (hg : Function.RightInverse g f)
 
 open scoped ContDiff Manifold Topology
-
-variable {f : M → M'} (hf : IsLocalHomeomorph f)
-  {g : M' → M} (hg : Function.RightInverse g f)
 
 -- TODO: find proper name for this
 lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧
