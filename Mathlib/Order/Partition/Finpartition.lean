@@ -385,6 +385,85 @@ end ToSubtype
 
 end Lattice
 
+section IsModularLattice
+
+variable [Lattice α] [OrderBot α] [IsModularLattice α] [DecidableEq α] {a b c : α}
+
+/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
+@[simps]
+def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
+    (ha : I.SupIndep a) : Finpartition (I.sup a) where
+  parts := I.biUnion fun i => (P i).parts
+  supIndep :=
+    .biUnion (by simpa only [sup_parts]) (fun i _ ↦ (P i).supIndep)
+  sup_parts := by
+    rw [sup_biUnion]
+    exact sup_congr rfl fun i _ => (P i).sup_parts
+  bot_notMem := by
+    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
+
+/-- The sum of a set-valued function over a combined partition equals the sum of sums over component
+partitions. -/
+lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
+    (ha : I.SupIndep s) {M : Type*} [AddCommMonoid M] (f : α → M) :
+    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
+  simp_rw [combine]
+  refine Finset.sum_biUnion fun i hi j hj hij => ?_
+  rw [Function.onFun, Finset.disjoint_left]
+  intro p hpi hpj
+  have hp_disj : Disjoint p p := (ha.pairwiseDisjoint hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
+  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
+
+section Bind
+
+variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
+
+/-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
+finpartition of `a` obtained by juxtaposing all the subpartitions. -/
+@[simps! parts]
+def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a :=
+  (combine (fun i : P.parts => Q i.val i.property) P.supIndep.attach).copy <| by
+    rw [Finset.sup_attach (f := fun x => x), ← Function.id_def, P.sup_parts]
+
+theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := by
+  rw [bind_parts, mem_biUnion]
+  constructor
+  · rintro ⟨⟨A, hA⟩, -, h⟩
+    exact ⟨A, hA, h⟩
+  · rintro ⟨A, hA, h⟩
+    exact ⟨⟨A, hA⟩, mem_attach _ ⟨A, hA⟩, h⟩
+
+theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
+    #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.property).parts := by
+  apply card_biUnion
+  rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
+  rw [Function.onFun, Finset.disjoint_left]
+  rintro d hdb hdc
+  rw [Ne, Subtype.mk_eq_mk] at hbc
+  exact
+    (Q b hb).ne_bot hdb
+      (eq_bot_iff.2 <|
+        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans (P.disjoint hb hc hbc).le_bot)
+
+end Bind
+
+/-- Adds `b` to a finpartition of `a` to make a finpartition of `a ⊔ b`. -/
+@[simps]
+def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a ⊔ b = c) :
+    Finpartition c where
+  parts := insert b P.parts
+  supIndep := by
+    refine P.supIndep.insert ?_
+    rwa [sup_parts, disjoint_comm]
+  sup_parts := by rwa [sup_insert, P.sup_parts, id, _root_.sup_comm]
+  bot_notMem h := (mem_insert.1 h).elim hb.symm P.bot_notMem
+
+theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
+    {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
+  card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
+
+end IsModularLattice
+
 section DistribLattice
 
 variable [DistribLattice α] [OrderBot α] [DecidableEq α] {a b c : α}
@@ -516,85 +595,6 @@ lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
   parts.sum_erase hf
 
 end DistribLattice
-
-section IsModularLattice
-
-variable [Lattice α] [OrderBot α] [IsModularLattice α] [DecidableEq α] {a b c : α}
-
-/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
-@[simps]
-def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
-    (ha : I.SupIndep a) : Finpartition (I.sup a) where
-  parts := I.biUnion fun i => (P i).parts
-  supIndep :=
-    .biUnion (by simpa only [sup_parts]) (fun i _ ↦ (P i).supIndep)
-  sup_parts := by
-    rw [sup_biUnion]
-    exact sup_congr rfl fun i _ => (P i).sup_parts
-  bot_notMem := by
-    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
-
-/-- The sum of a set-valued function over a combined partition equals the sum of sums over component
-partitions. -/
-lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
-    (ha : I.SupIndep s) {M : Type*} [AddCommMonoid M] (f : α → M) :
-    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
-  simp_rw [combine]
-  refine Finset.sum_biUnion fun i hi j hj hij => ?_
-  rw [Function.onFun, Finset.disjoint_left]
-  intro p hpi hpj
-  have hp_disj : Disjoint p p := (ha.pairwiseDisjoint hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
-  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
-
-section Bind
-
-variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
-
-/-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
-finpartition of `a` obtained by juxtaposing all the subpartitions. -/
-@[simps! parts]
-def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a :=
-  (combine (fun i : P.parts => Q i.val i.property) P.supIndep.attach).copy <| by
-    rw [Finset.sup_attach (f := fun x => x), ← Function.id_def, P.sup_parts]
-
-theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := by
-  rw [bind_parts, mem_biUnion]
-  constructor
-  · rintro ⟨⟨A, hA⟩, -, h⟩
-    exact ⟨A, hA, h⟩
-  · rintro ⟨A, hA, h⟩
-    exact ⟨⟨A, hA⟩, mem_attach _ ⟨A, hA⟩, h⟩
-
-theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
-    #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.property).parts := by
-  apply card_biUnion
-  rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
-  rw [Function.onFun, Finset.disjoint_left]
-  rintro d hdb hdc
-  rw [Ne, Subtype.mk_eq_mk] at hbc
-  exact
-    (Q b hb).ne_bot hdb
-      (eq_bot_iff.2 <|
-        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans (P.disjoint hb hc hbc).le_bot)
-
-end Bind
-
-/-- Adds `b` to a finpartition of `a` to make a finpartition of `a ⊔ b`. -/
-@[simps]
-def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a ⊔ b = c) :
-    Finpartition c where
-  parts := insert b P.parts
-  supIndep := by
-    refine P.supIndep.insert ?_
-    rwa [sup_parts, disjoint_comm]
-  sup_parts := by rwa [sup_insert, P.sup_parts, id, _root_.sup_comm]
-  bot_notMem h := (mem_insert.1 h).elim hb.symm P.bot_notMem
-
-theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
-    {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
-  card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
-
-end IsModularLattice
 
 section GeneralizedBooleanAlgebra
 
