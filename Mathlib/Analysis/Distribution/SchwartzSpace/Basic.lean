@@ -1263,7 +1263,7 @@ where finally
     simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜
 
-@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
+@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) : toZeroAtInftyCLM 𝕜 E F f = f.toZeroAtInfty :=
   rfl
 
 end ZeroAtInfty
