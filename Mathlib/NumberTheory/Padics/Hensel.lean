@@ -73,6 +73,7 @@ private theorem ncs_tendsto_lim :
 
 include ncs_der_val
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 private theorem ncs_tendsto_const :
     Tendsto (fun i => ‖F.derivative.aeval (ncs i)‖) atTop (𝓝 ‖F.derivative.aeval a‖) := by
   convert! @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
