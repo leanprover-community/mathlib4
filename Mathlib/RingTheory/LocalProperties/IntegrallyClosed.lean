@@ -59,8 +59,8 @@ theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum 
     (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.asIdeal))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.asIdeal.primeCompl
       p.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
-  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.1.asIdeal.primeCompl)
-    (fun p ↦ p.1.asIdeal.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.1 p.2)
+  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.val.asIdeal.primeCompl)
+    (fun p ↦ p.val.asIdeal.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.val p.property)
   ext x
   simp only [← hs, Algebra.mem_iInf, Subtype.forall]
 

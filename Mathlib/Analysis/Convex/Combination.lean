@@ -588,17 +588,17 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
     _ = ∑ g : ∀ i, κ i, (∏ i, w i (g i)) • f i (g i) := by
       simp only [Finset.sum_apply, Pi.smul_apply]
     _ = ∑ j : κ i, ∑ g : {g : ∀ k, κ k // g i = j},
-          (∏ k, w k (g.1 k)) • f i ((g : ∀ i, κ i) i) := by
+          (∏ k, w k (g.val k)) • f i ((g : ∀ i, κ i) i) := by
       rw [← Fintype.sum_fiberwise fun g : ∀ k, κ k ↦ g i]
-    _ = ∑ j : κ i, (∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.1 k)) • f i j := by
+    _ = ∑ j : κ i, (∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.val k)) • f i j := by
       simp_rw [sum_smul]
       congr! with j _ g _
-      exact g.2
+      exact g.property
     _ = ∑ j : κ i, w i j • f i j := ?_
     _ = x i := hf _
   congr! with j _
   calc
-    ∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.1 k)
+    ∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.val k)
       = ∑ g ∈ piFinset fun k ↦ if hk : k = i then hk ▸ {j} else univ, ∏ k, w k (g k) :=
       Finset.sum_bij' (fun g _ ↦ g) (fun g hg ↦ ⟨g, by simpa using mem_piFinset.1 hg i⟩)
         (by aesop) (by simp) (by simp) (by simp) (by simp)

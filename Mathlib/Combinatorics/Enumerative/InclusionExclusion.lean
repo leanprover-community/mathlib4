@@ -116,14 +116,14 @@ The sum of a function `f` over the union of the `S i` over `i ∈ s` is the alte
 sums of `f` over the intersections of the `S i`. -/
 theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (f : α → G) :
     ∑ a ∈ s.biUnion S, f a = ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a := by
+      (-1) ^ (#t.val + 1) • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a := by
   classical
   rw [← sub_eq_zero]
   calc
     ∑ a ∈ s.biUnion S, f a - ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a
+      (-1) ^ (#t.val + 1) • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a
       = ∑ t : s.powerset.filter (·.Nonempty),
-          (-1) ^ #t.1 • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a +
+          (-1) ^ #t.val • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a +
           ∑ t ∈ s.powerset.filter (¬ ·.Nonempty), (-1) ^ #t • ∑ a ∈ s.biUnion S, f a := by
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ]
     _ = ∑ t ∈ s.powerset, (-1) ^ #t •
@@ -154,7 +154,7 @@ The cardinality of the union of the `S i` over `i ∈ s` is the alternating sum 
 of the intersections of the `S i`. -/
 theorem inclusion_exclusion_card_biUnion (s : Finset ι) (S : ι → Finset α) :
     #(s.biUnion S) = ∑ t : s.powerset.filter (·.Nonempty),
-      (-1 : ℤ) ^ (#t.1 + 1) * #(t.1.inf' (mem_filter.1 t.2).2 S) := by
+      (-1 : ℤ) ^ (#t.val + 1) * #(t.val.inf' (mem_filter.1 t.property).2 S) := by
   simpa using inclusion_exclusion_sum_biUnion (G := ℤ) s S (f := 1)
 
 variable [Fintype α]

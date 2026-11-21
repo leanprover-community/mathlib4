@@ -51,11 +51,11 @@ variable {ds₁ ds₂ ds₃ : List ℕ}
 
 /-- Take the first elements of a `HolorIndex`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
-  | ds, is => ⟨List.take (length ds) is.1, forall₂_take_append is.1 ds ds₂ is.2⟩
+  | ds, is => ⟨List.take (length ds) is.val, forall₂_take_append is.val ds ds₂ is.property⟩
 
 /-- Drop the first elements of a `HolorIndex`. -/
 def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₂
-  | ds, is => ⟨List.drop (length ds) is.1, forall₂_drop_append is.1 ds ds₂ is.2⟩
+  | ds, is => ⟨List.drop (length ds) is.val, forall₂_drop_append is.val ds ds₂ is.property⟩
 
 theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
     (cast congr(HolorIndex $eq) ⟨is, h⟩).val = is := by subst eq; rfl
@@ -181,15 +181,15 @@ theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
 -- holor slices
 /-- A slice is a subholor consisting of all entries with initial index i. -/
 def slice (x : Holor α (d :: ds)) (i : ℕ) (h : i < d) : Holor α ds := fun is : HolorIndex ds =>
-  x ⟨i :: is.1, Forall₂.cons h is.2⟩
+  x ⟨i :: is.val, Forall₂.cons h is.property⟩
 
 /-- The 1-dimensional "unit" holor with 1 in the `j`th position. -/
 def unitVec [Monoid α] [AddMonoid α] (d : ℕ) (j : ℕ) : Holor α [d] := fun ti =>
-  if ti.1 = [j] then 1 else 0
+  if ti.val = [j] then 1 else 0
 
 theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
     ∀ t : HolorIndex (d :: ds),
-      (∀ i is, ∀ h : t.1 = i :: is, p ⟨i :: is, by rw [← h]; exact t.2⟩) → p t
+      (∀ i is, ∀ h : t.val = i :: is, p ⟨i :: is, by rw [← h]; exact t.property⟩) → p t
   | ⟨[], hforall₂⟩, _ => absurd (forall₂_nil_left_iff.1 hforall₂) (cons_ne_nil d ds)
   | ⟨i :: is, _⟩, hp => hp i is rfl
 
@@ -197,7 +197,7 @@ theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
 theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x = slice y) : x = y :=
   funext fun t : HolorIndex (d :: ds) =>
     holor_index_cons_decomp (fun t => x t = y t) t fun i is hiis =>
-      have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.2
+      have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.property
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
       calc
@@ -311,19 +311,20 @@ theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPR
   | d :: ds, x => by
     have h_summands :
       ∀ i : { x // x ∈ Finset.range d },
-        CPRankMax ds.prod (unitVec d i.1 ⊗ slice x i.1 (mem_range.1 i.2)) :=
-      fun i => cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.1 (mem_range.1 i.2)))
+        CPRankMax ds.prod (unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) :=
+      fun i => cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.val (mem_range.1 i.property)))
     have h_dds_prod : (List.cons d ds).prod = Finset.card (Finset.range d) * prod ds := by
       simp [Finset.card_range]
     have :
       CPRankMax (Finset.card (Finset.attach (Finset.range d)) * prod ds)
         (∑ i ∈ Finset.attach (Finset.range d),
-          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) :=
+          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) :=
       cprankMax_sum (Finset.range d).attach _ fun i _ => h_summands i
     have h_cprankMax_sum :
       CPRankMax (Finset.card (Finset.range d) * prod ds)
         (∑ i ∈ Finset.attach (Finset.range d),
-          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
+          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) := by
+      rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]
     exact h_cprankMax_sum

@@ -40,7 +40,7 @@ lemma Graded.map_mem (f : F) {i x} (h : x ∈ 𝒜 i) : f x ∈ ℬ i :=
 
 /-- A graded map descends to a map on each component. -/
 def Graded.subtypeMap (f : F) (i : ι) (x : 𝒜 i) : ℬ i :=
-  ⟨f x, map_mem f x.2⟩
+  ⟨f x, map_mem f x.property⟩
 
 end GradedFunLike
 
@@ -70,7 +70,7 @@ alias ⟨Graded.mem_of_map_mem, Graded.map_mem_of_mem⟩ := Graded.map_mem_iff
 @[simps] def Graded.equiv (e : E) (i : ι) : 𝒜 i ≃ ℬ i where
   toFun := subtypeMap e i
   invFun y := ⟨EquivLike.inv e (y : B),
-    mem_of_map_mem e <| by rw [EquivLike.apply_inv_apply]; exact y.2⟩
+    mem_of_map_mem e <| by rw [EquivLike.apply_inv_apply]; exact y.property⟩
   left_inv _ := by ext; exact EquivLike.inv_apply_apply e _
   right_inv _ := by ext; exact EquivLike.apply_inv_apply e _
 

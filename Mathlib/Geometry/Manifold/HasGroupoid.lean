@@ -282,14 +282,14 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 protected instance instChartedSpace : ChartedSpace H s where
-  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr ⟨x⟩}
-  chartAt x := (chartAt H x.1).subtypeRestr ⟨x⟩
-  mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
+  atlas := ⋃ x : s, {(chartAt H x.val).subtypeRestr ⟨x⟩}
+  chartAt x := (chartAt H x.val).subtypeRestr ⟨x⟩
+  mem_chart_source x := ⟨trivial, mem_chart_source H x.val⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 
-lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.val).subtypeRestr ⟨x⟩ := rfl
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/

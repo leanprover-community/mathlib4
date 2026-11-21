@@ -60,7 +60,7 @@ theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
 instance : LargeCategory MeasCat where
   Hom X Y := { f : X → Y // Measurable f }
   id X := ⟨id, measurable_id⟩
-  comp f g := ⟨g.1 ∘ f.1, g.2.comp f.2⟩
+  comp f g := ⟨g.val ∘ f.val, g.property.comp f.property⟩
 
 @[macro_inline]
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
@@ -85,7 +85,7 @@ the restriction of `Measure` to (sub-)probability spaces.)
 -/
 def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.carrier X.str)
-  map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
+  map f := ⟨Measure.map (⇑f), Measure.measurable_map f.val f.property⟩
   map_id X := Subtype.ext <| funext fun μ => @Measure.map_id X.carrier X.str μ
   map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.ext <| funext fun _ => (Measure.map_map hg hf).symm
 

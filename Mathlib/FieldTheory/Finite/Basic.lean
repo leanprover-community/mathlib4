@@ -394,14 +394,15 @@ theorem orderOf_frobeniusAlgEquivOfAlgebraic :
   simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using! orderOf_frobeniusAlgHom K L
 
 theorem bijective_frobeniusAlgHom_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.val :=
   let e := (finCongr <| orderOf_frobeniusAlgHom K L).symm.trans <|
     finEquivPowers (orderOf_pos_iff.mp <| orderOf_frobeniusAlgHom K L ▸ Module.finrank_pos)
   (Subtype.val_injective.comp e.injective).bijective_of_nat_card_le
     ((card_algHom_le_finrank K L L).trans_eq <| by simp)
 
 theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦
+      frobeniusAlgEquivOfAlgebraic K L ^ n.val :=
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using! bijective_frobeniusAlgHom_pow K L
 

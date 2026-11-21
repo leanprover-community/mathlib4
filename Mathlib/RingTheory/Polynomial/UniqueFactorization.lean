@@ -103,10 +103,11 @@ noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
   have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
   let H := { x : Associates D[X] // x ∣ y }
   let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
-  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  let i : G → H := fun x ↦ ⟨Associates.mk x.val, Associates.mk_dvd_mk.2 x.property.2⟩
   refine Fintype.ofInjective i fun x y heq ↦ ?_
   rw [Subtype.mk.injEq] at heq ⊢
-  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
+  exact eq_of_monic_of_associated x.property.1 y.property.1
+    (Associates.mk_eq_mk_iff_associated.mp heq)
 
 end Polynomial
 

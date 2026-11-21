@@ -43,7 +43,7 @@ public initialize allowNumericProjExt : TagAttribute ←
 
 /-- We can't add to a tag attribute later on, so hardcode the upstream exempt declarations here. -/
 @[inline]
-def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``PSigma, ``And, ``Iff, ``Subtype, ``Fin]
+def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``PSigma, ``And, ``Iff]
 
 /-- Whether a term whose type has a head of `structName` is allowed to use numeric projections. -/
 @[inline] public def allowsNumericProj (env : Environment) (structName : Name) :=
