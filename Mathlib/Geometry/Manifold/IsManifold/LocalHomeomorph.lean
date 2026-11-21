@@ -45,11 +45,16 @@ variable {M : Type*} [TopologicalSpace M]
 
 open scoped ContDiff Manifold Topology
 
+-- TODO: find a proper name for `Foo`
+variable (I n f) in
+structure Foo : Prop where
+  exists_contMDiffAt (p q : M) (hpq : f p = f q) :
+    ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f
+
 /-- If `f` satisfies the condition, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
-    (p q : M) :
+    (h : Foo I n f) (p q : M) :
     ContMDiffOn I I n ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q)
       ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q).source := by
   set τ := (hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q
@@ -58,7 +63,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
       hf.localInverseAt_symm] at hr
     simpa [τ] using hf.apply_localInverseAt_of_mem hr.2
   intro r hr
-  obtain ⟨σ, hσr, hσ, hfσ⟩ := h r (τ r) (hτ hr).symm
+  obtain ⟨σ, hσr, hσ, hfσ⟩ := h.exists_contMDiffAt r (τ r) (hτ hr).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
   have hT : (hf.localInverseAt q).target ∈ 𝓝 (σ r) :=
     (hf.localInverseAt q).open_target.mem_nhds (hσr ▸ (τ.map_source hr).1)
@@ -66,12 +71,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_symm_trans
     with r' hr' hσr' hfσr'
   exact hf.injOn_localInverseAt_target (τ.map_source hr').1 hσr' ((hτ hr').trans hfσr'.symm)
 
-lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M]
-    -- TODO: Is `h` below the most useful hypothesis?
-    -- I think so? from h we are trying to prove f is local diffeom. but also
-    -- i think the converse is true? and its not too painful to work with
-    -- but maybe it could be its own Prop definition (?)
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+lemma IsLocalHomeomorph.isManifoldOfRightInverse [IsManifold I n M] (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -125,12 +125,12 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_symm_rightInverse (y : M') :
     exact (extChartAt I y).right_inv hx
 
 lemma IsLocalHomeomorph.isContMDiffOfRightInverse
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+    (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I I n f := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro p
-  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h p (g (f p)) (hg (f p)).symm
+  obtain ⟨σ, hσ1, hσ2, hσ3⟩ := h.exists_contMDiffAt p (g (f p)) (hg (f p)).symm
   have : f =ᶠ[𝓝 p] (hf.localInverseAt (g (f p))).symm ∘ σ := by
     apply Filter.EventuallyEq.trans hσ3.symm
     have : f =ᶠ[𝓝 (g (f p))] (hf.localInverseAt (g (f p))).symm := by simp
@@ -179,7 +179,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
 /-- For any point `x` in `M`, if `f` satisfies the condition then its local inverse at `x`
 is `C^n` on its source -/
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+    (h : Foo I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffOn I I n ((hf.localInverseAt x)) (hf.localInverseAt x).source := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -190,8 +190,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
 
 /-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
 lemma IsLocalHomeomorph.contMDiff_iff_contMDiff_comp
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
-    {φ : M' → N} :
+    (h : Foo I n f) {φ : M' → N} :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n φ ↔ ContMDiff I J n (φ ∘ f) :=
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
