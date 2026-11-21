@@ -350,27 +350,23 @@ instance (priority := low) : WellFoundedGT α :=
 
 variable [LocallyFiniteOrder α]
 
-@[to_dual (rename := a ↔ b)]
-theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
-  simpa [← coe_subset] using Set.Icc_subset_Ici_self
+@[to_dual (rename := a ↔ b) (attr := simp)]
+theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by simp [← coe_subset]
 
-@[to_dual (rename := a ↔ b)]
-theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := by
-  simpa [← coe_subset] using Set.Ico_subset_Ici_self
+@[to_dual (rename := a ↔ b) (attr := simp)]
+theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := by simp [← coe_subset]
 
-@[to_dual (rename := a ↔ b)]
-theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by
-  simpa [← coe_subset] using Set.Ioc_subset_Ioi_self
+@[to_dual (rename := a ↔ b) (attr := simp)]
+theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by simp [← coe_subset]
 
-@[to_dual (rename := a ↔ b)]
-theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by
-  simpa [← coe_subset] using Set.Ioo_subset_Ioi_self
+@[to_dual (rename := a ↔ b) (attr := simp)]
+theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by simp [← coe_subset]
 
-@[to_dual (rename := a ↔ b)]
+@[to_dual (rename := a ↔ b) (attr := simp)]
 theorem Ioc_subset_Ici_self : Ioc a b ⊆ Ici a :=
   Ioc_subset_Icc_self.trans Icc_subset_Ici_self
 
-@[to_dual (rename := a ↔ b)]
+@[to_dual (rename := a ↔ b) (attr := simp)]
 theorem Ioo_subset_Ici_self : Ioo a b ⊆ Ici a :=
   Ioo_subset_Ico_self.trans Ico_subset_Ici_self
 
