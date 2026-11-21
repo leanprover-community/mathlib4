@@ -1,6 +1,7 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
 public import Mathlib.CategoryTheory.ChosenRepresentation
+public import Mathlib.CategoryTheory.Endomorphism.FinEnum
 public import Mathlib.Tactic.Gavrilovich
 public import Mathlib.Tactic.Gavrilovich.Elab.Basic
 public import Mathlib.Tactic.Gavrilovich.Elab.Full
