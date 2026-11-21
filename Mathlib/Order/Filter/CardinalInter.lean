@@ -55,9 +55,7 @@ theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : 
 
 /-- Every filter is a CardinalInterFilter with c = ℵ₀ -/
 theorem _root_.Filter.cardinalInterFilter_aleph0 (l : Filter α) : CardinalInterFilter l ℵ₀ where
-  cardinal_sInter_mem := by
-    simp_all only [lt_aleph0_iff_subtype_finite, ofPred_mem_eq, sInter_mem,
-      implies_true]
+  cardinal_sInter_mem := by simp +contextual [mk_subtype_lt_aleph0_iff]
 
 /-- Every CardinalInterFilter with c > ℵ₀ is a CountableInterFilter -/
 theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInterFilter l c]

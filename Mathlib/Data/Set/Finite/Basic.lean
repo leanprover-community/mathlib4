@@ -619,11 +619,19 @@ theorem Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : 
 
 end preimage
 
+-- TODO: deprecate in favor of `finite_Iio_nat`
 theorem finite_lt_nat (n : ℕ) : Set.Finite { i | i < n } :=
   toFinite _
 
+-- TODO: deprecate in favor of `finite_Iic_nat`
 theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
+
+theorem finite_Iio_nat (n : ℕ) : Set.Finite (Iio n) :=
+  finite_lt_nat n
+
+theorem finite_Iic_nat (n : ℕ) : Set.Finite (Iic n) :=
+  finite_le_nat n
 
 section MapsTo
 

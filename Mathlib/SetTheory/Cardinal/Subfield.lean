@@ -74,7 +74,7 @@ lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
   (Cardinal.mk_le_of_surjective <| surjective_ofWType s).trans <| by
     convert WType.cardinalMk_le_max_aleph0_of_finite' using 1
     · rw [lift_uzero, mk_sum, lift_uzero]
-      have : lift.{u, 0} #(Fin 6) < ℵ₀ := lift_lt_aleph0.mpr (lt_aleph0_of_finite _)
+      have : lift.{u} #(Fin 6) < ℵ₀ := by simp
       obtain h | h := lt_or_ge #s ℵ₀
       · rw [max_eq_right h.le, max_eq_right]
         exact (add_lt_aleph0 this h).le

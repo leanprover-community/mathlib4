@@ -182,9 +182,9 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
     rw [← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
-        hs (le_of_lt (lt_aleph0_of_finite _)) hK),
+        hs (mk_lt_aleph0 _).le hK),
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
-        ht (le_of_lt (lt_aleph0_of_finite _)) hL)]
+        ht (mk_lt_aleph0 _).le hL)]
     exact Cardinal.lift_mk_eq'.2 hKL
   obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩

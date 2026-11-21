@@ -64,6 +64,7 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
 
+attribute [local instance] Fintype.ofFinite in
 /-- If a submodule has maximal dimension in a finite-dimensional space, then it is equal to the
 whole space. -/
 theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}

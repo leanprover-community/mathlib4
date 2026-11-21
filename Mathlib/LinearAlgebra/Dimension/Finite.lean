@@ -128,7 +128,7 @@ variable [StrongRankCondition R]
 theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Finite ι := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
-    Cardinal.lt_aleph0_iff_finite] at h
+    Cardinal.mk_lt_aleph0_iff] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
 @[deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
@@ -180,11 +180,11 @@ theorem lt_aleph0_of_finite {ι : Type w}
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 h.lt_aleph0_of_finite
+  Cardinal.mk_lt_aleph0_iff.1 h.lt_aleph0_of_finite
 
 theorem setFinite [Module.Finite R M] {b : Set M}
     (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=
-  Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
+  finite h
 
 end LinearIndependent
 
@@ -194,11 +194,11 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
   · obtain ⟨⟨s, hs⟩, hs'⟩ := exists_eq_ciSup_of_not_isSuccLimit
       Cardinal.bddAbove_of_small (h.trans (Module.rank_def R M) ▸ not_isSuccLimit_natCast n)
     rw [← Module.rank_def, ← h] at hs'
-    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ natCast_lt_aleph0)
+    have : Finite s := mk_lt_aleph0_iff.mp (hs' ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
-    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ natCast_lt_aleph0)
+    have : Finite s := mk_lt_aleph0_iff.mp (hs ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
@@ -269,7 +269,7 @@ noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
   suffices #{ i // p i ≠ ⊥ } < (ℵ₀ : Cardinal.{w}) by
-    rw [Cardinal.lt_aleph0_iff_fintype] at this
+    rw [Cardinal.mk_lt_aleph0_iff, finite_iff_nonempty_fintype] at this
     exact this.some
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
   simp [Cardinal.natCast_lt_aleph0]

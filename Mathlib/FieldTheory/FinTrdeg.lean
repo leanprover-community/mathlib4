@@ -46,8 +46,7 @@ theorem finTrdeg_iff_trdeg : FinTrdeg K L ↔ Algebra.trdeg K L < .aleph0 := by
     exact trdeg_lt_aleph0_of_finiteType
   · intro h
     obtain ⟨s, hs⟩ := exists_isTranscendenceBasis K L
-    have fin : s.Finite := Cardinal.lt_aleph0_iff_set_finite.1 (hs.cardinalMk_eq_trdeg.trans_lt h)
-    constructor
+    have fin : s.Finite := Cardinal.mk_set_lt_aleph0_iff.1 (hs.cardinalMk_eq_trdeg.trans_lt h)
     refine ⟨adjoin K s, fg_adjoin_of_finite fin, ?_⟩
     have alg := hs.isAlgebraic_field
     rwa [Subtype.range_coe] at alg
@@ -80,7 +79,7 @@ theorem FinTrdeg.of_isTranscendenceBasis {ι : Type*} [Finite ι] {x : ι → L}
     (hx : IsTranscendenceBasis K x) : FinTrdeg K L := by
   rw [finTrdeg_iff_trdeg, ← Cardinal.lift_lt_aleph0,
     ← hx.lift_cardinalMk_eq_trdeg, Cardinal.lift_lt_aleph0]
-  exact Cardinal.mk_lt_aleph0
+  exact Cardinal.mk_lt_aleph0 _
 
 variable (K L) in
 theorem exists_finset_isTranscendenceBasis [FinTrdeg K L] :

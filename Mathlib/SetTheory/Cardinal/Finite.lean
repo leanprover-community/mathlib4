@@ -71,7 +71,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
 
 lemma cast_card [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
   rw [Nat.card, Cardinal.cast_toNat_of_lt_aleph0]
-  exact Cardinal.lt_aleph0_of_finite _
+  exact Cardinal.mk_lt_aleph0 _
 
 lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card s = 0 :=
   @card_eq_zero_of_infinite _ hs.to_subtype
@@ -147,7 +147,7 @@ open Set
 variable {s t : Set α}
 
 lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
-  toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
+  toNat_le_toNat (mk_le_mk_of_subset h) ht.mk_lt_aleph0
 
 lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
   have := hs.to_subtype
@@ -302,7 +302,7 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 
 @[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [← toENat_mk]
 
-@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [← toENat_mk, lt_aleph0_iff_finite]
+@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [← toENat_mk, mk_lt_aleph0_iff]
 
 @[simp]
 theorem card_sum (α β : Type*) :

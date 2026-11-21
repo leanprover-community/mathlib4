@@ -23,12 +23,10 @@ namespace IsNoetherian
 
 variable {K : Type u} {V : Type v} [DivisionRing K] [AddCommGroup V] [Module K V]
 
-/-- A module over a division ring is Noetherian if and only if
-its dimension (as a cardinal) is strictly less than the first infinite cardinal `ℵ₀`.
--/
+/-- A module over a division ring is Noetherian if and only if it has finite dimension. -/
 theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   let b := Basis.ofVectorSpace K V
-  rw [← b.mk_eq_rank'', lt_aleph0_iff_set_finite]
+  rw [← b.mk_eq_rank'', mk_set_lt_aleph0_iff]
   constructor
   · intro
     exact (Basis.ofVectorSpaceIndex.linearIndependent K V).set_finite_of_isNoetherian
