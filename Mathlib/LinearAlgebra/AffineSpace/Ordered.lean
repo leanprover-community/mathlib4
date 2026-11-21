@@ -6,9 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
+
+import Mathlib.Algebra.Order.Module.Synonym
 
 /-!
 # Ordered modules as affine spaces

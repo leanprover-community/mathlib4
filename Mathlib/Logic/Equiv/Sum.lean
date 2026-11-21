@@ -101,8 +101,8 @@ def subtypeSum {α β} {p : α ⊕ β → Prop} :
     | ⟨.inl a, h⟩ => .inl ⟨a, h⟩
     | ⟨.inr b, h⟩ => .inr ⟨b, h⟩
   invFun
-    | .inl a => ⟨.inl a, a.2⟩
-    | .inr b => ⟨.inr b, b.2⟩
+    | .inl a => ⟨.inl a, a.property⟩
+    | .inr b => ⟨.inr b, b.property⟩
   left_inv := by rintro ⟨a | b, h⟩ <;> rfl
   right_inv := by rintro (a | b) <;> rfl
 
@@ -293,12 +293,12 @@ theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a :
 @[simp]
 theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :
     (sumCompl p).symm x = Sum.inl x :=
-  sumCompl_symm_apply_of_pos x.2
+  sumCompl_symm_apply_of_pos x.property
 
 @[simp]
 theorem sumCompl_symm_apply_neg {α} {p : α → Prop} [DecidablePred p] (x : {x // ¬ p x}) :
     (sumCompl p).symm x = Sum.inr x :=
-  sumCompl_symm_apply_of_neg x.2
+  sumCompl_symm_apply_of_neg x.property
 
 end sumCompl
 

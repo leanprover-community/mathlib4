@@ -506,7 +506,7 @@ theorem restrict_eigenspace (f : End R M) (μ : R) :
     f.restrict (f.mem_invtSubmodule_iff_forall_mem_of_mem.mp
       (eigenspace_mem_invtSubmodule f μ)) = μ • LinearMap.id := by
   ext x
-  exact mem_eigenspace_iff.mp x.2
+  exact mem_eigenspace_iff.mp x.property
 
 /-- A nilpotent endomorphism has nilpotent eigenvalues.
 
