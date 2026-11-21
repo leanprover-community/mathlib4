@@ -174,6 +174,11 @@ protected theorem IsPrefix.nodup {l₁ l₂ : List α} (h : l₁ <+: l₂) (hn :
     l₁.Nodup :=
   hn.sublist h.sublist
 
+/-- A proper prefix is strictly shorter. -/
+theorem length_lt_of_prefix_ne {l₁ l₂ : List α} (h : l₁ <+: l₂) (hne : l₁ ≠ l₂) :
+    l₁.length < l₂.length :=
+  Nat.lt_of_le_of_ne h.length_le fun H ↦ hne (h.eq_of_length H)
+
 protected theorem IsInfix.nodup {l₁ l₂ : List α} (h : l₁ <:+: l₂) (hn : l₂.Nodup) :
     l₁.Nodup :=
   hn.sublist h.sublist
