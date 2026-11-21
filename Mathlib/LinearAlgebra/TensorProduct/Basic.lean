@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Abel
 
 Given any bilinear map `f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂`, there is a unique semilinear map
 `TensorProduct.lift f : TensorProduct R M N →ₛₗ[σ₁₂] P₂` whose composition with the canonical
-bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+bilinear map `TensorProduct.mk` is the given bilinear map `f`. Uniqueness is shown in the theorem
 `TensorProduct.lift.unique`.
 
 ## Tags
@@ -307,26 +307,40 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+/-- If M and N are both R- and A-modules and their actions on them commute,
+and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
+canonical group homomorphism from `M ⊗[A] N` to `M ⊗[R] N`. A version of this containing the
+compatibility with any ring acting on `M` in a way compatible with the `R` and `A` actions is given
+in `mapOfCompatibleSMul` below. -/
+def mapOfCompatibleSMulAddHom : M ⊗[A] N →ₙ+ M ⊗[R] N where
+  __ :=
+    lift (σ₁₂ := RingHom.id A)
+    { toFun := fun m ↦
+      { __ := mk R M N m
+        map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+      map_add' := fun _ _ ↦ by simp; rfl
+      map_smul' := fun _ _ ↦ rfl }
+
+@[simp] theorem mapOfCompatibleSMulAddHom_tmul (m n) :
+    mapOfCompatibleSMulAddHom R A M N (m ⊗ₜ n) = m ⊗ₜ n := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
 where `S` is any other ring acting on `M` and whose action commutes with the `A` and `R`-actions. -/
 def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
-  __ :=
-    lift (σ₁₂ := RingHom.id A)
-    { toFun := fun m ↦
-      { __ := mk R M N m
-        map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
-      map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-      map_smul' := fun _ _ ↦ rfl }
-  map_smul' s x := by
+  __ := mapOfCompatibleSMulAddHom R A M N
+  map_smul' _ x := by
     induction x with
-    | add x y _ _ => simp_all
-    | tmul x y => simp [smul_tmul']
+    | add _ _ _ _ => simp_all
+    | tmul _ _ => simp [smul_tmul']
 
-@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
-  rfl
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n
+    := rfl
+
+lemma toAddHom_mapOfCompatibleSMul :
+    mapOfCompatibleSMul R A S M N = mapOfCompatibleSMulAddHom R A M N := rfl
 
 /-- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
 `TensorProduct.AlgebraTensorModule.ker_mapOfCompatibleSMul`. -/
