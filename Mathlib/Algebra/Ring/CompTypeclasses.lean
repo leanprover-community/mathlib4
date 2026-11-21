@@ -180,6 +180,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 
-instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
+instance _root_.RingEquiv.instRingHomSurjective (σ : R₁ ≃+* R₂) :
+    RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

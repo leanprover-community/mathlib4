@@ -661,7 +661,7 @@ an actual `StarAlgEquiv`. -/
 def StarAlgEquiv.ofClass {F R A B : Type*}
     [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
     [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
-  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
+  { (RingEquiv.ofClass f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 

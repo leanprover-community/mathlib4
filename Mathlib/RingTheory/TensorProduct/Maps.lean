@@ -524,8 +524,8 @@ lemma mapRingHom_comp_includeLeftRingHom :
 
 @[simp]
 lemma mapRingHom_comp_includeRight :
-    (mapRingHom fR fS fT HS HT).comp (RingHomClass.toRingHom includeRight) =
-      (RingHomClass.toRingHom includeRight).comp fT := by ext; simp
+    (mapRingHom fR fS fT HS HT).comp (.ofClass includeRight) =
+      (RingHom.ofClass includeRight).comp fT := by ext; simp
 
 end mapRingHom
 
