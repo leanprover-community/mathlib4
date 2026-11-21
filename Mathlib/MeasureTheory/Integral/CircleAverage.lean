@@ -329,6 +329,22 @@ theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] (L 
   congr
   exact L.intervalIntegral_comp_comm hf
 
+open scoped ComplexConjugate in
+@[to_fun circleAverage_fun_conj]
+lemma circleAverage_conj {f : ℂ → ℂ} (hf : CircleIntegrable f c R) :
+    circleAverage (conj ∘ f) c R = conj (circleAverage f c R) :=
+  conjCLE.toContinuousLinearMap.circleAverage_comp_comm hf
+
+@[to_fun circleAverage_fun_re]
+lemma circleAverage_re {f : ℂ → ℂ} (hf : CircleIntegrable f c R) :
+    circleAverage (re ∘ f) c R = (circleAverage f c R).re :=
+  reCLM.circleAverage_comp_comm hf
+
+@[to_fun circleAverage_fun_im]
+lemma circleAverage_im {f : ℂ → ℂ} (hf : CircleIntegrable f c R) :
+    circleAverage (im ∘ f) c R = (circleAverage f c R).im :=
+  imCLM.circleAverage_comp_comm hf
+
 /-!
 ## Behaviour with Respect to Arithmetic Operations
 -/
