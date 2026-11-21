@@ -220,6 +220,33 @@ theorem pairwise_insertionSort : ∀ l, Pairwise r (insertionSort r l)
 
 end TotalAndTransitive
 
+section Trichotomous
+
+variable [Std.Trichotomous r]
+
+theorem IsChain.orderedInsert_of_not_mem {l : List α} (hl' : IsChain r l) {a} (ha : a ∉ l) :
+    IsChain r (l.orderedInsert r a) := by
+  cases l with
+  | nil => exact IsChain.singleton a
+  | cons b l =>
+    by_cases h' : a ≼ b
+    · simp [orderedInsert_cons, h', hl']
+    · cases l with
+      | nil => grind [Std.Trichotomous]
+      | cons c l' =>
+        by_cases hac : a ≼ c
+        · suffices b ≼ a by simpa [hac, h', hl'.of_cons]
+          grind [Std.Trichotomous]
+        · have := IsChain.orderedInsert' (a := a) (l := c :: l')
+          grind
+
+/-- The list `List.insertionSort r l` is `List.IsChain` with respect to trichotomous `r`. -/
+theorem IsChain.insertionSort_of_nodup : ∀ l, l.Nodup → IsChain r (insertionSort r l)
+  | [], h => IsChain.nil
+  | a :: l, h => (isChain_insertionSort' l h.of_cons).orderedInsert' (by simp [nodup_cons.mp h])
+
+end Trichotomous
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
