@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
+
+import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps

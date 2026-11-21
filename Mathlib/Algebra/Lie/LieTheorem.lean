@@ -121,7 +121,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [Module.End.isNilpotent_iff_of_finite]
     suffices ⨆ i, U' i ≤ Module.End.maxGenEigenspace (T χ w) 0 by
       intro x
-      specialize this x.2
+      specialize this x.property
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
       gconvert this with n hn
       ext
@@ -172,7 +172,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
-  obtain ⟨z, -, hz⟩ := IsConcreteLE.exists_of_lt (hA.lt_top)
+  obtain ⟨z, -, hz⟩ := exists_mem_notMem_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
   have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_notMem hA hz

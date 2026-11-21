@@ -67,14 +67,14 @@ variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAnti
 theorem fst_eq_fst_iff_snd_eq_snd : (x : α × α).1 = (y : α × α).1 ↔ (x : α × α).2 = (y : α × α).2 :=
   ⟨fun h =>
     mul_left_cancel
-      (y.2.2.2.trans <| by
+      (y.property.2.2.trans <| by
           rw [← h]
-          exact x.2.2.2.symm).symm,
+          exact x.property.2.2.symm).symm,
     fun h =>
     mul_right_cancel
-      (y.2.2.2.trans <| by
+      (y.property.2.2.trans <| by
           rw [← h]
-          exact x.2.2.2.symm).symm⟩
+          exact x.property.2.2.symm).symm⟩
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_eq_fst]
 theorem eq_of_fst_eq_fst (h : (x : α × α).fst = (y : α × α).fst) : x = y :=
@@ -97,7 +97,7 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × �
   eq_of_fst_eq_fst <|
     h₁.eq_of_not_lt fun hlt =>
       (mul_lt_mul_of_lt_of_le hlt h₂).ne <|
-        (mem_mulAntidiagonal.1 x.2).2.2.trans (mem_mulAntidiagonal.1 y.2).2.2.symm
+        (mem_mulAntidiagonal.1 x.property).2.2.trans (mem_mulAntidiagonal.1 y.property).2.2.symm
 
 variable {s t}
 
@@ -105,11 +105,11 @@ variable {s t}
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
   by_contra! h
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
-    fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
+    fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).property).1⟩
   have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
-    fun f ↦ ht fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).2.1⟩
+    fun f ↦ ht fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).property).2.1⟩
   obtain ⟨g, hg⟩ :=
-    h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
+    h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).property
   obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd _ _ _ (hg _ _ mn.le) h2'
