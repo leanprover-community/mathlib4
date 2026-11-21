@@ -8716,6 +8716,7 @@ public import Mathlib.Util.ElabWithoutMVars
 public import Mathlib.Util.Export
 public import Mathlib.Util.FormatTable
 public import Mathlib.Util.GetAllModules
+public import Mathlib.Util.IncludeDocstring
 public import Mathlib.Util.LongNames
 public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions
