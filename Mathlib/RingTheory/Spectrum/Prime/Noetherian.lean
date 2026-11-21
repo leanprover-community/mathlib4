@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.KrullDimension.Zero
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Prime spectra of Noetherian and Artinian rings
@@ -88,5 +90,33 @@ theorem finrank_eq_sum_primeSpectrum [Fintype (PrimeSpectrum R)] :
       (localization_surjective p.primeCompl (Localization.AtPrime p))
   ((toPiLocalizationEquiv R).restrictScalars F).toLinearEquiv.finrank_eq.trans
     (Module.finrank_pi_fintype F)
+
+/-- A reduced commutative Artinian ring with connected prime spectrum is a field. -/
+theorem isField_of_isReduced_of_connectedSpace (R : Type*) [CommRing R]
+    [IsArtinianRing R] [_root_.IsReduced R] [ConnectedSpace (PrimeSpectrum R)] : IsField R :=
+  have : Nontrivial R := PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance
+  PrimeSpectrum.subsingleton_iff_isField_of_isReduced.mp PreconnectedSpace.trivial_of_discrete
+
+open scoped Algebra in
+/-- A reduced integral algebra over a field with connected prime spectrum is a field. -/
+theorem isField_of_isIntegral_of_isReduced_of_connectedSpace
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Algebra.IsIntegral R S]
+    [_root_.IsReduced S] [ConnectedSpace (PrimeSpectrum S)] [IsArtinianRing R] : IsField S where
+  exists_pair_ne := (PrimeSpectrum.nonempty_iff_nontrivial.mp inferInstance).exists_pair_ne
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := by
+    let x' : R[x] := ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+    have hx' : x' ≠ 0 := fun h => hx (congr_arg ((↑) : R[x] → S) h)
+    have : Module.Finite R R[x] :=
+      Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral x)
+    have : IsArtinianRing R[x] := IsArtinianRing.of_finite R R[x]
+    have := isReduced_of_injective R[x].val Subtype.val_injective
+    have : Algebra.IsIntegral R[x] S :=
+      ⟨fun y ↦ (Algebra.IsIntegral.isIntegral (R := R) y).tower_top⟩
+    have : ConnectedSpace (PrimeSpectrum R[x]) :=
+      (Algebra.IsIntegral.comap_surjective R[x] S).connectedSpace (PrimeSpectrum.continuous_comap _)
+    let : Field R[x] := (IsArtinianRing.isField_of_isReduced_of_connectedSpace R[x]).toField
+    obtain ⟨y, rfl⟩ := RingHom.isUnit_map R[x].val.toRingHom (isUnit_iff_ne_zero.mpr hx')
+    exact ⟨y.inv, y.val_inv⟩
 
 end IsArtinianRing

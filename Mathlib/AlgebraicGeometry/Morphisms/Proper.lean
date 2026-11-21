@@ -6,6 +6,7 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.Topology.Separation.Connected
 
 /-!
 # Proper morphisms
@@ -15,9 +16,10 @@ Note that we don't require quasi-compact, since this is implied by universally c
 
 ## Main results
 - `AlgebraicGeometry.isField_of_universallyClosed`:
-  If `X` is an integral scheme that is universally closed over `Spec K`, then `Γ(X, ⊤)` is a field.
+  If `X` is a reduced, connected scheme that is universally closed over `Spec K`, then `Γ(X, ⊤)` is
+  a field.
 - `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
-  If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
+  If `X` is a reduced connected scheme that is universally closed and of finite type over `Spec K`,
   then `Γ(X, ⊤)` is finite dimensional over `K`.
 -/
 
@@ -142,21 +144,28 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
   rw [← IsIntegralHom.SpecMap_iff, IsIntegralHom.iff_universallyClosed_and_isAffineHom]
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 
-/-- If `X` is an integral scheme that is universally closed over `Spec K`,
+/-- If `X` is an reduced, connected scheme that is universally closed over `Spec K`,
 then `Γ(X, ⊤)` is a field. -/
 theorem isField_of_universallyClosed (f : X ⟶ Spec ↧K)
-    [IsIntegral X] [UniversallyClosed f] : IsField Γ(X, ⊤) := by
+    [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] : IsField Γ(X, ⊤) := by
   let F := (Scheme.ΓSpecIso _).inv ≫ f.appTop
   have : F.hom.IsIntegral := by
     apply RingHom.isIntegral_respectsIso.2 (e := (Scheme.ΓSpecIso _).symm.commRingCatIsoToRingEquiv)
     exact isIntegral_appTop_of_universallyClosed f
   algebraize [F.hom]
-  exact isField_of_isIntegral_of_isField' (Field.toIsField K)
+  have : CompactSpace X := (quasiCompact_iff_compactSpace f).mp inferInstance
+  have : UniversallyClosed (X.toSpecΓ ≫ Spec.map f.appTop) := by
+    rw [← Scheme.toSpecΓ_naturality]
+    infer_instance
+  have : UniversallyClosed X.toSpecΓ := .of_comp_of_isSeparated _ (Spec.map f.appTop)
+  have : ConnectedSpace (PrimeSpectrum Γ(X, ⊤)) :=
+    X.toSpecΓ.surjective.connectedSpace X.toSpecΓ.continuous
+  exact IsArtinianRing.isField_of_isIntegral_of_isReduced_of_connectedSpace K _
 
-/-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
-then `Γ(X, ⊤)` is a finite field extension over `K`. -/
+/-- If `X` is an reduced, connected scheme that is universally closed and of finite type over
+`Spec K`, then `Γ(X, ⊤)` is a finite field extension over `K`. -/
 theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec ↧K)
-    [IsIntegral X] [UniversallyClosed f] [LocallyOfFiniteType f] :
+    [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
