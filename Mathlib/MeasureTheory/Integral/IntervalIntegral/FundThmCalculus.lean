@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
-public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 
 /-!
 # Fundamental Theorem of Calculus
@@ -544,7 +545,7 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
   simpa only [integral_const, smul_eq_mul, mul_one] using!
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left hab hmeas hf hu hv
 
-open ContinuousLinearMap (fst snd smulRight sub_apply smulRight_apply coe_fst' coe_snd' map_sub)
+open ContinuousLinearMap (fst snd smulRight smulRight_apply coe_fst' coe_snd' map_sub)
 
 /-!
 #### Strict differentiability

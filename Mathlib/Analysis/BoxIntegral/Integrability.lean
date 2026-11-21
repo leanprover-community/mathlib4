@@ -82,7 +82,8 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     simp only [t, TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
       and_imp]
     refine fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ ?_, π.le_of_mem' J hJ hx⟩
-    simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
+    simpa only [r, s.piecewise_eq_of_mem _ _ hJs]
+      using hπ.isSubordinate J hJ (Box.coe_subset_Icc hx)
   refine abs_sub_le_iff.2 ⟨?_, ?_⟩
   · refine (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
     refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_sdiff.trans ?_)
@@ -98,7 +99,8 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine ⟨J, ⟨hJπ, ?_⟩, hxJ⟩
     contrapose hxF
     refine hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ ?_
-    simpa only [r, s.piecewise_eq_of_notMem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
+    simpa only [r, s.piecewise_eq_of_notMem _ _ hxF]
+      using hπ.isSubordinate J hJπ (Box.coe_subset_Icc hxJ)
 
 /-- If `f` is a.e. equal to zero on a rectangular box, then it has McShane integral zero on this
 box. -/
@@ -128,7 +130,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   choose r hrU using this
   refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ _ => ?_⟩
   rw [dist_eq_norm, sub_zero, ← integralSum_fiberwise fun J => N (π.tag J)]
-  grw [← hcε, ← sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc)]
+  grw [← hcε, ← sum_le_hasSum _ (fun n _ => (δ n).property) (NNReal.hasSum_coe.2 hδc)]
   apply norm_sum_le_of_le
   rintro n -
   dsimp [integralSum]
@@ -147,7 +149,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     refine (measure_mono ?_).trans_lt (hμU _)
     simp only [Set.subset_def, TaggedPrepartition.mem_iUnion, TaggedPrepartition.mem_filter]
     rintro x ⟨J, ⟨hJ, rfl⟩, hx⟩
-    exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
+    exact ⟨hrU _ (hπ.isSubordinate _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
   clear_value m
   lift m to ℝ≥0 using ne_top_of_lt this
   grw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
@@ -266,7 +268,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     grw [← hcε]
     refine
       (dist_sum_sum_le_of_le _ fun n hn => ?_).trans
-        (sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc))
+        (sum_le_hasSum _ (fun n _ => (δ n).property) (NNReal.hasSum_coe.2 hδc))
     have hNxn : ∀ J ∈ π.filter fun J => Nx (π.tag J) = n, Nx (π.tag J) = n := fun J hJ =>
       (π.mem_filter.1 hJ).2
     have hrn : ∀ J ∈ π.filter fun J => Nx (π.tag J) = n,

@@ -238,10 +238,10 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
 lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
   rw [← Subtype.range_coe (s := s), ← Set.image_univ]
   refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
-  exact continuous_subtype_val.continuousOn
+  exact continuous_subtypeVal.continuousOn
 
-lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
-  exact ⟨.of_subtype, .of_subtype⟩
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s :=
+  ⟨.of_subtype, .of_subtype⟩
 
 theorem isPreirreducible_iff_preirreducibleSpace :
     IsPreirreducible s ↔ PreirreducibleSpace s :=
@@ -499,15 +499,17 @@ bijection between irreducible components -/
 @[stacks 037A]
 def irreducibleComponentsEquivOfIsPreirreducibleFiber :
     irreducibleComponents Y ≃o irreducibleComponents X where
-  invFun W := ⟨f '' W.1,
-    image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
-  toFun W := ⟨f ⁻¹' W.1,
-    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.2 hf₁ hf₂ hf₃
-      (by simp [hf₄.range_eq, W.2.1.1])⟩
+  invFun W := ⟨f '' W.val,
+    image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.property⟩
+  toFun W := ⟨f ⁻¹' W.val,
+    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.property hf₁ hf₂ hf₃
+      (by simp [hf₄.range_eq, W.property.1.1])⟩
   right_inv W := Subtype.ext <| by
-    refine (Set.subset_preimage_image _ _).antisymm' (W.2.2 ?_ (Set.subset_preimage_image _ _))
-    refine ⟨?_, (W.2.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
-    obtain ⟨x, hx⟩ := W.2.1.1
+    refine (Set.subset_preimage_image _ _).antisymm'
+      (W.property.2 ?_ (Set.subset_preimage_image _ _))
+    refine ⟨?_,
+      (W.property.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
+    obtain ⟨x, hx⟩ := W.property.1.1
     exact ⟨_, x, hx, rfl⟩
   left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
   map_rel_iff' {W Z} := by

@@ -309,7 +309,7 @@ theorem vars_aeval [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolyn
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq φ
   choose cf hcf using fun x : φ.vars => exists_rename_coe_vars_eq (f x)
   let df (x : φ.vars) : MvPolynomial (φ.vars.biUnion fun i => (f i).vars) R :=
-    (cf x).rename (fun i => ⟨i.1, Finset.subset_biUnion_of_mem _ x.2 i.2⟩)
+    (cf x).rename (fun i => ⟨i.val, Finset.subset_biUnion_of_mem _ x.property i.property⟩)
   have hdf (x : φ.vars) : rename (↑) (df x) = f x := by
     unfold df
     rw [rename_rename, Function.comp_def, hcf]

@@ -59,29 +59,30 @@ variable (R) [CommSemiring R]
 /-- The algebra isomorphism between multivariable polynomials indexed by a type with a unique
 element and polynomials over the ground ring. -/
 @[simps]
-def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] where
-  toFun := eval₂ Polynomial.C fun _ => Polynomial.X
-  invFun := Polynomial.eval₂ MvPolynomial.C (X default)
-  left_inv := by
-    let f : R[X] →+* MvPolynomial σ R := Polynomial.eval₂RingHom MvPolynomial.C (X default)
-    let g : MvPolynomial σ R →+* R[X] := eval₂Hom Polynomial.C fun _ => Polynomial.X
-    change ∀ p, f.comp g p = p
-    apply is_id
-    · ext a
-      dsimp [f, g]
-      rw [eval₂_C, Polynomial.eval₂_C]
-    · intro i
-      dsimp [f, g]
-      rw [eval₂_X, Polynomial.eval₂_X]
-      rw [← Unique.eq_default i]
-  right_inv p :=
-    Polynomial.induction_on p (fun a => by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
-    (fun p q hp hq => by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ => by
-      rw [Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C,
-        eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
-  map_mul' _ _ := eval₂_mul _ _
-  map_add' _ _ := eval₂_add _ _
-  commutes' _ := eval₂_C _ _ _
+def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] :=
+  .ofCommutes
+  { toFun := eval₂ Polynomial.C fun _ ↦ Polynomial.X
+    invFun := Polynomial.eval₂ MvPolynomial.C (X default)
+    left_inv := by
+      let f : R[X] →+* MvPolynomial σ R := Polynomial.eval₂RingHom MvPolynomial.C (X default)
+      let g : MvPolynomial σ R →+* R[X] := eval₂Hom Polynomial.C fun _ ↦ Polynomial.X
+      change ∀ p, f.comp g p = p
+      apply is_id
+      · ext a
+        dsimp [f, g]
+        rw [eval₂_C, Polynomial.eval₂_C]
+      · intro i
+        dsimp [f, g]
+        rw [eval₂_X, Polynomial.eval₂_X]
+        rw [← Unique.eq_default i]
+    right_inv p :=
+      Polynomial.induction_on p (fun a ↦ by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
+      (fun p q hp hq ↦ by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ ↦ by
+        rw [Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C,
+          eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
+    map_mul' _ _ := eval₂_mul _ _
+    map_add' _ _ := eval₂_add _ _ }
+  fun _ ↦ eval₂_C _ _ _
 
 theorem uniqueAlgEquiv_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R σ) (MvPolynomial.monomial d r)
@@ -706,8 +707,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
     totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
   have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
-    rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
-    exact hi
+    rwa [support_nonempty]
   -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
