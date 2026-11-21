@@ -159,6 +159,10 @@ theorem eLpNorm_measure_zero {f : α → ε} :
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', ENNReal.toReal_pos h0 h_top]
 
+@[simp]
+theorem inhmgELpNorm_measure_zero {f : α → ε} : inhmgELpNorm f p (0 : Measure α) = 0 := by
+  simp [inhmgELpNorm]
+
 @[simp] lemma memLp_measure_zero {f : α → ε} : MemLp f p (0 : Measure α) := by
   simp [MemLp]
 
@@ -432,6 +436,26 @@ theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (hf : AEStronglyMeasur
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae_real hf (Eventually.of_forall h)
 
+theorem inhmgELpNorm_mono_eNorm_ae [TopologicalSpace ε'] {f : α → ε} {g : α → ε'}
+    (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+    inhmgELpNorm f p μ ≤ inhmgELpNorm g p μ := by
+  by_cases hg : AEStronglyMeasurable g μ; swap
+  · exact inhmgELpNorm_of_not_aestronglyMeasurable hg ▸ le_top
+  simp only [inhmgELpNorm, ite_eq_left hf, ite_eq_left hg]
+  by_cases hp₀ : p = 0
+  · simp only [ite_eq_left hp₀]
+    apply EventuallySubset.measure_le
+    filter_upwards [h] with x hx
+    simp only [Function.support, ne_eq, Set.mem_ofPred_eq]
+    contrapose
+    intro hgx
+    rwa [hgx, ← bot_eq_zero, le_bot_iff, bot_eq_zero] at hx
+  by_cases hp₁ : p < 1
+  · simp only [ite_eq_right hp₀, ite_eq_left hp₁]
+    apply lintegral_mono_ae
+    filter_upwards [h] with x hx using ENNReal.monotone_rpow_of_nonneg ENNReal.toReal_nonneg hx
+  · simp [hp₀, hp₁, eLpNorm_mono_eNorm_ae hf h]
+
 theorem eLpNormEssSup_le_of_ae_eNorm_bound {f : α → ε'} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le C hfC
@@ -643,6 +667,16 @@ theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) :
   contrapose hf
   exact hf.congr (EventuallyEq.symm hfg)
 
+theorem inhmgELpNorm_congr_ae {f g : α → ε} (h : f =ᵐ[μ] g) :
+    inhmgELpNorm f p μ = inhmgELpNorm g p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · refine (inhmgELpNorm_mono_eNorm_ae hf ?_).antisymm
+      (inhmgELpNorm_mono_eNorm_ae (hf.congr h) ?_) <;>
+    filter_upwards [h] with x hx using hx ▸ le_rfl
+  · rw [inhmgELpNorm_of_not_aestronglyMeasurable hf, inhmgELpNorm_of_not_aestronglyMeasurable]
+    contrapose hf with hg
+    exact hg.congr h.symm
+
 theorem memLp_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) :
     MemLp f p μ ↔ MemLp g p μ := by
   refine ⟨fun hf ↦ ?_, fun hg ↦ ?_⟩
@@ -752,6 +786,18 @@ theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) :
       eLpNormEssSup_mono_measure f (Measure.absolutelyContinuous_of_le hμν)]
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top hfν, eLpNorm_eq_eLpNorm' hp0 hp_top hf]
   exact eLpNorm'_mono_measure f hμν ENNReal.toReal_nonneg
+
+@[gcongr, mono]
+theorem inhmgELpNorm_mono_measure {f : α → ε} (hμν : ν ≤ μ) :
+    inhmgELpNorm f p ν ≤ inhmgELpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ; swap
+  · simp [inhmgELpNorm, hf]
+  simp only [inhmgELpNorm, ite_eq_left hf, ite_eq_left (hf.mono_measure hμν)]
+  by_cases hp₀ : p = 0
+  · simp [hp₀, hμν _]
+  by_cases hp₁ : p < 1
+  · simp [hp₀, hp₁, lintegral_mono' hμν le_rfl]
+  · simp [hp₀, hp₁, eLpNorm_mono_measure f hμν]
 
 theorem MemLp.mono_measure {f : α → ε} (hμν : ν ≤ μ) (hf : MemLp f p μ) :
     MemLp f p ν :=
