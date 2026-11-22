@@ -538,22 +538,15 @@ theorem Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo {a b c d : ℝ} (
     ∃ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ tsupport ψ ⊆ Ioo a d ∧
       (Icc b c).indicator 1 ≤ ψ ∧ ψ ≤ (Ioo a d).indicator 1 ∧
       c - b ≤ ∫ x, ψ x ∧ ∫ x, ψ x ≤ d - a := by
-  have hδ : 0 < min (b - a) (d - c) := lt_min (by linarith) (by linarith)
-  have hδa := min_le_left (b - a) (d - c)
-  have hδd := min_le_right (b - a) (d - c)
   let ψ : ContDiffBump ((b + c) / 2) :=
     ⟨(c - b) / 2 + min (b - a) (d - c) / 3, (c - b) / 2 + 2 * min (b - a) (d - c) / 3,
-      by linarith, by linarith⟩
+      by grind, by grind⟩
   have hts : tsupport ψ ⊆ Ioo a d := by
-    rw [ψ.tsupport_eq, Real.closedBall_eq_Icc]
-    exact Icc_subset_Ioo (by simp [ψ]; linarith) (by simp [ψ]; linarith)
+    grind [ψ.tsupport_eq, Real.closedBall_eq_Icc]
   have hle : (Icc b c).indicator 1 ≤ ψ := fun x ↦ by
     by_cases hx : x ∈ Icc b c
-    · rw [indicator_of_mem hx, Pi.one_apply, ψ.one_of_mem_closedBall]
-      rw [Real.closedBall_eq_Icc]
-      obtain ⟨hbx, hxc⟩ := hx
-      simp only [ψ, mem_Icc]
-      constructor <;> linarith
+    · rw [indicator_of_mem hx, Pi.one_apply, ψ.one_of_mem_closedBall ?h]
+      case h => grind [Real.closedBall_eq_Icc]
     · simpa [indicator_of_notMem hx] using ψ.nonneg
   have hle' : ⇑ψ ≤ (Ioo a d).indicator 1 := fun x ↦ by
     by_cases hx : x ∈ Ioo a d
