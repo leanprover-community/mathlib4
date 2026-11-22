@@ -991,14 +991,24 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
 
 @[to_dual]
-theorem IsGLB.min_eq [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) :
-    WellFoundedLT.min s hs₀ = a :=
-  (IsLeast.isGLB ⟨wellFounded_lt.min_mem s hs₀, fun _ ↦ WellFoundedLT.min_le⟩).unique hs
+theorem WellFoundedLT.isLeast_min [WellFoundedLT α] (hs₀ : s.Nonempty) :
+    IsLeast s (WellFoundedLT.min s hs₀) :=
+  ⟨wellFounded_lt.min_mem s hs₀, fun _ ↦ WellFoundedLT.min_le⟩
 
 @[to_dual]
-theorem IsGLB.mem_of_nonempty [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) : a ∈ s := by
+theorem IsGLB.min_eq [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) :
+    WellFoundedLT.min s hs₀ = a :=
+  (IsLeast.isGLB (WellFoundedLT.isLeast_min hs₀)).unique hs
+
+@[to_dual]
+theorem IsGLB.isLeast_of_wellFoundedLT [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) :
+    IsLeast s a := by
   rw [← hs.min_eq hs₀]
-  exact wellFounded_lt.min_mem s hs₀
+  exact WellFoundedLT.isLeast_min hs₀
+
+@[to_dual]
+theorem IsGLB.mem_of_wellFoundedLT [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) : a ∈ s :=
+  (hs.isLeast_of_wellFoundedLT hs₀).1
 
 end LinearOrder
 
