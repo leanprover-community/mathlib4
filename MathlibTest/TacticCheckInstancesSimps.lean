@@ -1,6 +1,14 @@
-import Mathlib.Tactic.Simps.Basic
+module
+
+public import Mathlib.Tactic.Simps
+
+@[expose] public section
 
 set_option linter.tacticCheckInstances true
+
+/-!
+# Tests for the `tacticCheckInstances` linter on `@[simps]` projections
+-/
 
 /-! ## clean projection, no warning expected -/
 

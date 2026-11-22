@@ -8,14 +8,14 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.Prop
-public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Tactic.Attr.Register
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Spread
+
+import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -179,6 +179,9 @@ theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > 
 
 attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
 
+@[to_dual (attr := gcongr strict) ge_imp_gt_of_lt']
+theorem ge_imp_gt_of_lt (h : a < b) : a ≥ c → b > c := lt_of_lt_of_le' h
+
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
@@ -280,10 +283,6 @@ protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a <
 @[to_dual (attr := simp) ne_iff_gt_iff_ge]
 theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b := open scoped Classical in
   Decidable.ne_iff_lt_iff_le
-
-@[to_dual eq_of_forall_ge_iff]
-lemma eq_of_forall_le_iff (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
-  ((H _).1 le_rfl).antisymm ((H _).2 le_rfl)
 
 /-- To prove commutativity of a binary operation `○`, we only to check `a ○ b ≤ b ○ a` for all `a`,
 `b`. -/
@@ -426,17 +425,27 @@ lemma lt_iff_lt_of_le_iff_le' {β} [Preorder α] [Preorder β] {a b : α} {c d :
 
 @[to_dual self]
 lemma lt_iff_lt_of_le_iff_le {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β}
-    (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans <| not_le
+    (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans not_le
 
 @[to_dual self]
 lemma le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     (a ≤ b ↔ c ≤ d) ↔ (b < a ↔ d < c) :=
-  ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
+  ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans not_lt⟩
 
 /-- A symmetric relation implies two values are equal, when it implies they're less-equal. -/
 lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.Symm r] {f : α → β}
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
+
+@[to_dual self]
+theorem map_le_of_lt_imp_le_of_le [PartialOrder α] [Preorder β] {x y : α}
+    {f : α → β} (h : x < y → f x ≤ f y) (hxy : x ≤ y) : f x ≤ f y :=
+  hxy.eq_or_lt.elim (fun heq ↦ heq ▸ le_rfl) h
+
+@[to_dual self]
+theorem map_le_of_gt_imp_le_of_ge [PartialOrder α] [Preorder β] {x y : α}
+    {f : α → β} (h : y < x → f x ≤ f y) (hxy : y ≤ x) : f x ≤ f y :=
+  hxy.eq_or_lt.elim (fun heq ↦ heq ▸ le_rfl) h
 
 /-! ### Extensionality lemmas -/
 
@@ -826,11 +835,11 @@ theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[simp, norm_cast, gcongr, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self, grind _=_]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 
@@ -850,8 +859,9 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
-    ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
+  fast_instance% @LinearOrder.lift (Subtype p) _ _
+    ⟨fun x y ↦ ⟨max x y, max_rec' _ x.property y.property⟩⟩
+    ⟨fun x y ↦ ⟨min x y, min_rec' _ x.property y.property⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
 
@@ -860,8 +870,8 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
-type synonym `α ×ₗ β = α × β`.
+The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
+the type synonym `α ×ₗ β = α × β`.
 -/
 
 
@@ -968,10 +978,8 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
-@[to_dual existing dense]
-theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
-    ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
-  simp_rw [and_comm]; exact dense
+to_dual_for DenselyOrdered.dense := by simpa [and_comm] using DenselyOrdered.dense a₂ a₁
+to_dual_for DenselyOrdered.mk := ⟨by simpa [and_comm] using forall_comm.mp dense⟩
 
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=

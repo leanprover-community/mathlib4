@@ -5,11 +5,8 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.Filter.CardinalInter
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # The cocardinal filter
@@ -17,7 +14,6 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 In this file we define `Filter.cocardinal hc`: the filter of sets with cardinality less than
   a regular cardinal `c` that satisfies `Cardinal.aleph0 < c`.
   Such filters are `CardinalInterFilter` with cardinality `c`.
-
 -/
 
 @[expose] public section
@@ -35,7 +31,7 @@ of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular 
 def cocardinal (hreg : c.IsRegular) : Filter α := by
   apply ofCardinalUnion {s | Cardinal.mk s < c} (natCast_lt_aleph0.trans_le hreg.aleph0_le)
   · refine fun s hS hSc ↦ lt_of_le_of_lt (mk_sUnion_le _) <| mul_lt_of_lt hreg.aleph0_le hS ?_
-    apply iSup_lt_of_lt_cof_ord _ fun i ↦ hSc i.1 i.2
+    apply iSup_lt_of_lt_cof_ord _ fun i ↦ hSc i.val i.property
     rwa [hreg.cof_ord]
   · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (mk_le_mk_of_subset ht) hSc
 
@@ -59,7 +55,7 @@ instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (�
 theorem eventually_cocardinal {p : α → Prop} :
     (∀ᶠ x in cocardinal α hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
 
-theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) {s : Set α | #s < c} compl :=
+theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) (fun s : Set α ↦ #s < c) compl :=
   ⟨fun s =>
     ⟨fun h => ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ => by
       have : #↑sᶜ < c := by

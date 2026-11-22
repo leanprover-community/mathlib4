@@ -5,8 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
-public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Order.SuccPred.ENat
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
@@ -114,7 +113,6 @@ However, when `σ` is finite, this is not necessarily an `MvPolynomial`.
 series, all of which coefficients are `1`, is the sum of all indeterminates.)
 
 TODO: Define a coercion to MvPolynomial.
-
 -/
 
 @[expose] public section
@@ -123,7 +121,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat WithTop Finsupp
+open ENat Finsupp Finset
 
 variable {σ R : Type*} [Semiring R]
 
@@ -143,7 +141,7 @@ def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
     Nat.find ((ne_zero_iff_exists_coeff_ne_zero_and_weight w).mp h)
 
 @[simp] theorem weightedOrder_zero : (0 : MvPowerSeries σ R).weightedOrder w = ⊤ := by
-  rw [weightedOrder, dif_pos rfl]
+  rw [weightedOrder, dite_eq_left rfl]
 
 theorem ne_zero_iff_weightedOrder_finite :
     f ≠ 0 ↔ (f.weightedOrder w).toNat = f.weightedOrder w := by
@@ -162,7 +160,7 @@ theorem exists_coeff_ne_zero_and_weightedOrder
     (h : (toNat (f.weightedOrder w) : ℕ∞) = f.weightedOrder w) :
     ∃ d, coeff d f ≠ 0 ∧ weight w d = f.weightedOrder w := by
   classical
-  simp_rw [weightedOrder, dif_neg ((ne_zero_iff_weightedOrder_finite w).mpr h), Nat.cast_inj]
+  simp_rw [weightedOrder, dite_eq_right ((ne_zero_iff_weightedOrder_finite w).mpr h), Nat.cast_inj]
   generalize_proofs h1
   exact Nat.find_spec h1
 
@@ -170,7 +168,7 @@ theorem exists_coeff_ne_zero_and_weightedOrder
 then the weighted order of the power series is less than or equal to `weight d w`. -/
 theorem weightedOrder_le {d : σ →₀ ℕ} (h : coeff d f ≠ 0) :
     f.weightedOrder w ≤ weight w d := by
-  rw [weightedOrder, dif_neg]
+  rw [weightedOrder, dite_eq_right]
   · simp only [ne_eq, Nat.cast_le, Nat.find_le_iff]
     exact ⟨weight w d, le_rfl, d, h, rfl⟩
   · exact (f.ne_zero_iff_exists_coeff_ne_zero_and_weight w).mpr ⟨weight w d, d, h, rfl⟩
@@ -180,6 +178,10 @@ smaller than the order of the power series. -/
 theorem coeff_eq_zero_of_lt_weightedOrder {d : σ →₀ ℕ} (h : (weight w d) < f.weightedOrder w) :
     coeff d f = 0 := by
   contrapose! h; exact weightedOrder_le w h
+
+theorem coeff_eq_of_lt_weightedOrder_sub {R : Type*} [Ring R] {f g : MvPowerSeries σ R}
+    {d : σ →₀ ℕ} (h : weight w d < (f - g).weightedOrder w) : coeff d f = coeff d g := by
+  rw [← sub_eq_zero, ← map_sub, coeff_eq_zero_of_lt_weightedOrder w h]
 
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/
@@ -227,7 +229,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     · use d
       simp only [coeff_monomial_same, ne_eq, h, not_false_eq_true, and_self]
     · intro b hb
-      rw [coeff_monomial, if_neg]
+      rw [coeff_monomial, ite_eq_right]
       rintro rfl
       exact hb.false
 
@@ -235,7 +237,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
 theorem weightedOrder_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠ 0) :
     weightedOrder w (monomial d a) = weight w d := by
   classical
-  rw [weightedOrder_monomial, if_neg h]
+  rw [weightedOrder_monomial, ite_eq_right h]
 
 @[simp]
 theorem weightedOrder_one [Nontrivial R] : (1 : MvPowerSeries σ R).weightedOrder w = 0 :=
@@ -354,6 +356,36 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]
 
+/-- If `a i - b i` has weighted order at least `n`, and `a i`, `b i` have weighted order at
+least `k`, for all `i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has weighted order at least
+`n + (#s - 1) • k`. -/
+theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).weightedOrder w)
+    (hb : ∀ i ∈ s, k ≤ (b i).weightedOrder w) (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+  induction s using cons_induction with
+  | empty => simp
+  | cons i s hi ih =>
+    simp only [mem_cons, forall_eq_or_imp] at ha hb h
+    rw [prod_cons, prod_cons, ← sub_add_sub_cancel (b := a i * ∏ j ∈ s, b j),
+      ← sub_mul, ← mul_sub, Finset.card_cons, Nat.add_sub_cancel]
+    refine (le_min ?_ ?_).trans (min_weightedOrder_le_add w)
+    · rcases s.eq_empty_or_nonempty with rfl | hs
+      · simp
+      calc
+        _ = k + (n + (s.card - 1) • k) := by
+          rw [add_left_comm, ← succ_nsmul', Nat.sub_add_cancel hs.card_pos]
+        _ ≤ _ := (add_le_add ha.1 (ih ha.2 hb.2 h.2)).trans (le_weightedOrder_mul w)
+    · exact (add_le_add h.1 ((s.card_nsmul_le_sum _ k hb.2).trans
+        (le_weightedOrder_prod w b s))).trans (le_weightedOrder_mul w)
+
+/-- If `a i - b i` has weighted order at least `n` for all `i ∈ s`, then so does
+`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
+theorem le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+  simpa using add_nsmul_le_weightedOrder_prod_sub_prod w (k := 0) (by simp) (by simp) h
+
 @[simp]
 theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.weightedOrder w := by
   by_contra! h
@@ -377,15 +409,12 @@ section Order
 
 variable {f g : MvPowerSeries σ R}
 
-@[deprecated (since := "2026-01-06")]
-alias eq_zero_iff_forall_coeff_eq_zero_and := eq_zero_iff_forall_coeff_zero
-
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ degree d = n) := by
   simp_rw [degree_eq_weight_one]
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
-/-- The order of a multivariate power series is the the minimum total degree over all
+/-- The order of a multivariate power series is the minimum total degree over all
 exponents `d` with nonzero coefficient `coeff d f`. -/
 def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 
@@ -419,6 +448,11 @@ theorem coeff_of_lt_order {d : σ →₀ ℕ} (h : degree d < f.order) :
     coeff d f = 0 := by
   rw [degree_eq_weight_one] at h
   exact coeff_eq_zero_of_lt_weightedOrder _ h
+
+theorem coeff_eq_of_lt_order_sub {R : Type*} [Ring R] {f g : MvPowerSeries σ R} {d : σ →₀ ℕ}
+    (h : degree d < (f - g).order) : coeff d f = coeff d g := by
+  rw [degree_eq_weight_one] at h
+  exact coeff_eq_of_lt_weightedOrder_sub _ h
 
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `degree d < n`. -/
@@ -531,6 +565,21 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ �
   rw [degree_eq_weight_one]
   exact coeff_mul_prod_one_sub_of_lt_weightedOrder _ d s f g
 
+/-- If `a i - b i` has order at least `n` for all `i ∈ s`, then so does
+`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
+theorem le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
+    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
+  le_weightedOrder_prod_sub_prod _ h
+
+/-- If `a i - b i` has order at least `n`, and `a i`, `b i` have order at least `k`, for all
+`i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has order at least `n + (#s - 1) • k`. -/
+theorem add_nsmul_le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).order)
+    (hb : ∀ i ∈ s, k ≤ (b i).order) (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
+  add_nsmul_le_weightedOrder_prod_sub_prod _ ha hb h
+
 @[simp]
 theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrder_neg _ f
 
@@ -637,7 +686,7 @@ theorem isWeightedHomogeneous_weightedHomogeneousComponent (f : MvPowerSeries σ
     IsWeightedHomogeneous w (f.weightedHomogeneousComponent w p) p := fun {d} ↦ by
   rw [not_imp_comm]
   intro hd
-  rw [coeff_weightedHomogeneousComponent, if_neg hd]
+  rw [coeff_weightedHomogeneousComponent, ite_eq_right hd]
 
 variable {w} in
 theorem isWeightedHomogeneous_iff_eq_weightedHomogeneousComponent
@@ -669,11 +718,11 @@ theorem weightedHomogeneousComponent_mul_of_le_weightedOrder {f g : MvPowerSerie
     rw [← hx, map_add] at hd
     simp only [coeff_weightedHomogeneousComponent]
     rcases trichotomy_of_add_eq_add hd with h | h | h
-    · rw [if_pos h.1, if_pos h.2]
-    · rw [if_neg (ne_of_lt h), zero_mul]
+    · rw [ite_eq_left h.1, ite_eq_left h.2]
+    · rw [ite_eq_right (ne_of_lt h), zero_mul]
       rw [← ENat.natCast_lt_natCast] at h
       rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hf), zero_mul]
-    · rw [if_neg (ne_of_lt h), mul_zero]
+    · rw [ite_eq_right (ne_of_lt h), mul_zero]
       rw [← ENat.natCast_lt_natCast] at h
       rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hg), mul_zero]
   · symm

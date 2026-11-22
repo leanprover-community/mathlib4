@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.Types.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Category of categories
@@ -37,6 +41,8 @@ set_option linter.checkUnivs false in
 def Cat :=
   Bundled Category.{v, u}
 
+attribute [to_dual_dont_translate] Bundled.α
+
 namespace Cat
 
 instance : Inhabited Cat :=
@@ -50,8 +56,14 @@ instance str (C : Cat.{v, u}) : Category.{v, u} C :=
   Bundled.str C
 
 /-- Construct a bundled `Cat` from the underlying type and the typeclass. -/
+@[implicit_reducible]
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.Cat.of X` as `↧X`. -/
+@[app_delab CategoryTheory.Cat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 section
 
@@ -211,8 +223,6 @@ end Hom
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := (𝟭 C).toCatHom
@@ -238,11 +248,9 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
 @[simp, push_cast]
 lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = 𝟭 C := rfl
 
-@[simp]
 theorem Hom.id_obj {C : Cat.{v, u}} (X : C) : (𝟙 C : C ⟶ C).toFunctor.obj X = X := by
   simp
 
-@[simp]
 theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C).toFunctor.map f = f := by
   simp
 
@@ -254,12 +262,10 @@ theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
     (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
   simp
 
-@[simp]
 theorem Hom.comp_map {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).toFunctor.map f = G.toFunctor.map (F.toFunctor.map f) := by
   simp
 
-@[simp]
 theorem Hom₂.id_app {C D : Cat.{v, u}} (F : C ⟶ D) (X : C) :
     (𝟙 F : F ⟶ F).toNatTrans.app X = 𝟙 (F.toFunctor.obj X) := by
   simp
@@ -302,13 +308,9 @@ lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -324,13 +326,9 @@ lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -346,13 +344,9 @@ lemma associator_hom_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ 
 lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -365,7 +359,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 
 @[simp] theorem of_α (C) [Category* C] : (of C).α = C := rfl
 
-@[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
+@[simp] theorem coe_of (C : Cat.{v, u}) : ↧C = C := rfl
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
@@ -380,13 +374,11 @@ section
 
 attribute [local simp] eqToHom_map
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
 def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom.toFunctor
   inverse := γ.inv.toFunctor
-  unitIso := eqToIso <| congr($(γ.hom_inv_id).toFunctor).symm
+  unitIso := eqToIso congr($(γ.hom_inv_id).toFunctor).symm
   counitIso := eqToIso <| congr($(γ.inv_hom_id).toFunctor)
 
 /-- Under certain hypotheses, an equivalence of categories actually
@@ -408,24 +400,20 @@ end
 
 end Cat
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Embedding `Type` into `Cat` as discrete categories.
 
 This ought to be modelled as a 2-functor!
 -/
 @[simps]
 def typeToCat : Type u ⥤ Cat where
-  obj X := Cat.of (Discrete X)
+  obj X := ↧(Discrete X)
   map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by
     ext
     simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.id_toFunctor]
     fapply Functor.ext
     · simp
-    · intro X Y f
-      cases f
-      apply ULift.ext
-      cat_disch
+    · exact fun _ _ _ ↦ Discrete.hom_eq
   map_comp f g := by
     ext
     simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.comp_toFunctor]
@@ -440,9 +428,6 @@ instance : Functor.Faithful typeToCat.{u} where
 instance : Functor.Full typeToCat.{u} where
   map_surjective F := ⟨↾(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
-    refine Functor.ext (by cat_disch) ?_
-    intro x y f
-    apply ULift.ext
-    cat_disch⟩
+    exact Functor.ext (by cat_disch) fun _ _ _ ↦ Discrete.hom_eq⟩
 
 end CategoryTheory

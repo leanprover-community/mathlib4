@@ -31,10 +31,10 @@ variable (n : ℕ)
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
-  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2
-  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.2
-  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2
-  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.2
+  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.isLt
+  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.isLt
+  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.isLt
+  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.isLt
   finset_mem_Icc a b := by simp
   finset_mem_Ico a b := by simp
   finset_mem_Ioc a b := by simp
@@ -53,27 +53,27 @@ variable {m : ℕ} (a b : Fin n)
 
 @[simp]
 theorem attachFin_Icc :
-    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2) = Icc a b :=
+    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.isLt) = Icc a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ico :
-    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.2) = Ico a b :=
+    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.isLt) = Ico a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ioc :
-    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2) = Ioc a b :=
+    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.isLt) = Ioc a b :=
   rfl
 
 @[simp]
 theorem attachFin_Ioo :
-    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.2) = Ioo a b :=
+    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.isLt) = Ioo a b :=
   rfl
 
 @[simp]
 theorem attachFin_uIcc :
-    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).2) = uIcc a b :=
+    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).isLt) = uIcc a b :=
   rfl
 
 @[simp]
@@ -85,11 +85,12 @@ theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx
   ext; simp
 
 @[simp]
-theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
+theorem attachFin_Iic :
+    attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.isLt) = Iic a := by
   ext; simp
 
 @[simp]
-theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
+theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.isLt) = Iio a := by
   ext; simp
 
 section val
@@ -393,55 +394,46 @@ theorem finsetImage_cast_Iio (h : n = m) (i : Fin n) :
 ### `Finset.map` along `finCongr`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Icc (h : n = m) (i j : Fin n) :
     (Icc i j).map (finCongr h).toEmbedding = Icc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ico (h : n = m) (i j : Fin n) :
     (Ico i j).map (finCongr h).toEmbedding = Ico (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioc (h : n = m) (i j : Fin n) :
     (Ioc i j).map (finCongr h).toEmbedding = Ioc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioo (h : n = m) (i j : Fin n) :
     (Ioo i j).map (finCongr h).toEmbedding = Ioo (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_uIcc (h : n = m) (i j : Fin n) :
     (uIcc i j).map (finCongr h).toEmbedding = uIcc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ici (h : n = m) (i : Fin n) :
     (Ici i).map (finCongr h).toEmbedding = Ici (i.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioi (h : n = m) (i : Fin n) :
     (Ioi i).map (finCongr h).toEmbedding = Ioi (i.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Iic (h : n = m) (i : Fin n) :
     (Iic i).map (finCongr h).toEmbedding = Iic (i.cast h) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Iio (h : n = m) (i : Fin n) :
     (Iio i).map (finCongr h).toEmbedding = Iio (i.cast h) := by
@@ -586,42 +578,35 @@ theorem finsetImage_natAdd_Ioi (m) (i : Fin n) : (Ioi i).image (natAdd m) = Ioi 
 ### `Finset.map` along `Fin.natAddEmb`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Icc (m) (i j : Fin n) :
     (Icc i j).map (natAddEmb m) = Icc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ico (m) (i j : Fin n) :
     (Ico i j).map (natAddEmb m) = Ico (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioc (m) (i j : Fin n) :
     (Ioc i j).map (natAddEmb m) = Ioc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioo (m) (i j : Fin n) :
     (Ioo i j).map (natAddEmb m) = Ioo (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (natAddEmb m) = uIcc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ici (m) (i : Fin n) : (Ici i).map (natAddEmb m) = Ici (natAdd m i) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioi (m) (i : Fin n) : (Ioi i).map (natAddEmb m) = Ioi (natAdd m i) := by
   simp [← coe_inj]
@@ -671,42 +656,35 @@ theorem finsetImage_addNat_Ioi (m) (i : Fin n) : (Ioi i).image (addNat · m) = I
 ### `Finset.map` along `Fin.addNatEmb`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Icc (m) (i j : Fin n) :
     (Icc i j).map (addNatEmb m) = Icc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ico (m) (i j : Fin n) :
     (Ico i j).map (addNatEmb m) = Ico (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioc (m) (i j : Fin n) :
     (Ioc i j).map (addNatEmb m) = Ioc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioo (m) (i j : Fin n) :
     (Ioo i j).map (addNatEmb m) = Ioo (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (addNatEmb m) = uIcc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ici (m) (i : Fin n) : (Ici i).map (addNatEmb m) = Ici (i.addNat m) := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioi (m) (i : Fin n) : (Ioi i).map (addNatEmb m) = Ioi (i.addNat m) := by
   simp [← coe_inj]
@@ -839,47 +817,38 @@ theorem finsetImage_rev_Iio (i : Fin n) : (Iio i).image rev = Ioi i.rev := by si
 ### `Finset.map` along `revPerm`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Icc (i j : Fin n) : (Icc i j).map revPerm.toEmbedding = Icc j.rev i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ico (i j : Fin n) : (Ico i j).map revPerm.toEmbedding = Ioc j.rev i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioc (i j : Fin n) : (Ioc i j).map revPerm.toEmbedding = Ico j.rev i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioo (i j : Fin n) : (Ioo i j).map revPerm.toEmbedding = Ioo j.rev i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_uIcc (i j : Fin n) : (uIcc i j).map revPerm.toEmbedding = uIcc i.rev j.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ici (i : Fin n) : (Ici i).map revPerm.toEmbedding = Iic i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioi (i : Fin n) : (Ioi i).map revPerm.toEmbedding = Iio i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Iic (i : Fin n) : (Iic i).map revPerm.toEmbedding = Ici i.rev := by
   simp [← coe_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Iio (i : Fin n) : (Iio i).map revPerm.toEmbedding = Ioi i.rev := by
   simp [← coe_inj]

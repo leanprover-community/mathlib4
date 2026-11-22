@@ -18,7 +18,6 @@ The Bochner integral of a strongly measurable function against a kernel is stron
 * `MeasureTheory.StronglyMeasurable.integral_kernel_prod_right`: the function
   `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : Kernel α β` and a function
   `f : α → β → E` such that `uncurry f` is measurable.
-
 -/
 
 public section
@@ -34,7 +33,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 theorem ProbabilityTheory.measurableSet_integrable ⦃f : β → E⦄ (hf : StronglyMeasurable f) :
     MeasurableSet {a | Integrable f (κ a)} := by
   simp_rw [Integrable, hf.aestronglyMeasurable, true_and]
-  exact measurableSet_lt hf.enorm.lintegral_kernel measurable_const
+  exact measurableSet_lt hf.eNorm.lintegral_kernel measurable_const
 
 variable [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
@@ -42,7 +41,7 @@ theorem ProbabilityTheory.measurableSet_kernel_integrable ⦃f : α → β → E
     (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.enorm) measurable_const
+  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.eNorm) measurable_const
 
 open ProbabilityTheory.Kernel
 
@@ -50,13 +49,12 @@ namespace MeasureTheory
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency.types false in
 omit [IsSFiniteKernel κ] in
 @[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, stronglyMeasurable_const]
+  · simp [integral_of_not_completeSpace hE, stronglyMeasurable_const]
   borelize E
   have : TopologicalSpace.SeparableSpace (range f ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
@@ -75,12 +73,11 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
       exact subset_rfl
     · simp [f', hfx, integral_undef]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, stronglyMeasurable_const]
+  · simp [integral_of_not_completeSpace hE, stronglyMeasurable_const]
   borelize E
   have : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
@@ -134,9 +131,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
     StronglyMeasurable
       ((fun x => ∫ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
   apply StronglyMeasurable.comp_measurable _ (measurable_prodMk_left (m := mα))
-  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
-      (hf.comp_measurable (measurable_fst.snd.prodMk measurable_snd))
-    simpa using this
+  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
+    (hf.comp_measurable (measurable_fst.snd.prodMk measurable_snd))
+  simpa using this
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun y => ∫ x, f x y ∂κ y :=
@@ -152,8 +149,8 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
     StronglyMeasurable
       ((fun y => ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x => (a, x))
   apply StronglyMeasurable.comp_measurable _ (measurable_prodMk_left (m := mα))
-  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
-      (hf.comp_measurable (measurable_fst.prodMk measurable_snd.snd))
-    simpa using this
+  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
+    (hf.comp_measurable (measurable_fst.prodMk measurable_snd.snd))
+  simpa using this
 
 end MeasureTheory

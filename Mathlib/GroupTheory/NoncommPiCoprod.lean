@@ -5,8 +5,8 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Order.SupIndep
 
 /-!
@@ -38,7 +38,6 @@ images of different morphisms commute, we obtain a canonical morphism
   of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
   they are independent.
-
 -/
 
 @[expose] public section
@@ -145,7 +144,7 @@ and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
-  toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
+  toFun ϕ := noncommPiCoprod ϕ.val ϕ.property
   invFun f :=
     ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
@@ -189,7 +188,9 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity, then
 `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/
-@[to_additive]
+@[to_additive /--
+Given additive monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity,
+then `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/]
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by

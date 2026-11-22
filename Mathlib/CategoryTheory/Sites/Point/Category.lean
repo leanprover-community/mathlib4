@@ -17,7 +17,6 @@ morphism `Φ₂.fiber ⟶ Φ₁.fiber` (SGA 4 IV 3.2).
 ## References
 * [Alexander Grothendieck and Jean-Louis Verdier, *Exposé IV : Topos*,
   SGA 4 IV 3.2][sga-4-tome-1]
-
 -/
 
 @[expose] public section
@@ -62,7 +61,6 @@ namespace Hom
 
 variable {Φ₁ Φ₂ Φ₃ : Point.{w} J} (f : Φ₁ ⟶ Φ₂) (g : Φ₂ ⟶ Φ₃)
 
-attribute [local simp] FunctorToTypes.naturality in
 /-- The natural transformation on fibers of presheaves that is induced
 by a morphism of points of a site. -/
 @[simps]

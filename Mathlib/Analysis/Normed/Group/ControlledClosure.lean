@@ -6,7 +6,8 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Analysis.Normed.Group.Hom
-public import Mathlib.Analysis.SpecificLimits.Normed
+
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -21,7 +22,7 @@ public section
 
 open Filter Finset
 
-open Topology
+open scoped Topology
 
 variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
 variable {H : Type*} [NormedAddCommGroup H]

@@ -53,6 +53,7 @@ namespace Nucleus
 section SemilatticeInf
 variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
+@[macro_inline]
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
@@ -242,7 +243,8 @@ set_option backward.privateInPublic true in
 /-- See `Nucleus.giRestrict` for the public-facing version. -/
 private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subtype.val where
   choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
-  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <| mem_range.1 y.2
+  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <|
+    mem_range.1 y.property
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 
@@ -250,15 +252,13 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
-instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
+instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
     rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
-      le_rfl]
-
-instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
+      le_rfl] }
 
 /-- Restrict a nucleus to its range. -/
 @[simps] def restrict (n : Nucleus X) : FrameHom X (range n) where

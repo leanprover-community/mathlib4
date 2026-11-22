@@ -14,26 +14,24 @@ public import Mathlib.Data.Nat.WithBot
 
 public section
 
-open Finsupp Finset
-
 open Polynomial
 
 namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {a b c d : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p : R[X]}
 
-theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) :=
-  ext fun n =>
-    Nat.casesOn n (by simp) fun n =>
-      Nat.casesOn n (by simp) fun m => by
-        have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
-        simp [coeff_eq_zero_of_degree_lt this]
+theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) := by
+  ext (_ | _ | n)
+  · simp
+  · simp
+  · have : degree p < ↑(n + 1 + 1) := lt_of_le_of_lt h Nat.one_lt_ofNat
+    simp [coeff_eq_zero_of_degree_lt this]
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :
     p = C p.leadingCoeff * X + C (p.coeff 0) :=
@@ -54,7 +52,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p : R[X]}
 
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
   rw [← not_lt, Nat.WithBot.lt_zero_iff, degree_eq_bot]

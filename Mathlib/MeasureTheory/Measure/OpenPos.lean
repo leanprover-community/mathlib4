@@ -16,7 +16,6 @@ In this file we define a typeclass for measures that are positive on nonempty op
 `MeasureTheory.Measure.IsOpenPosMeasure`. Examples include (additive) Haar measures, as well as
 measures that have positive density with respect to a Haar measure. We also prove some basic facts
 about these measures.
-
 -/
 
 public section
@@ -51,7 +50,7 @@ instance (priority := 100) [Nonempty X] : NeZero μ :=
   ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
+  ⟨fun h => ne_empty_iff_nonempty.1 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 
 theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
   simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
@@ -86,7 +85,6 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
@@ -238,12 +236,6 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
   (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
 end Metric
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_ball_pos := Metric.measure_eball_pos
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero

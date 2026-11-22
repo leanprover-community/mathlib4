@@ -55,13 +55,13 @@ end Rat
 namespace NNRat
 
 instance instInv : Inv ℚ≥0 where
-  inv x := ⟨x⁻¹, Rat.inv_nonneg x.2⟩
+  inv x := ⟨x⁻¹, Rat.inv_nonneg x.property⟩
 
 instance instDiv : Div ℚ≥0 where
-  div x y := ⟨x / y, Rat.div_nonneg x.2 y.2⟩
+  div x y := ⟨x / y, Rat.div_nonneg x.property y.property⟩
 
 instance instZPow : Pow ℚ≥0 ℤ where
-  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.2⟩
+  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.property⟩
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
@@ -111,8 +111,8 @@ theorem NNRatCast.ofScientific_eq_ite {K} [NNRatCast K] (m : ℕ) (b : Bool) (d 
   rw [NNRatCast.toOfScientific_def]
   split_ifs
   · congr 2
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_pos ‹_›]
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, ite_eq_left ‹_›]
     congr
   · congr 2
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_neg ‹_›]
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, ite_eq_right ‹_›]
     congr

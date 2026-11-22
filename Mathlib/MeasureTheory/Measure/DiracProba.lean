@@ -5,8 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Topology.Separation.CompletelyRegular
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
@@ -25,7 +25,7 @@ probability measure, Dirac delta, embedding
 
 @[expose] public section
 
-open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
+open Topology Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
@@ -38,7 +38,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
     refine fun x y ↦ ((Real.lipschitzWith_toNNReal).dist_le_mul (g x) (g y)).trans ?_
     simpa using Real.dist_le_of_mem_Icc_01 (g x).prop (g y).prop
   set g' := BoundedContinuousFunction.mkOfBound
-      ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
+      ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtypeVal⟩ 1 g_bdd
   set f := 1 - g'
   refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K, tsub_self]⟩
 
@@ -134,7 +134,6 @@ noncomputable def diracProbaEquiv [T0Space X] : X ≃ range (diracProba (X := X)
   left_inv x := by apply diracProbaInverse_eq; rfl
   right_inv μ := Subtype.ext (by simp only [diracProba_diracProbaInverse])
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of `diracProbaEquiv.symm` and `diracProba` is the subtype inclusion. -/
 lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space X] :
     diracProba ∘ (diracProbaEquiv (X := X)).symm = fun μ ↦ μ.val := by

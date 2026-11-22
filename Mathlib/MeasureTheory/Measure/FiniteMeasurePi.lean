@@ -25,12 +25,11 @@ the underlying space is metrizable and separable.
 
 `MeasureTheory.ProbabilityMeasure.continuous_pi`: the product probability measure depends
 continuously on the factors.
-
 -/
 
 @[expose] public section
 
-open MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open MeasureTheory Metric Filter Set ENNReal NNReal
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 

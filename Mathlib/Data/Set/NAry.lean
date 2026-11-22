@@ -27,6 +27,11 @@ namespace Set
 variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ}
 variable {s s' : Set α} {t t' : Set β} {u : Set γ} {v : Set δ} {a : α} {b : β}
 
+theorem image2_eq_range (f : α → β → γ) (s : Set α) (t : Set β) :
+    image2 f s t = range fun x : s × t ↦ f x.1 x.2 := by
+  ext
+  simp
+
 theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by
     rintro ⟨a', ha', b', hb', h⟩
@@ -172,8 +177,14 @@ theorem image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪
 theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
   rw [insert_eq, image2_union_right, image2_singleton_right]
 
+theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s t := by
+  grind
+
 @[congr]
-theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
+theorem image2_congr'' {s' : Set α} {t' : Set β}
+    (hs : s = s') (ht : t = t') (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s' t' := by
   grind
 
 /-- A common special case of `image2_congr` -/
@@ -316,21 +327,16 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 theorem image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
-  exact
-    union_subset_union (image2_subset_right inter_subset_left)
-      (image2_subset_right inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
-  exact
-    union_subset_union (image2_subset_left inter_subset_left)
-      (image2_subset_left inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
-  rw [inter_comm]
-  exact image2_inter_union_subset_union.trans (union_subset (image2_comm hf).subset Subset.rfl)
+  grw [inter_comm, image2_inter_union_subset_union, image2_comm hf, union_self]
 
 theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by

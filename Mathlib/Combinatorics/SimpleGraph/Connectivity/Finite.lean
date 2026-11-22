@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
-public import Mathlib.Data.Set.Card
+
+import Mathlib.Algebra.BigOperators.Ring.Nat
 
 /-!
 # Counting walks of a given length
@@ -112,7 +112,6 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   simp_rw [← Set.ncard_eq_toFinset_card', ← Finset.coe_filter_univ, Set.ncard_coe_finset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard)).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      G'.oddComponents.ncard ≤ G.oddComponents.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
@@ -125,7 +124,7 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
   refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
   simp only [Subtype.mk.injEq, f] at fcc'
   exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
-    ((fcc' ▸ (aux c.1 c.2).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)
-      ((aux c'.1 c'.2).choose_spec.2 (ConnectedComponent.nonempty_supp _).some_mem))
+    ((fcc' ▸ (aux c.val c.property).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)
+      ((aux c'.val c'.property).choose_spec.2 (ConnectedComponent.nonempty_supp _).some_mem))
 
 end SimpleGraph

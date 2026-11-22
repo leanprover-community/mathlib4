@@ -70,7 +70,6 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma C_smul (t : R) (m : AEval R M a) : C t • m = t • m :=
   (of R M a).symm.injective <| by simp
 
@@ -142,7 +141,8 @@ noncomputable def mapSubmodule :
         rintro f - ⟨m : M, h : m ∈ (p : Submodule R M), rfl⟩
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
           AddSubmonoid.mem_map, Submodule.mem_toAddSubmonoid]
-        exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.2, of_aeval_smul a f m⟩ }
+        exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.property,
+          of_aeval_smul a f m⟩ }
   invFun q := ⟨(Submodule.orderIsoMapComap (of R M a)).symm (q.restrictScalars R), fun m hm ↦ by
     simpa [← X_smul_of] using! q.smul_mem (X : R[X]) hm⟩
   left_inv p := by ext; simp

@@ -5,13 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Idempotents in rings
 
 The predicate `IsIdempotentElem` is defined for general monoids in
@@ -113,9 +113,9 @@ lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x
     rcases i with - | i <;> rcases j with - | j
     · cases ne rfl
     · simpa only [mul_assoc, Finset.sum_mul, he.mul_eq, Finset.sum_ite_eq', Finset.mem_univ,
-        ↓reduceIte, zero_mul] using! congr_arg (· * e j) hx₁
+        ↓reduceIte, zero_mul] using! congr($hx₁ * e j)
     · simpa only [Option.elim_some, Option.elim_none, ← mul_assoc, Finset.mul_sum, he.mul_eq,
-        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr_arg (e i * ·) hx₂
+        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr(e i * $hx₂)
     · exact he.ortho (Option.some_inj.ne.mp ne)
 
 variable [Fintype I]
@@ -259,7 +259,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   | zero => refine ⟨0, ⟨finZeroElim, finZeroElim⟩, funext finZeroElim⟩
   | succ n IH =>
     obtain ⟨e', h₁, h₂⟩ := IH (he.embedding (Fin.succEmb n)) (fun i ↦ he' _)
-    have h₂' (i) : f (e' i) = e i.succ := congr_fun h₂ i
+    have h₂' (i) : f (e' i) = e i.succ := congr($h₂ i)
     obtain ⟨e₀, h₃, h₄, h₅, h₆⟩ :=
       exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h _ (he' 0) (he.idem 0) _
       h₁.isIdempotentElem_sum
@@ -279,7 +279,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker [Finite I]
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     (he.embedding (Fintype.equivFin I).symm.toEmbedding) (fun _ ↦ he' _)
   refine ⟨_, h₁.embedding (Fintype.equivFin I).toEmbedding,
-    by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
+    by ext x; simpa using congr($h₂ (Fintype.equivFin I x))⟩
 
 lemma CompleteOrthogonalIdempotents.pair_iff {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ IsIdempotentElem x ∧ y = 1 - x := by
@@ -313,10 +313,11 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     simp at hn
   rcases n with - | n
   · simpa using he.complete
-  obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
+  obtain ⟨e', h₁, h₂⟩ :=
+    OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.toOrthogonalIdempotents he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
-  have (i : _) : f (e' i) = e i := congr_fun h₂ i
+  have (i : _) : f (e' i) = e i := congr($h₂ i)
   cases i using Fin.cases with
   | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
   | succ i => simp [this]
@@ -329,7 +330,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     ((equiv (Fintype.equivFin I).symm).mpr he) (fun _ ↦ he' _)
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
-    by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
+    by ext x; simpa using congr($h₂ (Fintype.equivFin I x))⟩
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
@@ -356,7 +357,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
     ext i
     refine eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute
       (he _) (h₁.idem _) (h _ ?_) ((he' i).comm _)
-    simpa [RingHom.mem_ker, sub_eq_zero] using congr_fun h₂.symm i
+    simpa [RingHom.mem_ker, sub_eq_zero] using congr($h₂.symm i)
   exact h₁
 
 end Ring
@@ -412,7 +413,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.
 lemma CompleteOrthogonalIdempotents.prod_one_sub
     (he : CompleteOrthogonalIdempotents e) :
     ∏ i, (1 - e i) = 0 := by
-  rw [he.1.prod_one_sub, he.complete, sub_self]
+  rw [he.toOrthogonalIdempotents.prod_one_sub, he.complete, sub_self]
 
 lemma CompleteOrthogonalIdempotents.of_prod_one_sub
     (he : OrthogonalIdempotents e) (he' : ∏ i, (1 - e i) = 0) :
@@ -424,7 +425,7 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   classical
-  refine ⟨?_, he.1.surjective_pi⟩
+  refine ⟨?_, he.toOrthogonalIdempotents.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
   simp only [funext_iff, RingHom.pi_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
@@ -489,25 +490,27 @@ lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
   choose e' he' using hef
   choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by
+        simp [he', (he.toOrthogonalIdempotents.idem i).eq]))
   refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
   · rintro (_|i) (_|j) h
     · simp at h
     · dsimp; linear_combination - he₀.eq * e' j
     · dsimp; linear_combination - he₀.eq * e' i
     · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+        (hfe₀.le (show f (e' i * e' j) = 0 by
+          simp [he', he.toOrthogonalIdempotents.ortho (by simpa using h)]))
       dsimp
       rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
   · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.complete))
     simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
       sub_eq_iff_eq_add.mp hk]
     linear_combination - he₀.eq * k
   · have : f e₀ = 0 := by simpa using hfe₀.ge (Ideal.mem_span_singleton_self _)
     aesop
   · dsimp [IsIdempotentElem]
-    linear_combination congr($(he₀.eq) * ((e' i) ^ 2 - k i) + (1 - e₀) * $(hk i))
+    linear_combination congr($he₀.eq * (e' i ^ 2 - k i) + (1 - e₀) * $(hk i))
 
 end CommRing
 
@@ -570,8 +573,8 @@ instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corne
   __ : NonUnitalSemiring idem.Corner :=
     inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
-  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
-  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
+  one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).1
+  mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.property).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
@@ -595,15 +598,15 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
     (he : CompleteOrthogonalIdempotents e) (hc : ∀ i, IsMulCentral (e i)) :
     R ≃+* Π i, (he.idem i).Corner where
   toFun r i := ⟨_, r, rfl⟩
-  invFun r := ∑ i, (r i).1
+  invFun r := ∑ i, (r i).val
   left_inv r := by
     simp_rw [((hc _).comm _).eq, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
   right_inv r := funext fun i ↦ Subtype.ext <| by
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_eq_single i _ (by simp at ·)]
-    · have ⟨r', eq⟩ := (r i).2
+    · have ⟨r', eq⟩ := (r i).property
       rw [← eq]; simp_rw [← mul_assoc, (he.idem i).eq, mul_assoc, (he.idem i).eq]
-    · intro j _ ne; have ⟨r', eq⟩ := (r j).2
+    · intro j _ ne; have ⟨r', eq⟩ := (r j).property
       rw [← eq]; simp_rw [← mul_assoc, he.ortho ne.symm, zero_mul]
   map_mul' r₁ r₂ := funext fun i ↦ Subtype.ext <|
     calc e i * (r₁ * r₂) * e i

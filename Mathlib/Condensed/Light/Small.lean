@@ -5,11 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Module
 
 /-!
-
 # Equivalence of light condensed objects with sheaves on a small site
 -/
 

@@ -5,11 +5,12 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -147,7 +148,7 @@ theorem isPrecomplete_iff :
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.prec', fun h => ⟨h⟩⟩
 
 theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
@@ -367,21 +368,21 @@ def of : M →ₗ[R] AdicCompletion I M where
   map_smul' _ _ := rfl
 
 @[simp]
-theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
+theorem of_apply (x : M) (n : ℕ) : (of I M x).val n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
   rfl
 
 /-- Linearly evaluating a sequence in the completion at a given input. -/
 def eval (n : ℕ) : AdicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) where
-  toFun f := f.1 n
+  toFun f := f.val n
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_eval (n : ℕ) :
-    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.1 n :=
+    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.val n :=
   rfl
 
-theorem eval_apply (n : ℕ) (f : AdicCompletion I M) : eval I M n f = f.1 n :=
+theorem eval_apply (n : ℕ) (f : AdicCompletion I M) : eval I M n f = f.val n :=
   rfl
 
 theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ (I ^ n • ⊤ : Submodule R M) x :=
@@ -577,7 +578,7 @@ the `I`-adic completion of `M`. -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
     M →ₗ[R] AdicCompletion I N where
-  toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ LinearMap.congr_fun (h hkl) x⟩
+  toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ congr($(h hkl) x)⟩
   map_add' x y := by
     simp only [map_add]
     rfl
@@ -597,6 +598,19 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
 
+lemma lift_add (f g : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
+    (hg : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ g n = g m) :
+    lift I (f + g) (fun h ↦ by simp [LinearMap.comp_add, hf h, hg h]) =
+      lift I f hf + lift I g hg := by
+  ext; simp
+
+theorem lift_smul (c : R) (f : ∀ n, M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
+    lift I (c • f) (fun h ↦ by simp [LinearMap.comp_smul, hf h]) =
+      c • (lift I f hf) := by
+  ext; simp [val_smul]
+
 section Bijective
 
 variable {I}
@@ -613,7 +627,7 @@ theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
     simp only [LinearMap.mem_ker, Submodule.mem_bot]
     refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
     rw [Subtype.ext_iff] at hx
-    simpa [SModEq.zero] using congrFun hx n
+    simpa [SModEq.zero] using congr($hx n)
 
 variable (I M) in
 theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=
@@ -623,7 +637,6 @@ theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=
 theorem of_inj [IsHausdorff I M] {a b : M} : of I M a = of I M b ↔ a = b :=
   (of_injective I M).eq_iff
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M := by
   constructor
   · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
@@ -634,8 +647,9 @@ theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M :
     rw [← mkQ_apply _ x, ← eval_of, hx]
     simp [u]
   · intro h u
-    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
-    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.2 hmn, ← hx]; simp)
+    choose x hx using
+      (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.val n))
+    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.property hmn, ← hx]; simp)
     use a
     ext n
     simpa [SModEq, ← eval_of, ha, ← hx] using (ha n).symm
@@ -648,7 +662,7 @@ theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
   ⟨fun h ↦
     { toIsHausdorff := of_injective_iff.mp h.1,
       toIsPrecomplete := of_surjective_iff.mp h.2 },
-   fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
+   fun h ↦ ⟨of_injective_iff.mpr h.toIsHausdorff, of_surjective_iff.mpr h.toIsPrecomplete⟩⟩
 
 variable (I M)
 
@@ -678,14 +692,12 @@ theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
 
 end Bijective
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_smul_top_le_ker_eval (n : ℕ) : I ^ n • ⊤ ≤ (eval I M n).ker := by
   simp only [smul_le, mem_top, LinearMap.mem_ker, map_smul, coe_eval, forall_const]
   intro r r_in x
   rw [← Submodule.Quotient.mk_out (x.val n), ← Quotient.mk_smul, Quotient.mk_eq_zero]
   exact smul_mem_smul r_in mem_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma val_apply_mem_smul_top_iff {m n : ℕ} {x : AdicCompletion I M}
     (m_ge : n ≤ m) : x.val m ∈ I ^ n • (⊤ : Submodule R (M ⧸ I ^ m • ⊤)) ↔ x.val n = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -861,15 +873,15 @@ end StrictMono
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
-  h.1.subsingleton
+  h.toIsHausdorff.subsingleton
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  rw [← Ideal.neg_mem_iff, Ring.mem_jacobson_iff]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
@@ -892,12 +904,16 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
-    convert! Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
+    convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
   · simp only [Ideal.one_eq_top, pow_zero, mem_top]
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+
+@[deprecated le_jacobson +typeChanged (since := "2026-10-12")]
+theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+  simpa only [Ideal.jacobson_bot] using (le_jacobson I)
 
 end IsAdicComplete

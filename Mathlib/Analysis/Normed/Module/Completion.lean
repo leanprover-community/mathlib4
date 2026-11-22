@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.LinearMapCompletion
 public import Mathlib.Topology.Algebra.UniformField
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Normed space structure on the completion of a normed space
@@ -44,22 +47,14 @@ variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformCont
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
-  { toCompl with
-    toFun := (↑)
-    map_smul' := coe_smul
-    norm_map' := norm_coe }
+  { toComplL with norm_map' := norm_coe }
 
 @[simp]
 theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
 
-/-- Embedding of a normed space to its completion as a continuous linear map. -/
-def toComplL : E →L[𝕜] Completion E :=
-  toComplₗᵢ.toContinuousLinearMap
-
-@[simp]
-theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
-  rfl
+@[simp] lemma toContinuousLinearMap_toComplₗᵢ :
+    (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).toContinuousLinearMap = toComplL := rfl
 
 @[simp]
 theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
@@ -99,3 +94,38 @@ end Algebra
 end Completion
 
 end UniformSpace
+
+/-!
+# Real scalars on a complete normed `ℚ`-algebra
+
+A complete normed ring `𝔸` with a `NormedAlgebra ℚ 𝔸` structure carries a `NormedAlgebra ℝ 𝔸`
+structure, and that structure is unique.
+-/
+
+section Real
+
+variable (𝔸 : Type*) [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸]
+
+/-- Extend normed algebras over `ℚ` to normed algebras over `ℝ` on Banach algebras. -/
+abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
+  __ := (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
+    Rat.isUniformEmbedding_coe_real.isUniformInducing Rat.denseRange_cast
+    (uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap ℚ 𝔸))).toAlgebra'
+    fun r x ↦ by
+      refine Rat.denseRange_cast.induction_on r (isClosed_eq (by fun_prop) (by fun_prop)) ?_
+      intro a
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, Algebra.commutes]
+  norm_smul_le r x := by
+    refine Rat.denseRange_cast.induction_on r ?_ fun a ↦ ?_
+    · exact isClosed_le ((IsDenseInducing.continuous_extendRingHom ..).mul continuous_const).norm
+        (by fun_prop)
+    · change ‖IsDenseInducing.extendRingHom _ _ _ (a : ℝ) * x‖ ≤ _
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, ← Algebra.smul_def]
+      exact norm_smul_le a x
+
+/-- A complete normed `ℚ`-algebra carries a unique `NormedAlgebra ℝ` structure. -/
+noncomputable instance [CompleteSpace 𝔸] : Unique (NormedAlgebra ℝ 𝔸) where
+  default := normedAlgebraReal 𝔸
+  uniq _ := Subsingleton.elim _ _
+
+end Real

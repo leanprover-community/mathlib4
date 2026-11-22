@@ -153,7 +153,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, ite_true]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
@@ -179,22 +179,22 @@ def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
     ext ⟨i, hi⟩
     simp [precomp, Proj, hi]⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
-    exact (continuous_apply i.val).comp continuous_subtype_val⟩
+    exact (continuous_apply i.val).comp continuous_subtypeVal⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · ext i
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
-    · exact congr_fun h ⟨i, hi⟩
+    · congrm $h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
-      simp only [Proj, if_neg hi]
+      simp only [Proj, ite_eq_right hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
     · rcases a with ⟨_, y, hy, rfl⟩
       exact ⟨y, hy, rfl⟩
     · ext i
-      exact dif_pos i.prop
+      exact dite_eq_left i.prop
 
 variable {C}
 
@@ -238,8 +238,8 @@ noncomputable def spanFunctorIsoIndexFunctor
         ext x
         have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
             IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
-          ext _ i; exact dif_pos i.prop
-        exact congr_fun this x)
+          ext _ i; exact dite_eq_left i.prop
+        congrm $this x)
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
@@ -249,8 +249,8 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsC
     (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cone.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
-        ext _ i; exact dif_pos i.prop
-      exact congr_fun this.symm _)))
+        ext _ i; exact dite_eq_left i.prop
+      congrm $this.symm _)))
 
 end Projections
 
@@ -294,7 +294,7 @@ def e (i : I) : LocallyConstant C ℤ where
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
-      ((continuous_apply i).comp continuous_subtype_val)
+      ((continuous_apply i).comp continuous_subtypeVal)
 
 variable [LinearOrder I]
 
@@ -327,7 +327,7 @@ instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   infer_instance
 
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ` of a formal product `[i₁, i₂, ..., iᵣ]`. -/
-def eval (l : Products I) := (l.1.map (e C)).prod
+def eval (l : Products I) := (l.val.map (e C)).prod
 
 /--
 The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`. We call such a
@@ -338,7 +338,7 @@ def isGood (l : Products I) : Prop :=
 
 theorem rel_head!_of_mem [Inhabited I] {i : I} {l : Products I} (hi : i ∈ l.val) :
     i ≤ l.val.head! :=
-  List.Pairwise.head!_le l.2.sortedGT.sortedGE.pairwise hi
+  List.Pairwise.head!_le l.property.sortedGT.sortedGE.pairwise hi
 
 theorem head!_le_of_lt [Inhabited I] {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
@@ -353,7 +353,7 @@ namespace GoodProducts
 
 /-- Evaluation of good products. -/
 def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
-  Products.eval C l.1
+  Products.eval C l.val
 
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
@@ -374,7 +374,7 @@ def equiv_range : GoodProducts C ≃ range C :=
 theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := rfl
 
 theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
-    LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
+    LinearIndependent ℤ (fun (p : range C) ↦ p.val) := by
   rw [← @Set.rangeFactorization_eq _ _ (GoodProducts.eval C), ← equiv_toFun_eq_eval C]
   exact linearIndependent_equiv (equiv_range C)
 
@@ -392,7 +392,7 @@ theorem eval_eq (l : Products I) (x : C) :
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
     rintro _ ⟨i, hi, rfl⟩
-    exact if_pos (h i hi)
+    exact ite_eq_left (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h
     convert! h with i
@@ -426,7 +426,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
     rw [this]
     exact Submodule.zero_mem _
   ext ⟨_, _, _, rfl⟩
-  rw [eval_eq, if_neg fun h ↦ ?_, LocallyConstant.zero_apply]
+  rw [eval_eq, ite_eq_right fun h ↦ ?_, LocallyConstant.zero_apply]
   simpa [Proj, h'] using h i hi
 
 end Products
@@ -440,7 +440,7 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   rintro f ⟨l, rfl⟩
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
-  apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
+  apply WellFounded.induction' (· < · : Products I → Products I → Prop)
   intro l h
   by_cases hl : l.isGood C
   · apply subset_span
@@ -596,7 +596,7 @@ namespace Products
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.SortedGT.lt_ord_of_lt l.2.sortedGT m.2.sortedGT h₁ h₂
+  List.SortedGT.lt_ord_of_lt m.property.sortedGT h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by

@@ -1,13 +1,15 @@
 /-
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Justin Palumbo
 -/
 module
 
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Sets.Opens
+
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Polish spaces
@@ -20,8 +22,9 @@ In this file, we establish the basic properties of Polish spaces.
 
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
-  use in a proof `letI := upgradeIsCompletelyMetrizable α`.
+  use in a proof `let := upgradeIsCompletelyMetrizable α`.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
+* `IsGδ.polishSpace`: a countable intersection of open subsets of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
   of the fundamental Polish space `ℕ → ℕ`.
@@ -139,21 +142,13 @@ instance : PolishSpace ENNReal :=
 
 end PolishSpace
 
-/-!
-### An open subset of a Polish space is Polish
-
-To prove this fact, one needs to construct another metric, giving rise to the same topology,
-for which the open subset is complete. This is not obvious, as for instance `(0,1) ⊆ ℝ` is not
-complete for the usual metric of `ℝ`: one should build a new metric that blows up close to the
-boundary.
--/
-
 namespace TopologicalSpace.Opens
 
 variable [MetricSpace α] {s : Opens α}
 
 /-- A type synonym for a subset `s` of a metric space, on which we will construct another metric
 for which it will be complete. -/
+@[deprecated "No replacement" (since := "2026-10-14")]
 def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 
 namespace CompleteCopy
@@ -161,19 +156,25 @@ namespace CompleteCopy
 /-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance instDist : Dist (CompleteCopy s) where
-  dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
+  dist x y := dist x.val y.val + abs (1 / infDist x.val sᶜ - 1 / infDist y.val sᶜ)
 
+@[deprecated "No replacement" (since := "2026-10-14")]
 theorem dist_eq (x y : CompleteCopy s) :
-    dist x y = dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ) :=
+    dist x y = dist x.val y.val + abs (1 / infDist x.val sᶜ - 1 / infDist y.val sᶜ) :=
   rfl
 
-theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
+@[deprecated "No replacement" (since := "2026-10-14")]
+theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.val y.val ≤ dist x y :=
   le_add_of_nonneg_right (abs_nonneg _)
 
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s) :=
   inferInstanceAs (SecondCountableTopology s)
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
 /--
@@ -185,15 +186,16 @@ inside `s`.
 This definition ensures the `TopologicalSpace` structure on
 `TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one.
 -/
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
   · simp only [dist_eq, dist_comm, abs_sub_comm]
   · calc
-      dist x z = dist x.1 z.1 + |1 / infDist x.1 sᶜ - 1 / infDist z.1 sᶜ| := rfl
-      _ ≤ dist x.1 y.1 + dist y.1 z.1 + (|1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ| +
-            |1 / infDist y.1 sᶜ - 1 / infDist z.1 sᶜ|) :=
+      dist x z = dist x.val z.val + |1 / infDist x.val sᶜ - 1 / infDist z.val sᶜ| := rfl
+      _ ≤ dist x.val y.val + dist y.val z.val + (|1 / infDist x.val sᶜ - 1 / infDist y.val sᶜ| +
+            |1 / infDist y.val sᶜ - 1 / infDist z.val sᶜ|) :=
         add_le_add (dist_triangle _ _ _) (dist_triangle (1 / infDist _ _) _ _)
       _ = dist x y + dist y z := add_add_add_comm ..
   · refine ⟨fun h x hx ↦ ?_, fun h ↦ isOpen_iff_mem_nhds.2 fun x hx ↦ ?_⟩
@@ -201,56 +203,126 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
       exact ⟨ε, ε0, fun y hy ↦ hε <| (dist_comm _ _).trans_lt <| (dist_val_le_dist _ _).trans_lt hy⟩
     · rcases h x hx with ⟨ε, ε0, hε⟩
       simp only [dist_eq, one_div] at hε
-      have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist y.1 sᶜ)⁻¹|)
-          (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|)) := by
-        refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
+      have : Tendsto (fun y : s ↦ dist x.val y.val + |(infDist x.val sᶜ)⁻¹ - (infDist y.val sᶜ)⁻¹|)
+          (𝓝 x) (𝓝 (dist x.val x.val + |(infDist x.val sᶜ)⁻¹ - (infDist x.val sᶜ)⁻¹|)) := by
+        refine (tendsto_const_nhds.dist continuous_subtypeVal.continuousAt).add
           (tendsto_const_nhds.sub <| ?_).abs
-        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
+        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtypeVal.continuousAt
         rw [s.isOpen.isClosed_compl.closure_eq, mem_compl_iff, not_not]
-        exact x.2
+        exact x.property
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
       exact mem_of_superset (this <| gt_mem_nhds ε0) hε
 
+@[deprecated "No replacement" (since := "2026-10-14")]
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
-  have A : CauchySeq fun n => (u n).1 := by
+  have A : CauchySeq fun n => (u n).val := by
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
     · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
-  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
+  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).val) atTop (𝓝 x) :=
+    cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 sᶜ < C := by
-    refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).1 sᶜ, fun n ↦ ?_⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).val sᶜ < C := by
+    refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).val sᶜ, fun n ↦ ?_⟩
     rw [← sub_lt_iff_lt_add]
     calc
-      _ ≤ |1 / infDist (u n).1 sᶜ - 1 / infDist (u 0).1 sᶜ| := le_abs_self _
-      _ = |1 / infDist (u 0).1 sᶜ - 1 / infDist (u n).1 sᶜ| := abs_sub_comm _ _
+      _ ≤ |1 / infDist (u n).val sᶜ - 1 / infDist (u 0).val sᶜ| := le_abs_self _
+      _ = |1 / infDist (u 0).val sᶜ - 1 / infDist (u n).val sᶜ| := abs_sub_comm _ _
       _ ≤ dist (u 0) (u n) := le_add_of_nonneg_left dist_nonneg
       _ < (1 / 2) ^ 0 := hu 0 0 n le_rfl n.zero_le
   have Cpos : 0 < C := lt_of_le_of_lt (div_nonneg zero_le_one infDist_nonneg) (hC 0)
   have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y sᶜ := fun {y} ↦ by
     rw [← s.isOpen.isClosed_compl.notMem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
-  have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
-    have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
+  have I : ∀ n, 1 / C ≤ infDist (u n).val sᶜ := fun n ↦ by
+    have : 0 < infDist (u n).val sᶜ := Hmem.1 (u n).property
     rw [div_le_iff₀' Cpos]
     exact (div_le_iff₀ this).1 (hC n).le
   have I' : 1 / C ≤ infDist x sᶜ :=
-    have : Tendsto (fun n => infDist (u n).1 sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
+    have : Tendsto (fun n => infDist (u n).val sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
       ((continuous_infDist_pt (sᶜ : Set α)).tendsto x).comp xlim
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs
 
-/-- An open subset of a Polish space is also Polish. -/
-theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
-    (hs : IsOpen s) : PolishSpace s := by
-  let := upgradeIsCompletelyMetrizable α
-  lift s to Opens α using hs
-  exact inferInstanceAs (PolishSpace s.CompleteCopy)
-
 end CompleteCopy
 
 end TopologicalSpace.Opens
+
+/-!
+### A Gδ subset of a Polish space is Polish
+
+In particular, an open subset of a Polish space is Polish.
+
+To prove this fact, we follow a proof attributed to A. Bernshteyn. We homeomorphically map a Gδ
+subset of `α` to a subset of `α × (ℕ → ℝ≥0)`, which is closed and thus Polish.
+-/
+
+namespace GδEmbedding
+
+open scoped NNReal ENNReal
+
+variable [MetricSpace α] {ι : Type*} {U : ι → Set α}
+
+/-- The map `x ↦ (x, fun i ↦ d(x, U iᶜ)⁻¹)` from `⋂ i, U i` into `α × (ι → ℝ≥0)`. When the `U i`
+are open, this is a closed embedding: the `i`-th coordinate of the second component blows up as
+`x` approaches the boundary of `U i`, so that the boundary is sent "to infinity". This guarantees
+limit points will have their first coordinates within all of the `U i`. -/
+def gδEmbedding (U : ι → Set α) (x : ↥(⋂ i, U i)) : α × (ι → ℝ≥0) :=
+  (x.val, fun i ↦ (infEDist x.val (U i)ᶜ)⁻¹.toNNReal)
+
+theorem inv_infEDist_compl_ne_top (hUo : ∀ i, IsOpen (U i)) (x : ↥(⋂ i, U i)) (i : ι) :
+    (infEDist x.val (U i)ᶜ)⁻¹ ≠ ∞ := by
+  simpa [← mem_iff_infEDist_zero_of_closed (hUo i).isClosed_compl] using mem_iInter.mp x.property i
+
+theorem continuous_gδEmbedding (hUo : ∀ i, IsOpen (U i)) : Continuous (gδEmbedding U) :=
+  continuous_subtypeVal.prodMk <| continuous_pi fun i ↦
+    ENNReal.continuousOn_toNNReal.comp_continuous (by fun_prop) (inv_infEDist_compl_ne_top hUo · i)
+
+/-- This characterization of the range of `gδEmbedding` as an intersection makes it easy to
+show that the range is closed. -/
+theorem range_gδEmbedding (hUo : ∀ i, IsOpen (U i)) :
+    range (gδEmbedding U) = {q | ∀ i, (infEDist q.1 (U i)ᶜ)⁻¹ = q.2 i} := by
+  ext q
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨x, rfl⟩ i
+    simp only [gδEmbedding, ENNReal.coe_toNNReal (inv_infEDist_compl_ne_top hUo x i)]
+  · have hmem (i : ι) : q.1 ∈ U i := by
+      by_contra hq
+      simpa [infEDist_zero_of_mem (mem_compl hq)] using h i
+    exact ⟨⟨q.1, by simpa⟩, Prod.ext rfl <| funext fun i ↦ congr($(h i).toNNReal)⟩
+
+theorem isClosedEmbedding_gδEmbedding (hUo : ∀ i, IsOpen (U i)) :
+    IsClosedEmbedding (gδEmbedding U) where
+  toIsInducing := .of_comp (continuous_gδEmbedding hUo) continuous_fst .subtypeVal
+  injective _ _ h := Subtype.ext congr(($h).1)
+  isClosed_range := by
+    rw [range_gδEmbedding hUo, ofPred_forall]
+    exact isClosed_iInter fun i ↦ isClosed_eq (by fun_prop) (by fun_prop)
+
+/-- A Gδ subset of a completely metrizable space is also completely metrizable. -/
+theorem _root_.IsGδ.isCompletelyMetrizableSpace {α : Type*} [TopologicalSpace α]
+    [IsCompletelyMetrizableSpace α] {s : Set α} (hs : IsGδ s) : IsCompletelyMetrizableSpace s := by
+  let := upgradeIsCompletelyMetrizable α
+  obtain ⟨V, V_open, rfl⟩ := hs.eq_iInter_nat
+  exact (isClosedEmbedding_gδEmbedding V_open).IsCompletelyMetrizableSpace
+
+/-- A Gδ subset of a Polish space is also Polish. -/
+theorem _root_.IsGδ.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
+    (hs : IsGδ s) : PolishSpace s where
+  __ := hs.isCompletelyMetrizableSpace
+
+/-- An open subset of a completely metrizable space is also completely metrizable. -/
+theorem _root_.IsOpen.isCompletelyMetrizableSpace {α : Type*} [TopologicalSpace α]
+    [IsCompletelyMetrizableSpace α] {s : Set α} (hs : IsOpen s) : IsCompletelyMetrizableSpace s :=
+  hs.isGδ.isCompletelyMetrizableSpace
+
+/-- An open subset of a Polish space is also Polish. -/
+theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
+    (hs : IsOpen s) : PolishSpace s :=
+  hs.isGδ.polishSpace
+
+end GδEmbedding
 
 namespace PolishSpace
 
@@ -277,7 +349,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   have hle : TopologicalSpace.coinduced f instTopologicalSpaceSum ≤ ‹_› := by
     simp only [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, sup_le_iff,
       ← continuous_iff_coinduced_le]
-    exact ⟨continuous_subtype_val, continuous_subtype_val⟩
+    exact ⟨continuous_subtypeVal, continuous_subtypeVal⟩
   refine ⟨.coinduced f instTopologicalSpaceSum, hle, ?_, hs.mono hle, ?_⟩
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced

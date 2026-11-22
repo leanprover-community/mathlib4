@@ -5,8 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # The set lattice and (pre)images of functions
@@ -472,6 +471,11 @@ lemma biUnion_prod {α β γ} (s : Set α) (t : Set β) (f : α → Set γ) (g :
 lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
     ⋃ x ∈ s ×ˢ t, f x = ⋃ (i ∈ s) (j ∈ t), f (i, j) :=
   biSup_prod
+
+theorem iInter_prod_iInter (s : ι → Set α) (t : ι → Set β) :
+    (⋂ i, s i) ×ˢ ⋂ i, t i = ⋂ i, s i ×ˢ t i := by
+  ext
+  simp [forall_and]
 
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=

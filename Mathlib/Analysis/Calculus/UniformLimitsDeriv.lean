@@ -6,8 +6,8 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Order.Filter.Curry
+
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Swapping limits and derivatives via uniform convergence
@@ -147,7 +147,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     -- With a small ball in hand, apply the mean value theorem
     refine
       eventually_prod_iff.mpr
-        ⟨_, b, fun e : E => Metric.ball x r e,
+        ⟨_, b, (· ∈ Metric.ball x r),
           eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
     simp only [Pi.zero_apply, dist_zero_left, norm_neg_add] at e ⊢
     refine lt_of_le_of_lt ?_ (hxyε y hy)
@@ -283,7 +283,7 @@ theorem difference_quotients_converge_uniformly
   obtain ⟨r, hr, hr'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
   rw [eventually_prod_iff]
   refine
-    ⟨_, b, fun e : E => Metric.ball x r e,
+    ⟨_, b, (· ∈ Metric.ball x r),
       eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
   simp only [Pi.zero_apply, dist_zero_left]
   rw [norm_neg_add, ← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]
@@ -336,8 +336,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   --   * The `f' n` are the derivatives of the `f n`
   --   * The `f' n` converge to `g'` at `x`
   conv =>
-    congr
-    ext
+    enter [1, _]
     rw [← abs_norm, ← abs_inv, ← @RCLike.norm_ofReal 𝕜 _ _, RCLike.ofReal_inv, ← norm_smul]
   rw [← tendsto_zero_iff_norm_tendsto_zero]
   have :
@@ -360,8 +359,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    convert! hn using 2
-    module
+    module_nf at hn ⊢
+    exact hn
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]
     intro ε hε
@@ -453,7 +452,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
     UniformCauchySeqOnFilter (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   intro u hu
-  simpa using hf' _ ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
+  simpa using hf' _ ((StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
 
 variable [IsRCLikeNormedField 𝕜]
 
@@ -470,7 +469,7 @@ theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' 
   have hf' :
     UniformCauchySeqOn (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
       (Metric.ball x r) :=
-    (ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_uniformCauchySeqOn hf'
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_uniformCauchySeqOn hf'
   exact uniformCauchySeqOn_ball_of_fderiv hf' hf hfg
 
 theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
@@ -483,7 +482,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   let G' z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) :=
-    (ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf'
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf'
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 
 theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)

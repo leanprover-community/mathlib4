@@ -6,6 +6,10 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Operator norm: Cartesian products
@@ -17,7 +21,7 @@ Interaction of operator norm with Cartesian products.
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
-open Set Real Metric ContinuousLinearMap
+open Set Real ContinuousLinearMap
 
 section SemiNormed
 

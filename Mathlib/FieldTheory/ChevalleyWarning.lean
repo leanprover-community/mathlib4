@@ -7,6 +7,8 @@ module
 
 public import Mathlib.FieldTheory.Finite.Basic
 
+import Mathlib.Algebra.MvPolynomial.CommRing
+
 /-!
 # The Chevalley–Warning theorem
 
@@ -32,7 +34,6 @@ and `q` is notation for the cardinality of `K`.
 - `K` is a finite field
 - `q` is notation for the cardinality of `K`
 - `σ` is the indexing type for the variables of a multivariate polynomial ring over `K`
-
 -/
 
 public section

@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject.Bifunctor
-public import Mathlib.CategoryTheory.Functor.Trifunctor
+
 /-!
 # The action of trifunctors on graded objects
 
@@ -22,7 +22,6 @@ for `p ⟨i₁, i₂, i₃⟩ = j`.
 This shall be used in order to construct the associator isomorphism for the monoidal
 category structure on `GradedObject I C` induced by a monoidal structure on `C` and
 an additive monoid structure on `I` (TODO @joelriou).
-
 -/
 
 @[expose] public section
@@ -38,9 +37,8 @@ namespace GradedObject
 
 section
 
-variable (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
+variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `mapTrifunctor`. -/
 @[simps]
 def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ : Type*) :
@@ -121,7 +119,6 @@ section
 variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 variable {I₁ I₂ I₃ J : Type*} (p : I₁ × I₂ × I₃ → J)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₃`, graded objects `X₁ : GradedObject I₁ C₁`,
 `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃`, and a map `p : I₁ × I₂ × I₃ → J`,
 this is the `J`-graded object sending `j` to the coproduct of
@@ -132,7 +129,6 @@ noncomputable def mapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : Gr
     GradedObject J C₄ :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).mapObj p
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The obvious inclusion
 `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃) ⟶ mapTrifunctorMapObj F p X₁ X₂ X₃ j` when
 `p ⟨i₁, i₂, i₃⟩ = j`. -/
@@ -142,7 +138,6 @@ noncomputable def ιMapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : 
     ((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃) ⟶ mapTrifunctorMapObj F p X₁ X₂ X₃ j :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).ιMapObj p ⟨i₁, i₂, i₃⟩ j h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The maps `mapTrifunctorMapObj F p X₁ X₂ X₃ ⟶ mapTrifunctorMapObj F p Y₁ Y₂ Y₃` which
 express the functoriality of `mapTrifunctorMapObj`, see `mapTrifunctorMap` -/
 noncomputable def mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ ⟶ Y₁)
@@ -190,7 +185,6 @@ instance (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ :
     [h : HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
     HasMap (((mapTrifunctorObj F X₁ I₂ I₃).obj X₂).obj X₃) p := h
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`, a map `p : I₁ × I₂ × I₃ → J`, and
 graded objects `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`,
 this is the `J`-graded object sending `j` to the coproduct of
@@ -338,8 +332,8 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
     (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).cofanMapObj ρ₁₂.q j
   have hc : IsColimit c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj
     (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).isColimitCofanMapObj ρ₁₂.q j
-  let c₁₂' := fun (i : ρ₁₂.q ⁻¹' {j}) => (G.flip.obj (X₃ i.1.2)).mapCocone (c₁₂ i.1.1)
-  have hc₁₂' : ∀ i, IsColimit (c₁₂' i) := fun i => isColimitOfPreserves _ (h₁₂ i.1.1)
+  let c₁₂' := fun (i : ρ₁₂.q ⁻¹' {j}) => (G.flip.obj (X₃ i.val.2)).mapCocone (c₁₂ i.val.1)
+  have hc₁₂' : ∀ i, IsColimit (c₁₂' i) := fun i => isColimitOfPreserves _ (h₁₂ i.val.1)
   let Z := (((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
   let p' : I₁ × I₂ × I₃ → ρ₁₂.I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨ρ₁₂.p ⟨i₁, i₂⟩, i₃⟩
   let e : ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), p' ⁻¹' {(i₁₂, i₃)} ≃ ρ₁₂.p ⁻¹' {i₁₂} := fun i₁₂ i₃ =>
@@ -348,7 +342,7 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
       left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
         obtain rfl : i₃ = i₃' := by cat_disch
         rfl }
-  let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
+  let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.val.1, i.val.2) :=
     fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
       refine (Cocone.precompose (Iso.hom ?_)).obj ((Cocone.whiskeringEquivalence
         (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
@@ -430,7 +424,7 @@ variable (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂
 noncomputable def mapBifunctor₁₂BifunctorDesc :
     mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j ⟶ A :=
   Cofan.IsColimit.desc (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)
-    (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
+    (fun i ↦ f i.val.1 i.val.2.1 i.val.2.2 i.property)
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctor₁₂BifunctorDesc
@@ -520,8 +514,8 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
     (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)).cofanMapObj ρ₂₃.q j
   have hc : IsColimit c := (((mapBifunctor F I₁ ρ₂₃.I₂₃).obj X₁).obj
     (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃)).isColimitCofanMapObj ρ₂₃.q j
-  let c₂₃' := fun (i : ρ₂₃.q ⁻¹' {j}) => (F.obj (X₁ i.1.1)).mapCocone (c₂₃ i.1.2)
-  have hc₂₃' : ∀ i, IsColimit (c₂₃' i) := fun i => isColimitOfPreserves _ (h₂₃ i.1.2)
+  let c₂₃' := fun (i : ρ₂₃.q ⁻¹' {j}) => (F.obj (X₁ i.val.1)).mapCocone (c₂₃ i.val.2)
+  have hc₂₃' : ∀ i, IsColimit (c₂₃' i) := fun i => isColimitOfPreserves _ (h₂₃ i.val.2)
   let Z := (((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
   let p' : I₁ × I₂ × I₃ → I₁ × ρ₂₃.I₂₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨i₁, ρ₂₃.p ⟨i₂, i₃⟩⟩
   let e : ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃), p' ⁻¹' {(i₁, i₂₃)} ≃ ρ₂₃.p ⁻¹' {i₂₃} := fun i₁ i₂₃ =>
@@ -530,7 +524,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
       left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
         obtain rfl : i₁ = i₁' := by cat_disch
         rfl }
-  let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
+  let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.val.1, i.val.2) :=
     fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
       refine (Cocone.precompose (Iso.hom ?_)).obj ((Cocone.whiskeringEquivalence
         (Discrete.equivalence (e i₁ i₂₃))).functor.obj (c₂₃' ⟨⟨i₁, i₂₃⟩, hi⟩))
@@ -546,7 +540,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
   rw [comp_id, id_comp]
   rfl
 
-variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
+variable {X₁ X₂ X₃}
 
 include ρ₂₃ in
 lemma HasGoodTrifunctor₂₃Obj.hasMap :
@@ -612,7 +606,7 @@ variable
 noncomputable def mapBifunctorBifunctor₂₃Desc :
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A :=
   Cofan.IsColimit.desc (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
-    (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
+    (fun i ↦ f i.val.1 i.val.2.1 i.val.2.2 i.property)
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorBifunctor₂₃Desc

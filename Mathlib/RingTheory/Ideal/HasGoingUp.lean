@@ -24,7 +24,7 @@ This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 - `Algebra.HasGoingUp.of_isIntegral`: integral algebras satisfy going up.
 -/
 
-@[expose] public section
+public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingUp R S` if for every pair of
@@ -109,7 +109,7 @@ lemma iff_specializingMap_primeSpectrumComap :
   · have : PrimeSpectrum.comap (algebraMap R S) ⟨P, hP⟩ ⤳ (⟨q, hq⟩ : PrimeSpectrum R) :=
       (PrimeSpectrum.le_iff_specializes _ _).mp hlt.le
     obtain ⟨Q, hs, heq⟩ := h this
-    refine ⟨Q.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, Q.2, ⟨?_⟩⟩
+    refine ⟨Q.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, Q.isPrime, ⟨?_⟩⟩
     simpa [PrimeSpectrum.ext_iff] using heq.symm
 
 variable (R S) in
