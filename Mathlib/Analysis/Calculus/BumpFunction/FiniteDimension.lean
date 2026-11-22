@@ -532,12 +532,12 @@ end
 
 /-- A smooth cutoff on `ℝ`: if `a < b ≤ c < d`, there is a smooth function `ψ` with compact
 support contained in `Ioo a d` such that `𝟙_[b, c] ≤ ψ ≤ 𝟙_(a, d)`. In particular,
-`c - b ≤ ∫ ψ ≤ d - a`. -/
+`∫ ψ ∈ [c - b, d - a]`. -/
 theorem Real.exists_contDiff_indicator_Icc_le_le_indicator_Ioo {a b c d : ℝ} (hab : a < b)
     (hbc : b ≤ c) (hcd : c < d) :
     ∃ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ tsupport ψ ⊆ Ioo a d ∧
       (Icc b c).indicator 1 ≤ ψ ∧ ψ ≤ (Ioo a d).indicator 1 ∧
-      c - b ≤ ∫ x, ψ x ∧ ∫ x, ψ x ≤ d - a := by
+      ∫ x, ψ x ∈ Icc (c - b) (d - a) := by
   let ψ : ContDiffBump ((b + c) / 2) :=
     ⟨(c - b) / 2 + min (b - a) (d - c) / 3, (c - b) / 2 + 2 * min (b - a) (d - c) / 3,
       by grind, by grind⟩
