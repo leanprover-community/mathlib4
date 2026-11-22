@@ -70,9 +70,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 variable (I n f) in
 /-- TODO: find a proper name for `Foo` and add a docstring. -/
-structure Foo : Prop where
-  exists_contMDiffAt {x y : M} (hxy : f x = f y) :
-    ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
+def Foo : Prop := ∀ {x y : M}, f x = f y → ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
 namespace IsLocalHomeomorph
 
@@ -88,7 +86,7 @@ lemma contMDiffOn_localInverseAt_symm_trans
   have hτ {z : M} (hz : z ∈ τ.source) : f (τ z) = f z := by
     simpa [τ] using hf.apply_localInverseAt_of_mem (by simpa using hz.2)
   intro z hz
-  obtain ⟨σ, hσz, hσ, hfσ⟩ := h.exists_contMDiffAt (hτ hz).symm
+  obtain ⟨σ, hσz, hσ, hfσ⟩ := h (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
   have ht : (hf.localInverseAt y).target ∈ 𝓝 (σ z) :=
     (hf.localInverseAt y).open_target.mem_nhds (hσz ▸ (τ.map_source hz).1)
@@ -141,7 +139,7 @@ theorem contMDiff_of_rightInverse (h : Foo I n f) :
     CMDiff n f := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro x
-  obtain ⟨σ, hσx, hσ, hfσ⟩ := h.exists_contMDiffAt (hg (f x)).symm
+  obtain ⟨σ, hσx, hσ, hfσ⟩ := h (hg (f x)).symm
   refine ContMDiffAt.congr_of_eventuallyEq ?_ hfσ.symm
   refine ContMDiffAt.comp x ?_ hσ
   rw [hσx]
