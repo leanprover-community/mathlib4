@@ -5,9 +5,10 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Function.Const
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.InductiveDimension.Classes
+
+import Mathlib.Logic.Function.Const
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -96,7 +97,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, (connectedComponent x).Subsingleton := by
   constructor
   · intro h x
-    apply h.1
+    apply h.isTotallyDisconnected_univ
     · exact subset_univ _
     exact isPreconnected_connectedComponent
   intro h; constructor

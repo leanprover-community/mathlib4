@@ -312,7 +312,7 @@ is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`.
 /-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
 instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^n⟮I, N; 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩
+  ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.property g.property⟩⟩
 
 /-- The left multiplication with a `C^n` scalar function commutes with composition. -/
 @[simp]

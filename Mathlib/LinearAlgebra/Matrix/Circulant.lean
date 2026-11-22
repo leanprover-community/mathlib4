@@ -161,7 +161,7 @@ theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
 This means that we cannot state this with `Pi.single` as we did with `Matrix.circulant_single`. -/
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
-    ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
+    ∀ n, circulant (fun i => ite (i.val = 0) 1 0 : Fin n → α) = 1
   | 0 => by simp [eq_iff_true_of_subsingleton]
   | n + 1 => by
     rw [← circulant_single_one]

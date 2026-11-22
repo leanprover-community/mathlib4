@@ -329,7 +329,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
 
 /-- Composition of a bounded continuous function and a continuous function. -/
 def compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) : δ →ᵇ β where
-  toContinuousMap := f.1.comp g
+  toContinuousMap := f.toContinuousMap.comp g
   map_bounded' := f.map_bounded'.imp fun _ hC _ _ => hC _ _
 
 @[simp]
@@ -382,7 +382,7 @@ theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   LipschitzWith.of_dist_le_mul fun f g =>
-    (dist_le (mul_nonneg C.2 dist_nonneg)).2 fun x =>
+    (dist_le (mul_nonneg C.property dist_nonneg)).2 fun x =>
       calc
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist

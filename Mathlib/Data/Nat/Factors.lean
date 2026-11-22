@@ -6,11 +6,12 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Basic
+
+import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers

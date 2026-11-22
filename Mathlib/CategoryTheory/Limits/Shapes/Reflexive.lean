@@ -117,7 +117,7 @@ theorem right_comp_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
 /-- If `f,g` is a kernel pair for some morphism `q`, then it is reflexive. -/
 theorem IsKernelPair.isReflexivePair {R : C} {f g : R ⟶ A} {q : A ⟶ B} (h : IsKernelPair q f g) :
     IsReflexivePair f g :=
-  IsReflexivePair.mk' _ (h.lift' _ _ rfl).2.1 (h.lift' _ _ _).2.2
+  IsReflexivePair.mk' _ (h.lift' _ _ rfl).property.1 (h.lift' _ _ _).property.2
 
 -- This shouldn't be an instance as it would instantly loop.
 /-- If `f,g` is reflexive, then `g,f` is reflexive. -/

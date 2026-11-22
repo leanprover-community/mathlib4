@@ -192,9 +192,8 @@ section
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- The `A`-algebra isomorphism `A[X] ≃ₐ[A] A ⊗[R] R[X]` (when `A` is commutative). -/
-def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
-  __ := polyEquivTensor R A
-  commutes' a := by simp
+def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] :=
+  .ofCommutes (polyEquivTensor R A) (by simp)
 
 /-- `polyEquivTensor' R A` is the same as `polyEquivTensor R A` as a function. -/
 @[simp] theorem coe_polyEquivTensor' : ⇑(polyEquivTensor' R A) = polyEquivTensor R A := rfl

@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Basic.Unique
-public import Mathlib.Data.Sum.Basic
 public import Mathlib.Tactic.Spread
+
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Instances and theorems on pi types

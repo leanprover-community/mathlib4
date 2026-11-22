@@ -158,12 +158,12 @@ attribute [local instance] specializationOrder
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
-  toFun s := s.2.genericPoint
+  toFun s := s.isIrreducible'.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
   left_inv s := by
     refine TopologicalSpace.IrreducibleCloseds.ext ?_
     simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
-      closure_eq_iff_isClosed.mpr s.3]
+      closure_eq_iff_isClosed.mpr s.isClosed']
     rfl
   right_inv x := isIrreducible_singleton.closure.isGenericPoint_genericPoint_closure.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
@@ -220,8 +220,8 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
   use H.genericPoint
   apply le_antisymm
   · simpa [h'.closure_subset_iff, h'.closure_eq] using!
-      continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-  rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
+      continuous_subtypeVal.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+  rw [← image_singleton, ← closure_image_closure continuous_subtypeVal,
     H.isGenericPoint_genericPoint_closure.def]
   refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
     (closure_mono ?_)
@@ -290,9 +290,9 @@ namespace genericPoints
 
 /-- The irreducible component of a generic point -/
 def component (x : genericPoints α) : irreducibleComponents α :=
-  ⟨closure {x.1}, x.2⟩
+  ⟨closure {x.val}, x.property⟩
 
-lemma isGenericPoint (x : genericPoints α) : IsGenericPoint x.1 (component x).1 := rfl
+lemma isGenericPoint (x : genericPoints α) : IsGenericPoint x.val (component x).val := rfl
 
 lemma component_injective [T0Space α] : Function.Injective (component (α := α)) :=
   fun x y e ↦ Subtype.ext ((isGenericPoint x).eq (e ▸ isGenericPoint y))
@@ -300,12 +300,14 @@ lemma component_injective [T0Space α] : Function.Injective (component (α := α
 /-- The generic point of an irreducible component. -/
 noncomputable
 def ofComponent [QuasiSober α] (x : irreducibleComponents α) : genericPoints α :=
-  ⟨x.2.1.genericPoint, show _ ∈ irreducibleComponents α from
-    (x.2.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.1 x.2)).symm ▸ x.2⟩
+  ⟨x.property.1.genericPoint, show _ ∈ irreducibleComponents α from
+    (x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)).symm ▸ x.property⟩
 
 lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
-    IsGenericPoint (ofComponent x).1 x :=
-    x.2.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.1 x.2)
+    IsGenericPoint (ofComponent x).val x :=
+    x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)
 
 @[simp]
 lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
@@ -333,7 +335,7 @@ lemma closure [QuasiSober α] : closure (genericPoints α) = Set.univ := by
   refine Set.eq_univ_iff_forall.mpr fun x ↦ Set.subset_def.mp ?_ x mem_irreducibleComponent
   refine (isGenericPoint_ofComponent
     ⟨_, irreducibleComponent_mem_irreducibleComponents x⟩).symm.trans_subset (closure_mono ?_)
-  exact Set.singleton_subset_iff.mpr (ofComponent _).2
+  exact Set.singleton_subset_iff.mpr (ofComponent _).property
 
 end genericPoints
 
