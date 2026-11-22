@@ -52,7 +52,7 @@ generated all the sets in the sigma-algebra.
 This construction is very similar to that of the Borel hierarchy. -/
 def generateMeasurableRec (s : Set (Set α)) (i : Ordinal) : Set (Set α) :=
   let S := ⋃ j < i, generateMeasurableRec s j
-  s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
+  s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).val
 termination_by i
 
 theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : Ordinal) :
@@ -106,7 +106,7 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
     exact hc u (IH j hj u hj') ⟨j, hj.trans_le hk, hj'⟩
   · apply hn
     intro n
-    obtain ⟨j, hj, hj'⟩ := mem_iUnion₂.1 (f n).2
+    obtain ⟨j, hj, hj'⟩ := mem_iUnion₂.1 (f n).property
     use IH j hj _ hj', j, hj.trans_le hk
 
 theorem generateMeasurableRec_omega_one (s : Set (Set α)) :

@@ -848,11 +848,11 @@ variable [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α
 
 @[to_dual]
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
-  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.property h
 
 @[to_dual]
 protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s) :=
-  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.property h
 
 @[to_dual]
 protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=

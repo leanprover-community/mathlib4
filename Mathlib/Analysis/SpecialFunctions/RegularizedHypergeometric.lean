@@ -141,6 +141,23 @@ theorem mul_regularizedHGFunCoeff_of_mem_right (n : ℕ) {u : ℂ} (h : u ∈ b)
     _ = 1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) := by
       grind [Multiset.map_cons, Multiset.prod_cons]
 
+theorem mul_regularizedHGFunCoeff (n : ℕ) :
+    (n + 1) * regularizedHGFunCoeff a b (n + 1) =
+      a.prod * regularizedHGFunCoeff (a.map (· + 1)) (b.map (· + 1)) n := by
+  unfold regularizedHGFunCoeff
+  simp only [Nat.cast_add, Nat.cast_one, Multiset.map_map, Function.comp_apply]
+  calc
+    _ = (a.map ((ascPochhammer ℂ (n + 1)).eval ·)).prod /
+        (n ! * (b.map fun x ↦ Gamma (x + (n + 1))).prod) := by
+      rw [Nat.factorial_succ]
+      push_cast
+      field
+    _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
+        (n ! * (b.map fun x ↦ Gamma (x + (n + 1))).prod) := by
+      simp [ascPochhammer, Multiset.prod_map_mul]
+    _ = _ := by
+      grind
+
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
     C 0 {-(n : ℂ) + 1} (i + n) = C 0 {(n : ℂ) + 1} i := by
@@ -398,6 +415,23 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
       ring
     _ = _ := by
       simp [regularizedHGFun, FormalMultilinearSeries.sum]
+
+section Derivative
+
+theorem hasDerivAt_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    HasDerivAt (regularizedHGFun a b)
+      (a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z) z := by
+  refine ((regularizedHGFunSeries a b).hasDerivAt_sum hz).congr_deriv ?_
+  suffices ∑' n, z ^ n * ((n + 1) * C a b (n + 1)) =
+      a.prod * ∑' n, z ^ n * C (a.map (· + 1)) (b.map (· + 1)) n by
+    simpa [regularizedHGFun, FormalMultilinearSeries.sum]
+  grind [tsum_mul_left, mul_regularizedHGFunCoeff]
+
+theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    deriv (regularizedHGFun a b) z = a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z :=
+  (hasDerivAt_regularizedHGFun hz).deriv
+
+end Derivative
 
 section ZeroZero
 
