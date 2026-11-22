@@ -6,6 +6,8 @@ Authors: Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.Probability.Martingale.Order.Dual
+public import Mathlib.Probability.Martingale.Order.Equality
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
 
@@ -131,6 +133,17 @@ theorem submartingale [Preorder E] (hf : Martingale f ℱ μ) : Submartingale f 
   ⟨hf.1, fun i j hij => (hf.2 i j hij).symm.le, fun i => hf.integrable i⟩
 
 end Martingale
+
+/-- A process is a supermartingale iff it is a submartingale in the order dual. -/
+theorem supermartingale_iff_submartingale_orderDual [LE E] :
+    Supermartingale f ℱ μ ↔ Submartingale (fun i ω ↦ OrderDual.toDual (f i ω)) ℱ μ :=
+  Iff.rfl
+
+/-- A process is a martingale iff it is a submartingale for the equality order on its values. -/
+theorem martingale_iff_submartingale_eqOrder [CompleteSpace E] :
+    Martingale f ℱ μ ↔ (letI := PartialOrder.eqOrder E; Submartingale f ℱ μ) :=
+  ⟨fun h ↦ ⟨h.1, fun i j hij ↦ (h.2 i j hij).symm, h.integrable⟩,
+    fun h ↦ ⟨h.1, fun i j hij ↦ Filter.EventuallyEq.symm (h.2.1 i j hij)⟩⟩
 
 theorem martingale_iff [CompleteSpace E] [PartialOrder E] :
     Martingale f ℱ μ ↔ Supermartingale f ℱ μ ∧ Submartingale f ℱ μ :=
@@ -421,13 +434,12 @@ theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : St
       𝒢.condExp_condExp (f (k + 1)) hik] with ω hω1 hω2 hω3
     grw [hω1, hω2, hω3]
 
-theorem supermartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
+omit [ClosedIciTopology E] in
+theorem supermartingale_nat [ClosedIicTopology E] [IsFiniteMeasure μ] {f : ℕ → Ω → E}
+    (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, μ[f (i + 1) | 𝒢 i] ≤ᵐ[μ] f i) :
-    Supermartingale f 𝒢 μ := by
-  rw [← neg_neg f]
-  refine (submartingale_nat hadp.neg (fun i => (hint i).neg) fun i =>
-    EventuallyLE.trans ?_ (condExp_neg ..).symm.le).neg
-  filter_upwards [hf i] with x hx using neg_le_neg hx
+    Supermartingale f 𝒢 μ :=
+  supermartingale_iff_submartingale_orderDual.mpr (submartingale_nat (E := Eᵒᵈ) hadp hint hf)
 
 theorem submartingale_of_condExp_sub_nonneg_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E}
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
@@ -478,16 +490,12 @@ end SubSuper
 theorem martingale_nat [CompleteSpace E] [IsFiniteMeasure μ]
     {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i =ᵐ[μ] μ[f (i + 1) | 𝒢 i]) :
-    Martingale f 𝒢 μ := by
-  refine ⟨hadp, fun i j hij ↦ ?_⟩
-  induction j, hij using Nat.le_induction with
-  | base =>
-    refine ae_of_all _ fun _ ↦ ?_
-    rw [condExp_of_stronglyMeasurable (𝒢.le i) (hadp i) (hint i)]
-  | succ k hik hk =>
-    filter_upwards [hk, condExp_congr_ae (hf k), 𝒢.condExp_condExp (f (k + 1)) hik]
-      with ω hω1 hω2 hω3
-    rw [← hω1, hω2, hω3]
+    Martingale f 𝒢 μ :=
+  letI := PartialOrder.eqOrder E
+  letI := PartialOrder.eqOrder.isOrderedAddMonoid E
+  letI := PartialOrder.eqOrder.posSMulMono E ℝ
+  letI := PartialOrder.eqOrder.closedIciTopology E
+  martingale_iff_submartingale_eqOrder.mpr (submartingale_nat hadp hint hf)
 
 theorem martingale_of_setIntegral_eq_succ [CompleteSpace E] [IsFiniteMeasure μ] {f : ℕ → Ω → E}
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)

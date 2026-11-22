@@ -6697,6 +6697,8 @@ public import Mathlib.Probability.Martingale.Centering
 public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
+public import Mathlib.Probability.Martingale.Order.Dual
+public import Mathlib.Probability.Martingale.Order.Equality
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.ComplexMGF
