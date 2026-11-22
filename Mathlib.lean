@@ -6015,6 +6015,7 @@ public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
 public import Mathlib.NumberTheory.CarmichaelNumber
 public import Mathlib.NumberTheory.Chebyshev
+public import Mathlib.NumberTheory.Chebyshev.VonKoch
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
