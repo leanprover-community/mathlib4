@@ -75,7 +75,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
-    @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, mem_Iio.2 <| lt_add_one o⟩ where
+    @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
   strictMono _ := by simp
   le_ord_cof := by simp
   isCofinal_range := by simp [IsTop]
@@ -92,8 +92,7 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
 fundamental sequence for `g o`. -/
 theorem comp_isNormal {g : Ordinal → Ordinal}
     (hg : IsNormal g) (hf : IsFundamentalSeq f) (ho : IsSuccLimit o) :
-    IsFundamentalSeq fun i ↦
-      ⟨g (f i), mem_Iio.2 <| hg.strictMono.imp <| mem_Iio.1 (f i).property⟩ where
+    IsFundamentalSeq fun i ↦ ⟨g (f i), hg.strictMono.imp (f i).property⟩ where
   strictMono := hg.strictMono.comp hf.strictMono
   le_ord_cof := by rw [cof_map_of_isNormal hg ho, hf.ord_cof]
   isCofinal_range := by
