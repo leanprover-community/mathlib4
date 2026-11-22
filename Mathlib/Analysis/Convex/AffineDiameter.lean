@@ -55,35 +55,34 @@ theorem IsCompact.exists_mem_segment_isMaxOn_isMinOn {K : Set E} (hK : IsCompact
     obtain ⟨f, hf, hmax⟩ := geometric_hahn_banach_of_nonempty_interior_point hc hzi hi
     obtain ⟨y, hy, hmin⟩ := hK.exists_isMinOn ⟨z, hz⟩ f.continuous.continuousOn
     exact ⟨z, hz, y, hy, left_mem_segment ℝ z y, f, hf, isMaxOn_iff.mpr hmax, hmin⟩
+  rw [mem_interior_iff_mem_nhds] at hzi
   -- Let `s` be the translate of `K` that moves `z` to the origin.
-  have hKz : K ∈ 𝓝 z := mem_interior_iff_mem_nhds.mp hzi
-  let s : Set E := (z + ·) ⁻¹' K
+  let e : E ≃ₜ E := Homeomorph.addLeft z
+  let s := e ⁻¹' K
   have hs : Convex ℝ s := hc.translate_preimage_right z
-  have hsc : IsCompact s := (Homeomorph.addLeft z).isCompact_preimage.mpr hK
-  have hs₀ : s ∈ 𝓝 0 := (continuous_const_add z).continuousAt.preimage_mem_nhds (by rwa [add_zero])
+  have hsc : IsCompact s := e.isCompact_preimage.mpr hK
+  have hs₀ : s ∈ 𝓝 0 := e.continuous.continuousAt.preimage_mem_nhds (by simpa [e] using hzi)
   -- Choose `y ∈ K` maximizing `gauge s (z - y)`. The maximum `m` is positive.
-  obtain ⟨y, hy, hymax⟩ := hK.exists_isMaxOn (f := fun w ↦ gauge s (z - w)) ⟨z, hz⟩
+  obtain ⟨y, hy, hmax⟩ := hK.exists_isMaxOn (f := fun w ↦ gauge s (z - w)) ⟨z, hz⟩
     ((continuous_gauge hs hs₀).comp (continuous_sub_left z)).continuousOn
   set m := gauge s (z - y)
-  have hle {w : E} (hw : w ∈ K) : gauge s (z - w) ≤ m := isMaxOn_iff.mp hymax w hw
   have hm : 0 < m := by
-    obtain ⟨w, hw, hwz⟩ := (infinite_of_mem_nhds z hKz).nontrivial.exists_ne z
+    obtain ⟨w, hw, hwz⟩ := (infinite_of_mem_nhds z hzi).nontrivial.exists_ne z
     exact ((gauge_pos (absorbent_nhds_zero hs₀) (hsc.isVonNBounded ℝ)).mpr
-      (sub_ne_zero.mpr hwz.symm)).trans_le (hle hw)
+      (sub_ne_zero.mpr hwz.symm)).trans_le (hmax hw)
+  -- The reflection about `z`, scaled by `m⁻¹`, maps `K` into `K` and `y` to the frontier of `K`.
+  let R (w : E) := z + m⁻¹ • (z - w)
   have hg (w : E) : gauge s (m⁻¹ • (z - w)) = m⁻¹ * gauge s (z - w) :=
     gauge_smul_of_nonneg (inv_nonneg.mpr hm.le) _
-  -- The map `w ↦ z + m⁻¹ • (z - w)` sends `K` into `K` and sends `y` outside the interior of `K`.
-  have hmem {w : E} (hw : w ∈ K) : z + m⁻¹ • (z - w) ∈ K :=
+  have hR : Set.MapsTo R K K := fun w hw ↦
     hsc.isClosed.closure_subset <| (gauge_le_one_iff_mem_closure hs hs₀).mp <|
-      (hg w).trans_le <| (inv_mul_le_one₀ hm).mpr (hle hw)
-  have hx : z + m⁻¹ • (z - y) ∉ interior K := fun h ↦
-    ((gauge_lt_one_iff_mem_interior hs hs₀).mpr
-      (preimage_interior_subset_interior_preimage (continuous_const_add z) h)).ne
-      (by rw [hg, inv_mul_cancel₀ hm.ne'])
-  -- A functional supporting `K` at `z + m⁻¹ • (z - y)` attains its minimum on `K` at `y`.
-  obtain ⟨f, hf, hmax⟩ := geometric_hahn_banach_of_nonempty_interior_point hc hx hi
-  refine ⟨_, hmem hy, y, hy, ?_, f, hf, isMaxOn_iff.mpr hmax, isMinOn_iff.mpr fun w hw ↦ ?_⟩
-  · rw [mem_segment_iff_sameRay, sub_add_cancel_left, ← smul_neg, neg_sub]
-    exact SameRay.sameRay_pos_smul_left _ (inv_pos.mpr hm)
-  · simpa only [map_add, map_smul, map_sub, smul_eq_mul, add_le_add_iff_left, sub_le_sub_iff_left,
-      mul_le_mul_iff_right₀ (inv_pos.mpr hm)] using hmax _ (hmem hw)
+      (hg w).trans_le <| (inv_mul_le_one₀ hm).mpr (hmax hw)
+  have hRy : R y ∈ frontier K := (e.preimage_frontier K).ge <|
+    (gauge_eq_one_iff_mem_frontier hs hs₀).mp <| (hg y).trans (inv_mul_cancel₀ hm.ne')
+  -- Since `f (R w) = f z + m⁻¹ * (f z - f w)`, a maximum at `R y` gives a minimum at `y`.
+  obtain ⟨f, hf, hsup⟩ := geometric_hahn_banach_of_nonempty_interior_point hc hRy.2 hi
+  refine ⟨R y, hR hy, y, hy, ?_, f, hf, isMaxOn_iff.mpr hsup, isMinOn_iff.mpr fun w hw ↦ ?_⟩
+  · rw [segment_symm, mem_segment_iff_sameRay]
+    simpa [R] using SameRay.sameRay_pos_smul_right (R := ℝ) (z - y) (inv_pos.mpr hm)
+  · simpa only [R, map_add, map_smul, map_sub, smul_eq_mul, add_le_add_iff_left,
+      mul_le_mul_iff_right₀ (inv_pos.mpr hm), sub_le_sub_iff_left] using hsup _ (hR hw)
