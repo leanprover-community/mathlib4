@@ -899,11 +899,11 @@ theorem le_extendScalars_iff (E' : IntermediateField F L) :
 /-- The identity map from `E` to `extendScalars h`, as a `K`-algebra isomorphism. -/
 @[simps]
 def extendScalarsAlgEquiv : E ≃ₐ[K] extendScalars h where
-  toFun x := ⟨x, x.2⟩
-  invFun x := ⟨x, x.2⟩
+  toFun x := ⟨x, x.property⟩
+  invFun x := ⟨x, x.property⟩
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 variable (F)
 

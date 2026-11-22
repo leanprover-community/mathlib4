@@ -467,7 +467,7 @@ private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F A] (h₁ :
       have h : adjoin B (A : Set E) = ⊤ := restrictScalars_injective F <| by
         rw [restrictScalars_adjoin_intermediateField, h₁, restrictScalars_top]
       exact h ▸ inferInstance
-    exact LinearEquiv.finiteDimensional IntermediateField.topEquiv.toLinearEquiv
+    exact (topEquiv (F := B) (E := E)).toLinearEquiv.finiteDimensional
   have : IsGalois B E := IsGalois.sup_right A B h₁
   rw [← IsGalois.card_aut_eq_finrank, ← IsGalois.card_aut_eq_finrank]
   exact Nat.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom _ _ _ _)
