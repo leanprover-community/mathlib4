@@ -129,7 +129,7 @@ protected lemma one :
     invtSubmodule (1 : End R M) = ⊤ :=
   invtSubmodule.id
 
-protected lemma mem_add {p} {f g : End R M} (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
+protected lemma add {p} {f g : End R M} (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
     p ∈ invtSubmodule (f + g) :=
   (le_inf hf hg).trans (Submodule.inf_comap_le_comap_add ..)
 
