@@ -232,6 +232,9 @@ def mkQ : M →ₗ[R] M ⧸ p where
 theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_mkQ : (p.mkQ : M → M ⧸ p) = Quotient.mk := rfl
+
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
   rintro ⟨x⟩; exact ⟨x, rfl⟩
 

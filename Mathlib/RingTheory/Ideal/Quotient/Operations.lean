@@ -1020,13 +1020,13 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
 
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
-def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I : A →+* A ⧸ I) →ₐ[R] A ⧸ I ⊔ J where
+def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) →ₐ[R] A ⧸ I ⊔ J where
   __ := quotQuotToQuotSup I J
   commutes' _ := rfl
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
-    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I : A →+* A ⧸ I) J →+* _) =
+    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Submodule.Quotient.mk : A → A ⧸ I) J →+* _) =
       quotQuotToQuotSup I J :=
   rfl
 
@@ -1036,13 +1036,13 @@ theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQ
 
 /-- The composition of the algebra homomorphisms `A → (A / I)` and `(A / I) → (A / I) / J'`,
   where `J'` is the projection `J` in `A / I`. -/
-def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) where
+def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) where
   __ := quotQuotMk I J
   commutes' _ := rfl
 
 @[simp]
 theorem quotQuotMkₐ_toRingHom :
-    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) = quotQuotMk I J :=
+    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) = quotQuotMk I J :=
   rfl
 
 @[simp]
@@ -1051,13 +1051,14 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
 
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
   where `J'` is the projection `J` in `A / I`. -/
-def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) where
+def liftSupQuotQuotMkₐ (I J : Ideal A) :
+    A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) where
   __ := liftSupQuotQuotMk I J
   commutes' _ := rfl
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :
-    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
+    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) =
       liftSupQuotQuotMk I J :=
   rfl
 
@@ -1067,12 +1068,12 @@ theorem coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuot
 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
 `I ≤ J`, this is the Third Isomorphism Theorem (see `DoubleQuot.quotQuotEquivQuotOfLE`). -/
-def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ I ⊔ J :=
+def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) ≃ₐ[R] A ⧸ I ⊔ J :=
   AlgEquiv.ofCommutes (e := quotQuotEquivQuotSup I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_toRingEquiv :
-    (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _) =
+    (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) ≃+* _) =
       quotQuotEquivQuotSup I J :=
   rfl
 
@@ -1082,7 +1083,7 @@ theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQ
 
 @[simp]
 theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
-    ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
+    ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) =
       (quotQuotEquivQuotSup I J).symm :=
   rfl
 
@@ -1094,13 +1095,15 @@ theorem coe_quotQuotEquivQuotSupₐ_symm :
 /-- The natural algebra isomorphism `(A / I) / J' → (A / J) / I'`,
   where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
 def quotQuotEquivCommₐ :
-    ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J) :=
+    ((A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) ≃ₐ[R]
+      (A ⧸ J) ⧸ I.map (Submodule.Quotient.mk : A → A ⧸ J) :=
   AlgEquiv.ofCommutes (e := quotQuotEquivComm I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivCommₐ_toRingEquiv :
     (quotQuotEquivCommₐ R I J :
-      _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _ ⧸ I.map (Quotient.mkₐ R J).toRingHom) =
+      _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) ≃+*
+      _ ⧸ I.map (Submodule.Quotient.mk : A → A ⧸ J)) =
       quotQuotEquivComm I J :=
   rfl
 
@@ -1121,12 +1124,13 @@ variable {I J}
 
 /-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
     that does not assume an inclusion of ideals. -/
-def quotQuotEquivQuotOfLEₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
+def quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
+    ((A ⧸ I) ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) ≃ₐ[R] A ⧸ J :=
   AlgEquiv.ofCommutes (e := quotQuotEquivQuotOfLE h) fun _ => rfl
 
 @[simp]
 theorem quotQuotEquivQuotOfLEₐ_toRingEquiv (h : I ≤ J) :
-    (quotQuotEquivQuotOfLEₐ R h : _ ⧸ J.map (Quotient.mkₐ R I).toRingHom ≃+* _) =
+    (quotQuotEquivQuotOfLEₐ R h : _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I) ≃+* _) =
       quotQuotEquivQuotOfLE h :=
   rfl
 
@@ -1137,7 +1141,7 @@ theorem coe_quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
 
 @[simp]
 theorem quotQuotEquivQuotOfLEₐ_symm_toRingEquiv (h : I ≤ J) :
-    ((quotQuotEquivQuotOfLEₐ R h).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I).toRingHom) =
+    ((quotQuotEquivQuotOfLEₐ R h).symm : _ ≃+* _ ⧸ J.map (Submodule.Quotient.mk : A → A ⧸ I)) =
       (quotQuotEquivQuotOfLE h).symm :=
   rfl
 

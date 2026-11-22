@@ -65,7 +65,9 @@ lemma factorₐ_comp_liftAdicCompletionAux (m : ℕ) :
   | succ m =>
     rw [liftAdicCompletionAux, ← DoubleQuot.quotQuotEquivQuotOfLEₐ_comp_mkₐ]
     ext
-    simp
+    simp only [Nat.succ_eq_add_one, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom,
+      DoubleQuot.quotQuotEquivQuotOfLEₐ_apply, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, mk_lift,
+      DoubleQuot.coe_quotQuotEquivQuotOfLEₐ_symm, RingEquiv.apply_symm_apply]
 
 @[simp]
 lemma factorₐ_comp_liftAdicCompletionAux_of_le {m n : ℕ} (hn : m ≤ n) :
