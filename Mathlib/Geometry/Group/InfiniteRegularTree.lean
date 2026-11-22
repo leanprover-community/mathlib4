@@ -20,9 +20,9 @@ The infinite regular rooted tree on an alphabet `α` has a vertex for every fini
 
 ## Main definitions
 
-* `InfiniteRegularTree α`: vertices are lists `List α`.
-* `InfiniteRegularTree.TreeAut α`: rooted automorphisms, as order isomorphisms of the prefix
-  partial order (`RelIso`). The name `TreeAut` avoids a clash with `MulAut`.
+* `InfiniteRegularTree.TreeAut α`: rooted automorphisms of the tree with vertices `List α`, as
+  order isomorphisms of the prefix partial order (`RelIso`). The name `TreeAut` avoids a clash
+  with `MulAut`.
 * `InfiniteRegularTree.TreeAut.combine`: act independently on the subtrees of the root.
 * `InfiniteRegularTree.TreeAut.ofRootPerm`: the rooted automorphism induced by a permutation of
   the children of the root.
@@ -42,9 +42,6 @@ regular tree, rooted tree, geometric group theory
 
 @[expose] public section
 
-/-- The infinite regular rooted tree on the alphabet `α`: vertices are finite words. -/
-abbrev InfiniteRegularTree (α : Type*) := List α
-
 namespace InfiniteRegularTree
 
 variable {α : Type*}
@@ -58,7 +55,7 @@ namespace TreeAut
 
 variable {α : Type*}
 
-@[simp] lemma map_isPrefix_iff (f : TreeAut α) {v w : InfiniteRegularTree α} :
+@[simp] lemma map_isPrefix_iff (f : TreeAut α) {v w : List α} :
     f v <+: f w ↔ v <+: w :=
   f.map_rel_iff
 
@@ -70,7 +67,7 @@ variable {α : Type*}
 
 @[simp] lemma inv_eq_symm (f : TreeAut α) : f⁻¹ = f.symm := rfl
 
-lemma length_map_take_ge (f : TreeAut α) (v : InfiniteRegularTree α) :
+lemma length_map_take_ge (f : TreeAut α) (v : List α) :
     ∀ k ≤ v.length, k ≤ (f (v.take k)).length
   | 0, _ => Nat.zero_le _
   | k + 1, hk => by
@@ -85,14 +82,14 @@ lemma length_map_take_ge (f : TreeAut α) (v : InfiniteRegularTree α) :
     omega
 
 /-- A tree automorphism preserves word length (the distance to the root). -/
-@[simp] lemma map_length (f : TreeAut α) (v : InfiniteRegularTree α) : (f v).length = v.length := by
+@[simp] lemma map_length (f : TreeAut α) (v : List α) : (f v).length = v.length := by
   refine Nat.le_antisymm ?_ ?_
   · have := length_map_take_ge f.symm (f v) (f v).length le_rfl
     simpa [List.take_length] using this
   · have := length_map_take_ge f v v.length le_rfl
     simpa [List.take_length] using this
 
-lemma apply_cons_ne_nil (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+lemma apply_cons_ne_nil (f : TreeAut α) (a : α) (w : List α) :
     f (a :: w) ≠ [] := by
   intro h
   have := f.map_length (a :: w)
@@ -143,13 +140,13 @@ private lemma rootPerm_eq_firstLetter (f : TreeAut α) (a : α) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Action of `f` on the subtree hanging from the child `a` of the root. -/
-private def restrictFun (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
-    InfiniteRegularTree α :=
+private def restrictFun (f : TreeAut α) (a : α) (w : List α) :
+    List α :=
   (f (a :: w)).tail
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-private lemma apply_cons (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+private lemma apply_cons (f : TreeAut α) (a : α) (w : List α) :
     f (a :: w) = firstLetter f a :: restrictFun f a w := by
   have hpref : f [a] <+: f (a :: w) := (map_isPrefix_iff f).mpr (by simp [List.cons_prefix_cons])
   rw [apply_singleton] at hpref
@@ -186,7 +183,7 @@ def restrict (f : TreeAut α) (a : α) : TreeAut α where
     rw [apply_cons f a w, apply_cons f a w'] at h
     simpa [List.cons_prefix_cons] using h
 
-@[simp] lemma restrict_apply (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+@[simp] lemma restrict_apply (f : TreeAut α) (a : α) (w : List α) :
     restrict f a w = (f (a :: w)).tail :=
   rfl
 
@@ -198,14 +195,14 @@ set_option backward.privateInPublic.warn false in
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-lemma apply_cons_rootPerm (f : TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+lemma apply_cons_rootPerm (f : TreeAut α) (a : α) (w : List α) :
     f (a :: w) = rootPerm f a :: restrict f a w := by
   rw [rootPerm_eq_firstLetter]
   exact apply_cons f a w
 
 set_option backward.privateInPublic true in
 /-- The map underlying `combine`: on the subtree rooted at `a`, apply `F a`. -/
-private def combineFun (F : α → TreeAut α) : InfiniteRegularTree α → InfiniteRegularTree α
+private def combineFun (F : α → TreeAut α) : List α → List α
   | [] => []
   | a :: w => a :: F a w
 
@@ -246,7 +243,7 @@ def combine (F : α → TreeAut α) : TreeAut α where
           exact (map_isPrefix_iff (F a)).symm
         · simp [combineFun, List.cons_prefix_cons, h]
 
-@[simp] lemma combine_cons (F : α → TreeAut α) (a : α) (w : InfiniteRegularTree α) :
+@[simp] lemma combine_cons (F : α → TreeAut α) (a : α) (w : List α) :
     combine F (a :: w) = a :: F a w :=
   rfl
 
@@ -303,7 +300,7 @@ def ofRootPerm (σ : Equiv.Perm α) : TreeAut α where
 
 @[simp] lemma ofRootPerm_root (σ : Equiv.Perm α) : ofRootPerm σ [] = [] := rfl
 
-@[simp] lemma ofRootPerm_cons (σ : Equiv.Perm α) (a : α) (w : InfiniteRegularTree α) :
+@[simp] lemma ofRootPerm_cons (σ : Equiv.Perm α) (a : α) (w : List α) :
     ofRootPerm σ (a :: w) = σ a :: w :=
   rfl
 
