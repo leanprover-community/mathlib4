@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.Cofinal
 public import Mathlib.Order.UpperLower.Principal
 
 import Mathlib.Data.Set.Finite.Basic

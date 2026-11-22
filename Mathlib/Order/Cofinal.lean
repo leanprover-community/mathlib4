@@ -12,6 +12,5 @@ import Mathlib.Order.Bounds.OrderIso
 # Cofinal sets
 -/
 
-deprecated_module "Theorems about cofinal sets are now scattered throughout the library, in the same
-  locations as analogous theorems on `BddAbove`, `IsLUB`, etc." (since := "2026-11-22")
-
+deprecated_module "Theorems about cofinal sets are now scattered throughout the library, in the \
+same locations as analogous theorems on `BddAbove`, `IsLUB`, etc." (since := "2026-11-22")

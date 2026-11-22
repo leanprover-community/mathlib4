@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
