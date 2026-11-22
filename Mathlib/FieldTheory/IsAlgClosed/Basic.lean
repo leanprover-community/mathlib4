@@ -5,12 +5,12 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Perfect
-public import Mathlib.RingTheory.Localization.Integral
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Algebraically Closed Field
@@ -487,7 +487,7 @@ noncomputable def equivOfEquiv (hSR : S ≃+* R) : L ≃+* M :=
 @[simp]
 theorem equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
     (↑(equivOfEquiv L M hSR) : L →+* M).comp (algebraMap S L) = (algebraMap R M).comp hSR :=
-  (equivOfEquivAux L M hSR).2
+  (equivOfEquivAux L M hSR).property
 
 @[simp]
 theorem equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :

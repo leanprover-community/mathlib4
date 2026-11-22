@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.MvPolynomial.Tower
 
 import Mathlib.Basic.Finite.Sum
+import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # Finiteness conditions in commutative algebra

@@ -364,7 +364,7 @@ theorem IsClopen.connectedComponent_subset {x} (hs : IsClopen s) (hx : x ∈ s) 
 neighbourhoods. -/
 theorem connectedComponent_subset_iInter_isClopen {x : α} :
     connectedComponent x ⊆ ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, Z :=
-  subset_iInter fun Z => Z.2.1.connectedComponent_subset Z.2.2
+  subset_iInter fun Z => Z.property.1.connectedComponent_subset Z.property.2
 
 /-- A clopen set is the union of its connected components. -/
 theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
@@ -568,7 +568,7 @@ noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedCo
       (fun ⟨i, x⟩ ↦
         x.lift (ConnectedComponents.mk ∘ Subtype.val)
           (fun x y (hxy : connectedComponent x = connectedComponent y) ↦ by
-            simp [← heq x.2, ← heq y.2, hxy]))
+            simp [← heq x.property, ← heq y.property, hxy]))
       ⟨fun ⟨i, x⟩ ⟨j, y⟩ ↦ ?_, fun x ↦ ?_⟩
   · intro hxy
     obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
@@ -578,7 +578,8 @@ noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedCo
     obtain rfl : i = j := by
       apply hdisj.eq
       rw [Set.not_disjoint_iff]
-      exact ⟨x, x.2, (hclopen j).connectedComponent_subset y.2 (hxy ▸ mem_connectedComponent)⟩
+      exact ⟨x, x.property,
+        (hclopen j).connectedComponent_subset y.property (hxy ▸ mem_connectedComponent)⟩
     simp [← Set.image_val_inj, heq, hxy]
   · obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
     obtain ⟨i, hi⟩ := Set.iUnion_eq_univ_iff.mp hunion x

@@ -309,7 +309,7 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     refine ⟨e a, ⟨?_, by simp only [ne_eq, EmbeddingLike.map_eq_zero_iff, ZeroMemClass.coe_eq_zero,
       ha, not_false_eq_true]⟩⟩
     rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
-    exact a.2
+    exact a.property
 
 section
 

@@ -6,9 +6,9 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.Interval.Set.OrderEmbedding
-public import Mathlib.Order.SetNotation
 
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.SetNotation
 import Mathlib.Order.WellFounded
 
 /-!

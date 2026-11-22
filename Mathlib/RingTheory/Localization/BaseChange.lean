@@ -284,7 +284,7 @@ open Algebra.TensorProduct in
 lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     s ⊗ₜ IsLocalization.mk' A x y =
       IsLocalization.mk' (S ⊗[R] A) (algebraMap R S x * s)
-        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+        ⟨algebraMap R S y.val, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
   rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_apply, Algebra.algebraMap_self,
     RingHomCompTriple.comp_apply, tmul_one_eq_one_tmul, tmul_mul_tmul, mul_one, mul_comm,
     IsLocalization.mk'_spec', algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
@@ -295,7 +295,7 @@ open Algebra.TensorProduct in
 lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     IsLocalization.mk' A x y ⊗ₜ s =
       IsLocalization.mk' (A ⊗[R] S) (algebraMap R S x * s)
-        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+        ⟨algebraMap R S y.val, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
   simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul,
     RingHom.algebraMap_toAlgebra]
 
@@ -335,10 +335,10 @@ theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
 
 /-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
 noncomputable def tensorRightAlgEquiv :
-    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) where
-  __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
-    (tensorLeftAlgEquiv M S).toRingEquiv
-  commutes' := tensorLeftAlgEquiv_apply_one_tmul M S
+    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+  .ofCommutes ((Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
+      (tensorLeftAlgEquiv M S).toRingEquiv)
+    (tensorLeftAlgEquiv_apply_one_tmul M S)
 
 @[simp]
 theorem tensorRightAlgEquiv_apply_tmul_one (x : Localization M) :

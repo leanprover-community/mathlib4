@@ -90,7 +90,7 @@ lemma _root_.KaehlerDifferential.cotangentComplexBaseChange_tmul
     {P A : Type*} [CommRing P] [CommRing A] [Algebra P S]
     [Algebra P A] [Algebra R P] [Algebra S A] [IsScalarTower P S A] (a b) :
   cotangentComplexBaseChange R S P A (a ⊗ₜ b) =
-    a • kerToTensor R P A ⟨b.1, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
+    a • kerToTensor R P A ⟨b.val, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
 
 variable (A) in
 lemma cotangentComplexBaseChange_eq_lTensor_cotangentComplex :
@@ -335,10 +335,10 @@ variable {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
   [IsScalarTower R₀ S P.Cotangent] in
 deriving instance SMul R₀, AddCommGroup, Module R₀ for (P).H1Cotangent
 
-@[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).1 = x.1 + y.1 := rfl
-@[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).1 = 0 := rfl
+@[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).val = x.val + y.val := rfl
+@[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).val = 0 := rfl
 @[simp] lemma H1Cotangent.val_smul {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
-    [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).1 = r • x.1 := rfl
+    [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).val = r • x.val := rfl
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
     [Algebra R₁ S] [Algebra R₂ S]
@@ -359,7 +359,7 @@ lemma subsingleton_h1Cotangent (P : Extension R S) :
 
 lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
 
-@[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.1 = y.1) : x = y := Subtype.ext e
+@[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.val = y.val) : x = y := Subtype.ext e
 
 /-- The sequence `H¹(L_{S/R}) → P.Cotangent → P.CotangentSpace` is exact. -/
 lemma exact_hCotangentι_cotangentComplex : Function.Exact h1Cotangentι P.cotangentComplex := by

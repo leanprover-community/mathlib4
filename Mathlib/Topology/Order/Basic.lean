@@ -204,9 +204,9 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
     grind
   have : Finite kl := k_fin.subset (by simp [k_eq])
   have : Finite kr := k_fin.subset (by simp [k_eq])
-  have Al : ∀ s : kl, ∃ a ∈ c, s = Ioi a := fun s ↦ s.2.2
+  have Al : ∀ s : kl, ∃ a ∈ c, s = Ioi a := fun s ↦ s.property.2
   choose al alc hal using Al
-  have Ar : ∀ s : kr, ∃ a ∈ c, s = Iio a := fun s ↦ s.2.2
+  have Ar : ∀ s : kr, ∃ a ∈ c, s = Iio a := fun s ↦ s.property.2
   choose ar arc har using Ar
   refine ⟨range al, by simp [range_subset_iff, alc], range ar,
     by simp [range_subset_iff, arc], finite_range _, finite_range _, ?_⟩

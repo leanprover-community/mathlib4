@@ -121,7 +121,7 @@ theorem Directed.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed 
 theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) c)
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
   rw [sUnion_eq_iUnion]
-  exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
+  exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.property
 
 theorem Convex.setOfPred_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]

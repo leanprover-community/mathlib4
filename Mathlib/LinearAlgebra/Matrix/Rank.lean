@@ -6,15 +6,16 @@ Authors: Johan Commelin, Eric Wieser
 module
 
 public import Mathlib.Data.Nat.Totient
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.LinearAlgebra.Dimension.Localization
+import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices

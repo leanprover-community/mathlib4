@@ -66,11 +66,11 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
           rw [← Localization.AtPrime.map_eq_maximalIdeal]
           exact mem_map_of_mem (algebraMap R (Localization.AtPrime p₂.asIdeal)) hx
   rw [← e.symm_apply_apply q] at h₀ h₁ hxq
-  have hq : (e q).1 < p₂ := by
+  have hq : (e q).val < p₂ := by
     have h : e.symm (e q) < e.symm ⟨p₂, le_refl p₂⟩ :=
       h₁.trans_eq Localization.AtPrime.map_eq_maximalIdeal.symm
     rwa [OrderIso.lt_iff_lt, Subtype.mk_lt_mk] at h
-  exact Exists.intro (e q).1
+  exact Exists.intro (e q).val
     ⟨(p₂.asIdeal.under_map_of_isLocalizationAtPrime hq.le).le hxq, e.symm.lt_iff_lt.mp h₀, hq⟩
 
 set_option backward.isDefEq.respectTransparency false in

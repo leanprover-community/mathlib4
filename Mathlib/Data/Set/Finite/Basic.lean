@@ -413,7 +413,7 @@ theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
 /-- `Finset α` is order isomorphic to the type of finite sets in `α`. -/
 @[simps] noncomputable def OrderIso.finsetSetFinite : Finset α ≃o {s : Set α // s.Finite} where
   toFun s := ⟨s, s.finite_toSet⟩
-  invFun s := s.2.toFinset
+  invFun s := s.property.toFinset
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := .rfl
@@ -762,7 +762,8 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
     (h : ∀ t : Set γ, t.Finite → ∃ c, P c t) : ∃ u : ℕ → γ, ∀ n, P (u n) (u '' Iio n) := by
   have : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
-  set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
+  set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ :=
+    fun n g => c (range fun k : Iio n => g k.val k.property)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
   refine ⟨u, fun n ↦ ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
