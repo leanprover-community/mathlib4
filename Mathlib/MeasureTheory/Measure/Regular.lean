@@ -1082,7 +1082,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFi
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
   have : OuterRegular μ := by
-    refine (μ.finiteSpanningSetsInOpen'.mono' fun U hU => ?_).outerRegular
+    refine (μ.finiteSpanningSetsInOpen.mono' fun U hU => ?_).outerRegular
     have : Fact (μ U < ∞) := ⟨hU.2⟩
     exact ⟨hU.1, inferInstance⟩
   ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩

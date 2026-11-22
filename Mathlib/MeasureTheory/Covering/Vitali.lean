@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-public import Mathlib.MeasureTheory.Measure.WithDensityFinite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -228,194 +227,6 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
 
-private theorem exists_disjoint_covering_ae_of_const
-    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
-    (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
-    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
-    (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
-    (hf : ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x) :
-    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
-  /- The idea of the proof is the following. Assume for simplicity that `μ` is finite. Applying the
-  abstract Vitali covering theorem with `δ = r` given by `hf`, one obtains a disjoint subfamily `u`,
-  such that any element of `t` intersects an element of `u` with comparable radius. Fix `ε > 0`.
-  Since the elements of `u` have summable measure, one can remove finitely elements `w_1, ..., w_n`.
-  so that the measure of the remaining elements is `< ε`. Consider now a point `z` not
-  in the `w_i`. There is a small ball around `z` not intersecting the `w_i` (as they are closed),
-  an element `a ∈ t` contained in this small ball (as the family `t` is fine at `z`) and an element
-  `b ∈ u` intersecting `a`, with comparable radius (by definition of `u`). Then `z` belongs to the
-  enlargement of `b`. This shows that `s \ (w_1 ∪ ... ∪ w_n)` is contained in
-  `⋃ (b ∈ u \ {w_1, ... w_n}) (enlargement of b)`. The measure of the latter set is bounded by
-  `∑ (b ∈ u \ {w_1, ... w_n}) C * μ b` (by the doubling property of the measure), which is at most
-  `C ε`. Letting `ε` tend to `0` shows that `s` is almost everywhere covered by the family `u`.
-
-  For the real argument, the measure is only locally finite. Therefore, we implement the same
-  strategy, but locally restricted to balls on which the measure is finite. For this, we do not
-  use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
-  the family is assumed to be fine at every point of `s`).
-  -/
-  -- choose around each `x` a small ball on which the measure is finite
-  have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
-    refine ((eventually_le_nhds one_pos).and ?_).exists_gt
-    refine (tendsto_closedBall_smallSets x).comp ?_ (μ.finiteAt_nhds x).eventually
-    exact Continuous.tendsto' (by fun_prop) _ _ (mul_zero _)
-  choose R hR0 hR1 hRμ using this
-  -- we restrict to a subfamily `t'` of `t`, made of elements small enough to ensure that
-  -- they only see a finite part of the measure, and with a doubling property
-  let t' := { a ∈ t | r a ≤ R (c a) }
-  -- extract a disjoint subfamily `u` of `t'` thanks to the abstract Vitali covering theorem.
-  obtain ⟨u, ut', u_disj, hu⟩ : ∃ u ⊆ t',
-      u.PairwiseDisjoint B ∧ ∀ a ∈ t', ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b := by
-    have A : ∀ a ∈ t', r a ≤ 1 := by
-      intro a ha
-      apply ha.2.trans (hR1 (c a))
-    have A' : ∀ a ∈ t', (B a).Nonempty :=
-      fun a hat' => Set.Nonempty.mono interior_subset (ht a hat'.1)
-    refine exists_disjoint_subfamily_covering_enlargement
-      B t' r 2 one_lt_two (fun a ha => ?_) 1 A A'
-    exact nonempty_closedBall.1 ((A' a ha).mono (hB a ha.1))
-  have ut : u ⊆ t := fun a hau => (ut' hau).1
-  -- As the space is second countable, the family is countable since all its sets have nonempty
-  -- interior.
-  have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha => ht a (ut ha)
-  -- the family `u` will be the desired family
-  refine ⟨u, fun a hat' => (ut' hat').1, u_count, u_disj, ?_⟩
-  -- it suffices to show that it covers almost all `s` locally around each point `x`.
-  refine measure_null_of_locally_null _ fun x _ => ?_
-  -- let `v` be the subfamily of `u` made of those sets intersecting the small ball `ball x (r x)`
-  let v := { a ∈ u | (B a ∩ ball x (R x)).Nonempty }
-  have vu : v ⊆ u := fun a ha => ha.1
-  -- they are all contained in a fixed ball of finite measure, thanks to our choice of `t'`
-  obtain ⟨K, μK, hK⟩ : ∃ K, μ (closedBall x K) < ∞ ∧
-      ∀ a ∈ u, (B a ∩ ball x (R x)).Nonempty → B a ⊆ closedBall x K := by
-    have Idist_v : ∀ a ∈ v, dist (c a) x ≤ r a + R x := by
-      intro a hav
-      apply dist_le_add_of_nonempty_closedBall_inter_closedBall
-      refine hav.2.mono ?_
-      gcongr
-      exacts [hB a (ut (vu hav)), ball_subset_closedBall]
-    set R0 := sSup (r '' v) with R0_def
-    have R0_bdd : BddAbove (r '' v) := by
-      refine ⟨1, fun r' hr' => ?_⟩
-      rcases (mem_image _ _ _).1 hr' with ⟨b, hb, rfl⟩
-      exact le_trans (ut' (vu hb)).2 (hR1 (c b))
-    rcases le_total R0 (R x) with (H | H)
-    · refine ⟨20 * R x, hRμ x, fun a au hax => ?_⟩
-      refine (hB a (ut au)).trans ?_
-      apply closedBall_subset_closedBall'
-      have : r a ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨au, hax⟩)
-      linarith [Idist_v a ⟨au, hax⟩, hR0 x]
-    · have R0pos : 0 < R0 := (hR0 x).trans_le H
-      have vnonempty : v.Nonempty := by
-        by_contra! h
-        rw [h, image_empty, Real.sSup_empty] at R0_def
-        exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
-      obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by
-        obtain ⟨r', r'mem, hr'⟩ : ∃ r' ∈ r '' v, R0 / 2 < r' :=
-          exists_lt_of_lt_csSup (vnonempty.image _) (half_lt_self R0pos)
-        rcases (mem_image _ _ _).1 r'mem with ⟨a, hav, rfl⟩
-        exact ⟨a, hav, hr'⟩
-      refine ⟨8 * R0, ?_, ?_⟩
-      · apply lt_of_le_of_lt (measure_mono _) (hRμ (c a))
-        apply closedBall_subset_closedBall'
-        rw [dist_comm]
-        linarith [Idist_v a hav, (ut' (vu hav)).2]
-      · intro b bu hbx
-        refine (hB b (ut bu)).trans ?_
-        apply closedBall_subset_closedBall'
-        have : r b ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨bu, hbx⟩)
-        linarith [Idist_v b ⟨bu, hbx⟩]
-  -- we will show that, in `ball x (R x)`, almost all `s` is covered by the family `u`.
-  refine ⟨_ ∩ ball x (R x), inter_mem_nhdsWithin _ (ball_mem_nhds _ (hR0 _)),
-    nonpos_iff_eq_zero.mp (le_of_forall_gt_imp_ge_of_dense fun ε εpos => ?_)⟩
-  -- the elements of `v` are disjoint and all contained in a finite volume ball, hence the sum
-  -- of their measures is finite.
-  have I : (∑' a : v, μ (B a)) < ∞ := by
-    calc
-      (∑' a : v, μ (B a)) = μ (⋃ a ∈ v, B a) := by
-        rw [measure_biUnion (u_count.mono vu) _ fun a ha => (h't _ (vu.trans ut ha)).measurableSet]
-        exact u_disj.subset vu
-      _ ≤ μ (closedBall x K) := (measure_mono (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
-      _ < ∞ := μK
-  -- we can obtain a finite subfamily of `v`, such that the measures of the remaining elements
-  -- add up to an arbitrarily small number, say `ε / C`.
-  obtain ⟨w, hw⟩ : ∃ w : Finset v, (∑' a : { a // a ∉ w }, μ (B a)) < ε / C :=
-    haveI : 0 < ε / C := by
-      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne, not_false_iff,
-        and_self_iff]
-    ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I.ne)).2 _ this).exists
-  -- main property: the points `z` of `s` which are not covered by `u` are contained in the
-  -- enlargements of the elements not in `w`.
-  have M : (s \ ⋃ a ∈ u, B a) ∩
-      ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) := by
-    intro z hz
-    set k := ⋃ (a : v) (_ : a ∈ w), B a
-    have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ => h't _ (ut (vu i.property))
-    have z_notmem_k : z ∉ k := by
-      simp only [k, not_exists, exists_prop, mem_iUnion, forall_exists_index,
-        SetCoe.exists, not_and, exists_and_right]
-      intro b hbv _ h'z
-      have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=
-        mem_inter (mem_of_mem_inter_left hz) (mem_biUnion (vu hbv) h'z)
-      simpa only [sdiff_inter_self]
-    -- since the elements of `w` are closed and finitely many, one can find a small ball around `z`
-    -- not intersecting them
-    have : ball x (R x) \ k ∈ 𝓝 z := by
-      apply IsOpen.mem_nhds (isOpen_ball.sdiff k_closed) _
-      exact (mem_sdiff _).2 ⟨mem_of_mem_inter_right hz, z_notmem_k⟩
-    obtain ⟨d, dpos, hd⟩ : ∃ d, 0 < d ∧ closedBall z d ⊆ ball x (R x) \ k :=
-      nhds_basis_closedBall.mem_iff.1 this
-    -- choose an element `a` of the family `t` contained in this small ball
-    obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
-      hf z ((mem_sdiff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
-    have ax : B a ⊆ ball x (R x) := by
-      refine (hB a hat).trans ?_
-      refine Subset.trans ?_ (hd.trans Set.sdiff_subset)
-      gcongr
-      exact ad.trans (min_le_left _ _)
-    -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
-    obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
-      hu a ⟨hat, ad.trans (min_le_right _ _)⟩
-    have bv : b ∈ v := by
-      refine ⟨bu, ab.mono ?_⟩
-      rw [inter_comm]
-      exact inter_subset_inter_right _ ax
-    let b' : v := ⟨b, bv⟩
-    -- `b` cannot belong to `w`, as the elements of `w` do not intersect `closedBall z d`,
-    -- contrary to `b`
-    have b'_notmem_w : b' ∉ w := by
-      intro b'w
-      have b'k : B b' ⊆ k := @Finset.subset_set_biUnion_of_mem _ _ _ (fun y : v => B y) _ b'w
-      have : (ball x (R x) \ k ∩ k).Nonempty := by
-        apply ab.mono (inter_subset_inter _ b'k)
-        refine ((hB _ hat).trans ?_).trans hd
-        gcongr
-        exact ad.trans (min_le_left _ _)
-      simpa only [sdiff_inter_self, Set.not_nonempty_empty]
-    let b'' : { a // a ∉ w } := ⟨b', b'_notmem_w⟩
-    -- since `a` and `b` have comparable diameters, it follows that `z` belongs to the
-    -- enlargement of `b`
-    have zb : c a ∈ closedBall (c b) (3 * r b) := by
-      rcases ab with ⟨e, ⟨ea, eb⟩⟩
-      have A : dist (c a) e ≤ r a := mem_closedBall'.1 (hB a hat ea)
-      have B : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
-      simp only [mem_closedBall]
-      linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
-    suffices H : closedBall (c b'') (3 * r b'')
-        ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) from H zb
-    exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
-  -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
-  -- in `ball x (r x)` not covered by `u`.
-  have : Countable v := (u_count.mono vu).to_subtype
-  calc
-    μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
-      measure_mono M
-    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
-    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (tsum_le_tsum fun a => μB a (ut (vu a.val.property)))
-    _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
-    _ ≤ C * (ε / C) := by gcongr
-    _ ≤ ε := ENNReal.mul_div_le
-
 /-- The measurable **Vitali covering theorem**.
 
 Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
@@ -437,75 +248,102 @@ theorem exists_disjoint_covering_ae
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
     (hf : ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x) :
     ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
-  /- The idea of the proof is the following. Let `s n` be the set of points `x ∈ s` such that
-  `C x ≤ n`. We construct inductively an increasing sequence of finite disjoint subfamilies `F n`
-  of `t` such that the measure of `s n \ ⋃ F (n + 1)` is at most `1 / n`. To construct `F (n + 1)`
-  from `F n`, we apply the uniform version of the theorem with the constant `n` to the points of
-  `s n` that are not covered by the closed set `K = ⋃ F n`, using only the elements of `t` which
-  are disjoint from `K`. This gives a countable disjoint family `u` covering almost all
-  `s n \ K`, and we add to `F n` a finite subfamily of `u` covering most of `⋃ u`.
-  To make sense of "most of" for a locally finite measure, we measure everything with a finite
-  measure `ν` having the same null sets as `μ`. The union of the `F n` is the desired family. -/
-  set ν := μ.toFinite
+  /- The idea of the proof is the following. Fix a monotone sequence of open sets `U n` of finite
+  measure covering the space, and let `s n` be the set of points `x ∈ s ∩ U n` such that `C x ≤ n`.
+  We construct inductively an increasing sequence of finite disjoint subfamilies `F n` of `t` such
+  that the measure of `s n \ ⋃ F (n + 1)` is at most `1 / n`.
+
+  To construct `F (n + 1)` from `F n`, consider the closed set `K = ⋃ F n` and the elements
+  `a ∈ t` that are disjoint from `K`, contained in `U n`, with `r a ≤ 1` and `C (c a) ≤ n`.
+  Applying the abstract Vitali covering theorem to this family, one obtains a disjoint subfamily
+  `u` such that any element of the family intersects an element of `u` with comparable radius.
+  Since the elements of `u` are contained in `U n`, they have summable measures, so one can keep
+  finitely many of them, forming a family `w`, so that the measure of the remaining ones is small.
+  Consider now a point `z ∈ s n` not in `K` and not in the elements of `w`. There is a small ball
+  around `z` not intersecting `K` and the elements of `w` (as they are closed), an element `a ∈ t`
+  centered at `z` contained in this small ball (as the family `t` is fine at `z`) and an element
+  `b ∈ u` intersecting `a`, with comparable radius. Then `b ∉ w` and `z` belongs to the
+  enlargement of `b`. This shows that `s n \ (K ∪ ⋃ w)` is contained in the union of the
+  enlargements of the elements of `u \ w`, whose measure is at most `n * ∑ b ∈ u \ w, μ b`, which
+  is small. We let `F (n + 1) = F n ∪ w`.
+
+  The union of the `F n` is the desired family. -/
+  set U := μ.finiteSpanningSetsInOpen
   /- A finite disjoint subfamily of `t`, encoded as an element of a subtype to make the inductive
   construction easier. -/
   let S := {F : Set ι // F.Finite ∧ F ⊆ t ∧ F.PairwiseDisjoint B}
   -- The main step: one can enlarge a finite disjoint subfamily to cover most of `s n`.
   have step : ∀ (F : S) (n : ℕ), ∃ G : S, F.val ⊆ G.val ∧
-      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ G.val, B a) < (n : ℝ≥0∞)⁻¹ := by
+      μ ({x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ G.val, B a) ≤ (n : ℝ≥0∞)⁻¹ := by
     rintro ⟨F, hFfin, hFt, hFdisj⟩ n
     set K := ⋃ a ∈ F, B a
-    have hK : IsClosed K := hFfin.isClosed_biUnion fun a ha ↦ h't a (hFt ha)
-    let t' := {a ∈ t | C (c a) ≤ n ∧ Disjoint (B a) K}
-    -- the family `t'` is still fine at the points of `s n` outside of `K`
-    have hf' : ∀ x ∈ {x ∈ s | C x ≤ n} \ K, ∀ ε > (0 : ℝ), ∃ a ∈ t', r a ≤ ε ∧ c a = x := by
-      rintro x ⟨⟨hxs, hxC⟩, hxK⟩ ε εpos
-      obtain ⟨d, dpos, hd⟩ : ∃ d > 0, closedBall x d ⊆ Kᶜ :=
-        nhds_basis_closedBall.mem_iff.1 (hK.isOpen_compl.mem_nhds hxK)
-      obtain ⟨a, hat, ha, rfl⟩ := hf x hxs (min ε d) (lt_min εpos dpos)
-      refine ⟨a, ⟨hat, hxC, subset_compl_iff_disjoint_right.1 ?_⟩, ha.trans (min_le_left _ _),
-        rfl⟩
-      exact (hB a hat).trans ((closedBall_subset_closedBall (ha.trans (min_le_right _ _))).trans hd)
-    obtain ⟨u, ut', u_count, u_disj, hu⟩ := exists_disjoint_covering_ae_of_const μ
-      ({x ∈ s | C x ≤ n} \ K) t' n r c B (fun a ha ↦ hB a ha.1)
-      (fun a ha ↦ (μB a ha.1).trans (by gcongr; exact_mod_cast ha.2.1))
-      (fun a ha ↦ ht a ha.1) (fun a ha ↦ h't a ha.1) hf'
+    let t' := {a ∈ t | C (c a) ≤ n ∧ Disjoint (B a) K ∧ B a ⊆ U.set n ∧ r a ≤ 1}
+    -- extract a disjoint subfamily `u` of `t'` thanks to the abstract Vitali covering theorem.
+    obtain ⟨u, ut', u_disj, hu⟩ : ∃ u ⊆ t',
+        u.PairwiseDisjoint B ∧ ∀ a ∈ t', ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b := by
+      have A : ∀ a ∈ t', (B a).Nonempty := fun a ha ↦ (ht a ha.1).mono interior_subset
+      refine exists_disjoint_subfamily_covering_enlargement B t' r 2 one_lt_two (fun a ha ↦ ?_) 1
+        (fun a ha ↦ ha.2.2.2.2) A
+      exact nonempty_closedBall.1 ((A a ha).mono (hB a ha.1))
     have ut : u ⊆ t := fun a ha ↦ (ut' ha).1
+    -- As the space is second countable, the family is countable since all its sets have nonempty
+    -- interior.
+    have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha ↦ ht a (ut ha)
     have : Countable u := u_count.to_subtype
-    -- the elements of `u` have summable `ν`-measures, so one can keep finitely many of them
-    -- so that the remaining ones have a total measure `< 1 / n`.
-    have I : ∑' a : u, ν (B a) ≠ ∞ := by
+    -- the elements of `u` are disjoint and contained in `U n`, so they have summable measures and
+    -- one can keep finitely many of them so that the remaining ones have a small total measure.
+    have I : ∑' a : u, μ (B a) ≠ ∞ := by
       rw [← measure_biUnion u_count u_disj fun a ha ↦ (h't a (ut ha)).measurableSet]
-      exact measure_ne_top _ _
-    obtain ⟨w, hw⟩ : ∃ w : Finset u, ∑' a : {a // a ∉ w}, ν (B a) < (n : ℝ≥0∞)⁻¹ :=
+      exact ((measure_mono (iUnion₂_subset fun a ha ↦ (ut' ha).2.2.2.1)).trans_lt
+        (U.finite n)).ne
+    obtain ⟨w, hw⟩ : ∃ w : Finset u, ∑' a : {a // a ∉ w}, μ (B a) < (n : ℝ≥0∞)⁻¹ / n :=
       ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I)).2 _
-        (ENNReal.inv_pos.2 (ENNReal.natCast_ne_top n))).exists
-    refine ⟨⟨F ∪ (↑) '' (w : Set u), hFfin.union ((w.finite_toSet).image _),
-      union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.property), ?_⟩, subset_union_left, ?_⟩
+        (by simp [ENNReal.div_pos_iff])).exists
+    set G := F ∪ (↑) '' (w : Set u)
+    have hGfin : G.Finite := hFfin.union ((w.finite_toSet).image _)
+    have hGt : G ⊆ t := union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.property)
+    refine ⟨⟨G, hGfin, hGt, ?_⟩, subset_union_left, ?_⟩
     · refine hFdisj.union (u_disj.subset (by rintro - ⟨a, -, rfl⟩; exact a.property)) ?_
       rintro a ha - ⟨b, -, rfl⟩ -
-      exact ((ut' b.property).2.2.mono_right (subset_biUnion_of_mem ha)).symm
-    -- the points of `s n` that are not covered are either not covered by `u` (a null set),
-    -- or covered by an element of `u` outside of `w`.
-    have M : {x ∈ s | C x ≤ n} \ ⋃ a ∈ F ∪ (↑) '' (w : Set u), B a ⊆
-        (({x ∈ s | C x ≤ n} \ K) \ ⋃ a ∈ u, B a) ∪ ⋃ a : {a : u // a ∉ w}, B a := by
-      intro x ⟨hxs, hxG⟩
-      simp only [mem_iUnion, mem_union, mem_image, Finset.mem_coe, exists_prop, not_exists,
-        not_and, or_imp, forall_and] at hxG
-      by_cases hxu : x ∈ ⋃ a ∈ u, B a
-      · obtain ⟨a, hau, hxa⟩ := mem_iUnion₂.1 hxu
-        refine Or.inr (mem_iUnion.2 ⟨⟨⟨a, hau⟩, fun haw ↦ ?_⟩, hxa⟩)
-        exact hxG.2 a ⟨⟨a, hau⟩, haw, rfl⟩ hxa
-      · exact Or.inl ⟨⟨hxs, by simpa [K] using hxG.1⟩, hxu⟩
+      exact ((ut' b.property).2.2.1.mono_right (subset_biUnion_of_mem ha)).symm
+    -- main property: the points of `s n` which are not covered by `G` are contained in the
+    -- enlargements of the elements of `u` not in `w`.
+    have M : {x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ G, B a ⊆
+        ⋃ a : {a : u // a ∉ w}, closedBall (c a) (3 * r a) := by
+      rintro z ⟨⟨⟨hzs, hzU⟩, hzC⟩, hzG⟩
+      -- since the elements of `G` are closed and finitely many, one can find a small ball
+      -- around `z` not intersecting them
+      have hG : IsClosed (⋃ a ∈ G, B a) := hGfin.isClosed_biUnion fun a ha ↦ h't a (hGt ha)
+      obtain ⟨d, dpos, hd⟩ : ∃ d > 0, closedBall z d ⊆ U.set n \ ⋃ a ∈ G, B a :=
+        nhds_basis_closedBall.mem_iff.1 (((U.set_mem n).sdiff hG).mem_nhds ⟨hzU, hzG⟩)
+      -- choose an element `a` of the family `t` contained in this small ball
+      obtain ⟨a, hat, ha, rfl⟩ := hf z hzs (min d 1) (lt_min dpos one_pos)
+      have haG : B a ⊆ U.set n \ ⋃ a ∈ G, B a :=
+        (hB a hat).trans ((closedBall_subset_closedBall (ha.trans (min_le_left _ _))).trans hd)
+      have hat' : a ∈ t' :=
+        ⟨hat, hzC, (subset_compl_iff_disjoint_right.1 fun x hx ↦ (haG hx).2).mono_right
+          (biUnion_subset_biUnion_left subset_union_left), fun x hx ↦ (haG hx).1,
+          ha.trans (min_le_right _ _)⟩
+      -- it intersects an element `b` of `u` with comparable radius, by definition of `u`
+      obtain ⟨b, bu, ⟨e, ea, eb⟩, hab⟩ := hu a hat'
+      -- `b` cannot belong to `w`, as the elements of `w` do not intersect `B a`.
+      have bw : (⟨b, bu⟩ : u) ∉ w := fun hbw ↦
+        (haG ea).2 (mem_biUnion (subset_union_right (mem_image_of_mem _ hbw)) eb)
+      refine mem_iUnion.2 ⟨⟨⟨b, bu⟩, bw⟩, ?_⟩
+      -- since `a` and `b` have comparable radii, `z` belongs to the enlargement of `b`
+      have hea : dist (c a) e ≤ r a := mem_closedBall'.1 (hB a hat ea)
+      have heb : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
+      simp only [mem_closedBall]
+      linarith only [dist_triangle (c a) e (c b), hea, heb, hab]
     calc
-      ν ({x ∈ s | C x ≤ n} \ ⋃ a ∈ F ∪ (↑) '' (w : Set u), B a)
-        ≤ ν (({x ∈ s | C x ≤ n} \ K) \ ⋃ a ∈ u, B a) + ν (⋃ a : {a : u // a ∉ w}, B a) :=
-          (measure_mono M).trans (measure_union_le _ _)
-      _ ≤ 0 + ∑' a : {a : u // a ∉ w}, ν (B a) := by
-          gcongr
-          · exact (toFinite_absolutelyContinuous μ hu).le
-          · exact measure_iUnion_le _
-      _ < (n : ℝ≥0∞)⁻¹ := by rwa [zero_add]
+      μ ({x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ G, B a)
+        ≤ ∑' a : {a : u // a ∉ w}, μ (closedBall (c a) (3 * r a)) :=
+          (measure_mono M).trans (measure_iUnion_le _)
+      _ ≤ ∑' a : {a : u // a ∉ w}, n * μ (B a) := tsum_le_tsum fun a ↦
+          (μB a (ut a.val.property)).trans (by gcongr; exact_mod_cast (ut' a.val.property).2.1)
+      _ = n * ∑' a : {a : u // a ∉ w}, μ (B a) := ENNReal.tsum_mul_left
+      _ ≤ n * ((n : ℝ≥0∞)⁻¹ / n) := by gcongr
+      _ ≤ (n : ℝ≥0∞)⁻¹ := ENNReal.mul_div_le
   choose G hFG hG using step
   -- the inductive construction of the sequence of finite subfamilies
   let F : ℕ → S := fun n ↦ Nat.rec ⟨∅, finite_empty, empty_subset _, pairwiseDisjoint_empty⟩
@@ -516,19 +354,21 @@ theorem exists_disjoint_covering_ae
   refine ⟨⋃ n, (F n).val, iUnion_subset fun n ↦ (F n).property.2.1,
     countable_iUnion fun n ↦ (F n).property.1.countable,
     (pairwiseDisjoint_iUnion F_mono.directed_le).2 fun n ↦ (F n).property.2.2, ?_⟩
-  rw [← toFinite_apply_eq_zero_iff]
   -- it suffices to show that each `s n` is almost everywhere covered
   have : s \ ⋃ a ∈ ⋃ n, (F n).val, B a ⊆
-      ⋃ n : ℕ, {x ∈ s | C x ≤ n} \ ⋃ a ∈ ⋃ n, (F n).val, B a := by
+      ⋃ n : ℕ, {x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ ⋃ n, (F n).val, B a := by
     intro x ⟨hxs, hx⟩
     obtain ⟨n, hn⟩ := exists_nat_ge (C x)
-    exact mem_iUnion.2 ⟨n, ⟨hxs, by exact_mod_cast hn⟩, hx⟩
+    obtain ⟨k, hk⟩ : ∃ k, x ∈ U.set k := by simpa [← U.spanning] using mem_univ x
+    refine mem_iUnion.2 ⟨max n k, ⟨⟨hxs, μ.monotone_finiteSpanningSetsInOpen
+      (le_max_right _ _) hk⟩, hn.trans (Nat.cast_le.2 (le_max_left _ _))⟩, hx⟩
   refine measure_mono_null this (measure_iUnion_null fun n ↦ ?_)
   -- the measure of the uncovered part of `s n` is at most `1 / m` for any `m ≥ n`.
   refine le_antisymm (ge_of_tendsto ENNReal.tendsto_inv_nat_nhds_zero ?_) bot_le
   filter_upwards [eventually_ge_atTop n] with m hm
-  refine le_trans (measure_mono ?_) (hG (F m) m).le
-  refine sdiff_subset_sdiff (fun x hx ↦ ⟨hx.1, hx.2.trans (by exact_mod_cast hm)⟩) ?_
+  refine le_trans (measure_mono ?_) (hG (F m) m)
+  refine sdiff_subset_sdiff (fun x hx ↦ ⟨⟨hx.1.1, μ.monotone_finiteSpanningSetsInOpen hm hx.1.2⟩,
+    hx.2.trans (by exact_mod_cast hm)⟩) ?_
   rw [← F_succ]
   exact biUnion_subset_biUnion_left (subset_iUnion (fun n ↦ (F n).val) (m + 1))
 
