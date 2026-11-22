@@ -114,7 +114,7 @@ theorem IsCofinalFor.isCofinal (hst : IsCofinalFor s t) (ht : IsCofinal s) : IsC
   obtain ⟨b, hb, hab⟩ := ht a
   obtain ⟨c, hc, hbc⟩ := hst hb
   exact ⟨c, hc, hab.trans hbc⟩
-  
+
 @[to_dual (attr := simp)]
 lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
