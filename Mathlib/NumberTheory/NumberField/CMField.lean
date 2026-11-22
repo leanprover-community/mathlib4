@@ -431,7 +431,7 @@ theorem regOfFamily_realFunSystem :
     ← abs_mul, ← Matrix.det_mul_column, ← Matrix.det_reindex_self f, Matrix.reindex_apply]
   congr; ext i w
   rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
-    show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
+    show f.symm w = (equivInfinitePlace K).symm w.val by rfl,
     show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
   simp [f, g]
 

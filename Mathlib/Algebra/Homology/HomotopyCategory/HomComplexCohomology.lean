@@ -255,7 +255,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         simpa using! congr($hl y))
 
 lemma leftHomologyData'_f'_apply_coe (hm : n + 1 = m) (hp : m + 1 = p) (x : Cochain K L n) :
-    ((leftHomologyData' K L n m p hm hp).f' x).1 = δ n m x := rfl
+    ((leftHomologyData' K L n m p hm hp).f' x).val = δ n m x := rfl
 
 /-- `CohomologyClass K L n` identifies to the cohomology of the complex `HomComplex K L`
 in degree `n`. -/

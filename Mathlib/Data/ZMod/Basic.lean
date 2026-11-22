@@ -874,7 +874,7 @@ lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod 
 the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
 def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.Coprime x.val n } where
   toFun x := ⟨x, val_coe_unit_coprime x⟩
-  invFun x := unitOfCoprime x.1.val x.2
+  invFun x := unitOfCoprime x.val.val x.property
   left_inv := fun ⟨_, _, _, _⟩ => Units.ext (natCast_zmod_val _)
   right_inv := fun ⟨_, _⟩ => by simp
 
@@ -915,9 +915,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         conv_rhs => rw [← ZMod.natCast_zmod_val x]
         rw [ite_eq_right hmn0, ZMod.natCast_eq_natCast_iff, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
-        refine
-          ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.left.trans ?_,
-            (Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.right.trans ?_⟩
+        let := Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val
+        refine ⟨this.property.left.trans ?_, this.property.right.trans ?_⟩
         · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
         · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
@@ -1165,7 +1164,7 @@ variable (f : { f : ℤ →+ A // f n = 0 })
 theorem lift_coe (x : ℤ) : lift n f (x : ZMod n) = f.val x :=
   AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
 
-theorem lift_castAddHom (x : ℤ) : lift n f (Int.castAddHom (ZMod n) x) = f.1 x :=
+theorem lift_castAddHom (x : ℤ) : lift n f (Int.castAddHom (ZMod n) x) = f.val x :=
   AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
 
 @[simp]
@@ -1177,8 +1176,8 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
   AddMonoidHom.ext <| lift_castAddHom _ _
 
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
-    Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
-  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, IsConcreteLE.le_iff,
+    Injective (lift n f) ↔ ∀ m, f.val m = 0 → (m : ZMod n) = 0 := by
+  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, le_iff_mem_imp_mem,
     ZMod.intCast_surjective.forall, ZMod.lift_coe, AddMonoidHom.mem_ker, AddSubgroup.mem_bot]
 
 end lift
@@ -1215,7 +1214,7 @@ lemma smulMemClass : SMulMemClass S (ZMod n) G where smul_mem _ _ {_x} hx := zmo
 
 namespace AddSubgroupClass
 
-instance instZModSMul : SMul (ZMod n) K where smul a x := ⟨a • x, zmod_smul_mem x.2 _⟩
+instance instZModSMul : SMul (ZMod n) K where smul a x := ⟨a • x, zmod_smul_mem x.property _⟩
 
 @[simp, norm_cast] lemma coe_zmod_smul (a : ZMod n) (x : K) : ↑(a • x) = (a • x : G) := rfl
 

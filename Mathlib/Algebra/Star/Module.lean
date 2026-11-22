@@ -211,7 +211,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
 @[simp]
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
-  LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
+  LinearMap.ext fun x ↦ x.property.selfAdjointPart_apply R
 
 theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.ext <| by
@@ -220,7 +220,7 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
 @[simp]
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
-  LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
+  LinearMap.ext fun x ↦ x.property.skewAdjointPart_apply R
 
 @[simp]
 theorem selfAdjointPart_comp_subtype_skewAdjoint :

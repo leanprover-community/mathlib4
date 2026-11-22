@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Tactic.Linarith
+
+import Mathlib.Algebra.Module.Equiv.Basic
 
 /-! # Shifting cochains
 
@@ -490,7 +491,7 @@ namespace Cocycle
 @[simps!, implicit_reducible]
 def rightShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n' + a = n) :
     Cocycle K (L⟦a⟧) n' :=
-  Cocycle.mk (γ.1.rightShift a n' hn') _ rfl (by
+  Cocycle.mk (γ.val.rightShift a n' hn') _ rfl (by
     simp only [Cochain.δ_rightShift _ a n' (n' + 1) hn' (n + 1) (by lia),
       δ_eq_zero, Cochain.rightShift_zero, smul_zero])
 
@@ -498,7 +499,7 @@ def rightShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n' + a = n) :
 @[simps!, implicit_reducible]
 def rightUnshift {n' a : ℤ} (γ : Cocycle K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     Cocycle K L n :=
-  Cocycle.mk (γ.1.rightUnshift n hn) _ rfl (by
+  Cocycle.mk (γ.val.rightUnshift n hn) _ rfl (by
     rw [Cochain.δ_rightUnshift _ n hn (n + 1) (n + 1 - a) (by lia),
       δ_eq_zero, Cochain.rightUnshift_zero, smul_zero])
 
@@ -506,7 +507,7 @@ def rightUnshift {n' a : ℤ} (γ : Cocycle K (L⟦a⟧) n') (n : ℤ) (hn : n' 
 @[simps!, implicit_reducible]
 def leftShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n + a = n') :
     Cocycle (K⟦a⟧) L n' :=
-  Cocycle.mk (γ.1.leftShift a n' hn') _ rfl (by
+  Cocycle.mk (γ.val.leftShift a n' hn') _ rfl (by
     simp only [Cochain.δ_leftShift _ a n' (n' + 1) hn' (n + 1) (by lia),
       δ_eq_zero, Cochain.leftShift_zero, smul_zero])
 
@@ -514,7 +515,7 @@ def leftShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n + a = n') :
 @[simps!, implicit_reducible]
 def leftUnshift {n' a : ℤ} (γ : Cocycle (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     Cocycle K L n :=
-  Cocycle.mk (γ.1.leftUnshift n hn) _ rfl (by
+  Cocycle.mk (γ.val.leftUnshift n hn) _ rfl (by
     rw [Cochain.δ_leftUnshift _ n hn (n + 1) (n + 1 + a) rfl,
       δ_eq_zero, Cochain.leftUnshift_zero, smul_zero])
 
@@ -522,7 +523,7 @@ def leftUnshift {n' a : ℤ} (γ : Cocycle (K⟦a⟧) L n') (n : ℤ) (hn : n + 
 @[simps!, implicit_reducible]
 def shift (γ : Cocycle K L n) (a : ℤ) :
     Cocycle (K⟦a⟧) (L⟦a⟧) n :=
-  Cocycle.mk (γ.1.shift a) _ rfl
+  Cocycle.mk (γ.val.shift a) _ rfl
     (by simp only [Cochain.δ_shift, δ_eq_zero, Cochain.shift_zero, smul_zero])
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K L⟦a⟧ n'` when `n' + a = n`. -/

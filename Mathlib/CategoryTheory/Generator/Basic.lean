@@ -512,7 +512,7 @@ theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : ObjectProperty C}
     [ObjectProperty.Small.{w} 𝒢] [LocallySmall.{w} C]
     (h𝒢 : 𝒢.IsDetecting) : WellPowered.{w} C where
   subobject_small X := small_of_injective
-    (f := fun P : Subobject X => { f : Σ G : Subtype 𝒢, G.1 ⟶ X | P.Factors f.2 })
+    (f := fun P : Subobject X => { f : Σ G : Subtype 𝒢, G.val ⟶ X | P.Factors f.2 })
       fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
         (by simpa [Set.ext_iff, Sigma.forall] using h)
 
