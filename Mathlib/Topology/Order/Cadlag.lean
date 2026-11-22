@@ -71,11 +71,15 @@ lemma IsRightContinuous.mul [Mul Y] [ContinuousMul Y]
     IsRightContinuous (f * g) :=
   hf.continuous_comp₂ hg continuous_mul
 
+attribute [to_additive existing] IsLeftContinuous.mul
+
 @[to_additive (attr := to_fun (attr := to_dual)) sub]
 lemma IsRightContinuous.div' [Div Y] [ContinuousDiv Y]
     (hf : IsRightContinuous f) (hg : IsRightContinuous g) :
     IsRightContinuous (f / g) :=
   hf.continuous_comp₂ hg continuous_div'
+
+attribute [to_additive existing sub] IsLeftContinuous.div'
 
 @[to_fun (attr := to_dual)]
 lemma IsRightContinuous.div [GroupWithZero Y] [ContinuousInv₀ Y] [ContinuousMul Y]
@@ -88,17 +92,21 @@ lemma IsRightContinuous.inv [Inv Y] [ContinuousInv Y] (hf : IsRightContinuous f)
     IsRightContinuous (f⁻¹) :=
   hf.continuous_comp continuous_inv
 
+attribute [to_additive existing] IsLeftContinuous.inv
+
 @[to_fun (attr := to_dual)]
 lemma IsRightContinuous.inv₀ [Zero Y] [Inv Y] [ContinuousInv₀ Y]
     (hf : IsRightContinuous f) (h : ∀ x, f x ≠ 0) :
     IsRightContinuous (f⁻¹) :=
   fun x ↦ (hf x).inv₀ (h x)
 
-@[to_fun (attr := to_dual (attr := to_additive))]
+@[to_additive (attr := to_fun (attr := to_dual))]
 lemma IsRightContinuous.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
     (hf : IsRightContinuous f) :
     IsRightContinuous (c • f) :=
   hf.continuous_comp (continuous_const_smul c)
+
+attribute [to_additive existing] IsLeftContinuous.const_smul
 
 section IsRightContinuousOn
 
