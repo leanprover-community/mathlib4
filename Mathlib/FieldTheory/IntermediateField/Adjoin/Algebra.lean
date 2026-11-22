@@ -8,8 +8,9 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
+
+import Mathlib.RingTheory.Adjoin.Singleton
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -101,7 +102,8 @@ lemma fg_top_iff :
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
       .comp _ (Algebra.adjoin F (s : Set E)) _
     rw [hs] at this
-    exact .of_surjective IntermediateField.topEquiv.toAlgHom IntermediateField.topEquiv.surjective
+    exact .of_surjective (IntermediateField.topEquiv (F := F) (E := E)).toAlgHom
+      IntermediateField.topEquiv.surjective
   · intro _
     use Algebra.EssFiniteType.finset F E
     refine top_le_iff.mp fun x _ ↦ ?_

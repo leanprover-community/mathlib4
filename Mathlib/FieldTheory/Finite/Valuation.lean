@@ -5,8 +5,9 @@ Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Valuations on an algebra over a finite field.
