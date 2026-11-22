@@ -427,7 +427,8 @@ def rootSystem :
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦
-    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
+    ⟨chainBotCoeff β.val α.val - chainTopCoeff β.val α.val,
+      by simp [apply_coroot_eq_cast β.val α.val]⟩
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
@@ -436,7 +437,8 @@ lemma corootForm_rootSystem_eq_killing :
   rfl
 
 @[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
-@[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
+@[simp] lemma rootSystem_pairing_apply (α β) :
+    (rootSystem H).pairing β α = β.val (coroot α.val) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
@@ -461,7 +463,8 @@ lemma biSup_corootSubmodule_eq_cartan :
 
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
-    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
+    ⟨chainBotCoeff β.val α.val - chainTopCoeff β.val α.val,
+      by simp [apply_coroot_eq_cast β.val α.val]⟩
 
 instance : (rootSystem H).IsReduced where
   eq_or_eq_neg := by

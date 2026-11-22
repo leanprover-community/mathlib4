@@ -376,6 +376,18 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
   norm_smul_le q x := by
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_cast, norm_smul, Rat.norm_cast_real]
 
+instance NormedAlgebra.subsingleton_real {𝕜} [NormedRing 𝕜] :
+    Subsingleton (NormedAlgebra ℝ 𝕜) where
+  allEq P Q := by
+    have cont (S : NormedAlgebra ℝ 𝕜) : Continuous (@algebraMap ℝ 𝕜 _ _ S.toAlgebra) := by
+      rw [Algebra.algebraMap_eq_smul_one']
+      fun_prop
+    suffices P.toAlgebra = Q.toAlgebra by cases P; cases Q; congr
+    refine Algebra.algebra_ext _ _ <| congr_fun ?_
+    apply Rat.denseRange_cast.equalizer (cont P) (cont Q)
+    rw [← Rat.coe_castHom, ← RingHom.coe_comp, ← RingHom.coe_comp, ← DFunLike.ext'_iff]
+    exact RingHom.ext_rat ..
+
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
   norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
 
