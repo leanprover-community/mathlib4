@@ -509,9 +509,9 @@ theorem eventually_setIntegral_Ioi_eq_of_eventuallyEq_zero [LinearOrder α] [Top
   filter_upwards [tendsto_smallSets_iff.mp (tendsto_const_nhds.uIcc tendsto_id) _ hf] with b hb
   rw [← integral_indicator measurableSet_Ioi, ← integral_indicator measurableSet_Ioi]
   congr 1 with x
-  by_cases hx : x ∈ uIcc a b
-  · simp [indicator_apply, show f x = 0 from hb hx]
   simp only [indicator_apply, mem_Ioi]
+  by_cases hx : x ∈ uIcc a b
+  · simp [show f x = 0 from hb hx]
   split_ifs with h₁ h₂ h₂ <;> first
     | rfl
     | exact (hx (mem_uIcc.mpr (.inr ⟨h₁.le, not_lt.mp h₂⟩))).elim
