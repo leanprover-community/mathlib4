@@ -42,7 +42,6 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   uniq f := congr(OrderRingHom.toRingHom $(@Subsingleton.elim (ℝ →+*o ℝ) _
       ⟨f, ringHom_monotone (fun _ ↦ Real.isSquare_iff.mpr) f⟩ default))
 
-@[simp]
 theorem Real.ringHom_apply {F : Type*} [FunLike F ℝ ℝ] [RingHomClass F ℝ ℝ] (f : F) (r : ℝ) :
     f r = r :=
   congr($(Unique.eq_default (RingHomClass.toRingHom f)) r)
