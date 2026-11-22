@@ -125,6 +125,11 @@ instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
 instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
+@[simp]
+protected lemma coe_ofClass {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
+    [CompletelyPositiveMapClass F A₁ A₂] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 open CStarMatrix in
 lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
