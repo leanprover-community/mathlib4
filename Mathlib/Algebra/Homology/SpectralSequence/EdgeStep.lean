@@ -199,6 +199,16 @@ lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.
     ← cancel_mono ((E.page r).isoHomologyι pq _ rfl (by simp)).hom,
     ← cancel_mono ((E.page r).iCyclesIso pq _ rfl (by simp)).inv]
 
+instance (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r') :
+    IsIso (E.edgeMonoStep pq r r' hrr') :=
+  ⟨E.edgeEpiStep pq r r', by simp⟩
+
+instance (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r') :
+    IsIso (E.edgeEpiStep pq r r' hrr') :=
+  ⟨E.edgeMonoStep pq r r', by simp⟩
+
 section
 
 variable (r r' : ℤ) (pq pq' pq'' : ι)
