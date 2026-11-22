@@ -179,7 +179,8 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
     riemannZeta (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * cos (π * s / 2) * riemannZeta s := by
   rw [riemannZeta, hurwitzZetaEven_one_sub 0 hs (Or.inr hs'), cosZeta_zero, hurwitzZetaEven_zero]
 
-/-- A formal statement of the **Riemann hypothesis**. See `leanprover-community/riemann-hypothesis`
+/-- A formal statement of the **Riemann hypothesis**. See
+[leanprover-community/riemann-hypothesis](https://github.com/leanprover-community/riemann-hypothesis)
 for a construction of a term of type `RiemannHypothesis`. -/
 @[wikidata Q205966]
 def RiemannHypothesis : Prop :=
