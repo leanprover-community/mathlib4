@@ -252,7 +252,7 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
     invFun := conj
     left_inv := star_star
     right_inv := star_star
-    commutes' := conj_ofReal }
+    map_smul' := by simp }
 
 @[simp]
 theorem conjAe_coe : ⇑conjAe = conj :=
@@ -657,6 +657,6 @@ instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
     StarHomClass F E A where
   map_star φ x := by
     rw [← realPart_add_I_smul_imaginaryPart x]
-    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
+    simp [(ℜ x).property.map' φ, IsSelfAdjoint.star_eq, (ℑ x).property.map' φ]
 
 end RealImaginaryPart

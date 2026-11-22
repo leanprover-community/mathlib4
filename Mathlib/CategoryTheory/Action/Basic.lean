@@ -275,7 +275,7 @@ abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
-  coe f := f.1
+  coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
@@ -284,7 +284,7 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
     ext
     simpa using congr($(f.comm g) _)⟩
   ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
-    simpa [ConcreteCategory.hom_ofHom] using congr($(f.2 g) x)⟩
+    simpa [ConcreteCategory.hom_ofHom] using congr($(f.property g) x)⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := V)

@@ -686,7 +686,7 @@ theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subs
 /-- The semigroup hom associated to an inclusion of subsemigroups. -/
 @[to_additive /-- The `AddSemigroup` hom associated to an inclusion of subsemigroups. -/]
 def inclusion {S T : Subsemigroup M} (h : S ≤ T) : S →ₙ* T :=
-  (MulMemClass.subtype S).codRestrict _ fun x => h x.2
+  (MulMemClass.subtype S).codRestrict _ fun x => h x.property
 
 @[to_additive (attr := simp)]
 theorem range_subtype (s : Subsemigroup M) : (MulMemClass.subtype s).srange = s :=

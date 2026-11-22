@@ -6,13 +6,13 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Order.Star.Int
-public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Base
 
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!
@@ -309,8 +309,8 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
     ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
       (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
-  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
-    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim LinearMap.proj
+    (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.val.1 - LinearMap.proj x.val.2)
   suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
