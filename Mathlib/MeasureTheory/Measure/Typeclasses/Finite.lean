@@ -593,14 +593,14 @@ private theorem exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ [Topologica
       ⋃ n, U n = univ := by
   obtain ⟨V, hV, hVU⟩ :
       ∃ V : ℕ → Set α, (∀ n, IsOpen (V n) ∧ μ (V n) < ∞) ∧ ⋃ n, V n = univ := by
-    refine (exists_seq_cover_iff_countable (p := fun s ↦ IsOpen s ∧ μ s < ∞)
-      ⟨∅, isOpen_empty, by simp⟩).2 ?_
+    rw [exists_seq_cover_iff_countable (p := fun s ↦ IsOpen s ∧ μ s < ∞) ⟨∅, by simp⟩]
     choose U hxU hUo hμU using μ.exists_isOpen_measure_lt_top
     obtain ⟨t, htc, ht⟩ := LindelofSpace.elim_nhds_subcover U fun x ↦ (hUo x).mem_nhds (hxU x)
     refine ⟨U '' t, htc.image _, forall_mem_image.2 fun x _ ↦ ⟨hUo x, hμU x⟩, ?_⟩
     rwa [sUnion_image]
-  refine ⟨accumulate V, monotone_accumulate, fun n ↦ isOpen_biUnion (s := Iic n) fun k _ ↦ (hV k).1,
-    fun n ↦ measure_biUnion_lt_top (s := Iic n) (finite_Iic n) fun k _ ↦ (hV k).2, ?_⟩
+  choose hVo hμV using hV
+  refine ⟨accumulate V, monotone_accumulate, fun n ↦ isOpen_biUnion (s := Iic n) fun n _ ↦ hVo n,
+    fun n ↦ measure_biUnion_lt_top (s := Iic n) (finite_Iic n) fun k _ ↦ hμV k, ?_⟩
   rw [iUnion_accumulate, hVU]
 
 /-- A locally finite measure on a Lindelöf topological space (e.g., a `σ`-compact space or a second
@@ -614,6 +614,7 @@ see `MeasureTheory.Measure.monotone_finiteSpanningSetsInOpen` for monotonicity. 
   finite := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.2.2.1
   spanning := (exists_monotone_isOpen_measure_lt_top_iUnion_eq_univ μ).choose_spec.2.2.2
 
+@[gcongr]
 theorem MeasureTheory.Measure.monotone_finiteSpanningSetsInOpen [TopologicalSpace α]
     [LindelofSpace α] {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     Monotone μ.finiteSpanningSetsInOpen.set :=
