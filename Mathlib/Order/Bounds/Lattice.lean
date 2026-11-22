@@ -47,10 +47,12 @@ theorem isGLB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsGLB (s i) (u i)
   refine isGLB_congr ?_
   simp_rw [range_eq_iUnion, lowerBounds_iUnion, lowerBounds_singleton, (hs _).lowerBounds_eq]
 
+@[to_dual]
 theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
   simp [IsCofinal, eq_univ_iff_forall]
 
+@[to_dual]
 theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
   mpr hs := by

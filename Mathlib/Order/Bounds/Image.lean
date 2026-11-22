@@ -330,6 +330,7 @@ lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) 
   exact ⟨b, hb, hf hab⟩
 
 -- TODO: prove from the previous theorem
+@[to_dual]
 theorem IsCofinal.image (hs : IsCofinal s) (hf : Monotone f)
     (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) := by
   intro a
@@ -338,14 +339,18 @@ theorem IsCofinal.image (hs : IsCofinal s) (hf : Monotone f)
   exact ⟨_, mem_image_of_mem f hc, hb.trans (hf hc')⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
+@[to_dual
+/-- A coinitial subset of a coinitial subset is cofinal. -/]
 theorem IsCofinal.trans {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
     IsCofinal (Subtype.val '' t) :=
   ht.image (Subtype.mono_coe _) (by simpa)
 
+@[to_dual]
 theorem GaloisConnection.isCofinal_range (h : GaloisConnection g f) :
     IsCofinal (range f) :=
   fun a ↦ ⟨_, mem_range_self _, GaloisConnection.le_u_l h a⟩
 
+@[to_dual]
 theorem GaloisConnection.map_isCofinal (h : GaloisConnection g f) (hs : IsCofinal s) :
     IsCofinal (f '' s) :=
   hs.image h.monotone_u h.isCofinal_range

@@ -298,17 +298,24 @@ theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoun
   obtain ⟨b, hb⟩ := exists_gt a
   exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
 
-/-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
-well-ordering of `α` is a cofinal set. -/
-theorem isCofinal_setOfPred_imp_lt [LinearOrder α] (r : α → α → Prop) [h : WellFounded r] :
-    IsCofinal { a | ∀ b, r b a → b < a } := by
+/-- The set of "records" (the smallest inputs yielding the largest values) with respect to a
+well-founded ordering of `α` is a cofinal set. -/
+@[to_dual
+/-- The set of "records" (the smallest inputs yielding the smallest values) with respect to a
+well-founded ordering of `α` is a coinitial set. -/]
+theorem WellFounded.isCofinal_setOfPred_imp_lt [LinearOrder α]
+    (r : α → α → Prop) [h : WellFounded r] : IsCofinal { a | ∀ b, r b a → b < a } := by
   intro a
   obtain ⟨b, hb, hb'⟩ := h.has_min {b | a ≤ b} ⟨a, le_rfl⟩
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
 
-@[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt := isCofinal_setOfPred_imp_lt
+@[deprecated (since := "2026-11-22")] alias isCofinal_setOfPred_imp_lt :=
+  WellFounded.isCofinal_setOfPred_imp_lt
+
+@[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt :=
+  WellFounded.isCofinal_setOfPred_imp_lt
 
 end LinearOrder
 

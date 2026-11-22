@@ -137,11 +137,13 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
 lemma IsCofinalFor.nonempty (h : IsCofinalFor s t) (hs : s.Nonempty) : t.Nonempty :=
   let ⟨_, ha⟩ := hs; let ⟨b, hb, _⟩ := h ha; ⟨b, hb⟩
 
+@[to_dual]
 theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
   rintro a (has | hat)
   · exact hc has
   · exact ⟨a, hat, le_rfl⟩
 
+@[to_dual]
 theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
   rw [union_comm]
   exact hc.union_left
@@ -196,32 +198,37 @@ theorem directedOn_or_directedOn_of_union'
     · aesop
     · exact .inr ⟨h, ht⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem IsCofinal.univ : IsCofinal (@univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
+@[to_dual]
 instance : Inhabited {s : Set α // IsCofinal s} :=
   ⟨_, .univ⟩
 
+@[to_dual]
 theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
+@[to_dual]
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
 
+@[to_dual]
 theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
   inhabit α
   exact (hs default).imp fun _ ↦ And.left
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
   simp [IsCofinal, IsTop]
 
+@[to_dual]
 theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} := by
   simp
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
   intro hx
   have := hx x
@@ -230,19 +237,22 @@ theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
 section PartialOrder
 variable {α : Type*} [PartialOrder α]
 
+@[to_dual]
 theorem IsCofinal.mem_of_isMax {s : Set α} {a : α} (ha : IsMax a) (hs : IsCofinal s) : a ∈ s := by
   obtain ⟨b, hb, hb'⟩ := hs a
   rwa [ha.eq_of_ge hb'] at hb
 
+@[to_dual]
 theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ ∈ s :=
   hs.mem_of_isMax isMax_top
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
   ⟨IsCofinal.top_mem, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
 
 variable [IsDirectedOrder α]
 
+@[to_dual]
 theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
     (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
   intro y
@@ -251,18 +261,22 @@ theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht
   obtain ⟨z, hz, hyz⟩ := hs m
   exact ⟨z, ⟨ht (hxm.trans hyz) hx, hz⟩, hym.trans hyz⟩
 
+@[to_dual]
 theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
     (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
   rw [inter_comm]
   exact hs.inter_of_isUpperSet_left ht ht₀
 
+@[to_dual]
 theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
   simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
 
-@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
+@[to_dual (attr := simp)]
+protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
   simpa using (IsUpperSet.Ici x).isCofinal
 
-@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+@[to_dual (attr := simp)]
+protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
   simpa using (IsUpperSet.Ioi x).isCofinal
 
 end PartialOrder
@@ -270,9 +284,11 @@ end PartialOrder
 section LinearOrder
 variable {α : Type*} [LinearOrder α]
 
+@[to_dual]
 theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
   simp [IsCofinal]
 
+@[to_dual]
 theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s := by
   rw [not_isCofinal_iff] at h
   obtain ⟨x, h⟩ := h
@@ -283,6 +299,8 @@ theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s
   exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
+@[to_dual
+/-- In a linear order with no minimum, coinitial sets are the same as unbounded sets. -/]
 theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s ↔ BddAbove s := by
   use .of_not_isCofinal
   rw [not_isCofinal_iff]
@@ -290,14 +308,17 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
   obtain ⟨z, hz⟩ := exists_gt x
   exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
 
-alias ⟨_, BddAbove.not_isCofinal⟩ := not_isCofinal_iff_bddAbove
+@[to_dual] alias ⟨_, BddAbove.not_isCofinal⟩ := not_isCofinal_iff_bddAbove
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
+@[to_dual
+/-- In a linear order with no minimum, coinitial sets are the same as unbounded sets. -/]
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
-alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
+@[to_dual] alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
+@[to_dual]
 theorem IsCofinal.noMaxOrder [NoMaxOrder α] {s : Set α} (hs : IsCofinal s) : NoMaxOrder s where
   exists_gt x := by
     obtain ⟨y, hxy⟩ := exists_gt x.val
@@ -364,6 +385,7 @@ theorem IsLeast.mono (ha : IsLeast s a) (hb : IsLeast t b) (hst : s ⊆ t) : b �
 theorem IsLUB.mono (ha : IsLUB s a) (hb : IsLUB t b) (hst : s ⊆ t) : a ≤ b :=
   IsLeast.mono hb ha <| upperBounds_mono_set hst
 
+@[to_dual]
 theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofinal t := by
   intro a
   obtain ⟨b, hb, hb'⟩ := hs a

@@ -45,15 +45,21 @@ theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s 
 theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) ↔ IsLUB s x := by
   rw [isLUB_preimage, f.apply_symm_apply]
 
--- TODO: rename to match the above theorems
-theorem map_isCofinal {s : Set α} (hs : IsCofinal s) : IsCofinal (f '' s) := by
+@[to_dual]
+private theorem isCofinal_image_imp {s : Set α} (hs : IsCofinal s) : IsCofinal (f '' s) := by
   intro b
   obtain ⟨a, ha, ha'⟩ := hs (f.symm b)
   exact ⟨f a, mem_image_of_mem _ ha, f.symm_apply_le.1 ha'⟩
 
--- TODO: rename to match the above theorems
-@[simp]
-theorem map_isCofinal_iff {s : Set α} : IsCofinal (f '' s) ↔ IsCofinal s :=
-  ⟨fun hs ↦ by simpa using f.symm.map_isCofinal hs, f.map_isCofinal⟩
+@[to_dual (attr := simp)]
+theorem isCofinal_image {s : Set α} : IsCofinal (f '' s) ↔ IsCofinal s :=
+  ⟨fun hs ↦ by simpa using f.symm.isCofinal_image_imp hs, f.isCofinal_image_imp⟩
+
+@[to_dual (attr := simp)]
+theorem isCofinal_preimage {s : Set β} : IsCofinal (f ⁻¹' s) ↔ IsCofinal s := by
+  rw [← image_symm_eq_preimage, isCofinal_image]
+
+@[deprecated (since := "2026-11-22")] alias map_isCofinal := isCofinal_image
+@[deprecated (since := "2026-11-22")] alias map_isCofinal_iff := isCofinal_image
 
 end OrderIso
