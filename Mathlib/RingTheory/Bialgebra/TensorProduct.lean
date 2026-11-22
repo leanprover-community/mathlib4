@@ -68,7 +68,7 @@ variable [Semiring C] [Semiring D] [Bialgebra S C]
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
 @[expose] def map (f : A →ₐc[S] C) (g : B →ₐc[R] D) : A ⊗[R] B →ₐc[S] C ⊗[R] D :=
-  { Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D),
+  { Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom,
     Algebra.TensorProduct.map (f : A →ₐ[S] C) (g : B →ₐ[R] D) with }
 
 @[simp]
@@ -78,7 +78,7 @@ theorem map_tmul (f : A →ₐc[S] C) (g : B →ₐc[R] D) (x : A) (y : B) :
 
 @[simp]
 theorem map_toCoalgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
-    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D) := rfl
+    (map f g).toCoalgHom = Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom := rfl
 
 @[simp]
 theorem map_toAlgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :

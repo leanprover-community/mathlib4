@@ -147,13 +147,15 @@ theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
     ⇑(⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
-    ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
+@[simp]
+theorem toCoalgHom_mk {f : A →ₗc[R] B} (h h₁) :
+    (⟨f, h, h₁⟩ : A →ₐc[R] B).toCoalgHom = f := by
   rfl
 
-@[simp, norm_cast]
-theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
+@[deprecated (since := "2026-11-22")] alias coe_coalgHom_mk := toCoalgHom_mk
+
+@[simp]
+theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑f.toCoalgHom = f :=
   rfl
 
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
@@ -188,9 +190,11 @@ theorem coe_fn_injective : @Function.Injective (A →ₐc[R] B) (A → B) (↑) 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗc[R] B) :=
+theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A →ₐc[R] B) → A →ₗc[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
-    show ((φ₁ : A →ₗc[R] B) : A → B) = ((φ₂ : A →ₗc[R] B) : A → B) from congr_arg _ H
+    show (φ₁.toCoalgHom : A → B) = (φ₂.toCoalgHom : A → B) from congr_arg _ H
+
+@[deprecated (since := "2026-11-22")] alias coe_coalgHom_injective := toCoalgHom_injective
 
 theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
@@ -199,7 +203,7 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
 @[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
-  CoalgHom.linearMapOfClass_injective.comp coe_coalgHom_injective
+  CoalgHom.linearMapOfClass_injective.comp toCoalgHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   congr($H x)
@@ -223,7 +227,7 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
 /-- Copy of a `BialgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₐc[R] B :=
-  { toCoalgHom := (f : A →ₗc[R] B).copy f' h
+  { toCoalgHom := f.toCoalgHom.copy f' h
     map_one' := by simp_all
     map_mul' := by intros; simp_all }
 
@@ -249,7 +253,7 @@ theorem coe_id : ⇑(BialgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toCoalgHom : BialgHom.id R A = CoalgHom.id R A :=
+theorem id_toCoalgHom : (BialgHom.id R A).toCoalgHom = CoalgHom.id R A :=
   rfl
 
 @[simp]
@@ -260,7 +264,7 @@ end
 
 /-- Composition of bialgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : A →ₐc[R] C :=
-  { (φ₁ : B →ₗc[R] C).comp (φ₂ : A →ₗc[R] B), (φ₁ : B →ₐ[R] C).comp (φ₂ : A →ₐ[R] B) with }
+  { φ₁.toCoalgHom.comp φ₂.toCoalgHom, (φ₁ : B →ₐ[R] C).comp (φ₂ : A →ₐ[R] B) with }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
@@ -268,7 +272,7 @@ theorem coe_comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : ⇑(φ₁.c
 
 @[simp]
 theorem comp_toCoalgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
-    φ₁.comp φ₂ = (φ₁ : B →ₗc[R] C).comp (φ₂ : A →ₗc[R] B) :=
+    (φ₁.comp φ₂).toCoalgHom = φ₁.toCoalgHom.comp φ₂.toCoalgHom :=
   rfl
 
 @[simp]
@@ -354,12 +358,12 @@ theorem counitBialgHom_apply (x : A) :
 
 @[simp]
 theorem counitBialgHom_toCoalgHom :
-    counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
+    (counitBialgHom R A).toCoalgHom = Coalgebra.counitCoalgHom R A := rfl
 
 @[simp] lemma counitBialgHom_self : counitBialgHom R R = .id R R := rfl
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
-  ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ => BialgHom.toCoalgHom_injective (Subsingleton.elim _ _)⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₐc[R] R) : f = g := Subsingleton.elim _ _

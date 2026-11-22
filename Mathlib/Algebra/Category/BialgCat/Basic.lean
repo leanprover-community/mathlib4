@@ -129,7 +129,7 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom.toCoalgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
@@ -138,7 +138,7 @@ theorem forget₂_coalgebra_obj (X : BialgCat R) :
 
 @[simp]
 theorem forget₂_coalgebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgCat R) (CoalgCat R)).map f = CoalgCat.ofHom f.toBialgHom :=
+    (forget₂ (BialgCat R) (CoalgCat R)).map f = CoalgCat.ofHom f.toBialgHom.toCoalgHom :=
   rfl
 
 end BialgCat
