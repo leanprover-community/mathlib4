@@ -13,12 +13,12 @@ public import Mathlib.Geometry.Group.InfiniteRegularTree
 The infinite rooted binary tree is the regular rooted tree of degree `2`: vertices are finite words
 on the alphabet `Fin 2`.
 
-This is the special case `α = Fin 2` of `InfiniteRegularTree`, and is the tree on which the
-Grigorchuk group acts.
+This is the special case `α = Fin 2` of the infinite regular rooted tree (vertices `List α`), and
+is the tree on which the Grigorchuk group acts.
 
 ## Main definitions
 
-* `InfiniteBinaryTree`: abbreviation for `InfiniteRegularTree (Fin 2)`.
+* `InfiniteBinaryTree`: abbreviation for `List (Fin 2)`.
 * `InfiniteBinaryTree.TreeAut`: abbreviation for `InfiniteRegularTree.TreeAut (Fin 2)`.
 * The root decomposition
   `TreeAut ≃* (Fin 2 → TreeAut) ⋊ Equiv.Perm (Fin 2)`
@@ -32,7 +32,7 @@ infinite binary tree, rooted tree, geometric group theory
 @[expose] public section
 
 /-- The infinite rooted binary tree: the regular tree on the alphabet `Fin 2`. -/
-abbrev InfiniteBinaryTree := InfiniteRegularTree (Fin 2)
+abbrev InfiniteBinaryTree := List (Fin 2)
 
 namespace InfiniteBinaryTree
 
