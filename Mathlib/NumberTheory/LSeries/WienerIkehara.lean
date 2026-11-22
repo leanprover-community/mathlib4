@@ -249,7 +249,6 @@ lemma integrableOn_mul_weight_div (hc : 0 < c) :
     IntegrableOn (fun t ↦ a * weight (t / c)) (Ici 0) := by
   have (t) (ht : 0 < t) :
       t⁻¹ • (a * c * (1 + ((2 * π)⁻¹ * (log t - log c)) ^ 2)⁻¹) = a * weight (t / c) := by
-    have : 0 < 1 + ((2 * π)⁻¹ * (log t - log c)) ^ 2 := by positivity
     simp [weight, log_div ht.ne' hc.ne', field]
   rw [integrableOn_Ici_iff_integrableOn_Ioi]
   exact ((integrableOn_comp_log_Ioi_zero _).2
