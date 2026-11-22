@@ -129,13 +129,13 @@ variable {G}
 
 theorem functorPullback_pushforward_covering [G.IsCoverDense K] [G.IsLocallyFull K] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine K.transitive T.2 _ fun Y iYX hiYX ↦ ?_
+  refine K.transitive T.property _ fun Y iYX hiYX ↦ ?_
   apply K.transitive (G.is_cover_of_isCoverDense _ _) _
   rintro W _ ⟨Z, iWZ, iZY, rfl⟩
   rw [Sieve.pullback_comp]; apply K.pullback_stable; clear W iWZ
   apply K.superset_covering ?_ (G.functorPushforward_imageSieve_mem _ (iZY ≫ iYX))
   rintro W _ ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
-  exact ⟨_, iVX, iWV, by simpa [e] using T.1.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
+  exact ⟨_, iVX, iWV, by simpa [e] using T.val.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
 
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.

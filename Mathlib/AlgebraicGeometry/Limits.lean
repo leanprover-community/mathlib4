@@ -664,7 +664,7 @@ lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
     IsAffineOpen (⨆ i ∈ s, U i) := by
   rw [← iSup_subtype'']
   have := hs.to_subtype
-  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.2 j.2 (by aesop)
+  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.property j.property (by aesop)
 
 lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (H : Disjoint U V) :

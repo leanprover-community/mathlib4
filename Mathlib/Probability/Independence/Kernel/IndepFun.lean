@@ -413,9 +413,9 @@ theorem iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T)
     Finset.prod_union, Finset.prod_image (by simp), Finset.prod_image (by simp)]
   · congr 1
     · refine Finset.prod_congr rfl fun i hi => ?_
-      rw [h_sets_t'_univ i.2, Set.inter_univ]
+      rw [h_sets_t'_univ i.property, Set.inter_univ]
     · refine Finset.prod_congr rfl fun i hi => ?_
-      rw [h_sets_s'_univ i.2, Set.univ_inter]
+      rw [h_sets_s'_univ i.property, Set.univ_inter]
   · rw [Finset.disjoint_iff_inter_eq_empty]
     grind
 

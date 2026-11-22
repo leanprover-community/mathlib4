@@ -560,11 +560,12 @@ variable [EMetricSpace β]
 open ENNReal Filter
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.1 y.1 ≠ ∞ :=
+theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.val y.val ≠ ∞ :=
   ne_of_lt <|
     calc
-      edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
+      edist x y ≤ edist a x + edist a y := edist_triangle_left x.val y.val a
+      _ < r + r := by
+        rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
@@ -575,7 +576,7 @@ def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :
 
 theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
     𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
-  (map_nhds_subtype_coe_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
+  (map_nhds_subtypeVal_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
 
 end
 
