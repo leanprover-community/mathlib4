@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
-public import Mathlib.Data.List.OfFn
+
+import Mathlib.Data.List.OfFn
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Group.Submonoid.Finite
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.Algebra.Group.Submonoid.Finite
 
 /-!
 # Subgroups
