@@ -402,6 +402,11 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
+initialize
+  registerGeneratingAttr `to_additive fun src stx kind ↦ do
+    profileitM Exception "to_additive" (← getOptions) do
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+
 /-- `insert_to_additive_translation mulName addName` inserts the translation `mulName ↦ addName`
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
