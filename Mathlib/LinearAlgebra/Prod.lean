@@ -586,7 +586,7 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   invFun m := ⟨⟨m, 0⟩, rfl⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv x := Subtype.ext <| Prod.ext rfl x.2.symm
+  left_inv x := Subtype.ext <| Prod.ext rfl x.prop.symm
   right_inv _ := rfl
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ :=
@@ -602,7 +602,7 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   invFun n := ⟨⟨0, n⟩, rfl⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv x := Subtype.ext <| Prod.ext x.2.symm rfl
+  left_inv x := Subtype.ext <| Prod.ext x.prop.symm rfl
   right_inv _ := rfl
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ :=
