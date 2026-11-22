@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Algebra.Group.Cocompact
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
+
 /-!
 # Cocompact subgroups of topological vector spaces
 
