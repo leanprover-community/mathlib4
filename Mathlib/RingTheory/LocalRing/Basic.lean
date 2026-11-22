@@ -5,15 +5,15 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.LocalRing.Defs
+
+import Mathlib.Algebra.Group.Units.Opposite
 
 /-!
-
 # Local rings
 
 We prove basic properties of local rings.
-
 -/
 
 public section
@@ -36,6 +36,31 @@ theorem of_nonunits_add [Nontrivial R]
   isUnit_or_isUnit_of_add_one {a b} hab :=
     or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
 
+variable [IsLocalRing R]
+
+theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
+  rcases h with ⟨u, hu⟩
+  rw [← Units.inv_mul_eq_one, mul_add] at hu
+  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact (u⁻¹.isUnit_units_mul _).mp
+
+theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
+  fun H ↦ not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
+
+variable (R) in
+/-- The nonunits of a local semiring form an additive submonoid. -/
+@[expose] def nonunitsAddSubmonoid : AddSubmonoid R where
+  carrier := nonunits R
+  zero_mem' := by simp
+  add_mem' := nonunits_add
+
+theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
+    (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
+  contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
+
+instance : IsLocalRing Rᵐᵒᵖ where
+  isUnit_or_isUnit_of_add_one h := by
+    simpa using isUnit_or_isUnit_of_add_one <| (MulOpposite.op_eq_one_iff _).mp h
+
 end Semiring
 
 section CommSemiring
@@ -47,14 +72,14 @@ theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R 
   @of_nonunits_add _ _
     (nontrivial_of_ne (0 : R) 1 <|
       let ⟨I, Imax, _⟩ := h
-      fun H : 0 = 1 => Imax.1.1 <| I.eq_top_iff_one.2 <| H ▸ I.zero_mem)
+      fun H : 0 = 1 => Imax.out.1 <| I.eq_top_iff_one.2 <| H ▸ I.zero_mem)
     fun x y hx hy H =>
     let ⟨I, Imax, Iuniq⟩ := h
     let ⟨Ix, Ixmax, Hx⟩ := exists_max_ideal_of_mem_nonunits hx
     let ⟨Iy, Iymax, Hy⟩ := exists_max_ideal_of_mem_nonunits hy
     have xmemI : x ∈ I := Iuniq Ix Ixmax ▸ Hx
     have ymemI : y ∈ I := Iuniq Iy Iymax ▸ Hy
-    Imax.1.1 <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H
+    Imax.out.1 <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H
 
 theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPrime P) : IsLocalRing R :=
   of_unique_max_ideal
@@ -64,17 +89,7 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
       · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
-        exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
-
-variable [IsLocalRing R]
-
-theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
-  rcases h with ⟨u, hu⟩
-  rw [← Units.inv_mul_eq_one, mul_add] at hu
-  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
-
-theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
+        exact hPnot_top (hM.out.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
 
 end CommSemiring
 
@@ -86,11 +101,7 @@ theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a
     IsLocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 
-end Ring
-
-section CommRing
-
-variable [CommRing R] [IsLocalRing R]
+variable [IsLocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
@@ -110,7 +121,7 @@ theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Su
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
 
-end CommRing
+end Ring
 
 end IsLocalRing
 

@@ -8,6 +8,8 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
 /-!
 # Simplicial categories
 
@@ -17,10 +19,6 @@ category of simplicial sets in such a way that morphisms in
 
 ## TODO
 
-* construct a simplicial category structure on simplicial objects, so
-  that it applies in particular to simplicial sets
-* obtain the adjunction property `(K ⊗ X ⟶ Y) ≃ (K ⟶ sHom X Y)` when `K`, `X`, and `Y`
-  are simplicial sets
 * develop the notion of "simplicial tensor" `K ⊗ₛ X : C` with `K : SSet` and `X : C`
   an object in a simplicial category `C`
 * define the notion of path between `0`-simplices of simplicial sets
@@ -29,15 +27,16 @@ category of simplicial sets in such a way that morphisms in
   by morphisms `Δ[1] ⊗ X ⟶ Y`.
 
 ## References
-* [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
-
+* [Daniel G. Quillen, *Homotopical algebra*, II §1][Quillen1967]
 -/
 
 @[expose] public section
 
 universe v u
 
-open CategoryTheory Category Simplicial MonoidalCategory
+open CategoryTheory Category MonoidalCategory
+
+open scoped Simplicial
 
 namespace CategoryTheory
 

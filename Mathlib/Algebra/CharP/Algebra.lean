@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras
@@ -27,7 +26,6 @@ and the fraction field `FractionRing R`.
 Instances constructed from this result:
 - Any `FreeAlgebra R X` has the same characteristic as `R`.
 - The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
-
 -/
 
 public section
@@ -48,7 +46,8 @@ theorem CharP.of_ringHom_of_ne_zero [NonAssocSemiring R] [NoZeroDivisors R]
   have H := (CharP.char_is_prime_or_zero R p).resolve_right hp
   obtain ⟨q, hq⟩ := CharP.exists A
   obtain ⟨k, e⟩ := dvd_of_ringHom f p q
-  have := Nat.isUnit_iff.mp ((H.2 e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
+  have := Nat.isUnit_iff.mp
+    ((H.isUnit_or_isUnit e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
   rw [this, mul_one] at e
   exact e ▸ hq
 
@@ -97,16 +96,16 @@ lemma expChar_of_injective_ringHom
     [NonAssocSemiring R] [NonAssocSemiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
   rcases hR with _ | hprime
-  · haveI := charZero_of_injective_ringHom h; exact .zero
-  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+  · have := charZero_of_injective_ringHom h; exact .zero
+  have := charP_of_injective_ringHom h q; exact .prime hprime
 
 /-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
 exponential characteristic `p`. Similar to `RingHom.charZero`. -/
 lemma RingHom.expChar [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
     (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
   cases ‹ExpChar A p› with
-  | zero => haveI := f.charZero; exact .zero
-  | prime hp => haveI := f.charP H p; exact .prime hp
+  | zero => have := f.charZero; exact .zero
+  | prime hp => have := f.charP H p; exact .prime hp
 
 /-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
 also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/

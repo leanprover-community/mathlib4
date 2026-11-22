@@ -20,7 +20,7 @@ or if they can be replaced by use of the `coherence` tactic.
 public section
 
 
-open CategoryTheory Category Iso
+open CategoryTheory
 
 namespace CategoryTheory.MonoidalCategory
 

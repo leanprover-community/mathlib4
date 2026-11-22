@@ -24,7 +24,7 @@ spaces.
 
 noncomputable section
 
-open NNReal Topology
+open NNReal
 
 open Filter
 
@@ -76,8 +76,10 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
   NormedAddTorsor.dist_eq_norm' x y
 
-theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
+theorem nnDist_eq_nnNorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
+
+@[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_vsub := nnDist_eq_nnNorm_vsub
 
 
 /-- The distance equals the norm of subtracting two points. In this
@@ -86,8 +88,10 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
   (dist_comm _ _).trans (dist_eq_norm_vsub _ _ _)
 
-theorem nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
+theorem nnDist_eq_nnNorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
+
+@[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_vsub' := nnDist_eq_nnNorm_vsub'
 
 end
 
@@ -181,7 +185,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -193,7 +197,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖

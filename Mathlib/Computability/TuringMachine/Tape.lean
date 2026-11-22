@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
-public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Turing machine tapes
@@ -25,7 +25,6 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   of `List Γ` by extension by blanks at the end.
 * `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
-
 -/
 
 @[expose] public section
@@ -115,7 +114,7 @@ theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) 
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
 
 /-- Construct a setoid instance for `BlankRel`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def BlankRel.setoid (Γ) [Inhabited Γ] : Setoid (List Γ) :=
   ⟨_, BlankRel.equivalence _⟩
 
@@ -264,11 +263,11 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
   induction n generalizing i L with
   | zero =>
-    cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
-      ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
+    cases i <;> simp only [ListBlank.nth_zero, ite_true, ListBlank.head_cons, ListBlank.modifyNth,
+      ListBlank.nth_succ, ite_false, ListBlank.tail_cons, reduceCtorEq]
   | succ n IH =>
     cases i
-    · rw [if_neg (Nat.succ_ne_zero _).symm]
+    · rw [ite_eq_right (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
 
@@ -502,7 +501,7 @@ def Tape.nth {Γ} [Inhabited Γ] (T : Tape Γ) : ℤ → Γ
   | -(n + 1 : ℕ) => T.left.nth n
 
 @[simp]
-theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.1 :=
+theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.head :=
   rfl
 
 theorem Tape.right₀_nth {Γ} [Inhabited Γ] (T : Tape Γ) (n : ℕ) : T.right₀.nth n = T.nth n := by
@@ -543,7 +542,7 @@ def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=
   { T with head := b }
 
 @[simp]
-theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.1 = T := by
+theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.head = T := by
   rintro ⟨⟩; rfl
 
 @[simp]
@@ -563,11 +562,11 @@ theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
-  ⟨f T.1, T.2.map f, T.3.map f⟩
+  ⟨f T.head, T.left.map f, T.right.map f⟩
 
 @[simp]
 theorem Tape.map_fst {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') :
-    ∀ T : Tape Γ, (T.map f).1 = f T.1 := by
+    ∀ T : Tape Γ, (T.map f).head = f T.head := by
   rintro ⟨⟩; rfl
 
 @[simp]

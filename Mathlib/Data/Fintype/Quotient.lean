@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Data.List.Pi
 public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Pi
 
 /-!
 # Quotients of families indexed by a finite type
@@ -24,7 +24,6 @@ by a finite type.
   setoid `S i` for each `i` can be lifted to a function on `Π i, Quotient (S i)`.
 * `Quotient.finRecOn`: Recursion principle for quotients indexed by a finite type. It is the
   dependent version of `Quotient.finLiftOn`.
-
 -/
 
 @[expose] public section
@@ -107,7 +106,7 @@ def finChoice (q : ∀ i, Quotient (S i)) :
   let e := Equiv.subtypeQuotientEquivQuotientSubtype (fun l : List ι ↦ ∀ i, i ∈ l)
     (fun s : Multiset ι ↦ ∀ i, i ∈ s) (fun i ↦ Iff.rfl) (fun _ _ ↦ Iff.rfl) ⟨_, Finset.mem_univ⟩
   refine e.liftOn
-    (fun l ↦ (listChoice fun i _ ↦ q i).map (fun a i ↦ a i (l.2 i)) ?_) ?_
+    (fun l ↦ (listChoice fun i _ ↦ q i).map (fun a i ↦ a i (l.property i)) ?_) ?_
   · exact fun _ _ h i ↦ h i _
   intro _ _ _
   refine ind_fintype_pi (fun a ↦ ?_) q
@@ -176,7 +175,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (eqRec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
+  finHRecOn q f (eqRec_heq_iff.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
@@ -240,6 +239,7 @@ def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
     C q :=
   Quotient.finRecOn q (f ·) (fun _ _ _ ↦ h _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
     (a : ∀ i, α i) :

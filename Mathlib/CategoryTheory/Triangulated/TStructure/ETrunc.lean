@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.Order.WithBotTop
 
 /-!
@@ -15,7 +15,6 @@ Let `t` be a t-structure on a triangulated category `C`.
 In this file, we extend the definition of the truncation functors
 `truncLT` and `truncGE` for indices in `ℤ` to `EInt`,
 as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -35,6 +34,7 @@ variable (t : TStructure C)
 
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
 `n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
+@[implicit_reducible]
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
   obj := WithBotTop.rec 0 t.truncLT (𝟭 C)
   map {x y} f := by
@@ -80,6 +80,7 @@ instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
 
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to `𝟭 C`,
 `n : ℤ` to `t.truncGE n` and `⊤` to the zero functor. -/
+@[implicit_reducible]
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
   obj := WithBotTop.rec (𝟭 C) t.truncGE 0
   map {x y} f := by
@@ -121,11 +122,10 @@ instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
   induction i using WithBotTop.rec
   all_goals dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The connecting homomorphism from `t.eTruncGE` to the
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
-    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C (1 : ℤ))) where
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C 1)) where
   app := WithBotTop.rec 0 t.truncGEδLT 0
   naturality {a b} hab := by
     replace hab := leOfHom hab
@@ -157,14 +157,12 @@ instance : IsIso (t.eTruncLTι ⊤) := by
   dsimp [eTruncLTι]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLT_map_app_eTruncLTι_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncLT.map f).app X ≫ (t.eTruncLTι j).app X = (t.eTruncLTι i).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
     (t.eTruncLT.obj i).map ((t.eTruncLTι i).app X) =
@@ -188,21 +186,18 @@ instance : IsIso (t.eTruncGEπ ⊥) := by
   dsimp [eTruncGEπ]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncGEπ_app_eTruncGE_map_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncGEπ i).app X ≫ (t.eTruncGE.map f).app X = (t.eTruncGEπ j).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
     (t.eTruncGE.obj i).map ((t.eTruncGEπ i).app X) =
     (t.eTruncGEπ i).app ((t.eTruncGE.obj i).obj X) := by
   induction i using WithBotTop.rec with simp [truncGE_map_truncGEπ_app]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
     {i j : EInt} (f : i ⟶ j) (X : C) :
@@ -212,16 +207,13 @@ lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
   rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl]
   induction j using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
 `t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def eTriangleLTGE : EInt ⥤ C ⥤ Triangle C where
   obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLT.app i)
   map f := Triangle.functorHomMk _ _ (t.eTruncLT.map f) (𝟙 _) (t.eTruncGE.map f)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma eTriangleLTGE_distinguished (i : EInt) (X : C) :
     (t.eTriangleLTGE.obj i).obj X ∈ distTriang _ := by
   induction i using WithBotTop.rec with
@@ -321,7 +313,6 @@ lemma isIso_eTruncLT_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLT.obj a).map ((t.eTruncLTι a).app X)) :=
   isIso_eTruncLT_obj_map_truncLTπ_app t a a (by rfl) X
 
-set_option backward.isDefEq.respectTransparency false in
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLTι a).app ((t.eTruncLT.obj a).obj X)) := by
   rw [← eTruncLT_obj_map_eTruncLTι_app]
   infer_instance
@@ -406,7 +397,6 @@ noncomputable def eTruncLTLTIsoLT :
   haveI := t.isIso_eTruncLTLTIsoLT a b hab
   asIso (t.eTruncLTLTToLT a b)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTLTIsoLT_hom_inv_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) ≫
@@ -419,7 +409,6 @@ lemma eTruncLTLTIsoLT_inv_hom_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) = 𝟙 _ := by
   simpa using (t.eTruncLTLTIsoLT a b hab).inv_hom_id_app X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
     (t.eTruncLTLTIsoLT a b hab).inv.app ((t.eTruncLT.obj a).obj X) ≫
@@ -452,7 +441,6 @@ noncomputable def eTruncLTGELTSelfToGELT :
   (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
     (Functor.rightUnitor _).hom
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -474,7 +462,6 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
 
 variable (b : EInt) (X : C)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -508,7 +495,6 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
       (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
   (t.eTruncLTGEIsoGELT a b).hom.naturality f
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
@@ -516,15 +502,12 @@ lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)) := by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
     (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)

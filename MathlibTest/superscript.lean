@@ -1,6 +1,11 @@
-import Mathlib.Util.Superscript
-import Mathlib.Tactic.UnsetOption
-import Lean.PrettyPrinter
+module
+
+public meta import Lean.PrettyPrinter
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Mathlib.Util.Superscript
+public import Mathlib.Tactic.UnsetOption
+
+@[expose] public section
 
 section
 
@@ -96,12 +101,12 @@ local syntax:arg "testsup(" noWs superscript(term) noWs ")" : term
 local macro_rules | `(testsup($a:superscript)) => `(checkSuperscript $a)
 
 @[app_delab checkSubscript]
-private def delabCheckSubscript : Delab := withOverApp 2 do
+meta def delabCheckSubscript : Delab := withOverApp 2 do
   let sub ← withAppArg delabSubscript
   `(testsub($sub:subscript))
 
 @[app_delab checkSuperscript]
-private def delabCheckSuperscript : Delab := withOverApp 2 do
+meta def delabCheckSuperscript : Delab := withOverApp 2 do
   let sup ← withAppArg delabSuperscript
   `(testsup($sup:superscript))
 
@@ -194,7 +199,6 @@ open Nat' (γ) in
 #guard_msgs in #check testsub(ᵧ ₙ)
 
 /- The delaborator should reject metavariables. -/
-set_option pp.mvars.anonymous false in
 /-- info: checkSubscript ?_ : Unit -/
 #guard_msgs in #check checkSubscript ?_
 
@@ -229,7 +233,6 @@ open Nat' (γ) in
 #guard_msgs in #check testsup(ᵞ ⁿ)
 
 /- The delaborator should reject metavariables. -/
-set_option pp.mvars false in
 /-- info: checkSuperscript ?_ : Unit -/
 #guard_msgs in #check checkSuperscript ?_
 

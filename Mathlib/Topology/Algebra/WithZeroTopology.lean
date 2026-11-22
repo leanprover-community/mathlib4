@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -35,7 +33,9 @@ a linearly ordered commutative group with zero. You can locally activate this to
 
 public section
 
-open Topology Filter TopologicalSpace Filter Set Function
+open Filter TopologicalSpace Filter Set Function
+
+open scoped Topology
 
 namespace WithZeroTopology
 
@@ -50,7 +50,7 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
   rw [nhds_nhdsAdjoint, sup_of_le_right]
-  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 hγ.pos
 
 /-!
 ### Neighbourhoods of zero
@@ -63,7 +63,7 @@ theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
 theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
-  refine hasBasis_biInf_principal ?_ ⟨1, one_ne_zero⟩
+  refine hasBasis_biInf_principal (S := {γ : Γ₀ | γ ≠ 0}) ?_ ⟨1, one_ne_zero⟩
   exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
 
 theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
@@ -142,7 +142,7 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
-    simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
+    simp only [← isOpen_compl_iff, compl_ofPred, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
     rw [nhds_prod_eq, nhds_of_ne_zero hab.ne_zero, pure_prod]
     exact Iio_mem_nhds hab
@@ -173,9 +173,9 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
-      calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx (zero_lt_iff.2 hy)
-      _ = γ := div_mul_cancel₀ _ hy
-    · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
+      rw [mem_Iio, ← div_mul_cancel₀ γ hy]
+      exact mul_lt_mul_of_pos_right hx hy.pos
+    · have hy : y ≠ 0 := (hx.pos.trans_le hle).ne'
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 

@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
+public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
-public import Mathlib.Order.WithBotTop
 
 /-!
 # The spectral sequence of a spectral object
@@ -52,7 +51,7 @@ we have `pq'' = pq` and the corresponding differential is zero.)
 In the favourable case where both `(c r).Rel pq pq'` and `(c r).Rel pq' pq''`
 hold, the definition `SpectralObject.SpectralSequence.shortComplexIso`
 in this file can be used in combination to `SpectralObject.SpectralSequence.dHomologyIso`
-in order to compute the homology of the differentials.)
+in order to compute the homology of the differentials.
 
 In the general case, using the assumptions in `X.HasSpectralSequence data`,
 we provide a limit kernel fork `kf` and
@@ -72,7 +71,6 @@ Under the `X.IsFirstQuadrant` assumption, we obtain
 `X.E₂SpectralSequenceNat` which is a first quadrant `E₂`-spectral
 sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
 of `ℤ × ℤ`).
-
 -/
 
 @[expose] public section
@@ -94,6 +92,7 @@ variable (data : SpectralSequenceDataCore ι c r₀)
 namespace SpectralSequence
 
 /-- The object on position `pq` on the `r`th page of the spectral sequence. -/
+@[implicit_reducible]
 noncomputable def pageX (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : C :=
   X.E (homOfLE (data.le₀₁ r pq)) (homOfLE (data.le₁₂ pq)) (homOfLE (data.le₂₃ r pq))
     (data.deg pq - 1) (data.deg pq) (data.deg pq + 1)
@@ -129,8 +128,6 @@ noncomputable def pageD (r : ℤ) (pq pq' : κ) (hr : r₀ ≤ r := by lia) :
         (data.hc₀₂ r pq pq' hpq) (data.hc₁₃ r pq pq' hpq) _ _ _ (data.hc r pq pq' hpq) rfl _).inv
     else 0
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma pageD_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq')
     {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
     (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
@@ -149,7 +146,7 @@ lemma pageD_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq'
   obtain rfl : n₂ = data.deg pq + 1 := by lia
   obtain rfl : n₃ = data.deg pq + 2 := by lia
   dsimp [pageD, pageXIso]
-  rw [dif_pos hpq, Category.id_comp]
+  rw [dite_eq_left hpq, Category.id_comp]
   rfl
 
 @[reassoc (attr := simp)]
@@ -173,17 +170,17 @@ lemma pageD_pageD (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
         Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
         d_d_assoc .., zero_comp, comp_zero]
     · dsimp only [pageD]
-      rw [dif_neg hpq', comp_zero]
+      rw [dite_eq_right hpq', comp_zero]
   · dsimp only [pageD]
-    rw [dif_neg hpq, zero_comp]
+    rw [dite_eq_right hpq, zero_comp]
 
 /-- The `r`th page of the spectral sequence. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
     HomologicalComplex C (c r) where
   X pq := pageX X data r pq
   d := pageD X data r
-  shape pq pq' hpq := dif_neg hpq
+  shape pq pq' hpq := dite_eq_right hpq
 
 /-- The short complex of the `r`th page of the spectral sequence on position `pq'`
 identifies to the short complex given by the differentials of the spectral object.
@@ -231,8 +228,6 @@ variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
 
 namespace HomologyData
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma kf_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃ (data.i₀_le' hrr' hr pq' hi₀' hi₀)
       (data.le₀₁' r hr pq' hi₀ hi₁) (data.le₁₂' pq' hi₁ hi₂) (data.le₂₃' r hr pq' hi₂ hi₃)
@@ -257,13 +252,12 @@ noncomputable abbrev kf (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = 
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁')
 
 /-- The (exact) short complex attached to the kernel fork `kf`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def kfSc (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     ShortComplex C :=
   ShortComplex.mk _ _ (kf_w X data r r' hrr' hr pq' pq''
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (kfSc X data r r' hrr' hr pq' pq'' i₀' i₀ i₁ i₂ i₃
       hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁ hn₂).f := by
@@ -283,7 +277,6 @@ lemma isIso_mapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'')
   subst hpq'
   exact h hk
 
-set_option backward.defeqAttrib.useBackward true in
 variable [X.HasSpectralSequence data] in
 include hpq' in
 lemma kfSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -324,7 +317,6 @@ noncomputable def isLimitKf (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
   (kfSc_exact X data r r' hrr' hr pq' pq'' hpq'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁ hn₂).fIsKernel
 
-set_option backward.defeqAttrib.useBackward true in
 lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (page X data r hr).d pq pq' ≫
       (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁').hom ≫
@@ -341,7 +333,6 @@ lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by li
       (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r pq pq' h; lia) (by simp) hn₁ hn₂,
       Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
       d_map_fourδ₄Toδ₃ .., comp_zero]
-    rfl
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
 
 /-- A (limit) cokernel cofork of the differential on the `r`th page whose point
@@ -352,13 +343,12 @@ noncomputable abbrev cc (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = 
     (cc_w X data r r' hrr' hr pq pq' i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁')
 
 /-- The (exact) short complex attached to the cokernel cofork `cc`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def ccSc (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     ShortComplex C :=
   ShortComplex.mk _ _ (cc_w X data r r' hrr' hr pq pq'
     i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁')
 
-set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (ccSc X data r r' hrr' hr pq pq'
     i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).g := by
@@ -378,7 +368,6 @@ lemma isIso_mapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq')
   subst hpq
   exact h hk
 
-set_option backward.defeqAttrib.useBackward true in
 variable [X.HasSpectralSequence data] in
 include hpq in
 lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -420,7 +409,6 @@ noncomputable def isColimitCc (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ 
       i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁') :=
   (ccSc_exact X data r r' hrr' hr pq pq' hpq i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃' ..).gIsCokernel
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fac (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
   (kf X data r r' hrr' hr pq' pq'' i₀' i₀ i₁ i₂ i₃
       hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').ι ≫
@@ -436,12 +424,11 @@ end HomologyData
 
 variable [X.HasSpectralSequence data]
 
-set_option backward.isDefEq.respectTransparency false in
 open HomologyData in
 /-- The homology data for the short complex given by differentials on the
 `r`th page of the spectral sequence which shows that the homology identifies
 to an object on the next page. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def homologyData (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     ((page X data r hr).sc' pq pq' pq'').HomologyData :=
   ShortComplex.HomologyData.ofEpiMonoFactorisation
@@ -582,7 +569,7 @@ variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
 unseal spectralSequence in
 /-- The homology data for the short complexes given by the differentials
 of a spectral sequence attached to a spectral object in an abelian category. -/
-@[simps! left_K left_H left_π right_Q right_H right_ι iso_hom iso_inv]
+@[simps! left_K left_H left_π right_Q right_H right_ι iso_hom iso_inv, implicit_reducible]
 noncomputable def spectralSequenceHomologyData
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (((X.spectralSequence data).page r hr).sc' pq pq' pq'').HomologyData :=
@@ -612,7 +599,6 @@ lemma spectralSequenceHomologyData_right_p
         X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
           (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
@@ -623,6 +609,7 @@ lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
   simp [ShortComplex.HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
 
 unseal spectralSequence in
+attribute [local implicit_reducible] spectralSequence in
 lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequence data).iso r r' pq' =
     ((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq' ≪≫

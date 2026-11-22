@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
-
 # Transporting a closed monoidal structure along an equivalence of categories
 -/
 

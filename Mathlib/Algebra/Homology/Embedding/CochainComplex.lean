@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 /-!
 # Truncations on cochain complexes indexed by the integers.
@@ -17,7 +17,6 @@ In this file, we introduce abbreviations for the canonical truncations
 complexes indexed by `ℤ`, as well as the conditions
 `CochainComplex.IsStrictlyLE`, `CochainComplex.IsStrictlyGE`,
 `CochainComplex.IsLE`, and `CochainComplex.IsGE`.
-
 -/
 
 @[expose] public section
@@ -289,7 +288,6 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -300,7 +298,6 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]
@@ -385,7 +382,6 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
   [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `K` is a cochain complex indexed by `ℤ` and `n < i`, this is
 the isomorphism `(K.truncGE n).X i ≅ K.X i`. -/
 noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
@@ -397,7 +393,6 @@ noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
       rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
       lia)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `K` is a cochain complex indexed by `ℤ` and `i < n`, this is
 the isomorphism `(K.truncLE n).X i ≅ K.X i`. -/
 noncomputable def truncLEXIso (n i : ℤ) (hi : i < n := by lia) :

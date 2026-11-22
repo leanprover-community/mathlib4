@@ -5,15 +5,13 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 
 /-!
-
 # Subring of opposite rings
 
 For every ring `R`, we construct an equivalence between subrings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -137,7 +135,7 @@ theorem unop_iInf (S : ι → Subring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i)
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

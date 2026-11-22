@@ -5,13 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Finset.BooleanAlgebra
-public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
+
+import Mathlib.Data.List.OfFn
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Instances for finite types
@@ -29,7 +29,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -102,7 +102,7 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
   simp [univ_image_def]
 
 @[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
-    Finset.univ.image (fun i : Fin l.length => f <| l[(i : Nat)]) = (l.map f).toFinset := by
+    Finset.univ.image (fun i : Fin l.length => f l[(i : Nat)]) = (l.map f).toFinset := by
   simp only [univ_image_def, List.ofFn_getElem_eq_map]
 
 theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
@@ -148,12 +148,12 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
   ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 
@@ -268,7 +268,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     have A : ∀ n : ℕ, P (f n) := by
       intro n
       induction n using Nat.strong_induction_on with | _ n IH
-      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
+      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.val n.isLt
       rw [hf, seqOfForallFinsetExistsAux]
       exact
         (Classical.choose_spec

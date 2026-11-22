@@ -6,9 +6,11 @@ Authors: Vasily Nesterov
 module
 
 public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Separation.Hausdorff
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Radon's theorem on convex sets
@@ -126,7 +128,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Given any subcollection `J` of `ι` containing `i`, because `F i` is convex, we need only
   show that `a j ∈ F i` for each `j ∈ s \ J`. -/
   intro J hi
-  rw [convexHull_subset_iff (h_convex i.1 i.2)]
+  rw [convexHull_subset_iff (h_convex i.val i.property)]
   rintro v ⟨j, hj, hj_v⟩
   rw [← hj_v]
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
@@ -268,14 +270,14 @@ theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set
     (⋂₀ (F : Set (Set E))).Nonempty := by
   apply helly_theorem_set_compact' h_convex h_compact
   intro I hI_ss hI_card
-  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card)
-    (by simpa only [encard_coe_eq_coe_finsetCard, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_le])
+  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (by norm_cast) h_card
   apply Set.Nonempty.mono <| sInter_mono (by simpa [hI_ss])
   have hJ_fin : Fintype J := Finite.fintype <| finite_of_encard_eq_coe hJ_card
   let J' := J.toFinset
   rw [← coe_toFinset J]
   apply h_inter J'
   · simpa [J']
-  · rwa [encard_eq_coe_toFinset_card J, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_inj] at hJ_card
+  · rwa [encard_eq_coe_toFinset_card J, ← ENat.natCast_one, ← ENat.natCast_add, Nat.cast_inj]
+      at hJ_card
 
 end Convex

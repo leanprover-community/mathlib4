@@ -86,12 +86,12 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
   simpa [mul_comm] using prod_univ_succAbove f (last n)
 
 @[to_additive (attr := simp)]
-theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
+theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.val] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
-    ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
+    ∏ i : Fin l.length, f l[i.val] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
@@ -464,7 +464,7 @@ theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) 
   simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 
 lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
-    (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
+    (∑ n : Fin m, (-1) ^ n.val : R) = if Even m then 0 else 1 := by
   induction m with
   | zero => simp
   | succ n IH =>
@@ -555,21 +555,18 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
       j.contractNth (· * ·) g k := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [succAbove_of_castSucc_lt, succAbove_of_castSucc_lt, partialProd_right_inv,
-    contractNth_apply_of_lt]
-    · assumption
-    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
-      exact le_of_lt h
+      contractNth_apply_of_lt]
+    rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
+    exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_succ, ← mul_assoc,
+      castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
       castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
-    · exact le_iff_val_le_val.2 (le_of_lt h)
-    · rw [le_iff_val_le_val, val_succ]
-      exact Nat.succ_le_of_lt h
+    exact le_iff_val_le_val.2 (le_of_lt h)
 
 end PartialProd
 
@@ -617,6 +614,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
   rintro x hx
   rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
@@ -647,7 +645,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       refine Fin.consInduction ?_ ?_ n
       · intro a
         have : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
-          (finCongr <| prod_empty).subsingleton
+          (finCongr prod_empty).subsingleton
         subsingleton
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
@@ -663,7 +661,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert! Nat.mod_add_div _ _
+        convert Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
@@ -680,7 +678,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
 /-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
   match m with
-  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simpa using Fin.isEmpty')
+  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simp)
   | Nat.succ m =>
     calc _ ≃ _ := (@finSumFinEquiv m 1).sigmaCongrLeft.symm
       _ ≃ _ := Equiv.sumSigmaDistrib _
@@ -688,9 +686,10 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
       _ ≃ _ := finSumFinEquiv
       _ ≃ _ := finCongr (Fin.sum_univ_castSucc n).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
-    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
+    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.isLt.le i) + k.2 := by
   induction m with
   | zero => exact k.fst.elim0
   | succ m ih =>
@@ -714,7 +713,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_eq_right]
-  apply @Finset.sum_of_isEmpty _ _ _ _ (by simpa using Fin.isEmpty')
+  apply @Finset.sum_of_isEmpty _ _ _ _ (by simp)
 
 namespace List
 
@@ -741,7 +740,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
         rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
         intro j
-        have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
+        have : (j : ℕ) < i := lt_of_lt_of_le j.isLt (not_lt.mp h)
         simp [this, lt_trans this (Nat.lt_succ_self _)]
       simp [← A, B, IH]
 
@@ -767,12 +766,6 @@ theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
     _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
-
-@[deprecated (since := "2026-04-08")]
-alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List
 

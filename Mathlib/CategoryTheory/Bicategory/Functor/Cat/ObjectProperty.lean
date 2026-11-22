@@ -22,7 +22,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
   `IsClosedUnderMapObj` saying that if an object locally satisfies
   the property, then it satisfies the property. Assuming this, show that
   `P.fullsubcategory` is a stack if the original pseudofunctor was.
-
 -/
 
 @[expose] public section
@@ -30,8 +29,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
 universe w v v' u u'
 
 namespace CategoryTheory
-
-open Bicategory
 
 namespace Pseudofunctor
 
@@ -78,7 +75,7 @@ in `B`, this is the functor `P.Obj X ⥤ P.Obj Y` that is induced by `F.map f`. 
 def map {X Y : B} (f : X ⟶ Y) :
     P.Obj X ⥤ P.Obj Y :=
   (P.prop Y).lift (ObjectProperty.ι _ ⋙ (F.map f).toFunctor)
-    (fun M ↦ P.map_obj M.2 f)
+    (fun M ↦ P.map_obj M.property f)
 
 /-- Given a property `P` of objects for `F : Pseudofunctor B Cat` and
 a `2`-morphism in `B`, this is the induced natural transformation between
@@ -126,7 +123,7 @@ the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj 
 consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
-  obj X := Cat.of (P.Obj X)
+  obj X := ↧(P.Obj X)
   map f := Cat.Hom.ofFunctor (P.map f)
   map₂ α := Cat.Hom₂.ofNatTrans (P.map₂ α)
   mapId X := Cat.Hom.isoMk (P.mapId X)

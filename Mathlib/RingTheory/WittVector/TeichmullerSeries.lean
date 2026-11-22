@@ -6,7 +6,6 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.WittVector.Complete
-public import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Teichmuller Series
@@ -31,7 +30,7 @@ Show that the Teichmuller series is unique.
 
 public section
 
-open Ideal Quotient
+open Ideal
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact (Nat.Prime p)]
@@ -51,8 +50,9 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
     have : (∀ (n : ℕ), Subsingleton {r | r ∈ S' ∧ (x r).coeff n ≠ 0}) := by
       refine fun n ↦ ⟨fun b c ↦ ?_⟩
       ext
-      exact congrArg (fun x ↦ x.1) <|
-          (h n).allEq ⟨b.1, S'.subset_insert a b.2.1, b.2.2⟩ ⟨c.1, S'.subset_insert a c.2.1, c.2.2⟩
+      exact congrArg (fun x ↦ x.val) <|
+          (h n).allEq ⟨b.val, S'.subset_insert a b.property.1, b.property.2⟩
+            ⟨c.val, S'.subset_insert a c.property.1, c.property.2⟩
     replace hind := hind this
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by
@@ -62,7 +62,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
       push Not at this
       choose b hb hb' using this
       have : a = b :=
-        congrArg (fun x ↦ x.1) <|
+        congrArg (fun x ↦ x.val) <|
           (h m).allEq ⟨a, S'.mem_insert_self a, hma⟩ ⟨b, S'.mem_insert_of_mem hb, hb'⟩
       exact ha (this ▸ hb)
     rw [coeff_add_of_disjoint n _ _ this, hind n]
@@ -106,7 +106,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       exact teichmuller_mul_pow_coeff_of_ne _ (Ne.intro hb.2).symm
   · refine fun n ↦ ⟨fun ⟨a, _, ha⟩ ⟨b, _, hb⟩ ↦ ?_⟩
     ext
-    dsimp only [ne_eq, Set.mem_setOf_eq]
+    dsimp only [ne_eq, Set.mem_ofPred_eq]
     rw [← Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) ha]
     exact Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) hb
 

@@ -5,11 +5,11 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.FDRep
-public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
-public import Mathlib.RepresentationTheory.Intertwining
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Characters of representations
@@ -99,11 +99,21 @@ theorem char_linHom (g : G) :
     (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
   rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
+theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,
+    End.trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits _)]
+  refine IsIntegral.multiset_sum fun x hx ↦ ?_
+  obtain ⟨v, hv⟩ := End.hasEigenvalue_iff_isRoot_charpoly .. |>.2
+    (Polynomial.isRoot_of_mem_roots hx) |>.exists_hasEigenvector
+  have hxn : x ^ orderOf g = 1 := smul_left_injective (R := AlgebraicClosure k) hv.2 <| by
+    simp [← hv.pow_apply, ← baseChange_pow, ← map_pow]
+  exact IsIntegral.of_pow (orderOf_pos g) (hxn ▸ isIntegral_one)
+
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem card_inv_mul_sum_char_eq_finrank :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
-  have : Invertible (Fintype.card G : k) := by rw [Fintype.card_eq_nat_card]; assumption
+  have : Invertible (Fintype.card G : k) := by rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
@@ -123,7 +133,7 @@ end Group
 section Orthogonality
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+  [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]
@@ -134,6 +144,8 @@ algebraically closed field whose characteristic doesn't divide the order of the 
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
+  have := ρ.asModuleEquiv.finiteDimensional
+  have := σ.asModuleEquiv.finiteDimensional
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa [finrank_eq_zero_of_subsingleton]
@@ -194,6 +206,9 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
     (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
   rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
 
+theorem isIntegral_character [Finite G] (V : FDRep k G) (g : G) : IsIntegral ℤ (V.character g) := by
+  rw [character, ← Representation.character]; exact Representation.isIntegral_character ..
+
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
@@ -211,7 +226,7 @@ equivariant maps from `V` to `W`.
 theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
-  conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
+  conv_lhs => enter [2, 2, _]; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']

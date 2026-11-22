@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Kan complexes
@@ -22,7 +21,6 @@ we show that every Kan complex is a quasicategory.
 ## TODO
 
 - Show that the singular simplicial set of a topological space is a Kan complex.
-
 -/
 
 public section
@@ -31,7 +29,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Limits HomotopicalAlgebra
+open CategoryTheory Limits HomotopicalAlgebra
+
+open scoped Simplicial
 
 open modelCategoryQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that
@@ -98,5 +98,24 @@ lemma KanComplex.iff {Z : SSet.{u}} :
     l := φ
     fac_left := horn.hom_ext' (by simpa using hφ)
     fac_right := by subsingleton }⟩⟩
+
+instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
+  rw [KanComplex.iff]
+  intro n i f hf
+  replace hf : horn.IsCompatible (i := i.rev)
+      (fun j hj ↦ yonedaEquiv.symm (opObjEquiv (yonedaEquiv (f j.rev (by grind))))) := by
+    obtain _ | n := n
+    · simp
+    · rw [horn.isCompatible_iff]
+      intro j k jh hk hjk
+      simp only [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+        ← stdSimplex.yonedaEquiv_δ_comp]
+      congr 3
+      convert (hf.δ_pred_comp k.rev j.rev (by grind) (by grind) (by grind)).symm <;>
+        grind [Fin.castPred]
+  refine ⟨yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv hf.liftOfKanComplex)), fun j hj ↦ ?_⟩
+  rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+    ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_liftOfKanComplex ..]
+  simp
 
 end SSet

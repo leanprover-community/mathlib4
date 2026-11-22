@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
@@ -29,7 +28,6 @@ The rationale is that we are not carrying any additional data, just requiring a 
 ## References
 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
-
 -/
 
 @[expose] public section
@@ -138,7 +136,6 @@ theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ₘ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ₘ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a braided monoidal category, the functors `tensorLeft X` and
 `tensorRight X` are isomorphic. -/
 @[simps]
@@ -147,7 +144,6 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
 @[simps!]
@@ -168,7 +164,7 @@ theorem yang_baxter' (X Y Z : C) :
     (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
       𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
-  convert! yang_baxter X Y Z using 1
+  convert yang_baxter X Y Z using 1
   all_goals monoidal
 
 theorem yang_baxter_iso (X Y Z : C) :
@@ -208,7 +204,7 @@ end BraidedCategory
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
@@ -252,7 +248,7 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [Monoid
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
@@ -392,7 +388,6 @@ attribute [reassoc] braided
 
 instance id : (𝟭 C).LaxBraided where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     (F ⋙ G).LaxBraided where
   braided X Y := by
@@ -405,7 +400,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
 /--
 Given two lax monoidal, monoidally isomorphic functors, if one is lax braided, so is the other.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     [NatTrans.IsMonoidal i.hom] : G.LaxBraided where
   braided X Y := by
@@ -413,6 +408,17 @@ def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
       simp [NatTrans.IsMonoidal.tensor X Y, tensorHom_comp_tensorHom_assoc]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
+
+/-- Copy of a lax braided structure on a functor `F` with new `ε` and `μ` fields equal to the old
+ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.LaxBraided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch) : F.LaxBraided where
+  __ := hF.toLaxMonoidal.copy ε' μ' hε hμ
+  braided X Y := hμ ▸ hF.braided X Y
 
 end Functor.LaxBraided
 
@@ -462,6 +468,7 @@ set_option backward.isDefEq.respectTransparency false in
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
     F ⟶ G := ⟨f, inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for isomorphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def isoMk {F G : LaxBraidedFunctor C D} (e : F.toFunctor ≅ G.toFunctor)
@@ -506,12 +513,6 @@ set_option backward.privateInPublic true in
 lemma isoOfComponents_inv_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
-  isoOfComponents_hom_hom_hom_app
-
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
-  isoOfComponents_inv_hom_hom_app
-
 end
 
 end LaxBraidedFunctor
@@ -533,14 +534,14 @@ lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
@@ -558,6 +559,19 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided
 
 lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
     (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
+
+/-- Copy of a braided structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
+old ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.Braided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)
+    (δ' : ∀ X Y : C, F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y)
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch)
+    (hη : η' = η F := by cat_disch) (hδ : δ' = δ F := by cat_disch) : F.Braided where
+  __ := hF.toMonoidal.copy ε' μ' η' δ' hε hμ hη hδ
+  braided X Y := hμ ▸ hF.braided X Y
 
 end Functor.Braided
 
@@ -636,13 +650,13 @@ theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X
 theorem tensorμ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
     (f₁ ⊗ₘ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensorμ Y₁ Y₂ Z₁ Z₂ =
       tensorμ X₁ X₂ Z₁ Z₂ ≫ (f₁ ▷ Z₁ ⊗ₘ f₂ ▷ Z₂) := by
-  convert! tensorμ_natural f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
+  convert tensorμ_natural f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
 
 @[reassoc]
 theorem tensorμ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
     (Z₁ ⊗ Z₂) ◁ (f₁ ⊗ₘ f₂) ≫ tensorμ Z₁ Z₂ Y₁ Y₂ =
       tensorμ Z₁ Z₂ X₁ X₂ ≫ (Z₁ ◁ f₁ ⊗ₘ Z₂ ◁ f₂) := by
-  convert! tensorμ_natural (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
+  convert tensorμ_natural (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
 
 @[reassoc]
 theorem tensor_left_unitality (X₁ X₂ : C) :
@@ -692,7 +706,6 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
     _ = _ := by rw [← whisker_exchange]; monoidal
 
-set_option backward.defeqAttrib.useBackward true in
 instance tensorMonoidal : (tensor C).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := (λ_ (𝟙_ C)).symm
@@ -784,84 +797,6 @@ theorem SymmetricCategory.tensorμ_braid_swap
       ((β_ X X).hom ⊗ₘ (β_ Y Y).hom) ≫ tensorμ X X Y Y := by
   simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y X, tensorHom_def]
 
-instance : BraidedCategory Cᵒᵖ where
-  braiding X Y := (β_ Y.unop X.unop).op
-  braiding_naturality_right X {_ _} f := Quiver.Hom.unop_inj <| by simp
-  braiding_naturality_left {_ _} f Z := Quiver.Hom.unop_inj <| by simp
-
-section OppositeLemmas
-
-open Opposite
-
-@[simp] lemma op_braiding (X Y : C) : (β_ X Y).op = β_ (op Y) (op X) := rfl
-@[simp] lemma unop_braiding (X Y : Cᵒᵖ) : (β_ X Y).unop = β_ (unop Y) (unop X) := rfl
-
-@[simp] lemma op_hom_braiding (X Y : C) : (β_ X Y).hom.op = (β_ (op Y) (op X)).hom := rfl
-@[simp] lemma unop_hom_braiding (X Y : Cᵒᵖ) : (β_ X Y).hom.unop = (β_ (unop Y) (unop X)).hom := rfl
-
-@[simp] lemma op_inv_braiding (X Y : C) : (β_ X Y).inv.op = (β_ (op Y) (op X)).inv := rfl
-@[simp] lemma unop_inv_braiding (X Y : Cᵒᵖ) : (β_ X Y).inv.unop = (β_ (unop Y) (unop X)).inv := rfl
-
-end OppositeLemmas
-
-namespace MonoidalOpposite
-
-instance instBraiding : BraidedCategory Cᴹᵒᵖ where
-  braiding X Y := (β_ Y.unmop X.unmop).mop
-  braiding_naturality_right X {_ _} f := Quiver.Hom.unmop_inj <| by simp
-  braiding_naturality_left {_ _} f Z := Quiver.Hom.unmop_inj <| by simp
-
-section MonoidalOppositeLemmas
-
-@[simp] lemma mop_braiding (X Y : C) : (β_ X Y).mop = β_ (mop Y) (mop X) := rfl
-@[simp] lemma unmop_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).unmop = β_ (unmop Y) (unmop X) := rfl
-
-@[simp] lemma mop_hom_braiding (X Y : C) : (β_ X Y).hom.mop = (β_ (mop Y) (mop X)).hom := rfl
-@[simp]
-lemma unmop_hom_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).hom.unmop = (β_ (unmop Y) (unmop X)).hom := rfl
-
-@[simp] lemma mop_inv_braiding (X Y : C) : (β_ X Y).inv.mop = (β_ (mop Y) (mop X)).inv := rfl
-@[simp]
-lemma unmop_inv_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).inv.unmop = (β_ (unmop Y) (unmop X)).inv := rfl
-
-end MonoidalOppositeLemmas
-
-set_option backward.defeqAttrib.useBackward true in
-instance : (mopFunctor C).Monoidal :=
-  Functor.CoreMonoidal.toMonoidal
-    { εIso := Iso.refl _
-      μIso := fun X Y ↦ β_ (mop X) (mop Y)
-      associativity := fun X Y Z ↦ by simp [← yang_baxter_assoc] }
-
-@[simp] lemma mopFunctor_ε : ε (mopFunctor C) = 𝟙 _ := rfl
-@[simp] lemma mopFunctor_η : η (mopFunctor C) = 𝟙 _ := rfl
-@[simp] lemma mopFunctor_μ (X Y : C) : μ (mopFunctor C) X Y = (β_ (mop X) (mop Y)).hom := rfl
-@[simp] lemma mopFunctor_δ (X Y : C) : δ (mopFunctor C) X Y = (β_ (mop X) (mop Y)).inv := rfl
-
-set_option backward.defeqAttrib.useBackward true in
-instance : (unmopFunctor C).Monoidal :=
-  Functor.CoreMonoidal.toMonoidal
-    { εIso := Iso.refl _
-      μIso := fun X Y ↦ β_ (unmop X) (unmop Y)
-      associativity := fun X Y Z ↦ by simp [← yang_baxter_assoc] }
-
-@[simp] lemma unmopFunctor_ε : ε (unmopFunctor C) = 𝟙 _ := rfl
-@[simp] lemma unmopFunctor_η : η (unmopFunctor C) = 𝟙 _ := rfl
-@[simp] lemma unmopFunctor_μ (X Y : Cᴹᵒᵖ) :
-    μ (unmopFunctor C) X Y = (β_ (unmop X) (unmop Y)).hom := rfl
-@[simp] lemma unmopFunctor_δ (X Y : Cᴹᵒᵖ) :
-    δ (unmopFunctor C) X Y = (β_ (unmop X) (unmop Y)).inv := rfl
-
-/-- The identity functor on `C`, viewed as a functor from `C` to its
-monoidal opposite, upgraded to a braided functor. -/
-instance : (mopFunctor C).Braided where
-
-/-- The identity functor on `C`, viewed as a functor from the
-monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
-instance : (unmopFunctor C).Braided where
-
-end MonoidalOpposite
-
 variable (C)
 
 /-- The braided monoidal category obtained from `C` by replacing its braiding
@@ -883,7 +818,7 @@ lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
 
 /-- The identity functor from `C` to `C`, where the codomain is given the
 reversed braiding, upgraded to a braided functor. -/
-@[implicit_reducible]
+@[instance_reducible]
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
   @Functor.Braided.mk C _ _ _ C _ _ (reverseBraiding C) (𝟭 C) _ <| by

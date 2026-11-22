@@ -5,11 +5,12 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover, Huanyu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Action
-public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Action
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # The Symplectic Group
@@ -101,7 +102,7 @@ variable [Fintype l]
 def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
   carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, transpose_mul] at *
+    simp only [Set.mem_ofPred_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
   one_mem' := by simp
@@ -187,7 +188,7 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
 
 instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) * (A : Matrix (l ⊕ l) (l ⊕ l) R)ᵀ * J l R,
-      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
+      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.property) <| J_mem _ _⟩
 
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 
@@ -215,7 +216,7 @@ instance : Group (symplecticGroup l R) :=
     inv_mul_cancel := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      exact inv_left_mul_aux A.2 }
+      exact inv_left_mul_aux A.property }
 
 section Determinant
 

@@ -6,11 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -23,7 +19,6 @@ The following meta-properties of predicates on ring homomorphisms are defined
 * `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
 * `RingHom.IsStableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
-
 -/
 
 @[expose] public section
@@ -31,7 +26,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 universe u
 
-open CategoryTheory Opposite CategoryTheory.Limits TensorProduct
+open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 
@@ -50,16 +45,17 @@ def RespectsIso : Prop :=
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
-    convert! hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
+    convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
-    convert! hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
+    convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
@@ -142,16 +138,16 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
       P (algebraMap R T) → P (algebraMap S (S ⊗[R] T))) :
     IsStableUnderBaseChange @P := by
   introv R h H
-  let e := h.symm.1.equiv
+  let e := h.symm.out.equiv
   let f' := Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
     (IsScalarTower.toAlgHom R S S')
   have hef (x : _) : e x = f' x := by
     suffices e.toLinearMap.restrictScalars R = f'.toLinearMap from congr($this x)
     exact ext' fun x y ↦ by simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
-  convert! h₁.1 _ { e with map_mul' := hemul } (h₂ H)
+  convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
+  simp [e, h.symm.out.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
@@ -162,12 +158,11 @@ lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChang
   -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
   hP _ _ _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
     P (pushout.inl _ _ : S ⟶ pushout f g).hom := by
-  letI := f.hom.toAlgebra
-  letI := g.hom.toAlgebra
+  let := f.hom.toAlgebra
+  let := g.hom.toAlgebra
   rw [← show _ = pushout.inl f g from
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit R S T⟩ WalkingSpan.left,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
@@ -209,9 +204,9 @@ lemma isStableUnderCobaseChange_toMorphismProperty_iff :
   refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
       fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
   · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
-    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+    exact h.of_isPushout (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
   · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
-    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.toCommSq.w).hom x)
     have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
     exact h (R := R) (S := S) _ _ hf
 
@@ -278,7 +273,7 @@ lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q
 end Descent
 
 /-- A property of ring homomorphisms `P` is said to have equalizers, if the equalizer of algebra
-maps between algebras satisfiying `P` also satisfies `P`. -/
+maps between algebras satisfying `P` also satisfies `P`. -/
 def HasEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
   ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (f g : S →ₐ[R] T), P (algebraMap R S) → P (algebraMap R T) →
@@ -289,7 +284,7 @@ lemma HasEqualizers.and (hP : HasEqualizers P) (hQ : HasEqualizers Q) :
   fun f g hf hg ↦ ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
 
 /-- A property of ring homomorphisms `P` is said to have finite products, if a finite product of
-algebras satisfiying `Q` also satisfies `P`. -/
+algebras satisfying `Q` also satisfies `P`. -/
 def HasFiniteProducts (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
   ∀ {R : Type u} [CommRing R] {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
     [∀ i, Algebra R (S i)],

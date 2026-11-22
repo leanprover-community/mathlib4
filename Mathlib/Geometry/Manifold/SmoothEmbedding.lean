@@ -6,8 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Immersion
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
-public import Mathlib.Geometry.Manifold.Diffeomorph  -- shake: keep (used in `proof_wanted` only)
 
 /-! # Smooth embeddings
 
@@ -42,15 +40,12 @@ This will be useful to define embedded submanifolds.
   is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
   a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
-
 -/
 
 open scoped ContDiff
 open Topology
 
 public section
-
-noncomputable section
 
 namespace Manifold
 
@@ -87,7 +82,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSmoothEmbedding I J n f) (hg : IsSmoothEmbedding I' J' n g) :
     IsSmoothEmbedding (I.prod I') (J.prod J') n (Prod.map f g) :=
-  ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
+  ⟨hf.isImmersion.prodMap hg.isImmersion, hf.isEmbedding.prodMap hg.isEmbedding⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is a smooth embedding. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
@@ -115,16 +110,6 @@ lemma contMDiff (hf : IsSmoothEmbedding I J n f) :
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
 
--- use IsImmersion.comp and IsEmbedding.comp
-/-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
-proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
-    {g : N → N'} (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
-    IsSmoothEmbedding I J' n (g ∘ f)
-
 end IsSmoothEmbedding
-
--- TODO: prove the same result for local diffeomorphisms and deduce it as a corollary
-proof_wanted Diffeomorph.isSmoothEmbedding [IsManifold I n M]
-    (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
 
 end Manifold

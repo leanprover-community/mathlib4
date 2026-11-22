@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Topology.Semicontinuity.Basic
-public import Mathlib.Topology.Compactness.Lindelof
 
 /-!
 # Envelopes of Semicontinuous functions on Hereditarily Lindelöf spaces
@@ -68,7 +67,8 @@ theorem exists_countable_upperSemicontinuous_isGLB {s : X → E} {𝓕 : Set (X 
     simp [U, isGLB_lt_iff (h𝓕 x)]
   have (d : E) : ∃ A ⊆ 𝓕, A.Countable ∧ {x | s x < d} = ⋃ f ∈ A, U f d := by
     simp_rw [this d]
-    rcases eq_open_union_countable (fun f : 𝓕 ↦ U f d) (fun f ↦ U_open f.2 d) with ⟨t, t_count, ht⟩
+    rcases eq_open_union_countable (fun f : 𝓕 ↦ U f d) (fun f ↦ U_open f.property d) with
+      ⟨t, t_count, ht⟩
     use (↑) '' t, image_val_subset, t_count.image _
     rw [← ht, biUnion_image]
   choose A A_sub A_count hA using this
@@ -80,7 +80,7 @@ theorem exists_countable_upperSemicontinuous_isGLB {s : X → E} {𝓕 : Set (X 
   rcases D_dense.exists_between H with ⟨d, d_mem, hd⟩
   obtain ⟨f, f_mem, hf⟩ : ∃ f ∈ A d, f x < d := by
     have : x ∈ {y | s y < d} := hd.1
-    simpa only [hA d, mem_iUnion₂, exists_prop, U, mem_setOf_eq] using this
+    simpa only [hA d, mem_iUnion₂, exists_prop, U, mem_ofPred_eq] using this
   suffices e < e by simpa
   exact (he (mem_image_of_mem _ (mem_iUnion₂_of_mem d_mem f_mem))).trans_lt hf |>.trans hd.2
 

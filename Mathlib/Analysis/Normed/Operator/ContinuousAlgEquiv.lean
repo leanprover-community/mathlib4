@@ -5,11 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 
 /-!
@@ -30,9 +26,10 @@ The proof follows the same idea as the non-continuous version.
 open ContinuousLinearMap ContinuousLinearEquiv
 
 section
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
-  [SeparatingDual 𝕜 W]
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup V] [AddCommGroup W]
+  [TopologicalSpace V] [IsTopologicalAddGroup V] [TopologicalSpace W] [IsTopologicalAddGroup W]
+  [Module 𝕜 V] [Module 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
+  [ContinuousSMul 𝕜 V] [ContinuousSMul 𝕜 W]
 
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
@@ -65,7 +62,8 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
-  set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
+  set T := applyₗ _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply_eq_comp, ← map_mul]
@@ -77,16 +75,16 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
-    smulRightL 𝕜 _ _ d
+  set T' := applyₗ _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
     continuous_invFun := by
       change Continuous Tₗ.symm.toLinearMap
       suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
-      simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
+      ext; simp [← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ, LinearEquiv.ofBijective] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
 
 variable (𝕜 V W) in
@@ -151,6 +149,7 @@ end auxiliaryDefs
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 
@@ -162,7 +161,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   -- Assume nontriviality of `V`.
   by_cases! Subsingleton V
   · by_cases! Subsingleton W
-    · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
+    · use { toLinearEquiv := 0,
+            norm_map' _ := by simp [Subsingleton.eq_zero (α := V), Subsingleton.eq_zero (α := W)] }
       exact ext fun _ ↦ Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
   /- By `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`,
@@ -200,10 +200,10 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   have hα_ne_zero : α ≠ 0 := fun h ↦ by simp [h, ← hα] at this
   -- As `adjoint y ∘ y` is positive, we then get `0 < α`.
   have hα_nonneg : 0 ≤ α := by
-    have := hα_re.symm ▸ (nonneg_iff_isPositive _ |>.mpr
+    have := hα_re.symm ▸ (nonneg_iff_isPositive |>.mpr
       (hα_re ▸ hα ▸ isPositive_adjoint_comp_self y.toContinuousLinearMap))
     rw [← LinearMap.isPositive_one.isPositive_smul_iff (E := V) (one_ne_zero' (V →ₗ[𝕜] V))]
-    exact (nonneg_iff_isPositive _).mp this
+    exact nonneg_iff_isPositive.mp this
   have hα_pos := RCLike.ofReal_pos.mp <| hα_re ▸ (lt_of_le_of_ne' hα_nonneg hα_ne_zero)
   -- We also get `y ∘ adjoint y = α • id`.
   have h_comp_adjoint : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
@@ -228,11 +228,11 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
 /- TODO: Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
 this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
 public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
-    [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
+    [AlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
     OrderIsoClass F _ _ where
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
-      (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
+      (.ofClass f) (map_continuous f)
     have this a : f a = U.conjStarAlgEquiv a := by simpa using! congr($hU a)
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U

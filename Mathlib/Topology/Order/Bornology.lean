@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Topology.Bornology.Constructions
 
 /-!
@@ -30,7 +31,7 @@ variable [Lattice α] [Nonempty α]
 
 /-- Order-bornology on a nonempty lattice. The bounded sets are the sets that are bounded both above
 and below. -/
-@[implicit_reducible]
+@[instance_reducible]
 def orderBornology : Bornology α := .ofBounded
   {s | BddBelow s ∧ BddAbove s}
   (by simp)
@@ -51,34 +52,32 @@ to be the ones that are bounded both above and below. -/
 class IsOrderBornology : Prop where
   protected isBounded_iff_bddBelow_bddAbove (s : Set α) : IsBounded s ↔ BddBelow s ∧ BddAbove s
 
+to_dual_for IsOrderBornology.isBounded_iff_bddBelow_bddAbove := by
+  rw [IsOrderBornology.isBounded_iff_bddBelow_bddAbove, and_comm]
+
 lemma isOrderBornology_iff_eq_orderBornology [Lattice α] [Nonempty α] :
     IsOrderBornology α ↔ ‹Bornology α› = orderBornology := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun s ↦ by rw [h, orderBornology_isBounded]⟩⟩
   ext s
-  exact isBounded_compl_iff.symm.trans (h.1 _)
+  exact isBounded_compl_iff.symm.trans (h.isBounded_iff_bddBelow_bddAbove _)
 
 section Preorder
 variable [Preorder α] [IsOrderBornology α]
 
+@[to_dual none]
 lemma isBounded_iff_bddBelow_bddAbove : IsBounded s ↔ BddBelow s ∧ BddAbove s :=
   IsOrderBornology.isBounded_iff_bddBelow_bddAbove _
 
+@[to_dual]
 protected lemma Bornology.IsBounded.bddBelow (hs : IsBounded s) : BddBelow s :=
   (isBounded_iff_bddBelow_bddAbove.1 hs).1
 
-protected lemma Bornology.IsBounded.bddAbove (hs : IsBounded s) : BddAbove s :=
-  (isBounded_iff_bddBelow_bddAbove.1 hs).2
-
+@[to_dual]
 protected lemma BddBelow.isBounded (hs₀ : BddBelow s) (hs₁ : BddAbove s) : IsBounded s :=
   isBounded_iff_bddBelow_bddAbove.2 ⟨hs₀, hs₁⟩
 
-protected lemma BddAbove.isBounded (hs₀ : BddAbove s) (hs₁ : BddBelow s) : IsBounded s :=
-  isBounded_iff_bddBelow_bddAbove.2 ⟨hs₁, hs₀⟩
-
+@[to_dual]
 lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : IsBounded (s ∩ t) :=
-  (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
-
-lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : IsBounded (s ∩ t) :=
   (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
 
 instance OrderDual.instIsOrderBornology : IsOrderBornology αᵒᵈ where
@@ -98,27 +97,31 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
     simp_rw [← forall_isBounded_image_eval_iff, bddBelow_pi, bddAbove_pi, ← forall_and,
       isBounded_iff_bddBelow_bddAbove]
 
+variable (α) in
+lemma Nonempty.of_isOrderBornology : Nonempty α := Bornology.isBounded_empty.bddBelow.nonempty
+
+@[to_dual]
+instance IsOrderBornology.neBot_cobounded_of_noBotOrder [NoBotOrder α] : (cobounded α).NeBot := by
+  simp [Filter.neBot_iff, cobounded_eq_bot_iff, ← isBounded_univ, isBounded_iff_bddBelow_bddAbove]
+
+@[to_dual]
+lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
+  intro s hs
+  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove] at hs
+  obtain ⟨b, hb⟩ := hs.2
+  obtain ⟨c, hbc⟩ := exists_gt b
+  refine Filter.mem_of_superset (Filter.mem_atTop c) fun x hx ↦ ?_
+  by_contra hx'
+  exact hbc.not_ge <| hx.trans <| hb <| mem_compl hx'
+
 end Preorder
 
 section LinearOrder
 
-variable [Nonempty α] [LinearOrder α] [IsOrderBornology α]
+variable [LinearOrder α] [IsOrderBornology α]
 
-lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
-  intro s
-  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
-    Filter.atTop_basis_Ioi.mem_iff]
-  intro ⟨_, b, hb⟩
-  rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
-  use b
-
--- TODO (khw): Generate this in the future with `to_dual`
--- See https://github.com/leanprover-community/mathlib4/pull/37738
-lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
-  atTop_le_cobounded (α := αᵒᵈ)
-
-lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
-    cobounded α ≤ .atBot ⊔ .atTop := by
+lemma IsOrderBornology.cobounded_le_atBot_sup_atTop : cobounded α ≤ .atBot ⊔ .atTop := by
+  have := Nonempty.of_isOrderBornology α
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
     ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
@@ -133,6 +136,7 @@ lemma IsOrderBornology.cobounded_eq [NoMaxOrder α] [NoMinOrder α] :
   cobounded_le_atBot_sup_atTop.antisymm <|
     sup_le IsOrderBornology.atBot_le_cobounded IsOrderBornology.atTop_le_cobounded
 
+@[to_dual]
 lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
     Bornology.cobounded α = .atTop := by
   refine atTop_le_cobounded.antisymm' fun s ↦ ?_
@@ -141,11 +145,6 @@ lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
   refine fun ⟨b, _, hb⟩ ↦ ⟨⟨⊥, fun x hx ↦ by simp⟩, ⟨b, fun x hx ↦ ?_⟩⟩
   by_contra! hx'
   exact hx (hb hx'.le)
-
--- TODO (khw): Generate this in the future with `to_dual`
--- See https://github.com/leanprover-community/mathlib4/pull/37738
-lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
-    Bornology.cobounded α = .atBot := cobounded_eq_atTop (α := αᵒᵈ)
 
 end LinearOrder
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories with finite (co)products
 
@@ -43,7 +46,7 @@ instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits 
 instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  haveI : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
+  have : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
   exact hasLimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
 
 /-- We can now write this for powers. -/
@@ -68,7 +71,7 @@ class HasFiniteCoproducts : Prop where
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  haveI : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
+  have : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
 
 /-- If `C` has finite colimits then it has finite coproducts. -/
