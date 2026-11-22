@@ -455,6 +455,19 @@ theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sS
     exact bot_le
   · exact csSup_le_csSup h₁ h h₂
 
+theorem csSup_eq_bot {s : Set α} (hs : BddAbove s := by bddDefault) :
+    sSup s = ⊥ ↔ s ⊆ {⊥} where
+  mp hsb x hx := by
+    rw [mem_singleton_iff, ← le_bot_iff, ← hsb]
+    exact le_csSup hs hx
+  mpr hsb := by
+    rw [← le_bot_iff, csSup_le_iff' hs]
+    grind
+
+theorem ciSup_eq_bot {f : ι → α} (hf : BddAbove (.range f) := by bddDefault) :
+    ⨆ i, f i = ⊥ ↔ ∀ i, f i = ⊥ :=
+  (csSup_eq_bot hf).trans (by simp)
+
 variable {t : Set α}
 
 theorem csSup_union' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by bddDefault) :

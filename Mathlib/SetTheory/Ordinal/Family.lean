@@ -83,33 +83,21 @@ theorem lt_iSup_add_one_iff {ι} {f : ι → Ordinal.{u}} {a} [Small.{u} ι] :
     a < ⨆ i, f i + 1 ↔ ∃ i, a ≤ f i := by
   simp
 
--- TODO: state in terms of `IsSuccLimit`.
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit +typeChanged (since := "2026-11-22")]
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
-  by_contra! hoa
-  exact hao.not_ge (Ordinal.iSup_le fun i ↦ le_of_lt_succ <|
-    ((Ordinal.le_iSup _ _).lt_of_ne (hf i)).trans_le hoa)
+  contrapose! hf
+  apply exists_eq_ciSup_of_not_isSuccPrelimit
+  rw [← hao.succ_le.antisymm hf]
+  exact not_isSuccPrelimit_succ a
 
--- TODO: generalize to conditionally complete lattices.
-theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
-    iSup f = 0 ↔ ∀ i, f i = 0 := by
-  refine
-    ⟨fun h i => ?_, fun h =>
-      le_antisymm (Ordinal.iSup_le fun i => nonpos_iff_eq_zero.2 (h i)) zero_le⟩
-  rw [← nonpos_iff_eq_zero, ← h]
-  exact Ordinal.le_iSup f i
+theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
+  ciSup_eq_bot bddAbove_of_small
 
--- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
-  apply (Ordinal.iSup_le _).antisymm (max_le _ _)
-  · rintro (i | i)
-    · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
-    · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
-  all_goals
-    apply csSup_le_csSup' bddAbove_of_small
-    rintro i ⟨a, rfl⟩
-    apply mem_range_self
+  rw [iSup, Sum.range_eq]
+  exact csSup_union' bddAbove_of_small bddAbove_of_small
 
 theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
@@ -200,7 +188,6 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
 end Ordinal
 
 /-! ### Results about injectivity and surjectivity -/
-
 
 theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
     ¬ Surjective f := by
