@@ -195,7 +195,7 @@ theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
 
 @[simp]
 lemma toRingEquiv_toRingHom {A₁ A₂ : Type*} [Semiring R] [NonAssocSemiring A₁] [NonAssocSemiring A₂]
-    [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂) : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
+    [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂) : e.toRingEquiv.toRingHom = e.toRingHom :=
   rfl
 
 theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
@@ -257,14 +257,16 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A�
 @[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 @[simp, norm_cast]
-lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
+lemma toRingHom_toAlgHom : e.toAlgHom.toRingHom = e.toRingHom :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem toRingHom_toAlgHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem toRingHom_toAlgHom' : e.toAlgHom.toRingHom = e.toRingEquiv.toRingHom :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
+@[deprecated (since := "2026-11-22")] alias toAlgHom_toRingHom := toRingHom_toAlgHom
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom'
 
 end Algebra
 
@@ -295,8 +297,8 @@ instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
 
 @[simp, norm_cast] lemma refl_toAlgHom {A₁ : Type*} [CommSemiring R] [Semiring A₁]
     [Algebra R A₁] : (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
-@[simp, norm_cast] lemma refl_toRingHom {A₁ : Type*} [Semiring R] [NonAssocSemiring A₁]
-    [Module R A₁] : (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
+@[simp] lemma refl_toRingHom {A₁ : Type*} [Semiring R] [NonAssocSemiring A₁]
+    [Module R A₁] : (refl : A₁ ≃ₐ[R] A₁).toRingHom = RingHom.id A₁ := rfl
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -459,11 +461,11 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
 @[simp] lemma self_trans_symm (e : A₁ ≃ₐ[R] A₂) : e.trans e.symm = refl := by ext; simp
 @[simp] lemma symm_trans_self (e : A₁ ≃ₐ[R] A₂) : e.symm.trans e = refl := by ext; simp
 
-@[simp, norm_cast]
+@[simp]
 lemma toRingHom_trans {A₁ A₂ A₃ : Type*} [Semiring R] [NonAssocSemiring A₁] [NonAssocSemiring A₂]
     [NonAssocSemiring A₃] [Module R A₁] [Module R A₂] [Module R A₃]
     (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
-    (e₁.trans e₂ : A₁ →+* A₃) = RingHom.comp e₂ (e₁ : A₁ →+* A₂) := rfl
+    (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom := rfl
 
 end trans
 
@@ -658,7 +660,7 @@ theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁)
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 @[simps! toEquiv]
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
-  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with
+  { RingEquiv.ofBijective f.toRingHom hf, f with
     map_smul' := by simp [RingEquiv.ofBijective] }
 
 @[simp]
@@ -905,7 +907,7 @@ lemma coe_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
     ⇑f.toNatAlgEquiv = ⇑f := rfl
 
 lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
-    f.toNatAlgEquiv.toAlgHom = (f : R →+* S).toNatAlgHom := rfl
+    f.toNatAlgEquiv.toAlgHom = f.toRingHom.toNatAlgHom := rfl
 
 @[simp]
 lemma symm_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
@@ -933,7 +935,7 @@ lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     ⇑f.toIntAlgEquiv = ⇑f := rfl
 
 lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
-    f.toIntAlgEquiv.toAlgHom = (f : R →+* S).toIntAlgHom := rfl
+    f.toIntAlgEquiv.toAlgHom = f.toRingHom.toIntAlgHom := rfl
 
 @[simp]
 lemma symm_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :

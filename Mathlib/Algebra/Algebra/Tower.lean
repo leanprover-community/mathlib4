@@ -147,7 +147,7 @@ variable (R)
 
 @[simp]
 theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
-    (f : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+    f.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext (AlgHom.map_algebraMap f)
 
 -- conflicts with IsScalarTower.Subalgebra
@@ -158,7 +158,7 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
-  letI := (f : A →+* B).toAlgebra
+  letI := f.toRingHom.toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
 
 end Semiring
@@ -179,7 +179,7 @@ namespace AlgHom
 
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
-  { (f : A →+* B) with
+  { f.toRingHom with
     commutes' := fun r => by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
       exact f.commutes (algebraMap R S r) }
@@ -190,7 +190,7 @@ theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R 
     (f.restrictScalars R).toLinearMap = f.toLinearMap.restrictScalars R := rfl
 
 @[simp]
-theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+* B) = f := rfl
+theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R).toRingHom = f.toRingHom := rfl
 
 @[simp]
 theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl

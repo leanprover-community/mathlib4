@@ -182,7 +182,7 @@ variable (M) in
 include M in
 protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebraMap R Q) :
     Function.Bijective f :=
-  (show f = IsLocalization.algEquiv M S Q by
+  (show f = (IsLocalization.algEquiv M S Q).toRingHom by
     apply IsLocalization.ringHom_ext M; rw [hf]; ext; simp) ▸
     (IsLocalization.algEquiv M S Q).toEquiv.bijective
 
@@ -230,14 +230,14 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
   .ofCommutes (ringEquivOfRingEquiv S Q h.toRingEquiv H) fun _ ↦ by
-    dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+    dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq, RingEquiv.coe_toRingHom,
+      AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
 theorem algEquivOfAlgEquiv_eq_map :
-    (algEquivOfAlgEquiv S Q h H : S →+* Q) =
-      map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
+    (algEquivOfAlgEquiv S Q h H).toRingHom =
+      map Q h.toRingHom (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -417,17 +417,18 @@ variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ]
   [IsLocalization N Sₙ] [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ]
   [IsScalarTower R S Sₙ] [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
 
-theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
-      (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
+theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ').toRingHom.comp (algebraMap Rₘ Sₙ) =
+      (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ').toRingHom := by
   refine IsLocalization.ringHom_ext M (RingHom.ext fun x => ?_)
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
+  simp only [RingHom.coe_comp, Function.comp_apply, RingEquiv.coe_toRingHom,
+    AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes]
   rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
     ← AlgEquiv.restrictScalars_apply R, AlgEquiv.commutes]
 
 variable {Rₘ} in
 theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
-    (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) x =
-    (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') x := by
+    (algEquiv N Sₙ Sₙ').toRingHom.comp (algebraMap Rₘ Sₙ) x =
+    (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ').toRingHom x := by
   rw [algEquiv_comp_algebraMap M Rₘ Sₙ Rₘ']
 
 
@@ -473,11 +474,11 @@ theorem algEquiv_symm_mk (x : R) (y : M) : (algEquiv M S).symm (mk' S x y) = mk 
   rw [mk_eq_mk', algEquiv_symm_mk']
 
 lemma coe_algEquiv :
-    (Localization.algEquiv M S : Localization M →+* S) =
+    (Localization.algEquiv M S).toRingHom =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 lemma coe_algEquiv_symm :
-    ((Localization.algEquiv M S).symm : S →+* Localization M) =
+    (Localization.algEquiv M S).symm.toRingHom =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 end Localization

@@ -45,4 +45,4 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
 @[simp]
 theorem Real.ringHom_apply {F : Type*} [FunLike F ℝ ℝ] [RingHomClass F ℝ ℝ] (f : F) (r : ℝ) :
     f r = r :=
-  congr($(Unique.eq_default (RingHomClass.toRingHom f)) r)
+  congr($(Unique.eq_default (RingHom.ofClass f)) r)

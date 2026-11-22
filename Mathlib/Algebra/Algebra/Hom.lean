@@ -76,7 +76,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual `AlgHom`. -/
 def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     A →ₐ[R] B where
-  __ := (f : A →+* B)
+  __ := RingHom.ofClass f
   toFun := f
   commutes' := AlgHomClass.commutes f
 
@@ -134,14 +134,14 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 
 /-- Turn an algebra homomorphism into the corresponding multiplicative monoid homomorphism. -/
 @[coe]
-def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
+def toMonoidHom' (f : A →ₐ[R] B) : A →* B := f.toRingHom
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
 /-- Turn an algebra homomorphism into the corresponding additive monoid homomorphism. -/
 @[coe]
-def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
+def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := f.toRingHom
 
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
@@ -155,19 +155,20 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
     ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
 
-@[simp, norm_cast]
-theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A →+* B) = f :=
+@[simp]
+theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : (⟨f, h₁, h₂⟩ : A →ₐ[R] B).toRingHom = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
 
--- make the coercion the simp-normal form
-@[simp]
-theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
+
+theorem toRingHom_eq_ofClass (f : A →ₐ[R] B) : f.toRingHom = .ofClass f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
+@[deprecated (since := "2026-11-22")] alias toRingHom_eq_coe := toRingHom_eq_ofClass
+
+@[simp]
+theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑f.toRingHom = f :=
   rfl
 
 @[simp, norm_cast]
@@ -179,11 +180,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →+ B) = f :=
   rfl
 
 variable (φ : A →ₐ[R] B)
@@ -194,8 +195,9 @@ theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem toRingHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
-  coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
+theorem toRingHom_injective : Function.Injective (toRingHom : (A →ₐ[R] B) → A →+* B) :=
+  fun φ₁ φ₂ H =>
+  coe_fn_injective <| show (φ₁.toRingHom : A → B) = (φ₂.toRingHom : A → B) from congr_arg _ H
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
 
@@ -230,7 +232,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅ h₆) :
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+theorem comp_algebraMap : φ.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
@@ -256,7 +258,7 @@ theorem coe_id : ⇑(AlgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toRingHom : (AlgHom.id R A : A →+* A) = RingHom.id _ :=
+theorem id_toRingHom : (AlgHom.id R A).toRingHom = RingHom.id _ :=
   rfl
 
 end
@@ -269,7 +271,7 @@ domain of `φ₁` equal to the codomain of `φ₂`, then
 `φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
 -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
-  { φ₁.toRingHom.comp ↑φ₂ with
+  { φ₁.toRingHom.comp φ₂.toRingHom with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 
 @[simp]
@@ -280,7 +282,7 @@ theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ�
   rfl
 
 theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
-    (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
+    (φ₁.comp φ₂).toRingHom = φ₁.toRingHom.comp φ₂.toRingHom :=
   rfl
 
 @[simp]
@@ -413,8 +415,10 @@ def toAlgHom : S →ₐ[R] A where
 theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
 @[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+theorem toRingHom_toAlgHom : (toAlgHom R S A).toRingHom = algebraMap S A :=
   RingHom.ext fun _ => rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_toAlgHom := toRingHom_toAlgHom
 
 @[simp]
 theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
@@ -430,11 +434,12 @@ namespace AlgHomClass
 
 -- TODO: rename again when RingHomClass.toRingHom gets renamed
 @[simp]
-lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+lemma ringHomOfClass_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHom.ofClass (AlgHom.ofClass f) = RingHom.ofClass f := rfl
 
-@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
+@[deprecated (since := "2026-11-22")] alias toRingHom_ofClass := ringHomOfClass_ofClass
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := ringHomOfClass_ofClass
 
 end AlgHomClass
 
@@ -499,7 +504,7 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
-@[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+@[simp] lemma toRingHom_ofId : (ofId R A).toRingHom = algebraMap R A := rfl
 
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=

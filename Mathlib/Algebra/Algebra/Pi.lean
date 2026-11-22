@@ -90,7 +90,9 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
     toFun := fun f ↦ f i
     commutes' := fun _ ↦ rfl }
 
-lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
+lemma toRingHom_evalAlgHom (i : ι) : (evalAlgHom R A i).toRingHom = evalRingHom A i := rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_evalAlgHom := toRingHom_evalAlgHom
 
 @[simp]
 theorem _root_.AlgHom.pi_evalAlgHom : AlgHom.pi (evalAlgHom R A) = AlgHom.id R (Π i, A i) :=
