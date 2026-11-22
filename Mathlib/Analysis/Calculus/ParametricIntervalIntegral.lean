@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ParametricIntegral
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 /-!
 # Derivatives of interval integrals depending on parameters

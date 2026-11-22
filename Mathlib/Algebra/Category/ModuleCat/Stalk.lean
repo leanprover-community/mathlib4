@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Algebra.Category.Ring.Colimits
 
 /-!
 # Module structure on stalks
