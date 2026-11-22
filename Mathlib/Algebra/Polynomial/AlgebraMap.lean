@@ -158,7 +158,7 @@ section Map
 
   This is the algebra version of `Polynomial.mapRingHom`. -/
 def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
-  toRingHom := mapRingHom f.toRingHom
+  toRingHom := mapRingHom f
   commutes' := by simp
 
 @[simp]
