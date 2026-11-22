@@ -56,12 +56,12 @@ simp only [Category.assoc, Functor.map_comp, …] at h
 -/
 elab (name := catNFPercent) "cat_nf%" t:term : term => do
   let e ← Term.elabTerm t none
-  let isProof ← isProof e
-  let lhs ← if isProof then inferType e else pure e
+  let isPrf ← isProof e
+  let lhs ← if isPrf then inferType e else pure e
   let go : TacticM Expr := do
     let ⟨rhs, p⟩ ← Lean.Elab.Tactic.Conv.convert lhs do
       evalTactic (← `(tactic| simp only [cat_nf]))
-    if isProof then
+    if isPrf then
       mkEqMP p e
     else
       return rhs
