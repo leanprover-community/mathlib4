@@ -65,7 +65,7 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 def _root_.BialgEquiv.ofClass (f : F) : A ≃ₐc[R] B :=
-  { (f : A ≃ₗc[R] B), (f : A →ₐc[R] B) with }
+  { (f : A ≃ₗc[R] B), (.ofClass f : A →ₐc[R] B) with }
 
 @[deprecated (since := "2026-11-22")] alias toBialgEquiv := BialgEquiv.ofClass
 
@@ -134,8 +134,8 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
 
 instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
-@[simp, norm_cast]
-theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
+@[simp]
+theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toBialgHom = e₂.toBialgHom ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
 
 @[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
@@ -149,32 +149,33 @@ variable [Semiring A] [Semiring B] [Semiring C] [Algebra R A] [Algebra R B]
 
 variable (e e' : A ≃ₐc[R] B)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : A →ₐc[R] B) = e :=
+@[deprecated BialgHom.coe_ofClass +typeChanged (since := "2026-11-22")]
+theorem coe_coe : ⇑(.ofClass e : A →ₐc[R] B) = e :=
   rfl
 
 @[simp]
 theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
   rfl
 
-@[simp]
-theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
+theorem toBialgHom_eq_ofClass (f : A ≃ₐc[R] B) : f.toBialgHom = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias toBialgHom_eq_coe := toBialgHom_eq_ofClass
 
 @[simp]
 theorem coe_toCoalgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
 @[simp]
-theorem coe_toBialgHom : ⇑(e : A →ₐc[R] B) = e :=
+theorem coe_toBialgHom : ⇑e.toBialgHom = e :=
   rfl
 
 @[simp]
 theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
-theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
-  rfl
+theorem toCoalgEquiv_toCoalgHom :
+    ((e : A ≃ₗc[R] B) : A →ₗc[R] B) = e.toBialgHom :=by rfl
 
 section
 
