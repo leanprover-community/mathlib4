@@ -428,16 +428,16 @@ alias Algebra.algHom := IsScalarTower.toAlgHom
 
 alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
-namespace AlgHomClass
-
 @[simp]
-lemma ofClass_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+lemma AlgHom.ringHomOfClass_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     RingHom.ofClass (AlgHom.ofClass f) = .ofClass f := rfl
 
-@[deprecated (since := "2026-11-21")] alias toRingHom_ofClass := ofClass_ofClass
+namespace AlgHomClass
 
-@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := ofClass_ofClass
+@[deprecated (since := "2026-11-21")] alias toRingHom_ofClass := AlgHom.ringHomOfClass_ofClass
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := AlgHom.ringHomOfClass_ofClass
 
 end AlgHomClass
 
