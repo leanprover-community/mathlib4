@@ -58,11 +58,12 @@ theorem isCocompact_of_span_eq_top [FiniteDimensional K V] (M : Submodule R V)
   let b := Basis.mk hli (by rw [Subtype.range_coe, hs, hM])
   have := @Fintype.ofFinite s <| Module.Finite.finite_basis b
   refine .of_isCompact_add_eq_univ _
-    ((isCompact_univ_pi fun _ ↦ hC).image (f := fun c : s → K ↦ ∑ i, c i • i.1) (by fun_prop))
+    ((isCompact_univ_pi fun _ ↦ hC).image (f := fun c : s → K ↦ ∑ i, c i • i.val) (by fun_prop))
     (Set.eq_univ_of_forall fun x ↦ ?_)
   choose c hc _ hh hck using fun i ↦ hRC ▸ Set.mem_univ (b.repr x i)
   choose r hrh using hh
-  refine ⟨_, ⟨c, fun i _ ↦ hc i, rfl⟩, ∑ i, r i • i.1, sum_mem fun i _ ↦ M.smul_mem _ (hsM i.2), ?_⟩
+  refine ⟨_, ⟨c, fun i _ ↦ hc i, rfl⟩, ∑ i, r i • i.val,
+    sum_mem fun i _ ↦ M.smul_mem _ (hsM i.prop), ?_⟩
   rw [← b.sum_repr x]
   simp_rw [← hck, ← hrh, b, add_smul, Basis.coe_mk, algebraMap_smul, Finset.sum_add_distrib]
 
