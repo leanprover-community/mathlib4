@@ -669,9 +669,9 @@ noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom 
     congr
     ext
     apply h.symm_apply_apply
-  { map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) with
-    toFun := map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H))
-    invFun := map S (h.symm : P →+* R) (T.le_comap_of_map_le (le_of_eq H'))
+  { map Q h.toRingHom (M.le_comap_of_map_le (le_of_eq H)) with
+    toFun := map Q h.toRingHom (M.le_comap_of_map_le (le_of_eq H))
+    invFun := map S h.symm.toRingHom (T.le_comap_of_map_le (le_of_eq H'))
     left_inv := fun x => by
       rw [map_map, map_unique _ (RingHom.id _), RingHom.id_apply]
       simp
@@ -682,8 +682,8 @@ noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom 
 end
 
 theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T) :
-    (ringEquivOfRingEquiv S Q j H : S →+* Q) =
-      map Q (j : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
+    (ringEquivOfRingEquiv S Q j H).toRingHom =
+      map Q j.toRingHom (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :

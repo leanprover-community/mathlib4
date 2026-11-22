@@ -88,8 +88,8 @@ instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ⟨e.toRingHom⟩
+  inv := ⟨e.symm.toRingHom⟩
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 

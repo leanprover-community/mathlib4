@@ -282,7 +282,8 @@ def inducedOrderRingIso : β ≃+*o γ :=
     left_inv := inducedMap_inv_self _ _
     right_inv := inducedMap_inv_self _ _
     map_le_map_iff' := by
-      dsimp
+      simp_rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+        MonoidHom.coe_ofClass, OrderRingHom.coe_toRingHom]
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
       convert inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]

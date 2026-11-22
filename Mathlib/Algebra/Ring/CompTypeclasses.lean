@@ -121,7 +121,7 @@ def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.
 -/
-lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
+lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair e.toRingHom e.symm.toRingHom :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
@@ -129,7 +129,7 @@ lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R�
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.
 -/
-theorem of_ringEquiv_symm (e : R₁ ≃+* R₂) : RingHomInvPair (↑e.symm : R₂ →+* R₁) ↑e :=
+theorem of_ringEquiv_symm (e : R₁ ≃+* R₂) : RingHomInvPair e.symm.toRingHom e.toRingHom :=
   of_ringEquiv e.symm
 
 /--
@@ -180,6 +180,6 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 
-instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective σ.toRingHom := ⟨σ.surjective⟩
 
 end RingHomSurjective

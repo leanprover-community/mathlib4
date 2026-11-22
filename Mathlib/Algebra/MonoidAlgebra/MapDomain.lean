@@ -369,7 +369,7 @@ variable (M) in
 @[to_additive (dont_translate := R S)
 /-- Isomorphic rings have isomorphic additive monoid algebras. -/]
 def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
-  .ofRingHom (MonoidAlgebra.mapRingHom M e) (MonoidAlgebra.mapRingHom M e.symm)
+  .ofRingHom (MonoidAlgebra.mapRingHom M e.toRingHom) (MonoidAlgebra.mapRingHom M e.symm.toRingHom)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
 @[to_additive (attr := simp)]
@@ -384,7 +384,7 @@ lemma mapRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
 
 @[to_additive]
 lemma toRingHom_mapRingEquiv (e : R ≃+* S) :
-    (mapRingEquiv M e).toRingHom = mapRingHom M e := rfl
+    (mapRingEquiv M e).toRingHom = mapRingHom M e.toRingHom := rfl
 
 @[to_additive (attr := simp)]
 lemma symm_mapRingEquiv (e : R ≃+* S) :

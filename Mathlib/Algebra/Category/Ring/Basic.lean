@@ -173,8 +173,8 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toRingHom
+  inv := ofHom e.symm.toRingHom
 
 instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -340,8 +340,8 @@ instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toRingHom
+  inv := ofHom e.symm.toRingHom
 
 instance forgetReflectIsos : (forget RingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -503,8 +503,8 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toRingHom
+  inv := ofHom e.symm.toRingHom
 
 instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -680,8 +680,8 @@ instance : HasForget₂ CommRingCat CommMonCat where
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toRingHom
+  inv := ofHom e.symm.toRingHom
 
 instance forgetReflectIsos : (forget CommRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -711,16 +711,16 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    e.semiRingCatIsoToRingEquiv.toRingHom = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    e.ringCatIsoToRingEquiv.toRingHom = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    e.commSemiRingCatIsoToRingEquiv.toRingHom = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    e.commRingCatIsoToRingEquiv.toRingHom = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 
