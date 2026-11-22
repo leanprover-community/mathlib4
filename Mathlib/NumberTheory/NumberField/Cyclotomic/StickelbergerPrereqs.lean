@@ -446,15 +446,15 @@ variable {R : Type*} (A : Type*) (B : Type*) [CommSemiring R] [CommSemiring A] [
 /-- In a tower `A/B/R`, the primes of `B` over `p` correspond to the pairs `(P, 𝔓)` with `P` a
 prime of `A` over `p` and `𝔓` a prime of `B` over `P`. -/
 @[expose] def equivPrimesOverPrimesOver :
-    p.primesOver B ≃ Σ P : p.primesOver A, P.1.primesOver B where
-  toFun 𝔓 := ⟨primesOver.mk p (𝔓.1.under A), primesOver.mk _ 𝔓.1⟩
+    p.primesOver B ≃ Σ P : p.primesOver A, P.val.primesOver B where
+  toFun 𝔓 := ⟨primesOver.mk p (𝔓.val.under A), primesOver.mk _ 𝔓.val⟩
   invFun P :=
-    have := LiesOver.trans P.2.1 P.1.1 p
-    primesOver.mk p P.2.1
-  right_inv P := Sigma.subtype_ext (Subtype.ext (over_def P.2.1 P.1.1).symm) rfl
+    have := LiesOver.trans P.2.val P.1.val p
+    primesOver.mk p P.2.val
+  right_inv P := Sigma.subtype_ext (Subtype.ext (over_def P.2.val P.1.val).symm) rfl
 
 @[simp]
-theorem coe_equivPrimesOverPrimesOver_symm_apply (x : Σ P : p.primesOver A, P.1.primesOver B) :
+theorem coe_equivPrimesOverPrimesOver_symm_apply (x : Σ P : p.primesOver A, P.val.primesOver B) :
     ((equivPrimesOverPrimesOver A B p).symm x : Ideal B) = x.2 :=
   rfl
 
@@ -683,7 +683,7 @@ theorem IsCyclotomicExtension.Rat.gcd_inf {K : Type*} [Field K] [NumberField K]
   let d := n₁.gcd n₂
   have : NeZero d := ⟨Nat.gcd_ne_zero_left (NeZero.ne _)⟩
   have : NeZero (n₁.lcm n₂) := ⟨Nat.lcm_ne_zero (NeZero.ne _) (NeZero.ne _)⟩
-  obtain ⟨ζ₁, hζ₁⟩ := h₁.1 rfl (NeZero.ne n₁)
+  obtain ⟨ζ₁, hζ₁⟩ := h₁.exists_isPrimitiveRoot rfl (NeZero.ne n₁)
   replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective F₁ K)
   obtain ⟨s, hs⟩ := n₁.gcd_dvd_left n₂
   let ζ := (algebraMap F₁ K ζ₁) ^ s
@@ -699,7 +699,7 @@ theorem IsCyclotomicExtension.Rat.gcd_inf {K : Type*} [Field K] [NumberField K]
       IsCyclotomicExtension.Rat.finrank n₂ F₂,
         IsCyclotomicExtension.Rat.finrank (n₁.lcm n₂) ↑(F₁ ⊔ F₂),
       IsCyclotomicExtension.Rat.finrank d ℚ⟮ζ⟯, Nat.totient_lcm_mul_totient_gcd]
-  · obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
+  · obtain ⟨ζ₂, hζ₂⟩ := h₂.exists_isPrimitiveRoot rfl (NeZero.ne n₂)
     replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective F₂ K)
     rw [(isCyclotomicExtension_singleton_iff_eq_adjoin n₁ ℚ K _ hζ₁).mp h₁,
       (isCyclotomicExtension_singleton_iff_eq_adjoin n₂ ℚ K _ hζ₂).mp h₂, adjoin_simple_le_iff,
@@ -920,7 +920,7 @@ theorem primesOver_mem_orbit [𝔭.IsPrime] [𝔭.LiesOver 𝒑] (𝔮 : 𝒑.pr
     (𝔮 : Ideal (𝓞 k)) ∈ MulAction.orbit Gal(k/ℚ) 𝔭 := by
   have := IsCyclotomicExtension.isGalois {m} ℚ k
   rw [Algebra.IsInvariant.orbit_eq_primesOver ℤ _ _ 𝒑 𝔭]
-  exact 𝔮.2
+  exact 𝔮.prop
 
 end
 
@@ -932,7 +932,7 @@ theorem restrictNormal_smul_eq [IsGalois ℚ k] [IsGalois ℚ L] [h𝓟 : 𝓟.L
     (τ.restrictScalars ℚ).restrictNormal k • 𝔭 = 𝔮 := by
   rw [← IsGaloisGroup.restrictHom_eq_restrictNormal,
     ← IsGaloisGroup.restrictHom_eq_restrictHom Gal(L/ℚ) Gal(k/ℚ) ℤ (𝓞 k) (𝓞 L) ℚ k L,
-    (liesOver_iff _ _).mp h𝓟, IsGaloisGroup.restrictHom_smul_under, (liesOver_iff _ _).mp 𝓠.2.2,
+    (liesOver_iff _ _).mp h𝓟, IsGaloisGroup.restrictHom_smul_under, (liesOver_iff _ _).mp 𝓠.prop.2,
     ← hτ]
   rfl
 

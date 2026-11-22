@@ -737,7 +737,7 @@ This reduces the computation of this ideal to that of the valuations `valGauss`.
 theorem span_singleton_gaussSum_eq_prod [Fact p.Prime] [NeZero n] [IsCyclotomicExtension {n} ℚ K]
     [P.IsMaximal] [P.LiesOver 𝒑] [CharP (𝓞 K ⧸ P) p] (a : ℤ) :
     span {𝓖 n P hζ a} =
-      ∏ 𝓟 : primesOver 𝒑 (𝓞 L), 𝓟.1 ^ valGauss n P 𝓟 hζ a := by
+      ∏ 𝓟 : primesOver 𝒑 (𝓞 L), 𝓟.val ^ valGauss n P 𝓟 hζ a := by
   classical
   have hp : 𝒑 ≠ ⊥ := by simpa using NeZero.ne p
   have h₁ : span {𝓖 n P hζ a} ≠ 0 := by simpa using gaussSum_ne_zero _
