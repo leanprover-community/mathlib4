@@ -44,6 +44,7 @@ integer numbers, least element, greatest element
 
 namespace Int
 
+-- shortcut instances
 instance : NoMinOrder ℤ := ⟨fun x ↦ ⟨x.pred, Int.pred_self_lt _⟩⟩
 instance : NoMaxOrder ℤ := ⟨fun x ↦ ⟨x.succ, Int.lt_succ_self _⟩⟩
 
