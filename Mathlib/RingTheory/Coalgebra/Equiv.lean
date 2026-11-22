@@ -54,16 +54,10 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
-@[coe]
 def _root_.CoalgEquiv.ofClass [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
   { (f : A →ₗc[R] B), (SemilinearEquivClass.semilinearEquiv f : A ≃ₗ[R] B) with }
 
 @[deprecated (since := "2026-09-08")] alias toCoalgEquiv := CoalgEquiv.ofClass
-
-/-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
-instance instCoeToCoalgEquiv
-    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
-  coe f := .ofClass f
 
 end CoalgEquivClass
 
@@ -129,14 +123,14 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 
 variable (e e' : A ≃ₗc[R] B)
 
-@[simp, norm_cast]
-theorem coe_ofClass : ⇑(ofClass e) = e := rfl
+@[simp]
+protected theorem coe_ofClass {F : Type*} [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
-@[simp, norm_cast]
-theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
-  rfl
+@[deprecated CoalgEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
+theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e := rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
+@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgEquiv.coe_ofClass
 
 @[simp]
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
@@ -148,7 +142,7 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
+@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := CoalgEquiv.coe_ofClass
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl

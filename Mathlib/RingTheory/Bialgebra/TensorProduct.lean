@@ -103,7 +103,7 @@ theorem assoc_symm_tmul (x : A) (y : C) (z : D) :
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R S A C D : _ ≃ₗc[S] _) =
+    (Bialgebra.TensorProduct.assoc R S A C D).toCoalgEquiv =
     Coalgebra.TensorProduct.assoc R S A C D := rfl
 
 @[simp]
@@ -119,7 +119,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₗc[R] B) = Coalgebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R B).toCoalgEquiv = Coalgebra.TensorProduct.lid R B := rfl
 
 @[simp]
 theorem lid_toAlgEquiv :
@@ -143,7 +143,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem rid_toCoalgEquiv :
-    (TensorProduct.rid R S A : A ⊗[R] R ≃ₗc[S] A) = Coalgebra.TensorProduct.rid R S A := rfl
+    (TensorProduct.rid R S A).toCoalgEquiv = Coalgebra.TensorProduct.rid R S A := rfl
 
 @[simp]
 theorem rid_toAlgEquiv :
