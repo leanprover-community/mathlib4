@@ -622,8 +622,7 @@ theorem toRingHom_eq_ofClass : f.toRingHom = .ofClass f :=
 theorem coe_toRingHom : ⇑f.toRingHom = f :=
   rfl
 
-theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] :
-    f = g ↔ f.toRingHom = g.toRingHom :=
+theorem toRingHom_inj_iff : f = g ↔ f.toRingHom = g.toRingHom :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
