@@ -104,6 +104,17 @@ theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t 
 
 /-! ### Cofinality -/
 
+@[to_dual]
+theorem IsCofinal.isCofinalFor (h : IsCofinal s) (t : Set α) : IsCofinalFor t s :=
+  fun a _ ↦ h a
+
+@[to_dual]
+theorem IsCofinalFor.isCofinal (hst : IsCofinalFor s t) (ht : IsCofinal s) : IsCofinal t := by
+  intro a
+  obtain ⟨b, hb, hab⟩ := ht a
+  obtain ⟨c, hc, hbc⟩ := hst hb
+  exact ⟨c, hc, hab.trans hbc⟩
+  
 @[to_dual (attr := simp)]
 lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
