@@ -24,13 +24,12 @@ Namely, we prove the following facts.
   the number of roots of a real polynomial
   is at most the number of roots of its derivative plus one.
 * `Polynomial.card_roots_le_derivative`: same, but the roots are counted with multiplicities.
-* `Polynomial.Splits.derivative_of_real`: the derivative of a real polynomial that splits
-  also splits.
+* `Polynomial.Splits.derivative`: the derivative of a real polynomial that splits also splits.
 
 ## TODO
 
-* Generalise `Polynomial.Splits.derivative_of_real` to real closed fields once the intermediate
-  value theorem is available for them.
+* Generalise `Polynomial.Splits.derivative` to real closed fields once the intermediate value
+  theorem is available for them.
 
 ## Keywords
 
@@ -109,6 +108,6 @@ protected theorem Splits.derivative {p : ℝ[X]} (hp : p.Splits) : p.derivative.
   have := card_roots_le_derivative p
   have := card_roots' p.derivative
   have := natDegree_derivative_le p
-  omega
+  lia
 
 end Polynomial
