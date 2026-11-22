@@ -119,7 +119,7 @@ theorem HasCompactSupport.summable_mul_natCast_div [NonUnitalNonAssocSemiring R]
   obtain ⟨M, hM⟩ := hg.isCompact.isBounded.subset_closedBall 0
   refine summable_of_hasFiniteSupport <| (Set.finite_Iic ⌈M * |x|⌉₊).subset fun n hn ↦ ?_
   have := hM (subset_tsupport _ (right_ne_zero_of_mul hn))
-  rw [Metric.mem_closedBall, Real.dist_eq, sub_zero, abs_div, Nat.abs_cast,
+  rw [Metric.mem_closedBall, Real.dist_0_eq_abs, abs_div, Nat.abs_cast,
     div_le_iff₀ (abs_pos.mpr hx)] at this
   exact Nat.cast_le.mp (this.trans (Nat.le_ceil _))
 
