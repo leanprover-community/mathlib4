@@ -316,8 +316,8 @@ theorem fractRestrict_surjective : Function.Surjective b.fractRestrict :=
 
 theorem vadd_mem_halfOpenParallelepiped (y : span ℤ (range b)) (x : E) :
     y +ᵥ x ∈ halfOpenParallelepiped K b ↔ y = -b.floor x := by
-  rw [← fract_eq_self, vadd_def, vadd_eq_add, fract_span_add b x y.prop, fract_apply, Subtype.ext_iff,
-    NegMemClass.coe_neg]
+  rw [← fract_eq_self, vadd_def, vadd_eq_add, fract_span_add b x y.prop, fract_apply,
+    Subtype.ext_iff, NegMemClass.coe_neg]
   grind
 
 theorem existsUnique_vadd_mem_halfOpenParallelepiped (x : E) :
