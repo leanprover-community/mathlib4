@@ -83,18 +83,12 @@ section Hom
 variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `RingHomClass F α β`
-into an actual `OrderRingHom`.
-This is declared as the default coercion from `F` to `α →+*o β`. -/
-@[coe]
-def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
+into an actual `OrderRingHom`. -/
+def OrderRingHom.ofClass [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
   { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
-/-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
-  `OrderRingHomClass.toOrderRingHom`. -/
-instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
-    [OrderHomClass F α β] [RingHomClass F α β] : CoeTC F (α →+*o β) :=
-  ⟨OrderRingHomClass.toOrderRingHom⟩
+@[deprecated (since := "2026-11-22")] alias OrderRingHomClass.toOrderRingHom := OrderRingHom.ofClass
 
 end Hom
 
@@ -451,17 +445,20 @@ variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 def toOrderRingHom (f : α ≃+*o β) : α →+*o β :=
   ⟨f.toRingEquiv.toRingHom, fun _ _ => (map_le_map_iff f).2⟩
 
-@[simp]
-theorem toOrderRingHom_eq_coe (f : α ≃+*o β) : f.toOrderRingHom = f :=
+theorem toOrderRingHom_eq_ofClass (f : α ≃+*o β) : f.toOrderRingHom = .ofClass f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_toOrderRingHom (f : α ≃+*o β) : ⇑(f : α →+*o β) = f :=
+@[deprecated (since := "2026-11-22")] alias toOrderRingHom_eq_coe := toOrderRingHom_eq_ofClass
+
+@[simp]
+theorem coe_toOrderRingHom (f : α ≃+*o β) : ⇑f.toOrderRingHom = f :=
   rfl
 
 @[simp]
-theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderRingHom.id α :=
+theorem toOrderRingHom_refl : (OrderRingIso.refl α).toOrderRingHom = OrderRingHom.id α :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_toOrderRingHom_refl := toOrderRingHom_refl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
   fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0
