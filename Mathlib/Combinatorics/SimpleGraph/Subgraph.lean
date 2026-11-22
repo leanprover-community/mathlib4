@@ -180,7 +180,7 @@ theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCo
     G.Adj u v :=
   G'.adj_sub h
 
-lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.3
+lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.adj_sub
 
 theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
   simp [Subgraph.spanningCoe]
@@ -216,7 +216,7 @@ def IsInduced (G' : Subgraph G) : Prop :=
 
 @[simp] protected lemma IsInduced.adj {G' : G.Subgraph} (hG' : G'.IsInduced) {a b : G'.verts} :
     G'.Adj a b ↔ G.Adj a b :=
-  ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
+  ⟨coe_adj_sub _ _ _, hG' a.property b.property⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
 def support (H : Subgraph G) : Set V := SetRel.dom {(v, w) | H.Adj v w}
@@ -241,8 +241,8 @@ theorem mem_neighborSet (G' : Subgraph G) (v w : V) : w ∈ G'.neighborSet v ↔
 /-- A subgraph as a graph has equivalent neighbor sets. -/
 def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
     G'.coe.neighborSet v ≃ G'.neighborSet v where
-  toFun w := ⟨w, w.2⟩
-  invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.2)⟩, w.2⟩
+  toFun w := ⟨w, w.property⟩
+  invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.property)⟩, w.property⟩
 
 theorem image_neighborSet_coe (v : G'.verts) : (↑) '' G'.coe.neighborSet v = G'.neighborSet v := by
   ext
@@ -263,6 +263,10 @@ def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
 theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
 
+variable (G') in
+theorem disjoint_edgeSet_diagSet : Disjoint G'.edgeSet Sym2.diagSet :=
+  G.disjoint_edgeSet_diagSet.mono_left G'.edgeSet_subset
+
 @[simp]
 protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
@@ -279,6 +283,11 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
 @[simp]
 lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
   rfl
+
+variable (G') in
+@[simp]
+theorem fromEdgeSet_edgeSet : fromEdgeSet G'.edgeSet = G'.spanningCoe := by
+  simp [← edgeSet_inj, disjoint_edgeSet_diagSet]
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -406,7 +415,7 @@ theorem eq_bot_iff_verts_eq_empty (G' : G.Subgraph) : G' = ⊥ ↔ G'.verts = �
     funext₂ fun _ _ ↦ propext ⟨fun h' ↦ (h ▸ h'.fst_mem :), False.elim⟩⟩
 
 theorem ne_bot_iff_nonempty_verts (G' : G.Subgraph) : G' ≠ ⊥ ↔ G'.verts.Nonempty :=
-  G'.eq_bot_iff_verts_eq_empty.not.trans Set.nonempty_iff_ne_empty.symm
+  G'.eq_bot_iff_verts_eq_empty.not.trans Set.ne_empty_iff_nonempty
 
 @[simp]
 theorem sSup_adj {s : Set G.Subgraph} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -732,7 +741,8 @@ instance [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.Subgraph :
   refine .ofBijective
     (α := {H : Finset V × (V → V → Bool) //
       (∀ a b, H.2 a b → G.Adj a b) ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ ∀ a b, H.2 a b = H.2 b a})
-    (fun H ↦ ⟨H.1.1, fun a b ↦ H.1.2 a b, @H.2.1, @H.2.2.1, by simp [symm_def, H.2.2.2]⟩)
+    (fun H ↦ ⟨H.val.1, fun a b ↦ H.val.2 a b, @H.property.1, @H.property.2.1,
+      by simp [symm_def, H.property.2.2]⟩)
     ⟨?_, fun H ↦ ?_⟩
   · rintro ⟨⟨_, _⟩, -⟩ ⟨⟨_, _⟩, -⟩
     simp [funext_iff]
@@ -1280,11 +1290,11 @@ lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') :=
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 
-lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).1
+lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).1
 
-lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
-  exact (sup_le_iff.mp le_induce_union).2
+lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') :=
+  (sup_le_iff.mp le_induce_union).2
 
 variable (G') in
 theorem le_induce_iUnion (s : ι → Set V) : ⨆ i, G'.induce (s i) ≤ G'.induce (⋃ i, s i) :=
@@ -1433,7 +1443,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     if h : G.Adj x y
     then
       .isTrue <| SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
-        ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
+        ⟨by trivial, x.property.2, by trivial, y.property.2, h⟩
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 

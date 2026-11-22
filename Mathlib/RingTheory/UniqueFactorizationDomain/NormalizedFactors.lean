@@ -348,11 +348,8 @@ bijection between the `normalizedFactors` of `a` and of `f a`.
 def normalizedFactorsEquiv (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
     {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
   Equiv.subtypeEquiv f fun x ↦ by
-    rcases eq_or_ne a 0 with rfl | ha
-    · simp
-    · simp [mem_normalizedFactors_iff' ha,
-        mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
-        MulEquiv.irreducible_iff, he]
+    obtain rfl | ha := eq_or_ne a 0 <;>
+      simp [mem_normalizedFactors_iff', MulEquiv.irreducible_iff, *]
 
 @[simp]
 theorem normalizedFactorsEquiv_apply (he : ∀ x, normalize (f x) = f (normalize x))

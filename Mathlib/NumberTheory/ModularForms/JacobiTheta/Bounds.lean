@@ -118,7 +118,7 @@ lemma F_nat_zero_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
   convert! (hasSum_geometric_of_lt_one (exp_pos _).le <| exp_lt_aux ht).mul_left _ using 1
   ext1 n
   simp only [g_nat]
-  rw [← Real.exp_nat_mul, ← Real.exp_add]
+  rw [← Real.exp_natCast_mul, ← Real.exp_add]
   ring_nf
 
 lemma F_nat_zero_zero_sub_le {t : ℝ} (ht : 0 < t) :
@@ -168,12 +168,12 @@ lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
       simpa only [norm_eq_abs, abs_exp] using exp_lt_aux ht
     convert (hasSum_coe_mul_geometric_of_norm_lt_one h0').mul_left (exp (-π * a ^ 2 * t)) using 1
     · ext1 n
-      rw [mul_comm (exp _), ← Real.exp_nat_mul, mul_assoc (n : ℝ), ← Real.exp_add]
+      rw [mul_comm (exp _), ← Real.exp_natCast_mul, mul_assoc (n : ℝ), ← Real.exp_add]
       ring_nf
     · rw [mul_add, add_mul, mul_one, exp_add, mul_div_assoc]
   · convert! (hasSum_geometric_of_lt_one (exp_pos _).le <| exp_lt_aux ht).mul_left _ using 1
     ext1 n
-    rw [← Real.exp_nat_mul, mul_assoc _ (exp _), ← Real.exp_add]
+    rw [← Real.exp_natCast_mul, mul_assoc _ (exp _), ← Real.exp_add]
     ring_nf
 
 lemma isBigO_atTop_F_nat_one {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧

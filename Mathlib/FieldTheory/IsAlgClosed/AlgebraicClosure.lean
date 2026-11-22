@@ -45,13 +45,13 @@ def Monics : Type u := {f : k[X] // f.Monic}
 
 /-- `Vars k` provides `n` variables $X_{f,1}, \dots, X_{f,n}$ for each monic polynomial
 `f : k[X]` of degree `n`. -/
-def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
+def Vars : Type u := Σ f : Monics k, Fin f.val.natDegree
 
 variable {k} in
 /-- Given a monic polynomial `f : k[X]`,
 `subProdXSubC f` is the polynomial $f - \prod_i (X - X_{f,i})$. -/
 def subProdXSubC (f : Monics k) : (MvPolynomial (Vars k) k)[X] :=
-  f.1.map (algebraMap _ _) - ∏ i : Fin f.1.natDegree, (X - C (MvPolynomial.X ⟨f, i⟩))
+  f.val.map (algebraMap _ _) - ∏ i : Fin f.val.natDegree, (X - C (MvPolynomial.X ⟨f, i⟩))
 
 /-- The span of all coefficients of `subProdXSubC f` as `f` ranges all polynomials in `k[X]`. -/
 def spanCoeffs : Ideal (MvPolynomial (Vars k) k) :=
@@ -62,24 +62,24 @@ variable {k}
 /-- If a monic polynomial `f : k[X]` splits in `K`,
 then it has as many roots (counting multiplicity) as its degree. -/
 def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
-    (hf : (f.1.map i).Splits) : Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
+    (hf : (f.val.map i).Splits) : Fin f.val.natDegree ≃ (f.val.map i).roots.toEnumFinset :=
   .symm <| Finset.equivFinOfCardEq <| by
     rwa [splits_iff_card_roots,
-      ← Multiset.card_toEnumFinset, f.2.natDegree_map] at hf
+      ← Multiset.card_toEnumFinset, f.property.natDegree_map] at hf
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
-    (f.1.map (algebraMap k (SplittingField (∏ f ∈ s, f.1)))).Splits :=
-  (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
-    (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
+    (f.val.map (algebraMap k (SplittingField (∏ f ∈ s, f.val)))).Splits :=
+  (splits_prod_iff fun j _ ↦ map_ne_zero j.property.ne_zero).mp
+    (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.val)) f hf
 
 open scoped Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
 to the splitting field of the product of the polynomials
 sending indeterminates $X_{f_i}$ to the distinct roots of `f`. -/
 def toSplittingField (s : Finset (Monics k)) :
-    MvPolynomial (Vars k) k →ₐ[k] SplittingField (∏ f ∈ s, f.1) :=
+    MvPolynomial (Vars k) k →ₐ[k] SplittingField (∏ f ∈ s, f.val) :=
   MvPolynomial.aeval fun fi ↦
-    if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).1.1 else 37
+    if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).val.1 else 37
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
@@ -93,7 +93,7 @@ theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,
     Multiset.map_toEnumFinset_fst, map_map, AlgHom.comp_algebraMap]
   conv in map _ _ => rw [Splits.eq_prod_roots (Monics.splits_finsetProd h)]
-  rw [leadingCoeff_map, f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
+  rw [leadingCoeff_map, f.property, map_one, C_1, one_mul, sub_self, coeff_zero]
 
 variable (k)
 
@@ -167,7 +167,7 @@ instance instField : Field (AlgebraicClosure k) where
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :
-    f.1.map (algebraMap k (AlgebraicClosure k)) =
+    f.val.map (algebraMap k (AlgebraicClosure k)) =
       ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
   ext
   dsimp [AlgebraicClosure]
@@ -186,7 +186,7 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
         | add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
         | mul_X p fi ih =>
           rw [map_mul]
-          refine (ih _ rfl).mul ⟨_, fi.1.2, ?_⟩
+          refine (ih _ rfl).mul ⟨_, fi.1.property, ?_⟩
           simp_rw [← eval_map, Monics.map_eq_prod, eval_prod, Polynomial.map_sub, eval_sub]
           apply Finset.prod_eq_zero (Finset.mem_univ fi.2)
           rw [map_C]

@@ -157,8 +157,9 @@ theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
 lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
+@[deprecated support_single +typeChanged (since := "2026-11-15")]
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single _ h] using! singleton_ne_empty _
+  simp [h]
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by

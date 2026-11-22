@@ -145,8 +145,8 @@ private theorem finite_projective_of_one_mem_range_dualTensorHom :
     Module.Finite R M ∧ Projective R M := by
   have ⟨t, eq⟩ := h
   obtain ⟨s, rfl⟩ := TensorProduct.exists_finset t
-  let f : (s → R) →ₗ[R] M := Fintype.linearCombination R (·.1.2)
-  have : f ∘ₗ pi (·.1.1) = 1 := by
+  let f : (s → R) →ₗ[R] M := Fintype.linearCombination R (·.val.2)
+  have : f ∘ₗ pi (·.val.1) = 1 := by
     ext; simp [f, ← eq, Fintype.linearCombination_apply, ← s.sum_coe_sort]
   exact ⟨.of_surjective f (surjective_of_comp_eq_id _ _ this), .of_split _ f this⟩
 
