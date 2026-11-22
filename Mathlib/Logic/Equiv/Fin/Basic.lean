@@ -330,8 +330,8 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   toFun p := p.1.mkDivMod p.2
   invFun k := (k.divNat, k.modNat)
-  left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
-  right_inv k := Fin.mkDivMod_divNat_modNat k
+  left_inv _ := by simp
+  right_inv k := by simp
 
 /-- Equivalence between `ℕ × Fin n` and `ℕ` for nonzero `n`, sending `(q, r)` to the natural number
 `n * q + r` with quotient `q` and remainder `r` modulo `n`.
@@ -339,9 +339,9 @@ This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divMod
 @[simps]
 def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
   toFun p := p.1.mkDivMod p.2
-  invFun k := (k / n, Fin.ofNat n k)
-  left_inv _ := Prod.ext (Nat.div_mkDivMod _ _) (Nat.cast_mkDivMod _ _)
-  right_inv k := Nat.mkDivMod_div_cast k
+  invFun k := (k / n, (Fin.ofNat n k))
+  left_inv _ := by simp
+  right_inv k := by simp
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is the inverse of `natProdFinEquiv`, and is like `finProdFinEquiv.symm` but with `m` infinite.
