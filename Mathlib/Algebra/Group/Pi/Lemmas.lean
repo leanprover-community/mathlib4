@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Util.Delaborators
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -63,9 +63,22 @@ theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f
 
 end MulHom
 
-section MonoidHom
+section MulHom
 
-variable [(i : I) → MulOneClass (f i)]
+/-- Coercion of a `MulHom` into a function is itself a `MulHom`.
+
+See also `MulHom.eval`. -/
+@[to_additive (attr := simps) /-- Coercion of an `AddHom` into a function is itself an `AddHom`.
+
+See also `AddHom.eval`. -/]
+def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
+    (α →ₙ* β) →ₙ* α → β where
+  toFun g := g
+  map_mul' _ _ := rfl
+
+end MulHom
+
+section MonoidHom
 
 /-- Coercion of a `MonoidHom` into a function is itself a `MonoidHom`.
 

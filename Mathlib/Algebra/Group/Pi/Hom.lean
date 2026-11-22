@@ -22,13 +22,8 @@ This file defines various operations on products as bundled homomorphisms.
 
 assert_not_exists AddMonoidWithOne MonoidWithZero
 
-universe u v w
-
-variable {ι α : Type*}
-variable {I : Type u}
-variable {f : I → Type v} {M N : ι → Type*}
-
-variable (i : I)
+variable {ι α I : Type*}
+variable {f : I → Type*} {M N : ι → Type*}
 
 section MulHom
 
@@ -39,7 +34,7 @@ given by `MulHom.pi f x b = f b x`. -/
 @[to_additive (attr := simps)
   /-- A family of AddHom's `f a : γ → β a` defines an AddHom `AddHom.pi f : γ → Π a, β a` given by
   `AddHom.pi f x b = f b x`. -/]
-def MulHom.pi {γ : Type w} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
+def MulHom.pi {γ : Type*} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 
@@ -48,7 +43,7 @@ def MulHom.pi {γ : Type w} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* �
 @[to_additive (attr := deprecated (since := "2026-05-29"))] alias Pi.mulHom_apply := MulHom.pi_apply
 
 @[to_additive]
-theorem MulHom.pi_injective {γ : Type w} [Nonempty I] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+theorem MulHom.pi_injective {γ : Type*} [Nonempty I] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (MulHom.pi g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
@@ -89,17 +84,6 @@ def Pi.constMulHom (α β : Type*) [Mul β] :
   toFun := Function.const α
   map_mul' _ _ := rfl
 
-/-- Coercion of a `MulHom` into a function is itself a `MulHom`.
-
-See also `MulHom.eval`. -/
-@[to_additive (attr := simps) /-- Coercion of an `AddHom` into a function is itself an `AddHom`.
-
-See also `AddHom.eval`. -/]
-def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
-    (α →ₙ* β) →ₙ* α → β where
-  toFun g := g
-  map_mul' _ _ := rfl
-
 /-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
 homomorphism `f` between `α` and `β`. -/
 @[to_additive (attr := simps) /-- Additive semigroup homomorphism between the function spaces
@@ -120,7 +104,7 @@ variable [(i : I) → MulOneClass (f i)]
 @[to_additive (attr := simps)
   /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
   `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
-def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
+def MonoidHom.pi {γ : Type*} [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
   { MulHom.pi fun i => (g i).toMulHom with
     toFun := fun x i => g i x
@@ -132,7 +116,7 @@ def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
 alias Pi.monoidHom_apply := MonoidHom.pi_apply
 
 @[to_additive]
-theorem MonoidHom.pi_injective {γ : Type w} [Nonempty I] [MulOneClass γ]
+theorem MonoidHom.pi_injective {γ : Type*} [Nonempty I] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (MonoidHom.pi g) :=
   MulHom.pi_injective (fun i => (g i).toMulHom) hg
