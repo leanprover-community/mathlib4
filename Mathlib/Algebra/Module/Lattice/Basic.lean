@@ -247,9 +247,9 @@ theorem exists_finite_linearIndepOn_le_span [IsLattice K M] :
       mem_map_of_mem (f := φ ∘ₗ M.subtype) (haM ⟨m, hm⟩)
   refine ⟨_, I.toFinite.image _, ?_, hM, le_antisymm ?_ ?_⟩
   · exact .id_image <|
-      (linearIndependent K M (fun i : I ↦ (g i).2) (hI.map' M.subtype M.ker_subtype)).units_smul
+      (linearIndependent K M (fun i : I ↦ (g i).prop) (hI.map' M.subtype M.ker_subtype)).units_smul
         fun _ ↦ Units.mk0 _ (inv_ne_zero ha')
-  · exact span_le.mpr <| Set.image_subset_iff.mpr fun i _ ↦ smul_mem _ _ (subset_span (g i).2)
+  · exact span_le.mpr <| Set.image_subset_iff.mpr fun i _ ↦ smul_mem _ _ (subset_span (g i).prop)
   · exact span_le.mpr <| hM.trans (span_le_restrictScalars R K _)
 
 /-- The `K`-span of a lattice is finite-dimensional. -/
