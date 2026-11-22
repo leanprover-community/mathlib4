@@ -76,7 +76,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     simpa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
-  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw : y.1 + w = x.1 + v⟩ := Set.not_disjoint_iff.mp h
+  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw : y.val + w = x.val + v⟩ := Set.not_disjoint_iff.mp h
   refine ⟨x - y, sub_ne_zero.2 hxy, ?_⟩
   rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
   simp_rw [add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ← AddSubgroupClass.coe_sub] at hvw
@@ -112,7 +112,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
       NNReal.coe_one] at this
     rw [K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
-      exact ⟨⟨x, hx.2.1⟩, fun h ↦ hx.2.2 congr($h.1), hx.1⟩
+      exact ⟨⟨x, hx.2.1⟩, fun h ↦ hx.2.2 congr($(h).val), hx.1⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
