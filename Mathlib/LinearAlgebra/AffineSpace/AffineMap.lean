@@ -16,7 +16,6 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.Abel
 
-import Mathlib.Algebra.Group.FunLike
 
 /-!
 # Affine maps

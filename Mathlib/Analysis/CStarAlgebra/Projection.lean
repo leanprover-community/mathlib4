@@ -5,9 +5,10 @@ Authors: Monica Omar, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
 /-!
 # Projections in C⋆-algebras

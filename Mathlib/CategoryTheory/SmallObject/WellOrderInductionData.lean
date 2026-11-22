@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Limits.Final.Type
 import Mathlib.Order.Interval.Set.Final
 import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.LatticeIntervals
+public import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Limits of inverse systems indexed by well-ordered types

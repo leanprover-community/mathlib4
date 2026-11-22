@@ -9,9 +9,8 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Group.IsApply
 
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Basic.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Monoid and group homomorphisms

@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.HasLaw
 
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Poisson distributions over ℕ
 

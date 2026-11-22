@@ -11,6 +11,7 @@ public meta import Lean.Meta.Transform
 meta import Aesop.BuiltinRules
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Init
 
 /-!
 # `Encodable` deriving handler

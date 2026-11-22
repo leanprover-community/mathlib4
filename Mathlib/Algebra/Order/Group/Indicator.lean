@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!

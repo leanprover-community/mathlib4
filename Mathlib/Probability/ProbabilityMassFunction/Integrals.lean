@@ -5,7 +5,8 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

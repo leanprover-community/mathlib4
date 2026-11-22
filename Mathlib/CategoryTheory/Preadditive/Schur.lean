@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # Schur's lemma

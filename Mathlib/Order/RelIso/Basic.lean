@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Linter.HaveILetI
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms

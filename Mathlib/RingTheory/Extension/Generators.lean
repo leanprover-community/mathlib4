@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
 
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # Generators of algebras

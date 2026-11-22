@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices

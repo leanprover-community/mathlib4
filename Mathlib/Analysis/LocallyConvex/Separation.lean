@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Separation Hahn-Banach theorem

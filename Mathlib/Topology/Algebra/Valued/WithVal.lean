@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 import Mathlib.Algebra.Order.Hom.Units
-import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
 # Ring topologised by a valuation

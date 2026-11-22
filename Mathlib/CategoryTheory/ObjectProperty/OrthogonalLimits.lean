@@ -8,8 +8,6 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # Orthogonals are closed under (co)limits, quotients and subobjects

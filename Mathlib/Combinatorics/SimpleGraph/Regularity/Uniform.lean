@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Order.Partition.Equipartition
 
 import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions

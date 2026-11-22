@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Nat
 
-import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Cast of natural numbers (additional theorems)

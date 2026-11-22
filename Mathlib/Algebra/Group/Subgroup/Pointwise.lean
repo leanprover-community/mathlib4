@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 

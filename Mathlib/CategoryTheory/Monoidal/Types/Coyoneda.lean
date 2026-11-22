@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

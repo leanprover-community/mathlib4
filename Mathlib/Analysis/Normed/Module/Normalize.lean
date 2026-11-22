@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Basic.Sign.Defs
 
-import Mathlib.Analysis.Normed.Module.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

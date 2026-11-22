@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Reverse
 
-import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # A list of coefficients of a polynomial

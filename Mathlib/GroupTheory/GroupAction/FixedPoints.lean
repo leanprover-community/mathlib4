@@ -10,7 +10,6 @@ public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
 
-import Mathlib.Algebra.Group.Commute.Basic
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`

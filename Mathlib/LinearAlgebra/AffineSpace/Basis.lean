@@ -10,8 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 public import Mathlib.LinearAlgebra.Basis.SMul
 
-import Mathlib.Algebra.Group.Action.FunLike
-import Mathlib.Algebra.Module.FunLike
 
 /-!
 # Affine bases and barycentric coordinates

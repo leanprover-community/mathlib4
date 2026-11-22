@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # The set of Fredholm operators is open, and the index is locally constant

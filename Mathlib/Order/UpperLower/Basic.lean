@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Interval.Set.OrderEmbedding
 
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.SetNotation
 import Mathlib.Order.WellFounded
 
 /-!

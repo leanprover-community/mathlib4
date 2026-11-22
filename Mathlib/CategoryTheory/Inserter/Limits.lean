@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
-import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # (Co)limits of inserters

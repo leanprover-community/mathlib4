@@ -12,8 +12,6 @@ public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!

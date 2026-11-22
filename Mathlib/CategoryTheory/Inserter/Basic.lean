@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
-import Mathlib.CategoryTheory.Functor.Category
 
 /-!
 # Inserter categories

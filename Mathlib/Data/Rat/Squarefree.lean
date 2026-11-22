@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RingTheory.Int.Basic
 
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Rat.Lemmas
 
 /-!
 # Squarefree rationals

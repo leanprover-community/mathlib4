@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.Tactic.Abel
+public import Mathlib.GroupTheory.Perm.Support
 
 /-!
 # Nonsingular inverses over semirings

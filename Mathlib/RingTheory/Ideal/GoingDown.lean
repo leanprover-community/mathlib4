@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
-import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Going down

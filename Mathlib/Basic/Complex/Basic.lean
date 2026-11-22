@@ -11,7 +11,6 @@ public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
 
 import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # The complex numbers

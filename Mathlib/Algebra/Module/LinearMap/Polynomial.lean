@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
-import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms

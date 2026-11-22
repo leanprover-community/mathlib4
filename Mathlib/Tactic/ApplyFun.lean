@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Order.Hom.Basic
+public meta import Aesop
 
 /-!
 # The `apply_fun` tactic.

@@ -5,7 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 
 /-!
 # Basic inclusion extensions for interval_int

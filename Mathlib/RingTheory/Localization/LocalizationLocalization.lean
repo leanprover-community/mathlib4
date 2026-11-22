@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Localizations of localizations

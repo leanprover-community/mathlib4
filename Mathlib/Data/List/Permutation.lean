@@ -9,13 +9,13 @@ public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.Nat.Factorial.Basic
 
 import Batteries.Data.List.Perm
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Induction
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.Linter.Style
 
 /-!
 # Permutations of a list

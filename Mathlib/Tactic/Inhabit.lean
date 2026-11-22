@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
+public import Mathlib.Tactic.TypeStar
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

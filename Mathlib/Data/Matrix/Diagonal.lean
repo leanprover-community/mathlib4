@@ -7,10 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Defs
 
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices

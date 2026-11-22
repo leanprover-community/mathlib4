@@ -9,7 +9,6 @@ public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Data.Sym.Sym2.Card
 
-import Mathlib.Basic.Finite.Prod
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.CompleteBooleanAlgebra
 

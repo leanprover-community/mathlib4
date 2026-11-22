@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
 
 import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # `WithAbs` type synonym

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Localization.Ideal
 
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Submodules in localizations of commutative rings

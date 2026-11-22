@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
 
-import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Derivatives of operations on continuous alternating maps

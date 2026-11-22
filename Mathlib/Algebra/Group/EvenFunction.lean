@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Group.Torsion
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

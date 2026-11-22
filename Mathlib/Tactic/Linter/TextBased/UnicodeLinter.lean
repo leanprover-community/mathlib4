@@ -6,6 +6,7 @@ Authors: Adomas Baliuka, Jon Eugster, Michael Rothgang
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 
 /-!

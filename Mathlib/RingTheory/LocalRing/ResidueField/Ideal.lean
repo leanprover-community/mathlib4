@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.SurjectiveOnStalks
 
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The residue field of a prime ideal

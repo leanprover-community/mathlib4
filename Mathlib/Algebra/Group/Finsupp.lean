@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
-import Mathlib.Algebra.Group.Pi.Torsion
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

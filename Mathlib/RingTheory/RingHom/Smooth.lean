@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Smooth.Locus
 
 import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Smooth ring homomorphisms

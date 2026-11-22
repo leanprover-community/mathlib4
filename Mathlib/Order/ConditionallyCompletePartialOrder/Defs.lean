@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Directed
 public import Mathlib.Order.SetNotation
 
-import Mathlib.Order.Bounds.Defs
 
 /-! # Conditionally complete partial orders
 

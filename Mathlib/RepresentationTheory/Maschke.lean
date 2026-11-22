@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RepresentationTheory.Semisimple
 
-import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Maschke's theorem

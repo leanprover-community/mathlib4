@@ -5,9 +5,10 @@ Authors: Jujian Zhang
 -/
 module
 
-public meta import Aesop
 
 import Mathlib.Init
+public import Aesop
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

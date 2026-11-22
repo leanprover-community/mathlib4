@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Leonid Ryvkin
 -/
 module
 
-public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
+public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 
 /-!
 # Lie-Rinehart ideals

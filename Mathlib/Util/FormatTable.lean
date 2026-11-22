@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Data.String.Defs
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Format Table

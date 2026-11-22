@@ -15,8 +15,6 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.Order.Setoid.Basic
 
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Subgroup.Map
 
 /-!
 # Basic properties of group actions

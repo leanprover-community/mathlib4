@@ -7,11 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # Realisations of Cartan Matrices

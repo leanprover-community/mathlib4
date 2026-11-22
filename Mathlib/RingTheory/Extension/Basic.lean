@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Defs
 
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Extension of algebras

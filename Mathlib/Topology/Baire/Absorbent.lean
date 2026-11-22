@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Bornology.Absorbs
 
-import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Absorbent sets in Baire spaces

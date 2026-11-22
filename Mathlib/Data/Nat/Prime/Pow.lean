@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Prime numbers

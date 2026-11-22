@@ -7,8 +7,6 @@ module
 
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Group.Subgroup
 
 /-!
 # Cyclic linearly ordered groups

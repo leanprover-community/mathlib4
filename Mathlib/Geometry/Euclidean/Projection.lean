@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Geometry.Euclidean.PerpBisector
 
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Orthogonal projection in affine spaces

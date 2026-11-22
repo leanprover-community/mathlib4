@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
-import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 # Open immersions of schemes

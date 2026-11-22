@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 
-import Mathlib.Algebra.Star.Pi
 
 /-!
 # Normed star rings and algebras

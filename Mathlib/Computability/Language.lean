@@ -6,9 +6,12 @@ Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 module
 
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.SetLike
 
 /-!
 # Languages

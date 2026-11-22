@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.Real.Irrational
 
 import Mathlib.RingTheory.Int.Basic
+public meta import Lean.Meta.Tactic.NormCast
 
 /-!
 # Diophantine Approximation

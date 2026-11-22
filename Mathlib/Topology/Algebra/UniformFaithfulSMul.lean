@@ -5,9 +5,10 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Topology.Algebra.UniformField
 
 import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Faithfulness of Scalar Multiplication on Completions

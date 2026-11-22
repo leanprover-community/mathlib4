@@ -8,7 +8,6 @@ module
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
-import Mathlib.Analysis.RCLike.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.Topology.Algebra.ConstMulAction
 
 import Mathlib.GroupTheory.Complement
+public import Mathlib.Data.Set.Functor
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

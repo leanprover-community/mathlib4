@@ -9,7 +9,6 @@ public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 import Mathlib.Algebra.Group.Action.FunLike
-import Mathlib.Algebra.Module.FunLike
 
 /-!
 # Group seminorms

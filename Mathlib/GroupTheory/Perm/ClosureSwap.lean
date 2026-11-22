@@ -6,9 +6,7 @@ Authors: Thomas Browning, Junyan Xu
 module
 
 public import Mathlib.GroupTheory.GroupAction.Basic
-public import Mathlib.GroupTheory.Perm.Support
 
-import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 /-!

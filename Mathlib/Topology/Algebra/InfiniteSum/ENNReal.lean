@@ -10,7 +10,6 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
-import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Infinite sums in extended nonnegative reals

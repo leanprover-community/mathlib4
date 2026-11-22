@@ -14,6 +14,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.Group.Nat.Defs
+public import Batteries.Data.Nat.Lemmas
 
 /-!
 # Extended GCD and divisibility over ℤ

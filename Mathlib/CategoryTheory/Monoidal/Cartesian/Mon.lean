@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 import Mathlib.Algebra.Group.IsCommutative
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 # Yoneda embedding of `Mon C`

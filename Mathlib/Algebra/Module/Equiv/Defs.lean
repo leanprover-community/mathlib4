@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
-import Mathlib.Algebra.Group.IsApply
 
 /-!
 # (Semi)linear equivalences
