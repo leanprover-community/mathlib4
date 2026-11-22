@@ -104,15 +104,15 @@ are in one-to-one correspondence with its prime spectrum. -/
 @[expose]
 noncomputable
 def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpectrum R where
-  toFun f := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
+  toFun f := ⟨RingHom.ker (f : R →+* k), RingHom.ker_isPrime (f : R →+* k)⟩
   invFun p := AlgHom.comp
     (AlgEquiv.ofBijective (Algebra.ofId _ _) (bijective_algebraMap_quotient _ _)).symm.toAlgHom
     (Ideal.Quotient.mkₐ _ p.asIdeal)
   left_inv f := by
     ext
     dsimp
-    have : (RingHom.ker f).IsPrime := RingHom.ker_isPrime f
-    apply (AlgEquiv.ofBijective (ofId k (R ⧸ RingHom.ker f))
+    have : (RingHom.ker (f : R →+* k)).IsPrime := RingHom.ker_isPrime (f : R →+* k)
+    apply (AlgEquiv.ofBijective (ofId k (R ⧸ RingHom.ker (f : R →+* k)))
       (bijective_algebraMap_quotient _ _)).injective
     rw [AlgEquiv.apply_symm_apply, AlgEquiv.coe_ofBijective, ofId_apply,
       IsScalarTower.algebraMap_apply k R]
@@ -126,7 +126,7 @@ def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpec
 
 @[simp]
 lemma coe_algHomEquivPrimeSpectrum [IsFiniteSplit k R] (f : R →ₐ[k] k) :
-    algHomEquivPrimeSpectrum k R f = RingHom.ker f :=
+    algHomEquivPrimeSpectrum k R f = (f : R →+* k).ker :=
   rfl
 
 instance [IsSepClosed k] [EssFiniteType k R] [FormallyEtale k R] : IsFiniteSplit k R := by
