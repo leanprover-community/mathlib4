@@ -38,16 +38,11 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   rw [Complex.cos, Complex.exp_eq_exp_ℂ]
   have := ((expSeries_div_hasSum_exp (z * Complex.I)).add
     (expSeries_div_hasSum_exp (-z * Complex.I))).div_const 2
-  replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
-  refine this.prod_fiberwise fun k => ?_
-  dsimp only
-  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
-    neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
-    mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
+  refine ((mul_right_injective₀ (two_ne_zero' ℕ)).hasSum_iff fun n hn => ?_).mpr this
+    |>.congr_fun fun k => ?_
+  · have : Odd n := Nat.not_even_iff_odd.mp fun ⟨k, hk⟩ => hn ⟨k, (two_mul k).trans hk.symm⟩
+    rw [neg_mul, this.neg_pow, neg_div, add_neg_cancel, zero_div]
+  · simp only [Function.comp_apply, neg_mul, (even_two_mul k).neg_pow, add_self_div_two]
 
 set_option backward.defeqAttrib.useBackward true in
 theorem Complex.hasSum_sin' (z : ℂ) :
@@ -56,16 +51,12 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   rw [Complex.sin, Complex.exp_eq_exp_ℂ]
   have := (((expSeries_div_hasSum_exp (-z * Complex.I)).sub
     (expSeries_div_hasSum_exp (z * Complex.I))).mul_right Complex.I).div_const 2
-  replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
-  refine this.prod_fiberwise fun k => ?_
-  dsimp only
-  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
-    zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
-    neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
+  refine (((add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))).hasSum_iff
+    fun n hn => ?_).mpr this |>.congr_fun fun k => ?_
+  · have : Even n := Nat.not_odd_iff_even.mp fun ⟨k, hk⟩ => hn ⟨k, hk.symm⟩
+    rw [neg_mul, this.neg_pow, sub_self, zero_mul, zero_div]
+  · simp only [Function.comp_apply, neg_mul, (odd_two_mul_add_one k).neg_pow, Complex.div_I]
+    ring
 
 /-- The power series expansion of `Complex.cos`. -/
 theorem Complex.hasSum_cos (z : ℂ) :
