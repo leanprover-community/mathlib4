@@ -285,27 +285,28 @@ theorem exists_disjoint_covering_ae
       refine exists_disjoint_subfamily_covering_enlargement B t' r 2 one_lt_two (fun a ha ↦ ?_) 1
         (fun a ha ↦ ha.2.2.2.2) A
       exact nonempty_closedBall.1 ((A a ha).mono (hB a ha.1))
-    have ut : u ⊆ t := fun a ha ↦ (ut' ha).1
+    choose hut hCu hud huBU hur using ut'
+    change u ⊆ t at hut
     -- As the space is second countable, the family is countable since all its sets have nonempty
     -- interior.
-    have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha ↦ ht a (ut ha)
+    have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha ↦ ht a (hut ha)
     have : Countable u := u_count.to_subtype
     -- the elements of `u` are disjoint and contained in `U n`, so they have summable measures and
     -- one can keep finitely many of them so that the remaining ones have a small total measure.
     have I : ∑' a : u, μ (B a) ≠ ∞ := by
-      rw [← measure_biUnion u_count u_disj fun a ha ↦ (h't a (ut ha)).measurableSet]
-      exact ((measure_mono (iUnion₂_subset fun a ha ↦ (ut' ha).2.2.2.1)).trans_lt
-        (U.finite n)).ne
+      rw [← measure_biUnion u_count u_disj fun a ha ↦ (h't a (hut ha)).measurableSet]
+      grw [iUnion₂_subset huBU]
+      exact (U.finite n).ne
     obtain ⟨w, hw⟩ : ∃ w : Finset u, ∑' a : {a // a ∉ w}, μ (B a) < (n : ℝ≥0∞)⁻¹ / n :=
-      ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I)).2 _
-        (by simp [ENNReal.div_pos_iff])).exists
+      (ENNReal.tendsto_tsum_compl_atTop_zero I).eventually_lt_const (by simp [ENNReal.div_pos_iff])
+        |>.exists
     set G := F ∪ (↑) '' (w : Set u)
     have hGfin : G.Finite := hFfin.union ((w.finite_toSet).image _)
-    have hGt : G ⊆ t := union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact ut a.property)
+    have hGt : G ⊆ t := union_subset hFt (by rintro - ⟨a, -, rfl⟩; exact hut a.property)
     refine ⟨⟨G, hGfin, hGt, ?_⟩, subset_union_left, ?_⟩
     · refine hFdisj.union (u_disj.subset (by rintro - ⟨a, -, rfl⟩; exact a.property)) ?_
       rintro a ha - ⟨b, -, rfl⟩ -
-      exact ((ut' b.property).2.2.1.mono_right (subset_biUnion_of_mem ha)).symm
+      exact ((hud b.property).mono_right (subset_biUnion_of_mem ha)).symm
     -- main property: the points of `s n` which are not covered by `G` are contained in the
     -- enlargements of the elements of `u` not in `w`.
     have M : {x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ G, B a ⊆
@@ -332,15 +333,16 @@ theorem exists_disjoint_covering_ae
       refine mem_iUnion.2 ⟨⟨⟨b, bu⟩, bw⟩, ?_⟩
       -- since `a` and `b` have comparable radii, `z` belongs to the enlargement of `b`
       have hea : dist (c a) e ≤ r a := mem_closedBall'.1 (hB a hat ea)
-      have heb : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
+      have heb : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (hut bu) eb)
       simp only [mem_closedBall]
       linarith only [dist_triangle (c a) e (c b), hea, heb, hab]
     calc
       μ ({x ∈ s ∩ U.set n | C x ≤ n} \ ⋃ a ∈ G, B a)
         ≤ ∑' a : {a : u // a ∉ w}, μ (closedBall (c a) (3 * r a)) :=
           (measure_mono M).trans (measure_iUnion_le _)
-      _ ≤ ∑' a : {a : u // a ∉ w}, n * μ (B a) := tsum_le_tsum fun a ↦
-          (μB a (ut a.val.property)).trans (by gcongr; exact_mod_cast (ut' a.val.property).2.1)
+      _ ≤ ∑' a : {a : u // a ∉ w}, n * μ (B a) := by
+        grw [μB, hCu]
+        exacts [le_rfl, a.val.prop, hut a.val.prop]
       _ = n * ∑' a : {a : u // a ∉ w}, μ (B a) := ENNReal.tsum_mul_left
       _ ≤ n * ((n : ℝ≥0∞)⁻¹ / n) := by gcongr
       _ ≤ (n : ℝ≥0∞)⁻¹ := ENNReal.mul_div_le
