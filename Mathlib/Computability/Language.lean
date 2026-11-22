@@ -149,6 +149,13 @@ instance : KStar (Language α) where
 
 @[deprecated (since := "2026-11-18")] alias kstar_def := toSet_kstar
 
+@[simp] lemma toSet_eq_empty_iff : l.toSet = ∅ ↔ l = 0 := by rw [Language.ext_iff]; rfl
+@[simp] lemma toSet_eq_singleton_nil_iff : l.toSet = {[]} ↔ l = 1 := by rw [Language.ext_iff]; rfl
+@[simp] lemma ofSet_eq_zero_iff {s : Set (List α)} : ofSet s = 0 ↔ s = ∅ := by
+  rw [Language.ext_iff]; rfl
+@[simp] lemma ofSet_eq_one_iff {s : Set (List α)} : ofSet s = 1 ↔ s = {[]} := by
+  rw [Language.ext_iff]; rfl
+
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id

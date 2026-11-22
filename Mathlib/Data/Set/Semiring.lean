@@ -77,6 +77,11 @@ lemma add_def (s t : SetSemiring α) : s + t = ofSet (s.toSet ∪ t.toSet) := rf
 @[simp] lemma toSet_add (s t : SetSemiring α) : (s + t).toSet = s.toSet ∪ t.toSet := rfl
 @[simp] lemma ofSet_union (s t : Set α) : ofSet (s ∪ t) = ofSet s + ofSet t := rfl
 
+@[simp] lemma toSet_eq_empty_iff {s : SetSemiring α} : s.toSet = ∅ ↔ s = 0 := by
+  rw [SetSemiring.ext_iff]; rfl
+@[simp] lemma ofSet_eq_zero_iff {s : Set α} : ofSet s = 0 ↔ s = ∅ := by
+  rw [SetSemiring.ext_iff]; rfl
+
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc _ _ _ := SetSemiring.ext (union_assoc ..)
   zero_add _ := SetSemiring.ext (empty_union _)
@@ -103,6 +108,11 @@ lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
 @[simp] lemma ofSet_one : ofSet (1 : Set α) = 1 := rfl
 @[simp] lemma singleton_one : ({1} : SetSemiring α) = 1 := rfl
 
+@[simp] lemma toSet_eq_singleton_one_iff {s : SetSemiring α} : s.toSet = {1} ↔ s = 1 := by
+  rw [SetSemiring.ext_iff]; rfl
+@[simp] lemma ofSet_eq_one_iff {s : Set α} : ofSet s = 1 ↔ s = {1} := by
+  rw [SetSemiring.ext_iff]; rfl
+
 end One
 
 section Mul
@@ -118,7 +128,7 @@ lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
   ext; simp
 
 instance : NoZeroDivisors (SetSemiring α) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := by simp [SetSemiring.ext_iff]
+  eq_zero_or_eq_zero_of_mul_eq_zero := by simp [← toSet_eq_empty_iff]
 
 instance : MulLeftMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_left
