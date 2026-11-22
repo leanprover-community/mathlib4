@@ -1124,8 +1124,8 @@ theorem isPrincipal_prod_smul_pow_of_coprime (k : Type*) [Field k] [NumberField 
     ext x
     have := map_galEquivZMod_symm_smul (f := e.toRingHom) e.injective a (e.symm x)
     simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply] at this
-    rw [mapHom_apply, show map e _ = _ from map_comap_of_equiv (e : 𝓞 k₀ ≃+* 𝓞 k), mem_comap,
-      Ideal.mem_inv_pointwise_smul_iff, Ideal.mem_inv_pointwise_smul_iff, ← this, ← mem_comap]
+    rw [mapHom_apply, show map e _ = _ from map_comap_of_equiv (e : 𝓞 k₀ ≃+* 𝓞 k), Ideal.mem_comap,
+      Ideal.mem_inv_pointwise_smul_iff, Ideal.mem_inv_pointwise_smul_iff, ← this, ← Ideal.mem_comap]
   simp_rw [ha, ← map_pow, ← map_prod]
   exact Submodule.IsPrincipal.map_ringHom e <|
     isPrincipal_prod_smul_pow_of_orderOf_eq p f d L m k₀ 𝔭₀ hmd rfl

@@ -800,7 +800,7 @@ variable [hp : Fact p.Prime] [IsCyclotomicExtension {p} ℚ F]
 
 include hζ in
 theorem zeta_sub_one_mem [𝓟.IsPrime] [𝓟.LiesOver 𝒑] : algebraMap (𝓞 F) (𝓞 L) ζ - 1 ∈ 𝓟 := by
-  rw [← map_one (f := algebraMap (𝓞 F) (𝓞 L)), ← map_sub, ← mem_comap,
+  rw [← map_one (f := algebraMap (𝓞 F) (𝓞 L)), ← map_sub, ← Ideal.mem_comap,
     ← Ideal.under_def, IsCyclotomicExtension.Rat.eq_span_zeta_sub_one_of_liesOver' p F
       (IsPrimitiveRoot.coe_submonoidClass_iff.mpr hζ) (under (𝓞 F) 𝓟)]
   exact Submodule.mem_span_singleton_self _
