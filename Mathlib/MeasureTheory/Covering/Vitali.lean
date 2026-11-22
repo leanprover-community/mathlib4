@@ -228,9 +228,6 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
 
-/-- The measurable **Vitali covering theorem** with a uniform doubling constant `C`.
-This is an auxiliary statement, see `exists_disjoint_covering_ae` for a version where the constant
-may depend on the center of the ball. -/
 private theorem exists_disjoint_covering_ae_of_const
     [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
