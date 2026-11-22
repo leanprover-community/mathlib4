@@ -120,7 +120,7 @@ theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
 theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
   have := hF.to_subtype
-  simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.2
+  simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.property
 
 theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by simpa [sInter_eq_biInter] using isExtreme_biInter hF hAF

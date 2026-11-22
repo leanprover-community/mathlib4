@@ -275,16 +275,16 @@ variable [NumberField K] [NumberField L]
 
 @[macro_inline]
 instance : FunLike (FinitePlace K) K ℝ where
-  coe w x := w.1 x
+  coe w x := w.val x
   coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
 
 instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
-  map_mul w := w.1.map_mul
-  map_one w := w.1.map_one
-  map_zero w := w.1.map_zero
+  map_mul w := w.val.map_mul
+  map_one w := w.val.map_one
+  map_zero w := w.val.map_zero
 
 instance : NonnegHomClass (FinitePlace K) K ℝ where
-  apply_nonneg w := w.1.nonneg
+  apply_nonneg w := w.val.nonneg
 
 @[simp]
 theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
@@ -297,17 +297,18 @@ instance : MulRingNormClass (FinitePlace K) K ℝ where
   eq_zero_of_map_eq_zero v := by simp
 
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
-noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
+noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.property.choose
 
 @[simp]
-theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype.ext w.2.choose_spec
+theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w :=
+  Subtype.ext w.property.choose_spec
 
 @[simp]
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
     ‖embedding (maximalIdeal w) x‖ = w x := by
   conv_rhs => rw [← mk_maximalIdeal w, mk_apply]
 
-theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
+theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.val.pos_iff
 
 @[simp]
 theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ ↔ v₁ = v₂ := by

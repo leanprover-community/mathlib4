@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 module
 
 public import Mathlib.Algebra.Algebra.Prod
-public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
+
+import Mathlib.Algebra.Group.Graph
 
 /-! # Products of modules
 
@@ -478,7 +479,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -581,7 +582,7 @@ variable (R M M₂)
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  toFun x := x.1.1
+  toFun x := x.val.fst
   invFun m := ⟨⟨m, 0⟩, rfl⟩
   map_add' := by simp
   map_smul' := by simp
@@ -597,7 +598,7 @@ theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = �
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  toFun x := x.1.2
+  toFun x := x.val.snd
   invFun n := ⟨⟨0, n⟩, rfl⟩
   map_add' := by simp
   map_smul' := by simp
@@ -848,7 +849,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`

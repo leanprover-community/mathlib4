@@ -6,8 +6,9 @@ Authors: Kirill Kondrashov, Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
-public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
+
+import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 
 /-!
 # Hodge star on exterior powers

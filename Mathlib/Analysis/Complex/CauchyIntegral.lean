@@ -697,7 +697,7 @@ theorem hasFPowerSeriesOnBall_of_differentiable_off_countable {R : ℝ≥0} {c :
     rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
       hs hw' hc hd]
     exact (hasFPowerSeriesOn_cauchy_integral
-      ((hc.mono sphere_subset_closedBall).circleIntegrable R.2) hR).hasSum hw
+      ((hc.mono sphere_subset_closedBall).circleIntegrable R.property) hR).hasSum hw
 
 /-- If `f : ℂ → E` is complex differentiable on an open disc of positive radius and is continuous
 on its closure, then it is analytic on the open disc with coefficients of the power series given by

@@ -147,11 +147,11 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   · simp [hp]
   · simp
   simp_rw [ENNReal.coe_toReal, ← ofReal_norm, norm_eq_abs,
-    ENNReal.ofReal_rpow_of_nonneg (x := |X _|) (p := p) (abs_nonneg (X _)) p.2]
+    ENNReal.ofReal_rpow_of_nonneg (x := |X _|) (p := p) (abs_nonneg (X _)) p.property]
   refine Integrable.lintegral_lt_top ?_
   simp_rw [integrable_tilted_iff (interior_subset (s := integrableExpSet X μ) ht),
     smul_eq_mul, mul_comm]
-  exact integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet ht p.2
+  exact integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet ht p.property
 
 /-- The variance of `X` under the tilted measure `μ.tilted (t * X ·)` is the second derivative of
 the cumulant-generating function of `X` at `t`. -/
