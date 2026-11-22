@@ -149,7 +149,7 @@ def d : TreeAut := bcd 2
 
 @[simp] lemma a_eq_swapRoot : a = swapRoot := rfl
 
-@[simp] lemma a_cons (i : Fin 2) (w : InfiniteBinaryTree) : a (i :: w) = (i + 1) :: w :=
+lemma a_cons (i : Fin 2) (w : InfiniteBinaryTree) : a (i :: w) = (i + 1) :: w :=
   swapRoot_cons i w
 
 @[simp] lemma b_cons (i : Fin 2) (w : InfiniteBinaryTree) :
