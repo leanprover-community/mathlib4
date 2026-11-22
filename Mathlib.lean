@@ -1,7 +1,5 @@
 module -- shake: keep-all -- deprecated_module: ignore
 
-public import Mathlib.CategoryTheory.ChosenRepresentation
-public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
@@ -2756,6 +2754,7 @@ public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.ChosenRepresentation
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
@@ -8252,6 +8251,7 @@ public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
+public import Mathlib.Topology.Category.TopCat.Limits.AlexandrovDiscrete
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
