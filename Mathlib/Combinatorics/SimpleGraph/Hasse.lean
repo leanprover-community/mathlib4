@@ -31,17 +31,18 @@ open Order OrderDual Relation
 
 namespace SimpleGraph
 
-variable (α β : Type*)
+variable {α β : Type*}
 
 section Preorder
 
 variable [Preorder α] [Preorder β]
 
+variable (α β) in
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
 
-variable {α β} {a b : α}
+variable {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
@@ -91,6 +92,7 @@ section PartialOrder
 
 variable [PartialOrder α] [PartialOrder β]
 
+variable (α β) in
 @[simp]
 theorem hasse_prod : hasse (α × β) = hasse α □ hasse β := by
   ext x y
@@ -121,6 +123,7 @@ theorem Walk.mem_darts_hasse_of_ge_of_le_of_le {u v : α} (w : (hasse α).Walk u
   have := w.exists_boundary_dart (.Iic d.fst) hu (hd.trans_le hv).not_ge
   grind [Dart.ext, Dart.adj, hasse_adj, CovBy, covBy_iff_lt_iff_le_left]
 
+variable (α) in
 theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] :
     (hasse α).Preconnected :=
   fun a b => by
@@ -132,6 +135,7 @@ theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] :
 @[deprecated (since := "2026-10-01")]
 alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
 
+variable (α) in
 theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] :
     (hasse α).Preconnected :=
   fun a b => by
