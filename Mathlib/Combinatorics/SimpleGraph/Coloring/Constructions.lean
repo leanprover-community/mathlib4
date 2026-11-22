@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Data.Fin.Parity
+
+import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 /-!
 # Concrete colorings of common graphs
