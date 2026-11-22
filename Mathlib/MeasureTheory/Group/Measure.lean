@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
@@ -13,6 +12,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.GroupTheory.Complement
 
 /-!
 # Measures on Groups
@@ -293,7 +293,8 @@ lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : Measurab
     _ = μ univ := by
       rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
       · simp [hs.mul_eq]
-      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+      · exact fun a b hab ↦
+          hs.pairwiseDisjoint_smul a.property b.property (Subtype.val_injective.ne hab)
 
 end Group
 

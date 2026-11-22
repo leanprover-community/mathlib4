@@ -152,7 +152,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
     calc
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
       _ ≤ _ := Padic.nonarchimedean _ _
-      _ ≤ _ := max_le (le_of_lt hr) x.2
+      _ ≤ _ := max_le (le_of_lt hr) x.property
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
   lift n to ℕ using hzn
   use n

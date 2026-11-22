@@ -159,7 +159,8 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     ObjectProperty.Small.{w} (P.strictLimitsClosureIter J b) := by
   have := SuccOrder.ofLinearWellFoundedLT β
   have H {b c : β} (hbc : b ≤ c) [Small.{w} (Set.Iio c)] : Small.{w} (Set.Iio b) :=
-    small_of_injective (f := fun x ↦ (⟨x.1, Set.mem_Iio.2 <| x.2.trans_le hbc⟩ : Set.Iio c))
+    small_of_injective
+      (f := fun x ↦ (⟨x.val, Set.mem_Iio.2 <| x.property.trans_le hbc⟩ : Set.Iio c))
       (fun _ _ _ ↦ by grind)
   induction b using SuccOrder.limitRecOn generalizing hb₀ with
   | isMin b hb =>
@@ -173,9 +174,9 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
   | isSuccLimit b hb hb' =>
     simp only [supTransfiniteIterate_limit _ _ hb]
     have (c : Set.Iio b) : ObjectProperty.Small.{w}
-      (supTransfiniteIterate (fun Q ↦ Q.strictLimitsClosureStep J) c.1 P) := by
-      have := H c.2.le
-      exact hb' c.1 c.2
+      (supTransfiniteIterate (fun Q ↦ Q.strictLimitsClosureStep J) c.val P) := by
+      have := H c.property.le
+      exact hb' c.val c.property
     infer_instance
 
 end

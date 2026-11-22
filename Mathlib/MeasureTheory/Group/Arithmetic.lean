@@ -490,7 +490,7 @@ instance SubmonoidClass.instMeasurableConstSMul {M α S : Type*} [MeasurableSpac
 instance SubmonoidClass.instMeasurableSMul {M α S : Type*} [MeasurableSpace M] [MeasurableSpace α]
     [Monoid M] [MulAction M α] [MeasurableSMul M α] [SetLike S M] [SubmonoidClass S M] (s : S) :
     MeasurableSMul s α where
-  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
+  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtypeVal
 
 @[to_additive (attr := deprecated SubmonoidClass.instMeasurableConstSMul +typeChanged
   (since := "2026-11-11"))]

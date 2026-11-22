@@ -5,10 +5,11 @@ Authors: Jiabai Wang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.RingTheory.Ideal.Maps
+
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Determinantal ideals of a generic matrix

@@ -7,11 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
-public import Mathlib.MeasureTheory.Measure.AddContent.CompactSystem
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
+import Mathlib.MeasureTheory.Measure.AddContent.CompactSystem
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!

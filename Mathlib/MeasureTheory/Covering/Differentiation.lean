@@ -110,7 +110,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   refine le_antisymm ?_ bot_le
   calc
     μ s ≤ ∑' x : h.index, μ (h.covering x) := h.measure_le_tsum
-    _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.2
+    _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.property
     _ = 0 := by simp only [tsum_zero]
 
 /-- For every point `x`, sufficiently small sets in a Vitali family around `x` have finite measure.
@@ -141,10 +141,10 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
   have : Countable h.index := h.index_countable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
-    _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.2).1
+    _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.property).1
     _ = ν (⋃ x : h.index, h.covering x) := by
-      rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
-    _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
+      rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.property]
+    _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.property).2))
     _ ≤ ν s + ε := νU
 
 theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :

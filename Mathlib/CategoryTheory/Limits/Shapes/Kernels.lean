@@ -179,8 +179,8 @@ def KernelFork.IsLimit.ofι {W : C} (g : W ⟶ X) (eq : g ≫ f = 0)
 def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
     (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
     IsLimit (KernelFork.ofι i w) :=
-  ofι _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
-    rw [← cancel_mono i, (h k hk).2, hm])
+  ofι _ _ (fun {_} k hk => (h k hk).val) (fun {_} k hk => (h k hk).property)
+    (fun {A} k hk m hm => by rw [← cancel_mono i, (h k hk).property, hm])
 
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
 @[to_dual isCokernelEpiComp
@@ -190,8 +190,8 @@ def isKernelCompMono {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : 
   Fork.IsLimit.mk' _ fun s =>
     let s' : KernelFork f := Fork.ofι s.ι (by rw [← cancel_mono g]; simp [← hh, s.condition])
     let l := KernelFork.IsLimit.lift' i s'.ι s'.condition
-    ⟨l.1, l.2, fun hm => by
-      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.2.symm⟩
+    ⟨l.val, l.property, fun hm => by
+      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.property.symm⟩
 
 @[to_dual isCokernelEpiComp_desc]
 theorem isKernelCompMono_lift {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : Mono g]
