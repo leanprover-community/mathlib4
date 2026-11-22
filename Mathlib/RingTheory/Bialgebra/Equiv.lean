@@ -179,7 +179,7 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
 theorem toCoalgEquiv_toCoalgHom :
-    ((e : A ≃ₗc[R] B) : A →ₗc[R] B) = e.toBialgHom :=by rfl
+    ((e : A ≃ₗc[R] B) : A →ₗc[R] B) = e.toBialgHom := rfl
 
 section
 
@@ -222,7 +222,7 @@ def refl : A ≃ₐc[R] A :=
 theorem refl_toCoalgEquiv : refl R A = CoalgEquiv.refl R A := rfl
 
 @[simp]
-theorem refl_toBialgHom : refl R A = BialgHom.id R A :=
+theorem refl_toBialgHom : (refl R A).toBialgHom = BialgHom.id R A :=
   rfl
 
 /-- Bialgebra equivalences are symmetric. -/
@@ -264,7 +264,7 @@ theorem trans_toCoalgEquiv :
 
 @[simp]
 theorem trans_toBialgHom :
-    (e₁₂.trans e₂₃ : A →ₐc[R] C) = (e₂₃ : B →ₐc[R] C).comp e₁₂ := rfl
+    (e₁₂.trans e₂₃).toBialgHom = e₂₃.toBialgHom.comp e₁₂.toBialgHom := rfl
 
 @[simp]
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
@@ -276,16 +276,16 @@ lemma apply_symm_apply (e : A ≃ₐc[R] B) : ∀ x, e (e.symm x) = x := e.toEqu
 @[simp]
 lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEquiv.symm_apply_apply
 
-@[simp] lemma comp_symm (e : A ≃ₐc[R] B) : (e : A →ₐc[R] B).comp e.symm = .id R B :=
+@[simp] lemma comp_symm (e : A ≃ₐc[R] B) : e.toBialgHom.comp e.symm.toBialgHom = .id R B :=
   BialgHom.coe_toAlgHom_injective e.toAlgEquiv.comp_symm
 
-@[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
+@[simp] lemma symm_comp (e : A ≃ₐc[R] B) : e.symm.toBialgHom.comp e.toBialgHom = .id R A :=
   BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
 lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
-/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
+/-- If a bialgebra morphism has an inverse, it is a bialgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
   __ := f
@@ -295,9 +295,11 @@ def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = Bial
   right_inv := BialgHom.ext_iff.1 h₁
 
 @[simp]
-theorem coe_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
-    ofBialgHom f g h₁ h₂ = f :=
+theorem toBialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    (ofBialgHom f g h₁ h₂).toBialgHom = f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_ofBialgHom := toBialgHom_ofBialgHom
 
 theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
