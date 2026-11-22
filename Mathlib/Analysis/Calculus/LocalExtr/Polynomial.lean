@@ -103,13 +103,12 @@ theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p :
   simpa only [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, derivative_map] using
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))
 
-/-- If a real polynomial splits, i.e. all of its roots are real, then so does its derivative.
-This follows from Rolle's theorem in the form of `Polynomial.card_roots_le_derivative`. -/
-theorem Splits.derivative_of_real {p : ℝ[X]} (hp : p.Splits) : p.derivative.Splits := by
+-- TODO: generalize to real closed fields once the intermediate value theorem is available
+protected theorem Splits.derivative {p : ℝ[X]} (hp : p.Splits) : p.derivative.Splits := by
   rw [splits_iff_card_roots] at hp ⊢
-  have h1 := card_roots_le_derivative p
-  have h2 := card_roots' p.derivative
-  have h3 := natDegree_derivative_le p
+  have := card_roots_le_derivative p
+  have := card_roots' p.derivative
+  have := natDegree_derivative_le p
   omega
 
 end Polynomial
