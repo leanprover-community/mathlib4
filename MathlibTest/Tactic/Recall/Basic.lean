@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
@@ -27,7 +26,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  Complex.wrapped✝.1
+  fun z ↦ (Complex.exp' z).lim
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 
@@ -109,7 +108,6 @@ universe u v
 class RecallUnivTest (R : Type u) : Prop where
   test : True
 
-set_option linter.unusedVariables false in
 recall RecallUnivTest (R : Type v) : Prop
 
 -- Test that `recall` works with `Type*`.

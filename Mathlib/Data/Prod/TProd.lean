@@ -5,8 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Prod
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Finite products of types
@@ -39,7 +40,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 @[expose] public section
 
 
-open List Function
+open List
 universe u v
 variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι}
 
@@ -148,7 +149,7 @@ theorem mk_preimage_tprod :
       rw [mk_preimage_tprod l t]
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
-    simp_rw [mem_setOf_eq, mem_cons]
+    simp_rw [mem_ofPred_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h
 

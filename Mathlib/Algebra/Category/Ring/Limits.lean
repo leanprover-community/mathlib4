@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Shrink  -- shake: keep (Semiring (Shrink ...)), cf. lean#13417
 public import Mathlib.Algebra.Ring.Subring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of (commutative) rings has all limits
 
@@ -81,7 +84,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := SemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
       naturality _ _ f := by
@@ -212,7 +215,7 @@ instance :
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))
   let c : Cone F :=
-    { pt := CommSemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+    { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) j
@@ -315,7 +318,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   let c : Cone F :=
-  { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+  { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
         naturality _ _ f := by
@@ -442,7 +445,7 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
     have : Small.{u} (Functor.sections (F' ⋙ forget _)) :=
       inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
     let c : Cone F :=
-    { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+    { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality _ _ f := by

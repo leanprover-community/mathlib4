@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Lattice
-public import Batteries.Data.List.Pairwise
+
+import Batteries.Data.List.Pairwise
+import Mathlib.Data.List.Nodup
 
 /-!
 # Erasure of duplicates in a list
@@ -90,6 +91,15 @@ theorem tail_dedup [Inhabited α] (l : List α) :
 theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 
+theorem nodup_iff_sublist_dedup {l : List α} : l.Nodup ↔ l <+ l.dedup :=
+  dedup_eq_self.symm.trans ⟨(·.symm ▸ .refl l), l.dedup_sublist.antisymm⟩
+
+theorem nodup_iff_length_dedup_eq {l : List α} : l.Nodup ↔ l.dedup.length = l.length := by
+  rw [← dedup_eq_self, l.dedup_sublist.length_eq]
+
+theorem nodup_iff_le_length_dedup {l : List α} : l.Nodup ↔ l.length ≤ l.dedup.length :=
+  nodup_iff_length_dedup_eq.trans ⟨Nat.le_of_eq ∘ symm, antisymm l.dedup_sublist.length_le⟩
+
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -169,6 +179,13 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
   | n + 2, _ => by
     rw [replicate_succ, dedup_cons_of_mem (mem_replicate.2 ⟨n.succ_ne_zero, rfl⟩),
       replicate_dedup n.succ_ne_zero]
+
+lemma dedup_eq_singleton_iff {l : List α} {x : α} :
+    l.dedup = [x] ↔ ∃ n : ℕ, l = List.replicate (n + 1) x := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ by rw [h, replicate_dedup n.succ_ne_zero]⟩
+  cases l with
+  | nil => simp at h
+  | cons a l => exact ⟨_, eq_replicate_of_mem fun y hy ↦ by rwa [← mem_singleton, ← h, mem_dedup]⟩
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [List.Nodup.count <| nodup_dedup l, mem_dedup]

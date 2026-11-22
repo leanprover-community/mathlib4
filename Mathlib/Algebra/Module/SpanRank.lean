@@ -5,8 +5,6 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.Finiteness.Ideal
 
@@ -79,21 +77,21 @@ lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
   · have := congrFun toENat_comp_ofENat.{u}.symm (⨅ (s : Set M) (_ : span R s = p), s.encard)
     rw [id_eq] at this; rw [this]
     refine toENat.monotone' (le_ciInf fun s ↦ ?_)
-    have : ofENat.{u} (⨅ (s' : Set M), ⨅ (_ : span R s' = p), s'.encard) ≤ ofENat s.1.encard :=
-      ofENatHom.monotone' (le_trans (ciInf_le' _ s.1) (ciInf_le' _ s.2))
+    have : ofENat.{u} (⨅ (s' : Set M), ⨅ (_ : span R s' = p), s'.encard) ≤ ofENat s.val.encard :=
+      ofENatHom.monotone' (le_trans (ciInf_le' _ s.val) (ciInf_le' _ s.property))
     apply le_trans this
     rw [Set.encard, ENat.card]
     exact Cardinal.ofENat_toENat_le _
 
 lemma spanRank_toENat_eq_iInf_finset_card (p : Submodule R M) :
-    p.spanRank.toENat = ⨅ (s : {s : Finset M // span R s = p}), (s.1.card : ℕ∞) := by
+    p.spanRank.toENat = ⨅ (s : {s : Finset M // span R s = p}), (s.val.card : ℕ∞) := by
   rw [spanRank_toENat_eq_iInf_encard]
   rcases eq_or_ne (⨅ (s : Set M) (_ : span R s = p), s.encard) ⊤ with (h1 | h2)
   · rw [h1, eq_comm]; simp_rw [iInf_eq_top] at h1 ⊢
-    exact fun s ↦ False.elim (Set.encard_ne_top_iff.mpr s.1.finite_toSet (h1 s.1 s.2))
+    exact fun s ↦ False.elim (Set.encard_ne_top_iff.mpr s.val.finite_toSet (h1 s.val s.property))
   · simp_rw [← Set.encard_coe_eq_coe_finsetCard]
     apply le_antisymm
-    · exact le_iInf fun s ↦ iInf₂_le (s.1 : Set M) s.2
+    · exact le_iInf fun s ↦ iInf₂_le (s.val : Set M) s.property
     · refine le_iInf fun s ↦ le_iInf fun h ↦ ?_
       by_cases hs : s.Finite
       · exact iInf_le_of_le ⟨hs.toFinset, by simpa⟩ (by simp)
@@ -101,7 +99,7 @@ lemma spanRank_toENat_eq_iInf_finset_card (p : Submodule R M) :
         exact OrderTop.le_top _
 
 lemma spanFinrank_eq_iInf (p : Submodule R M) :
-    p.spanFinrank = ⨅ (s : {s : Finset M // span R s = p}), s.1.card := by
+    p.spanFinrank = ⨅ (s : {s : Finset M // span R s = p}), s.val.card := by
   simp [spanFinrank, Cardinal.toNat, spanRank_toENat_eq_iInf_finset_card, ENat.iInf_toNat]
 
 /-- A submodule's `spanRank` is finite if and only if it is finitely generated. -/
@@ -112,7 +110,7 @@ lemma spanRank_finite_iff_fg {p : Submodule R M} : p.spanRank < aleph0 ↔ p.FG 
   · rintro h
     obtain ⟨s, hs⟩ : ⨅ (s : {s : Set M // span R s = p}), #s ∈
       Set.range (fun (s : {s : Set M // span R s = p}) ↦ #s) := csInf_mem ⟨#p, ⟨⟨p, by simp⟩, rfl⟩⟩
-    refine ⟨s.1, ?_, s.2⟩
+    refine ⟨s.val, ?_, s.property⟩
     simpa [← hs] using h
   · rintro ⟨s, hs₁, hs₂⟩
     exact (ciInf_le' _ ⟨s, hs₂⟩).trans_lt (by simpa)
@@ -149,14 +147,15 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
     (hv : v.Injective) (hs : LinearIndependent R v) :
     (span R (.range v)).spanRank = #ι := by
   refine le_antisymm (le_trans (spanRank_span_le_card _) mk_range_le) (le_ciInf fun x ↦ ?_)
-  have : #x.1 = #((Subtype.val : span R (.range v) → _) ⁻¹' x.1) :=
-    (mk_preimage_of_injective_of_subset_range _ _ Subtype.val_injective (by simp [← x.2])).symm
+  have : #x.val = #((Subtype.val : span R (.range v) → _) ⁻¹' x.val) :=
+    (mk_preimage_of_injective_of_subset_range _ _ Subtype.val_injective
+      (by simp [← x.property])).symm
   rw [this]
-  refine le_trans ?_ ((Module.Basis.span hs).le_span (R := R) (J := Subtype.val ⁻¹' x.1) ?_)
+  refine le_trans ?_ ((Module.Basis.span hs).le_span (R := R) (J := Subtype.val ⁻¹' x.val) ?_)
   · rw [mk_range_eq]
-    exact .of_comp (f := Subtype.val) (by convert! hv; ext; simp [Module.Basis.span_apply])
+    exact .of_comp (f := Subtype.val) (by convert hv; ext; simp [Module.Basis.span_apply])
   · apply map_injective_of_injective (f := (span R _).subtype) (injective_subtype _)
-    simp [map_span, Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left, ← x.2]
+    simp [map_span, Set.image_preimage_eq_inter_range, ← x.property]
 
 lemma spanRank_span_of_linearIndepOn [RankCondition R] (s : Set M) (hs : LinearIndepOn R id s) :
     (span R s).spanRank = #s := by
@@ -177,7 +176,7 @@ theorem exists_span_set_card_eq_spanRank (p : Submodule R M) :
   rw [spanRank]
   obtain ⟨s, hs⟩ : ⨅ (s : {s : Set M // span R s = p}), #s ∈
     Set.range (fun (s : {s : Set M // span R s = p}) ↦ #s) := csInf_mem ⟨#p, ⟨⟨p, by simp⟩, rfl⟩⟩
-  exact ⟨s.1, ⟨hs, s.2⟩⟩
+  exact ⟨s.val, ⟨hs, s.property⟩⟩
 
 /-- Constructs a generating set with cardinality equal to the `spanFinrank` of the submodule when
   the submodule is finitely generated. -/
@@ -196,7 +195,7 @@ theorem FG.exists_span_finset_card_eq_spanFinrank {p : Submodule R M} (h : p.FG)
   obtain ⟨s, ⟨hs₁, hs₂⟩⟩ := exists_span_set_encard_eq_spanFinrank h
   have s_f := Set.finite_of_encard_eq_coe hs₁
   refine ⟨s_f.toFinset, ⟨?_, by simpa using hs₂⟩⟩
-  simpa [s_f.encard_eq_coe_toFinset_card, ENat.coe_inj] using hs₁
+  simpa [s_f.encard_eq_coe_toFinset_card, ENat.natCast_inj] using hs₁
 
 lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal.{max u v}} :
     Cardinal.lift.{v} p.spanRank ≤ a ↔ ∃ s : Set M, Cardinal.lift.{v} #s ≤ a ∧ span R s = p := by
@@ -283,6 +282,13 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
   · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
   · by_contra!
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
+
+lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
+  refine ⟨fun h ↦ ⟨?_, (by grind [spanFinrank_bot])⟩,
+    fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
+  have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
+  obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+  exact ⟨a, ha ▸ (p.span_generators).symm⟩
 
 end Defs
 
@@ -433,7 +439,6 @@ lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R
 
 theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
     Module.rank R M = (⊤ : Submodule R M).spanRank := by
-  haveI := nontrivial_of_invariantBasisNumber R
   obtain ⟨I, B⟩ := ‹Module.Free R M›
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]
@@ -444,9 +449,9 @@ lemma Module.finrank_eq_spanFinrank_of_free [StrongRankCondition R] [Module.Free
 
 theorem Submodule.rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
-  rw [Module.rank, Submodule.spanRank]
+  rw [Module.rank_def, Submodule.spanRank]
   refine ciSup_le' (fun ι ↦ (le_ciInf fun s ↦ ?_))
-  have := linearIndependent_le_span'' ι.2 s.1 s.2
+  have := linearIndependent_le_span'' ι.property s.val s.property
   simpa
 
 end rank

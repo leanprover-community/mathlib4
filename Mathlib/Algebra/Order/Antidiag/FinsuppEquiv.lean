@@ -6,12 +6,11 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
-public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Multiset
+
 import Mathlib.Data.Sym.Card
 
 /-!
-
 # Equivalence between `Finset.finsuppAntidiag` and `Sym`
 
 This file collects further results about equivalence and cardinality related to
@@ -31,7 +30,7 @@ reduce imports.
 
 open Finsupp Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
@@ -44,11 +43,11 @@ variable (s n) in
 noncomputable def finsuppAntidiagEquivSubtype :
     s.finsuppAntidiag n ≃ { P : s →₀ μ // (P.sum fun (_ : s) ↦ id) = n } where
   toFun f := ⟨subtypeDomain (· ∈ s) f.val, by
-    have hf := f.2
+    have hf := f.property
     rw [mem_finsuppAntidiag'] at hf
     simpa [sum, filter_mem_eq_inter, inter_eq_left.mpr hf.2] using hf.1⟩
   invFun f := ⟨extendDomain f.val, mem_finsuppAntidiag'.mpr
-    ⟨by simpa [sum] using f.2, by simp [map_eq_image, image_subset_iff]⟩⟩
+    ⟨by simpa [sum] using f.property, by simp [map_eq_image, image_subset_iff]⟩⟩
   left_inv f := by
     obtain ⟨hsum, hs⟩ := mem_finsuppAntidiag.mp f.prop
     ext1

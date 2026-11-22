@@ -5,14 +5,10 @@ Authors: Madison Crim
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.RingTheory.KrullDimension.Zero
+
+import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Localizing a product of commutative rings
@@ -42,13 +38,13 @@ variable {ι : Type*} (R S : ι → Type*)
 then `Π i, S i` is a localization of `Π i, R i` at the product submonoid. -/
 instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     IsLocalization (.pi .univ M) (Π i, S i) where
-  map_units m := Pi.isUnit_iff.mpr fun i ↦ map_units _ ⟨m.1 i, m.2 i ⟨⟩⟩
+  map_units m := Pi.isUnit_iff.mpr fun i ↦ map_units _ ⟨m.val i, m.property i ⟨⟩⟩
   surj z := by
     choose rm h using fun i ↦ surj (M := M i) (z i)
-    exact ⟨(fun i ↦ (rm i).1, ⟨_, fun i _ ↦ (rm i).2.2⟩), funext h⟩
+    exact ⟨(fun i ↦ (rm i).1, ⟨_, fun i _ ↦ (rm i).2.property⟩), funext h⟩
   exists_of_eq {x y} eq := by
-    choose c hc using fun i ↦ exists_of_eq (M := M i) (congr_fun eq i)
-    exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
+    choose c hc using fun i ↦ exists_of_eq (M := M i) congr($eq i)
+    exact ⟨⟨_, fun i _ ↦ (c i).property⟩, funext hc⟩
 
 variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
 
@@ -69,7 +65,7 @@ product `Π i, R i` to the product of the localizations of each `R i` at `M' i`,
 maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
     IsUnit ((RingHom.pi fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
-  Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i))
+  Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.val i, y, y.property, rfl⟩ : M.map (Pi.evalRingHom R i))
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
@@ -81,7 +77,7 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-open Function Ideal
+open Function
 
 include M in
 variable {R} in

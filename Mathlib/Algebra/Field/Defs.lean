@@ -54,8 +54,6 @@ assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom Set
 
-open Function
-
 universe u
 
 variable {K : Type*}
@@ -102,6 +100,8 @@ class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCas
 
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
+
+attribute [instance 500] DivisionSemiring.toSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 

@@ -16,7 +16,6 @@ a bifunctor `F : C₁ ⥤ C₂ ⥤ D`, and a complex shape `c` with
 `[TotalComplexShape c₁ c₂ c]` and `[TotalComplexShape c₂ c₁ c]`, we define
 an isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`
 under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
-
 -/
 
 @[expose] public section
@@ -71,7 +70,6 @@ lemma mapBifunctorFlipIso_flip
     mapBifunctorFlipIso K₂ K₁ F.flip c = (mapBifunctorFlipIso K₁ K₂ F c).symm :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).flip_totalFlipIso c
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K₁ K₂ L₁ L₂} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorFlipIso_hom_naturality :

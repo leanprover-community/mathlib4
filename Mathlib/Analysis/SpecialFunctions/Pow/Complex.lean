@@ -15,7 +15,9 @@ We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 
 @[expose] public section
 
-open Real Topology Filter ComplexConjugate Finset Set
+open Real Topology Filter Finset Set
+
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -36,7 +38,7 @@ theorem cpow_def (x y : ℂ) : x ^ y = if x = 0 then if y = 0 then 1 else 0 else
   rfl
 
 theorem cpow_def_of_ne_zero {x : ℂ} (hx : x ≠ 0) (y : ℂ) : x ^ y = exp (log x * y) :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 theorem cpow_zero (x : ℂ) : x ^ (0 : ℂ) = 1 := by simp [cpow_def]
@@ -59,7 +61,7 @@ theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_d
 theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   constructor
   · intro hyp
-    simp only [cpow_def, if_true] at hyp
+    simp only [cpow_def, ite_true] at hyp
     grind
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_cpow h
@@ -71,7 +73,8 @@ theorem eq_zero_cpow_iff {x : ℂ} {a : ℂ} : a = (0 : ℂ) ^ x ↔ x ≠ 0 ∧
 @[simp]
 theorem cpow_one (x : ℂ) : x ^ (1 : ℂ) = x :=
   if hx : x = 0 then by simp [hx, cpow_def]
-  else by rw [cpow_def, if_neg (one_ne_zero : (1 : ℂ) ≠ 0), if_neg hx, mul_one, exp_log hx]
+  else by
+    rw [cpow_def, ite_eq_right (one_ne_zero : (1 : ℂ) ≠ 0), ite_eq_right hx, mul_one, exp_log hx]
 
 @[simp]
 theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
@@ -102,7 +105,7 @@ lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := 
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · rcases eq_or_ne y 0 with rfl | hy <;> simp [*, zero_zpow]
-  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_int_mul]
+  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_intCast_mul]
 
 lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
 
@@ -165,8 +168,10 @@ lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -π < OfNat.ofNa
     x ^ (OfNat.ofNat n * y) = (x ^ ofNat(n)) ^ y :=
   cpow_nat_mul' hlt hle y
 
-lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x.arg) (hle : x.arg ≤ π / n) :
+lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (hlt : -(π / n) < x.arg) (hle : x.arg ≤ π / n) :
     (x ^ n) ^ (n⁻¹ : ℂ) = x := by
+  rcases eq_or_ne n 0 with rfl | h₀
+  · exact absurd (hlt.trans_le hle) (by simp)
   rw [← cpow_nat_mul', mul_inv_cancel₀ (Nat.cast_ne_zero.2 h₀), cpow_one]
   · rwa [← div_lt_iff₀' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
   · rwa [← le_div_iff₀' (Nat.cast_pos.2 h₀.bot_lt)]
@@ -174,7 +179,7 @@ lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x
 lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :
     (x ^ ofNat(n)) ^ ((OfNat.ofNat n : ℂ)⁻¹) = x :=
-  pow_cpow_nat_inv (NeZero.ne n) hlt hle
+  pow_cpow_nat_inv hlt hle
 
 /-- See also `Complex.pow_cpow_ofNat_inv` for a version that also works for `x * I`, `0 ≤ x`. -/
 lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : ℂ) = x :=
@@ -183,21 +188,59 @@ lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : �
 
 @[simp] lemma isSquare (x : ℂ) : IsSquare x := ⟨x ^ (2⁻¹ : ℂ), by simp [← sq]⟩
 
-theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
-    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
-  rcases eq_or_ne r 0 with (rfl | hr)
-  · simp only [cpow_zero, mul_one]
-  rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [ofReal_zero, zero_mul, zero_cpow hr, zero_mul]
-  rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [ofReal_zero, mul_zero, zero_cpow hr, mul_zero]
-  have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
-  have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
-  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
-    add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
+theorem mul_cpow {a b : ℂ} (h : a.arg + b.arg ∈ Set.Ioc (-π) π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r := by
+  by_cases hr : r = 0
+  · simp [hr]
+  by_cases ha : a = 0
+  · simp [ha, hr]
+  by_cases hb : b = 0
+  · simp [hb, hr]
+  rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul ha hb h, add_mul, exp_add]
 
+theorem mul_cpow_of_pi_lt {a b : ℂ} (h : π < a.arg + b.arg) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (-2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [arg_le_pi, arg_zero]
+  have hb : b ≠ 0 := by grind [arg_le_pi, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_pi_lt h, sub_eq_add_neg, add_mul, exp_add, neg_mul]
+
+theorem mul_cpow_of_le_neg_pi {a b : ℂ} (h : a.arg + b.arg ≤ -π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  have hb : b ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_le_neg_pi h, add_mul, exp_add]
+
+theorem ofReal_mul_cpow {a : ℝ} (ha : 0 ≤ a) (b r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg ha, neg_pi_lt_arg, arg_le_pi]) r
+
+theorem mul_ofReal_cpow (a : ℂ) {b : ℝ} (hb : 0 ≤ b) (r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg hb, neg_pi_lt_arg, arg_le_pi]) r
+
+@[deprecated ofReal_mul_cpow +typeChanged (since := "2026-11-11")]
+theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (_hb : 0 ≤ b) (r : ℂ) :
+    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r :=
+  ofReal_mul_cpow ha b r
+
+theorem natCast_mul_cpow (a : ℕ) (b r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
+
+theorem ofNat_mul_cpow (a : ℕ) [a.AtLeastTwo] (b r : ℂ) :
+    (ofNat(a) * b) ^ r = ofNat(a) ^ r * b ^ r :=
+  natCast_mul_cpow a b r
+
+theorem mul_natCast_cpow (a : ℂ) (b : ℕ) (r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
+
+theorem mul_ofNat_cpow (a : ℂ) (b : ℕ) [b.AtLeastTwo] (r : ℂ) :
+    (a * ofNat(b)) ^ r = a ^ r * ofNat(b) ^ r :=
+  mul_natCast_cpow a b r
+
+@[deprecated natCast_mul_cpow +typeChanged (since := "2026-11-11")]
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
-  ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+  natCast_mul_cpow m n s
 
 lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
   refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
@@ -212,7 +255,16 @@ theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hx hn ha ha <;> rfl
 
 theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
-  rw [inv_cpow_eq_ite, if_neg hx]
+  rw [inv_cpow_eq_ite, ite_eq_right hx]
+
+lemma inv_cpow_ofReal_nonneg {a : ℝ} (ha : 0 ≤ a) (r : ℂ) :
+    ((a : ℂ)⁻¹) ^ r = (a ^ r : ℂ)⁻¹ :=
+  inv_cpow _ _ <| by simpa [arg_ofReal_of_nonneg ha] using Real.pi_ne_zero.symm
+
+lemma div_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
+    ((a : ℂ) / (b : ℂ)) ^ r = (a : ℂ) ^ r / (b : ℂ) ^ r := by
+  rw [div_eq_mul_inv, ← ofReal_inv, ofReal_mul_cpow ha,
+    ofReal_inv, inv_cpow_ofReal_nonneg hb, div_eq_mul_inv]
 
 /-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :
@@ -229,7 +281,7 @@ theorem conj_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hcx hn hx <;> rfl
 
 theorem conj_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : conj x ^ n = conj (x ^ conj n) := by
-  rw [conj_cpow_eq_ite, if_neg hx]
+  rw [conj_cpow_eq_ite, ite_eq_right hx]
 
 theorem cpow_conj (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x ^ conj n = conj (conj x ^ n) := by
   rw [conj_cpow _ _ hx, conj_conj]

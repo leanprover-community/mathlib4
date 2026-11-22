@@ -5,13 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.Int
-public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
-/-!
+import Mathlib.Algebra.Module.LocalizedModule.Int
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
+/-!
 # Finiteness properties under localization
 
 In this file we establish behaviour of `Module.Finite` under localizations.
@@ -30,10 +30,9 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 * Move the results that `Module.Finite` over a semilocal ring is a local property from
   `Mathlib/RingTheory/LocalProperties/Semilocal.lean` to this file.
-
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
@@ -41,10 +40,11 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R) (f : R →+* S)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R)
 variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S']
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
@@ -68,7 +68,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   have : algebraMap R S y' • (s : Set S') = y' • (s : Set S') := by
     simp_rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
   rw [← e, this] at hx₁
-  replace hx₁ := congr_arg (Submodule.span R) hx₁
+  replace hx₁ := congr(Submodule.span R $hx₁)
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
   rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← AlgHom.coe_toLinearMap,
@@ -80,12 +80,12 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
-  convert!
+  convert
     (Submodule.span R
           (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
             Set S)).smul_mem
       a hx' using 1
-  convert! ha₂.symm using 1
+  convert ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
   · exact Algebra.smul_def _ _
@@ -137,6 +137,7 @@ variable {M : Type w} [AddCommMonoid M] [Module R M]
 variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R] [CommSemiring S]
     [CommSemiring Rₚ] [CommSemiring Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
     [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)
@@ -198,7 +199,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     Module.Finite R M := by
   classical
   constructor
-  choose s₁ s₂ using (fun g ↦ (H g).1)
+  choose s₁ s₂ using (fun g ↦ (H g).fg_top)
   let sf := fun x : t ↦
     IsLocalizedModule.finsetIntegerMultiple (Submonoid.powers x.val) (f x) (s₁ x)
   use t.attach.biUnion sf
@@ -280,15 +281,15 @@ lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
     [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
     (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]
-    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.1) (ϕ g)).FG) :
+    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.val) (ϕ g)).FG) :
     N.FG := by
   simp [← Module.Finite.iff_fg, Module.Finite.of_localizationSpan' s hs
-    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.1) (ϕ g))
+    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.val) (ϕ g))
     (fun g ↦ Module.Finite.iff_fg.mpr (H g))]
 
 lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
-    (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
-  N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) H
+    (H : ∀ (g : s), (localized (Submonoid.powers g.val) N).FG) : N.FG :=
+  N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.val) M) H
 
 variable (R' : Type*) [CommSemiring R'] [Algebra R R']
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']

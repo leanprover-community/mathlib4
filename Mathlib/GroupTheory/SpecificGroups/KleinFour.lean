@@ -80,7 +80,8 @@ theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
 
 /-- This instance is scoped, because it always applies (which makes linting and typeclass inference
 potentially *a lot* slower). -/
-@[to_additive]
+@[to_additive /-- This instance is scoped, because it always applies (which makes linting and
+typeclass inference potentially *a lot* slower). -/]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 
@@ -140,7 +141,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
     let _inst₂ := Fintype.ofEquiv G₁ e
     intro x y
     by_cases hx : x = 1 <;> by_cases hy : y = 1
-    all_goals try simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
+    all_goals simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
     by_cases hxy : x = y
     · simp [hxy, mul_self, ← pow_two (e y), h ▸ Monoid.pow_exponent_eq_one (e y), he]
     · classical

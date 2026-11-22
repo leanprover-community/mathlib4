@@ -8,10 +8,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO = Path()
-OUTFILE = REPO / "measurements.jsonl"
-OUTFILE_TMP = REPO / "measurements_repeated_tmp.jsonl"
-
 
 @dataclass
 class Measurement:
@@ -33,59 +29,98 @@ class Measurement:
 
 
 @contextmanager
-def temporarily_move_outfile():
-    if OUTFILE_TMP.exists():
-        raise Exception(f"{OUTFILE_TMP} already exists")
+def temporarily_move_outfile(outfile: Path):
+    outfile_tmp = outfile.with_name(outfile.name + ".repeatedly_tmp")
+    if outfile_tmp.exists():
+        raise Exception(f"{outfile_tmp} already exists")
 
-    OUTFILE.touch()
-    OUTFILE.rename(OUTFILE_TMP)
+    outfile.touch()
+    outfile.rename(outfile_tmp)
     try:
         yield
     finally:
-        OUTFILE_TMP.rename(OUTFILE)
+        outfile_tmp.rename(outfile)
 
 
-def read_measurements_from_outfile() -> list[Measurement]:
+def read_measurements_from_outfile(outfile: Path) -> list[Measurement]:
     measurements = []
-    with open(OUTFILE, "r") as f:
+    with open(outfile, "r") as f:
         for line in f:
             measurements.append(Measurement.from_json_str(line))
     return measurements
 
 
-def write_measurements_to_outfile(measurements: list[Measurement]) -> None:
-    with open(OUTFILE, "a") as f:
+def write_measurements_to_outfile(
+    outfile: Path, measurements: list[Measurement]
+) -> None:
+    with open(outfile, "a") as f:
         for measurement in measurements:
             f.write(f"{measurement.to_json_str()}\n")
 
 
-def run_once(cmd: list[str]) -> list[Measurement]:
-    with temporarily_move_outfile():
+def run_once(cmd: list[str], outfile: Path) -> list[Measurement]:
+    with temporarily_move_outfile(outfile):
         proc = subprocess.run(cmd)
         if proc.returncode != 0:
             sys.exit(proc.returncode)
 
-        return read_measurements_from_outfile()
+        return read_measurements_from_outfile(outfile)
 
 
-def repeatedly(cmd: list[str], iterations: int) -> list[Measurement]:
+def sum_by_metric(measurements: list[Measurement]) -> dict[str, Measurement]:
     totals: dict[str, Measurement] = {}
+    for measurement in measurements:
+        if existing := totals.get(measurement.metric):
+            measurement.value += existing.value
+        totals[measurement.metric] = measurement
+    return totals
+
+
+def repeatedly(
+    cmd: list[str],
+    iterations: int,
+    outfile: Path,
+    drop_highest: int = 0,
+    drop_lowest: int = 0,
+) -> list[Measurement]:
+    by_metric: dict[str, list[Measurement]] = {}
 
     for i in range(iterations):
-        for measurement in run_once(cmd):
-            if existing := totals.get(measurement.metric):
-                measurement.value += existing.value
-            totals[measurement.metric] = measurement
+        for metric, measurement in sum_by_metric(run_once(cmd, outfile)).items():
+            by_metric.setdefault(metric, []).append(measurement)
 
-    for measurement in totals.values():
-        measurement.value /= iterations
+    if drop_highest + drop_lowest >= iterations:
+        raise ValueError(
+            f"drop_highest ({drop_highest}) + drop_lowest ({drop_lowest}) must be "
+            f"less than the number of iterations ({iterations})"
+        )
 
-    return list(totals.values())
+    results = []
+    for metric, measurements in by_metric.items():
+        if drop_highest or drop_lowest:
+            measurements.sort(key=lambda m: m.value)
+            measurements = measurements[drop_lowest : len(measurements) - drop_highest]
+        if not measurements:
+            continue
+        unit = measurements[0].unit
+        value = sum(m.value for m in measurements) / len(measurements)
+        results.append(Measurement(metric, value, unit))
+
+    return results
+
+
+class Args:
+    iterations: int
+    drop_highest: int
+    drop_lowest: int
+    outfile: Path
+    cmd: str
+    args: list[str]
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=f"Repeatedly run a command, averaging the resulting measurements in {OUTFILE.name}.",
+        description="Repeatedly run a command, averaging the measurements it writes.",
     )
     parser.add_argument(
         "-n",
@@ -95,14 +130,43 @@ if __name__ == "__main__":
         help="number of iterations",
     )
     parser.add_argument(
+        "-H",
+        "--drop-highest",
+        type=int,
+        default=0,
+        help="drop the n highest values of each metric before averaging",
+    )
+    parser.add_argument(
+        "-L",
+        "--drop-lowest",
+        type=int,
+        default=0,
+        help="drop the n lowest values of each metric before averaging",
+    )
+    parser.add_argument(
+        "-o",
+        "--outfile",
+        type=Path,
+        default=Path("measurements.jsonl"),
+        help="measurements file the command under test writes to",
+    )
+    parser.add_argument(
         "cmd",
-        nargs="*",
         help="command to repeatedly run",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "args",
+        nargs="*",
+        default=[],
+        help="arguments to pass to the command",
+    )
+    args = parser.parse_args(namespace=Args())
 
-    iterations: int = args.iterations
-    cmd: list[str] = args.cmd
-
-    measurements = repeatedly(cmd, iterations)
-    write_measurements_to_outfile(measurements)
+    measurements = repeatedly(
+        [args.cmd] + args.args,
+        args.iterations,
+        args.outfile,
+        args.drop_highest,
+        args.drop_lowest,
+    )
+    write_measurements_to_outfile(args.outfile, measurements)

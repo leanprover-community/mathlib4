@@ -47,7 +47,7 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
 
 @[simp]
 theorem prod_bot_bot : prod (⊥ : Ideal R) (⊥ : Ideal S) = ⊥ :=
-  SetLike.coe_injective <| Set.singleton_prod_singleton
+  SetLike.coe_injective Set.singleton_prod_singleton
 
 @[gcongr]
 theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I₂) (hJ : J₁ ≤ J₂) :
@@ -172,7 +172,7 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
   mem_or_mem' {x y} := by simpa using h.mem_or_mem
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
-  letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
+  let : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := S) (S := R))

@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 -/
 module
 
-import all Lean.Meta.Tactic.Simp.Rewrite
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Util.DischargerAsTactic
+
+import all Lean.Meta.Tactic.Simp.Rewrite -- for `Simp.dischargeUsingAssumption?`
 
 /-!
 # Discharger for `field_simp` tactic
@@ -34,7 +35,6 @@ fundamentally difficult.
 * `Mathlib.Tactic.FieldSimp.discharge`: the discharger, of type `Expr → SimpM (Option Expr)`
 
 * `field_simp_discharge`: tactic syntax for the discharger (most useful for testing/debugging)
-
 -/
 
 public meta section

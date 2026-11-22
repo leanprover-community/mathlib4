@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
-public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # Locally bijective morphisms of presheaves
@@ -19,7 +18,6 @@ after sheafification) is the class of morphisms that are both locally injective
 and locally surjective (i.e. locally bijective). We prove that this holds iff
 for any presheaf `P : Cᵒᵖ ⥤ A`, the sheafification map `toSheafify J P` is locally bijective.
 We show that this holds under certain universe assumptions.
-
 -/
 
 public section
@@ -60,17 +58,17 @@ private lemma isLocallyBijective_iff_isIso' :
       apply h₁
       have eq₁ := NatTrans.naturality_apply f.hom g₁.op (t f₁ hf₁)
       have eq₂ := NatTrans.naturality_apply f.hom g₂.op (t f₂ hf₂)
-      have eq₃ := congr_arg (G.obj.map g₁.op) (Presheaf.app_localPreimage f.hom s _ hf₁)
-      have eq₄ := congr_arg (G.obj.map g₂.op) (Presheaf.app_localPreimage f.hom s _ hf₂)
+      have eq₃ := congr(G.obj.map g₁.op $(Presheaf.app_localPreimage f.hom s _ hf₁))
+      have eq₄ := congr(G.obj.map g₂.op $(Presheaf.app_localPreimage f.hom s _ hf₂))
       refine eq₁.trans (eq₃.trans (Eq.trans ?_ (eq₄.symm.trans eq₂.symm)))
       rw [← Functor.map_comp_apply, ← Functor.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
-    · apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
-        (Presheaf.imageSieve_mem J f.hom s)).ext
-      intro Y g hg
-      rw [← NatTrans.naturality_apply, H.valid_glue ht]
-      exact Presheaf.app_localPreimage f.hom s g hg
+    apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
+      (Presheaf.imageSieve_mem J f.hom s)).ext
+    intro Y g hg
+    rw [← NatTrans.naturality_apply, H.valid_glue ht]
+    exact Presheaf.app_localPreimage f.hom s g hg
   · intro
     constructor <;> infer_instance
 
@@ -167,7 +165,6 @@ namespace Presheaf
 variable {A}
 variable [HasWeakSheafify J A] [J.WEqualsLocallyBijective A] {P Q : Cᵒᵖ ⥤ A} (φ : P ⟶ Q)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyInjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
   rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
@@ -175,7 +172,6 @@ lemma isLocallyInjective_presheafToSheaf_map_iff :
     ← comp_isLocallyInjective_iff J (toSheafify J P),
     toSheafify_naturality, ObjectProperty.ι_map]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocallySurjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
   rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,

@@ -5,9 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Polynomial.CancelLeads
-public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
@@ -28,7 +26,6 @@ Let `p : R[X]`.
 ## Note
 
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
-
 -/
 
 @[expose] public section
@@ -67,7 +64,8 @@ theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : Is
 theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
     {p : Polynomial R} (hp : Irreducible p) (hp' : p.natDegree ≠ 0) : p.IsPrimitive := by
   rintro r ⟨q, hq⟩
-  suffices ¬IsUnit q by simpa using ((hp.2 hq).resolve_right this).map Polynomial.constantCoeff
+  suffices ¬IsUnit q by
+    simpa using ((hp.isUnit_or_isUnit hq).resolve_right this).map Polynomial.constantCoeff
   intro H
   have hr : r ≠ 0 := by rintro rfl; simp_all
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
@@ -197,7 +195,7 @@ theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
     eraseLead_support]
   refine congr rfl (Finset.gcd_congr rfl fun i hi => ?_)
   rw [Finset.mem_erase] at hi
-  rw [eraseLead_coeff, if_neg hi.1]
+  rw [eraseLead_coeff, ite_eq_right hi.1]
 
 theorem dvd_content_iff_C_dvd {p : R[X]} {r : R} : r ∣ p.content ↔ C r ∣ p := by
   rw [C_dvd_iff_dvd_coeff]
@@ -230,11 +228,11 @@ noncomputable def primPart (p : R[X]) : R[X] :=
 
 theorem eq_C_content_mul_primPart (p : R[X]) : p = C p.content * p.primPart := by
   by_cases h : p = 0; · simp [h]
-  rw [primPart, if_neg h, ← Classical.choose_spec (C_content_dvd p)]
+  rw [primPart, ite_eq_right h, ← Classical.choose_spec (C_content_dvd p)]
 
 @[simp]
 theorem primPart_zero : primPart (0 : R[X]) = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
   by_cases h : p = 0; · simp [h]

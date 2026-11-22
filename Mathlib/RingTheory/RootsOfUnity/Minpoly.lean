@@ -9,7 +9,8 @@ public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Minimal polynomial of roots of unity
@@ -20,7 +21,6 @@ We gather several results about minimal polynomial of root of unity.
 
 * `IsPrimitiveRoot.totient_le_degree_minpoly`: The degree of the minimal polynomial of an `n`-th
   primitive root of unity is at least `totient n`.
-
 -/
 
 public section
@@ -78,7 +78,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     minpoly ℤ μ ∣ expand ℤ p (minpoly ℤ (μ ^ p)) := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · simp_all
-  letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
+  let : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
   refine minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) ?_
   rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
     eval_comp, eval_X_pow, ← eval₂_eq_eval_map, ← aeval_def]
@@ -109,7 +109,6 @@ then the minimal polynomials of a primitive `n`-th root of unity `μ`
 and of `μ ^ p` are the same. -/
 theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     minpoly ℤ μ = minpoly ℤ (μ ^ p) := by
-  classical
   by_cases hn : n = 0
   · simp_all
   have hpos := Nat.pos_of_ne_zero hn
@@ -117,9 +116,10 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   set P := minpoly ℤ μ
   set Q := minpoly ℤ (μ ^ p)
   have Pmonic : P.Monic := minpoly.monic (h.isIntegral hpos)
-  have Qmonic : Q.Monic := minpoly.monic ((h.pow_of_prime hprime.1 hdiv).isIntegral hpos)
+  have Qmonic : Q.Monic := minpoly.monic ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have Pirr : Irreducible P := minpoly.irreducible (h.isIntegral hpos)
-  have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.1 hdiv).isIntegral hpos)
+  have Qirr : Irreducible Q :=
+    minpoly.irreducible ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have PQprim : IsPrimitive (P * Q) := Pmonic.isPrimitive.mul Qmonic.isPrimitive
   have prod : P * Q ∣ X ^ n - 1 := by
     rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim,
@@ -134,7 +134,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic).2
       exact minpoly_dvd_x_pow_sub_one h
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Qmonic).2
-      exact minpoly_dvd_x_pow_sub_one (pow_of_prime h hprime.1 hdiv)
+      exact minpoly_dvd_x_pow_sub_one (pow_of_prime h hprime.out hdiv)
   replace prod := _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p))) prod
   rw [coe_mapRingHom, Polynomial.map_mul, Polynomial.map_sub, Polynomial.map_one,
     Polynomial.map_pow, map_X] at prod
@@ -174,7 +174,7 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
     rw [hind h (Nat.Coprime.coprime_mul_left hcop)]; clear hind
     replace hprime := hprime.nat_prime
     have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.Coprime.coprime_mul_right hcop)
-    haveI := Fact.mk hprime
+    have := Fact.mk hprime
     rw [minpoly_eq_pow (h.pow_of_coprime a (Nat.Coprime.coprime_mul_left hcop)) hdiv]
     congr 1
     ring
@@ -197,7 +197,7 @@ theorem is_roots_of_minpoly [DecidableEq K] :
   intro x hx
   obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
   simp only [Multiset.mem_toFinset]
-  convert! pow_isRoot_minpoly h hcop using 0
+  convert pow_isRoot_minpoly h hcop using 0
   rw [← mem_roots]
   exact map_monic_ne_zero <| minpoly.monic <| isIntegral h hpos
 

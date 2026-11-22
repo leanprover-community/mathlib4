@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 In this file, it is shown that if `C` is an `R`-linear category, then
 `ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
-
 -/
 
 @[expose] public section
@@ -53,7 +52,7 @@ instance : Linear R (ShortComplex C) where
 
 section LeftHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
 
 namespace LeftHomologyMapData
 
@@ -107,7 +106,7 @@ end LeftHomology
 
 section RightHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
 
 namespace RightHomologyMapData
 
@@ -161,11 +160,11 @@ end RightHomology
 
 section Homology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
 
 namespace HomologyMapData
 
-variable (γ : HomologyMapData φ h₁ h₂) (γ' : HomologyMapData φ' h₁ h₂)
+variable (γ : HomologyMapData φ h₁ h₂)
 
 /-- Given a homology map data for a morphism `φ`, this is the induced homology
 map data for `a • φ`. -/
@@ -193,6 +192,7 @@ lemma homologyMap_smul [S₁.HasHomology] [S₂.HasHomology] :
 
 instance homologyFunctor_linear [CategoryWithHomology C] :
     Functor.Linear R (homologyFunctor C) where
+  map_smul := by simp
 
 end Homology
 

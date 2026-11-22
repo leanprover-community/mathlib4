@@ -6,14 +6,13 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.Flat.Equalizer
-public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Etale.Locus
+public import Mathlib.RingTheory.Kaehler.TensorProduct
+
+import Mathlib.RingTheory.Flat.Equalizer
+import Mathlib.RingTheory.Smooth.Local
 
 /-!
-
 # Flat and smooth fibers imply smooth
 
 ## Main results
@@ -32,12 +31,11 @@ public import Mathlib.RingTheory.Etale.Locus
 ## Note
 
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
-
 -/
 
 open TensorProduct IsLocalRing
 
-@[expose] public section
+public section
 
 namespace Algebra
 
@@ -90,7 +88,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     simp [RingHom.algebraMap_toAlgebra, ψ, Sp]
   have : IsScalarTower P Sp 𝓀[S] := .to₁₃₄ _ S _ _
   have : IsScalarTower P Pp 𝓀[S] := .to₁₂₄ _ _ Sp _
-  let ePp : Pp ≃ₐ[P] P ⊗[R] 𝓀[R] := { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
+  let ePp : Pp ≃ₐ[P] P ⊗[R] 𝓀[R] := .ofCommutes (TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
   let e₀ : Ω[Pp⁄𝓀[R]] ≃ₗ[Pp] Pp ⊗[P] Ω[P⁄R] :=
     (KaehlerDifferential.tensorKaehlerEquiv R 𝓀[R] P Pp).symm
   have : Module.Free Pp Ω[Pp⁄𝓀[R]] := .of_equiv e₀.symm
@@ -99,7 +97,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     kerTensorProductMapIdToAlgHomEquiv _ _ _ _ h₁
   have h₁' : Function.Surjective φ := LinearMap.lTensor_surjective _ h₁
   have h₂' : (RingHom.ker φ).FG := by
-    suffices Module.Finite Pp (RingHom.ker φ) from (Submodule.fg_top _).mp this.1
+    suffices Module.Finite Pp (RingHom.ker φ) from (Submodule.fg_top _).mp this.fg_top
     have : Module.Finite P (RingHom.ker (algebraMap P S)) := ⟨(Submodule.fg_top _).mpr h₂⟩
     exact .equiv e₁.symm
   have h₃ : 𝓂[Sp] ≤ RingHom.ker ψ := by
@@ -126,11 +124,10 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₁).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
   -- It remains to check that the two maps are equal under the identifications above.
-  convert! (eᵣ.injective.comp this).comp eₗ.symm.injective
+  convert (eᵣ.injective.comp this).comp eₗ.symm.injective
   ext x
   dsimp
   induction x with
-  | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero]
   | add x y _ _ => simp only [LinearEquiv.map_add, LinearMap.map_add, *]
   | tmul x y =>
   dsimp [eₗ, eᵣ, e₁, KaehlerDifferential.cotangentComplexBaseChange,
@@ -153,14 +150,13 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   `S = (P/I)[M⁻¹] = P[M⁻¹]/I[M⁻¹]`, where `P` is a polynomial ring and `M` some submonoid of `P/I`.
   We then apply `FormallySmooth.of_formallySmooth_residueField_tensor_aux` to this presentation.
   -/
-  classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
     (inferInstance : Algebra.FiniteType R P)
   let M' := M.comap f₀
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
       (f := (IsScalarTower.toAlgHom R P S).comp f₀) fun x ↦ by
-    simpa using IsLocalization.map_units (M := M) _ ⟨f₀ x.1, x.2⟩
+    simpa using IsLocalization.map_units (M := M) _ ⟨f₀ x.val, x.property⟩
   have hf₁ : Function.Surjective fP := by
     intro x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M x
@@ -170,7 +166,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     simp [fP, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight]
   have hfP : (RingHom.ker fP).FG := by
     have := Algebra.FinitePresentation.ker_fG_of_surjective _ hf₀
-    convert! this.map (algebraMap _ P')
+    convert this.map (algebraMap _ P')
     refine le_antisymm ?_ (Ideal.map_le_iff_le_comap.mpr fun x hx ↦ by simp_all [fP])
     intro x hx
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M' x
@@ -222,7 +218,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     have : FormallySmooth 𝓀[Rp] ((𝓀[Rp] ⊗[R] S) ⊗[S] Sq) :=
       .comp _ (𝓀[Rp] ⊗[R] S) _
     let e : 𝓀[Rp] ⊗[R] S ≃ₐ[S] S ⊗[R] 𝓀[Rp] :=
-      { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
+      .ofCommutes (TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
     let e' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[R] 𝓀[Rp] ⊗[Rp] Sq :=
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
@@ -231,7 +227,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
-      { __ := e', commutes' r := congr($this r) }
+      .ofCommutes e' fun r ↦ congr($this r)
     exact .of_equiv e''
   have := FormallySmooth.of_formallySmooth_residueField_tensor
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)

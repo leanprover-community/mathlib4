@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -44,13 +43,17 @@ In lemma names,
 
 @[expose] public section
 
-open Function OrderDual Set
+open OrderDual Set
 
-variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β : Type*} {ι : Sort*}
 
 @[to_dual]
 instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
   ⟨fun s ↦ h.sInf s⟩
+
+@[to_dual]
+instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
+  isLUB_sSup_of_isLUB _ _ := IsGLB.isGLB_sInf (α := α)
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -79,6 +82,11 @@ variable [CompleteSemilatticeSup α] {s t : Set α} {a b l : α} {f : ι → α}
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   CompleteSemilatticeSup.isLUB_sSup _
 
+@[to_dual]
+instance (priority := 100) CompleteSemilatticeSup.toOrderSupSet :
+    OrderSupSet α where
+  isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
+
 @[to_dual sInf_le]
 theorem le_sSup (h : a ∈ s) : a ≤ sSup s :=
   (isLUB_sSup s).1 h
@@ -90,9 +98,6 @@ theorem sSup_le (h : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
 @[to_dual]
 lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
   ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
-
-@[to_dual]
-alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
 
 @[to_dual]
 theorem sSup_mem_upperBounds : sSup s ∈ upperBounds s :=
@@ -137,7 +142,7 @@ instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒ
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
 
-attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
+attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf CompleteLattice.toInfSet
 attribute [to_dual self (reorder := toSupSet toInfSet, isLUB_sSup isGLB_sInf)] CompleteLattice.mk
 
 -- Shortcut instance to ensure that the path
@@ -162,7 +167,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfInf my_T _
 ```
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
   __ := H1; __ := H2
@@ -189,7 +194,7 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfInf`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf α] :
     CompleteLattice α :=
   completeLatticeOfInf α fun s => isGLB_sInf s
@@ -209,7 +214,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfSup my_T _
 ```
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2
@@ -234,7 +239,7 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfSup`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup α] :
     CompleteLattice α :=
   completeLatticeOfSup α fun s => isLUB_sSup s

@@ -7,10 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences
@@ -29,7 +27,6 @@ to linear equivs.
 ## Tags
 
 matrix, linear equivalence, linear isomorphism, determinant, inverse
-
 -/
 
 @[expose] public section
@@ -132,18 +129,18 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine Iff.trans ?_ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
   · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
+    · exact IsFractionRing.to_map_eq_zero_iff.mp congr($h i)
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
       rw [mul_eq, Pi.zero_apply, map_zero, Pi.zero_apply]
-  · letI := Classical.decEq K
+  · let := Classical.decEq K
     obtain ⟨⟨b, hb⟩, ba_eq⟩ :=
       IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors A) (Finset.univ.image v)
     choose f hf using ba_eq
     refine
       ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
         mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · have := congr_arg (algebraMap A K) (congr_fun h i)
+    · have := congr(algebraMap A K ($h i))
       rw [hf, Subtype.coe_mk, Pi.zero_apply, map_zero, Algebra.smul_def, mul_eq_zero,
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
@@ -169,6 +166,8 @@ theorem exists_vecMul_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, v ᵥ* M = 0) 
 theorem nondegenerate_iff_det_ne_zero [DecidableEq n] : Nondegenerate M ↔ M.det ≠ 0 := by
   grind [nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero, exists_mulVec_eq_zero_iff,
     exists_vecMul_eq_zero_iff]
+
+alias ⟨Nondegenerate.det_ne_zero, _⟩ := nondegenerate_iff_det_ne_zero
 
 lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.det ≠ 0 := by
   grind [separatingLeft_iff_forall_vecMul_eq_zero, exists_vecMul_eq_zero_iff]
@@ -218,8 +217,6 @@ theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
   rw [nondegenerate_def, nondegenerate_def]
   simp [smul_mulVec, mul_eq_zero_iff_left h]
 
-alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
-
 end Nondegenerate
 
 end LinearEquiv
@@ -248,7 +245,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
       rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
-      rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
+      rw [show 0 = ∑ i, v i * A i j₀ from congr($h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀
       · rw [h]

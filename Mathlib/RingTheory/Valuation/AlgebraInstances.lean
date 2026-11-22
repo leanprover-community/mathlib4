@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
@@ -58,7 +57,7 @@ instance : IsScalarTower v.valuationSubring L E := inferInstance
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
-    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
+    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.property⟩
       map_zero' :=
         Subtype.ext <| by simp only [Subalgebra.coe_zero, map_zero]
       map_one' := Subtype.ext <| by simp only [Subalgebra.coe_one, map_one]

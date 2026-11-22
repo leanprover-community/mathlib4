@@ -6,7 +6,8 @@ Authors: Yury Kudryashov, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Calculus.LocalExtr.Basic
-public import Mathlib.Topology.Order.Rolle
+
+import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -44,7 +45,9 @@ local extremum, Rolle's Theorem
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {f f' : ℝ → ℝ} {a b l : ℝ}
 

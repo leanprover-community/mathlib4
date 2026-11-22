@@ -14,12 +14,11 @@ public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 We gather some results about `TendstoUniformlyOn f g K` on ordered spaces,
 in particular bounding the values of `f` in terms of bounds on the limit `g`.
-
 -/
 
 public section
 
-open Filter Function Finset Topology
+open Filter
 
 variable {α ι : Type*}
 

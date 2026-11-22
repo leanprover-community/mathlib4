@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -23,7 +23,6 @@ Under suitable assumptions on `c` (e.g. chain complexes, or cochain
 complexes indexed by `ℤ`), we shall show that `HomologicalComplexUpToQuasiIso C c`
 is also the localized category of `HomotopyCategory C c` with respect to
 the class of quasi-isomorphisms.
-
 -/
 
 @[expose] public section
@@ -35,7 +34,6 @@ section
 variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
   rw [mem_quasiIso_iff] at hf
@@ -67,7 +65,6 @@ noncomputable def homologyFunctorFactors (i : ι) :
 
 variable {C c}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) :
     IsIso (Q.map f) ↔ HomologicalComplex.quasiIso C c f := by
   constructor
@@ -110,7 +107,6 @@ lemma mem_quasiIso_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
     quasiIso C c f ↔ ∀ (n : ι), IsIso ((homologyFunctor _ _ n).map f) := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
@@ -138,7 +134,6 @@ instance : (quasiIso C c).IsMultiplicative where
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_eq_quasiIso_map_quotient :
     quasiIso C c = (HomologicalComplex.quasiIso C c).map (quotient C c) := by
   ext ⟨K⟩ ⟨L⟩ f
@@ -172,6 +167,7 @@ lemma Q_map_eq_of_homotopy {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : H
 
 /-- The functor `HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c` from the homotopy
 category to the localized category with respect to quasi-isomorphisms. -/
+@[no_expose]
 def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
   CategoryTheory.Quotient.lift _ HomologicalComplexUpToQuasiIso.Q (by
     intro K L f g ⟨h⟩
@@ -180,10 +176,10 @@ def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
 variable (C c)
 
 /-- The canonical isomorphism `HomotopyCategory.quotient C c ⋙ Qh ≅ Q`. -/
+@[no_expose]
 def quotientCompQhIso : HomotopyCategory.quotient C c ⋙ Qh ≅ Q := by
   apply Quotient.lift.isLift
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_inverts_quasiIso : (HomotopyCategory.quasiIso C c).IsInvertedBy Qh := by
   rintro ⟨K⟩ ⟨L⟩ φ
   obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient C c).map_surjective φ
@@ -203,7 +199,6 @@ noncomputable def homologyFunctorFactorsh (i : ι) :
     Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_hom_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :
@@ -213,7 +208,6 @@ lemma homologyFunctorFactorsh_hom_app_quotient_obj
         (HomotopyCategory.homologyFunctorFactors C c i).inv.app K :=
   (Quotient.natTransLift_app ..).trans (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_inv_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :
@@ -307,7 +301,7 @@ end ChainComplex
 
 section CochainComplex
 
-variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
+variable (C : Type*) [Category* C] [Preadditive C] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
@@ -343,7 +337,7 @@ variable [Preadditive C] [Preadditive D]
 
 /-- The localizer morphism which expresses that `F.mapHomologicalComplex c` preserves
 quasi-isomorphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapHomologicalComplexUpToQuasiIsoLocalizerMorphism :
     LocalizerMorphism (HomologicalComplex.quasiIso C c) (HomologicalComplex.quasiIso D c) where
   functor := F.mapHomologicalComplex c
@@ -384,6 +378,7 @@ variable [c.QFactorsThroughHomotopy C] [c.QFactorsThroughHomotopy D]
 
 /-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
 `F.mapHomotopyCategory c`. -/
+@[no_expose]
 noncomputable def mapHomologicalComplexUpToQuasiIsoFactorsh :
     HomologicalComplexUpToQuasiIso.Qh ⋙ F.mapHomologicalComplexUpToQuasiIso c ≅
       F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh :=
@@ -403,7 +398,7 @@ noncomputable instance :
 
 variable {c}
 
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] HomologicalComplexUpToQuasiIso.Qh in
 @[reassoc]
 lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
     (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app
@@ -415,7 +410,7 @@ lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex 
             HomologicalComplexUpToQuasiIso.Qh.map
               ((F.mapHomotopyCategoryFactors c).inv.app K) := by
   dsimp [mapHomologicalComplexUpToQuasiIsoFactorsh]
-  rw [Localization.liftNatTrans_app]
+  rw [Localization.liftNatIso_hom, Localization.liftNatTrans_app]
   dsimp
   simp only [Category.comp_id, Category.id_comp]
   change _ = (F.mapHomologicalComplexUpToQuasiIso c).map (𝟙 _) ≫ _ ≫ 𝟙 _ ≫
