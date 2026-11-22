@@ -174,6 +174,6 @@ def inv (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
 
 @[inclusion_op interval_dyadic_real]
 theorem inv_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) : x⁻¹ ∈ inv I prec := by
-  simpa [← one_div, ← toReal_one, inv] using div_mem (Interval.mem_map_singleton 1 _) hx prec
+  simpa [← one_div, toReal, inv] using div_mem (Interval.mem_map_singleton 1 _) hx prec
 
 end Inclusion.IntervalDyadicReal
