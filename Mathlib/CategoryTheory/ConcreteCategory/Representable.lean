@@ -49,7 +49,7 @@ variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type
 def couniv : CC (forget C).coreprObj := c.coreprBy.homEquiv (𝟙 _)
 
 /-- The unique morphism `(forget C).coreprObj ⟶ Z` corresponding to an element `z : ↥Z`. This
-generalizes the function `fun ⟨⟩ ↦ z` for the case of `PUnit` in `TypeCat`.  -/
+generalizes the function `fun ⟨⟩ ↦ z` for the case of `PUnit` in `TypeCat`. -/
 def homOfElement (x : CC Z) : (forget C).coreprObj ⟶ Z := c.coreprBy.homEquiv.symm x
 
 @[simp] lemma homOfElement_apply (x : CC Z) : homOfElement x couniv = x :=
