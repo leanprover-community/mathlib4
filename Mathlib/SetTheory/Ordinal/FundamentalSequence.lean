@@ -7,6 +7,8 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
+import Mathlib.Order.Bounds.OrderIso
+
 /-!
 # Fundamental sequences
 
@@ -90,7 +92,7 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
   le_ord_cof := by rw [hf.ord_cof, ← hg.ord_cof]; exact a.ord_cof_le
   isCofinal_range := by
     rw [range_comp]
-    exact hg.isCofinal_range.image hf.strictMono.monotone hf.isCofinal_range
+    exact hg.isCofinal_range.image_of_monotone hf.strictMono.monotone hf.isCofinal_range
 
 /-- If `f` is a fundamental sequence for a limit ordinal `o` and `g` is normal, then `g ∘ f` is a
 fundamental sequence for `g o`. -/
@@ -118,7 +120,7 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
   let g := (Set.orderIsoOfEq _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
   refine ⟨fun i ↦ g i, le_rfl, fun _ ↦ by simp, ?_⟩
-  rw [range_comp', OrderIso.map_isCofinal_iff, range_comp', g.range_eq]
+  rw [range_comp', OrderIso.isCofinal_image, range_comp']
   simpa
 
 end Ordinal
