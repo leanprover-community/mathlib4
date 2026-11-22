@@ -832,16 +832,9 @@ theorem det_subsingleton_sum_subsingleton {ι m R : Type*}
       M (.inl i) (.inr j) * M (.inr j) (.inl i) := by
   let : Unique ι := uniqueOfSubsingleton i
   let : Unique m := uniqueOfSubsingleton j
-  let e : (ι ⊕ m) ≃ Fin 2 :=
-    (Equiv.sumCongr
-      (Equiv.ofUnique ι (Fin 1))
-      (Equiv.ofUnique m (Fin 1))).trans finSumFinEquiv
-  calc
-    M.det = (Matrix.reindex e e M).det :=
-      (Matrix.det_reindex_self e M).symm
-    _ = _ := by
-      rw [Matrix.det_fin_two]
-      rfl
+  rw [← det_reindex_self ((Equiv.sumCongr
+    (.ofUnique ι (Fin 1)) (.ofUnique m (Fin 1))).trans finSumFinEquiv) M]
+  exact det_fin_two ..
 
 /-- Determinant of 3x3 matrix -/
 theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
