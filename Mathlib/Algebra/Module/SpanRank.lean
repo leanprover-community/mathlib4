@@ -407,7 +407,7 @@ lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank �
 
 @[simp]
 lemma Ideal.spanRank_map_eq_of_ringEquiv (f : R ≃+* S) (I : Ideal R) :
-    (I.map f.toRingHom).spanRank = I.spanRank := by
+    (I.map f).spanRank = I.spanRank := by
   simpa using I.lift_spanRank_map_eq_of_ringEquiv f
 
 lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :

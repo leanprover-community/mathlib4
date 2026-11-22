@@ -367,7 +367,7 @@ theorem toRingEquiv_symm : (e : A₁ ≃+* A₂).symm = e.symm :=
   rfl
 
 @[simp]
-theorem symm_toRingEquiv : e.symm.toRingEquiv = e.toRingEquiv.symm :=
+theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
   rfl
 
 @[simp]

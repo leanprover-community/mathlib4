@@ -54,7 +54,7 @@ instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
   inferInstanceAs <| Module.Finite R M
 
 noncomputable instance instModulePolynomial : Module R[X] <| AEval R M a :=
-  compHom M (aeval a).toRingHom
+  compHom M ((aeval a : R[X] →ₐ[R] A) : R[X] →+* A)
 
 variable (R M)
 /--
@@ -113,7 +113,7 @@ def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N
   right_inv x := by simp [LinearMap.ofAEval]
 
 lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
-    annihilator R[X] (AEval R M a) = (RingHomClass.toRingHom <| aeval a).ker  := by
+    annihilator R[X] (AEval R M a) = (aeval a).ker  := by
   ext p
   simp_rw [mem_annihilator, RingHom.mem_ker]
   change (∀ m : M, aeval a p • m = 0) ↔ _
@@ -121,7 +121,7 @@ lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
 
 @[simp]
 lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
-    (⊤ : Submodule R[X] <| AEval R M a).annihilator = (aeval a).toRingHom.ker := by
+    (⊤ : Submodule R[X] <| AEval R M a).annihilator = (aeval a).ker := by
   ext p
   simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
   change (∀ m : M, aeval a p • m = 0) ↔ _
