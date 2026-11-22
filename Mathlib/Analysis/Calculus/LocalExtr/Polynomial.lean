@@ -28,8 +28,8 @@ Namely, we prove the following facts.
 
 ## TODO
 
-* Generalise `Polynomial.Splits.derivative` to real closed fields once the intermediate value
-  theorem is available for them.
+* Generalise the results of this file to real closed fields once the intermediate value theorem
+  is available for them.
 
 ## Keywords
 
@@ -102,7 +102,6 @@ theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p :
   simpa only [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, derivative_map] using
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))
 
--- TODO: generalize to real closed fields once the intermediate value theorem is available
 protected theorem Splits.derivative {p : ℝ[X]} (hp : p.Splits) : p.derivative.Splits := by
   rw [splits_iff_card_roots] at hp ⊢
   have := card_roots_le_derivative p
