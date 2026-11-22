@@ -59,8 +59,7 @@ This file is adapted from the `PrimeNumberTheoremAnd` project.
 noncomputable section
 
 open Complex hiding log
-open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
-  Function
+open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap Function
 open scoped Topology ContDiff ComplexConjugate LSeries.notation
 
 /-- The hypotheses of the Wiener-Ikehara theorem: `f : ℕ → ℝ` is non-negative and obeys the
