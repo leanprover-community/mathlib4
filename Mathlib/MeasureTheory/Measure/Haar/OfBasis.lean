@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Convex.Parallelepiped
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Convex.Parallelepiped
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
@@ -54,7 +54,7 @@ namespace Module.Basis
 /-- The parallelepiped spanned by a basis, as a compact set with nonempty interior. -/
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped ℝ b
-  isCompact' := isCompact_Icc.image (by fun_prop)
+  isCompact' := isCompact_parallelepiped b
   interior_nonempty' := by
     use b.equivFunL.symm fun _ ↦ 1 / 2
     rw [mem_interior]
