@@ -625,7 +625,7 @@ lemma wordLength_liftsFst_le (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
           gens.wordLength_mul_le _ _
       _ ≤ liftBound + liftBound * ts.length := Nat.add_le_add h1 h2
       _ = liftBound * (t :: ts).length := by
-            simp [Nat.mul_succ, Nat.add_comm]
+            simp [List.length_cons, Nat.mul_add, Nat.add_comm]
 
 lemma wordLength_liftsSnd_le (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
     (hform : ∀ t ∈ bs, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
@@ -657,7 +657,7 @@ lemma wordLength_liftsSnd_le (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
           gens.wordLength_mul_le _ _
       _ ≤ liftBound + liftBound * ts.length := Nat.add_le_add h1 h2
       _ = liftBound * (t :: ts).length := by
-            simp [Nat.mul_succ, Nat.add_comm]
+            simp [List.length_cons, Nat.mul_add, Nat.add_comm]
 
 lemma exists_linear_lift_fst {x : G} (hx : x ∈ B) :
     ∃ h : st 1, psi h = (x, 1) ∧
