@@ -120,7 +120,7 @@ def smoothedSum : ℂ := ∑' n, term ↗f σ n * φ ((2 * π)⁻¹ * log (n / x
 def poleTerm : ℂ :=
   A * ↑(x ^ (1 - σ)) * ∫ u in Ici (-log x), rexp (-u * (σ - 1)) * φ ((2 * π)⁻¹ * u)
 
-/-- A key statistic in the Wiener--Ikehara analysis involving an exponent `σ`, a test
+/-- A key statistic in the Wiener-Ikehara analysis involving an exponent `σ`, a test
 function `φ`, and a scale parameter `x`: the smoothed sum of `f` minus the contribution of the
 pole of its `L`-series. -/
 def remainder : ℂ := smoothedSum f σ φ x - poleTerm A σ φ x
