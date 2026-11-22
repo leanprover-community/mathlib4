@@ -310,7 +310,7 @@ theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_t
 theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
   ext a; simp only [mem_Ici, bot_le, mem_univ]
 
-@[to_dual (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_dual (attr := simp)]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[to_dual (attr := simp)]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
