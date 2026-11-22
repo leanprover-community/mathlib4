@@ -19,7 +19,7 @@ with cofinal range. We can generalize this notion to arbitrary ordinals by setti
 - `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -45,14 +45,11 @@ namespace IsFundamentalSeq
 variable {f : Iio a → Iio o} {g : Iio b → Iio a}
 
 theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).val + 1 = o := by
-  apply le_antisymm
-  · simp_rw [Ordinal.iSup_le_iff, add_one_le_iff]
-    exact fun i ↦ (f i).property
-  · refine le_of_forall_lt fun b hb ↦ ?_
-    obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
-    apply hc.trans_lt
-    rw [← add_one_le_iff]
-    apply Ordinal.le_iSup
+  refine (iSup_add_one_le fun i ↦ (f i).property).antisymm (le_of_forall_lt fun b hb ↦ ?_)
+  obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
+  apply hc.trans_lt
+  rw [← add_one_le_iff]
+  apply Ordinal.le_iSup
 
 theorem ord_cof (hf : IsFundamentalSeq f) : o.cof.ord = a := by
   apply hf.le_ord_cof.antisymm'
