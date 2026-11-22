@@ -167,7 +167,7 @@ mismatch error.
     all. This can be achieved with `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the `relevant_arg` of `d` is a type with a multiplicative structure.
-    You can see the value of `relevant_arg` usnig `to_additive?` on `d`.
+    You can see the value of `relevant_arg` using `to_additive?` on `d`.
     The reason is that `@[to_additive]` doesn't additivize declarations if their `relevant_arg`
     contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     The expected output of `to_additive?` is `(relevant_arg := n)` where the `n`-th argument is
