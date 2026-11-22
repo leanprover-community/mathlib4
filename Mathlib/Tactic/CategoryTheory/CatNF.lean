@@ -7,6 +7,8 @@ module
 
 public meta import Lean.Elab.Tactic.Conv
 
+import Mathlib.Init
+
 /-!
 # The `cat_nf` simp set
 
