@@ -221,7 +221,7 @@ theorem Real.fourierChar_mul_log_div_two_pi {x : ℝ} (hx : 0 < x) (t : ℝ) :
     ← ofReal_log hx.le]
   congr 1
   push_cast
-  field_simp
+  field
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`, in multiplicative form: the integrals
 `∫ t, x ^ (t * I) • f t` tend to `0` as `x → ∞`. -/
