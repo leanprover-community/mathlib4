@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Anne Baanen
+Authors: Kenny Lau, Chris Hughes, Anne Baanen, Levent Alpöge
 -/
 module
 
@@ -24,6 +24,8 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 ## Main results
 
 - `det_mul`: the determinant of `A * B` is the product of determinants
+- `det_mul_eq_sum_over_functions`: the Cauchy–Binet formula for `det (A * B)` with `A`, `B`
+  rectangular, as a sum over functions between the index sets
 - `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
 - `det_block_diagonal`: the determinant of a block diagonal matrix is a product
   of the blocks' determinants
@@ -167,6 +169,26 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
           simp only [this])
     _ = det M * det N := by
       simp only [det_apply', Finset.mul_sum, mul_comm, mul_left_comm, mul_assoc]
+
+omit [DecidableEq n] in
+/-- **Cauchy–Binet formula**, as a sum over all functions `f : m → n`: for `A : Matrix m n R`
+and `B : Matrix n m R`, `det (A * B)` is the sum over `f` of
+`(∏ i, A i (f i)) * (B.submatrix f id).det`. Functions that are not injective contribute `0`. -/
+theorem det_mul_eq_sum_over_functions (A : Matrix m n R) (B : Matrix n m R) :
+    (A * B).det = ∑ f : m → n, (∏ i, A i (f i)) * (B.submatrix f id).det := by
+  classical
+  have h1 : (A * B : Matrix m m R) = fun a => ∑ k, A a k • B k := by
+    funext a j
+    simp only [Matrix.mul_apply, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+  have h2 : (A * B).det =
+      (detRowAlternating : (m → R) [⋀^m]→ₗ[R] R).toMultilinearMap
+        (fun a => ∑ k, A a k • B k) := by
+    rw [Matrix.det, h1]
+    rfl
+  rw [h2, MultilinearMap.map_sum]
+  refine Finset.sum_congr rfl fun f _ => ?_
+  rw [MultilinearMap.map_smul_univ, smul_eq_mul]
+  rfl
 
 /-- The determinant of a matrix, as a monoid homomorphism. -/
 def detMonoidHom : Matrix n n R →* R where
