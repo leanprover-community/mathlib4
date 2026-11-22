@@ -10,18 +10,16 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
-
 # Maximal ideal of local rings
 
 We prove basic properties of the maximal ideal of a local ring.
-
 -/
 
 public section
 
 namespace IsLocalRing
 
-variable {R S K : Type*}
+variable {R K : Type*}
 
 section CommSemiring
 
@@ -45,7 +43,8 @@ instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
     simpa using I.mul_mem_left (↑u⁻¹) H
 
 theorem isMaximal_iff {I : Ideal R} : I.IsMaximal ↔ I = maximalIdeal R where
-  mp hI := hI.eq_of_le (maximalIdeal.isMaximal R).1.1 fun _ h ↦ hI.1.1 ∘ I.eq_top_of_isUnit_mem h
+  mp hI := hI.eq_of_le (maximalIdeal.isMaximal R).out.1 fun _ h ↦
+    hI.out.1 ∘ I.eq_top_of_isUnit_mem h
   mpr e := e ▸ maximalIdeal.isMaximal R
 
 theorem maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal := by
@@ -111,7 +110,7 @@ end CommRing
 
 section
 
-variable [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S]
+variable [CommRing R] [IsLocalRing R]
 
 theorem ker_eq_maximalIdeal [DivisionRing K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=

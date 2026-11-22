@@ -61,7 +61,6 @@ To make this straightforward, it is crucial that `(↑i : WithTop ι)⁺ = ↑(i
 The predicate `IsSuccPrelimit` allows us to treat limits and the bottom element uniformly, and
 the only place the bottom element requires special treatment is in `equivLim` (the bijection
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
-
 -/
 
 @[expose] public section
@@ -115,15 +114,15 @@ variable (F E) in
 `leastExt j`, `j < i`. For cardinality reasons, such `k` always exist if `ι` is infinite. -/
 def leastExt : ι → ι :=
   wellFounded_lt.fix fun i ih ↦
-    let s := range fun j : Iio i ↦ b (ih j j.2)
+    let s := range fun j : Iio i ↦ b (ih j j.property)
     wellFounded_lt.min {k | b k ∉ adjoin F s} <| by
-      rw [← compl_ofPred, nonempty_compl]; by_contra!
+      rw [← compl_ofPred, nonempty_compl]; by_contra
       simp_rw [eq_univ_iff_forall, mem_ofPred] at this
       have := adjoin_le_iff.mpr (range_subset_iff.mpr this)
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
-      conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
+      rw [IntermediateField.rank_top']
       have := mk_Iio_lt i (by simp)
       rw [mk_toType, card_ord] at this
       obtain eq | lt := rank_inf.out.eq_or_lt
@@ -131,9 +130,9 @@ def leastExt : ι → ι :=
         have : FiniteDimensional F (adjoin F s) :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
-      · exact (Subalgebra.equivOfEq _ _ <| adjoin_toSubalgebra_of_isAlgebraic
-          fun x _ ↦ IsAlgebraic.isAlgebraic x) |>.toLinearEquiv.rank_eq.trans_lt <|
-          (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
+      · rw [← IntermediateField.rank_eq_rank_subalgebra,
+          adjoin_toSubalgebra_of_isAlgebraic fun x _ ↦ IsAlgebraic.isAlgebraic x]
+        exact (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
 
 local notation "φ" => leastExt F E
 
@@ -142,13 +141,13 @@ local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
-  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (wellFounded_lt.min_le ·)⟩
+  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (WellFoundedLT.min_le ·)⟩
 
 theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
   have least := isLeast_leastExt (F := F) (E := E)
   by_contra!
   obtain eq | lt := this.eq_or_lt
-  · exact (least j).1 (subset_adjoin _ _ ⟨i, h, congr_arg b eq.symm⟩)
+  · exact (least j).1 (subset_adjoin _ _ ⟨i, h, congr(b $eq.symm)⟩)
   · refine ((least i).2 <| mt (adjoin.mono _ _ _ (image_mono ?_) ·) (least j).1).not_gt lt
     exact fun k (hk : k < i) ↦ hk.trans h
 
@@ -168,7 +167,7 @@ theorem strictMono_filtration : StrictMono (E⟮<·⟯) :=
     fun incl ↦ (isLeast_leastExt i).1 (incl <| subset_adjoin _ _ ⟨i, h, rfl⟩)⟩
 
 theorem filtration_succ (i : ι) : E⟮<i⁺⟯ = E⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
-  rw [Iio_succ, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
+  rw [Iio_succ, ← insert_Iio, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
 
 local notation "X" i => Field.Emb (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯
 
@@ -179,13 +178,10 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (Algebra.IsAlgebraic.tower_top (K := F) _).of_injective (val _) Subtype.val_injective).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext
-  simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
-    algHomEquivSigma, AlgHom.restrictDomain, Subalgebra.inclusion, Set.inclusion, equivOfEq,
-    Subalgebra.equivOfEq]
+  rfl
 
 instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional ((Algebra.IsAlgebraic.tower_top (K := F) _).isAlgebraic _).isIntegral
@@ -208,10 +204,7 @@ def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 
 variable [Algebra.IsSeparable F E]
 
--- slow (typeclass inference reasonable, type checking takes ~4s)
 instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
-  have := Algebra.isSeparable_tower_top_of_isSeparable F (E⟮<i⟯) E
-  have : IsScalarTower (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) E := .of_algebraMap_eq' rfl
   Algebra.isSeparable_tower_bot_of_isSeparable _ _ E
 
 open Field in
@@ -222,7 +215,7 @@ theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
   by_contra!
   obtain ⟨x, hx⟩ := finrank_adjoin_simple_eq_one_iff.mp (this.antisymm Module.finrank_pos)
   refine (isLeast_leastExt i).1 (hx ▸ ?_)
-  exact x.2
+  exact x.property
 
 end
 
@@ -242,7 +235,9 @@ private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i)
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
 def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor i :=
-  i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _)
+  i.recTopCoe
+    (((IntermediateField.equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <|
+      .symm <| .prodPUnit _)
     (succEquiv ·)
 
 theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ i) f := by
@@ -252,7 +247,7 @@ section Lim
 
 variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
-theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
+theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.val :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
 
 variable (hi : IsSuccPrelimit i)
@@ -262,7 +257,8 @@ open WithTop in
 theorem iSup_filtration : ⨆ j : Iio i, filtration j = filtration i := by
   cases i
   · rw [← range_coe, iSup_range']; exact iSup_adjoin_eq_top
-  refine (iSup_le fun j ↦ filtration.monotone (mem_Iio.1 j.2).le).antisymm (adjoin_le_iff.2 ?_)
+  refine (iSup_le fun j ↦ filtration.monotone (mem_Iio.1 j.property).le).antisymm
+    (adjoin_le_iff.2 ?_)
   rintro _ ⟨j, hj, rfl⟩
   refine le_iSup (α := IntermediateField F E) _ ⟨j⁺, ?_⟩ (subset_adjoin F _ ?_)
   exacts [⟨j, lt_succ j, rfl⟩, hi.succ_lt (coe_lt_coe.mpr hj)]
@@ -280,10 +276,10 @@ open scoped Classical in
 /-- If `i` is a limit, the type of embeddings of `E⟮<i⟯` into `Ē` is
 the limit of the types of embeddings of `E⟮<j⟯` for `j < i`. -/
 def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
-  toFun f := ⟨fun j ↦ embFunctor _ _ (id j.2 : j < i).le f, fun _ _ _ ↦ rfl⟩
+  toFun f := ⟨fun j ↦ embFunctor _ _ (id j.property : j < i).le f, fun _ _ _ ↦ rfl⟩
   invFun f := if h : Nonempty (Iio i) then
-    Subalgebra.iSupLift _ directed_filtration f.1
-      (fun _ _ h ↦ (f.2 <| filtration.map_rel_iff.mp h).symm) _ <| by
+    Subalgebra.iSupLift _ directed_filtration f.val
+      (fun _ _ h ↦ (f.property <| filtration.map_rel_iff.mp h).symm) _ <| by
         rw [← iSup_filtration hi, toSubalgebra_iSup_of_directed directed_filtration]
     else (Algebra.ofId F Ē).comp ((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E)
   left_inv f := by
@@ -297,10 +293,11 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
       simp
   right_inv f := Subtype.ext <| funext fun j ↦ by
     have := Nonempty.intro j
-    simp_rw [dif_pos this]
+    simp_rw [dite_eq_left this]
     apply Subalgebra.iSupLift_comp_inclusion
 
-theorem equivLim_coherence (x l) : (equivLim hi x).1 l = embFunctor F E (mem_Iio.mp l.2).le x :=
+theorem equivLim_coherence (x l) :
+    (equivLim hi x).val l = embFunctor F E (mem_Iio.mp l.property).le x :=
   rfl
 
 end Lim

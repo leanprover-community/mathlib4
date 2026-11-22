@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Edward Ayers
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sieves
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 public import Mathlib.Order.Copy
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies
@@ -58,8 +56,6 @@ universe v₁ u₁ v u
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u) [Category.{v} C]
 
 /-- The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying
@@ -89,6 +85,7 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
+@[macro_inline]
 instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
   coe J X := sieves J X
   coe_injective J₁ J₂ h := by cases J₁; cases J₂; congr
@@ -124,7 +121,7 @@ variable {J} in
 lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
     S.pullback i ∈ J _ ↔ S ∈ J _ := by
   refine ⟨fun H ↦ ?_, J.pullback_stable i⟩
-  convert! J.pullback_stable (inv i) H
+  convert J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
 @[grind .]
@@ -429,11 +426,11 @@ namespace Cover
 
 variable {J}
 
-instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.1⟩
+instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.val⟩
 
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S => (S : Sieve X)⟩
 
-theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.2
+theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.property
 
 @[ext]
 theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S = T :=
@@ -484,7 +481,7 @@ attribute [reassoc] Arrow.Relation.w
 corresponding to `g ≫ I.f`. -/
 @[simps]
 def Arrow.precomp {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) : S.Arrow :=
-  ⟨Z, g ≫ I.f, S.1.downward_closed I.hf g⟩
+  ⟨Z, g ≫ I.f, S.val.downward_closed I.hf g⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `I : S.Arrow` and a morphism `g : Z ⟶ I.Y`, this is the obvious relation

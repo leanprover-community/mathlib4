@@ -29,7 +29,6 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Tags
 
 predictable, previsible
-
 -/
 
 @[expose] public section
@@ -103,7 +102,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
     · ext p
       simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, Set.mem_singleton_iff,
         Set.mem_empty_iff_false, iff_false, not_and]
-      exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.2.symm)
+      exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.property.symm)
   · rw [MeasurableSpace.map_def]
     obtain hni | hin := lt_or_ge n i
     · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A) = ∅)]
@@ -111,7 +110,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
       · ext p
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_empty_iff_false,
           iff_false, not_and]
-        rw [p.1.2]
+        rw [p.1.property]
         grind
     · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A)
           = {⟨n + 1, rfl⟩} ×ˢ A)]
@@ -120,7 +119,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_singleton_iff,
           and_congr_left_iff]
         intro hp2
-        rw [p.1.2]
+        rw [p.1.property]
         exact ⟨fun _ ↦ by aesop, fun _ ↦ lt_add_one_iff.2 hin⟩
 
 lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι]
@@ -151,7 +150,7 @@ lemma measurable_inclusion_predictable [LinearOrder ι] [OrderBot ι] [Measurabl
     obtain hji | hij := le_total j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
+      exact (measurable_subtypeVal measurableSet_Ioc).prod (𝓕.mono hji _ hA)
     · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 end
@@ -164,8 +163,6 @@ def IsStronglyPredictable [Preorder ι] [OrderBot ι] (𝓕 : Filtration ι m) (
   StronglyMeasurable[𝓕.predictable] <| Function.uncurry u
 
 namespace IsStronglyPredictable
-
-open Filtration
 
 variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace ι]
     [OpensMeasurableSpace ι] [OrderClosedTopology ι]
@@ -258,32 +255,5 @@ lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
 end Discrete
 
 end IsStronglyPredictable
-
-@[deprecated IsStronglyPredictable.stronglyAdapted (since := "2026-01-05")]
-theorem Predictable.stronglyAdapted {β : Type*} [TopologicalSpace β] {f : Filtration ℕ m}
-    {u : ℕ → Ω → β} (hu : StronglyAdapted f fun n => u (n + 1))
-    (hu0 : StronglyMeasurable[f 0] (u 0)) :
-    StronglyAdapted f u := fun n =>
-  match n with
-  | 0 => hu0
-  | n + 1 => (hu n).mono (f.mono n.le_succ)
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable := IsStronglyPredictable
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.progMeasurable := IsStronglyPredictable.isStronglyProgressive
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.adapted := IsStronglyPredictable.stronglyAdapted
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.measurable_add_one := IsStronglyPredictable.measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.of_measurable_add_one := IsStronglyPredictable.of_measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.iff_measurable_add_one := IsStronglyPredictable.iff_measurable_add_one
 
 end MeasureTheory

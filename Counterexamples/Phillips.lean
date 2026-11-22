@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # A counterexample on Pettis integrability
@@ -72,6 +74,7 @@ on a discrete copy of the original type, as mathlib only contains the space of a
 continuous functions (which is the useful one).
 -/
 
+@[expose] public noncomputable section
 
 namespace Counterexample
 
@@ -84,8 +87,6 @@ open Set BoundedContinuousFunction MeasureTheory
 open Cardinal (aleph)
 
 open scoped Cardinal BoundedContinuousFunction
-
-noncomputable section
 
 /-- A copy of a type, endowed with the discrete topology -/
 def DiscreteCopy (α : Type u) : Type u :=
@@ -125,16 +126,16 @@ Hahn-Banach. -/
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
-    { toFun := fun f => ∫ x, f.1 x ∂μ
-      map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul c f.1 } (μ.real univ)
+    { toFun := fun f => ∫ x, f.val x ∂μ
+      map_add' := fun f g => integral_add f.property g.property
+      map_smul' := fun c f => integral_smul c f.val } (μ.real univ)
     (by
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
       apply Filter.Eventually.of_forall
       intro x
-      exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
+      exact BoundedContinuousFunction.norm_coe_le_norm f.val x)
 
 /-- Given a measure, there exists a continuous linear form on the space of all bounded functions
 (not necessarily measurable) that coincides with the integral on bounded measurable functions. -/
@@ -247,7 +248,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}
   let empty : A := ⟨∅, countable_empty⟩
-  haveI : Nonempty A := ⟨empty⟩
+  have : Nonempty A := ⟨empty⟩
   -- given a countable set `s`, one can find a set `t` in its complement with measure close to
   -- maximal.
   have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
@@ -259,7 +260,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       exact f.le_bound _
     let S := iSup fun t : A => f (↑t \ ↑s)
     have S_pos : 0 < S := by
-      rcases h s.1 s.2 with ⟨t, t_count, ht⟩
+      rcases h s.val s.property with ⟨t, t_count, ht⟩
       apply ht.trans_le
       let t' : A := ⟨t, t_count⟩
       change f (↑t' \ ↑s) ≤ S
@@ -272,11 +273,11 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
-  let G : A → A := fun u => ⟨(↑u : Set α) ∪ ↑(F u), u.2.union (F u).2⟩
+  let G : A → A := fun u => ⟨(↑u : Set α) ∪ ↑(F u), u.property.union (F u).property⟩
   let s : ℕ → A := fun n => G^[n] empty
   -- We will get a contradiction from the fact that there is a countable set `u` with positive
   -- measure in the complement of `⋃ n, s n`.
-  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).2) with ⟨t, t_count, ht⟩
+  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).property) with ⟨t, t_count, ht⟩
   let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono sdiff_subset⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
@@ -296,7 +297,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, le_rfl]
     | succ n IH =>
-      have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+      have : (s (n + 1)).val = (s (n + 1)).val \ (s n).val ∪ (s n).val := by
         simpa only [s, Function.iterate_succ', union_sdiff_self]
           using! (sdiff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
@@ -582,7 +583,5 @@ theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
   simp at h
 
 end Phillips1940
-
-end
 
 end Counterexample

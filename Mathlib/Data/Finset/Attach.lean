@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.MapFold
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -28,11 +27,11 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Subtype
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -44,10 +43,10 @@ attribute [local trans] Subset.trans Superset.trans
 /-- `attach s` takes the elements of `s` and forms a new set of elements of the subtype
 `{x // x ∈ s}`. -/
 def attach (s : Finset α) : Finset { x // x ∈ s } :=
-  ⟨Multiset.attach s.1, nodup_attach.2 s.2⟩
+  ⟨Multiset.attach s.val, nodup_attach.2 s.nodup⟩
 
 @[simp]
-theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
+theorem attach_val (s : Finset α) : s.attach.val = s.val.attach :=
   rfl
 
 @[simp, grind ←]

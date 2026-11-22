@@ -6,11 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Disjointed
-public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Zify
+
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
 
 /-!
 # Decomposing a locally finite ordered ring into boxes
@@ -103,7 +104,7 @@ lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    omega
+    lia
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by

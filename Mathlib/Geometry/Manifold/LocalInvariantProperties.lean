@@ -85,7 +85,7 @@ theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s =ᶠ[𝓝 x] t) :
 
 theorem is_local_nhds {s u : Set H} {x : H} {f : H → H'} (hu : u ∈ 𝓝[s] x) :
     P f s x ↔ P f (s ∩ u) x :=
-  hG.congr_set <| mem_nhdsWithin_iff_eventuallyEq.mp hu
+  hG.congr_set <| mem_nhdsWithin_iff_eventuallyEqSet.mp hu
 
 theorem congr_iff_nhdsWithin {s : Set H} {x : H} {f g : H → H'} (h1 : f =ᶠ[𝓝[s] x] g)
     (h2 : f x = g x) : P f s x ↔ P g s x := by
@@ -138,9 +138,8 @@ theorem right_invariance {s : Set H} {x : H} {f : H → H'} {e : OpenPartialHome
   refine hG.congr ?_ ((hG.congr_set ?_).mp this)
   · refine eventually_of_mem (e.open_source.mem_nhds hxe) fun x' hx' ↦ ?_
     simp_rw [Function.comp_apply, e.left_inv hx']
-  · rw [eventuallyEq_set]
-    refine eventually_of_mem (e.open_source.mem_nhds hxe) fun x' hx' ↦ ?_
-    simp_rw [mem_preimage, e.left_inv hx']
+  · refine eventually_of_mem (e.open_source.mem_nhds hxe) fun x' hx' ↦ ?_
+    simp [e.left_inv hx']
 
 end LocalInvariantProp
 
@@ -241,7 +240,7 @@ theorem liftPropWithinAt_iff {f : M → M'} :
           (chartAt H x x) := by
   rw [liftPropWithinAt_iff']
   refine and_congr_right fun hf ↦ hG.congr_set ?_
-  exact OpenPartialHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter hf
+  exact OpenPartialHomeomorph.preimage_eventuallyEqSet_target_inter_preimage_inter hf
     (mem_chart_source H x) (chart_source_mem_nhds H' (f x))
 
 theorem liftPropWithinAt_indep_chart_source_aux (g : M → H')
@@ -358,15 +357,15 @@ theorem liftPropOn_indep_chart (he : e ∈ G.maximalAtlas M)
     (hf : f ∈ G'.maximalAtlas M') (h : LiftPropOn P g s) {y : H}
     (hy : y ∈ e.target ∩ e.symm ⁻¹' (s ∩ g ⁻¹' f.source)) :
     P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) y := by
-  convert! ((hG.liftPropWithinAt_indep_chart he (e.mapsTo_symm hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
+  convert ((hG.liftPropWithinAt_indep_chart he (e.mapsTo_symm hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
   rw [e.right_inv hy.1]
 
 theorem liftPropWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     LiftPropWithinAt P g (s ∩ t) x ↔ LiftPropWithinAt P g s x := by
   rw [liftPropWithinAt_iff', liftPropWithinAt_iff', continuousWithinAt_inter' ht, hG.congr_set]
-  simp_rw [eventuallyEq_set, mem_preimage,
+  simp_rw [eventuallyEqSet_iff, mem_preimage,
     (chartAt _ x).eventually_nhds' (fun x ↦ x ∈ s ∩ t ↔ x ∈ s) (mem_chart_source _ x)]
-  exact (mem_nhdsWithin_iff_eventuallyEq.mp ht).symm.mem_iff
+  exact (mem_nhdsWithin_iff_eventuallyEqSet.mp ht).symm.mem_iff
 
 theorem liftPropWithinAt_inter (ht : t ∈ 𝓝 x) :
     LiftPropWithinAt P g (s ∩ t) x ↔ LiftPropWithinAt P g s x :=
@@ -403,9 +402,9 @@ theorem liftProp_of_locally_liftPropOn (h : ∀ x, ∃ u, IsOpen u ∧ x ∈ u �
 
 theorem liftPropWithinAt_congr_of_eventuallyEq (h : LiftPropWithinAt P g s x) (h₁ : g' =ᶠ[𝓝[s] x] g)
     (hx : g' x = g x) : LiftPropWithinAt P g' s x := by
-  refine ⟨h.1.congr_of_eventuallyEq h₁ hx, ?_⟩
+  refine ⟨h.continuousWithinAt.congr_of_eventuallyEq h₁ hx, ?_⟩
   refine hG.congr_nhdsWithin' ?_
-    (by simp_rw [Function.comp_apply, (chartAt H x).left_inv (mem_chart_source H x), hx]) h.2
+    (by simp_rw [Function.comp_apply, (chartAt H x).left_inv (mem_chart_source H x), hx]) h.prop
   simp_rw [EventuallyEq, Function.comp_apply]
   rw [(chartAt H x).eventually_nhdsWithin'
     (fun y ↦ chartAt H' (g' x) (g' y) = chartAt H' (g x) (g y)) (mem_chart_source H x)]
@@ -462,7 +461,7 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
-  refine ⟨h.1.mono hts, mono (fun y hy ↦ ?_) h.2⟩
+  refine ⟨h.continuousWithinAt.mono hts, mono (fun y hy ↦ ?_) h.prop⟩
   simp only [mfld_simps] at hy
   simp only [hy, hts _, mfld_simps]
 
@@ -538,14 +537,17 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
   simp_rw [liftProp_iff, continuous_id, true_and]
   exact fun x ↦ hG.congr' ((chartAt H x).eventually_right_inverse <| mem_chart_target H x) (hQ _)
 
-theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Opens M}
+theorem liftPropAt_iff_comp_subtypeVal (hG : LocalInvariantProp G G' P) {U : Opens M}
     (f : M → M') (x : U) :
     LiftPropAt P f x ↔ LiftPropAt P (f ∘ Subtype.val) x := by
   simp only [LiftPropAt, liftPropWithinAt_iff']
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ, U.isOpenEmbedding'.continuousAt_iff]
   · apply hG.congr_iff
-    exact (U.chartAt_subtype_val_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
+    exact (U.chartAt_subtypeVal_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
+
+@[deprecated (since := "2026-11-10")]
+alias liftPropAt_iff_comp_subtype_val := liftPropAt_iff_comp_subtypeVal
 
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :
@@ -558,13 +560,15 @@ theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Op
     exact (TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq hUV).fun_comp
       (chartAt H' (f (Set.inclusion hUV x)) ∘ f)
 
-theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
+theorem liftProp_subtypeVal {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) (U : Opens M) :
     LiftProp Q (Subtype.val : U → M) := by
   intro x
   change LiftPropAt Q (id ∘ Subtype.val) x
-  rw [← hG.liftPropAt_iff_comp_subtype_val]
+  rw [← hG.liftPropAt_iff_comp_subtypeVal]
   apply hG.liftProp_id hQ
+
+@[deprecated (since := "2026-11-10")] alias liftProp_subtype_val := liftProp_subtypeVal
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :

@@ -14,7 +14,6 @@ Given a linearly ordered type `J` with `SuccOrder J`, `j : J` that is not maxima
 we define the extension of a functor `F : Set.Iic j ⥤ C` as a
 functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 `τ : F.obj ⟨j, _⟩ ⟶ X` is given.
-
 -/
 
 @[expose] public section
@@ -41,19 +40,19 @@ set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
-  if hij : i.1 ≤ j then F.obj ⟨i.1, hij⟩ else X
+  if hij : i.val ≤ j then F.obj ⟨i.val, hij⟩ else X
 
 lemma obj_eq (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i := dif_pos i.2
+    obj F X ⟨i, i.property.trans (Order.le_succ j)⟩ = F.obj i := dite_eq_left i.property
 
 /-- The isomorphism `obj F X ⟨i, _⟩ ≅ F.obj i` when `i : Set.Iic j`. -/
 def objIso (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i :=
+    obj F X ⟨i, i.property.trans (Order.le_succ j)⟩ ≅ F.obj i :=
   eqToIso (obj_eq _ _ _)
 
 include hj in
 lemma obj_succ_eq : obj F X ⟨Order.succ j, by simp⟩ = X :=
-  dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj)
+  dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj)
 
 /-- The isomorphism `obj F X ⟨Order.succ j, _⟩ ≅ X`. -/
 def objSuccIso :
@@ -83,24 +82,24 @@ lemma map_eq (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     map hj F τ i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
       (objIso F X ⟨i₁, hi.trans hi₂⟩).hom ≫ F.map (homOfLE hi) ≫
         (objIso F X ⟨i₂, hi₂⟩).inv :=
-  dif_pos hi₂
+  dite_eq_left hi₂
 
 lemma map_self_succ :
     map hj F τ j (Order.succ j) (Order.le_succ j) (by rfl) =
       (objIso F X ⟨j, by simp⟩).hom ≫ τ ≫ (objSuccIso hj F X).inv := by
   dsimp [map]
-  rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
-    dif_pos (by rfl), Functor.map_id, comp_id, id_comp]
+  rw [dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj),
+    dite_eq_left (by rfl), Functor.map_id, comp_id, id_comp]
 
 @[simp]
 lemma map_id (i : J) (hi : i ≤ Order.succ j) :
     map hj F τ i i (by rfl) hi = 𝟙 _ := by
   dsimp [map]
   by_cases h₁ : i ≤ j
-  · rw [dif_pos h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
+  · rw [dite_eq_left h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
   · obtain rfl : i = Order.succ j := le_antisymm hi (Order.succ_le_of_lt (not_le.1 h₁))
-    rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
-      dif_neg h₁]
+    rw [dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj),
+      dite_eq_right h₁]
 
 lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) (h : i₃ ≤ Order.succ j) :
     map hj F τ i₁ i₃ (h₁₂.trans h₂₃) h =
@@ -114,8 +113,8 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
     · rw [Order.lt_succ_iff_of_not_isMax hj] at h₂
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
-      rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+      rw [dite_eq_right h₁, dite_eq_left (h₁₂.trans h₂), dite_eq_right h₁, dite_eq_left h₂, assoc,
+        assoc, Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc
@@ -126,9 +125,10 @@ include hj in
 when we specify a morphism `F.obj ⟨j, _⟩ ⟶ X`. -/
 def extendToSucc : Set.Iic (Order.succ j) ⥤ C where
   obj := obj F X
-  map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.2
+  map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.property
   map_id _ := extendToSucc.map_id _ F τ _ _
-  map_comp {i₁ i₂ i₃} f g := extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.2
+  map_comp {i₁ i₂ i₃} f g :=
+    extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.property
 
 lemma extendToSucc_obj_eq (i : J) (hi : i ≤ j) :
     (extendToSucc hj F τ).obj ⟨i, hi.trans (Order.le_succ j)⟩ = F.obj ⟨i, hi⟩ :=
@@ -161,7 +161,7 @@ lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi
 @[simps!]
 def extendToSuccRestrictionLEIso :
     SmallObject.restrictionLE (extendToSucc hj F τ) (Order.le_succ j) ≅ F :=
-  NatIso.ofComponents (fun i ↦ extendToSuccObjIso hj F τ i.1 i.2) (by
+  NatIso.ofComponents (fun i ↦ extendToSuccObjIso hj F τ i.val i.property) (by
     rintro ⟨i₁, h₁⟩ ⟨i₂, h₂⟩ f
     apply extendToSuccObjIso_hom_naturality)
 

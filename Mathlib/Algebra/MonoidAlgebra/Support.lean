@@ -6,11 +6,10 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Module
 
-import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Order.BourbakiWitt
 
 /-!
 # Lemmas about the support of a finitely supported function
@@ -42,6 +41,11 @@ theorem support_coeff_mul_subset [DecidableEq G] (x y : k[G]) :
 
 @[deprecated (since := "2026-06-18")] alias support_single_mul_eq_image := support_coeff_mul_subset
 
+@[to_additive (dont_translate := k) card_support_coeff_mul_le]
+lemma card_support_coeff_mul_le (x y : k[G]) :
+    #(x * y).coeff.support ≤ #x.coeff.support * #y.coeff.support := by
+  classical grw [support_coeff_mul_subset, card_mul_le]
+
 @[to_additive (dont_translate := k) support_coeff_single_mul_subset]
 lemma support_coeff_single_mul_subset [DecidableEq G] (x : k[G]) (r : k) (a : G) :
     (single a r * x).coeff.support ⊆ x.coeff.support.image (a * ·) := by
@@ -56,7 +60,6 @@ theorem support_coeff_mul_single_subset [DecidableEq G] (x : k[G]) (r : k) (a : 
   change image₂ _ _ _ ⊆ _
   rw [image₂_singleton_right]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_coeff_single_mul_eq_image]
 theorem support_coeff_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
@@ -65,7 +68,6 @@ theorem support_coeff_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
   obtain ⟨y, yf, rfl⟩ : ∃ a ∈ f.coeff.support, x * a = y := by grind
   simp [coeff_mul, mem_support_iff.mp yf, hr, lx.eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_coeff_mul_single_eq_image]
 theorem support_coeff_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :
@@ -123,7 +125,7 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-open Finset Finsupp MulOpposite
+open Finset Finsupp
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 

@@ -8,11 +8,9 @@ module
 public import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
-
 # Abelian extensions
 
 In this file, we define the typeclass of abelian extensions and provide some basic API.
-
 -/
 
 public section
@@ -67,3 +65,13 @@ instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
   .of_algHom (IntermediateField.botEquiv K L).toAlgHom
 
 lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where
+
+/-- The compositum of two abelian extensions is abelian: its Galois group embeds into the product
+of the (commutative) factor Galois groups. -/
+instance IsAbelianGalois.sup {F E : Type*} [Field F] [Field E] [Algebra F E]
+    (K L : IntermediateField F E) [IsAbelianGalois F K] [IsAbelianGalois F L] :
+    IsAbelianGalois F ↑(K ⊔ L) :=
+  haveI : IsMulCommutative Gal(↑(K ⊔ L)/F) :=
+    .of_comm fun a b ↦ IntermediateField.restrictNormalHomSupProd_injective K L <| by
+      rw [map_mul, map_mul, mul_comm']
+  { }

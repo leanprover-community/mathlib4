@@ -66,11 +66,11 @@ theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)
 theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
     Topology.IsClosedEmbedding p.subtypeL := .subtypeVal hp
 
-@[deprecated range_subtype (since := "2026-05-06")]
+@[deprecated range_subtype +typeChanged (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
   Submodule.range_subtype _
 
-@[deprecated ker_subtype (since := "2026-05-06")]
+@[deprecated ker_subtype +typeChanged (since := "2026-05-06")]
 theorem ker_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).ker = ⊥ :=
   Submodule.ker_subtype _
 
@@ -101,7 +101,7 @@ theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R
   rfl
 
 lemma coe_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
-    ⇑(f.domRestrict p) = Set.restrict p f :=
+    ⇑(f.domRestrict p) = Set.domRestrict p f :=
   rfl
 
 /-- Restrict codomain of a continuous linear map. -/
@@ -167,7 +167,7 @@ theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M
   rfl
 
 theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.val x.property⟩ :=
   rfl
 
 open Set in
@@ -183,7 +183,7 @@ theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R�
 
 theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
     {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.val x.property :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
@@ -195,7 +195,7 @@ end Restrict
 
 section
 
-variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
+variable {R₁ R₂ : Type*} [Ring R₁] [Ring R₂]
   {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
   {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]

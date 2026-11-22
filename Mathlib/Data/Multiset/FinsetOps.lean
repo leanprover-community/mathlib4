@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Preparations for defining operations on `Finset`.
@@ -47,11 +47,11 @@ theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
 
 @[simp]
 theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = s :=
-  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_mem h
+  Quot.inductionOn s fun _ h => congr($(insert_of_mem h))
 
 @[simp]
 theorem ndinsert_of_notMem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
-  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
+  Quot.inductionOn s fun _ h => congr($(insert_of_not_mem h))
 
 @[simp]
 theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b ∨ a ∈ s :=
@@ -88,13 +88,14 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
     (s.ndinsert a).attach =
-      ndinsert ⟨a, mem_ndinsert_self a s⟩ (s.attach.map fun p => ⟨p.1, mem_ndinsert_of_mem p.2⟩) :=
+      ndinsert ⟨a, mem_ndinsert_self a s⟩
+        (s.attach.map fun p => ⟨p.val, mem_ndinsert_of_mem p.property⟩) :=
   have eq :
-    ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
+    ∀ h : ∀ p : { x // x ∈ s }, p.val ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
     fun _ => funext fun _ => Subtype.ext rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
-      (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
+      (s.attach.map fun p => ⟨p.val, eq ▸ mem_ndinsert_of_mem p.property⟩) := by
     intro t ht
     by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht

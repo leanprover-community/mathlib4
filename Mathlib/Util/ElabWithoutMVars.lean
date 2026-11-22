@@ -9,7 +9,6 @@ public import Mathlib.Init
 
 /-!
 # `elabTermWithoutNewMVars`
-
 -/
 
 public meta section

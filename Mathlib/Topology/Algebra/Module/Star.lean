@@ -6,7 +6,7 @@ Authors: Eric Wieser, Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Star
 
 /-!
@@ -70,7 +70,6 @@ def starL' : A ≃L[R] A :=
 theorem symm_starL' : (starL' R : A ≃L[R] A).symm = starL' R :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated "Use `symm_starL'` and `starL'_apply` instead" (since := "2026-06-03")]
 theorem starL'_symm_apply (x : A) : (starL' R).symm x = starAddEquiv.symm x := by
   simp
@@ -98,7 +97,7 @@ theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousSta
 @[fun_prop]
 theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
-  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+  (continuous_subtypeVal.comp continuous_fst).add (continuous_subtypeVal.comp continuous_snd)
 
 /-- The self-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps! -isSimp]

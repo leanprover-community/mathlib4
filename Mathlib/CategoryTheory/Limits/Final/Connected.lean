@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Discrete.StructuredArrow
+
+import Mathlib.CategoryTheory.Discrete.StructuredArrow
 
 /-!
 # Characterization of connected categories using initial/final functors
@@ -15,7 +16,6 @@ A category `C` is connected iff the constant functor `C ⥤ Discrete PUnit`
 is final (or initial).
 
 We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is connected.
-
 -/
 
 public section

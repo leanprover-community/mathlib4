@@ -5,12 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic
@@ -23,7 +21,6 @@ properties about separable polynomials here.
   over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
   over `K`.
-
 -/
 
 @[expose] public section
@@ -156,7 +153,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert! hp using 1
+    convert hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
@@ -271,7 +268,7 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+  rw [rootMultiplicity_eq_multiplicity, ite_eq_right hp, ← Nat.cast_le (α := ℕ∞),
     Nat.cast_one, ← (finiteMultiplicity_X_sub_C x hp).emultiplicity_eq_multiplicity]
   apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
@@ -323,7 +320,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
       separable_prod'
         (fun x _hx y _hy hxy =>
           @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.ext <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
+            (fun x y hxy => Subtype.ext <| H x.val x.property y.val y.property hxy) _ _ hxy)
         fun _ _ => separable_X_sub_C⟩
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
@@ -404,7 +401,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   · rw [isUnit_iff] at h
     rcases h with ⟨r, hr, rfl⟩
     simp_rw [expand_C] at hf
-    exact absurd (isUnit_C.2 hr) hf.1
+    exact absurd (isUnit_C.2 hr) hf.not_isUnit
   · rw [add_zero, pow_zero, expand_one]
     constructor <;> rfl
 
@@ -666,10 +663,16 @@ protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.I
 
 end IsIntegral
 
-section IsScalarTower
+section
 
-variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
-  [Nontrivial E] [IsScalarTower F K E]
+variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Nontrivial E] {x : K}
+
+lemma IsSeparable.of_algHom (f : K →ₐ[F] E) (h : IsSeparable F (f x)) : IsSeparable F x := by
+  have ⟨q, hq⟩ := minpoly.dvd F x (p := minpoly F (f x)) <| f.injective <| by
+    simp [← aeval_algHom_apply]
+  exact .of_mul_left <| by rwa [← hq]
+
+variable [Algebra K E] [IsScalarTower F K E]
 
 variable {F} in
 /-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
@@ -685,26 +688,12 @@ theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F 
     Algebra.IsSeparable F K :=
   ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
-end IsScalarTower
-
-section
-
-variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    (f : E →ₐ[F] E')
-include f
-
-variable {F} in
-theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
-  let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  have : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact h.tower_bot
-
+end
 
 variable (E') in
-theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
+theorem Algebra.IsSeparable.of_algHom [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    [Algebra.IsSeparable F E'] (f : E →ₐ[F] E') : Algebra.IsSeparable F E :=
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
-
-end
 
 namespace IntermediateField
 
@@ -739,10 +728,8 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
         smul_def' := fun _ _ ↦ rfl }
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
       (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
-  let e : B₁ ≃ₐ[A₂] B₂ :=
-    { e₂ with
-      commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using! DFunLike.congr_fun he.symm (e₁.symm x) }
+  let e : B₁ ≃ₐ[A₂] B₂ := .ofCommutes e₂ fun x ↦ by
+    simpa [RingHom.algebraMap_toAlgebra] using! congr($he.symm (e₁.symm x))
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
@@ -760,8 +747,8 @@ end AlgEquiv
 
 section CardAlgHom
 
-variable {R S T : Type*} [CommRing S]
-variable {K L F : Type*} [Field K] [Field L] [Field F]
+variable {S : Type*} [CommRing S]
+variable {K L : Type*} [Field K] [Field L]
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)

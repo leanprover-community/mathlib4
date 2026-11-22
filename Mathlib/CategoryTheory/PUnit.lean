@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -47,8 +46,6 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
 def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
@@ -61,7 +58,6 @@ def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
 
 end Functor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/
@@ -76,13 +72,14 @@ theorem equiv_punit_iff_unique :
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
-      simp
+      #adaptation_note /-- Since nightly-2026-10-21, `Discrete.functor_map_id` applies in more
+      situations, which makes Lean simplify away `z` from the right hand side. -/
+      simp [-Discrete.functor_map_id]
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]
     simp only [Functor.comp_map]
     congr 3
-    apply ULift.ext
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
     have := fun x y => (h x y).some

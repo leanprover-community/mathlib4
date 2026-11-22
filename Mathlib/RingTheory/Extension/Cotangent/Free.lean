@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.Exact
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
+
+import Mathlib.LinearAlgebra.Basis.Exact
 
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent
@@ -39,7 +40,7 @@ namespace Algebra
 namespace Generators
 
 variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u)
-  {v : κ → ι} (hv : Function.Injective v)
+  {v : κ → ι}
 
 /--
 If `H¹(L_{S/R}) = 0` and `R[xᵢ] → S` are generators indexed by `σ ⊕ κ` such that the images

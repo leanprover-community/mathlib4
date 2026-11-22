@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
 
 /-!
 # `Finset`s are a Boolean algebra
@@ -27,11 +26,9 @@ assert_not_exists Monoid
 
 open Function
 
-open Nat
-
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Finset
 
@@ -45,6 +42,7 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
   exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 
+@[grind =]
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 
@@ -52,9 +50,11 @@ theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
+@[grind =]
 theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
   contrapose!; exact univ_nonempty_iff
 
+@[grind =]
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
@@ -162,19 +162,15 @@ theorem compl_eq_empty_iff (s : Finset α) : sᶜ = ∅ ↔ s = univ :=
 theorem compl_eq_univ_iff (s : Finset α) : sᶜ = univ ↔ s = ∅ :=
   compl_eq_top
 
-@[simp]
 theorem union_compl (s : Finset α) : s ∪ sᶜ = univ :=
   sup_compl_eq_top
 
-@[simp]
 theorem inter_compl (s : Finset α) : s ∩ sᶜ = ∅ :=
   inf_compl_eq_bot
 
-@[simp]
 theorem compl_union (s t : Finset α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   compl_sup
 
-@[simp]
 theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
   compl_inf
 
@@ -218,9 +214,9 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
 theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
   Finset.image_univ_of_surjective f.surjective
 
-@[simp] lemma univ_inter (s : Finset α) : univ ∩ s = s := by ext a; simp
+lemma univ_inter (s : Finset α) : univ ∩ s = s := by simp
 
-@[simp] lemma inter_univ (s : Finset α) : s ∩ univ = s := by rw [inter_comm, univ_inter]
+lemma inter_univ (s : Finset α) : s ∩ univ = s := by simp
 
 @[simp] lemma inter_eq_univ : s ∩ t = univ ↔ s = univ ∧ t = univ := inf_eq_top_iff
 
@@ -268,16 +264,18 @@ lemma univ_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
     univ.map (Function.Embedding.subtype p) = univ.filter p := by
   rw [← subtype_map, subtype_univ]
 
-lemma univ_val_map_subtype_val [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+lemma univ_val_map_subtypeVal [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map ((↑) : { a // p a } → α) = (univ.filter p).val := by
   apply (map_val (Function.Embedding.subtype p) univ).symm.trans
   apply congr_arg
   apply univ_map_subtype
 
+@[deprecated (since := "2026-11-10")] alias univ_val_map_subtype_val := univ_val_map_subtypeVal
+
 lemma univ_val_map_subtype_restrict [Fintype α] (f : α → β)
     (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map (Subtype.restrict p f) = (univ.filter p).val.map f := by
-  rw [← univ_val_map_subtype_val, Multiset.map_map, Subtype.restrict_def]
+  rw [← univ_val_map_subtypeVal, Multiset.map_map, Subtype.restrict_def]
 
 section DecEq
 

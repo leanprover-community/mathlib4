@@ -39,7 +39,7 @@ artanh, arctanh, argtanh, atanh
 
 noncomputable section
 
-open Function Filter Set
+open Function Set
 
 open scoped Topology
 
@@ -55,6 +55,20 @@ def artanh (x : ℝ) :=
 theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Icc (-1) 1) :
     artanh x = 1 / 2 * log ((1 + x) / (1 - x)) := by
   rw [artanh, log_sqrt <| div_nonneg (by grind) (by grind), one_div_mul_eq_div]
+
+theorem log_eq_two_mul_artanh {x : ℝ} (hx : 0 ≤ x) :
+    log x = 2 * artanh ((x - 1) / (x + 1)) := by
+  have : (x - 1) / (x + 1) ∈ Icc (-1) 1 := by simp [field]; grind
+  rw [artanh_eq_half_log this]
+  field_simp
+  grind
+
+theorem log_two_eq_six_mul_artanh_add :
+    log 2 = 6 * artanh (1 / 17) + 4 * artanh (1 / 19) + 4 * artanh (1 / 31) := by
+  rw [show (2 : ℝ) = (9 / 8) ^ 3 * (10 / 9) ^ 2 * (16 / 15) ^ 2 by norm_num]
+  simp [log_mul]
+  norm_num [artanh_eq_half_log]
+  field
 
 theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : exp (artanh x) = √((1 + x) / (1 - x)) :=
   exp_log <| sqrt_pos_of_pos <| div_pos (by grind) (by grind)

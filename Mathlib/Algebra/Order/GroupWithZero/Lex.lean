@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.ProdHom
 public import Mathlib.Algebra.Order.Group.Equiv
-public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
-public import Mathlib.Data.Prod.Lex
+public import Mathlib.Algebra.Order.Monoid.Lex
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
@@ -25,7 +24,6 @@ the plain product `αˣ × βˣ` would not be linearly ordered.
 ## TODO
 
 Create the "LinOrdCommGrpWithZero" category.
-
 -/
 
 @[expose] public section
@@ -34,7 +32,6 @@ namespace MonoidWithZeroHom
 
 variable {M₀ N₀ : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] : Monotone (inl M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inl_mono).comp ?_
@@ -47,7 +44,6 @@ lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] 
     [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
   inl_mono.strictMono_of_injective inl_injective
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀]
     [DecidablePred fun x : N₀ ↦ x = 0] : Monotone (inr M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inr_mono).comp ?_
@@ -101,7 +97,6 @@ nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inr α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inr_mono
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
 `WithZero (Mˣ ×ₗ Nˣ)` to M, which is the linearly ordered group with zero that can be identified
 as their product. -/

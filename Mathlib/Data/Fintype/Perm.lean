@@ -5,18 +5,18 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Nat.Factorial.Basic
+
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
 Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
-
 -/
 
 @[expose] public section
@@ -29,7 +29,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset List Equiv Equiv.Perm
 
@@ -64,7 +64,8 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_flatMap]
   refine or_iff_not_imp_left.2 fun _hfl => ⟨f a, ?_, Equiv.swap a (f a) * f, IH this, ?_⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
-  · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
+  · rw [← mul_assoc, mul_def (Equiv.swap a (f a)) (Equiv.swap a (f a)), Equiv.swap_swap,
+      ← Perm.one_def, one_mul]
 
 theorem mem_of_mem_permsOfList :
     ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → {x : α} → f x ≠ x → x ∈ l
@@ -117,11 +118,11 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
-  Quotient.hrecOn s.1 (fun l hl => ⟨permsOfList l, nodup_permsOfList hl⟩)
+  Quotient.hrecOn s.val (fun l hl => ⟨permsOfList l, nodup_permsOfList hl⟩)
     (fun a b hab =>
       hfunext (congr_arg _ (Quotient.sound hab)) fun ha hb _ =>
         heq_of_eq <| Finset.ext <| by simp [mem_permsOfList_iff, hab.mem_iff])
-    s.2
+    s.nodup
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by

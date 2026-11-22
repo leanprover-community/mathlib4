@@ -18,7 +18,6 @@ compositions/products.
 
 * `comp_eq_snd_compProd`: `η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft X η)`
 * `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
-
 -/
 
 public section
@@ -30,7 +29,7 @@ open scoped ENNReal
 
 variable {X Y Z T : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   {mZ : MeasurableSpace Z} {mT : MeasurableSpace T}
-  {μ : Measure X} {ν : Measure Y} {κ : Kernel X Y} {η : Kernel Z T}
+  {κ : Kernel X Y} {η : Kernel Z T}
 
 namespace ProbabilityTheory.Kernel
 

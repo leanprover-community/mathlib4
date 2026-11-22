@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject
+
 /-!
 # The action of bifunctors on graded objects
 
@@ -18,7 +19,6 @@ a functor
 In case `p : I × I → I` is the addition on a monoid and `F` is the tensor product on a monoidal
 category `C`, these definitions shall be used in order to construct a monoidal structure
 on `GradedObject I C` (TODO @joelriou).
-
 -/
 
 @[expose] public section
@@ -32,18 +32,15 @@ variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C
 
 namespace GradedObject
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
-    set_option backward.isDefEq.respectTransparency.types false in
     { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
       map := fun φ ij => (F.obj (X ij.1)).map (φ ij.2) }
   map φ :=
-    set_option backward.isDefEq.respectTransparency.types false in
     { app := fun Y ij => (F.map (φ ij.1)).app (Y ij.2) }
 
 section
@@ -53,6 +50,7 @@ variable {I J K : Type*} (p : I × J → K)
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
 `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
+@[implicit_reducible]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
     [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
   (((mapBifunctor F I J).obj X).obj Y).mapObj p
@@ -122,7 +120,6 @@ variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
     [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂`
 induced by isomorphisms `X₁ ≅ X₂` and `Y₁ ≅ Y₂`. -/
 @[simps]

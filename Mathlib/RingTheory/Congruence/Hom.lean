@@ -6,12 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.RingTheory.Congruence.Basic
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Congruence relations and ring homomorphisms
@@ -108,7 +102,7 @@ theorem mapGen_eq_map_of_surjective
     {c : RingCon M} (f : M →+* N) (h : ker f ≤ c) (hf : Surjective f) :
     c.mapGen f = Relation.Map c f f := by
   refine le_antisymm ?_ <| (RingCon.gi N).gc.le_u_l _
-  have := Relation.map_equivalence c.toSetoid.2 _ hf h
+  have := Relation.map_equivalence c.toSetoid.iseqv _ hf h
   intro _ _ hg
   induction hg with
   | of _ _ a => exact a
@@ -131,17 +125,16 @@ theorem mapGen_apply_apply_of_surjective
   refine ⟨fun ⟨a, b, h₁, h₂, h₃⟩ ↦ ?_, by grind⟩
   exact c.trans (h h₂.symm) <| c.trans h₁ <| h h₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring congruence relation `c` on a semiring `M`, the order-preserving
 bijection between the set of ring congruence relations containing `c` and the
 ring congruence relations on the quotient of `M` by `c`. -/
 def correspondence {c : RingCon M} : Set.Ici c ≃o RingCon c.Quotient where
-  toFun d := d.1.mapGen c.mk'
+  toFun d := d.val.mapGen c.mk'
   invFun d := ⟨d.comap (mk' c), c.ker_mk'_eq.symm.trans_le <| comap_bot c.mk' ▸ comap_mono bot_le⟩
   left_inv d := by
     ext
     simp only [comap_rel]
-    rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le d.2) c.mk'_surjective]
+    rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le d.property) c.mk'_surjective]
   right_inv d := by
     ext x y
     simp only
@@ -151,8 +144,9 @@ def correspondence {c : RingCon M} : Set.Ici c ≃o RingCon c.Quotient where
       comap_rel]
   map_rel_iff' {s t} := by
     simp only [Equiv.coe_fn_mk, le_def, c.mk'_surjective.forall, ← Subtype.coe_le_coe]
-    simp_rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le s.2) c.mk'_surjective,
-      mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le t.2) c.mk'_surjective]
+    simp_rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le s.property)
+        c.mk'_surjective,
+      mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le t.property) c.mk'_surjective]
 
 variable (c : RingCon M)
 
@@ -191,7 +185,7 @@ theorem lift_apply_mk' (f : c.Quotient →+* P) :
 equal if they are equal on elements that are coercions from the ring. -/
 @[ext high] -- This should have higher priority than `RingHom.ext`
 theorem Quotient.hom_ext {f g : c.Quotient →+* P} (h : f.comp c.mk' = g.comp c.mk') : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- The uniqueness part of the universal property for quotients of rings. -/
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk' = f) :
@@ -459,9 +453,8 @@ variable (R) in
 /-- An isomorphism of algebras `e : M ≃ₐ[R] N` generates an isomorphism between quotient spaces,
 if it is compatible with the relations. -/
 protected def congrₐ {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
-    c.Quotient ≃ₐ[R] d.Quotient where
-  __ := RingCon.congr e h
-  commutes' r := by simp [← coe_algebraMap]
+    c.Quotient ≃ₐ[R] d.Quotient :=
+  .ofCommutes (RingCon.congr e h) fun r ↦ by simp [← coe_algebraMap]
 
 @[simp]
 theorem congrₐ_mk {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) (a : M) :
@@ -510,13 +503,13 @@ equal if they are equal on elements that are coercions from the ring. -/
 @[ext 1100]
 theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
     (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- `liftₐ` as an equivalence. -/
 @[simps]
 def liftₐEquiv (c : RingCon M) :
     { f : M →ₐ[R] P // c ≤ ker (f : M →+* P)} ≃ (c.Quotient →ₐ[R] P) where
-  toFun f := liftₐ c f.1 f.2
+  toFun f := liftₐ c f.val f.property
   invFun F := ⟨F.comp (c.mkₐ R), fun x y h => congr(F $(Quotient.sound h))⟩
 
 variable (f) in
@@ -613,8 +606,7 @@ variable (R)
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
     (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
-  { quotientQuotientEquivQuotient c d h with
-    commutes' _ := by rfl }
+  .ofCommutes (quotientQuotientEquivQuotient c d h) fun _ ↦ by rfl
 
 @[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :

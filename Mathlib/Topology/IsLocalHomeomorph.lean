@@ -27,7 +27,6 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 ## Main results
 * local homeomorphisms are locally injective open maps
 * more!
-
 -/
 
 @[expose] public section
@@ -44,19 +43,19 @@ def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
 theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
+    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.domRestrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.isOpenEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
-    have : IsOpenEmbedding ((interior U).restrict f) := by
+    have : IsOpenEmbedding ((interior U).domRestrict f) := by
       refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
     have : Nonempty X := ⟨x⟩
     exact ⟨OpenPartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
-      (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
+      (continuousOn_iff_continuous_domRestrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
 
 namespace IsLocalHomeomorphOn
@@ -67,16 +66,16 @@ set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     [DiscreteTopology (f '' s)] : DiscreteTopology s :=
   discreteTopology_iff_isOpen_singleton.mpr fun x ↦ by
-    obtain ⟨e, hx, rfl⟩ := h x x.2
-    have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
+    obtain ⟨e, hx, rfl⟩ := h x x.property
+    have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.property, rfl⟩ : e '' s)}
     refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
       subset_antisymm (fun x' mem ↦ Subtype.ext <| e.injOn mem.1 hx ?_) ?_⟩
-    · simpa using Set.subset_singleton_iff.1 eq.subset ⟨_, x', x'.2, rfl⟩ mem.2
+    · simpa using Set.subset_singleton_iff.1 eq.subset ⟨_, x', x'.property, rfl⟩ mem.2
     · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
 
 lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
     (hs : IsDiscrete (f '' s)) : IsDiscrete s :=
-  have := hs.1; ⟨discreteTopology_of_image h⟩
+  have := hs.to_subtype; ⟨discreteTopology_of_image h⟩
 
 theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
@@ -85,7 +84,7 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
   rintro hX ⟨_, x, hx, rfl⟩
   obtain ⟨e, hxe, rfl⟩ := h x hx
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
-  · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
+  · simpa using hs.isOpenMap_subtypeVal _ (hX ⟨x, hx⟩)
   · ext; simp [Subtype.ext_iff]
 
 lemma isDiscrete_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
@@ -179,7 +178,7 @@ protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph 
     IsLocalHomeomorphOn f s := fun x _ ↦ hf x
 
 theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
+    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.domRestrict f) := by
   simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
     isLocalHomeomorphOn_iff_isOpenEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
@@ -272,9 +271,9 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
-      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
-      ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
-    · ext y; exact f.right_inv y.2.1
+      ⟨_, continuousOn_iff_continuous_domRestrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
+      ?_, (Set.range_domRestrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
+    · ext y; exact f.right_inv y.property.1
     · apply (f.symm_image_target_inter_eq _).trans
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]

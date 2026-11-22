@@ -5,8 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Prod
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Finite products of types
@@ -39,7 +40,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 @[expose] public section
 
 
-open List Function
+open List
 universe u v
 variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι}
 

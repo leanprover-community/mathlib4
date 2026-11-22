@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral algebras
 
@@ -20,13 +23,10 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 public section
 
-
-open Polynomial Submodule
-
 section Ring
 
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable {R A : Type*}
+variable [CommRing R] [Ring A]
 
 variable [Algebra R A] (R)
 

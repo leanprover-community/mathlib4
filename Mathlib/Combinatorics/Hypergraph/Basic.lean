@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 module
-public import Mathlib.Data.Set.Basic
+
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -53,7 +53,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
 all hypergraphs are *without repeated edge*.
-
 -/
 
 public section
@@ -210,8 +209,8 @@ lemma IsNonempty.of_nonempty_edgeSet (hE : E(H).Nonempty) : H.IsNonempty :=
 
 @[simp]
 theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
-  simp [IsNonempty, Set.nonempty_iff_ne_empty, Hypergraph.ext_iff]
-  grind [bot_vertexSet, bot_edgeSet]
+  simp [IsNonempty, Hypergraph.ext_iff]
+  grind [bot_vertexSet, bot_edgeSet, Set.not_nonempty_iff_eq_empty]
 
 alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
 
@@ -228,7 +227,6 @@ lemma eq_bot_or_isNonempty : H = ⊥ ∨ H.IsNonempty := by
     apply Hypergraph.ext empty.1 empty.2
   )
   | inr nonempty => (
-    right
     grind [IsNonempty]
   )
 
@@ -249,9 +247,11 @@ lemma IsTrivial.trivialOn (hf : Set.Nonempty f) :
   grind [trivialOn, IsTrivial]
 
 lemma IsTrivial.isNonempty (h : IsTrivial H) : IsNonempty H := by
-  grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
+  grind [IsNonempty, IsTrivial]
 
-lemma IsTrivial.not_mem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
+lemma IsTrivial.notMem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
+
+@[deprecated (since := "2026-09-28")] alias IsTrivial.not_mem_edgeSet := IsTrivial.notMem_edgeSet
 
 /-- A hypergraph is complete if every subset of the vertex set is in the edge set. -/
 @[expose]
@@ -277,9 +277,24 @@ lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
 
 lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬ H.IsTrivial := by
   intro hH
-  exact hH.not_mem_edgeSet (h ∅ (Set.empty_subset _))
+  exact hH.notMem_edgeSet (h ∅ (Set.empty_subset _))
 
 lemma not_isTrivial_completeOn (f : Set α) : ¬ (completeOn f).IsTrivial :=
   (IsComplete.completeOn f).not_isTrivial
+
+/-- A hypergraph is linear if any two distinct edges share at most one vertex. -/
+def IsLinear (H : Hypergraph α) : Prop :=
+  H.edgeSet.Pairwise fun e e' ↦ (e ∩ e').Subsingleton
+
+lemma isLinear_def : H.IsLinear ↔ H.edgeSet.Pairwise fun e e' ↦ (e ∩ e').Subsingleton :=
+  .rfl
+
+lemma IsLinear.inter_subsingleton (h : H.IsLinear) {e e' : Set α} (he : e ∈ H.edgeSet)
+    (he' : e' ∈ H.edgeSet) (hee' : e ≠ e') : (e ∩ e').Subsingleton :=
+  h he he' hee'
+
+/-- A hypergraph with no edges is linear. -/
+theorem IsTrivial.isLinear (h : H.IsTrivial) : H.IsLinear :=
+  fun _ he ↦ (h.notMem_edgeSet he).elim
 
 end Hypergraph

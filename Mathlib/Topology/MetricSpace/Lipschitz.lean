@@ -9,7 +9,6 @@ public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
@@ -38,7 +37,7 @@ assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -127,7 +126,7 @@ theorem coe_toLocallyBoundedMap (hf : LipschitzWith K f) : ⇑(hf.toLocallyBound
 
 theorem comap_cobounded_le (hf : LipschitzWith K f) :
     comap f (Bornology.cobounded β) ≤ Bornology.cobounded α :=
-  (hf.toLocallyBoundedMap f).2
+  (hf.toLocallyBoundedMap f).comap_cobounded_le'
 
 /-- The image of a bounded set under a Lipschitz map is bounded. -/
 theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
@@ -167,6 +166,11 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
   simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using!
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
+
+/-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
+theorem _root_.Set.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
+    { f : E → ℝ | LipschitzWith 1 f }.SeparatesPoints :=
+  fun _ y _ ↦ ⟨(dist · y), by simp [LipschitzWith.dist_left], by simpa⟩
 
 end Metric
 
@@ -297,8 +301,6 @@ theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 end Real
 end LocallyLipschitz
 
-open Metric
-
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 
 /-- A function `f : α → ℝ` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz extension
@@ -320,10 +322,10 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
     dsimp
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
     calc
-      f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
+      f z ≤ f t + K * dist z t := hf.le_add_mul hz t.property
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
+    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.property) ?_
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
   refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
   rw [← sub_le_iff_le_add]
@@ -348,6 +350,6 @@ theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set 
     exact this.extend_real
   choose g hg using this
   refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
-  · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
+  · exact (dist_pi_le_iff (mul_nonneg K.property dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
   · ext1 i
     exact (hg i).2 hx

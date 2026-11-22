@@ -5,8 +5,8 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Extremally disconnected spaces
@@ -105,7 +105,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   have hZ₂ : IsClosed Z₂ := isClosed_closure.prod (T1Space.t1 false)
   have hZ : IsClosed Z := hZ₁.union hZ₂
   let f : Z → X := Prod.fst ∘ Subtype.val
-  have f_cont : Continuous f := continuous_fst.comp continuous_subtype_val
+  have f_cont : Continuous f := continuous_fst.comp continuous_subtypeVal
   have f_sur : Surjective f := by
     intro x
     by_cases hx : x ∈ U
@@ -114,16 +114,16 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   have : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
   let φ := Subtype.val ∘ g
-  have hφ : Continuous φ := continuous_subtype_val.comp hg
+  have hφ : Continuous φ := continuous_subtypeVal.comp hg
   have hφ₁ : ∀ x, (φ x).1 = x := congr_fun g_sec
   suffices closure U = φ ⁻¹' Z₂ by
     rw [this, preimage_comp, ← isClosed_compl_iff, ← preimage_compl,
-      ← preimage_subtype_coe_eq_compl Subset.rfl]
+      ← preimage_subtypeVal_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
   refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
-    have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
+    have : φ x ∈ Z₁ ∪ Z₂ := (g x).property
     rcases this with hφ | hφ
     · exact ((hφ₁ x ▸ hφ.1) hx).elim
     · exact hφ
@@ -142,7 +142,7 @@ a compact subset $E$ of $D$, such that $\pi$ maps $E$ onto $A$ and satisfies the
 "Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
 lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D → A}
     (X_cont : Continuous X) (X_surj : X.Surjective) : ∃ E : Set D, CompactSpace E ∧ X '' E = univ ∧
-    ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.restrict X '' E₀ ≠ univ := by
+    ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.domRestrict X '' E₀ ≠ univ := by
   -- suffices to apply Zorn's lemma on the subsets of $D$ that are closed and mapped onto $A$
   let S : Set <| Set D := {E : Set D | IsClosed E ∧ X '' E = univ}
   suffices ∀ (C : Set <| Set D) (_ : C ⊆ S) (_ : IsChain (· ⊆ ·) C), ∃ s ∈ S, ∀ c ∈ C, s ⊆ c by
@@ -152,7 +152,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     intro E₀ E₀_min E₀_closed
     contrapose E₀_min
     exact eq_univ_of_image_val_eq <|
-      E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
+      E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_domRestrict_image ▸ E₀_min⟩
         image_val_subset
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
@@ -161,7 +161,8 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  · refine eq_univ_of_forall fun a =>
+      (inter_nonempty_iff_exists_left (s := ⋂ c : C, (c : Set D)) (t := X ⁻¹' {a})).mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (X ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
@@ -263,20 +264,21 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
     (isClosed_eq (φ_cont.comp continuous_fst) (f_cont.comp continuous_snd)).isCompact
   -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
   let X₁ : D → A := Prod.fst ∘ Subtype.val
-  have X₁_cont : Continuous X₁ := continuous_fst.comp continuous_subtype_val
+  have X₁_cont : Continuous X₁ := continuous_fst.comp continuous_subtypeVal
   have X₁_surj : X₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
   rcases exists_compact_surjective_zorn_subset X₁_cont X₁_surj with ⟨E, _, E_onto, E_min⟩
   -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
-  let ρ : E → A := E.restrict X₁
-  have ρ_cont : Continuous ρ := X₁_cont.continuousOn.restrict
+  let ρ : E → A := E.domRestrict X₁
+  have ρ_cont : Continuous ρ := X₁_cont.continuousOn.domRestrict
   have ρ_surj : ρ.Surjective := fun a => by
     rcases (E_onto ▸ mem_univ a : a ∈ X₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$
   let X₂ : D → B := Prod.snd ∘ Subtype.val
-  have X₂_cont : Continuous X₂ := continuous_snd.comp continuous_subtype_val
-  refine ⟨E.restrict X₂ ∘ ρ'.symm, ⟨X₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
-  suffices f ∘ E.restrict X₂ = φ ∘ ρ' by
+  have X₂_cont : Continuous X₂ := continuous_snd.comp continuous_subtypeVal
+  refine ⟨E.domRestrict X₂ ∘ ρ'.symm,
+    ⟨X₂_cont.continuousOn.domRestrict.comp ρ'.symm.continuous, ?_⟩⟩
+  suffices f ∘ E.domRestrict X₂ = φ ∘ ρ' by
     rw [← comp_assoc, this, comp_assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm

@@ -6,7 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Bimon_
-public import Mathlib.CategoryTheory.Monoidal.Conv
+
+import Mathlib.CategoryTheory.Monoidal.Conv
 
 /-!
 # The category of Hopf monoids in a braided monoidal category.
@@ -238,7 +239,6 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
     rw [ComonObj.counit_comul]
-    simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [BraidedCategory.braiding_naturality_left]
@@ -386,7 +386,6 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
     rw [MonObj.one_mul]
-    simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.braiding_naturality_left]
@@ -400,7 +399,6 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
     rw [Iso.inv_hom_id]
-    simp only [whiskerLeft_comp]
   simp only [whiskerLeft_id, Category.id_comp]
   slice_lhs 5 6 =>
     rw [whiskerLeft_rightUnitor, Category.assoc, ← rightUnitor_naturality]
@@ -414,7 +412,6 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 2 3 =>
     rw [← whisker_exchange]
   slice_lhs 1 2 =>
-    dsimp
     rw [← tensorHom_def]
   slice_lhs 2 3 =>
     rw [rightUnitor_naturality]

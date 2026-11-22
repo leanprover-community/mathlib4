@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.ModelTheory.Substructures
+
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Finitely Generated First-Order Structures
@@ -26,7 +28,6 @@ generated, similarly to other finitely-generated objects in the algebra library.
 
 Develop a more unified definition of finite generation using the theory of closure operators, or use
 this definition of finite generation to define the others.
-
 -/
 
 @[expose] public section
@@ -203,7 +204,7 @@ class CG : Prop where
 variable {L M}
 
 theorem fg_def : FG L M ↔ (⊤ : L.Substructure M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.FG` in terms of `Set.Finite` instead of `Finset`. -/
 theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.Substructure M) := by
@@ -228,7 +229,7 @@ theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) 
     intro f f' h
     apply Hom.eq_of_eqOn_dense closure_S
     intro x x_in_S
-    exact congr_fun h ⟨x, x_in_S⟩
+    congrm $h ⟨x, x_in_S⟩
   have : Finite ↑S := (S.finite_coe_iff).2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
@@ -254,7 +255,7 @@ theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
   ⟨FG.finite, fun _ => FG.of_finite⟩
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.cg`. -/
 theorem cg_iff : CG L M ↔ ∃ S : Set M, S.Countable ∧ closure L S = (⊤ : L.Substructure M) := by
@@ -320,7 +321,7 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     intro S S' h
     apply Subtype.ext
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg (closure L ∘ SetLike.coe) h
+    congrm closure L $h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

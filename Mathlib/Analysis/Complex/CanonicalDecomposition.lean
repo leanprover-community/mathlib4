@@ -6,15 +6,16 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.Meromorphic.RCLike
-public import Mathlib.Analysis.Normed.Module.Connected
+
+import Mathlib.Analysis.Meromorphic.RCLike
+import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Canonical Decomposition
 
 If a function `f` is meromorphic on a compact set `U`, then it has only finitely many zeros and
 poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be used to re-write `f`
-as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
+as `factorizedRational (divisor f U) • g`, where `g` is analytic without zeros on `U`. In case where
 `U` is a disk, one consider a similar decomposition, called *Finite Canonical Decomposition* or
 *Finite Blaschke Product* that replaces the factors `(· - u)` by canonical factors that take only
 values of norm one on the boundary of the disk. This file introduces the canonical factors and
@@ -31,7 +32,9 @@ discussion.
 
 namespace Complex
 
-open ComplexConjugate Filter Function MeromorphicOn Metric Real Set Topology
+open Filter Function MeromorphicOn Metric Real Set
+
+open scoped ComplexConjugate Topology
 
 variable {R : ℝ} {w : ℂ}
 
@@ -72,7 +75,7 @@ variable (R w) in
 /--
 Canonical factors are meromorphic.
 -/
-theorem meromorphic_canonicalFactor : Meromorphic (canonicalFactor R w) := by
+@[fun_prop] theorem meromorphic_canonicalFactor : Meromorphic (canonicalFactor R w) := by
   intro x
   unfold canonicalFactor
   fun_prop
@@ -165,6 +168,19 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   obtain rfl := by simpa [mem_sphere_zero_iff_norm] using hz
   rw [← ofReal_pow, ← normSq_eq_norm_sq, normSq_eq_conj_mul_self, ← sub_mul, mul_comm _ z]
   simp [← map_sub]
+
+/--
+Finite Blaschke products, i.e., products of powers of canonical factors `canonicalFactor R u` with
+`u ∈ ball 0 R`, take values of norm one on `sphere 0 R`.
+-/
+theorem norm_finprod_canonicalFactor_zpow_eq_one {F : ℂ → ℤ} (hF : F.support ⊆ ball 0 R) {z : ℂ}
+    (hz : z ∈ sphere 0 R) :
+    ‖(∏ᶠ u, (canonicalFactor R u) ^ (F u)) z‖ = 1 := by
+  refine finprod_induction (fun f : ℂ → ℂ ↦ ‖f z‖ = 1) (by simp)
+    (fun _ _ ha hb ↦ by simp [ha, hb]) fun u ↦ ?_
+  by_cases hu : F u = 0
+  · simp [hu]
+  · simp [norm_canonicalFactor_eval_circle_eq_one (hF hu) hz]
 
 /-!
 ### Orders and Divisors
@@ -330,9 +346,7 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
   -- `(something)⁻¹ • g`, converted to a meromorphic function in normal form. The next lines define
   -- `g` in this way and establish basic properties.
   let φ := (∏ᶠ c, canonicalFactor R c ^ (divisor f (ball 0 R)) c) • f
-  have hφ : MeromorphicOn φ (closedBall 0 R) := by
-    apply smul (MeromorphicOn.finprod _) h₁f
-    exact fun z ↦ zpow (fun z₁ hz₁ ↦ meromorphic_canonicalFactor _ _ _) _
+  have hφ : MeromorphicOn φ (closedBall 0 R) := by fun_prop
   let g := toMeromorphicNFOn φ (closedBall 0 R)
   have h₃g : divisor g (ball 0 R) = 0 := by
     rw [divisor_congr_codiscreteWithin
@@ -365,19 +379,19 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
       trans (∏ i ∈ η₀.toFinset, canonicalFactor R i ^ (-(divisor f (ball 0 R)) i)) • φ
       · unfold φ
         rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
-        · filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
-            self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
-          simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
-          rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
-          intro x hx
-          rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
-          simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
-            locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
-            Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
-            or_false]
-          apply canonicalFactor_ne_zero _ (by simp_all) (by grind)
-          by_contra h
-          simp_all
+        filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
+          self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
+        simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
+        rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
+        intro x hx
+        rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
+        simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
+          locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
+          Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
+          or_false]
+        apply canonicalFactor_ne_zero _ (by simp_all) (by grind)
+        by_contra h
+        simp_all
       · rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
         filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ] using by simp_all [g]
   }
@@ -414,7 +428,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
         (η₁.meromorphicAt.smul (D.meromorphicNFOn.meromorphicOn x (by aesop))) (by aesop) ?_
         D.eventuallyEq
       rw [← closure_ball 0 hR.ne']
-      exact isOpen_ball.perfect_closure.2
+      exact isOpen_ball.perfect_closure.preperfect
     have : meromorphicOrderAt (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x = 0 := by
       refine η₁.meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (finprod_apply_ne_zero fun a ↦ ?_)
       by_cases ha : a ∈ ball 0 R
@@ -458,7 +472,7 @@ structure ECanonicalDecomp (f g : ℂ → E) (R : ℝ) where
   -/
   eventuallyEq : f =ᶠ[codiscreteWithin (closedBall 0 R)]
     ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u))
-    * (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v)) • g
+    * factorizedRational (divisor f (sphere 0 R))) • g
 
 /--
 **Extended canonical decomposition:** A meromorphic function on a closed disk is equal, up to
@@ -508,8 +522,179 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
     ne_zero := (h₂h ⟨·, ·⟩)
     eventuallyEq := by
       filter_upwards [D.eventuallyEq, h₃h] with a h₁a h₂a
-      simp_rw [← D.divisor_eq_divisor hR]
+      rw [(funext fun _ ↦ (D.divisor_eq_divisor hR).symm :
+        ⇑(divisor f (sphere 0 R)) = divisor g (closedBall 0 R))]
       simp_all [← smul_assoc]
     }
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, write the function `h` entirely in terms of `f`.
+-/
+lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
+    {f h : ℂ → E} (D : ECanonicalDecomp f h R) (hw : w ∈ closedBall 0 R) (hR : 0 < R) :
+    h w
+      = ((∏ᶠ i, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f (ball 0 R) i))
+          * (∏ᶠ i, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f (sphere 0 R)) i))
+          • meromorphicTrailingCoeffAt f w := by
+  -- Finiteness properties and side results used throughout the proof
+  let B₀R := ball (0 : ℂ) R
+  let S₀R := sphere (0 : ℂ) R
+  lift (divisor f S₀R).support to Finset ℂ using divisor_sphere_support_finite with t₁ ht₁
+  lift (divisor f B₀R).support to Finset ℂ using D.meromorphicOn.divisor_ball_support_finite
+    with t₂ ht₂
+  have := (D.analyticOnNhd w hw).meromorphicAt
+  rw [Eq.comm]
+  -- Proof body: Substitute `f` using `h₁f` and compute
+  calc ((∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt f w
+    _ = ((∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt (((∏ᶠ (u : ℂ), canonicalFactor R u ^ (-(divisor f B₀R) u))
+        * factorizedRational (divisor f S₀R)) • h) w := by
+      rw [meromorphicTrailingCoeffAt_congr_nhdsNE
+        ((D.meromorphicOn w hw).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
+        (by fun_prop) hw ?η₁ D.eventuallyEq)]
+      case η₁ =>
+        rw [← closure_ball _ hR.ne']
+        exact isOpen_ball.perfect_closure.preperfect
+    _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt (((∏ i ∈ t₂, canonicalFactor R i ^ (-(divisor f B₀R) i))
+        * ∏ i ∈ t₁, (· - i) ^ (divisor f S₀R) i) • h) w := by
+      rw [factorizedRational, finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
+      <;> simpa [ht₁, ht₂] using mulSupport_zpow_subset_support ..
+    _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • ((∏ n ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R n ^ (-(divisor f B₀R) n)) w)
+        * ∏ n ∈ t₁, meromorphicTrailingCoeffAt ((· - n) ^ (divisor f S₀R) n) w)
+      • h w := by
+      rw [MeromorphicAt.meromorphicTrailingCoeffAt_smul (by fun_prop)
+        (D.analyticOnNhd w hw).meromorphicAt,
+        MeromorphicAt.meromorphicTrailingCoeffAt_mul (by fun_prop) (by fun_prop),
+        meromorphicTrailingCoeffAt_prod (by fun_prop),
+        meromorphicTrailingCoeffAt_prod (by fun_prop),
+        (D.analyticOnNhd w hw).meromorphicTrailingCoeffAt_of_ne_zero (D.ne_zero w hw)]
+    _ = h w := by
+      rw [smul_smul, mul_mul_mul_comm, ← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib,
+        Finset.prod_eq_one ?η₁, Finset.prod_eq_one ?η₂, mul_one, one_smul]
+      case η₁ =>
+        intro x hx
+        rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
+          add_neg_cancel, zpow_zero]
+        apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (by fun_prop)
+          (meromorphicOrderAt_canonicalFactor_ne_top x hR)
+      case η₂ =>
+        intro x hx
+        rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
+          locallyFinsuppWithin.coe_neg, Pi.neg_apply, neg_add_cancel, zpow_zero]
+        rw [meromorphicTrailingCoeffAt_id_sub_const]
+        grind
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, write the function `h` entirely in terms of `f`, under the assumption that `f` has
+order zero.
+-/
+lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt_of_meromorphicOrderAt
+    {f h : ℂ → E} (D : ECanonicalDecomp f h R) (h₁w : w ∈ closedBall 0 R)
+    (h₂w : meromorphicOrderAt f w = 0) (hR : 0 < R) :
+    h w = ((∏ᶠ i, (canonicalFactor R i w) ^ (divisor f (ball 0 R) i))
+          * (∏ᶠ i, (w - i) ^ (-divisor f (sphere 0 R)) i))
+          • meromorphicTrailingCoeffAt f w := by
+  rw [D.eq_smul_meromorphicTrailingCoeffAt h₁w hR]
+  congr! 4 with x x
+  · by_cases h₃x : (divisor f (ball 0 R)) x = 0
+    · simp [h₃x]
+    have h₁x : x ∈ ball 0 R := (divisor f (ball 0 R)).supportWithinDomain h₃x
+    have h₂x : w ≠ x := by
+      rintro rfl
+      exact h₃x (by simp [(D.meromorphicOn.mono_set ball_subset_closedBall).divisor_apply h₁x, h₂w])
+    rw [AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero
+      (Complex.analyticOnNhd_canonicalFactor R x w h₂x)
+      (Complex.canonicalFactor_ne_zero h₁x h₁w h₂x)]
+  · by_cases h : x = w
+    · simp_all [meromorphicTrailingCoeffAt_id_sub_const, divisor_def]
+    grind [meromorphicTrailingCoeffAt_id_sub_const]
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, write the function `log ‖h‖` entirely in terms of `f`, under the assumption that `f`
+has order zero.
+-/
+lemma ECanonicalDecomp.log_norm_eq
+    {f h : ℂ → E} (D : ECanonicalDecomp f h R) (h₁w : w ∈ closedBall 0 R)
+    (h₂w : meromorphicOrderAt f w = 0)
+    (hR : 0 < R) :
+    Real.log ‖h w‖ = ((∑ᶠ i, (divisor f (ball 0 R) i) * Real.log ‖canonicalFactor R i w‖)
+          - (∑ᶠ i, (divisor f (sphere 0 R) i) * Real.log ‖w - i‖))
+          + Real.log ‖meromorphicTrailingCoeffAt f w‖ := by
+  -- Finiteness properties and side results used throughout the proof
+  let B₀R := ball (0 : ℂ) R
+  let S₀R := sphere (0 : ℂ) R
+  lift (divisor f S₀R).support to Finset ℂ using divisor_sphere_support_finite with t₁ ht₁
+  lift (divisor f B₀R).support to Finset ℂ using D.meromorphicOn.divisor_ball_support_finite
+    with t₂ ht₂
+  calc Real.log ‖h w‖
+    _ = log ‖((∏ᶠ (i : ℂ), canonicalFactor R i w ^ (divisor f B₀R) i)
+        * ∏ᶠ (i : ℂ), (w - i) ^ (-divisor f S₀R) i) • meromorphicTrailingCoeffAt f w‖ := by
+      rw [D.eq_smul_meromorphicTrailingCoeffAt_of_meromorphicOrderAt
+        h₁w h₂w hR, finprod_eq_prod_of_mulSupport_subset (s := t₂) _ (by aesop)]
+    _ = log ‖((∏ i ∈ t₂, canonicalFactor R i w ^ (divisor f B₀R) i)
+        * ∏ i ∈ t₁, (w - i) ^ (-divisor f S₀R) i) • meromorphicTrailingCoeffAt f w‖ := by
+      rw [finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
+      <;> simpa [ht₁, ht₂] using mulSupport_zpow_subset_support ..
+    _ =  ∑ i ∈ t₂, log (‖canonicalFactor R i w‖ ^ (divisor f B₀R) i)
+        + ∑ i ∈ t₁, log (‖w - i‖ ^ (-divisor f S₀R) i) + log ‖meromorphicTrailingCoeffAt f w‖ := by
+      have η₀ (x) (hx : x ∈ t₁) : ‖w - x‖ ^ (-divisor f S₀R) x ≠ 0 := by
+        refine zpow_ne_zero _ ?_
+        rw [norm_ne_zero_iff, sub_ne_zero]
+        rintro rfl
+        simp_all [divisor_def, ← Finset.mem_coe]
+      have η₁ (x) (hx : x ∈ t₂) : ‖canonicalFactor R x w‖ ^ (divisor f B₀R) x ≠ 0 := by
+        refine zpow_ne_zero _ ?_
+        rw [norm_ne_zero_iff]
+        have h₁x : x ∈ ball 0 R := (divisor f B₀R).supportWithinDomain (ht₂ ▸ hx)
+        refine canonicalFactor_ne_zero h₁x h₁w fun _ ↦ ?_
+        simp_all [divisor_def, ← Finset.mem_coe]
+      simp_rw [norm_smul, norm_mul, norm_prod, norm_zpow]
+      rw [Real.log_mul (mul_ne_zero_iff.2 ⟨Finset.prod_ne_zero_iff.2 η₁,
+          Finset.prod_ne_zero_iff.2 η₀⟩) ?_, Real.log_mul (Finset.prod_ne_zero_iff.2 η₁)
+        (Finset.prod_ne_zero_iff.2 η₀), Real.log_prod η₁, Real.log_prod η₀]
+      simpa using (D.meromorphicOn w h₁w).meromorphicTrailingCoeffAt_ne_zero (by simp [h₂w])
+    _ = ((∑ᶠ i, (divisor f B₀R i) * Real.log ‖canonicalFactor R i w‖)
+        - (∑ᶠ i, (divisor f S₀R i) * Real.log ‖w - i‖))
+        + Real.log ‖meromorphicTrailingCoeffAt f w‖ := by
+      rw [finsum_eq_sum_of_support_subset (s := t₂) _ ?η₀,
+        finsum_eq_sum_of_support_subset (s := t₁) _ ?η₁]
+      case η₀ | η₁ => intro _ _; simp_all [S₀R, B₀R]
+      rw [sub_eq_add_neg, ← Finset.sum_neg_distrib]
+      congr! 3 with i hi i hi <;> simp
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, the function `log ‖f‖` agrees on the circle `sphere 0 R`, up to modification over a
+discrete set, with `log ‖factorizedRational (divisor f (sphere 0 R)) ·‖ + log ‖h ·‖`. The canonical
+factors do not contribute because they have norm one on the circle.
+-/
+lemma ECanonicalDecomp.log_norm_eventuallyEq {f h : ℂ → E} (D : ECanonicalDecomp f h R) :
+    (Real.log ‖f ·‖) =ᶠ[codiscreteWithin (sphere 0 R)]
+      (Real.log ‖factorizedRational (divisor f (sphere 0 R)) ·‖) + (Real.log ‖h ·‖) := by
+  -- The Blaschke product has norm one on the circle
+  have h₀ {u : ℂ} (hu : u ∈ sphere 0 R) :
+      ‖(∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) u‖ = 1 :=
+    norm_finprod_canonicalFactor_zpow_eq_one
+      (fun _ hu ↦ (divisor f (ball 0 R)).supportWithinDomain (by simpa using hu)) hu
+  filter_upwards [D.eventuallyEq.filter_mono (codiscreteWithin_mono sphere_subset_closedBall),
+    (divisor f (sphere 0 R)).eq_zero_codiscreteWithin, self_mem_codiscreteWithin _]
+    with z hz h₁z h₂z
+  rw [Pi.add_apply, hz, Pi.smul_apply', Pi.mul_apply, norm_smul, norm_mul, h₀ h₂z, one_mul, log_mul]
+  · simpa using FactorizedRational.ne_zero h₁z
+  · simpa using D.ne_zero z <| sphere_subset_closedBall h₂z
 
 end Complex

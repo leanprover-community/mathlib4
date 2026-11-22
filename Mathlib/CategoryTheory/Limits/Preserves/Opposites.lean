@@ -13,15 +13,12 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` and `F.rightOp`
 preserve certain (co)limits and vice versa.
-
 -/
 
 public section
 
 
 universe w w' v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 
