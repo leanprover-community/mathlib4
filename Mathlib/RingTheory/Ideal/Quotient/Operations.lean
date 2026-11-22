@@ -398,7 +398,10 @@ theorem Quotient.mkₐ_toRingHom (I : Ideal A) [I.IsTwoSided] :
     (Quotient.mkₐ R₁ I).toRingHom = Ideal.Quotient.mk I :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
+theorem Quotient.coe_mkₐ (I : Ideal A) [I.IsTwoSided] :
+    ⇑(Quotient.mkₐ R₁ I) = Submodule.Quotient.mk := rfl
+
 theorem Quotient.mkₐ_eq_mk (I : Ideal A) [I.IsTwoSided] : ⇑(Quotient.mkₐ R₁ I) = Quotient.mk I :=
   rfl
 

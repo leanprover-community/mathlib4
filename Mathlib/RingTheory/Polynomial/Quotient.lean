@@ -53,8 +53,14 @@ def quotientSpanCXSubCAlgEquiv (x y : R) :
     (DoubleQuot.quotQuotEquivQuotSupₐ R _ _).symm.trans <|
       (Ideal.quotientEquivAlg _ _ (quotientSpanXSubCAlgEquiv y) rfl).trans <|
         Ideal.quotientEquivAlgOfEq R <| by
-          simp only [Ideal.map_span, Set.image_singleton, ← AlgHom.coe_toRingHom]
-          congr 2; exact eval_C
+          calc
+            _ = Ideal.map (quotientSpanXSubCAlgEquiv y).toRingHom
+                (Ideal.map (Ideal.Quotient.mk _) (Ideal.span {C x})) := by
+              -- `simp` fails to close the goal
+              rfl
+            _ = _ := by
+              simp only [Ideal.map_span, Set.image_singleton]
+              congr 2; exact eval_C
 
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
