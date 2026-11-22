@@ -113,11 +113,11 @@ lemma bcdFun_isPrefix (k : Fin 3) (v w : InfiniteBinaryTree) :
       rcases fin3_eq_zero_or_one_or_two k with hk | hk | hk <;>
         rcases fin2_eq_zero_or_one i with hi | hi <;>
           rcases fin2_eq_zero_or_one j with hj | hj
-      · simpa [bcdFun, hk, hi, hj, List.cons_prefix_cons] using swapRoot.map_isPrefix a b
+      · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons, ih 1]
-      · simpa [bcdFun, hk, hi, hj, List.cons_prefix_cons] using swapRoot.map_isPrefix a b
+      · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons]
       · simp [bcdFun, hk, hi, hj, List.cons_prefix_cons, ih 2]
@@ -133,7 +133,7 @@ def bcd (k : Fin 3) : TreeAut where
       invFun := bcdFun k
       left_inv := bcdFun_involutive k
       right_inv := bcdFun_involutive k }
-  map_isPrefix := bcdFun_isPrefix k
+  map_rel_iff' {_ _} := (bcdFun_isPrefix k _ _).symm
 
 /-- The generator `a`: swap the two children of the root. -/
 def a : TreeAut := swapRoot
@@ -167,21 +167,21 @@ def d : TreeAut := bcd 2
 lemma b_eq_phi : b = phi a c :=
   TreeAut.ext fun v ↦ by
     cases v with
-    | nil => rfl
+    | nil => simp [map_root]
     | cons i w =>
       rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, phi_cons]
 
 lemma c_eq_phi : c = phi a d :=
   TreeAut.ext fun v ↦ by
     cases v with
-    | nil => rfl
+    | nil => simp [map_root]
     | cons i w =>
       rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, phi_cons]
 
 lemma d_eq_phi : d = phi (1 : TreeAut) b :=
   TreeAut.ext fun v ↦ by
     cases v with
-    | nil => rfl
+    | nil => simp [map_root]
     | cons i w =>
       rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, phi_cons]
 
@@ -189,17 +189,17 @@ lemma a_mul_self : a * a = 1 := swapRoot_mul_self
 
 @[simp] lemma b_mul_self : b * b = 1 :=
   TreeAut.ext fun v ↦ by
-    simp only [mul_apply, one_apply, b, bcd]
+    simp only [TreeAut.mul_apply, TreeAut.one_apply, b, bcd]
     exact bcdFun_involutive 0 v
 
 @[simp] lemma c_mul_self : c * c = 1 :=
   TreeAut.ext fun v ↦ by
-    simp only [mul_apply, one_apply, c, bcd]
+    simp only [TreeAut.mul_apply, TreeAut.one_apply, c, bcd]
     exact bcdFun_involutive 1 v
 
 @[simp] lemma d_mul_self : d * d = 1 :=
   TreeAut.ext fun v ↦ by
-    simp only [mul_apply, one_apply, d, bcd]
+    simp only [TreeAut.mul_apply, TreeAut.one_apply, d, bcd]
     exact bcdFun_involutive 2 v
 
 lemma a_inv : a⁻¹ = a := inv_eq_of_mul_eq_one_right a_mul_self
@@ -214,15 +214,15 @@ lemma d_inv : d⁻¹ = d := inv_eq_of_mul_eq_one_right d_mul_self
 lemma bc_cd_db_apply (v : InfiniteBinaryTree) :
     (b * c) v = d v ∧ (c * d) v = b v ∧ (d * b) v = c v := by
   induction v with
-  | nil => exact ⟨rfl, rfl, rfl⟩
+  | nil => simp
   | cons i w ih =>
     obtain ⟨ihbc, ihcd, ihdb⟩ := ih
     rcases fin2_eq_zero_or_one i with hi | hi
-    · simp [hi, mul_apply, swapRoot_apply_apply]
+    · simp [hi, TreeAut.mul_apply, swapRoot_apply_apply]
     · refine ⟨?_, ?_, ?_⟩
-      · simpa [hi, mul_apply] using ihcd
-      · simpa [hi, mul_apply] using ihdb
-      · simpa [hi, mul_apply] using ihbc
+      · simpa [hi, TreeAut.mul_apply] using ihcd
+      · simpa [hi, TreeAut.mul_apply] using ihdb
+      · simpa [hi, TreeAut.mul_apply] using ihbc
 
 lemma bc_eq_d : b * c = d :=
   TreeAut.ext fun v ↦ (bc_cd_db_apply v).1
@@ -330,14 +330,14 @@ def stabilizerLevel (n : ℕ) : Subgroup TreeAut where
   one_mem' := by simp
   mul_mem' := by
     intro f g hf hg v hv
-    simp [mul_apply, hg v hv, hf v hv]
+    simp [TreeAut.mul_apply, hg v hv, hf v hv]
   inv_mem' := by
     intro f hf v hv
     have hlen : (f⁻¹ v).length = n := by
-      simpa [inv_eq_symm] using f.symm.map_length v ▸ hv
+      simpa [inv_eq_symm] using (map_length f.symm v).symm ▸ hv
     have hfix := hf (f⁻¹ v) hlen
     have : f (f⁻¹ v) = v := by
-      simp [inv_eq_symm, Equiv.apply_symm_apply]
+      simp [inv_eq_symm]
     rw [this] at hfix
     exact hfix.symm
 
@@ -347,23 +347,31 @@ def stabilizerLevel (n : ℕ) : Subgroup TreeAut where
 
 lemma a_notMem_stabilizerLevel_one : a ∉ stabilizerLevel 1 := by
   intro h
-  have := h [0] (by simp)
-  simp at this
+  have h0 := h [0] (by simp)
+  have : a [0] = [1] := a_cons 0 []
+  rw [this] at h0
+  cases h0
 
 lemma b_mem_stabilizerLevel_one : b ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+  rcases fin2_eq_zero_or_one i with hi | hi
+  · rw [hi, b_cons]; simp [map_root]
+  · rw [hi, b_cons]; simp [map_root]
 
 lemma c_mem_stabilizerLevel_one : c ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+  rcases fin2_eq_zero_or_one i with hi | hi
+  · rw [hi, c_cons]; simp [map_root]
+  · rw [hi, c_cons]; simp [map_root]
 
 lemma d_mem_stabilizerLevel_one : d ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+  rcases fin2_eq_zero_or_one i with hi | hi
+  · rw [hi, d_cons]; simp
+  · rw [hi, d_cons]; simp [map_root]
 
 /-- The stabilizer of level `n` in the Grigorchuk group. -/
 def st (n : ℕ) : Subgroup G := (stabilizerLevel n).subgroupOf G
@@ -395,14 +403,14 @@ lemma activity_mul (f g : TreeAut) :
   have hfg : (f * g) [0] = [activity (f * g) []] := by
     simpa [firstLetter_zero, activity_nil] using apply_singleton (f * g) 0
   have h : (f * g) [0] = [activity g [] + activity f []] := by
-    simp only [mul_apply]
+    simp only [TreeAut.mul_apply]
     rw [apply_singleton, firstLetter_zero, activity_nil, apply_singleton,
       firstLetter_eq_add_activity, activity_nil]
   have := (List.cons_eq_cons.mp (hfg.symm.trans h)).1
   rw [this, add_comm]
 
 lemma activity_a : activity a [] = 1 := by
-  have h : a [0] = [1] := by simp
+  have h : a [0] = [1] := a_cons 0 []
   have hs := apply_singleton a 0
   rw [firstLetter_zero, ← activity_nil] at hs
   exact (List.cons_eq_cons.mp (hs.symm.trans h)).1
@@ -479,7 +487,7 @@ lemma apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Fin 2) :
   · obtain ⟨j, hj⟩ := exists_apply_succ f v 1
     have h0 := apply_succ_zero f v
     have hne : f (v ++ [0]) ≠ f (v ++ [1]) :=
-      f.toEquiv.injective.ne (by simp)
+      f.injective.ne (by simp)
     have hjne : j ≠ activity f v := by
       intro h
       apply hne
@@ -503,9 +511,9 @@ lemma apply_eq_of_mem_stabilizerLevel {n : ℕ} {f : TreeAut} (hf : f ∈ stabil
   have hfw : f w = w := hf w hwlen
   have hpref : f v <+: w := by
     have : v <+: w := List.prefix_append _ _
-    simpa [hfw] using (f.map_isPrefix_iff).mp this
+    simpa [hfw] using (map_isPrefix_iff f).mpr this
   have : f v = w.take v.length := by
-    simpa [f.map_length] using (List.prefix_iff_eq_take.mp hpref)
+    simpa [map_length f] using (List.prefix_iff_eq_take.mp hpref)
   have htake : w.take v.length = v := by
     simp [w]
   rw [this, htake]
@@ -598,7 +606,7 @@ lemma activityBelow_eq_of_mul_mem {n : ℕ} {f g : TreeAut}
   have hfix : (f⁻¹ * g) (v ++ [0]) = v ++ [0] :=
     apply_eq_of_mem_stabilizerLevel h (by simp; omega)
   have hfg : f (v ++ [0]) = g (v ++ [0]) := by
-    rw [mul_apply, inv_eq_symm, symm_apply] at hfix
+    rw [TreeAut.mul_apply, inv_eq_symm] at hfix
     exact ((Equiv.symm_apply_eq f.toEquiv).mp hfix).symm
   have hfeq : f v ++ [activity f v] = g v ++ [activity g v] := by
     simpa [apply_succ, zero_add] using hfg
@@ -610,8 +618,8 @@ lemma mul_mem_stabilizerLevel_of_activityBelow_eq {n : ℕ} {f g : TreeAut}
   have hact : ∀ u : InfiniteBinaryTree, u.length < n → activity f u = activity g u :=
     fun u hu => congr_fun h ⟨u, hu⟩
   have hfg : f v = g v := apply_eq_of_activity_eq hact hv
-  rw [mul_apply, inv_eq_symm, symm_apply, ← hfg]
-  exact Equiv.symm_apply_apply f.toEquiv v
+  rw [TreeAut.mul_apply, inv_eq_symm, ← hfg]
+  exact RelIso.symm_apply_apply f v
 
 /-- Activities below level `n` descend to the quotient by `stabilizerLevel n`. -/
 noncomputable def activityBelowQuot (n : ℕ) :
@@ -671,15 +679,14 @@ lemma firstLetter_eq_of_mem_stabilizerLevel_one {f : TreeAut} (hf : f ∈ stabil
 lemma apply_cons_of_mem_stabilizerLevel_one {f : TreeAut} (hf : f ∈ stabilizerLevel 1)
     (i : Fin 2) (w : InfiniteBinaryTree) : f (i :: w) = i :: restrict f i w := by
   rw [apply_cons, firstLetter_eq_of_mem_stabilizerLevel_one hf]
-  rfl
 
 lemma restrict_mul {f g : TreeAut} (hf : f ∈ stabilizerLevel 1) (hg : g ∈ stabilizerLevel 1)
     (i : Fin 2) : restrict (f * g) i = restrict f i * restrict g i :=
   TreeAut.ext fun w => by
     have hfg : (f * g) (i :: w) = i :: restrict f i (restrict g i w) := by
-      rw [mul_apply, apply_cons_of_mem_stabilizerLevel_one hg,
+      rw [TreeAut.mul_apply, apply_cons_of_mem_stabilizerLevel_one hg,
         apply_cons_of_mem_stabilizerLevel_one hf]
-    simpa [restrict_apply, mul_apply] using congrArg List.tail hfg
+    simpa [restrict_apply, TreeAut.mul_apply] using congrArg List.tail hfg
 
 lemma restrict_inv {f : TreeAut} (hf : f ∈ stabilizerLevel 1) (i : Fin 2) :
     restrict f⁻¹ i = (restrict f i)⁻¹ := by
@@ -1039,8 +1046,8 @@ lemma psi_snd_surjective : Function.Surjective ((MonoidHom.snd G G).comp psi) :=
 `[G : st 1] = 2` and `G` is finite. -/
 instance : Infinite G :=
   ⟨fun _ => by
-    have hcard : Nat.card G = Nat.card (st 1) * 2 := by
-      rw [← st_one_index, Subgroup.card_mul_index]
+    have hcard : Nat.card (st 1) * (st 1).index = Nat.card G := Subgroup.card_mul_index _
+    rw [st_one_index] at hcard
     have hle : Nat.card G ≤ Nat.card (st 1) :=
       Nat.card_le_card_of_surjective _ psi_fst_surjective
     have : 0 < Nat.card (st 1) := Nat.card_pos
