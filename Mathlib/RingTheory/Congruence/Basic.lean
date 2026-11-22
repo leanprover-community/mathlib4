@@ -339,7 +339,7 @@ theorem comap_ringConGen_equiv
     {F} [EquivLike F R' R] [RingEquivClass F R' R]
     (r : R → R → Prop) (f : F) :
     (ringConGen r).comap f = ringConGen (r on f) := by
-  set f' := RingEquivClass.toRingEquiv f
+  set f' := RingEquiv.ofClass f
   suffices (ringConGen r).comap f' = ringConGen (r on f') from this
   refine le_antisymm (fun x y h ↦ ?_) (le_comap_ringConGen _ _)
   rw [← f'.symm_apply_apply x, ← f'.symm_apply_apply y]

@@ -108,7 +108,7 @@ This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
 def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-  { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
+  { RingEquiv.ofClass f with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
@@ -415,8 +415,7 @@ theorem trans_toRingEquiv (f : α ≃+*o β) (g : β ≃+*o γ) :
 /-- `simp`-normal form of `trans_toRingEquiv`. -/
 @[simp]
 theorem trans_toRingEquiv_aux (f : α ≃+*o β) (g : β ≃+*o γ) :
-    RingEquivClass.toRingEquiv (OrderRingIso.trans f g)
-      = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
+    .ofClass (OrderRingIso.trans f g) = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
   rfl
 
 @[simp]
