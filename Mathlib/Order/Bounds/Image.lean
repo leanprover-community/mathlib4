@@ -311,7 +311,7 @@ end AntitoneMonotone
 end Image2
 
 section IsCofinalFor
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β} {g : β → α}
 
 @[to_dual]
 lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) :
@@ -328,6 +328,27 @@ lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) 
   rintro a ha
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
+
+-- TODO: prove from the previous theorem
+theorem IsCofinal.image (hs : IsCofinal s) (hf : Monotone f)
+    (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) := by
+  intro a
+  obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+  obtain ⟨c, hc, hc'⟩ := hs b
+  exact ⟨_, mem_image_of_mem f hc, hb.trans (hf hc')⟩
+
+/-- A cofinal subset of a cofinal subset is cofinal. -/
+theorem IsCofinal.trans {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
+    IsCofinal (Subtype.val '' t) :=
+  ht.image (Subtype.mono_coe _) (by simpa)
+
+theorem GaloisConnection.isCofinal_range (h : GaloisConnection g f) :
+    IsCofinal (range f) :=
+  fun a ↦ ⟨_, mem_range_self _, GaloisConnection.le_u_l h a⟩
+
+theorem GaloisConnection.map_isCofinal (h : GaloisConnection g f) (hs : IsCofinal s) :
+    IsCofinal (f '' s) :=
+  hs.image h.monotone_u h.isCofinal_range
 
 end IsCofinalFor
 
