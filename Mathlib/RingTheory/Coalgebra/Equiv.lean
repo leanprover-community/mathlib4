@@ -56,7 +56,7 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 @[coe]
 def _root_.CoalgEquiv.ofClass [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
-  { (f : A →ₗc[R] B), (SemilinearEquivClass.semilinearEquiv f : A ≃ₗ[R] B) with }
+  { (f : A →ₗc[R] B), (.ofClass f : A ≃ₗ[R] B) with }
 
 @[deprecated (since := "2026-09-08")] alias toCoalgEquiv := CoalgEquiv.ofClass
 
