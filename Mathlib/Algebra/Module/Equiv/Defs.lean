@@ -188,12 +188,14 @@ theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.
   DFunLike.coe_injective
 
 @[simp]
-lemma ofClass_apply {F : Type*} [EquivLike F M M₂]
-    [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
-    LinearEquiv.ofClass (M₂ := M₂) f x = f x := rfl
+protected lemma coe_ofClass {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) :
+    ⇑(.ofClass f : M ≃ₛₗ[σ] M₂) = f := rfl
 
-@[deprecated (since := "2026-11-22")] alias _root_.SemilinearEquivClass.semilinearEquiv_apply :=
-  LinearEquiv.ofClass_apply
+@[deprecated LinearEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
+lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
+    SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
 
 end
 
