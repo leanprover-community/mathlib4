@@ -8,10 +8,10 @@ module
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
-public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 /-!
 # Volume measure for Euclidean geometry

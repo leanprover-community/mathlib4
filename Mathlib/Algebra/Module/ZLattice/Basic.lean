@@ -5,11 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Localization.Module
 
