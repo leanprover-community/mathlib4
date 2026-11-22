@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Monica Omar
+Authors: Monica Omar, Levent Alpöge
 -/
 module
 
@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
 /-!
 # The partial order on matrices
@@ -23,6 +24,10 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 * `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
 * `Matrix.toMatrixInnerProductSpace`: the inner product on matrices induced by a
   positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
+* `Matrix.PosDef.det_re_mono`: **Minkowski's determinant inequality**: the determinant is
+  monotone with respect to this order on positive definite matrices.
+* `Matrix.PosDef.det_re_le_det_re_mul_det_re_fromBlocks`: **Fischer's inequality**.
+* `Matrix.PosDef.det_re_le_prod_diag_re`: **Hadamard's determinant inequality**.
 
 ## Implementation notes
 
@@ -233,6 +238,152 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
   (hA.kronecker hB).submatrix (e := fun i ↦ (i, i)) fun _ _ h ↦ congrArg Prod.fst h
 
 end hadamard
+
+/-! ### Determinant inequalities -/
+
+section Determinant
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- The determinant of `1 + Q` for a positive semidefinite matrix `Q` is the product of
+`1 + λ` over the eigenvalues `λ` of `Q`. -/
+theorem PosSemidef.det_one_add_eq_prod {Q : Matrix ι ι 𝕜} (hQ : Q.PosSemidef) :
+    (1 + Q).det = ((∏ i, (1 + hQ.isHermitian.eigenvalues i) : ℝ) : 𝕜) := by
+  have h1 : (1 + Q) = Unitary.conjStarAlgAut 𝕜 _ hQ.isHermitian.eigenvectorUnitary
+      (1 + diagonal (RCLike.ofReal ∘ hQ.isHermitian.eigenvalues)) := by
+    rw [map_add, map_one, ← hQ.isHermitian.spectral_theorem]
+  have hd : (1 + diagonal (RCLike.ofReal ∘ hQ.isHermitian.eigenvalues) : Matrix ι ι 𝕜) =
+      diagonal fun i => ((1 + hQ.isHermitian.eigenvalues i : ℝ) : 𝕜) := by
+    ext i j
+    by_cases h : i = j
+    · subst h; simp
+    · simp [h]
+  rw [h1, Unitary.conjStarAlgAut_apply, hd, det_mul, det_mul, det_diagonal, RCLike.ofReal_prod,
+    mul_comm (det _) (∏ _, _), mul_assoc, ← det_mul,
+    Unitary.mul_star_self_of_mem hQ.isHermitian.eigenvectorUnitary.property, det_one, mul_one]
+
+/-- **Minkowski's determinant inequality**: the determinant is monotone with respect to the
+Loewner order on positive definite matrices: if `G` is positive definite and `H - G` is
+positive semidefinite, then `(G.det).re ≤ (H.det).re`. -/
+theorem PosDef.det_re_mono {G H : Matrix ι ι 𝕜} (hG : G.PosDef) (hGH : (H - G).PosSemidef) :
+    RCLike.re G.det ≤ RCLike.re H.det := by
+  set S := CFC.sqrt G
+  have hS0 : S.PosSemidef := (CFC.sqrt_nonneg G).posSemidef
+  have hSS : S * S = G := CFC.sqrt_mul_sqrt_self G hG.posSemidef.nonneg
+  have hSh : Sᴴ = S := hS0.1
+  have hdetG : G.det = S.det * S.det := by rw [← hSS, det_mul]
+  have hGpos := hG.det_pos
+  have hSdet : S.det ≠ 0 := fun h => by rw [hdetG, h, zero_mul] at hGpos; exact lt_irrefl _ hGpos
+  have hSu : IsUnit S.det := isUnit_iff_ne_zero.mpr hSdet
+  have hQ : (S⁻¹ * (H - G) * (S⁻¹)ᴴ).PosSemidef := hGH.mul_mul_conjTranspose_same _
+  have hinvh : (S⁻¹)ᴴ = S⁻¹ := by rw [conjTranspose_nonsing_inv, hSh]
+  have h2 : S * (S⁻¹ * (H - G) * (S⁻¹)ᴴ) * S = H - G := by
+    rw [hinvh, show S * (S⁻¹ * (H - G) * S⁻¹) * S = (S * S⁻¹) * (H - G) * (S⁻¹ * S) by
+      simp only [Matrix.mul_assoc]]
+    rw [mul_nonsing_inv S hSu, nonsing_inv_mul S hSu, Matrix.one_mul, Matrix.mul_one]
+  have hH : H = S * (1 + S⁻¹ * (H - G) * (S⁻¹)ᴴ) * S := by
+    rw [Matrix.mul_add, Matrix.add_mul, Matrix.mul_one, hSS, h2]; abel
+  have hdetH : H.det = G.det * (1 + S⁻¹ * (H - G) * (S⁻¹)ᴴ).det := by
+    conv_lhs => rw [hH]
+    rw [det_mul, det_mul, hdetG]; ring
+  rw [hdetH, hQ.det_one_add_eq_prod]
+  obtain ⟨hre, -⟩ := RCLike.pos_iff.mp hGpos
+  rw [RCLike.mul_re, RCLike.ofReal_re, RCLike.ofReal_im, mul_zero, sub_zero]
+  have h1 : (1 : ℝ) ≤ ∏ i, (1 + hQ.isHermitian.eigenvalues i) :=
+    calc
+      (1 : ℝ) = ∏ _i : ι, (1 : ℝ) := by simp
+      _ ≤ ∏ i, (1 + hQ.isHermitian.eigenvalues i) :=
+        Finset.prod_le_prod₀ (f := fun _ : ι => (1 : ℝ))
+          (g := fun i => 1 + hQ.isHermitian.eigenvalues i)
+          (fun i _ => zero_le_one) (fun i _ => by linarith [hQ.eigenvalues_nonneg i])
+  nlinarith
+
+/-- **Fischer's inequality**: for a positive definite block matrix `[[A, B], [C, D]]`
+(necessarily `C = Bᴴ`), the determinant is at most the product of the determinants of the
+diagonal blocks: `((fromBlocks A B C D).det).re ≤ (A.det).re * (D.det).re`. -/
+theorem PosDef.det_re_le_det_re_mul_det_re_fromBlocks
+    {m k : Type*} [Fintype m] [DecidableEq m] [Fintype k] [DecidableEq k]
+    {A : Matrix m m 𝕜} {B : Matrix m k 𝕜} {C : Matrix k m 𝕜} {D : Matrix k k 𝕜}
+    (h : (fromBlocks A B C D).PosDef) :
+    RCLike.re (fromBlocks A B C D).det ≤ RCLike.re A.det * RCLike.re D.det := by
+  have hA : A.PosDef := by
+    have := h.submatrix (e := (Sum.inl : m → m ⊕ k)) Sum.inl_injective
+    have e : (fromBlocks A B C D).submatrix Sum.inl Sum.inl = A := by ext; simp
+    rwa [e] at this
+  have hD : D.PosDef := by
+    have := h.submatrix (e := (Sum.inr : k → m ⊕ k)) Sum.inr_injective
+    have e : (fromBlocks A B C D).submatrix Sum.inr Sum.inr = D := by ext; simp
+    rwa [e] at this
+  have hC : C = Bᴴ := ((isHermitian_fromBlocks_iff.mp h.isHermitian).2.1).symm
+  subst hC
+  have : Invertible A := hA.isUnit.invertible
+  have hS : (D - Bᴴ * A⁻¹ * B).PosSemidef := (PosDef.fromBlocks₁₁ B D hA).mp h.posSemidef
+  have hdet : (fromBlocks A B Bᴴ D).det = A.det * (D - Bᴴ * A⁻¹ * B).det := by
+    rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv]
+  have hSne : (D - Bᴴ * A⁻¹ * B).det ≠ 0 := by
+    intro h0
+    have := h.det_pos
+    rw [hdet, h0, mul_zero] at this
+    exact lt_irrefl _ this
+  have hSd : (D - Bᴴ * A⁻¹ * B).PosDef := hS.posDef_iff_det_ne_zero.mpr hSne
+  have hdiff : (D - (D - Bᴴ * A⁻¹ * B)).PosSemidef := by
+    rw [sub_sub_cancel]
+    exact hA.inv.posSemidef.conjTranspose_mul_mul_same B
+  have hmono := hSd.det_re_mono hdiff
+  have hAre : 0 ≤ RCLike.re A.det := (RCLike.pos_iff.mp hA.det_pos).1.le
+  have hAim : RCLike.im A.det = 0 := (RCLike.pos_iff.mp hA.det_pos).2
+  rw [hdet, RCLike.mul_re, hAim, zero_mul, sub_zero]
+  exact mul_le_mul_of_nonneg_left hmono hAre
+
+/-- Block version of Fischer's inequality for a matrix indexed by `Fin (a + b)`. -/
+theorem PosDef.det_re_le_submatrix_det_re_mul_submatrix_det_re {a b : ℕ}
+    {M : Matrix (Fin (a + b)) (Fin (a + b)) 𝕜} (hM : M.PosDef) :
+    RCLike.re M.det ≤ RCLike.re (M.submatrix (Fin.castAdd b) (Fin.castAdd b)).det *
+      RCLike.re (M.submatrix (Fin.natAdd a) (Fin.natAdd a)).det := by
+  have hE : M.submatrix finSumFinEquiv finSumFinEquiv =
+      fromBlocks (M.submatrix (Fin.castAdd b) (Fin.castAdd b))
+        (M.submatrix (Fin.castAdd b) (Fin.natAdd a))
+        (M.submatrix (Fin.natAdd a) (Fin.castAdd b))
+        (M.submatrix (Fin.natAdd a) (Fin.natAdd a)) := by
+    ext (i | i) (j | j) <;> simp
+  have hP : (M.submatrix finSumFinEquiv finSumFinEquiv).PosDef :=
+    hM.submatrix finSumFinEquiv.injective
+  rw [hE] at hP
+  have := hP.det_re_le_det_re_mul_det_re_fromBlocks
+  rwa [← hE, det_submatrix_equiv_self] at this
+
+/-- **Hadamard's determinant inequality** for positive definite matrices:
+the determinant is at most the product of the diagonal entries. -/
+theorem PosDef.det_re_le_prod_diag_re {k : ℕ} {D : Matrix (Fin k) (Fin k) 𝕜}
+    (hD : D.PosDef) :
+    RCLike.re D.det ≤ ∏ j : Fin k, RCLike.re (D j j) := by
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    have h1 := hD.det_re_le_submatrix_det_re_mul_submatrix_det_re (a := k) (b := 1)
+    have h2 := ih (hD.submatrix (Fin.castAdd_injective k 1))
+    have h3 : (D.submatrix (Fin.natAdd k) (Fin.natAdd k : Fin 1 → Fin (k + 1))).det =
+        D (Fin.last k) (Fin.last k) := by
+      rw [det_unique]; rfl
+    have h4 : 0 ≤ RCLike.re (D (Fin.last k) (Fin.last k)) :=
+      (RCLike.pos_iff.mp hD.diag_pos).1.le
+    rw [h3] at h1
+    rw [Fin.prod_univ_castSucc]
+    exact h1.trans (mul_le_mul_of_nonneg_right h2 h4)
+
+/-- Hadamard's inequality for an arbitrary split of the index set: the determinant is at most
+the determinant of the leading block times the product of the remaining diagonal entries. -/
+theorem PosDef.det_re_le_submatrix_det_re_mul_prod_diag_re {a b : ℕ}
+    {M : Matrix (Fin (a + b)) (Fin (a + b)) 𝕜} (hM : M.PosDef) :
+    RCLike.re M.det ≤ RCLike.re (M.submatrix (Fin.castAdd b) (Fin.castAdd b)).det *
+      ∏ j : Fin b, RCLike.re (M (Fin.natAdd a j) (Fin.natAdd a j)) := by
+  have h1 := hM.det_re_le_submatrix_det_re_mul_submatrix_det_re
+  have h2 := (hM.submatrix (e := Fin.natAdd a) (Fin.natAdd_injective b a)).det_re_le_prod_diag_re
+  have h0 : 0 ≤ RCLike.re (M.submatrix (Fin.castAdd b) (Fin.castAdd b)).det :=
+    (RCLike.pos_iff.mp (hM.submatrix (Fin.castAdd_injective a b)).det_pos).1.le
+  exact h1.trans (mul_le_mul_of_nonneg_left h2 h0)
+
+end Determinant
 
 section tracePositiveLinearMap
 variable (n α 𝕜 : Type*) [Fintype n] [Semiring α] [RCLike 𝕜] [Module α 𝕜]
