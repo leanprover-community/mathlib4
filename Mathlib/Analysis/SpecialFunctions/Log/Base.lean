@@ -298,19 +298,19 @@ theorem logb_lt_logb_iff_of_base_lt_one (hx : 0 < x) (hy : 0 < y) :
   exact log_lt_log_iff hy hx
 
 theorem logb_le_iff_le_rpow_of_base_lt_one (hx : 0 < x) : logb b x ≤ y ↔ b ^ y ≤ x := by
-  rw [← rpow_le_rpow_iff_right_of_base_lt_one b_pos b_lt_one,
+  rw [← rpow_le_rpow_iff_right_lt_one b_pos b_lt_one,
     rpow_logb b_pos (b_ne_one b_lt_one) hx]
 
 theorem logb_lt_iff_lt_rpow_of_base_lt_one (hx : 0 < x) : logb b x < y ↔ b ^ y < x := by
-  rw [← rpow_lt_rpow_iff_right_of_base_lt_one b_pos b_lt_one,
+  rw [← rpow_lt_rpow_iff_right_lt_one b_pos b_lt_one,
     rpow_logb b_pos (b_ne_one b_lt_one) hx]
 
 theorem le_logb_iff_rpow_le_of_base_lt_one (hy : 0 < y) : x ≤ logb b y ↔ y ≤ b ^ x := by
-  rw [← rpow_le_rpow_iff_right_of_base_lt_one b_pos b_lt_one,
+  rw [← rpow_le_rpow_iff_right_lt_one b_pos b_lt_one,
     rpow_logb b_pos (b_ne_one b_lt_one) hy]
 
 theorem lt_logb_iff_rpow_lt_of_base_lt_one (hy : 0 < y) : x < logb b y ↔ y < b ^ x := by
-  rw [← rpow_lt_rpow_iff_right_of_base_lt_one b_pos b_lt_one,
+  rw [← rpow_lt_rpow_iff_right_lt_one b_pos b_lt_one,
     rpow_logb b_pos (b_ne_one b_lt_one) hy]
 
 theorem logb_pos_iff_of_base_lt_one (hx : 0 < x) : 0 < logb b x ↔ x < 1 := by

@@ -675,21 +675,21 @@ theorem rpow_le_rpow_right_of_le_one (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ 
   rpow_le_rpow_of_exponent_ge := rpow_le_rpow_right_of_le_one
 
 @[simp]
-theorem rpow_le_rpow_iff_right_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
+theorem rpow_le_rpow_iff_right_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y ≤ x ^ z ↔ z ≤ y := by
   rw [← log_le_log_iff (rpow_pos_of_pos hx0 y) (rpow_pos_of_pos hx0 z), log_rpow hx0, log_rpow hx0,
     mul_le_mul_right_of_neg (log_neg hx0 hx1)]
 
 @[deprecated (since := "2026-11-22")] alias
-  rpow_le_rpow_left_iff_of_base_lt_one := rpow_le_rpow_iff_right_of_base_lt_one
+  rpow_le_rpow_left_iff_of_base_lt_one := rpow_le_rpow_iff_right_lt_one
 
 @[simp]
-theorem rpow_lt_rpow_iff_right_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
+theorem rpow_lt_rpow_iff_right_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y < x ^ z ↔ z < y := by
-  rw [lt_iff_not_ge, rpow_le_rpow_iff_right_of_base_lt_one hx0 hx1, lt_iff_not_ge]
+  rw [lt_iff_not_ge, rpow_le_rpow_iff_right_lt_one hx0 hx1, lt_iff_not_ge]
 
 @[deprecated (since := "2026-11-22")] alias
-  rpow_lt_rpow_left_iff_of_base_lt_one := rpow_lt_rpow_iff_right_of_base_lt_one
+  rpow_lt_rpow_left_iff_of_base_lt_one := rpow_lt_rpow_iff_right_lt_one
 
 theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^ z < 1 := by
   rw [← one_rpow z]
