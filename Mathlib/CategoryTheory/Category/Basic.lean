@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.CategoryTheory.CatNF
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.TryThis
@@ -238,8 +239,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
     cat_disch
 
-attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
-attribute [simp, grind _=_] Category.assoc
+attribute [to_dual existing (attr := simp, grind =, cat_nf) id_comp] Category.comp_id
+attribute [simp, cat_nf, grind _=_] Category.assoc
 
 to_dual_for Category.assoc := (self.assoc h g f).symm
 
