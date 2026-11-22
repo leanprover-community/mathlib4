@@ -467,8 +467,8 @@ theorem toFun_pos {t : Monomial} {basis : Basis}
 
 theorem zeros_append_toFun (coef : ℝ) {exps : UnitMonomial} {left right : Basis} :
     let t : Monomial := ⟨coef, List.replicate left.length 0 ++ exps⟩;
-    t.toFun (left ++ right) = (mk coef exps).toFun right := by
-  exact congrArg (coef • ·) UnitMonomial.zeros_append_toFun
+    t.toFun (left ++ right) = (mk coef exps).toFun right :=
+  congrArg (coef • ·) UnitMonomial.zeros_append_toFun
 
 /-- `t.toFun` tends to `𝓝 0` when `t.coef = 0`. -/
 theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : UnitMonomial} (basis : Basis)
@@ -531,8 +531,8 @@ theorem toFun_tendsto_const_of_allZero {coef : ℝ} {exps : UnitMonomial} {basis
 theorem majorized_tail_toFun_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : t.unit.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    Majorized (t.toFun basis_tl) basis_hd 0 := by
-  exact Majorized.smul (UnitMonomial.majorized_tail_toFun_head h_length h_basis)
+    Majorized (t.toFun basis_tl) basis_hd 0 :=
+  Majorized.smul (UnitMonomial.majorized_tail_toFun_head h_length h_basis)
 
 lemma isLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis basis)

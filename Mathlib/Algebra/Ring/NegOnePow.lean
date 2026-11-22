@@ -24,6 +24,7 @@ assert_not_exists TwoSidedIdeal
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
+@[implicit_reducible]
 def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
