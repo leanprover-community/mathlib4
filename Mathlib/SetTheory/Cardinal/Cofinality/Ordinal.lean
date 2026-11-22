@@ -8,6 +8,8 @@ module
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+import Mathlib.Order.Bounds.Lattice
+
 /-!
 # Cofinality of an ordinal
 
