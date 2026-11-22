@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
@@ -676,7 +677,7 @@ theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
   Submodule.ext_iff.mpr fun _ ↦ mem_span_latticeBasis K
 
-instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
+instance : (mixedEmbedding.integerLattice K).IsFullLattice ℝ := by
   classical
   rw [← span_latticeBasis]
   infer_instance
@@ -790,7 +791,7 @@ theorem span_idealLatticeBasis :
   ext x
   simp [mem_span_fractionalIdealLatticeBasis]
 
-instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
+instance : (mixedEmbedding.idealLattice K I).IsFullLattice ℝ := by
   classical
   rw [← span_idealLatticeBasis]
   infer_instance
@@ -870,16 +871,15 @@ theorem volumePreserving_toMixed_symm :
 open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
-  ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
+  (mixedEmbedding.integerLattice K).comap ((toMixed K).toLinearEquiv.restrictScalars ℤ).toLinearMap
 
-instance : DiscreteTopology (euclidean.integerLattice K) := by
+instance : (euclidean.integerLattice K).IsFullLattice ℝ := by
   rw [euclidean.integerLattice]
   infer_instance
 
 open scoped Classical in
-instance : IsZLattice ℝ (euclidean.integerLattice K) := by
-  simp_rw [euclidean.integerLattice]
-  infer_instance
+instance : IsZLattice ℝ (euclidean.integerLattice K) :=
+  ⟨Submodule.IsFullLattice.span_eq_top⟩
 
 end euclidean
 
