@@ -131,13 +131,19 @@ lemma coeff_uniqueAlgEquiv_symm [Subsingleton M] (a : A) (m : M) :
 
 variable (R M) in
 @[to_additive (attr := simp)]
-lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
+lemma ringEquivOfClass_uniqueAlgEquiv [Unique M] :
     .ofClass (uniqueAlgEquiv R (A := A) M) = uniqueRingEquiv (R := A) M := rfl
+
+@[deprecated (since := "2026-11-22")] alias toRingEquiv_uniqueAlgEquiv :=
+  ringEquivOfClass_uniqueAlgEquiv
 
 variable (R M) in
 @[to_additive (attr := simp)]
-lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
+lemma ringEquivOfClass_symm_uniqueAlgEquiv [Unique M] :
     .ofClass (uniqueAlgEquiv R (A := A) M).symm = (uniqueRingEquiv (R := A) M).symm := rfl
+
+@[deprecated (since := "2026-11-22")] alias toRingEquiv_symm_uniqueAlgEquiv :=
+  ringEquivOfClass_symm_uniqueAlgEquiv
 
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/

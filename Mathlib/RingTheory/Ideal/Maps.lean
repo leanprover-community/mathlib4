@@ -1064,7 +1064,7 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
-  have h : I.map f = I.map ((RingEquiv.ofClass f) : R →+* S) := rfl
+  have h : I.map f = I.map (RingEquiv.ofClass f : R →+* S) := rfl
   rw [h, map_comap_of_equiv (.ofClass f)]
   exact Ideal.IsPrime.comap (RingEquiv.ofClass f).symm
 
