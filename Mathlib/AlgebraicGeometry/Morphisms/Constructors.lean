@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 public import Mathlib.RingTheory.RingHomProperties
 
 /-!
-
 # Constructors for properties of morphisms between schemes
 
 This file provides some constructors to obtain morphism properties of schemes from other morphism
@@ -29,7 +28,6 @@ properties:
 
 Also provides API for showing the standard locality and stability properties for these
 types of properties.
-
 -/
 
 @[expose] public section
@@ -167,7 +165,7 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
     refine (diagonal_iff (targetAffineLocally Q)).mpr ?_
     let 𝒰 := Y.openCoverOfIsOpenCover _
       ((isAffineOpen_top Y).iSup_basicOpen_eq_self_iff.mpr hs)
-    have (i : _) : IsAffine (𝒰.X i) := (isAffineOpen_top Y).basicOpen i.1
+    have (i : _) : IsAffine (𝒰.X i) := (isAffineOpen_top Y).basicOpen i.val
     refine diagonal_of_openCover_diagonal (targetAffineLocally Q) f 𝒰 ?_
     intro i
     exact (Q.diagonal.arrow_mk_iso_iff
@@ -222,12 +220,12 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
       simpa using @hU (i₂ x) trivial
     · rintro i
       refine H _ ((X'.isoOfEq ?_).hom ≫ i₁ ∣_ _) (i₂ ∣_ _) _ ?_
-      · congrm $(h.1.1) ⁻¹ᵁ U i
+      · congrm $(h.toCommSq.w) ⁻¹ᵁ U i
       · rw [← (isPullback_morphismRestrict f _).paste_vert_iff]
         · simp only [Category.assoc, morphismRestrict_ι, Scheme.isoOfEq_hom_ι_assoc]
           exact (isPullback_morphismRestrict f' (i₂ ⁻¹ᵁ U i)).paste_vert h
         · rw [← cancel_mono (Scheme.Opens.ι _)]
-          simp [morphismRestrict_ι_assoc, h.1.1]
+          simp [morphismRestrict_ι_assoc, h.toCommSq.w]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -302,7 +300,7 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
   apply IsZariskiLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f U.carrier f.continuous U.2 hf
+    exact hP₂ f U.carrier f.continuous U.is_open' hf
   · intro X Y f ι U hU hf
     apply hP₃ f U hU f.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]
@@ -411,7 +409,7 @@ lemma stalkwise_SpecMap_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ
   trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ.hom rfl)
   · exact forall_congr' fun p ↦
       (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
-  · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩
+  · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.asIdeal p.isPrime⟩
 
 end Stalkwise
 

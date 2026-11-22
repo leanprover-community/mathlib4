@@ -6,10 +6,10 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Interval.Set.Group
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Tactic.Bound
 
 /-!
@@ -22,7 +22,6 @@ This file defines notions of a point in an affine space being between two given 
 * `affineSegment R x y`: The segment of points weakly between `x` and `y`.
 * `Wbtw R x y z`: The point `y` is weakly between `x` and `z`.
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
-
 -/
 
 @[expose] public section
@@ -787,10 +786,10 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [IsTorsionFree R V]
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
   have h₁s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
-      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'
+      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ hr₁0 hr₁1 h₁'
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
-      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
+      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ hr₂0 hr₂1 h₂'
   rw [← Finset.univ.affineCombination_piSingle R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
@@ -942,7 +941,7 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : r₂ ≤ r₁) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
-  convert!
+  convert
     wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
       (neg_le_neg_iff.2 hr₂) using
     1 <;>
@@ -956,7 +955,7 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : 0 ≤ r₂) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
-  convert!
+  convert
     wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
       (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using
     1 <;>
@@ -1105,12 +1104,12 @@ theorem sbtw_pointReflection_of_ne {x y : P} (h : x ≠ y) : Sbtw R y x (pointRe
   exact (pointReflection_involutive R x).injective.ne h
 
 theorem wbtw_midpoint (x y : P) : Wbtw R x (midpoint R x y) y := by
-  convert! wbtw_pointReflection R (midpoint R x y) x
+  convert wbtw_pointReflection R (midpoint R x y) x
   rw [pointReflection_midpoint_left]
 
 theorem sbtw_midpoint_of_ne {x y : P} (h : x ≠ y) : Sbtw R x (midpoint R x y) y := by
   have h : midpoint R x y ≠ x := by simp [h]
-  convert! sbtw_pointReflection_of_ne R h
+  convert sbtw_pointReflection_of_ne R h
   rw [pointReflection_midpoint_left]
 
 end LinearOrderedField

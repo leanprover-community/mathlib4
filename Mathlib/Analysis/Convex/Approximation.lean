@@ -26,7 +26,6 @@ of continuous affine linear functions. We follow the proof in
   `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is the supremum
   of a family of countably many functions that are the restrictions to `s` of continuous affine
   linear functions.
-
 -/
 
 public section
@@ -84,7 +83,7 @@ lemma exists_affine_le_of_lt {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (
         mul_comm (φ w)] using hw
     have hc : 0 < c := inv_pos.2 (pos_of_right_mul_lt_le (lt_of_add_lt_add_left (hine hx)) hax.le)
     simpa [smul_re, u, c, mul_add, ← mul_assoc, inv_mul_cancel₀ (ne_of_gt (inv_pos.1 hc))]
-      using mul_le_mul_of_nonneg_left (hine z.2).le hc.le
+      using mul_le_mul_of_nonneg_left (hine z.property).le hc.le
   · simp [u, c, smul_re]
 
 lemma exists_affine_le_of_lt_real {s : Set ℝ} {f : ℝ → ℝ} {x : ℝ} {a : ℝ} (hx : x ∈ s)
@@ -114,12 +113,12 @@ theorem sSup_affine_eq (hsc : IsClosed s)
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
-  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x by grind)
+  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.property (show φ x - 1 < φ x by grind)
       hsc hφc hφcv
     exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
-  · exact hf ▸ f.2.1 x
+  · exact hf ▸ f.property.1 x
   · obtain ⟨z, hz⟩ := exists_between hr
-    obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 hz.2 hsc hφc hφcv
+    obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.property hz.2 hsc hφc hφcv
     exact ⟨z, hlc.2 ▸ ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩, hz.1⟩
 
 /-- The countable version of `sSup_affine_eq`. -/
@@ -171,7 +170,7 @@ theorem sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
       have : s = ∅ := by have := congr($(h𝓕'.2.1) x); simp_all
       grind
 
-/-- A function `φ : E → ℝ` that is convex and lower-semicontinuous is the supremum of a family of
+/-- A function `φ : E → ℝ` that is convex and lower-semicontinuous is the supremum of a family
 of continuous affine linear functions. -/
 theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     sSup {f | f ≤ φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c} = φ := by

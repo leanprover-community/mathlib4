@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.GroupTheory.CoprodI
-public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.CoprodI
 
 /-!
 # Pushouts of Monoids and Groups
@@ -38,7 +38,6 @@ in the diagram are injective).
 ## Tags
 
 amalgamated product, pushout, group
-
 -/
 
 @[expose] public section
@@ -151,7 +150,7 @@ def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
+    invFun := fun f => lift f.val.1 f.val.2 f.property,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
     right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
@@ -500,7 +499,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
   · induction w using Word.consRecOn with
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
-      convert!
+      convert
         cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩ h1
           (h3 _ _ List.mem_cons_self) ?_ rfl (ih ?_)
       · simp only [Word.cons, NormalWord.cons, map_one, mul_one,

@@ -9,9 +9,10 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.RingTheory.HahnSeries.Lex
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Hahn embedding theorem on ordered modules
@@ -157,7 +158,7 @@ abbrev stratum' (c : FiniteArchimedeanClass M) : Submodule K (baseDomain u) :=
 theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert! u.iSupIndep_stratum
+  convert u.iSupIndep_stratum
   ext1 c
   simpa using! le_iSup _ _
 
@@ -319,7 +320,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     apply Finset.min'_lt_of_mem_erase_min' (α := FiniteArchimedeanClass M)
     apply Finset.min'_mem _ _
   · -- special case: `f` has a single term, and becomes 0 after removing it
-    simpa [hsupport'] using! (f.support.min' hsupport).2.lt_top
+    simpa [hsupport'] using! (f.support.min' hsupport).property.lt_top
 
 theorem baseEmbedding_strictMono [IsOrderedAddMonoid R] : StrictMono seed.baseEmbedding := by
   intro x y h
@@ -357,7 +358,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc]
     have hcd : c.val ≤ d.val := hdc
     simp only [DFinsupp.mk_apply, hcd, ↓reduceIte]
-    convert! LinearMap.map_zero _
+    convert LinearMap.map_zero _
     simp
 
 /-- `HahnEmbedding.Seed.baseEmbedding` is a partial Hahn embedding. -/
@@ -563,7 +564,7 @@ def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
 @[simp]
 theorem eval_zero [IsOrderedAddMonoid R] [Archimedean R] : f.eval 0 = 0 := by
   unfold eval
-  convert! toLex_zero
+  convert toLex_zero
   ext c
   rw [f.evalCoeff_eq (y := 0) (by simp)]
   simp
@@ -704,7 +705,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   -- * `mk (x - y) = mk (z - y)`
   obtain ⟨z, hz⟩ := f.exists_sub_mem_ball hx y
   rw [f.evalCoeff_eq hz]
-  have : z ≠ x := by rintro rfl; exact hx z.2
+  have : z ≠ x := by rintro rfl; exact hx z.property
   have hzy : z < y := by
     change z.val < y.val
     refine (sub_lt_sub_iff_right x).mp <|

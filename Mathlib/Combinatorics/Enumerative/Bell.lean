@@ -40,7 +40,6 @@ The definition presents it as a natural number.
 
 Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
-
 -/
 
 @[expose] public section
@@ -198,6 +197,7 @@ theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 The `n`th standard Bell number,
 which counts the number of partitions of a set of cardinality `n`.
 -/
+@[oeis A000110]
 protected def bell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ i ≤ n, choose n i * (n - i).bell
@@ -246,8 +246,8 @@ theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
 private def sigmaPartitionWithPartEquiv (n : ℕ) :
     (Σ i : Fin n.succ, {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts}) ≃
     Σ p : (n + 1).Partition, {a : ℕ // a ∈ p.parts.toFinset} where
-  toFun x := ⟨x.2.1, ⟨(x.1 + 1 : ℕ), by simpa using x.2.2⟩⟩
-  invFun x := ⟨⟨x.2.1 - 1, by grind⟩, ⟨x.1, by grind⟩⟩
+  toFun x := ⟨x.2.val, ⟨(x.1 + 1 : ℕ), by simpa using x.2.property⟩⟩
+  invFun x := ⟨⟨x.2.val - 1, by grind⟩, ⟨x.1, by grind⟩⟩
   left_inv x := by simp
   right_inv x := by grind
 
@@ -263,7 +263,7 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
     congr! with i
     simp [ih (n - i) _, Finset.mul_sum]
   _ = ∑ i ≤ n, ∑ p : {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts},
-      choose n i * (p.1.parts.erase (i + 1)).bell := by
+      choose n i * (p.val.parts.erase (i + 1)).bell := by
     congr! with i hi
     have : i ≤ n := Finset.mem_Iic.mp hi
     have h1 : 1 ≤ (i + 1 : ℕ) := by lia
@@ -271,13 +271,13 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
     have hsub : n + 1 - (i + 1 : ℕ) = n - i := by lia
     exact hsub ▸ (Fintype.sum_equiv (Partition.partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
   _ = ∑ x : Σ p : (n + 1).Partition, p.parts.toFinset,
-      choose n (x.2.1 - 1) * (x.1.parts.erase x.2.1).bell := by
+      choose n (x.2.val - 1) * (x.1.parts.erase x.2.val).bell := by
     rw [← Nat.range_succ_eq_Iic, Finset.sum_range, ← Fintype.sum_sigma']
     refine Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ ?_
     simp [sigmaPartitionWithPartEquiv]
   _ = ∑ p : (n + 1).Partition, ∑ a : p.parts.toFinset, choose n (a - 1) * (p.parts.erase a).bell :=
     Fintype.sum_sigma' fun (p : (n + 1).Partition) (a : p.parts.toFinset) ↦
-      choose n (a - 1) * (p.parts.erase a.1).bell
+      choose n (a - 1) * (p.parts.erase a.val).bell
   _ = _ := by
     congr! with p
     rw [bell_eq_sum_erase p]

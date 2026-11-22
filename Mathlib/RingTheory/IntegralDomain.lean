@@ -6,9 +6,10 @@ Authors: Johan Commelin, Chris Hughes
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Fintype.Inv
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -134,9 +135,6 @@ theorem isCyclic_of_injective_ringHom [Finite G] (f : G →* R) (hf : Injective 
     intro n hn
     exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 
-@[deprecated (since := "2026-03-04")]
-alias isCyclic_of_subgroup_isDomain := isCyclic_of_injective_ringHom
-
 /-- The unit group of a finite integral domain is cyclic.
 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
@@ -152,8 +150,6 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance isCyclic_subgroup_units : IsCyclic S :=
   isCyclic_of_injective_ringHom { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
     (Units.val_injective.comp Subtype.val_injective)
-
-@[deprecated (since := "2026-03-03")] alias subgroup_units_cyclic := isCyclic_subgroup_units
 
 end
 
@@ -186,7 +182,7 @@ variable [Fintype G]
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_monoid_generator (α := MonoidHom.range f.toHomUnits)
-    have hx1 : (x.1 : R) - 1 ≠ 0 := by
+    have hx1 : (x.val : R) - 1 ≠ 0 := by
       rw [sub_ne_zero]
       contrapose hf
       ext g
@@ -199,9 +195,9 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
-      _ = ∑ b : MonoidHom.range f.toHomUnits, c • (b.1 : R) :=
+      _ = ∑ b : MonoidHom.range f.toHomUnits, c • (b.val : R) :=
         (Finset.sum_subtype _ (by simp) _)
-      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b.1 : R) := smul_sum.symm
+      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b.val : R) := smul_sum.symm
       _ = c • 0 := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
       _ = 0 := smul_zero _
@@ -211,8 +207,8 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       · exact ⟨1, f.toHomUnits.map_one⟩
     -- remaining goal 2
     calc
-      (∑ b : MonoidHom.range f.toHomUnits, (b.1 : R))
-        = ∑ n ∈ range (orderOf x), (x.1 : R) ^ n :=
+      (∑ b : MonoidHom.range f.toHomUnits, (b.val : R))
+        = ∑ n ∈ range (orderOf x), (x.val : R) ^ n :=
         Eq.symm <|
           sum_nbij (x ^ ·) (by simp)
             (by simpa using pow_injOn_Iio_orderOf)

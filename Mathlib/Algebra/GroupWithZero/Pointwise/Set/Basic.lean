@@ -5,8 +5,11 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise operations of sets in a group with zero

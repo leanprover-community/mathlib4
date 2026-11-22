@@ -7,6 +7,7 @@ Authors: Alastair Irving, Michael Stoll, Terence Tao
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!

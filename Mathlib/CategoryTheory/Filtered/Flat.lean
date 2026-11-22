@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 public import Mathlib.CategoryTheory.Functor.Flat
+
+import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 
 /-!
 # Pulling back filteredness along representably flat functors

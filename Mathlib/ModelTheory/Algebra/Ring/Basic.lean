@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # First-Order Language of Rings

@@ -191,7 +191,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   rw [← ha]
-  convert! (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
   simp only [Equiv.coe_mulRight]
   congr
   ext

@@ -52,13 +52,13 @@ deriving CommRing, IsDomain, ValuationRing, LinearOrder, IsStrictOrderedRing
 
 namespace FiniteElement
 
-@[simp] theorem val_zero : (0 : FiniteElement K).1 = 0 := rfl
-@[simp] theorem val_one : (1 : FiniteElement K).1 = 1 := rfl
-@[simp] theorem val_add (x y : FiniteElement K) : (x + y).1 = x.1 + y.1 := rfl
-@[simp] theorem val_sub (x y : FiniteElement K) : (x - y).1 = x.1 - y.1 := rfl
-@[simp] theorem val_mul (x y : FiniteElement K) : (x * y).1 = x.1 * y.1 := rfl
+@[simp] theorem val_zero : (0 : FiniteElement K).val = 0 := rfl
+@[simp] theorem val_one : (1 : FiniteElement K).val = 1 := rfl
+@[simp] theorem val_add (x y : FiniteElement K) : (x + y).val = x.val + y.val := rfl
+@[simp] theorem val_sub (x y : FiniteElement K) : (x - y).val = x.val - y.val := rfl
+@[simp] theorem val_mul (x y : FiniteElement K) : (x * y).val = x.val * y.val := rfl
 
-@[ext] theorem ext {x y : FiniteElement K} (h : x.1 = y.1) : x = y := Subtype.ext h
+@[ext] theorem ext {x y : FiniteElement K} (h : x.val = y.val) : x = y := Subtype.ext h
 
 /-- The constructor for `FiniteElement`. -/
 protected def mk (x : K) (h : 0 ≤ mk x) : FiniteElement K := ⟨x, h⟩
@@ -96,11 +96,11 @@ theorem mk_le_mk (x y : K) (hx hy) : FiniteElement.mk x hx ≤ .mk y hy ↔ x �
 theorem mk_lt_mk (x y : K) (hx hy) : FiniteElement.mk x hx < .mk y hy ↔ x < y :=
   .rfl
 
-theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
+theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.val :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
-theorem isUnit_iff_mk_eq_zero {x : FiniteElement K} : IsUnit x ↔ mk x.1 = 0 := by
-  rw [← not_iff_not, not_isUnit_iff_mk_pos, lt_iff_not_ge, x.2.ge_iff_eq']
+theorem isUnit_iff_mk_eq_zero {x : FiniteElement K} : IsUnit x ↔ mk x.val = 0 := by
+  rw [← not_iff_not, not_isUnit_iff_mk_pos, lt_iff_not_ge, x.property.ge_iff_eq']
 
 instance : RatCast (FiniteElement K) where
   ratCast q := .mk q (mk_ratCast_nonneg q)
@@ -110,7 +110,7 @@ instance : RatCast (FiniteElement K) where
 @[no_expose]
 instance : FloorRing (FiniteElement K) :=
   .ofBounded _ fun x ↦ by
-    obtain ⟨n, hn⟩ := x.2
+    obtain ⟨n, hn⟩ := x.property
     refine ⟨n, (le_abs_self x).trans ?_⟩
     simpa using! hn
 
@@ -158,17 +158,18 @@ instance ordConnected_preimage_mk :
   ordConnected_preimage_mk'
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mk_eq_mk {x y : FiniteElement K} : mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.1 - y.1) := by
+theorem mk_eq_mk {x y : FiniteElement K} :
+    mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.val - y.val) := by
   apply Quotient.eq.trans
   rw [Submodule.quotientRel_def, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
     FiniteElement.not_isUnit_iff_mk_pos, AddSubgroupClass.coe_sub]
 
-theorem mk_eq_zero {x : FiniteElement K} : mk x = 0 ↔ 0 < ArchimedeanClass.mk x.1 := by
+theorem mk_eq_zero {x : FiniteElement K} : mk x = 0 ↔ 0 < ArchimedeanClass.mk x.val := by
   apply mk_eq_mk.trans
   simp
 
-theorem mk_ne_zero {x : FiniteElement K} : mk x ≠ 0 ↔ ArchimedeanClass.mk x.1 = 0 := by
-  rw [ne_eq, mk_eq_zero, not_lt, x.2.ge_iff_eq']
+theorem mk_ne_zero {x : FiniteElement K} : mk x ≠ 0 ↔ ArchimedeanClass.mk x.val = 0 := by
+  rw [ne_eq, mk_eq_zero, not_lt, x.property.ge_iff_eq']
 
 theorem mk_le_mk {x y : FiniteElement K} : mk x ≤ mk y ↔ x ≤ y ∨ mk x = mk y := by
   refine (Quotient.mk_le_mk (H := ordConnected_preimage_mk')).trans ?_
@@ -216,8 +217,8 @@ instance : Archimedean (FiniteResidueField K) where
       rwa [zero_nsmul]
     · obtain ⟨n, hn⟩ := ((mk_ne_zero.1 hy.ne').trans (mk_ne_zero.1 hx.ne').symm).le
       refine ⟨n, mk.monotone' ?_⟩
-      change x.1 ≤ n • y.1
-      convert! ← hn
+      change x.val ≤ n • y.val
+      convert ← hn
       · exact abs_of_pos <| lt_of_mk_lt_mk hx
       · exact abs_of_pos <| lt_of_mk_lt_mk hy
 
@@ -322,12 +323,12 @@ theorem stdPart_inv (x : K) : stdPart x⁻¹ = (stdPart x)⁻¹ := by
   · unfold stdPart
     have hx' : 0 ≤ mk x⁻¹ := by simp_all
     rw [dite_eq_left hx.ge, dite_eq_left hx']
-    · apply eq_inv_of_mul_eq_one_left
-      suffices FiniteElement.mk x⁻¹ hx' * .mk x hx.ge = 1 by
-        rw [← map_mul, this, map_one]
-      ext
-      apply inv_mul_cancel₀
-      aesop
+    apply eq_inv_of_mul_eq_one_left
+    suffices FiniteElement.mk x⁻¹ hx' * .mk x hx.ge = 1 by
+      rw [← map_mul, this, map_one]
+    ext
+    apply inv_mul_cancel₀
+    aesop
   · rw [stdPart_of_mk_ne_zero hx, stdPart_of_mk_ne_zero, inv_zero]
     rwa [mk_inv, neg_ne_zero]
 
@@ -461,13 +462,8 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
       exact hs.le.trans (f.monotone' hs'.le)
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
-    obtain h | h := le_or_gt 0 x
-    · convert! Real.sInf_empty.symm
-      rw [Set.eq_empty_iff_forall_notMem]
-      exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
-    · convert! Real.sInf_univ.symm
-      rw [Set.eq_univ_iff_forall]
-      exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
+    obtain hx | hx := le_total 0 x <;>
+      simp [(lt_of_mk_lt_mk_of_nonneg hr _).not_gt, lt_of_mk_lt_mk_of_nonpos hr, *]
 
 theorem stdPart_eq_sSup (f : ℝ →+*o K) (x : K) : stdPart x = sSup {r | f r < x} := by
   rw [← neg_inj, ← stdPart_neg, stdPart_eq_sInf f, ← Real.sInf_neg]

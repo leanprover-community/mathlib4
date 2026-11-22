@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.Unitization
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Quasiregularity and quasispectrum
@@ -353,7 +354,7 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
 
 @[simp]
 lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
-    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
   /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
   and we have no `NonUnitalAlgEquiv` type, so we use `StarAlgEquiv` instead because that allows
@@ -388,7 +389,7 @@ lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ri
 
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
-  convert! quasispectrum_eq_spectrum_union R a
+  convert quasispectrum_eq_spectrum_union R a
   simp
 
 lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
@@ -428,6 +429,26 @@ lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [NonUni
   rw [← Set.union_eq_left.mpr this, ← quasispectrum_eq_spectrum_union]
   apply forall_congr' fun hr ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
+
+open Pointwise in
+/-- The spectrum of `x : Unitization R A` is the translate by `x.fst` of the quasispectrum of
+`x.snd`. -/
+lemma spectrum_eq_vadd_quasispectrum (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] (x : Unitization R A) :
+    spectrum R x = x.fst +ᵥ quasispectrum R x.snd := by
+  rw [quasispectrum_eq_spectrum_inr R, spectrum.vadd_eq, algebraMap_eq_inl,
+    inl_fst_add_inr_snd_eq]
+
+lemma mem_spectrum_iff {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] {x : Unitization R A} {r : R} :
+    r ∈ spectrum R x ↔ r - x.fst ∈ quasispectrum R x.snd := by
+  rw [spectrum_eq_vadd_quasispectrum]
+  simp [Set.mem_vadd_set_iff_neg_vadd_mem, sub_eq_neg_add]
+
+lemma fst_mem_spectrum {R A : Type*} [CommRing R] [Nontrivial R] [NonUnitalRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] (x : Unitization R A) :
+    x.fst ∈ spectrum R x :=
+  mem_spectrum_iff.mpr <| by simp
 
 lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
     [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
@@ -592,10 +613,10 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [F
     (hf : QuasispectrumRestricts a f) (hg : QuasispectrumRestricts a g) :
     QuasispectrumRestricts a e where
   left_inv := by
-    convert! hfge ▸ hf.left_inv.comp hg.left_inv
+    convert hfge ▸ hf.left_inv.comp hg.left_inv
     congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
   rightInvOn := by
-    convert! hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
+    convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
     congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end NonUnital

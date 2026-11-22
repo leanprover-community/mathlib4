@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Rename
+
+import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.MvPolynomial.Polynomial
-public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Function extensionality for multivariate polynomials
@@ -20,7 +21,6 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 * `MvPolynomial.funext`: two polynomials `φ ψ : MvPolynomial σ R`
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
-
 -/
 
 public section
@@ -64,7 +64,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   suffices p = 0 by rw [this, map_zero]
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
-  convert! h (Function.extend f x g) fun i _ ↦ ?_
+  convert h (Function.extend f x g) fun i _ ↦ ?_
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩

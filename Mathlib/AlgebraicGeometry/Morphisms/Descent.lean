@@ -27,7 +27,6 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
 
 - Show that affine morphisms descend along faithfully-flat morphisms. This will make
   `HasAffineProperty.descendsAlong_of_affineAnd` useful.
-
 -/
 
 public section
@@ -196,7 +195,7 @@ nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
   apply IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
   introv h hf
   have : IsAffine Y := by
-    convert! isAffine_of_isAffineHom g
+    convert isAffine_of_isAffineHom g
     exact MorphismProperty.of_pullback_fst_of_descendsAlong h <|
       AlgebraicGeometry.HasAffineProperty.affineAnd_le_isAffineHom P inferInstance _ hf
   wlog hY : ∃ S, Y = Spec S generalizing Y

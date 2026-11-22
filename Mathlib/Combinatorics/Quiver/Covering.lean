@@ -5,11 +5,12 @@ Authors: Antoine Labelle, Rémi Bottinelli
 -/
 module
 
-import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Tactic.Common
+
+import Mathlib.Combinatorics.Quiver.Cast
+import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Attr.Core
 
 /-!
@@ -256,7 +257,7 @@ namespace Prefunctor.IsCovering
 variable {φ}
 
 protected theorem pathStar_bijective (hφ : φ.IsCovering) (u : U) : Bijective (φ.pathStar u) :=
-  φ.pathStar_bijective hφ.1 u
+  φ.pathStar_bijective hφ.star_bijective u
 
 end Prefunctor.IsCovering
 

@@ -6,8 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.PolynomialAlgebra
+
+import Mathlib.RingTheory.Localization.Ideal
 
 /-!
 # Localization of algebra maps
@@ -19,7 +20,6 @@ localization commutes with taking kernels for ring homomorphisms.
 
 The proof that localization commutes with taking kernels does not use the result for linear maps,
 as the translation is currently tedious and can be unified easily after the localization refactor.
-
 -/
 
 @[expose] public section
@@ -33,18 +33,10 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
 open IsLocalization in
 variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
--- TODO: golf using `Ideal.localized'_eq_map`
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
-    IsLocalizedModule M (Algebra.idealMap I (S := S)) where
-  map_units x :=
-    (Module.End.isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
-      (by simpa [Algebra.smul_def] using congr(($e).1))),
-      fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
-        Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
-  surj y :=
-    have ⟨x, hx⟩ := (mem_map_algebraMap_iff M S).mp y.property
-    ⟨x, Subtype.ext (by simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx])⟩
-  exists_of_eq h := ⟨_, Subtype.ext (exists_of_eq congr(($h).1)).choose_spec⟩
+    IsLocalizedModule M (Algebra.idealMap S I) :=
+  .of_linearEquiv M (Submodule.toLocalized' S M _ I)
+    ((LinearEquiv.ofEq _ _ (Ideal.localized'_eq_map S M I)).restrictScalars R)
 
 lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
@@ -102,10 +94,11 @@ instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
-noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
-  ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
+noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ where
+  __ := IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f)
+  commutes' r := by
     obtain ⟨a, m, rfl⟩ := IsLocalization.exists_mk'_eq M r
-    simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
+    simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :

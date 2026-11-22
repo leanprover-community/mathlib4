@@ -1,4 +1,8 @@
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.Tactic.Algebraize
+
+@[expose] public section
 
 set_option linter.unusedVariables false
 

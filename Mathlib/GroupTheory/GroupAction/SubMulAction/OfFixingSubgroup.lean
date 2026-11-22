@@ -5,11 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
-public import Mathlib.GroupTheory.GroupAction.Primitive
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Tactic.Group
 
 /-!
@@ -62,7 +63,6 @@ Given a `MulAction` of `G` on `α` and `s : Set α`,
   * `SubMulAction.ofFixingSubgroup.append`: appends
     an enumeration of `ofFixingSubgroup M s` at the end
     of an enumeration of `s`, as an equivariant map.
-
 -/
 
 @[expose] public section
@@ -99,8 +99,11 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 variable {M}
 
 @[to_additive]
-theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+theorem notMem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
+
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
 
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
@@ -472,7 +475,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
     {g : M} (ha : s ∪ g • s ≠ ⊤) :
     IsPretransitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
-  rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, ← Set.nonempty_iff_ne_empty] at ha
+  rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, Set.ne_empty_iff_nonempty] at ha
   obtain ⟨a, ha⟩ := ha
   rw [Set.compl_union] at ha
   have ha' : a ∈ (s ∩ g • s)ᶜ := by

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.CategoryTheory.Monoidal.Mod
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module objects in cartesian monoidal categories
 
@@ -41,9 +44,6 @@ attribute [local instance] ModObj.trivialAction in
 @[simps]
 def Mod.trivialAction (M : Mon C) (X : C) : Mod C M.X where
   X := X
-
-@[deprecated (since := "2026-04-21")]
-alias Mod_.trivialAction := Mod.trivialAction
 
 variable {M : C} [MonObj M] {X : C} [ModObj M X]
 

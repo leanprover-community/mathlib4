@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Tactic.DSimpPercent
 
 /-!
@@ -84,31 +84,22 @@ add_decl_doc RingEquiv.toMulEquiv
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
-  extends MulEquivClass F R S where
-  /-- By definition, a ring isomorphism preserves the additive structure. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+  extends MulEquivClass F R S, AddEquivClass F R S where
 
 namespace RingEquivClass
 
 variable [EquivLike F R S]
 
 -- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass [Mul R] [Add R]
-    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with }
+attribute [instance 100] toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
-    [h : RingEquivClass F R S] : RingHomClass F R S :=
-  { h with
-    map_zero := map_zero
-    map_one := map_one }
+    [RingEquivClass F R S] : RingHomClass F R S where
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
-    [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
-  { h with
-    map_zero := map_zero }
+    [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
 /-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
@@ -457,6 +448,10 @@ theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bij
 theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
+
+-- TODO: Make simp once `toEquiv` is simp nf
+lemma toEquiv_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+    (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
 
 @[simp]
 lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :

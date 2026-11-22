@@ -6,12 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Group.Ext
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -51,7 +52,6 @@ matrices over a ring, in particular the Schur complement (see
 `Mathlib/LinearAlgebra/Matrix/SchurComplement.lean`). In particular, the declarations
 `CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
-
 -/
 
 @[expose] public section
@@ -650,9 +650,9 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
-      (by convert! (inferInstance : HasBinaryBiproduct X X); subsingleton)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
-      (by convert! (inferInstance : HasBinaryBiproduct X X); subsingleton)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     refine h₁.trans (Eq.trans ?_ h₂.symm)
     congr! 2 <;> subsingleton
 
@@ -801,8 +801,7 @@ theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
     simp only [Category.assoc]
     rw [comp_add_assoc, add_comp]
     conv_lhs =>
-      congr
-      next => skip
+      enter [2]
       slice 1 3
       rw [a₂]
     simp only [zero_comp, add_zero]
@@ -903,7 +902,7 @@ lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct
       (F.mapIso (biproduct.isoProduct f)).inv ≫
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
-    convert! piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
+    convert piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
   have : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
   have : IsIso (piComparison F f) := by
     rw [that]

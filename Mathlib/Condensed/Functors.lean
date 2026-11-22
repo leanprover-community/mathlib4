@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Explicit
+
+import Mathlib.CategoryTheory.Sites.PreservesLimits
 
 /-!
 # Functors from categories of topological spaces to condensed sets
@@ -18,7 +19,6 @@ sets.
 
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
-
 -/
 
 @[expose] public section

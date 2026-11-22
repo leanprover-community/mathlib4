@@ -48,7 +48,6 @@ appropriate models with corners. This is not a definition, so technically deviat
 convention.
 
 TODO: this file uses more made-up names; document these as well
-
 -/
 
 @[expose] public section
@@ -164,7 +163,7 @@ theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.sourc
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
+theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp
 
 lemma interior_extend_target_subset_interior_range :
     interior (f.extend I).target ⊆ interior (range I) := by
@@ -552,7 +551,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert! extChartAt_target_mem_nhdsWithin x
+  convert extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
@@ -561,7 +560,7 @@ theorem extChartAt_target_mem_nhds' [I.Boundaryless] {x : M} {y : E}
   (isOpen_extChartAt_target x).mem_nhds m
 
 theorem extChartAt_target_subset_range (x : M) : (extChartAt I x).target ⊆ range I := by
-  simp only [mfld_simps]
+  simp
 
 /-- Around the image of a point in the source, the neighborhoods are the same
 within `(extChartAt I x).target` and within `range I`. -/
@@ -813,6 +812,22 @@ theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I 
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_apply_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) :
+    writtenInExtChartAt I I' x f (extChartAt I x y) = extChartAt I' (f x) (f y) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I x).left_inv hy]
+
+theorem extChartAt_symm_writtenInExtChartAt {x : M} {z : E} {f : M → M'}
+    (hz : f ((extChartAt I x).symm z) ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f z) =
+      f ((extChartAt I x).symm z) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I' (f x)).left_inv hz]
+
+theorem extChartAt_symm_writtenInExtChartAt_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) (hfy : f y ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f (extChartAt I x y)) = f y := by
+  rw [writtenInExtChartAt_apply_extChartAt hy, (extChartAt I' (f x)).left_inv hfy]
 
 theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
     MapsTo (writtenInExtChartAt I I' x f)

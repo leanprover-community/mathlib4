@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fintype instances relating to units

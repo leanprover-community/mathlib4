@@ -6,10 +6,11 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.RingTheory.Derivation.ToSquareZero
-public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # The module of Kähler differentials
@@ -235,7 +236,7 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
-      convert!
+      convert
         Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
           (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [Submodule.coe_add,
@@ -375,8 +376,8 @@ def KaehlerDifferential.quotientCotangentIdealRingEquiv :
 def KaehlerDifferential.quotientCotangentIdeal :
     ((S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸
         (KaehlerDifferential.ideal R S).cotangentIdeal) ≃ₐ[S] S :=
-  { KaehlerDifferential.quotientCotangentIdealRingEquiv R S with
-    commutes' := (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).apply_symm_apply }
+  .ofCommutes (KaehlerDifferential.quotientCotangentIdealRingEquiv R S)
+    (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).apply_symm_apply
 
 theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) :
     (Ideal.Quotient.mkₐ R (KaehlerDifferential.ideal R S).cotangentIdeal).comp f =
@@ -671,7 +672,7 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 section
-variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
+variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 ```
@@ -720,7 +721,7 @@ lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebr
     Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
     Submodule.map_comap_eq_of_surjective (linearCombination_surjective _ _),
     bot_sup_eq, Submodule.map_span, ← Set.range_comp]
-  convert! bot_sup_eq _
+  convert bot_sup_eq _
   rw [Submodule.span_eq_bot]; simp
 
 open IsScalarTower (toAlgHom)
@@ -769,7 +770,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     · rw [KaehlerDifferential.ker_map]
       congr 1
       convert! Submodule.comap_id _
-      · ext; simp
+      ext; simp
     rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
     rintro f ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩)
     · use 0; simp
@@ -811,7 +812,7 @@ def KaehlerDifferential.kerCotangentToTensor :
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
-    kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
+    kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.val := rfl
 
 variable [Algebra R B] [IsScalarTower R A B]
 
@@ -825,7 +826,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
     simp only [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
-      mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.2, map_zero, smul_zero]
+      mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.property, map_zero, smul_zero]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective Ω[A⁄R] (g := Algebra.linearMap A B) h x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
@@ -857,7 +858,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
     · have : x i ≠ 0 ∧ algebraMap A B i = c := by
-        convert! i.prop
+        convert i.prop
         simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
 

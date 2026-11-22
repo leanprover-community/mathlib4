@@ -174,14 +174,14 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by lia)⟩
+    toFun := fun i => ⟨i.val + j, (by lia)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using! hii'
   }
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     ⦋0⦌.const ⦋l⦌ i ≫ subinterval j l hjl =
-    ⦋0⦌.const ⦋n⦌ ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
+    ⦋0⦌.const ⦋n⦌ ⟨j + i.val, lt_add_of_lt_add_right (Nat.add_lt_add_left i.isLt j) hjl⟩  := by
   rw [const_comp]
   congr
   ext
@@ -192,7 +192,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
-    mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
+    mkOfSucc ⟨j + i.val, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.isLt j) hjl⟩ := by
   unfold subinterval mkOfSucc
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
@@ -203,7 +203,8 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
   ext (i : Fin 2)
-  match i with | 0 | 1 => simp <;> lia
+  match i with | 0 | 1 => ?_ <;> simp
+  lia
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -246,7 +247,8 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> lia
+  split_ifs <;> simp at *
+  all_goals lia
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
     δ i ≫ δ j =
@@ -609,6 +611,12 @@ lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
 lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
     dsimp% ⇑(σ i) = Fin.predAbove i := rfl
 
+lemma δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
+    SimplexCategory.δ i j = Fin.succAbove i j := rfl
+
+lemma σ_apply {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    SimplexCategory.σ i j = Fin.predAbove i j := rfl
+
 end Concrete
 
 section EpiMono
@@ -667,7 +675,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                 by_cases h' : y₁ < y₂
                 · by_contra h''
                   apply not_le.mpr h'
-                  convert! f.toOrderHom.monotone (le_of_not_ge h'')
+                  convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
                     exact congr($(Iso.inv_hom_id (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }

@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 # Profinite sets have enough projectives
@@ -21,7 +21,6 @@ Let `X` be a profinite set.
 * `Profinite.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
 * `Profinite.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
-
 -/
 
 @[expose] public section
