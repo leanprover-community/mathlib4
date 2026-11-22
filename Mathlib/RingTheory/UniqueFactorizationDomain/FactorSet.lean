@@ -29,6 +29,11 @@ namespace Associates
 
 open UniqueFactorizationMonoid Associated Multiset
 
+/-- The type of irreducible elements of `Associates α`.
+
+In a unique factorization monoid, these index the factors of an element. -/
+abbrev Irreducibles (α : Type*) [CommMonoidWithZero α] := {p : Associates α // Irreducible p}
+
 variable [CommMonoidWithZero α]
 
 /-- `FactorSet α` representation elements of unique factorization domain as multisets.
@@ -39,11 +44,11 @@ complete lattice structure. Infimum is the greatest common divisor and supremum 
 multiple.
 -/
 abbrev FactorSet.{u} (α : Type u) [CommMonoidWithZero α] : Type u :=
-  WithTop (Multiset { a : Associates α // Irreducible a })
+  WithTop (Multiset (Irreducibles α))
 
 attribute [local instance] Associated.setoid
 
-theorem FactorSet.coe_add {a b : Multiset { a : Associates α // Irreducible a }} :
+theorem FactorSet.coe_add {a b : Multiset (Irreducibles α)} :
     (↑(a + b) : FactorSet α) = a + b := by norm_cast
 
 theorem FactorSet.sup_add_inf_eq_add [DecidableEq (Associates α)] :
@@ -67,7 +72,7 @@ theorem prod_top : (⊤ : FactorSet α).prod = 0 :=
   rfl
 
 @[simp]
-theorem prod_coe {s : Multiset { a : Associates α // Irreducible a }} :
+theorem prod_coe {s : Multiset (Irreducibles α)} :
     FactorSet.prod (s : FactorSet α) = (s.map (↑)).prod :=
   rfl
 
@@ -101,7 +106,7 @@ section count
 variable [DecidableEq (Associates α)]
 
 /-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`). -/
-def bcount (p : { a : Associates α // Irreducible a }) :
+def bcount (p : Irreducibles α) :
     FactorSet α → ℕ
   | ⊤ => 0
   | WithTop.some s => s.count p
@@ -130,7 +135,7 @@ end count
 section Mem
 
 /-- membership in a FactorSet (bundled version) -/
-def BfactorSetMem : { a : Associates α // Irreducible a } → FactorSet α → Prop
+def BfactorSetMem : Irreducibles α → FactorSet α → Prop
   | _, ⊤ => True
   | p, some l => p ∈ l
 
@@ -153,7 +158,7 @@ theorem mem_factorSet_top {p : Associates α} {hp : Irreducible p} : p ∈ (⊤ 
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; exact trivial
 
 theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
-    {l : Multiset { a : Associates α // Irreducible a }} :
+    {l : Multiset (Irreducibles α)} :
     p ∈ (l : FactorSet α) ↔ Subtype.mk p hp ∈ l := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; rfl
 
@@ -185,7 +190,7 @@ theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.pr
 
 /-- This returns the multiset of irreducible factors as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
-noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducible a } :=
+noncomputable def factors' (a : α) : Multiset (Irreducibles α) :=
   (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
 @[simp]
@@ -251,7 +256,7 @@ theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 
   exact ⟨fun h ↦ by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h ↦ h ▸ factors_zero⟩
 
 theorem factors_eq_some_iff_ne_zero {a : Associates α} :
-    (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = s) ↔ a ≠ 0 := by
+    (∃ s : Multiset (Irreducibles α), a.factors = s) ↔ a ≠ 0 := by
   simp_rw [@eq_comm _ a.factors, ← WithTop.ne_top_iff_exists]
   exact factors_eq_top_iff_zero.not
 

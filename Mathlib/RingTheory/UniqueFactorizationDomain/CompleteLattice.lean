@@ -15,8 +15,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.MulEquiv
 
 The associates of a unique factorization monoid form a complete (co)Heyting algebra, with `inf` the
 gcd, `sup` the lcm and `⊤ = 0`. We deduce this from the order isomorphism
-`Associates α ≃o WithTop (Multiset (IrreducibleAssociates α))` of
-`UniqueFactorizationMonoid.associatesOrderIso`.
+`Associates α ≃o FactorSet α` of `UniqueFactorizationMonoid.associatesOrderIso`.
 
 ## Main declarations
 
@@ -37,39 +36,27 @@ variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 open scoped Classical in
 /-- The infimum of a set of associates is the greatest common divisor of its elements.
 
-It is transferred from `WithTop (Multiset _)` along `associatesOrderIso`. -/
+It is transferred from `FactorSet α` along `associatesOrderIso`. -/
 noncomputable instance : InfSet (Associates α) where
-  sInf S := if h : Nontrivial α then
-      haveI := h
-      (OrderIso.completeLattice
-        (β := WithTop (Multiset (IrreducibleAssociates α))) (associatesOrderIso (α := α))).sInf S
-    else 0
-
-open scoped Classical in
-lemma isGLB_sInf_associates (S : Set (Associates α)) : IsGLB S (sInf S) := by
-  by_cases h : Nontrivial α
-  · have := h
-    simp only [sInf, h, ↓reduceDIte]
-    exact (OrderIso.completeLattice
-      (β := WithTop (Multiset (IrreducibleAssociates α))) (associatesOrderIso (α := α))).isGLB_sInf
-        S
-  · rw [not_nontrivial_iff_subsingleton] at h
-    exact ⟨fun _ _ ↦ (Subsingleton.elim _ _).le, fun _ _ ↦ (Subsingleton.elim _ _).le⟩
+  sInf S := if _ : Nontrivial α then associatesOrderIso.completeLattice.sInf S else 0
 
 /-- Associates in a unique factorization monoid form a complete lattice, with `sInf` the gcd and
 `sSup` the lcm (which is `0` when the set is not bounded above by a nonzero element). -/
 noncomputable instance : CompleteLattice (Associates α) where
   __ : Lattice (Associates α) := inferInstance
   __ : BoundedOrder (Associates α) := inferInstance
-  __ := completeLatticeOfInf (Associates α) isGLB_sInf_associates
+  __ := completeLatticeOfInf (Associates α) fun S ↦ by
+    classical
+    nontriviality α
+    simpa [sInf, *] using associatesOrderIso.completeLattice.isGLB_sInf S
 
 open scoped Classical in
 /-- Associates in a unique factorization monoid form a coframe: `a ⊔ ⨅ s = ⨅ b ∈ s, a ⊔ b`.
 
 This is not a frame: `2 ⊓ ⨆ {p | p prime, 3 ≤ p} = 2` in `Associates ℕ`. -/
 noncomputable instance : Order.Coframe (Associates α) :=
-  Order.Coframe.ofMinimalAxioms
-    { iInf_sup_le_sup_sInf := fun a s ↦ by
+  .ofMinimalAxioms
+    { iInf_sup_le_sup_sInf a s :=by
         by_cases h : Nontrivial α
         · have := h
           exact (associatesOrderIso (α := α)).coframeMinimalAxioms.iInf_sup_le_sup_sInf a s

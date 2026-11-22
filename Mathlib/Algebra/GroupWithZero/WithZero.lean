@@ -240,12 +240,6 @@ def unitsWithZeroEquivUnits : (WithZero M)ˣ ≃* Mˣ where
   right_inv _ := by ext; simp
   map_mul' _ _ := by ext; simp [← coe_inj]
 
-@[simp] lemma coe_unitsWithZeroEquivUnits_apply (u : (WithZero M)ˣ) :
-    ((unitsWithZeroEquivUnits u : Mˣ) : M) = unzero u.ne_zero := rfl
-
-@[simp] lemma coe_unitsWithZeroEquivUnits_symm :
-    (unitsWithZeroEquivUnits.symm : Mˣ → (WithZero M)ˣ) = .map coeMonoidHom := rfl
-
 @[simp]
 lemma associated_coe_iff : Associated (a : WithZero M) b ↔ Associated a b :=
   unitsWithZeroEquivUnits.exists_congr <| by simp [← coe_inj (α := M)]
