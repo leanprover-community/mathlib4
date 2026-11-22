@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD
+
+import Mathlib.GroupTheory.Perm.Closure
 
 /-!
 # Cycle Types

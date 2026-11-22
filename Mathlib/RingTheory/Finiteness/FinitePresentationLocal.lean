@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+
+import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 
 /-!
 # `Algebra.FinitePresentation` is local

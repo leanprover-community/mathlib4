@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Orthogonal
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Star-orthogonality in star-ordered rings

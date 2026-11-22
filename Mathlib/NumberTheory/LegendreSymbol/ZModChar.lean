@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Int.Range
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.NumberTheory.MulChar.Basic
+
+import Mathlib.Data.Int.Range
 
 /-!
 # Quadratic characters on ℤ/nℤ
