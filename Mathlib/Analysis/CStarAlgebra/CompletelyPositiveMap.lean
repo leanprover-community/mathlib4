@@ -65,8 +65,7 @@ property that holds for matrices indexed by any finite type.
 -/
 class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
     [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
-    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂]
-    extends LinearMapClass F ℂ A₁ A₂ where
+    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂] where
   map_cstarMatrix_nonneg' (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ M.map φ
 
@@ -77,7 +76,7 @@ namespace CompletelyPositiveMapClass
 
 variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
-  [StarOrderedRing A₂] [FunLike F A₁ A₂]
+  [StarOrderedRing A₂] [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
@@ -91,7 +90,7 @@ def _root_.CompletelyPositiveMap.ofClass [CompletelyPositiveMapClass F A₁ A₂
 set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
-lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg [LinearMapClass F ℂ A₁ A₂]
+lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .of_addMonoidHom <| by
   intro φ a ha
@@ -119,9 +118,11 @@ instance : FunLike (A₁ →CP A₂) A₁ A₂ where
     apply DFunLike.coe_injective
     exact h
 
-instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
+instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
+
+instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
 open CStarMatrix in
