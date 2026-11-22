@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 
 import Mathlib.Tactic.Group
 
