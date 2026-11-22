@@ -105,7 +105,7 @@ attribute [gcongr] abs_le_abs_of_nonneg
 variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
-  apply pow_two_semiclosed _
+  apply one_le_of_one_le_pow_two _
   rw [mabs, pow_two, mul_sup, sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 

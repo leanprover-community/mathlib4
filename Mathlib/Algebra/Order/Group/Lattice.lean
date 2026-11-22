@@ -88,8 +88,8 @@ lemma one_le_of_one_le_pow_two {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
 
 attribute [to_dual existing nonpos_of_nonpos_nsmul_two] nonneg_of_nonneg_nsmul_two
 
-@[deprecated (since := "2026-11-21")] alias pow_two_semiclosed := one_le_of_one_le_pow_two
-@[deprecated (since := "2026-11-21")] alias nsmul_two_semiclosed := nonneg_of_nonneg_nsmul_two
+@[to_additive (attr := deprecated (since := "2026-11-21"))]
+alias pow_two_semiclosed := one_le_of_one_le_pow_two
 
 end
 
