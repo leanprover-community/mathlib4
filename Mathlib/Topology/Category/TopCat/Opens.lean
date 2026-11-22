@@ -536,6 +536,9 @@ def functor : TopCat.{u}ᵒᵖ ⥤ Type u where
   obj x := Opens (unop x).carrier
   map f := ↾(Opens.comap (unop f).hom)
 
+instance mono_inclusion' {X : TopCat} (U : Opens X) : Mono U.inclusion' :=
+  (TopCat.mono_iff_injective _).mpr Subtype.val_injective
+
 end TopologicalSpace.Opens
 
 namespace TopologicalSpace.Closeds
@@ -577,6 +580,3 @@ instance {X : TopCat} (s : Closeds X) : Mono s.inclusion' :=
   (TopCat.mono_iff_injective _).mpr Subtype.val_injective
 
 end TopologicalSpace.Closeds
-
-instance TopologicalSpace.Opens.mono_inclusion' {X : TopCat} (U : Opens X) : Mono U.inclusion' :=
-  (TopCat.mono_iff_injective _).mpr Subtype.val_injective

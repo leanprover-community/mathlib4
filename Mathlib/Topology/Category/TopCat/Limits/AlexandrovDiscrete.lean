@@ -15,23 +15,34 @@ public import Mathlib.Topology.Specialization
 /-!
 # Equalizers of Alexandrov-discrete spaces in `TopCat`
 
-TODO(docstring)
+As a reflective full subcategory of `TopCat`, Alexandrov-discrete spaces are closed under limits,
+and limits can therefore be recognized as such purely by checking the topological structure visible
+to the Alexandrov-discrete structure, i.e. by checking the specialization preorder.
+
+The proof of this fact for equalizers is particularly simple, so we provide it separately.
 -/
 
 
 @[expose] public section
 namespace TopCat
-open CategoryTheory
-open Topology
-open CategoryTheory.Limits
+open CategoryTheory Topology Limits
 universe w v u
-variable {J : Type*}
-variable [Category J]
-variable [FinCategory J]
-variable {F : J ⥤ TopCat}
-variable [∀ j, AlexandrovDiscrete (F.obj j)]
+
+variable {J : Type*} [Category J] [FinCategory J] {F : J ⥤ TopCat}
+  [∀ j, AlexandrovDiscrete (F.obj j)]
 
 open Set in
+/-- When an equalizer diagram in `TopCat` is composed entirely of `AlexandrovDiscrete` spaces, it
+suffices to check that the diagram is an equalizer at the level of the specialization preorder:
+that it bijects onto the equalizer type and that the specialization preorder on that type is
+that induced from the base of the fork.
+
+The direction `x ⤳ y → e x ⤳ e y` is free from continuity, so we drop it from the hypotheses for
+convenience.
+
+This version checks the bijection pointwise, at the level of sets; see the unprimed version that
+instead asks for a type-level `Equiv`.
+ -/
 noncomputable def isEqualizer_of_alexandrovDiscrete' {E Y Z : TopCat}
     [AlexandrovDiscrete E] [AlexandrovDiscrete Y] [AlexandrovDiscrete Z]
     (e : E ⟶ Y) [Mono e] {f g : Y ⟶ Z} (w : e ≫ f = e ≫ g)
@@ -74,6 +85,18 @@ noncomputable def isEqualizer_of_alexandrovDiscrete' {E Y Z : TopCat}
     · ext p; simp
 
 open Set in
+/--
+When an equalizer diagram in `TopCat` is composed entirely of `AlexandrovDiscrete` spaces, it
+suffices to check that the diagram is an equalizer at the level of the specialization preorder:
+that it bijects onto the equalizer type and that the specialization preorder on that type is
+that induced from the base of the fork.
+
+The direction `x ⤳ y → e x ⤳ e y` is free from continuity, so we drop it from the hypotheses for
+convenience.
+
+This version asks for a type-level `Equiv` to prove the bijection; check the primed version for a
+pointwise propositional condition.
+-/
 noncomputable def isEqualizer_of_alexandrovDiscrete {E Y Z : TopCat}
     [AlexandrovDiscrete E] [AlexandrovDiscrete Y] [AlexandrovDiscrete Z]
     (e : E ⟶ Y) {f g : Y ⟶ Z} (ε : E ≃ { y // f y = g y }) (w : e ≫ f = e ≫ g)
