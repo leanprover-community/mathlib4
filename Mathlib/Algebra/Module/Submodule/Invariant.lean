@@ -190,7 +190,7 @@ protected lemma comp {p : Submodule R M} {g : End R M}
     p ∈ invtSubmodule (f ∘ₗ g) :=
   fun _ hx ↦ hf (hg hx)
 
-protected lemma mem_mul {p : Submodule R M} {g : End R M}
+protected lemma mul {p : Submodule R M} {g : End R M}
     (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
     p ∈ invtSubmodule (f * g) := fun _ hx ↦ hf (hg hx)
 
