@@ -74,8 +74,8 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 set_option backward.defeqAttrib.useBackward true in
 /-- Associator for the vertical composition of lax natural transformations. -/
 @[simps!]
-def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι := by
-  exact isoMk (fun a ↦ α_ (η.app a) (θ.app a) (ι.app a)) <| by
+def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
+  isoMk (fun a ↦ α_ (η.app a) (θ.app a) (ι.app a)) <| by
     intro a b f
     dsimp only [comp_app, comp_naturality]
     bicategory

@@ -171,7 +171,7 @@ theorem differentiableWithinAt_localInvariantProp :
       rw [this] at h
       have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-      convert! (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
+      convert (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
         using 1
       · ext y; simp only [mfld_simps]
       refine
@@ -192,7 +192,7 @@ theorem differentiableWithinAt_localInvariantProp :
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-      convert! (this.differentiableWithinAt one_ne_zero).comp _ h _
+      convert (this.differentiableWithinAt one_ne_zero).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 
@@ -253,7 +253,7 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
-  simp [DifferentiableWithinAtProp, Set.univ_inter, Function.comp_assoc]
+  simp [DifferentiableWithinAtProp, Function.comp_assoc]
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
     ContinuousAt f x :=
@@ -344,12 +344,12 @@ variable (I I') in
 /-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
 as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, mfderivWithin I I' f s p.1 p.2⟩
+  ⟨f p.proj, mfderivWithin I I' f s p.proj p.snd⟩
 
 variable (I I') in
 /-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
 `TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, mfderiv I I' f p.1 p.2⟩
+  ⟨f p.proj, mfderiv I I' f p.proj p.snd⟩
 
 end DerivativesDefinitions

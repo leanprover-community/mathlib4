@@ -123,7 +123,7 @@ lemma isProbabilityMeasure_iff_real {μ : Measure α} :
 
 instance {f : α → β} : IsProbabilityMeasure (map f μ) where
   measure_univ := by
-    rw [Measure.map]
+    rw [Measure.map_def]
     split_ifs with hf hμ
     · simp [mapₗ_mk_apply_of_aemeasurable, hf]
     · have := measure_univ (μ := μ)
@@ -203,7 +203,7 @@ section IsZeroOrProbabilityMeasure
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
-  · rw [Measure.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
+  · rw [FunLike.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
   rcases eq_top_or_lt_top (μ univ) with h | h
   · rw [h, inv_top, zero_smul]; infer_instance
   have : IsFiniteMeasure μ := ⟨h⟩
@@ -229,7 +229,7 @@ lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mbl
   · simp at hμs
   · rw [prob_compl_eq_one_sub s_mble]
     apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
-    convert! hμs
+    convert hμs
     exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
 
 lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :

@@ -672,11 +672,11 @@ variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
 @[to_additive (attr := simp)]
 theorem srange_fst [Nonempty N] : (fst M N).srange = ⊤ :=
-  (fst M N).srange_eq_top_of_surjective <| Prod.fst_surjective
+  (fst M N).srange_eq_top_of_surjective Prod.fst_surjective
 
 @[to_additive (attr := simp)]
 theorem srange_snd [Nonempty M] : (snd M N).srange = ⊤ :=
-  (snd M N).srange_eq_top_of_surjective <| Prod.snd_surjective
+  (snd M N).srange_eq_top_of_surjective Prod.snd_surjective
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subsemigroup N} :
@@ -686,11 +686,11 @@ theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subs
 /-- The semigroup hom associated to an inclusion of subsemigroups. -/
 @[to_additive /-- The `AddSemigroup` hom associated to an inclusion of subsemigroups. -/]
 def inclusion {S T : Subsemigroup M} (h : S ≤ T) : S →ₙ* T :=
-  (MulMemClass.subtype S).codRestrict _ fun x => h x.2
+  (MulMemClass.subtype S).codRestrict _ fun x => h x.property
 
 @[to_additive (attr := simp)]
 theorem range_subtype (s : Subsemigroup M) : (MulMemClass.subtype s).srange = s :=
-  SetLike.coe_injective <| (coe_srange _).trans <| Subtype.range_coe
+  SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=

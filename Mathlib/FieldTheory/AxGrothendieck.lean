@@ -32,13 +32,12 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section
 
 
-noncomputable section
+section
 
 open MvPolynomial Finset
 
@@ -71,14 +70,14 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
   let S' : Set (ι → Algebra.adjoin K (s : Set R)) :=
     (fun v => Subtype.val ∘ v) ⁻¹' S
   let res : S' → S' := fun x => ⟨fun i =>
-    ⟨eval (fun j : ι => (x.1 j : R)) (ps i), eval_mem (hs₁ _) fun i => (x.1 i).2⟩,
-      hm x.2⟩
+    ⟨eval (fun j : ι => (x.val j : R)) (ps i), eval_mem (hs₁ _) fun i => (x.val i).property⟩,
+      hm x.property⟩
   have hres_surj : Function.Surjective res := by
     rw [← Finite.injective_iff_surjective]
     intro x y hxy
     ext i
     simp only [Subtype.ext_iff, funext_iff] at hxy
-    exact congr_fun (hinj x.2 y.2 (funext hxy)) i
+    congrm $(hinj x.property y.property (funext hxy)) i
   rcases hres_surj ⟨fun i => ⟨v i, hv i⟩, hvS⟩ with ⟨⟨w, hwS'⟩, hw⟩
   refine ⟨fun i => w i, hwS', ?_⟩
   simpa [Subtype.ext_iff, funext_iff] using hw
@@ -137,13 +136,13 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
           (fun a => .var (Sum.inl (Sum.inl a)))
           (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
-  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
-        let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
+        let f : (ι → K) → (ι → K) := fun v i => eval v (p.val i)
         let S : Set (ι → K) := {x | φ.Realize (Sum.elim v x)}
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
@@ -182,7 +181,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert! Set.infinite_univ (α := Nat.Primes)
+    convert Set.infinite_univ (α := Nat.Primes) using 1
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons

@@ -7,13 +7,13 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
-public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+
+import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
 # Horns
 
 This file introduces horns `Λ[n, i]`.
-
 -/
 
 @[expose] public section
@@ -45,7 +45,7 @@ lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ} (x : 
 
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
-      ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
+      ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.val}ᶜ := by
   ext m j
   simp [stdSimplex.face_obj, horn, Set.eq_univ_iff_forall]
   rfl
@@ -62,7 +62,7 @@ lemma mem_horn_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) (i : Fin (n + 1
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
   rw [horn_eq_iSup]
-  exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.1}ᶜ) ⟨i, h⟩
+  exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.val}ᶜ) ⟨i, h⟩
 
 @[simp]
 lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
@@ -93,7 +93,7 @@ lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := b
   obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
     by_contra!
     have : Finset.image f.toOrderHom ⊤ ∪ {i} = ⊤ := by ext k; by_cases k = i <;> aesop
-    have := (congr_arg Finset.card this).symm.le.trans (Finset.card_union_le _ _)
+    have := congr($(this).card).symm.le.trans (Finset.card_union_le _ _)
     simp only [SimplexCategory.len_mk, Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le

@@ -6,7 +6,6 @@ Authors: Daniel Morrison
 module
 
 public import Mathlib.Data.Set.PowersetCard
-public import Mathlib.Data.Finset.Sort
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Logic.Equiv.Fin.Basic
 
@@ -20,7 +19,6 @@ the finite sets of that type.
 
 * `ofFinEmbEquiv` is the equivalence between `Fin n ↪o I` and `Set.powersetCard I n` when `I` is
   a linearly ordered type.
-
 -/
 
 @[expose] public noncomputable section
@@ -75,12 +73,13 @@ def permOfDisjoint {m n : ℕ}
   letI e₂ : Fin m ⊕ Fin n ≃ s.val ⊕ t.val := (orderIsoOfFin s).sumCongr (orderIsoOfFin t)
   letI e₃ : s.val ⊕ t.val ≃ disjUnion h := Equiv.Finset.disjUnionEquiv _ _ h
   letI e₄ : disjUnion h ≃o Fin (m + n) := (orderIsoOfFin (disjUnion h)).symm
-  e₁.trans <| e₂.trans <| e₃.trans <| e₄
+  e₁.trans <| e₂.trans <| e₃.trans e₄
 
 /-- A subset `s` of a linearly-ordered finite type `I`, determines a permutation of `I` by moving
 all these terms of `s` to the front. This is the sign of that permutation. -/
 protected def sign [Fintype I] (s : powersetCard I n) : ℤˣ :=
-  have : ∃ m, n + m = Fintype.card I := Nat.le.dest <| powersetCard.nonempty_iff.mp ⟨s⟩
+  have : ∃ m, n + m = Fintype.card I :=
+    Nat.le.dest <| by simpa using powersetCard.nonempty_iff.mp ⟨s⟩
   letI t := (powersetCard.compl this.choose_spec).symm s
   have H : Disjoint s.val t.val := by
     rw [powersetCard.disjoint_iff_eq_compl, Equiv.apply_symm_apply]
@@ -90,7 +89,8 @@ protected def sign [Fintype I] (s : powersetCard I n) : ℤˣ :=
 lemma sign_eq_permOfDisjoint_sign [Fintype I] {m : ℕ} (hkl : n + m = Fintype.card I)
     (s : powersetCard I n) (t : powersetCard I m) (hst : Disjoint s.val t.val) :
     powersetCard.sign s = (powersetCard.permOfDisjoint hst).sign := by
-  have h : ∃ m, n + m = Fintype.card I := Nat.le.dest <| powersetCard.nonempty_iff.mp ⟨s⟩
+  have h : ∃ m, n + m = Fintype.card I :=
+    Nat.le.dest <| by simpa using powersetCard.nonempty_iff.mp ⟨s⟩
   obtain rfl : m = h.choose := by have := h.choose_spec; lia
   obtain rfl : t = (powersetCard.compl h.choose_spec).symm s :=
     (Equiv.eq_symm_apply _).mpr ((powersetCard.disjoint_iff_eq_compl h.choose_spec).mp hst).symm

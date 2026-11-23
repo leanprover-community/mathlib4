@@ -5,15 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
-
 # Compact submodules
-
 -/
 
 public section

@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Ring.Defs
+
+import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Semirings and rings
@@ -17,7 +18,6 @@ the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
-
 -/
 
 public section

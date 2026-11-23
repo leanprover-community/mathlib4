@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-
 # Graph Orientation
 
 This module introduces conversion operations between `Digraph`s and `SimpleGraph`s, by forgetting

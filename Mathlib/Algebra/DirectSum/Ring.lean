@@ -5,9 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.Algebra.GradedMonoid
+
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -221,25 +222,23 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
 private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
-  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
+  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from congr($this x)
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
-  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
+  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from congr($this x)
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
-set_option backward.defeqAttrib.useBackward true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
-      simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
-        DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+    simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using congr($this a b c)
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.mulLeft₃_apply,
     AddMonoidHom.mulRight₃_apply]
@@ -339,7 +338,7 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 -- Porting note: overspecified fields in ml4
 /-- The `Ring` derived from `GSemiring A`. -/
 instance ring : Ring (⨁ i, A i) where
-  toIntCast.intCast z := of A 0 <| (GRing.intCast z)
+  toIntCast.intCast z := of A 0 (GRing.intCast z)
   intCast_ofNat _ := congrArg (of A 0) <| GRing.intCast_ofNat _
   intCast_negSucc _ :=
     (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _
@@ -364,7 +363,6 @@ Implementation detail: Note that these instances on `A 0` have very general disc
 tree keys (e.g. `DirectSum.instRingOfNat` has discrimination tree key `Ring _` and often
 sends typeclass inference on a wild goose chase with any goal of the form `Ring (F X)`),
 so we scope these instances to the `DirectSum` namespace.
-
 -/
 
 
@@ -577,7 +575,7 @@ def liftRingHom :
         f GradedMonoid.GOne.one = 1 ∧
           ∀ {i j} (ai : A i) (aj : A j), f (GradedMonoid.GMul.mul ai aj) = f ai * f aj } ≃
       ((⨁ i, A i) →+* R) where
-  toFun f := toSemiring (fun _ => f.1) f.2.1 f.2.2
+  toFun f := toSemiring (fun _ => f.val) f.property.1 f.property.2
   invFun F :=
     ⟨by intro i; exact (F : (⨁ i, A i) →+ R).comp (of _ i),
       by
@@ -590,7 +588,7 @@ def liftRingHom :
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
     ext xi xv
-    exact toAddMonoid_of (fun _ => f.1) xi xv
+    exact toAddMonoid_of (fun _ => f.val) xi xv
   right_inv F := by
     apply RingHom.toAddMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))

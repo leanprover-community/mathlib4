@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-public import Mathlib.CategoryTheory.Localization.Opposite
-public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Certain quotient categories are localizations
@@ -25,7 +22,6 @@ We also deduce a slightly more general result involving
 a full and essentially surjective functor `L : C ⥤ D` instead of the quotient
 functor `functor r : C ⥤ quotient r`.
 Dual results involving path objects are also obtained.
-
 -/
 
 public section

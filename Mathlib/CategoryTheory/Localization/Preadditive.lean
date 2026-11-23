@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Localization of natural transformations to preadditive categories
-
 -/
 
 public section
@@ -25,7 +24,6 @@ namespace Localization
 
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma liftNatTrans_zero (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E)
     [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
     [HasZeroMorphisms E] :
@@ -34,7 +32,6 @@ lemma liftNatTrans_zero (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E)
 
 variable [Preadditive E]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma liftNatTrans_add (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E)
     [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
     (τ τ' : F₁ ⟶ F₂) :
