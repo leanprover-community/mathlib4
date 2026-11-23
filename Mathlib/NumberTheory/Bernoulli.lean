@@ -752,19 +752,29 @@ private theorem mul_bernoulli_mem_pIntegrals {p k : ℕ} [Fact p.Prime] :
     simp [vonStaudtIndicator, apply_ite]
   · simp [bernoulli_eq_zero_of_odd ho hk₁]
 
-/-- For a prime `p`, `p` does not divide the denominator of `p * bernoulli k`. -/
-theorem not_dvd_mul_bernoulli {p k : ℕ} (hp : p.Prime) :
+/-- For `p ≠ 1`, `p` does not divide the denominator of `p * bernoulli k`. -/
+theorem not_dvd_mul_bernoulli {p k : ℕ} (hp : p ≠ 1) :
     ¬ p ∣ ((p : ℚ) * bernoulli k).den := by
-  have : Fact p.Prime := ⟨hp⟩
-  rw [← mem_pIntegrals_iff_not_dvd_den]
-  exact mul_bernoulli_mem_pIntegrals
+  intro hdvd
+  have hfact : Fact p.minFac.Prime := ⟨Nat.minFac_prime hp⟩
+  have hqd : p.minFac ∣ ((p : ℚ) * bernoulli k).den := (Nat.minFac_dvd p).trans hdvd
+  obtain ⟨m, hm⟩ := Nat.minFac_dvd p
+  have hpc : (p : ℚ) = p.minFac * m := by exact_mod_cast hm
+  have hfactor : (p.minFac : ℚ) * m * bernoulli k = (m : ℚ) * (p.minFac * bernoulli k) := by
+    ring
+  rw [hpc, hfactor] at hqd
+  have hdvd2 : ((m : ℚ) * ((p.minFac : ℚ) * bernoulli k)).den ∣
+      ((p.minFac : ℚ) * bernoulli k).den := by
+    simpa using Rat.mul_den_dvd (m : ℚ) ((p.minFac : ℚ) * bernoulli k)
+  exact mem_pIntegrals_iff_not_dvd_den.mp mul_bernoulli_mem_pIntegrals (hqd.trans hdvd2)
 
 /-- The denominator of every Bernoulli number is squarefree. See `not_sq_dvd_den_bernoulli`
 for the statement that no prime square divides it. -/
 theorem squarefree_den_bernoulli {k : ℕ} : Squarefree (bernoulli k).den := by
   rw [Nat.squarefree_iff_prime_squarefree]
   intro p hp h
-  suffices p ∣ ((p : ℚ) * bernoulli k).den by grind [not_dvd_mul_bernoulli]
+  suffices p ∣ ((p : ℚ) * bernoulli k).den by
+    exact not_dvd_mul_bernoulli hp.ne_one this
   apply Nat.dvd_of_mul_dvd_mul_left hp.pos
   calc
     p * p ∣ (bernoulli k).den := h
@@ -772,12 +782,12 @@ theorem squarefree_den_bernoulli {k : ℕ} : Squarefree (bernoulli k).den := by
     _ ∣ (1 / p : ℚ).den * ((p : ℚ) * bernoulli k).den := Rat.mul_den_dvd _ _
     _ = _ := by simp [hp.ne_zero]
 
-/-- For a prime `p`, `p ^ 2` does not divide the denominator of any Bernoulli number:
+/-- For `p ≠ 1`, `p ^ 2` does not divide the denominator of any Bernoulli number:
 each prime occurs in the denominator with multiplicity one. A corollary of
 `squarefree_den_bernoulli`. -/
-theorem not_sq_dvd_den_bernoulli {p k : ℕ} (hp : p.Prime) : ¬ p ^ 2 ∣ (bernoulli k).den := by
+theorem not_sq_dvd_den_bernoulli {p k : ℕ} (hp : p ≠ 1) : ¬ p ^ 2 ∣ (bernoulli k).den := by
   rw [pow_two]
-  exact Nat.squarefree_iff_prime_squarefree.mp squarefree_den_bernoulli p hp
+  exact fun h => hp (Nat.isUnit_iff.mp (squarefree_den_bernoulli p h))
 
 section Valuation
 
@@ -805,13 +815,16 @@ Bernoulli number `B₂ₖ`. See `dvd_den_bernoulli_iff` for the iff under a pari
 theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den :=
   (dvd_den_bernoulli_iff Fact.out ⟨k, two_mul k⟩ (by lia)).mpr hpk
 
-/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+/-- If `p` is prime and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
 Bernoulli number `B₂ₖ`. -/
-theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+theorem not_dvd_num_bernoulli (hpk : p - 1 ∣ 2 * k) :
     ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
   rw [Int.natCast_dvd]
-  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
-    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
+  rcases Nat.eq_zero_or_pos k with rfl | hk
+  · simp only [mul_zero, bernoulli_zero, Rat.num_one, Int.natAbs_one, Nat.dvd_one]
+    exact (Fact.out : p.Prime).ne_one
+  · exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+      (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
 
 end Valuation
 
