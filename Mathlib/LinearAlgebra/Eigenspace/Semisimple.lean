@@ -34,7 +34,6 @@ namespace Module.End
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     {μ : R} {k : ℕ∞} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :
@@ -43,7 +42,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
   obtain ⟨l, -, hm⟩ := hm
   rw [← f.mem_genEigenspace_nat] at hm
   set p := f.genEigenspace μ l
-  have h₁ : MapsTo g p p := mapsTo_genEigenspace_of_comm hfg μ l
+  have h₁ : ∀ x ∈ p, g x ∈ p := mapsTo_genEigenspace_of_comm hfg μ l
   have h₂ : MapsTo (g - algebraMap R (End R M) μ) p p :=
     mapsTo_genEigenspace_of_comm (hfg.sub_right <| Algebra.commute_algebraMap_right μ f) μ l
   have h₃ : MapsTo (f - g) p p :=

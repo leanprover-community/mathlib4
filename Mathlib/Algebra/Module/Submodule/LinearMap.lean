@@ -223,12 +223,11 @@ theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q :
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.val x.property⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_sub {R R₂ M M₂ : Type*}
     [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
-    (hf : MapsTo f p q) (hg : MapsTo g p q)
-    (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
+    (hf : ∀ x ∈ p, f x ∈ q) (hg : ∀ x ∈ p, g x ∈ q)
+    (hfg : ∀ x ∈ p, (f - g) x ∈ q := fun _ hx ↦ q.sub_mem (hf _ hx) (hg _ hx)) :
     f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
   ext; simp
 
