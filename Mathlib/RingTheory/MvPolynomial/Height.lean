@@ -23,20 +23,19 @@ variable {σ R : Type*} [CommRing R]
 
 private theorem le_height_span_X_image_of_isDomain [IsDomain R] (s : Set σ) :
     s.encard ≤ (Ideal.span (X (R := R) '' s)).height := by
+  classical
   refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
-  induction n generalizing s with
-  | zero => simp
-  | succ n ih =>
-    by_cases! he : IsEmpty s
-    · simp_all
-    obtain ⟨x, hx⟩ := he
-    have := ih (s \ {x}) (by grw [← Set.encard_tsub_one_le_encard_sdiff_singleton, ← hn]; norm_cast)
-    push_cast
-    grw [this]
+  obtain ⟨t, ht₁, ht₂⟩ := Set.exists_subset_encard_eq hn
+  lift t to Finset σ using Set.finite_of_encard_eq_coe ht₂
+  grw [← ht₂, ← Ideal.height_mono <| Ideal.span_mono <| Set.image_mono ht₁]
+  clear ht₁ ht₂
+  induction t using Finset.induction_on with
+  | empty => simp
+  | insert a t ha ih =>
+    grw [Finset.coe_insert, Set.encard_insert_of_notMem (by simpa), ih]
     have := span_X_image_isPrime (R := R) (σ := σ)
-    refine Ideal.height_add_one_le_of_lt_of_isPrime <| lt_iff_le_and_ne'.mpr ⟨?_, ?_⟩
-    · exact Ideal.span_mono (by grind)
-    · exact ne_of_mem_of_not_mem' (a := X x) (by simp [hx]) (by simp)
+    apply Ideal.height_add_one_le_of_lt_of_isPrime
+    simpa [Ideal.span_insert]
 
 theorem le_height_span_X_image (s : Set σ) :
     s.encard ≤ (Ideal.span (X (R := R) '' s)).height := by
