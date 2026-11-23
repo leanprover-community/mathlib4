@@ -351,7 +351,7 @@ theorem of_comp_surjective
     Ideal.Quotient.lift_surjective_of_surjective _ _ P.algebraMap_surjective
   have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = ⊥ := by
     rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square]
-  dsimp only [AlgHom.toRingHom_eq_coe, RingHom.ker_coe_toRingHom] at sqz
+  dsimp only [AlgHom.toRingHom_eq_coe] at sqz
   obtain ⟨g, hg⟩ := H _ sqz (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x

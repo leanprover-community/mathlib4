@@ -171,10 +171,9 @@ lemma ramificationIdx'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   congr 1
   ext n
   simp only [Set.mem_ofPred_eq, Ideal.map_le_iff_le_comap]
-  rw [← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
-    ← map_comap_of_equiv, ← RingHom.coe_coe, ← Ideal.map_pow, RingHom.coe_coe, map_comap_of_equiv,
-    comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
-    AlgHom.comp_algebraMap]
+  rw [← e.toRingEquiv_toRingHom, ← RingEquiv.symm_symm (e : S ≃+* S₁), ← map_comap_of_equiv,
+    ← RingHom.coe_coe, ← Ideal.map_pow, RingHom.coe_coe, map_comap_of_equiv, comap_comap,
+    RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_comap_eq := ramificationIdx'_comap_eq
 

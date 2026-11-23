@@ -81,7 +81,7 @@ noncomputable def Fiber.algEquivQuotient :
     p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
   (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans
     (.ofCommutes (Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
-        rw [← Ideal.map_coe, Ideal.map_map]
+        rw [Ideal.map_map]
         congr
         ext
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl]))

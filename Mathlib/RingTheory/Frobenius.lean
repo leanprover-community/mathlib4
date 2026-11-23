@@ -209,11 +209,11 @@ lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q
 lemma conj (H : IsArithFrobAt R σ Q) (τ : G) : IsArithFrobAt R (τ * σ * τ⁻¹) (τ • Q) := by
   intro x
   have : (Q.map (MulSemiringAction.toRingEquiv G S τ)).under R = Q.under R := by
-    rw [← Ideal.comap_symm, ← Ideal.comap_coe, Ideal.under, Ideal.comap_comap]
+    rw [← Ideal.comap_symm, Ideal.under, Ideal.comap_comap]
     congr 1
     exact (MulSemiringAction.toAlgEquiv R S τ).symm.toAlgHom.comp_algebraMap
   rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
-  simpa [smul_sub, mul_smul, this] using H (τ⁻¹ • x)
+  simpa [smul_sub, mul_smul, this, Ideal.comap_symm] using H (τ⁻¹ • x)
 
 variable [Finite G] [Algebra.IsInvariant R S G]
 

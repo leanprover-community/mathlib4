@@ -120,9 +120,8 @@ def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpec
   right_inv p := by
     ext : 1
     dsimp
-    rw [← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom, AlgEquiv.toAlgHom_toRingHom,
-      AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot, ← RingHom.ker_coe_toRingHom,
-      Ideal.Quotient.mkₐ_ker]
+    rw [← AlgHom.comap_ker, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv,
+      ← RingHom.ker_eq_comap_bot, Ideal.Quotient.mkₐ_ker]
 
 @[simp]
 lemma coe_algHomEquivPrimeSpectrum [IsFiniteSplit k R] (f : R →ₐ[k] k) :

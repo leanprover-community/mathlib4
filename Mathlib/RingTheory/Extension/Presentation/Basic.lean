@@ -229,8 +229,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
     simp only [aeval_X, Generators.localizationAway_val, AlgHom.coe_comp,
       AlgEquiv.coe_toAlgHom, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
-  rw [Generators.ker_eq_ker_aeval_val, this, ← RingHom.ker_coe_toRingHom, AlgHom.comp_toRingHom,
-    ← RingHom.comap_ker]
+  rw [Generators.ker_eq_ker_aeval_val, this, AlgHom.comp_toRingHom, ← RingHom.comap_ker]
   simp only [AlgEquiv.toAlgHom_toRingHom]
   change Ideal.comap _ (RingHom.ker (RingHomClass.toRingHom <| mvPolynomialQuotientEquiv S r)) =
     Ideal.span {C r * X () - 1}
@@ -298,10 +297,10 @@ lemma span_range_relation_eq_ker_baseChange :
     rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
     rw [← P.span_range_relation_eq_ker, ← RingHom.coe_coe e.symm, ← Ideal.mem_comap,
-      ← Ideal.comap_coe, ← AlgEquiv.toRingEquiv_toRingHom, Ideal.comap_coe,
-      AlgEquiv.symm_toRingEquiv, Ideal.comap_symm, Ideal.map_map, ← RingHom.coe_coe,
-      ← RingHom.coe_coe TensorProduct.includeRight, ← RingHom.coe_comp, Ideal.map_span,
-      ← Set.range_comp, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe] at H'
+      ← AlgEquiv.toRingEquiv_toRingHom, AlgEquiv.symm_toRingEquiv, Ideal.comap_symm, Ideal.map_map,
+      ← RingHom.coe_coe, ← RingHom.coe_coe TensorProduct.includeRight, ← RingHom.coe_comp,
+      Ideal.map_span, ← Set.range_comp, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
+      RingHom.coe_coe] at H'
     convert! H'
     simp [e]
 

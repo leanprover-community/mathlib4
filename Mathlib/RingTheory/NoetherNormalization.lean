@@ -219,8 +219,7 @@ private noncomputable abbrev eqv2 :
         RingEquiv.symm_toRingHom_comp_toRingHom _
       rw [this, RingHom.coe_id, Ideal.map_id]
     _ = _ := by
-      rw [RingHom.coe_comp, ← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
-      exact congrArg _ rfl
+      simp [← Ideal.map_map]
 
 /-- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=

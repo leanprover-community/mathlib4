@@ -641,9 +641,8 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_ofClass,
-    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
-    AlgHomClass.toRingHom_ofClass, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
-    ← ker_eq_ker_aeval_val]
+    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, AlgHomClass.toRingHom_ofClass,
+    AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot, ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom =

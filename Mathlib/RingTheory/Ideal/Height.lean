@@ -306,8 +306,7 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
     (I.comap (e : R →+* S)).height = I.height := by
   refine (Equiv.iInf_congr e.idealComapOrderIso fun J ↦ (Equiv.iInf_congr ?_ fun h ↦ ?_).symm).symm
   · refine .ofIff ?_
-    rw [← Ideal.comap_coe,
-      Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
+    rw [Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
     exact e.idealComapOrderIso.injective.mem_set_image.symm
   · have : J.IsPrime := h.isPrime
     simp [← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
