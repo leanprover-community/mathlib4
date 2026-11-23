@@ -6,9 +6,9 @@ Authors: Josha Dekker, Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Geometric distributions
 

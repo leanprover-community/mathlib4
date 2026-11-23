@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
+
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Further lemmas for the Rational Numbers
