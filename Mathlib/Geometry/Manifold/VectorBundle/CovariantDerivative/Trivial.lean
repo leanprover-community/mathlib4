@@ -277,14 +277,18 @@ lemma _root_.CovariantDerivative.exists_one_form
   simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 
 
-lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
+lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : ContMDiffCovariantDerivativeOn' F n cov s) (hs : IsOpen s) {x : M} (hx : x ∈ s) :
+    (hcov' : have := isManifold_one I n M; ContMDiffCovariantDerivativeOn' F n cov s)
+    (hs : IsOpen s) {x : M} (hx : x ∈ s) :
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
+    have := isManifold_one I n M
     CMDiffAt n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) x := by
+  have := isManifold_one I n M
   have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
-    TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
+    -- Note: this lemma is not an instance (always the same issue with regularity assumptions)
+    TangentBundle.contMDiffVectorBundle
   apply ContMDiffAt.clm_bundle_of_apply' (n+1)
   intro σ hσ
   apply ContMDiffAt.contMDiffWithinAt
@@ -318,7 +322,8 @@ lemma contMDiffOn_one_form' [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
   have := isManifold_one I n M
   have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
-    TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
+    -- Note: this lemma is not an instance (always the same issue with regularity assumptions)
+    TangentBundle.contMDiffVectorBundle
   apply ContMDiffOn.clm_bundle_of_apply' (n+1)
   intro σ x hx hσ
   have hσ' : ∀ᶠ b in 𝓝[s] x, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) (n + 1) (T% σ) s b :=
