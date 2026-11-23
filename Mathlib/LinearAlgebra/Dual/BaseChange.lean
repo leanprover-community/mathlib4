@@ -115,7 +115,7 @@ noncomputable def toDualBaseChange :
     this ▸ LinearEquiv.bijective _
   ext f w
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply]
+    LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]

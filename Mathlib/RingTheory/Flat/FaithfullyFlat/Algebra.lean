@@ -97,7 +97,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     apply TensorProduct.ext'
     intro x y
     simp
-  rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
+  rw [this, coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by

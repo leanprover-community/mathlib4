@@ -291,11 +291,11 @@ instance instCoalgebra : Coalgebra R (A × B) where
     · simp only [map_zero, add_zero]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
-        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_toLinearMap]
     · simp only [map_zero, zero_add]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
-        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_toLinearMap]
 
 instance [IsCocomm R A] [IsCocomm R B] : IsCocomm R (A × B) where
   comm_comp_comul := by ext <;> simp [← TensorProduct.map_comm]

@@ -157,7 +157,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
   apply (Q.comp P).cotangentSpaceBasis.repr.injective
   ext j
   simp only [compEquiv, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr,
+    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr,
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
@@ -180,7 +180,7 @@ lemma CotangentSpace.fst_compEquiv :
   intro i
   apply Q.cotangentSpaceBasis.repr.injective
   ext j
-  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ofComp_val,
+  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, ofComp_val,
     LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply, repr_CotangentSpaceMap]
   obtain (i | i) := i <;>
     simp only [Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
@@ -403,7 +403,7 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
   · exact hy
   · rw [← CotangentSpace.compEquiv_symm_inr]
     apply (CotangentSpace.compEquiv Q P).injective
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr, Function.comp_apply,
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr, Function.comp_apply,
       LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl

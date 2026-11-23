@@ -145,7 +145,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
   simp only [Action.tensorObj_V, types_tensorObj_def, comp_toLinearMap, μ_toLinearMap,
     toLinearMap_rTensor, LinearMap.coe_comp, Function.comp_apply,
     TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
-    TensorProduct.curry_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul, toLinearMap_apply,
+    TensorProduct.curry_apply, LinearEquiv.coe_toLinearMap, LinearMap.rTensor_tmul, toLinearMap_apply,
     toLinearMap_lTensor, toLinearMap_assoc, TensorProduct.assoc_tmul, LinearMap.lTensor_tmul]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.

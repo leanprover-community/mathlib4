@@ -164,7 +164,7 @@ noncomputable def differentialsSolution :
     pres.differentialsRelations.Solution Ω[S⁄R] where
   var g := D _ _ (pres.val g)
   linearCombination_var_relation r := by
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
       Function.comp_apply, ← comm₂₃', ← comm₁₂_single]
     apply DFunLike.congr_fun (Function.Exact.linearMap_comp_eq_zero
       (pres.toExtension.exact_cotangentComplex_toKaehler))
