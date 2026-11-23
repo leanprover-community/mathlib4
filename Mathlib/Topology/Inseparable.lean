@@ -6,9 +6,10 @@ Authors: Andrew Yang, Yury Kudryashov
 module
 
 public import Mathlib.Order.UpperLower.Closure
-public import Mathlib.Order.UpperLower.Fibration
 public import Mathlib.Tactic.TFAE
 public import Mathlib.Topology.ContinuousOn
+
+import Mathlib.Order.UpperLower.Fibration
 
 /-!
 # Inseparable points in a topological space

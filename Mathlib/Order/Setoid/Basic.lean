@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations

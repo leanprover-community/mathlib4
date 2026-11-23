@@ -6,10 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
+
+import Mathlib.Algebra.Order.Ring.NNRat
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Density of a finite set
