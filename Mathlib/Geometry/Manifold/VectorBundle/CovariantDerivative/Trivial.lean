@@ -263,13 +263,6 @@ lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     cov σ x = d% σ x + hcov.one_form x (σ x) :=
   hcov.exists_one_form.choose_spec σ x hx hσ
 
--- TODO: do we want this version instead?
-lemma eq_one_form_lemming {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
-    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    {σ : M → F} {x : M} (hσ : MDiffAt[s] (T% σ) x) (hx : x ∈ s := by trivial) :
-    cov σ x = d% σ x + hcov.one_form x (σ x) :=
-  sorry -- hcov.exists_one_form.choose_spec σ x hx hσ
-
 lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
     ∃ (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F),
@@ -323,7 +316,8 @@ lemma contMDiffOn_one_form' [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteD
     eventually_nhdsWithin_of_eventually_nhds hσ
   have : ∀ᶠ x' in 𝓝[s] x, cov σ x' = d% σ x' + (hcov.one_form x') (σ x') := by
     filter_upwards [hσ', eventually_mem_nhdsWithin] with x' hx' Hx'
-    exact hcov.eq_one_form_lemming (hx'.mdifferentiableWithinAt (by simp))
+    have := hx'.mdifferentiableWithinAt (by simp) |>.mdifferentiableAt (hs.mem_nhds Hx')
+    exact hcov.eq_one_form this
   let V := TotalSpace (E →L[𝕜] F) fun x : M ↦ TangentSpace I x →L[𝕜] F
   have : ∀ᶠ x' in 𝓝[s] x,
       (TotalSpace.mk' (E →L[𝕜] F) x' (hcov.one_form x' (σ x')) : V) =
