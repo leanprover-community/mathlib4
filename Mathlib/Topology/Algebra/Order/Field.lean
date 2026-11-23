@@ -215,7 +215,7 @@ theorem Filter.tendsto_atBot_iff_of_tendsto_div_nhds_one
 @[simp]
 lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
   (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
-    (nhdsLT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_neg''.2 ha)]
+    (nhdsLT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_neg'.2 ha)]
 
 @[simp]
 lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by

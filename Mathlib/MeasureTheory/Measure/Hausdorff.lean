@@ -953,10 +953,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / (n : ℝ≥0∞)) ^ Fintype.card ι) atTop := by
       refine liminf_le_liminf ?_ ?_
       · filter_upwards [B] with _ hn
-        apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_natCast]
-        intro i _
-        exact pow_le_pow_left' (hn i) _
+        gcongr with i
+        exact hn _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
       simp only [γ, Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,

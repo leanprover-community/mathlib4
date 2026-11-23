@@ -75,36 +75,42 @@ section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
-@[to_additive eq_zero_of_neg_eq]
-theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
+@[to_additive]
+theorem eq_one_of_inv_eq (h : a⁻¹ = a) : a = 1 :=
   match lt_trichotomy a 1 with
   | Or.inl h₁ =>
     have : 1 < a := h ▸ one_lt_inv_of_inv h₁
     absurd h₁ this.asymm
   | Or.inr (Or.inl h₁) => h₁
   | Or.inr (Or.inr h₁) =>
-    have : a < 1 := h ▸ inv_lt_one'.mpr h₁
+    have : a < 1 := by rw [← h]; simpa
     absurd h₁ this.asymm
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.eq_zero_of_neg_eq]
+alias eq_one_of_inv_eq' := eq_one_of_inv_eq
+
 @[to_additive exists_zero_lt]
-theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
+theorem exists_one_lt [Nontrivial α] : ∃ a : α, 1 < a := by
   obtain ⟨y, hy⟩ := Decidable.exists_ne (1 : α)
   obtain h | h := hy.lt_or_gt
-  · exact ⟨y⁻¹, one_lt_inv'.mpr h⟩
+  · exact ⟨y⁻¹, by simpa⟩
   · exact ⟨y, h⟩
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.exists_zero_lt]
+alias exists_one_lt' := exists_one_lt
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_noMaxOrder [Nontrivial α] : NoMaxOrder α :=
   ⟨by
-    obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
+    obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt
     exact fun a => ⟨a * y, lt_mul_of_one_lt_right' a hy⟩⟩
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] : NoMinOrder α :=
   ⟨by
-    obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
+    obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt
     exact fun a => ⟨a / y, (div_lt_self_iff a).mpr hy⟩⟩
 
 @[to_additive (attr := simp)]
@@ -127,13 +133,19 @@ section NormNumLemmas
 expected signatures. -/
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a b : α}
 
-@[to_additive (attr := gcongr) neg_le_neg]
-theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
+@[to_additive (attr := gcongr)]
+theorem inv_le_inv : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   inv_le_inv_iff.mpr
 
-@[to_additive (attr := gcongr) neg_lt_neg]
-theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_le_neg]
+alias inv_le_inv' := inv_le_inv
+
+@[to_additive (attr := gcongr)]
+theorem inv_lt_inv : a < b → b⁻¹ < a⁻¹ :=
   inv_lt_inv_iff.mpr
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_lt_neg]
+alias inv_lt_inv' := inv_lt_inv
 
 --  The additive version is also a `linarith` lemma.
 @[to_additive]
@@ -142,11 +154,9 @@ theorem inv_lt_one_of_one_lt : 1 < a → a⁻¹ < 1 :=
 
 --  The additive version is also a `linarith` lemma.
 @[to_additive]
-theorem inv_le_one_of_one_le : 1 ≤ a → a⁻¹ ≤ 1 :=
-  inv_le_one'.mpr
+theorem inv_le_one_of_one_le : 1 ≤ a → a⁻¹ ≤ 1 := by simp
 
 @[to_additive neg_nonneg_of_nonpos]
-theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
-  one_le_inv'.mpr
+theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ := by simp
 
 end NormNumLemmas

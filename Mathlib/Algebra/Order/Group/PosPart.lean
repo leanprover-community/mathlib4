@@ -140,7 +140,7 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 @[to_additive] lemma leOnePart_le_one : a⁻ᵐ ≤ 1 ↔ 1 ≤ a := by simp [leOnePart]
 
 @[to_additive (attr := simp) negPart_pos] lemma one_lt_leOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
-  rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
+  simpa [leOnePart_eq_inv.2 ha.le]
 
 -- Bourbaki A.VI.12 Prop 9 a)
 @[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
@@ -210,8 +210,7 @@ variable [CommGroup α] [MulLeftMono α]
 -- Bourbaki A.VI.12 Prop 9 c)
 @[to_additive] lemma le_iff_oneLePart_leOnePart (a b : α) : a ≤ b ↔ a⁺ᵐ ≤ b⁺ᵐ ∧ b⁻ᵐ ≤ a⁻ᵐ := by
   refine ⟨fun h ↦ ⟨oneLePart_mono h, leOnePart_anti h⟩, fun h ↦ ?_⟩
-  rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b]
-  exact div_le_div'' h.1 h.2
+  grw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b, h.1, h.2]
 
 @[to_additive abs_add_eq_two_nsmul_posPart]
 lemma mabs_mul_eq_oneLePart_sq (a : α) : |a|ₘ * a = a⁺ᵐ ^ 2 := by
@@ -272,7 +271,7 @@ section covariantmul
 variable [Group α] [MulLeftMono α]
 
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
-  simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
+  simp_rw [← one_le_inv]; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive] lemma leOnePart_eq_ite_lt : a⁻ᵐ = if a < 1 then a⁻¹ else 1 := by
   grind [leOnePart_eq_ite, inv_one]
@@ -283,7 +282,7 @@ variable [Group α] [MulLeftMono α]
 variable [MulRightMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
-  sup_lt_iff.trans <| by rw [inv_lt']
+  sup_lt_iff.trans <| by rw [inv_lt]
 
 end covariantmul
 end LinearOrder

@@ -55,7 +55,7 @@ instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedM
     MulArchimedean Gᵒᵈ :=
   ⟨fun x y hy =>
     have hy : (ofDual y) < 1 := hy
-    let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv'.2 hy)
+    let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
 instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
@@ -78,7 +78,7 @@ theorem existsUnique_zpow_near_of_one_lt {a : G} (ha : 1 < a) (g : G) :
     ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
   let s : Set ℤ := { n : ℤ | a ^ n ≤ g }
   obtain ⟨k, hk : g⁻¹ ≤ a ^ k⟩ := MulArchimedean.arch g⁻¹ ha
-  have h_ne : s.Nonempty := ⟨-k, by simpa [s] using inv_le_inv' hk⟩
+  have h_ne : s.Nonempty := ⟨-k, by simpa [s] using inv_le_inv hk⟩
   obtain ⟨k, hk⟩ := MulArchimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn

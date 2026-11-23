@@ -32,7 +32,7 @@ variable (v : Valuation R Γ₀)
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
-  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred_eq, map_mul, mul_le_one' hx hy]
+  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred_eq, map_mul, mul_le_one hx hy]
   zero_mem' := by simp
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_ofPred_eq] at hx; simpa only [Set.mem_ofPred_eq, map_neg]

@@ -131,8 +131,7 @@ instance : Preorder (MulArchimedeanOrder M) where
   le_trans a b c := by
     intro ⟨m, hm⟩ ⟨n, hn⟩
     use m * n
-    rw [pow_mul]
-    exact hn.trans (pow_le_pow_left' hm n)
+    grw [pow_mul, hn, hm]
   lt_iff_le_not_ge a b := by
     rw [lt_def, le_def, le_def]
     suffices (∀ (n : ℕ), |b.val|ₘ ^ n < |a.val|ₘ) → ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n by
@@ -422,11 +421,11 @@ theorem mk_div_lt_mk_right_iff : mk (a / b) < mk b ↔ mk a < mk b :=
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
   refine le_antisymm (mk_le_mk.mpr ⟨2, ?_⟩) (mk_left_le_mk_mul h.le)
   rw [mk_lt_mk] at h
-  apply (mabs_mul' _ b).trans
+  apply (mabs_mul _ b).trans
   rw [mul_comm b a, pow_two, mul_le_mul_iff_right]
   apply le_of_mul_le_mul_left' (a := |b|ₘ)
   rw [mul_comm a b]
-  exact (pow_two |b|ₘ ▸ (h 2).le).trans (mabs_mul' a b)
+  exact (pow_two |b|ₘ ▸ (h 2).le).trans (mabs_mul a b)
 
 @[to_additive]
 theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=

@@ -49,7 +49,7 @@ theorem setOfPred_liouvilleWith_subset_aux :
       ∃ a ∈ Finset.Icc (0 : ℤ) b, |y - a / b| < 1 / (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) by
     simp only [mem_iUnion, mem_preimage]
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
-      simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
+      simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add, zero_add, and_self_iff,
         mem_Ico, Int.cast_neg, le_add_neg_iff_add_le]
     exact ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
   clear hxp x; intro x hxp hx01

@@ -49,20 +49,29 @@ section ContravariantLE
 
 variable [Mul α] [Preorder α] [MulLeftMono α] [MulRightMono α]
 
-@[to_additive Icc_add_Icc_subset]
-theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
+@[to_additive]
+theorem Icc_mul_Icc_subset (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
 
-@[to_additive Iic_add_Iic_subset]
-theorem Iic_mul_Iic_subset' (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Icc_add_Icc_subset]
+alias Icc_mul_Icc_subset' := Set.Icc_mul_Icc_subset
+
+@[to_additive]
+theorem Iic_mul_Iic_subset (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
-@[to_additive Ici_add_Ici_subset]
-theorem Ici_mul_Ici_subset' (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Iic_add_Iic_subset]
+alias Iic_mul_Iic_subset' := Set.Iic_mul_Iic_subset
+
+@[to_additive]
+theorem Ici_mul_Ici_subset (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_le_mul' hya hzb
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ici_add_Ici_subset]
+alias Ici_mul_Ici_subset' := Set.Ici_mul_Ici_subset
 
 end ContravariantLE
 
@@ -70,57 +79,81 @@ section ContravariantLT
 
 variable [Mul α] [PartialOrder α] [MulLeftStrictMono α] [MulRightStrictMono α]
 
-@[to_additive Icc_add_Ico_subset]
-theorem Icc_mul_Ico_subset' (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
+@[to_additive]
+theorem Icc_mul_Ico_subset (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
-@[to_additive Ico_add_Icc_subset]
-theorem Ico_mul_Icc_subset' (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Icc_add_Ico_subset]
+alias Icc_mul_Ico_subset' := Set.Icc_mul_Ico_subset
+
+@[to_additive]
+theorem Ico_mul_Icc_subset (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
-@[to_additive Ioc_add_Ico_subset]
-theorem Ioc_mul_Ico_subset' (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ico_add_Icc_subset]
+alias Ico_mul_Icc_subset' := Set.Ico_mul_Icc_subset
+
+@[to_additive]
+theorem Ioc_mul_Ico_subset (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
-@[to_additive Ico_add_Ioc_subset]
-theorem Ico_mul_Ioc_subset' (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ioc_add_Ico_subset]
+alias Ioc_mul_Ico_subset' := Set.Ioc_mul_Ico_subset
+
+@[to_additive]
+theorem Ico_mul_Ioc_subset (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
-@[to_additive Iic_add_Iio_subset]
-theorem Iic_mul_Iio_subset' (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ico_add_Ioc_subset]
+alias Ico_mul_Ioc_subset' := Set.Ico_mul_Ioc_subset
+
+@[to_additive]
+theorem Iic_mul_Iio_subset (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
-@[to_additive Iio_add_Iic_subset]
-theorem Iio_mul_Iic_subset' (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Iic_add_Iio_subset]
+alias Iic_mul_Iio_subset' := Set.Iic_mul_Iio_subset
+
+@[to_additive]
+theorem Iio_mul_Iic_subset (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
-@[to_additive Ioi_add_Ici_subset]
-theorem Ioi_mul_Ici_subset' (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Iio_add_Iic_subset]
+alias Iio_mul_Iic_subset' := Set.Iio_mul_Iic_subset
+
+@[to_additive]
+theorem Ioi_mul_Ici_subset (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
   have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
-@[to_additive Ici_add_Ioi_subset]
-theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ioi_add_Ici_subset]
+alias Ioi_mul_Ici_subset' := Set.Ioi_mul_Ici_subset
+
+@[to_additive]
+theorem Ici_mul_Ioi_subset (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
   have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Ici_add_Ioi_subset]
+alias Ici_mul_Ioi_subset' := Set.Ici_mul_Ioi_subset
 
 end ContravariantLT
 
@@ -143,7 +176,7 @@ lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
 
 @[to_additive]
 lemma Icc_mul_Icc (hab : a ≤ b) (hcd : c ≤ d) : Icc a b * Icc c d = Icc (a * c) (b * d) := by
-  refine (Icc_mul_Icc_subset' _ _ _ _).antisymm fun x ⟨hacx, hxbd⟩ ↦ ?_
+  refine (Icc_mul_Icc_subset _ _ _ _).antisymm fun x ⟨hacx, hxbd⟩ ↦ ?_
   obtain hxbc | hbcx := le_total x (b * c)
   · obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le hacx
     refine ⟨a * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, c, left_mem_Icc.2 hcd, mul_right_comm ..⟩
@@ -157,10 +190,10 @@ end LinearOrderedCommMonoid
 section OrderedCommGroup
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b c : α)
 
-@[to_additive (attr := simp)] lemma inv_Ici (a : α) : (Ici a)⁻¹ = Iic a⁻¹ := ext fun _x ↦ le_inv'
-@[to_additive (attr := simp)] lemma inv_Iic (a : α) : (Iic a)⁻¹ = Ici a⁻¹ := ext fun _x ↦ inv_le'
-@[to_additive (attr := simp)] lemma inv_Ioi (a : α) : (Ioi a)⁻¹ = Iio a⁻¹ := ext fun _x ↦ lt_inv'
-@[to_additive (attr := simp)] lemma inv_Iio (a : α) : (Iio a)⁻¹ = Ioi a⁻¹ := ext fun _x ↦ inv_lt'
+@[to_additive (attr := simp)] lemma inv_Ici (a : α) : (Ici a)⁻¹ = Iic a⁻¹ := ext fun _x ↦ le_inv
+@[to_additive (attr := simp)] lemma inv_Iic (a : α) : (Iic a)⁻¹ = Ici a⁻¹ := ext fun _x ↦ inv_le
+@[to_additive (attr := simp)] lemma inv_Ioi (a : α) : (Ioi a)⁻¹ = Iio a⁻¹ := ext fun _x ↦ lt_inv
+@[to_additive (attr := simp)] lemma inv_Iio (a : α) : (Iio a)⁻¹ = Ioi a⁻¹ := ext fun _x ↦ inv_lt
 
 @[to_additive (attr := simp)]
 lemma inv_Icc (a b : α) : (Icc a b)⁻¹ = Icc b⁻¹ a⁻¹ := by simp [← Ici_inter_Iic, inter_comm]
@@ -176,9 +209,12 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
 
-@[to_additive Icc_sub_Icc_subset]
-lemma Icc_div_Icc_subset' (a b c d : α) : Icc a b / Icc c d ⊆ Icc (a / d) (b / c) := by
-  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset']
+@[to_additive]
+lemma Icc_div_Icc_subset (a b c d : α) : Icc a b / Icc c d ⊆ Icc (a / d) (b / c) := by
+  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset]
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Set.Icc_sub_Icc_subset]
+alias Icc_div_Icc_subset' := Set.Icc_div_Icc_subset
 
 /-!
 ### Preimages under `x ↦ a * x`
@@ -717,11 +753,13 @@ variable {K : Type*} [DivisionSemiring K] [PartialOrder K] [PosMulReflectLT K]
   [IsOrderedCancelAddMonoid K] [ExistsAddOfLE K] {a : K}
 
 @[simp]
-theorem image_affine_Icc' (h : 0 < a) (b c d : K) :
+theorem image_affine_Icc (h : 0 < a) (b c d : K) :
     (a * · + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
   suffices (· + b) '' (a * ·) '' Icc c d = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
+
+@[deprecated (since := "2026-11-22")] alias image_affine_Icc' := Set.image_affine_Icc
 
 @[simp]
 theorem image_affine_Ico (h : 0 < a) (b c d : K) :
@@ -882,12 +920,12 @@ theorem image_div_const_uIcc (a b c : α) : (fun x => x / a) '' [[b, c]] = [[b /
 /-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
 theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
   ext x
-  refine ⟨fun h ↦ (lt_inv_of_neg (inv_neg''.1 h.2) ha).2 h.1, fun h ↦ ?_⟩
-  have h' := (h.trans (inv_neg''.2 ha))
-  exact ⟨(lt_inv_of_neg ha h').2 h, inv_neg''.2 h'⟩
+  refine ⟨fun h ↦ (lt_inv_of_neg (by simpa using h.2) ha).2 h.1, fun h ↦ ?_⟩
+  have h' : x < 0 := h.trans (by simpa)
+  exact ⟨(lt_inv_of_neg ha h').2 h, by simpa⟩
 
 theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg'.2 ha), inv_inv]
 
 end LinearOrderedField
 
@@ -899,8 +937,7 @@ variable [Preorder α] [CanonicallyOrderedMul α] [MulRightMono α]
 @[to_additive]
 theorem Ici_mul_Ici_eq {a b : α} :
     Ici a * Ici b = Ici (a * b) := by
-  refine Subset.antisymm (Ici_mul_Ici_subset' ..) (subset_def ▸ fun c c_in ↦
-    mem_mul.mpr ⟨a, ⟨by simp, ?_⟩⟩)
+  refine (Ici_mul_Ici_subset ..).antisymm <| subset_def ▸ fun c c_in ↦ mem_mul.mpr ⟨a, by simp, ?_⟩
   obtain ⟨d, hd⟩ := exists_mul_of_le <| mem_Ici.mp c_in
   exact ⟨b * d, by simp [← mul_assoc, hd]⟩
 

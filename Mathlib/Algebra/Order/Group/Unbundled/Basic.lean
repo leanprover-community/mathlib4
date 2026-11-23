@@ -255,19 +255,26 @@ theorem inv_lt_inv_iff : a⁻¹ < b⁻¹ ↔ b < a := by
   rw [← mul_lt_mul_iff_left a, ← mul_lt_mul_iff_right b]
   simp
 
-@[to_additive neg_lt]
-theorem inv_lt' : a⁻¹ < b ↔ b⁻¹ < a := by rw [← inv_lt_inv_iff, inv_inv]
+@[to_additive]
+theorem inv_lt : a⁻¹ < b ↔ b⁻¹ < a := by rw [← inv_lt_inv_iff, inv_inv]
 
-@[to_additive lt_neg]
-theorem lt_inv' : a < b⁻¹ ↔ b < a⁻¹ := by rw [← inv_lt_inv_iff, inv_inv]
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_lt] alias inv_lt' := inv_lt
 
-alias ⟨lt_inv_of_lt_inv, _⟩ := lt_inv'
+@[to_additive]
+theorem lt_inv : a < b⁻¹ ↔ b < a⁻¹ := by rw [← inv_lt_inv_iff, inv_inv]
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.lt_neg] alias lt_inv' := lt_inv
+
+alias ⟨lt_inv_of_lt_inv, _⟩ := lt_inv
 
 attribute [to_additive] lt_inv_of_lt_inv
 
-alias ⟨inv_lt_of_inv_lt', _⟩ := inv_lt'
+alias ⟨inv_lt_of_inv_lt, _⟩ := inv_lt
 
-attribute [to_additive neg_lt_of_neg_lt] inv_lt_of_inv_lt'
+attribute [to_additive] inv_lt_of_inv_lt
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_lt_of_neg_lt]
+alias inv_lt_of_inv_lt' := inv_lt_of_inv_lt
 
 @[to_additive]
 theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
@@ -359,9 +366,12 @@ theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_
 theorem mul_inv_le_iff_le_mul' : a * b⁻¹ ≤ c ↔ a ≤ b * c := by
   rw [← inv_mul_le_iff_le_mul, mul_comm]
 
-@[to_additive add_neg_le_add_neg_iff]
-theorem mul_inv_le_mul_inv_iff' : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b := by
+@[to_additive]
+theorem mul_inv_le_mul_inv_iff : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b := by
   rw [mul_comm c, mul_inv_le_inv_mul_iff, mul_comm]
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.add_neg_le_add_neg_iff]
+alias mul_inv_le_mul_inv_iff' := mul_inv_le_mul_inv_iff
 
 end LE
 
@@ -373,12 +383,18 @@ variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
 
 @[to_additive]
-theorem mul_inv_lt_iff_le_mul' : a * b⁻¹ < c ↔ a < b * c := by
+theorem mul_inv_lt_iff_le_mul : a * b⁻¹ < c ↔ a < b * c := by
   rw [← inv_mul_lt_iff_lt_mul, mul_comm]
 
-@[to_additive add_neg_lt_add_neg_iff]
-theorem mul_inv_lt_mul_inv_iff' : a * b⁻¹ < c * d⁻¹ ↔ a * d < c * b := by
+@[to_additive (attr := deprecated (since := "2026-11-22"))]
+alias mul_inv_lt_iff_le_mul' := mul_inv_lt_iff_le_mul
+
+@[to_additive]
+theorem mul_inv_lt_mul_inv_iff : a * b⁻¹ < c * d⁻¹ ↔ a * d < c * b := by
   rw [mul_comm c, mul_inv_lt_inv_mul_iff, mul_comm]
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.add_neg_lt_add_neg_iff]
+alias mul_inv_lt_mul_inv_iff' := mul_inv_lt_mul_inv_iff
 
 end LT
 
@@ -404,9 +420,12 @@ alias inv_lt_one_iff_one_lt := Left.inv_lt_one_iff
 
 attribute [to_additive] inv_lt_one_iff_one_lt
 
-alias inv_lt_one' := Left.inv_lt_one_iff
+alias inv_lt_one := Left.inv_lt_one_iff
 
-attribute [to_additive neg_lt_zero] inv_lt_one'
+attribute [to_additive neg_lt_zero] inv_lt_one
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_lt_zero]
+alias inv_lt_one' := inv_lt_one
 
 alias ⟨inv_of_one_lt_inv, _⟩ := Left.one_lt_inv_iff
 
@@ -446,17 +465,26 @@ alias lt_mul_of_inv_mul_lt_left := lt_mul_of_inv_mul_lt
 
 attribute [to_additive] lt_mul_of_inv_mul_lt_left
 
-alias inv_le_one' := Left.inv_le_one_iff
+alias inv_le_one := Left.inv_le_one_iff
 
-attribute [to_additive neg_nonpos] inv_le_one'
+attribute [to_additive] inv_le_one
 
-alias one_le_inv' := Left.one_le_inv_iff
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_nonpos]
+alias inv_le_one' := inv_le_one
 
-attribute [to_additive neg_nonneg] one_le_inv'
+alias one_le_inv := Left.one_le_inv_iff
 
-alias one_lt_inv' := Left.one_lt_inv_iff
+attribute [to_additive neg_nonneg] one_le_inv
 
-attribute [to_additive neg_pos] one_lt_inv'
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_nonneg]
+alias one_le_inv' := one_le_inv
+
+alias one_lt_inv := Left.one_lt_inv_iff
+
+attribute [to_additive neg_pos] one_lt_inv
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.neg_pos]
+alias one_lt_inv' := one_lt_inv
 
 --  Most of the lemmas that are primed in this section appear in ordered_field.
 --  I (DT) did not try to minimise the assumptions.
@@ -472,9 +500,12 @@ variable [MulRightMono α] {a b c : α}
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 
-@[to_additive (attr := gcongr) sub_le_sub_right]
-theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
+@[to_additive (attr := gcongr)]
+theorem div_le_div_right (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_le_sub_right]
+alias div_le_div_right' := div_le_div_right
 
 @[to_additive (attr := simp) sub_nonneg]
 theorem one_le_div' : 1 ≤ a / b ↔ b ≤ a := by
@@ -520,9 +551,12 @@ theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 
-@[to_additive (attr := gcongr) sub_le_sub_left]
-theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
+@[to_additive (attr := gcongr)]
+theorem div_le_div_left (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_le_sub_left]
+alias div_le_div_left' := div_le_div_left
 
 end Left
 
@@ -538,9 +572,12 @@ variable [LE α] [MulLeftMono α] {a b c d : α}
 
 /-- See also `div_le_div_iff` for a version that works for `LinearOrderedSemifield` with
 additional assumptions. -/
-@[to_additive sub_le_sub_iff]
-theorem div_le_div_iff' : a / b ≤ c / d ↔ a * d ≤ c * b := by
-  simpa only [div_eq_mul_inv] using mul_inv_le_mul_inv_iff'
+@[to_additive]
+theorem div_le_div_iff : a / b ≤ c / d ↔ a * d ≤ c * b := by
+  simpa only [div_eq_mul_inv] using mul_inv_le_mul_inv_iff
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_le_sub_iff]
+alias div_le_div_iff' := div_le_div_iff
 
 @[to_additive]
 theorem le_div_iff_mul_le' : b ≤ c / a ↔ a * b ≤ c := by rw [le_div_iff_mul_le, mul_comm]
@@ -573,10 +610,13 @@ section Preorder
 
 variable [Preorder α] [MulLeftMono α] {a b c d : α}
 
-@[to_additive (attr := gcongr) sub_le_sub]
-theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
+@[to_additive (attr := gcongr)]
+theorem div_le_div (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_le_sub]
+alias div_le_div'' := div_le_div
 
 end Preorder
 
@@ -596,9 +636,12 @@ variable [MulRightStrictMono α] {a b c : α}
 theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
   simpa only [div_eq_mul_inv] using mul_lt_mul_iff_right _
 
-@[to_additive (attr := gcongr) sub_lt_sub_right]
-theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
+@[to_additive (attr := gcongr)]
+theorem div_lt_div_right (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_lt_sub_right]
+alias div_lt_div_right' := div_lt_div_right
 
 @[to_additive (attr := simp) sub_pos]
 theorem one_lt_div' : 1 < a / b ↔ b < a := by
@@ -642,9 +685,12 @@ theorem div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
 theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
   rw [div_eq_mul_inv, lt_mul_inv_iff_mul_lt, inv_mul_lt_iff_lt_mul]
 
-@[to_additive (attr := gcongr) sub_lt_sub_left]
-theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
+@[to_additive (attr := gcongr)]
+theorem div_lt_div_left (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_lt_sub_left]
+alias div_lt_div_left' := div_lt_div_left
 
 end Left
 
@@ -658,9 +704,12 @@ section LT
 
 variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 
-@[to_additive sub_lt_sub_iff]
-theorem div_lt_div_iff' : a / b < c / d ↔ a * d < c * b := by
-  simpa only [div_eq_mul_inv] using mul_inv_lt_mul_inv_iff'
+@[to_additive]
+theorem div_lt_div_iff : a / b < c / d ↔ a * d < c * b := by
+  simpa only [div_eq_mul_inv] using mul_inv_lt_mul_inv_iff
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_lt_sub_iff]
+alias div_lt_div_iff' := div_lt_div_iff
 
 @[to_additive]
 theorem lt_div_iff_mul_lt' : b < c / a ↔ a * b < c := by rw [lt_div_iff_mul_lt, mul_comm]
@@ -690,10 +739,13 @@ section Preorder
 
 variable [Preorder α] [MulLeftStrictMono α] {a b c d : α}
 
-@[to_additive (attr := gcongr) sub_lt_sub]
-theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
+@[to_additive (attr := gcongr)]
+theorem div_lt_div (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.sub_lt_sub]
+alias div_lt_div'' := div_lt_div
 
 end Preorder
 
@@ -701,7 +753,7 @@ section LinearOrder
 variable [LinearOrder α] [MulLeftMono α] {a b c d : α}
 
 @[to_additive] lemma lt_or_lt_of_div_lt_div : a / d < b / c → a < b ∨ c < d := by
-  contrapose!; exact fun h ↦ div_le_div'' h.1 h.2
+  contrapose!; exact fun h ↦ by grw [h.1, h.2]
 
 end LinearOrder
 end CommGroup
@@ -710,9 +762,12 @@ section LinearOrder
 
 variable [Group α] [LinearOrder α]
 
-@[to_additive (attr := simp) cmp_sub_zero]
-theorem cmp_div_one' [MulRightMono α] (a b : α) :
-    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel]
+@[to_additive (attr := simp)]
+theorem cmp_div_one [MulRightMono α] (a b : α) :
+    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right _ _ b, one_mul, div_mul_cancel]
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.cmp_sub_zero]
+alias cmp_div_one' := cmp_div_one
 
 variable [MulLeftMono α]
 

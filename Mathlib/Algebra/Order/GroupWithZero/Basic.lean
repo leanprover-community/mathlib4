@@ -606,7 +606,7 @@ section ZeroLEOneClass
 
 variable [ZeroLEOneClass M₀]
 
-/-- See also `pow_right_strictMono'`. -/
+/-- See also `pow_right_strictMono`. -/
 lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
   strictMono_nat_of_lt_succ fun n => by
     simpa only [one_mul, pow_succ] using lt_mul_right (pow_pos (zero_le_one.trans_lt h) _) h
@@ -1318,15 +1318,17 @@ variable [LinearOrder G₀] {a b : G₀}
 section PosMulMono
 variable [PosMulMono G₀]
 
-@[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by
+@[simp] lemma inv_neg' : a⁻¹ < 0 ↔ a < 0 := by
   have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_le, inv_nonneg]
+
+@[deprecated (since := "2026-11-22")] alias inv_neg'' := inv_neg'
 
 @[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by
   have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_lt, inv_pos]
 
-alias inv_lt_zero := inv_neg''
+alias inv_lt_zero := inv_neg'
 
-lemma one_div_neg : 1 / a < 0 ↔ a < 0 := one_div a ▸ inv_neg''
+lemma one_div_neg : 1 / a < 0 ↔ a < 0 := one_div a ▸ inv_neg'
 lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := one_div a ▸ inv_nonpos
 
 lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by

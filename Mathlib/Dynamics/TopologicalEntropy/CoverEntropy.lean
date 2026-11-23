@@ -121,13 +121,13 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
   have _ : Nonempty X := F_nemp.nonempty
-  have s_nemp := h.nonempty F_nemp
+  have s_nemp : s.Nonempty := h.nonempty F_nemp
   obtain ⟨x, x_F⟩ := F_nemp
   rcases m.eq_zero_or_pos with rfl | m_pos
   · use {x}
     simp only [zero_mul, Finset.coe_singleton, Finset.card_singleton]
     exact ⟨isDynCoverOf_zero T F (U ○ U) (singleton_nonempty x),
-      one_le_pow_of_one_le' (Nat.one_le_of_lt (Finset.Nonempty.card_pos s_nemp)) n⟩
+      Nat.one_le_pow _ _ s_nemp.card_pos⟩
   -- The proof goes as follows. Given an orbit of length `(m * n)` starting from `y`, each of its
   -- iterates `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to a point of `s`.
   -- Conversely, given a sequence `t 0`, `t 1`, `t 2` of points in `s`, we choose a point

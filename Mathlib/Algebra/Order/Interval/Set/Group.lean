@@ -28,19 +28,19 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a c d : α}
 
 @[to_additive]
 theorem inv_mem_Icc_iff : a⁻¹ ∈ Set.Icc c d ↔ a ∈ Set.Icc d⁻¹ c⁻¹ :=
-  and_comm.trans <| and_congr inv_le' le_inv'
+  and_comm.trans <| and_congr inv_le le_inv
 
 @[to_additive]
 theorem inv_mem_Ico_iff : a⁻¹ ∈ Set.Ico c d ↔ a ∈ Set.Ioc d⁻¹ c⁻¹ :=
-  and_comm.trans <| and_congr inv_lt' le_inv'
+  and_comm.trans <| and_congr inv_lt le_inv
 
 @[to_additive]
 theorem inv_mem_Ioc_iff : a⁻¹ ∈ Set.Ioc c d ↔ a ∈ Set.Ico d⁻¹ c⁻¹ :=
-  and_comm.trans <| and_congr inv_le' lt_inv'
+  and_comm.trans <| and_congr inv_le lt_inv
 
 @[to_additive]
 theorem inv_mem_Ioo_iff : a⁻¹ ∈ Set.Ioo c d ↔ a ∈ Set.Ioo d⁻¹ c⁻¹ :=
-  and_comm.trans <| and_congr inv_lt' lt_inv'
+  and_comm.trans <| and_congr inv_lt lt_inv
 
 end OrderedCommGroup
 

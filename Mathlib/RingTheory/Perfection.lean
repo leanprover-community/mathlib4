@@ -766,8 +766,8 @@ theorem valAux_add (f g : PreTilt O p) :
   rcases le_max_iff.1
       (ModP.preVal_add hv (coeff (max (max m n) k) f)
       (coeff (max (max m n) k) g)) with h | h
-  · exact le_max_of_le_left (pow_le_pow_left' h _)
-  · exact le_max_of_le_right (pow_le_pow_left' h _)
+  · exact le_max_of_le_left (by gcongr)
+  · exact le_max_of_le_right (by gcongr)
 
 variable (K v O p)
 

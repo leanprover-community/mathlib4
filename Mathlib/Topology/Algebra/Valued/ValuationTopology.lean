@@ -46,7 +46,7 @@ lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r 
     specialize h (x ^ k) (by simp [hx])
     simp [← Units.val_lt_val, ← map_pow, h.not_gt] at hk
   · simpa [Units.ext_iff] using H
-  · rw [← inv_lt_one'] at H
+  · rw [← inv_lt_one] at H
     obtain ⟨k, hk⟩ := exists_pow_lt H r
     specialize h (x ^ (-k : ℤ)) (by simp [hx])
     simp only [zpow_neg, zpow_natCast, map_inv₀, map_pow] at h

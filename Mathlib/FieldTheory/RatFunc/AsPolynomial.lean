@@ -343,7 +343,7 @@ theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[
   by_cases h0 : p.coeff i = 0
   · simp_all
   · rw [← RatFunc.coePolynomial]
-    simp_all [pow_le_one', ← RatFunc.algebraMap_eq_C, hv.eq_one _ h0]
+    simp_all [pow_le_one, ← RatFunc.algebraMap_eq_C, hv.eq_one _ h0]
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `1 / (monomial n a)` (as an element of the field of rational functions) is equal

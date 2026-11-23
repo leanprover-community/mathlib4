@@ -38,18 +38,27 @@ section ContravariantLE
 variable [Mul α] [Preorder α] [DecidableEq α]
 variable [MulLeftMono α] [MulRightMono α]
 
-@[to_additive Icc_add_Icc_subset]
-theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+@[to_additive]
+theorem Icc_mul_Icc_subset [LocallyFiniteOrder α] (a b c d : α) :
     Icc a b * Icc c d ⊆ Icc (a * c) (b * d) :=
-  Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Icc_subset' _ _ _ _
+  Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Icc_subset _ _ _ _
 
-@[to_additive Iic_add_Iic_subset]
-theorem Iic_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iic b ⊆ Iic (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iic_subset' _ _
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Icc_add_Icc_subset]
+alias Icc_mul_Icc_subset' := Finset.Icc_mul_Icc_subset
 
-@[to_additive Ici_add_Ici_subset]
-theorem Ici_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ici b ⊆ Ici (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ici_subset' _ _
+@[to_additive]
+theorem Iic_mul_Iic_subset [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iic b ⊆ Iic (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iic_subset _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Iic_add_Iic_subset]
+alias Iic_mul_Iic_subset' := Finset.Iic_mul_Iic_subset
+
+@[to_additive]
+theorem Ici_mul_Ici_subset [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ici b ⊆ Ici (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ici_subset _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ici_add_Ici_subset]
+alias Ici_mul_Ici_subset' := Finset.Ici_mul_Ici_subset
 
 end ContravariantLE
 
@@ -58,41 +67,65 @@ section ContravariantLT
 variable [Mul α] [PartialOrder α] [DecidableEq α]
 variable [MulLeftStrictMono α] [MulRightStrictMono α]
 
-@[to_additive Icc_add_Ico_subset]
-theorem Icc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
+@[to_additive]
+theorem Icc_mul_Ico_subset [LocallyFiniteOrder α] (a b c d : α) :
     Icc a b * Ico c d ⊆ Ico (a * c) (b * d) :=
-  Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Ico_subset' _ _ _ _
+  Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Ico_subset _ _ _ _
 
-@[to_additive Ico_add_Icc_subset]
-theorem Ico_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Icc_add_Ico_subset]
+alias Icc_mul_Ico_subset' := Finset.Icc_mul_Ico_subset
+
+@[to_additive]
+theorem Ico_mul_Icc_subset [LocallyFiniteOrder α] (a b c d : α) :
     Ico a b * Icc c d ⊆ Ico (a * c) (b * d) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Icc_subset' _ _ _ _
+  Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Icc_subset _ _ _ _
 
-@[to_additive Ioc_add_Ico_subset]
-theorem Ioc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ico_add_Icc_subset]
+alias Ico_mul_Icc_subset' := Finset.Ico_mul_Icc_subset
+
+@[to_additive]
+theorem Ioc_mul_Ico_subset [LocallyFiniteOrder α] (a b c d : α) :
     Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ioc_mul_Ico_subset' _ _ _ _
+  Finset.coe_subset.mp <| by simpa using Set.Ioc_mul_Ico_subset _ _ _ _
 
-@[to_additive Ico_add_Ioc_subset]
-theorem Ico_mul_Ioc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ioc_add_Ico_subset]
+alias Ioc_mul_Ico_subset' := Finset.Ioc_mul_Ico_subset
+
+@[to_additive]
+theorem Ico_mul_Ioc_subset [LocallyFiniteOrder α] (a b c d : α) :
     Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Ioc_subset' _ _ _ _
+  Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Ioc_subset _ _ _ _
 
-@[to_additive Iic_add_Iio_subset]
-theorem Iic_mul_Iio_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iio b ⊆ Iio (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iio_subset' _ _
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ico_add_Ioc_subset]
+alias Ico_mul_Ioc_subset' := Finset.Ico_mul_Ioc_subset
 
-@[to_additive Iio_add_Iic_subset]
-theorem Iio_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iio a * Iic b ⊆ Iio (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Iio_mul_Iic_subset' _ _
+@[to_additive]
+theorem Iic_mul_Iio_subset [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iio b ⊆ Iio (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iio_subset _ _
 
-@[to_additive Ioi_add_Ici_subset]
-theorem Ioi_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ioi_mul_Ici_subset' _ _
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Iic_add_Iio_subset]
+alias Iic_mul_Iio_subset' := Finset.Iic_mul_Iio_subset
 
-@[to_additive Ici_add_Ioi_subset]
-theorem Ici_mul_Ioi_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) :=
-  Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ioi_subset' _ _
+@[to_additive]
+theorem Iio_mul_Iic_subset [LocallyFiniteOrderBot α] (a b : α) : Iio a * Iic b ⊆ Iio (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Iio_mul_Iic_subset _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Iio_add_Iic_subset]
+alias Iio_mul_Iic_subset' := Finset.Iio_mul_Iic_subset
+
+@[to_additive]
+theorem Ioi_mul_Ici_subset [LocallyFiniteOrderTop α] (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Ioi_mul_Ici_subset _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ioi_add_Ici_subset]
+alias Ioi_mul_Ici_subset' := Finset.Ioi_mul_Ici_subset
+
+@[to_additive]
+theorem Ici_mul_Ioi_subset [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) :=
+  Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ioi_subset _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Finset.Ici_add_Ioi_subset]
+alias Ici_mul_Ioi_subset' := Finset.Ici_mul_Ioi_subset
 
 end ContravariantLT
 

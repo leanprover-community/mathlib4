@@ -243,7 +243,7 @@ theorem valuativeCriterion_existence_aux
     exact ((valuation O K).map_add _ _).trans <| sup_le_iff.mpr ⟨hhx, hhy⟩
   | smul a x₀ hx hx1 =>
     simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
-    refine mul_le_one' ?_ hx1
+    refine mul_le_one ?_ hx1
     rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀)),
       ← awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a, hφ'1]
     change valuation O K (φ.comp (fromZeroRingHom 𝒜 (.powers (x j))) a) ≤ 1

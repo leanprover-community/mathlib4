@@ -69,7 +69,7 @@ lemma genLTOne_unique {g : G} (hg : g < 1) (hH : Subgroup.zpowers g = H) : g = H
   rw [← H.genLTOne_zpowers_eq_top] at hH
   rcases (Subgroup.zpowers_eq_zpowers_iff hg').mp hH with _ | h
   · assumption
-  rw [← one_lt_inv', h] at hg
+  rw [← one_lt_inv, h] at hg
   exact (not_lt_of_gt hg <| Subgroup.genLTOne_lt_one _).elim
 
 lemma genLTOne_unique_of_zpowers_eq {g1 g2 : G} (hg1 : g1 < 1) (hg2 : g2 < 1)

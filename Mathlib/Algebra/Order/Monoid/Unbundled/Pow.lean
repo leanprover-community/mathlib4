@@ -48,9 +48,18 @@ theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 
 
 end Left
 
-@[to_additive nsmul_nonneg] alias one_le_pow_of_one_le' := Left.one_le_pow_of_le
-@[to_additive nsmul_nonpos] alias pow_le_one' := Left.pow_le_one_of_le
-@[to_additive nsmul_neg] alias pow_lt_one' := Left.pow_lt_one_of_lt
+@[to_additive nsmul_nonneg] alias one_le_pow_of_one_le := Left.one_le_pow_of_le
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_nonneg]
+alias one_le_pow_of_one_le' := one_le_pow_of_one_le
+@[to_additive] alias pow_le_one := Left.pow_le_one_of_le
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_nonpos]
+alias pow_le_one' := pow_le_one
+@[to_additive] alias pow_lt_one := Left.pow_lt_one_of_lt
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_neg]
+alias pow_lt_one' := pow_lt_one
 
 section Left
 
@@ -62,20 +71,29 @@ theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
 
 -- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
 @[to_additive (attr := gcongr low) nsmul_le_nsmul_left]
-theorem pow_le_pow_right' {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
+theorem pow_le_pow_right {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   pow_right_monotone ha h
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_le_nsmul_left]
+alias pow_le_pow_right' := pow_le_pow_right
+
 @[to_additive nsmul_le_nsmul_left_of_nonpos]
-theorem pow_le_pow_right_of_le_one' {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
-  pow_le_pow_right' (M := Mᵒᵈ) ha h
+theorem pow_le_pow_right_of_le_one {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
+  pow_le_pow_right (M := Mᵒᵈ) ha h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_le_nsmul_left_of_nonpos]
+alias pow_le_pow_right_of_le_one' := pow_le_pow_right_of_le_one
 
 @[to_additive nsmul_pos]
-theorem one_lt_pow' (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
-  pow_lt_one' (M := Mᵒᵈ) ha hk
+theorem one_lt_pow (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
+  pow_lt_one (M := Mᵒᵈ) ha hk
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_pos]
+alias one_lt_pow' := one_lt_pow
 
 @[to_additive]
 lemma le_self_pow (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
-  simpa using pow_le_pow_right' ha (Nat.one_le_iff_ne_zero.2 hn)
+  simpa using pow_le_pow_right ha (Nat.one_le_iff_ne_zero.2 hn)
 
 end Left
 
@@ -84,12 +102,18 @@ section LeftLt
 variable [MulLeftStrictMono M] {a : M} {n m : ℕ}
 
 @[to_additive nsmul_left_strictMono]
-theorem pow_right_strictMono' (ha : 1 < a) : StrictMono ((a ^ ·) : ℕ → M) :=
+theorem pow_right_strictMono (ha : 1 < a) : StrictMono ((a ^ ·) : ℕ → M) :=
   strictMono_nat_of_lt_succ fun n ↦ by rw [pow_succ]; exact lt_mul_of_one_lt_right' (a ^ n) ha
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_left_strictMono]
+alias pow_right_strictMono' := pow_right_strictMono
+
 @[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
-theorem pow_lt_pow_right' (ha : 1 < a) (h : n < m) : a ^ n < a ^ m :=
-  pow_right_strictMono' ha h
+theorem pow_lt_pow_right (ha : 1 < a) (h : n < m) : a ^ n < a ^ m :=
+  pow_right_strictMono ha h
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_lt_nsmul_left]
+alias pow_lt_pow_right' := pow_lt_pow_right
 
 end LeftLt
 
@@ -146,8 +170,11 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 
 @[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
-lemma pow_lt_pow_left' (hn : n ≠ 0) {a b : M} (hab : a < b) : a ^ n < b ^ n :=
+lemma pow_lt_pow_left (hn : n ≠ 0) {a b : M} (hab : a < b) : a ^ n < b ^ n :=
   pow_left_strictMono hn hab
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_lt_nsmul_right]
+alias pow_lt_pow_left' := pow_lt_pow_left
 
 end CovariantLTSwap
 
@@ -156,11 +183,14 @@ section CovariantLESwap
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive (attr := mono, gcongr, to_dual self) nsmul_le_nsmul_right]
-theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
+theorem pow_le_pow_left {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
   | k + 1 => by
     rw [pow_succ, pow_succ]
-    exact mul_le_mul' (pow_le_pow_left' hab k) hab
+    exact mul_le_mul' (pow_le_pow_left hab k) hab
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_le_nsmul_right]
+alias pow_le_pow_left' := pow_le_pow_left
 
 @[to_additive Monotone.const_nsmul]
 theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
@@ -175,7 +205,7 @@ theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow
 -- `gcongr low` so that we prefer `Set.pow_subset_pow` and `Finset.pow_subset_pow`
 @[to_additive (attr := gcongr low)]
 lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=
-  (pow_le_pow_left' hab _).trans (pow_le_pow_right' ht hmn)
+  by grw [hab, hmn]
 
 end CovariantLESwap
 
@@ -185,7 +215,7 @@ section SemilatticeSup
 variable [SemilatticeSup M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
 
 lemma le_pow_sup : a ^ n ⊔ b ^ n ≤ (a ⊔ b) ^ n :=
-  sup_le (pow_le_pow_left' le_sup_left _) (pow_le_pow_left' le_sup_right _)
+  sup_le (pow_le_pow_left le_sup_left _) (pow_le_pow_left le_sup_right _)
 
 end SemilatticeSup
 
@@ -193,7 +223,7 @@ section SemilatticeInf
 variable [SemilatticeInf M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
 
 lemma pow_inf_le : (a ⊓ b) ^ n ≤ a ^ n ⊓ b ^ n :=
-  le_inf (pow_le_pow_left' inf_le_left _) (pow_le_pow_left' inf_le_right _)
+  le_inf (pow_le_pow_left inf_le_left _) (pow_le_pow_left inf_le_right _)
 
 end SemilatticeInf
 
@@ -208,7 +238,7 @@ variable [MulLeftMono M]
 -- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
-  ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩
+  ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one h hn, fun h => one_le_pow_of_one_le h n⟩
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
@@ -229,12 +259,18 @@ section CovariantLT
 variable [MulLeftStrictMono M] {a : M} {m n : ℕ}
 
 @[to_additive nsmul_le_nsmul_iff_left]
-theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (pow_right_strictMono' ha).le_iff_le
+theorem pow_le_pow_iff_right (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
+  (pow_right_strictMono ha).le_iff_le
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_le_nsmul_iff_left]
+alias pow_le_pow_iff_right' := pow_le_pow_iff_right
 
 @[to_additive nsmul_lt_nsmul_iff_left]
-theorem pow_lt_pow_iff_right' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (pow_right_strictMono' ha).lt_iff_lt
+theorem pow_lt_pow_iff_right (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
+  (pow_right_strictMono ha).lt_iff_lt
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.nsmul_lt_nsmul_iff_left]
+alias pow_lt_pow_iff_right' := pow_lt_pow_iff_right
 
 end CovariantLT
 
@@ -243,8 +279,11 @@ section CovariantLESwap
 variable [MulLeftMono M] [MulRightMono M]
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
-theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
+theorem lt_of_pow_lt_pow_left {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
   (pow_left_mono _).reflect_lt
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.lt_of_nsmul_lt_nsmul_right]
+alias lt_of_pow_lt_pow_left' := lt_of_pow_lt_pow_left
 
 @[to_additive nsmul_max]
 theorem max_pow (a b : M) (n : ℕ) : max a b ^ n = max (a ^ n) (b ^ n) :=
@@ -273,7 +312,10 @@ theorem pow_le_pow_iff_left {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n
   (pow_left_strictMono hn).le_iff_le
 
 @[to_additive le_of_nsmul_le_nsmul_right]
-alias ⟨le_of_pow_le_pow_left', _⟩ := pow_le_pow_iff_left
+alias ⟨le_of_pow_le_pow_left, _⟩ := pow_le_pow_iff_left
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.le_of_nsmul_le_nsmul_right]
+alias le_of_pow_le_pow_left' := le_of_pow_le_pow_left
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
@@ -316,12 +358,12 @@ variable [DivInvMonoid G] [Preorder G] [MulLeftMono G]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
   lift n to ℕ using hn
   rw [zpow_natCast]
-  apply one_le_pow_of_one_le' H
+  apply one_le_pow_of_one_le H
 
 @[to_additive zsmul_pos]
 lemma one_lt_zpow {x : G} (hx : 1 < x) {n : ℤ} (hn : 0 < n) : 1 < x ^ n := by
   lift n to ℕ using Int.le_of_lt hn
   rw [zpow_natCast]
-  exact one_lt_pow' hx (Int.natCast_pos.mp hn).ne'
+  exact one_lt_pow hx (Int.natCast_pos.mp hn).ne'
 
 end DivInvMonoid

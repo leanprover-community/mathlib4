@@ -181,7 +181,7 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
   · by_cases hL : L.NeBot
     · exact hf.hasProd.le_one h
     · simp only [tprod_bot hL]
-      exact finprod_induction (· ≤ 1) le_rfl (fun _ _ ↦ mul_le_one') h
+      exact finprod_induction (· ≤ 1) le_rfl (fun _ _ ↦ mul_le_one) h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]

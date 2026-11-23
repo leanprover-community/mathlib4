@@ -125,7 +125,7 @@ theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hK
   refine ⟨f, fun x hx ↦ ?_, fun x hx ↦ (hu x hx).trans_le <| huv.le.trans hv₀.le⟩
   by_contra! hx₀
   simpa [hx₀.ne] using hv ((v * (f x)⁻¹) • x)
-    (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| inv_neg''.2 hx₀)
+    (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| by simpa)
 
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
