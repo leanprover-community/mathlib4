@@ -5,16 +5,16 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Angle.Bisector
-public import Mathlib.Geometry.Euclidean.Angle.Sphere
 public import Mathlib.Geometry.Euclidean.Incenter.SouthPole
 public import Mathlib.Geometry.Euclidean.Triangle
+
+import Mathlib.Geometry.Euclidean.Angle.Bisector
+import Mathlib.Geometry.Euclidean.Angle.Sphere
 
 /-!
 # Angles and incenters and excenters.
 
 This file proves lemmas relating incenters and excenters of a simplex to angle bisection.
-
 -/
 
 public section

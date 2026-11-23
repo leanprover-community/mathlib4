@@ -20,7 +20,6 @@ where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will al
 at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
-
 -/
 
 public meta section

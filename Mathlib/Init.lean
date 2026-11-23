@@ -23,6 +23,7 @@ public meta import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
+public meta import Mathlib.Tactic.Linter.NumericProjection
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
 public meta import Mathlib.Tactic.Linter.SyntaxBased
@@ -73,7 +74,6 @@ All linters imported here have no bulk imports;
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
   it is useful for debugging, but not as a permanently enabled lint)
 - the `upstreamableDecls` linter, as it is also mostly informational
-
 -/
 
 public section
@@ -108,6 +108,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
+  linter.style.numericProjections
   linter.style.setOption
   linter.style.show
   linter.style.whitespace

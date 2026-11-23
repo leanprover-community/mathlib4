@@ -17,7 +17,6 @@ a locally injective morphism (which is mono).
 
 Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 (see `Sites.LeftExact`), then epimorphisms are exactly locally surjective morphisms.
-
 -/
 
 @[expose] public section

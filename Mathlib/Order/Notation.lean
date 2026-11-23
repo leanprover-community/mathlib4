@@ -34,7 +34,6 @@ if and only if the order on `α` does not have a `LinearOrder α` instance (wher
 This is so that in a lattice we can use the same underlying constants `max`/`min`
 as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`.
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
-
 -/
 
 public section

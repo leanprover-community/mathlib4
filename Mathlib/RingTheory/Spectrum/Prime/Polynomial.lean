@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
 # Prime spectrum of (multivariate) polynomials
@@ -24,7 +25,6 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
 - `MvPolynomial.isOpenMap_comap_C`:
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
-
 -/
 
 public section

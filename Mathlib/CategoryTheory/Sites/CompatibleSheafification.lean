@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 In this file, we prove that sheafification is compatible with functors which
 preserve the correct limits and colimits.
-
 -/
 
 @[expose] public section

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD
+
+import Mathlib.GroupTheory.Perm.Closure
 
 /-!
 # Cycle Types
@@ -48,16 +49,16 @@ variable [DecidableEq α]
 
 /-- The cycle type of a permutation -/
 def cycleType (σ : Perm α) : Multiset ℕ :=
-  σ.cycleFactorsFinset.1.map (Finset.card ∘ support)
+  σ.cycleFactorsFinset.val.map (Finset.card ∘ support)
 
 theorem cycleType_def (σ : Perm α) :
-    σ.cycleType = σ.cycleFactorsFinset.1.map (Finset.card ∘ support) :=
+    σ.cycleType = σ.cycleFactorsFinset.val.map (Finset.card ∘ support) :=
   rfl
 
 theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm α, f ∈ s → f.IsCycle)
     (h2 : (s : Set (Perm α)).Pairwise Disjoint)
     (h0 : s.noncommProd id (h2.imp fun _ _ => Disjoint.commute) = σ) :
-    σ.cycleType = s.1.map (Finset.card ∘ support) := by
+    σ.cycleType = s.val.map (Finset.card ∘ support) := by
   rw [cycleType_def]
   congr
   rw [cycleFactorsFinset_eq_finset]
@@ -444,15 +445,15 @@ by appending the inverse of the product of `v`. -/
 def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
     rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
-  invFun v := v.1.tail
+  invFun v := v.val.tail
   left_inv v := v.tail_cons v.toList.prod⁻¹
   right_inv v := Subtype.ext <|
     calc
-      v.1.tail.toList.prod⁻¹ ::ᵥ v.1.tail = v.1.head ::ᵥ v.1.tail :=
-        congr((· ::ᵥ v.1.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
-          rw [← List.prod_cons, ← Vector.toList_cons, v.1.cons_head_tail]
-          exact v.2))
-      _ = v.1 := v.1.cons_head_tail
+      v.val.tail.toList.prod⁻¹ ::ᵥ v.val.tail = v.val.head ::ᵥ v.val.tail :=
+        congr((· ::ᵥ v.val.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
+          rw [← List.prod_cons, ← Vector.toList_cons, v.val.cons_head_tail]
+          exact v.property))
+      _ = v.val := v.val.cons_head_tail
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
@@ -471,16 +472,17 @@ variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/
 def rotate : vectorsProdEqOne G n :=
-  ⟨⟨_, (v.1.1.length_rotate k).trans v.1.2⟩, List.prod_rotate_eq_one_of_prod_eq_one v.2 k⟩
+  ⟨⟨_, (v.val.val.length_rotate k).trans v.val.property⟩,
+    List.prod_rotate_eq_one_of_prod_eq_one v.property k⟩
 
 theorem rotate_zero : rotate v 0 = v :=
-  Subtype.ext (Subtype.ext v.1.1.rotate_zero)
+  Subtype.ext (Subtype.ext v.val.val.rotate_zero)
 
 theorem rotate_rotate : rotate (rotate v j) k = rotate v (j + k) :=
-  Subtype.ext (Subtype.ext (v.1.1.rotate_rotate j k))
+  Subtype.ext (Subtype.ext (v.val.val.rotate_rotate j k))
 
 theorem rotate_length : rotate v n = v :=
-  Subtype.ext (Subtype.ext ((congr_arg _ v.1.2.symm).trans v.1.1.rotate_length))
+  Subtype.ext (Subtype.ext ((congr_arg _ v.val.property.symm).trans v.val.val.rotate_length))
 
 end VectorsProdEqOne
 
@@ -515,9 +517,9 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   refine
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
-  · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
+  · rw [← List.prod_replicate, ← v.val.property, ← hg, show v.val.val.prod = 1 from v.property]
   · change (v : List.Vector G p).toList = _ at hg
-    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.1.2]
+    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.val.property]
     rfl
 
 -- TODO: Make the `Finite` version of this theorem the default

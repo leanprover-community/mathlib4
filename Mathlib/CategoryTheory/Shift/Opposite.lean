@@ -45,7 +45,6 @@ Given a `CommShift` structure on a functor `F`, we define a `CommShift` structur
 We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
 `F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
 `CommShift` structures.
-
 -/
 
 @[expose] public section
@@ -62,6 +61,7 @@ namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
+@[implicit_reducible]
 def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
@@ -78,7 +78,7 @@ end HasShift
 
 /-- The category `OppositeShift C A` is the opposite category `Cᵒᵖ` equipped
 with the naive shift: `shiftFunctor (OppositeShift C A) n` is `(shiftFunctor C n).op`. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
@@ -86,7 +86,6 @@ instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
@@ -103,7 +102,6 @@ lemma oppositeShiftFunctorZero_inv_app (X : OppositeShift C A) :
     (shiftFunctorZero (OppositeShift C A) A).inv.app X =
       ((shiftFunctorZero C A).hom.app X.unop).op := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorZero_hom_app (X : OppositeShift C A) :
     (shiftFunctorZero (OppositeShift C A) A).hom.app X =
       ((shiftFunctorZero C A).inv.app X.unop).op := by
@@ -119,7 +117,6 @@ lemma oppositeShiftFunctorAdd_inv_app :
     (shiftFunctorAdd (OppositeShift C A) a b).inv.app X =
       ((shiftFunctorAdd C a b).hom.app X.unop).op := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorAdd_hom_app :
     (shiftFunctorAdd (OppositeShift C A) a b).hom.app X =
       ((shiftFunctorAdd C a b).inv.app X.unop).op := by
@@ -128,14 +125,12 @@ lemma oppositeShiftFunctorAdd_hom_app :
     Iso.hom_inv_id_app, op_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma oppositeShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).inv.app X =
       ((shiftFunctorAdd' C a b c h).hom.app X.unop).op := by
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_inv_app]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma oppositeShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).hom.app X =
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
@@ -276,7 +271,6 @@ instance [F.CommShift A] [G.CommShift A] :
 
 end NatTrans
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
 and `OppositeShift.functor F`.

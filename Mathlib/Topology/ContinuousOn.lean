@@ -19,7 +19,6 @@ related to continuity, which are defined in previous definition files.
 Their basic properties studied in this file include the relationships between
 these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
-
 -/
 
 public section
@@ -864,7 +863,7 @@ theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     ContinuousOn finv (f '' s) := by
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_domRestrict]
-    exact h _ (ht.preimage continuous_subtype_val)
+    exact h _ (ht.preimage continuous_subtypeVal)
   · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}

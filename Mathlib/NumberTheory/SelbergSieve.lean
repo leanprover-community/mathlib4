@@ -31,7 +31,6 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
 * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
-
 -/
 
 @[expose] public section
