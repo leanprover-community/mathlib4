@@ -1012,6 +1012,13 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
   rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
+/-- Metric ball of radius `r` is a subset of the extended metric ball of radius `ENNReal.ofReal r`.
+
+For `r ≥ 0`, this inclusion is an equality, see `Metric.closedEBall_ofReal`. -/
+theorem Metric.closedBall_subset_closedEBall {x : α} {r : ℝ} :
+    closedBall x r ⊆ closedEBall x (.ofReal r) := by
+  simp +contextual [subset_def, edist_dist, ENNReal.ofReal_le_ofReal]
+
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
