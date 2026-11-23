@@ -578,7 +578,7 @@ variable (M) in
 def uniqueRingEquiv [Subsingleton M] : R⟦M⟧ ≃+* R where
   toAddEquiv :=
     letI : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
-    coeffAddEquiv.trans <| AddEquiv.funUnique M R
+    coeffAddEquiv.trans <| .funUnique M R
   map_mul' x y := by
     let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
     have : mulAntidiagonal (default : M) = {(1, 1)} := by
