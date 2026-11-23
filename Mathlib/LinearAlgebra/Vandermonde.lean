@@ -5,14 +5,14 @@ Authors: Anne Baanen, Peter Nelson
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.SuperFactorial
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.RingTheory.Polynomial.Pochhammer
 
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Polynomial.Pochhammer
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

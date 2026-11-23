@@ -6,7 +6,8 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.GroupTheory.Sylow
+
+import Mathlib.GroupTheory.Sylow
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

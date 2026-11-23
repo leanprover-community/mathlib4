@@ -5,12 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.LocalRing.Basic
+
+import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 
 /-!
 # Intermediate fields

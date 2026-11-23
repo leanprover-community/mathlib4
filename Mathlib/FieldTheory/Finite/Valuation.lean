@@ -5,8 +5,9 @@ Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.FieldTheory.Finite.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Data.List.Pairwise
 public import Mathlib.Data.List.Lattice
 
+import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.Nodup
 
 set_option doc.verso true

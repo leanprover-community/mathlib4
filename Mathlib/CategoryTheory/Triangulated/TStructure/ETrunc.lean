@@ -128,7 +128,7 @@ instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
 /-- The connecting homomorphism from `t.eTruncGE` to the
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
-    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C (1 : ℤ))) where
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C 1)) where
   app := WithBotTop.rec 0 t.truncGEδLT 0
   naturality {a b} hab := by
     replace hab := leOfHom hab
