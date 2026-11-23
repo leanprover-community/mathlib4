@@ -43,7 +43,7 @@ namespace PiTensorProduct
 
 open scoped InnerProductSpace TensorProduct
 
-variable {𝕜} [RCLike 𝕜] {ι : Type*} [Fintype ι]
+variable {𝕜 : Type*} [RCLike 𝕜] {ι : Type*} [Fintype ι]
   {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)]
   {F : ι → Type*} [∀ i, NormedAddCommGroup (F i)] [∀ i, InnerProductSpace 𝕜 (F i)]
 
