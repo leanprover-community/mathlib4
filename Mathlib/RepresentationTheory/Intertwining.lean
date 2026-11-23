@@ -386,13 +386,13 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma toIntertwiningMap_refl : (refl ρ).toIntertwiningMap = .id ρ := rfl
 
-@[simp] lemma toLinearMap_refl : (refl ρ).toLinearMap = LinearMap.id := rfl
+lemma toLinearMap_refl : (refl ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp] lemma refl_apply (v : V) : refl ρ v = v := rfl
 
 @[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = φ := rfl
 
-@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
+lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
 theorem toLinearEquiv_toLinearMap :
   φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
@@ -441,7 +441,6 @@ def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
 lemma toIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (φ.trans ψ).toIntertwiningMap = ψ.toIntertwiningMap.comp φ.toIntertwiningMap := rfl
 
-@[simp]
 lemma toLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (trans φ ψ).toLinearMap = ψ.toLinearMap ∘ₗ φ.toLinearMap := rfl
 

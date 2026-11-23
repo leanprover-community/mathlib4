@@ -188,7 +188,6 @@ theorem coe_copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : ⇑(f.co
 theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
-@[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 

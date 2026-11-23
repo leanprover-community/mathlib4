@@ -104,7 +104,7 @@ instance monoidalι : P.ι.Monoidal :=
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 @[simp] lemma ι_ε : ε P.ι = 𝟙 _ := rfl
-@[simp] lemma ι_η : ε P.ι = 𝟙 _ := rfl
+@[simp] lemma ι_η : η P.ι = 𝟙 _ := rfl
 @[simp] lemma ι_μ (X Y : FullSubcategory P) : μ P.ι X Y = 𝟙 _ := rfl
 @[simp] lemma ι_δ (X Y : FullSubcategory P) : δ P.ι X Y = 𝟙 _ := rfl
 

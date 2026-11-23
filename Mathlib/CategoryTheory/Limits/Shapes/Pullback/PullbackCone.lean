@@ -118,23 +118,18 @@ def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
 
-@[simp]
 theorem mk_π_app_left {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.left = fst := rfl
 
-@[simp]
 theorem mk_π_app_right {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.right = snd := rfl
 
-@[simp]
 theorem mk_π_app_one {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).π.app WalkingCospan.one = fst ≫ f := rfl
 
-@[simp]
 theorem mk_fst {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).fst = fst := rfl
 
-@[simp]
 theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
     (mk fst snd eq).snd = snd := rfl
 
@@ -334,23 +329,18 @@ def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : Pu
          naturality := by
           rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
-@[simp]
 theorem mk_ι_app_left {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
     (mk inl inr eq).ι.app WalkingSpan.left = inl := rfl
 
-@[simp]
 theorem mk_ι_app_right {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
     (mk inl inr eq).ι.app WalkingSpan.right = inr := rfl
 
-@[simp]
 theorem mk_ι_app_zero {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
     (mk inl inr eq).ι.app WalkingSpan.zero = f ≫ inl := rfl
 
-@[simp]
 theorem mk_inl {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
     (mk inl inr eq).inl = inl := rfl
 
-@[simp]
 theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
     (mk inl inr eq).inr = inr := rfl
 

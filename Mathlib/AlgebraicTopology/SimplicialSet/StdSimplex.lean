@@ -124,7 +124,6 @@ abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (stdSimplex.{u}.obj n).obj m :=
   objEquiv.symm (Hom.mk f)
 
-@[simp]
 lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1)) :
     objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl

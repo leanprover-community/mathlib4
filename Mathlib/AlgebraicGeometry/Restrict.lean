@@ -81,7 +81,6 @@ lemma ι_app (V) : U.ι.app V = X.presheaf.map
     (homOfLE (x := U.ι ''ᵁ U.ι ⁻¹ᵁ V) (Set.image_preimage_subset _ _)).op :=
   rfl
 
-@[simp]
 lemma ι_appTop :
     U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op :=
   rfl

@@ -496,7 +496,6 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp congr(im $h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
-@[simp]
 theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
 

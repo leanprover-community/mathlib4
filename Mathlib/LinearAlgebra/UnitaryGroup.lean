@@ -181,15 +181,15 @@ variable (A B : unitaryGroup n α)
 
 @[simp] theorem inv_val : ↑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
+theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem mul_val : ↑(A * B) = A.val * B.val := rfl
+theorem mul_val : ↑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
+theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
-@[simp] theorem one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+theorem one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
 @[simp]
 theorem toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=

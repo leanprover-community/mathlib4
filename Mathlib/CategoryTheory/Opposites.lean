@@ -58,7 +58,7 @@ theorem Quiver.Hom.unop_op' {X Y : Cᵒᵖ} {x} :
 theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 
-@[simp, to_dual self]
+@[to_dual self]
 theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop { unop := f } = f :=
   rfl
 
@@ -79,7 +79,6 @@ instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
 theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
   rfl
 
-@[simp]
 theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
   rfl
 
@@ -95,7 +94,6 @@ theorem op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
 theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
   rfl
 
-@[simp]
 theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
   rfl
 

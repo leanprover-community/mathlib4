@@ -79,7 +79,7 @@ attribute [to_dual self (reorder :=
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 namespace End
 
-@[simps!]
+@[simps! zero neg sub add]
 instance (X : C) : AddCommGroup (End X) := (End.homEquiv (X := X)).addCommGroup
 
 /-- The additive bijection `End X ≃+ (X ⟶ X)`

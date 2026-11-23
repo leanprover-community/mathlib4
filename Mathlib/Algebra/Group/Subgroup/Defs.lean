@@ -240,7 +240,7 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
@@ -519,15 +519,15 @@ instance zpow : Pow H ℤ :=
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_one : ((1 : H) : G) = 1 :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
@@ -535,7 +535,7 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 

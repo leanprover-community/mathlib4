@@ -226,7 +226,6 @@ lemma _root_.MonoidHom.coe_compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ
     f.compAddChar φ = f ∘ φ :=
   rfl
 
-@[simp, norm_cast]
 lemma _root_.MonoidHom.compAddChar_apply (f : M →* N) (φ : AddChar A M) : f.compAddChar φ = f ∘ φ :=
   rfl
 

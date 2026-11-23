@@ -132,7 +132,6 @@ variable (e e' : A ≃ₗc[R] B)
 @[simp, norm_cast]
 theorem coe_ofClass : ⇑(ofClass e) = e := rfl
 
-@[simp, norm_cast]
 theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
   rfl
 
@@ -144,7 +143,6 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 
 @[deprecated (since := "2026-09-09")] alias toCoalgHom_eq_coe := toCoalgHom_eq_ofClass
 
-@[simp]
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 

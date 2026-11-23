@@ -145,7 +145,7 @@ noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
   t.eTruncLT.map (homOfLE (le_top))
 
 @[simp] lemma eTruncLT_ι_bot : t.eTruncLTι ⊥ = 0 := rfl
-@[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
+lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
 @[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
 
 @[reassoc]

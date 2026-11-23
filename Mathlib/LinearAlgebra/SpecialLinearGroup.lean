@@ -272,7 +272,6 @@ theorem congr_linearEquiv_coe_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup 
     (congr_linearEquiv e f : W ≃ₗ[R] W) = e.symm ≪≫ₗ f ≪≫ₗ e :=
   rfl
 
-@[simp]
 theorem congr_linearEquiv_apply_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) (x : W) :
     congr_linearEquiv e f x = e (f (e.symm x)) :=
   rfl

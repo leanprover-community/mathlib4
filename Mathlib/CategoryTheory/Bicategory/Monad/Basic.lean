@@ -72,7 +72,6 @@ theorem comul_assoc_flip : Δ ≫ Δ ▷ t = Δ ≫ t ◁ Δ ≫ (α_ t t t).inv
 
 end
 
-@[simps! counit]
 instance {a : B} : Comonad (𝟙 a) :=
   ComonObj.instTensorUnit (a ⟶ a)
 

@@ -145,7 +145,6 @@ theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
 
 @[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
-@[simp, norm_cast]
 theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 

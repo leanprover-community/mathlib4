@@ -77,20 +77,16 @@ theorem op2_comp {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) :
 theorem op2_id {a b : B} {f : a ⟶ b} : op2 (𝟙 f) = 𝟙 f.op :=
   rfl
 
-@[simp]
 theorem unop2_comp {a b : Bᵒᵖ} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) :
     unop2 (η ≫ θ) = unop2 η ≫ unop2 θ :=
   rfl
 
-@[simp]
 theorem unop2_id {a b : Bᵒᵖ} {f : a ⟶ b} : unop2 (𝟙 f) = 𝟙 f.unop :=
   rfl
 
-@[simp]
 theorem unop2_id_bop {a b : B} {f : a ⟶ b} : unop2 (𝟙 f.op) = 𝟙 f :=
   rfl
 
-@[simp]
 theorem op2_id_unbop {a b : Bᵒᵖ} {f : a ⟶ b} : op2 (𝟙 f.unop) = 𝟙 f :=
   rfl
 
@@ -150,7 +146,7 @@ It is defined as follows.
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 -/
-@[simps! homCategory_id_unop2 homCategory_comp_unop2 whiskerLeft_unop2 whiskerRight_unop2
+@[simps! whiskerLeft_unop2 whiskerRight_unop2
   associator_hom_unop2 associator_inv_unop2 leftUnitor_hom_unop2 leftUnitor_inv_unop2
   rightUnitor_hom_unop2 rightUnitor_inv_unop2]
 instance bicategory : Bicategory.{w, v} Bᵒᵖ where

@@ -87,7 +87,6 @@ theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
 
-@[simp]
 theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
   rfl
 
@@ -167,7 +166,6 @@ theorem casesOn'_none (x : β) (f : α → β) : casesOn' none x f = x :=
 theorem casesOn'_some (x : β) (f : α → β) (a : α) : casesOn' (some a) x f = f a :=
   rfl
 
-@[simp]
 theorem casesOn'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α) x f = f a :=
   rfl
 

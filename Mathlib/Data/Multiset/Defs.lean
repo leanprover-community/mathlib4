@@ -87,7 +87,6 @@ theorem quot_mk_to_coe (l : List α) : @Eq (Multiset α) ⟦l⟧ l :=
 theorem quot_mk_to_coe' (l : List α) : @Eq (Multiset α) (Quot.mk (· ≈ ·) l) l :=
   rfl
 
-@[simp]
 theorem quot_mk_to_coe'' (l : List α) : @Eq (Multiset α) (Quot.mk Setoid.r l) l :=
   rfl
 

@@ -279,7 +279,6 @@ theorem ext [Std.Irrefl s] [Std.Trichotomous s] {f g : r ≺i s} (h : ∀ x, f x
   ext
   exact h _
 
-@[simp]
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
   rfl
 

@@ -103,7 +103,6 @@ theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = S :=
   rfl
 
 variable (M) in
-@[simp]
 theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet S a :=
   rfl
 

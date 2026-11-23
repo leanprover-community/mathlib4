@@ -194,7 +194,6 @@ the codomain of `f`, then `g.comp f` is the graded algebra homomorphism `x ↦ g
   { (g : B →ₐ[R] C).comp (f : A →ₐ[R] B),
     (g.toGradedRingHom : ℬ →+*ᵍ 𝒞).comp (f.toGradedRingHom : 𝒜 →+*ᵍ ℬ) with }
 
-@[simp]
 theorem coe_comp (g : B →ₐ[R] C) (f : 𝒜 →ₐᵍ[R] ℬ) : ⇑(g.comp f) = g ∘ f := rfl
 
 theorem comp_toGradedRingHom (g : ℬ →ₐᵍ[R] 𝒞) (f : 𝒜 →ₐᵍ[R] ℬ) :

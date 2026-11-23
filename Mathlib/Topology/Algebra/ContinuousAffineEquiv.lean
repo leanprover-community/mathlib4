@@ -93,7 +93,6 @@ instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
 theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
   rfl
 
-@[simp]
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
@@ -155,7 +154,6 @@ theorem refl_apply (x : P₁) : refl k P₁ x = x :=
 theorem toAffineEquiv_refl : (refl k P₁).toAffineEquiv = AffineEquiv.refl k P₁ :=
   rfl
 
-@[simp]
 theorem toEquiv_refl : (refl k P₁).toEquiv = Equiv.refl P₁ :=
   rfl
 
@@ -185,10 +183,8 @@ theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.
 @[simp]
 theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.symm = e.symm := rfl
 
-@[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
 
-@[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
 
 @[simp]
@@ -263,7 +259,6 @@ theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e.symm 
 theorem refl_symm : (refl k P₁).symm = refl k P₁ :=
   rfl
 
-@[simp]
 theorem symm_refl : (refl k P₁).symm = refl k P₁ :=
   rfl
 

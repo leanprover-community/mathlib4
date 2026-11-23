@@ -215,7 +215,6 @@ theorem optionSubtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃
     (a : α) : ((optionSubtype x).symm e : Option α ≃ β) a = e a :=
   rfl
 
-@[simp]
 theorem optionSubtype_symm_apply_apply_some
     [DecidableEq β]
     (x : β)
@@ -265,7 +264,6 @@ theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PU
 theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
   rfl
 
-@[simp]
 theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
   rfl
 

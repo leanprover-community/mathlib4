@@ -189,7 +189,6 @@ end LinearEquiv
 
 instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEquiv
 
-@[simp]
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 

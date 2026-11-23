@@ -71,7 +71,7 @@ instance : SMulMemClass (ClosedSubmodule R M) R M where
 instance : Coe (ClosedSubmodule R M) (Submodule R M) where
   coe := toSubmodule
 
-@[simp] lemma carrier_eq_coe (s : ClosedSubmodule R M) : s.carrier = s := rfl
+lemma carrier_eq_coe (s : ClosedSubmodule R M) : s.carrier = s := rfl
 
 @[simp] lemma mem_mk {s : Submodule R M} {hs} : x ∈ mk s hs ↔ x ∈ s := .rfl
 
@@ -82,7 +82,6 @@ lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s :=
 lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
   rfl
 
-@[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
 lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'

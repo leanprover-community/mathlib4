@@ -211,7 +211,6 @@ theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
 theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 
@@ -544,7 +543,6 @@ theorem coe_symm_mk [Module R M] [Module R M₂]
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
-@[simp]
 theorem coe_symm_mk' [Module R M] [Module R M₂]
     {f inv_fun left_inv right_inv} :
     ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun := rfl

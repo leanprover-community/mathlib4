@@ -152,7 +152,6 @@ variable [Semiring A] [Semiring B] [Semiring C] [Algebra R A] [Algebra R B]
 
 variable (e e' : A ≃ₐc[R] B)
 
-@[simp, norm_cast]
 theorem coe_coe : ⇑(e : A →ₐc[R] B) = e :=
   rfl
 
@@ -168,11 +167,9 @@ theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
 theorem coe_toCoalgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
-@[simp]
 theorem coe_toBialgHom : ⇑(e : A →ₐc[R] B) = e :=
   rfl
 
-@[simp]
 theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 

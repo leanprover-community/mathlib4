@@ -113,7 +113,6 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
-@[simp]
 lemma rec_zero {motive : ℕ → Sort*} (zero : motive 0) (succ : ∀ n, motive n → motive (n + 1)) :
     @Nat.rec motive zero succ 0 = zero := rfl
 

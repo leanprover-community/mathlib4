@@ -314,7 +314,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
-@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l

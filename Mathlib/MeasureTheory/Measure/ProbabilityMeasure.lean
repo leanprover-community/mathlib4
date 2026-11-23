@@ -189,7 +189,6 @@ lemma toFiniteMeasure_apply (μ : ProbabilityMeasure Ω) (s : Set Ω) :
 theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Measure Ω) = (ν : Measure Ω) := rfl
 
-@[simp]
 theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) := rfl
 

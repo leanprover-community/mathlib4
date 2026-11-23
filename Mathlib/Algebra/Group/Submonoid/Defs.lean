@@ -447,7 +447,7 @@ instance one : One S :=
 theorem coe_mul (x y : S) : (↑(x * y) : M) = ↑x * ↑y :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_one : ((1 : S) : M) = 1 :=
   rfl
 

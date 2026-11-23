@@ -162,7 +162,6 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 
-@[simp]
 theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
   rfl
 
@@ -780,7 +779,6 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 @[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
@@ -825,17 +823,14 @@ theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* 
   rfl
 
 -- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
 theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
-@[simp]
 theorem toMonoidHom_refl' : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toAddMonoidHom`, in #43765.
-@[simp]
 theorem toAddMonoidHom_refl' : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
@@ -848,7 +843,6 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
   Equiv.symm_apply_apply e.toEquiv
 
 -- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
 theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl

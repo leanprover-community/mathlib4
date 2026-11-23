@@ -788,13 +788,13 @@ theorem coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 
-@[simp] theorem re_add : (a + b).re = a.re + b.re := rfl
+theorem re_add : (a + b).re = a.re + b.re := rfl
 
-@[simp] theorem imI_add : (a + b).imI = a.imI + b.imI := rfl
+theorem imI_add : (a + b).imI = a.imI + b.imI := rfl
 
-@[simp] theorem imJ_add : (a + b).imJ = a.imJ + b.imJ := rfl
+theorem imJ_add : (a + b).imJ = a.imJ + b.imJ := rfl
 
-@[simp] theorem imK_add : (a + b).imK = a.imK + b.imK := rfl
+theorem imK_add : (a + b).imK = a.imK + b.imK := rfl
 
 @[simp] theorem im_add : (a + b).im = a.im + b.im := QuaternionAlgebra.im_add a b
 
@@ -802,13 +802,13 @@ theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
   QuaternionAlgebra.coe_add x y
 
-@[simp] theorem re_neg : (-a).re = -a.re := rfl
+theorem re_neg : (-a).re = -a.re := rfl
 
-@[simp] theorem imI_neg : (-a).imI = -a.imI := rfl
+theorem imI_neg : (-a).imI = -a.imI := rfl
 
-@[simp] theorem imJ_neg : (-a).imJ = -a.imJ := rfl
+theorem imJ_neg : (-a).imJ = -a.imJ := rfl
 
-@[simp] theorem imK_neg : (-a).imK = -a.imK := rfl
+theorem imK_neg : (-a).imK = -a.imK := rfl
 
 @[simp] theorem im_neg : (-a).im = -a.im := QuaternionAlgebra.im_neg a
 
@@ -816,13 +816,13 @@ theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
 theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
   QuaternionAlgebra.coe_neg x
 
-@[simp] theorem re_sub : (a - b).re = a.re - b.re := rfl
+theorem re_sub : (a - b).re = a.re - b.re := rfl
 
-@[simp] theorem imI_sub : (a - b).imI = a.imI - b.imI := rfl
+theorem imI_sub : (a - b).imI = a.imI - b.imI := rfl
 
-@[simp] theorem imJ_sub : (a - b).imJ = a.imJ - b.imJ := rfl
+theorem imJ_sub : (a - b).imJ = a.imJ - b.imJ := rfl
 
-@[simp] theorem imK_sub : (a - b).imK = a.imK - b.imK := rfl
+theorem imK_sub : (a - b).imK = a.imK - b.imK := rfl
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im := QuaternionAlgebra.im_sub a b
 
@@ -861,16 +861,12 @@ lemma mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
 theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
   QuaternionAlgebra.coe_pow x n
 
-@[simp, norm_cast]
 theorem re_natCast (n : ℕ) : (n : ℍ[R]).re = n := rfl
 
-@[simp, norm_cast]
 theorem imI_natCast (n : ℕ) : (n : ℍ[R]).imI = 0 := rfl
 
-@[simp, norm_cast]
 theorem imJ_natCast (n : ℕ) : (n : ℍ[R]).imJ = 0 := rfl
 
-@[simp, norm_cast]
 theorem imK_natCast (n : ℕ) : (n : ℍ[R]).imK = 0 := rfl
 
 @[simp, norm_cast]
@@ -879,16 +875,12 @@ theorem im_natCast (n : ℕ) : (n : ℍ[R]).im = 0 := rfl
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R]) := rfl
 
-@[simp, norm_cast]
 theorem re_intCast (z : ℤ) : (z : ℍ[R]).re = z := rfl
 
-@[simp, norm_cast]
 theorem imI_intCast (z : ℤ) : (z : ℍ[R]).imI = 0 := rfl
 
-@[simp, norm_cast]
 theorem imJ_intCast (z : ℤ) : (z : ℍ[R]).imJ = 0 := rfl
 
-@[simp, norm_cast]
 theorem imK_intCast (z : ℤ) : (z : ℍ[R]).imK = 0 := rfl
 
 @[simp, norm_cast]
@@ -904,15 +896,14 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R]) :=
 theorem coe_inj {x y : R} : (x : ℍ[R]) = y ↔ x = y :=
   coe_injective.eq_iff
 
-@[simp]
 theorem re_smul [SMul S R] (s : S) : (s • a).re = s • a.re :=
   rfl
 
-@[simp] theorem imI_smul [SMul S R] (s : S) : (s • a).imI = s • a.imI := rfl
+theorem imI_smul [SMul S R] (s : S) : (s • a).imI = s • a.imI := rfl
 
-@[simp] theorem imJ_smul [SMul S R] (s : S) : (s • a).imJ = s • a.imJ := rfl
+theorem imJ_smul [SMul S R] (s : S) : (s • a).imJ = s • a.imJ := rfl
 
-@[simp] theorem imK_smul [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
+theorem imK_smul [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
 
 @[simp]
 theorem im_smul [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
@@ -953,11 +944,11 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 @[simp high] theorem re_star : (star a).re = a.re := by
   rw [QuaternionAlgebra.re_star, zero_mul, add_zero]
 
-@[simp] theorem imI_star : (star a).imI = -a.imI := rfl
+theorem imI_star : (star a).imI = -a.imI := rfl
 
-@[simp] theorem imJ_star : (star a).imJ = -a.imJ := rfl
+theorem imJ_star : (star a).imJ = -a.imJ := rfl
 
-@[simp] theorem imK_star : (star a).imK = -a.imK := rfl
+theorem imK_star : (star a).imK = -a.imK := rfl
 
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
 
