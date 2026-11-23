@@ -194,11 +194,11 @@ protected theorem IsDesign.indiscrete (s : Set α) (b : β) (k : ℕ) :
   card_carrier := rfl
 
 theorem IsDesign.nonempty {d : IncidenceSystem α β} {t n k l : ℕ}
-    (hd : d.IsDesign t n k l) (hk : n ≠ 0) : d.carrier.Nonempty := by
+    (hd : d.IsDesign t n k l) (hn : n ≠ 0) : d.carrier.Nonempty := by
   grind [Set.nonempty_of_ncard_ne_zero]
 
 theorem IsDesign.finite {d : IncidenceSystem α β} {t n k l : ℕ}
-    (hd : d.IsDesign t n k l) (hk : n ≠ 0) : d.carrier.Finite := by
+    (hd : d.IsDesign t n k l) (hn : n ≠ 0) : d.carrier.Finite := by
   grind [Set.finite_of_ncard_ne_zero]
 
 /-- An incidence system is an `S(t,k,n)` Steiner system if the ambient set has size `n`, every
