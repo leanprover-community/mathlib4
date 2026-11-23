@@ -121,7 +121,7 @@ open scoped Pointwise
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
     a • S = S.comap (MulSemiringAction.toRingAut M R a).symm := by
   ext
-  simp [pointwise_smul_def]
+  rw [pointwise_smul_def, comap_symm]
   rfl
 
 @[simp]
