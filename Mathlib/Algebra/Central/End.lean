@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.End R M` is a central algebra
 

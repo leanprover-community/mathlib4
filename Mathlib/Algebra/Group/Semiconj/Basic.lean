@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Basic
 
 import Mathlib.Algebra.Group.Semiconj.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about semiconjugate elements of a group
 -/

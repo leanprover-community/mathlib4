@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.Point.Conservative
 import Mathlib.CategoryTheory.Comma.LocallySmall
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points of `Over` sites
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The R-algebra structure on products of R-algebras
 

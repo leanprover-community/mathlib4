@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.IsSupported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The extension of a homological complex by an embedding of complex shapes
 

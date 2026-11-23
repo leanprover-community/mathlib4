@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra structures on the multiplicative opposite
 
