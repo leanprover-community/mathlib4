@@ -73,7 +73,7 @@ def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
   toFun k := ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
   monotone' _ _ hkl := biSup_mono fun _ hi ↦ hi.trans hkl
 
-lemma genEigenspace_coe {f : End R M} {μ : R} {k : ℕ∞} :
+lemma coe_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} :
     genEigenspace f μ k = ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l) := rfl
 
 lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
@@ -81,7 +81,7 @@ lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
   have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le⟩⟩
   have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
     Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
-  simp_rw [genEigenspace_coe, LinearMap.mem_ker, iSup_subtype',
+  simp_rw [coe_genEigenspace, LinearMap.mem_ker, iSup_subtype',
     Submodule.mem_iSup_of_directed _ this, LinearMap.mem_ker, Subtype.exists, exists_prop]
 
 lemma genEigenspace_directed {f : End R M} {μ : R} {k : ℕ∞} :
