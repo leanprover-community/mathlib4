@@ -47,8 +47,7 @@ theorem toAddMonoidHom_coeLinearMap [IsZeroApply F] :
   rfl
 
 @[simp, norm_cast]
-theorem toAddHom_coeLinearMap [IsZeroApply F] :
-    (coeLinearMap R F : F →ₙ+ α → β) = coeAddHom F α β :=
+theorem toAddHom_coeLinearMap : (coeLinearMap R F : F →ₙ+ α → β) = coeAddHom F α β :=
   rfl
 
 variable (R F) in
@@ -64,8 +63,7 @@ theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
     (evalLinearMap R F x : F →+ β) = evalAddMonoidHom F x := rfl
 
 @[simp, norm_cast]
-theorem toAddHom_evalLinearMap [IsZeroApply F] (x : α) :
-    (evalLinearMap R F x : F →ₙ+ β) = evalAddHom F x :=
+theorem toAddHom_evalLinearMap (x : α) : (evalLinearMap R F x : F →ₙ+ β) = evalAddHom F x :=
   rfl
 
 end LinearMap
