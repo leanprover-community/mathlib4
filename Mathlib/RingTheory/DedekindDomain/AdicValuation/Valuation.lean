@@ -122,7 +122,7 @@ theorem intValuation.le_max_iff_min_le {a b c : ℕ} :
     ← min_le_iff]
 
 /-- The `v`-adic valuation of a sum is bounded above by the maximum of the valuations. -/
-theorem intValuation.map_add_le_max' (x y : R) :
+protected theorem intValuation.map_add_le_max (x y : R) :
     v.intValuationDef (x + y) ≤ max (v.intValuationDef x) (v.intValuationDef y) := by
   by_cases hx : x = 0
   · rw [hx, zero_add]
@@ -155,13 +155,16 @@ theorem intValuation.map_add_le_max' (x y : R) :
         · exact h_dvd_xy
         exact v.associates_irreducible
 
+@[deprecated (since := "2026-11-23")]
+alias intValuation.map_add_le_max' := IsDedekindDomain.HeightOneSpectrum.intValuation.map_add_le_max
+
 /-- The `v`-adic valuation on `R`. -/
 def intValuation : Valuation R ℤᵐ⁰ where
   toFun := v.intValuationDef
   map_zero' := intValuation.map_zero' v
   map_one' := intValuation.map_one' v
   map_mul' := intValuation.map_mul' v
-  map_add_le_max' := intValuation.map_add_le_max' v
+  map_add_le_max' := intValuation.map_add_le_max v
 
 theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
     intValuation v r = intValuationDef v r := rfl

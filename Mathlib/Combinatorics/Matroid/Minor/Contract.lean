@@ -571,10 +571,12 @@ lemma delete_contract_eq_sdiff (M : Matroid α) (D C : Set α) : M ＼ D ／ C =
 
 @[deprecated (since := "2026-06-03")] alias delete_contract_eq_diff := delete_contract_eq_sdiff
 
-/-- A version of `delete_contract_comm'` without the disjointness hypothesis,
+/-- A version of `delete_contract_comm` without the disjointness hypothesis,
 and hence a less simple RHS. -/
-lemma delete_contract_comm' (M : Matroid α) (D C : Set α) : M ＼ D ／ C = M ／ (C \ D) ＼ D := by
+lemma delete_contract_comm (M : Matroid α) (D C : Set α) : M ＼ D ／ C = M ／ (C \ D) ＼ D := by
   rw [delete_contract_eq_sdiff, ← contract_delete_comm _ disjoint_sdiff_left]
+
+@[deprecated (since := "2026-11-23")] alias delete_contract_comm' := Matroid.delete_contract_comm
 
 /-- A version of `contract_delete_contract` without the disjointness hypothesis,
 and hence a less simple RHS. -/
@@ -599,7 +601,7 @@ lemma contract_delete_contract_delete (M : Matroid α) (C D C' D' : Set α) (h :
 and hence a less simple RHS. -/
 lemma delete_contract_delete' (M : Matroid α) (D C D' : Set α) :
     M ＼ D ／ C ＼ D' = M ／ (C \ D) ＼ (D ∪ D') := by
-  rw [delete_contract_comm', delete_delete]
+  rw [delete_contract_comm, delete_delete]
 
 lemma delete_contract_delete (M : Matroid α) (D C D' : Set α) (h : Disjoint C D) :
     M ＼ D ／ C ＼ D' = M ／ C ＼ (D ∪ D') := by

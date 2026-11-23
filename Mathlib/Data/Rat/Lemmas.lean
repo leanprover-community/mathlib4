@@ -189,7 +189,7 @@ theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero 
   haveI : (n : ℚ) / d = Rat.divInt n d := by rw [← Rat.divInt_eq_div]
   Rat.num_den_mk d_ne_zero this
 
-theorem mul_num_den' (q r : ℚ) :
+theorem mul_num_den (q r : ℚ) :
     (q * r).num * q.den * r.den = q.num * r.num * (q * r).den := by
   let s := q.num * r.num /. (q.den * r.den : ℤ)
   have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (Nat.mul_pos q.pos r.pos)
@@ -202,6 +202,8 @@ theorem mul_num_den' (q r : ℚ) :
   have h : _ = s := divInt_mul_divInt q.num r.num
   rw [num_divInt_den, num_divInt_den] at h
   rw [h, mul_comm, ← Rat.eq_iff_mul_eq_mul, ← divInt_eq_div]
+
+@[deprecated (since := "2026-11-23")] alias mul_num_den' := Rat.mul_num_den
 
 theorem add_num_den' (q r : ℚ) :
     (q + r).num * q.den * r.den = (q.num * r.den + r.num * q.den) * (q + r).den := by
@@ -222,12 +224,14 @@ theorem add_num_den' (q r : ℚ) :
   apply Rat.eq_iff_mul_eq_mul.mp
   rw [← divInt_eq_div]
 
-theorem sub_num_den' (q r : ℚ) :
+theorem sub_num_den (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
   rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
     add_num_den' q (-r)]
 
-@[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den'
+@[deprecated (since := "2026-11-23")] alias sub_num_den' := Rat.sub_num_den
+
+@[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den
 
 end Casts
 

@@ -63,22 +63,24 @@ theorem toSphere_apply_aux (s : Set (sphere (0 : E) 1)) (r : Ioi (0 : ℝ)) :
 
 variable [BorelSpace E]
 
-theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
+theorem toSphere_apply {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
     μ.toSphere s = dim E * μ (Ioo (0 : ℝ) 1 • ((↑) '' s)) := by
   rw [toSphere, smul_apply, fst_apply hs, restrict_apply (measurable_fst hs),
     ((MeasurableEmbedding.subtypeVal (measurableSet_singleton _).compl).comp
       (Homeomorph.measurableEmbedding _)).comap_apply,
     image_comp, Homeomorph.image_symm, univ_prod, ← Set.prod_eq, nsmul_eq_mul, toSphere_apply_aux]
 
+@[deprecated (since := "2026-11-23")] alias toSphere_apply' := MeasureTheory.Measure.toSphere_apply
+
 theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
-  rw [μ.toSphere_apply' .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
+  rw [μ.toSphere_apply .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
 
 instance toSphere.instIsOpenPosMeasure [FiniteDimensional ℝ E] [μ.IsOpenPosMeasure] :
     μ.toSphere.IsOpenPosMeasure where
   open_pos := by
     nontriviality E using not_nonempty_iff_eq_empty
     rintro U hUo hU
-    rw [μ.toSphere_apply' hUo.measurableSet]
+    rw [μ.toSphere_apply hUo.measurableSet]
     apply mul_ne_zero (by simp [Module.finrank_pos.ne'])
     exact isOpen_Ioo.smul_sphere one_ne_zero (by simp) hUo |>.measure_ne_zero _ (by simpa)
 
@@ -153,7 +155,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
   have : Ioo (0 : ℝ) r = r.val • Ioo (0 : ℝ) 1 := by
     simp [LinearOrderedField.smul_Ioo r.property.out]
   have hpos : 0 < dim E := Module.finrank_pos
-  rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
+  rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply _ hs, volumeIoiPow_apply_Iio,
     comap_subtypeVal_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.property.out.le, Nat.sub_add_cancel hpos,
     Nat.cast_pred hpos, sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast,
@@ -227,7 +229,7 @@ theorem toSphereBallBound_mul_measure_unitBall_le_toSphere_ball {ε : ℝ}
         using this (ε := min ε 2) (by simp [hε]) (by simp)
     · gcongr
       simp
-  rw [μ.toSphere_apply' measurableSet_ball, Subtype.image_ball, ofPred_mem_eq]
+  rw [μ.toSphere_apply measurableSet_ball, Subtype.image_ball, ofPred_mem_eq]
   grw [← ball_subset_sector_of_small_epsilon] <;> try assumption
   · have hdim : Module.finrank ℝ E ≠ 0 := Module.finrank_pos.ne'
     have : min (ENNReal.ofReal ε) 2 = ENNReal.ofReal ε := by simpa

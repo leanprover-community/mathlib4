@@ -139,16 +139,20 @@ lemma ofHom_add (f g : ρ →ⁱL σ) : ofHom (f + g) = ofHom f + ofHom g := rfl
 
 lemma ofHom_sub (f g : ρ →ⁱL σ) : ofHom (f - g) = ofHom f - ofHom g := rfl
 
-lemma comp_add' (f : A ⟶ B) (g h : B ⟶ C) : f ≫ (g + h) = f ≫ g + f ≫ h := by
+lemma comp_add (f : A ⟶ B) (g h : B ⟶ C) : f ≫ (g + h) = f ≫ g + f ≫ h := by
   ext : 1; simp [hom_add, ContIntertwiningMap.add_comp]
 
-lemma add_comp' (f g : A ⟶ B) (h : B ⟶ C) : (f + g) ≫ h = f ≫ h + g ≫ h := by
+@[deprecated (since := "2026-11-23")] alias comp_add' := TopRep.comp_add
+
+lemma add_comp (f g : A ⟶ B) (h : B ⟶ C) : (f + g) ≫ h = f ≫ h + g ≫ h := by
   ext : 1; simp [hom_add, ContIntertwiningMap.comp_add]
+
+@[deprecated (since := "2026-11-23")] alias add_comp' := TopRep.add_comp
 
 instance : Preadditive (TopRep k G) where
   homGroup := inferInstance
-  add_comp := TopRep.add_comp'
-  comp_add := TopRep.comp_add'
+  add_comp := TopRep.add_comp
+  comp_add := TopRep.comp_add
 
 section Linear
 
@@ -167,17 +171,21 @@ lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 lemma ofHom_smul (r : k) (f : ρ →ⁱL σ) : ofHom (r • f) = r • ofHom f := rfl
 
 variable (A B C) in
-lemma smul_comp' (r : k) (f : A ⟶ B) (g : B ⟶ C) : (r • f) ≫ g = r • (f ≫ g) := by
+lemma smul_comp (r : k) (f : A ⟶ B) (g : B ⟶ C) : (r • f) ≫ g = r • (f ≫ g) := by
   ext; simp [hom_smul, ContIntertwiningMap.comp_smul]
 
+@[deprecated (since := "2026-11-23")] alias smul_comp' := TopRep.smul_comp
+
 variable (A B C) in
-lemma comp_smul' (f : A ⟶ B) (r : k) (g : B ⟶ C) : f ≫ (r • g) = r • (f ≫ g) := by
+lemma comp_smul (f : A ⟶ B) (r : k) (g : B ⟶ C) : f ≫ (r • g) = r • (f ≫ g) := by
   ext; simp [hom_smul, ContIntertwiningMap.smul_comp]
+
+@[deprecated (since := "2026-11-23")] alias comp_smul' := TopRep.comp_smul
 
 instance : CategoryTheory.Linear k (TopRep k G) where
   homModule := inferInstance
-  smul_comp := smul_comp'
-  comp_smul := comp_smul'
+  smul_comp := smul_comp
+  comp_smul := comp_smul
 
 end Linear
 

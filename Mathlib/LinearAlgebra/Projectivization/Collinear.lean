@@ -65,7 +65,7 @@ lemma isCollinear_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsCollinear 
   exact ⟨M, hMfin, hM1, hst.trans hM2⟩
 
 @[simp]
-lemma isCollinear_singleton' (a : ℙ K V) : IsCollinear {a} := by
+lemma isCollinear_singleton (a : ℙ K V) : IsCollinear {a} := by
   induction a using ind with | h v hv =>
   refine ⟨(Submodule.span K {v}).projectivization, ?_, ?_, ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
@@ -73,6 +73,9 @@ lemma isCollinear_singleton' (a : ℙ K V) : IsCollinear {a} := by
   · rw [Subspace.submodule.apply_symm_apply, finrank_span_singleton hv]
     omega
   · simp [Submodule.mem_span_of_mem]
+
+@[deprecated (since := "2026-11-23")]
+alias isCollinear_singleton' := Projectivization.isCollinear_singleton
 
 lemma isCollinear_subsingleton (hS : S.Subsingleton) :
     IsCollinear S := by

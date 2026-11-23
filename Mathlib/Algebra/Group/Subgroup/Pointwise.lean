@@ -182,7 +182,7 @@ the closure of `k`. -/
   /-- An induction principle for additive closure membership. If `p` holds for `0` and all
   elements of `k` and their negation, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `k`. -/]
-theorem closure_induction'' {p : (g : G) → g ∈ closure s → Prop}
+theorem closure_induction' {p : (g : G) → g ∈ closure s → Prop}
     (mem : ∀ x (hx : x ∈ s), p x (subset_closure hx))
     (inv_mem : ∀ x (hx : x ∈ s), p x⁻¹ (inv_mem (subset_closure hx)))
     (one : p 1 (one_mem _))
@@ -190,6 +190,9 @@ theorem closure_induction'' {p : (g : G) → g ∈ closure s → Prop}
     {x} (h : x ∈ closure s) : p x h :=
   closure_induction_left one (fun x hx y _ hy => mul x y _ _ (mem x hx) hy)
     (fun x hx y _ => mul x⁻¹ y _ _ <| inv_mem x hx) h
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))]
+alias closure_induction'' := Subgroup.closure_induction'
 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
@@ -200,7 +203,7 @@ then it holds for all elements of the supremum of `S`. -/]
 theorem iSup_induction {ι : Sort*} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
     (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
-  induction hx using closure_induction'' with
+  induction hx using closure_induction' with
   | one => exact one
   | mem x hx =>
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
@@ -281,7 +284,7 @@ theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ norm
     (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
-  induction hx using closure_induction'' with
+  induction hx using closure_induction' with
   | one => exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
   | mem _ hx => exact hx
   | inv_mem x hx =>
@@ -403,7 +406,7 @@ theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup 
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
     (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ g ∈ s, ∀ x ∈ t, g • x ∈ t) {g : G}
     (hg : g ∈ Subgroup.closure s) {x : X} (hx : x ∈ t) : g • x ∈ t := by
-  induction hg using Subgroup.closure_induction'' generalizing x with
+  induction hg using Subgroup.closure_induction' generalizing x with
   | one => simpa
   | mem g' hg' => exact hst g' hg' x hx
   | inv_mem g' hg' => exact hst g'⁻¹ (hs g' hg') x hx

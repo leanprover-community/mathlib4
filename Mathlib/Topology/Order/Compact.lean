@@ -260,7 +260,7 @@ theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCom
 
 /-- If a continuous function lies strictly above `a` on a compact set,
   it has a lower bound strictly above `a`. -/
-theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : β → α}
+theorem IsCompact.exists_forall_le [ClosedIicTopology α] [NoMaxOrder α] {f : β → α}
     {s : Set β} (hs : IsCompact s) (hf : ContinuousOn f s) {a : α} (hf' : ∀ b ∈ s, a < f b) :
     ∃ a', a < a' ∧ ∀ b ∈ s, a' ≤ f b := by
   rcases s.eq_empty_or_nonempty with (rfl | hs')
@@ -269,6 +269,9 @@ theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : 
   · obtain ⟨x, hx, hx'⟩ := hs.exists_isMinOn hs' hf
     exact ⟨f x, hf' x hx, hx'⟩
 
+@[deprecated (since := "2026-11-23")]
+alias IsCompact.exists_forall_le' := IsCompact.exists_forall_le
+
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMaxOn f s x :=
@@ -276,7 +279,7 @@ theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCom
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 larger than a value in its image away from compact sets, then it has a minimum on this set. -/
-theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β → α}
+theorem ContinuousOn.exists_isMinOn [ClosedIicTopology α] {s : Set β} {f : β → α}
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x₀ ≤ f x) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hasBasis_cocompact.inf_principal _).eventually_iff.1 hc with ⟨K, hK, hKf⟩
@@ -287,18 +290,24 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
   by_cases hyK : y ∈ K
   exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
 
+@[deprecated (since := "2026-11-23")]
+alias ContinuousOn.exists_isMinOn' := ContinuousOn.exists_isMinOn
+
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 smaller than a value in its image away from compact sets, then it has a maximum on this set. -/
-theorem ContinuousOn.exists_isMaxOn' [ClosedIciTopology α] {s : Set β} {f : β → α}
+theorem ContinuousOn.exists_isMaxOn [ClosedIciTopology α] {s : Set β} {f : β → α}
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x ≤ f x₀) : ∃ x ∈ s, IsMaxOn f s x :=
-  ContinuousOn.exists_isMinOn' (α := αᵒᵈ) hf hsc h₀ hc
+  ContinuousOn.exists_isMinOn (α := αᵒᵈ) hf hsc h₀ hc
+
+@[deprecated (since := "2026-11-23")]
+alias ContinuousOn.exists_isMaxOn' := ContinuousOn.exists_isMaxOn
 
 /-- The **extreme value theorem**: if a continuous function `f` is larger than a value in its range
 away from compact sets, then it has a global minimum. -/
 theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf : Continuous f)
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
-  let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
+  let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
   ⟨x, fun y => hx (mem_univ y)⟩
 

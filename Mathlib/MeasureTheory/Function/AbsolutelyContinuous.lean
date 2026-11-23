@@ -490,6 +490,6 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
     unfold IntegrableOn
     have h_subset := uIoc_subset_of_mem_disjWithin hnI (Finset.mem_range.mp hi)
     rw [Measure.restrict_restrict_of_subset h_subset]
-    exact IntegrableOn.mono_set h.def'.norm h_subset |>.integrable
+    exact IntegrableOn.mono_set h.def.norm h_subset |>.integrable
 
 end AbsolutelyContinuousOnInterval

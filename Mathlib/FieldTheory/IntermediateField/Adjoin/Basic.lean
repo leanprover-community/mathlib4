@@ -236,10 +236,13 @@ theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 
-theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
+theorem exists_finset_of_mem_supr {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
   refine exists_finset_of_mem_iSup (mem_of_le_of_mem (iSup_le fun i x h ↦ ?_) hx)
   exact mem_of_le_of_mem (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
+
+@[deprecated (since := "2026-11-23")]
+alias exists_finset_of_mem_supr' := IntermediateField.exists_finset_of_mem_supr
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
@@ -601,7 +604,7 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
     Algebra.IsAlgebraic K (⨆ i, t i : IntermediateField K L) := by
   constructor
   rintro ⟨x, hx⟩
-  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
+  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr hx
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
   have : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
     adjoin.finiteDimensional (isIntegral_iff.1 (Algebra.IsIntegral.isIntegral x))

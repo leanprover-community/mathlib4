@@ -383,14 +383,16 @@ class ClosedUnderRestriction (G : StructureGroupoid H) : Prop where
   closedUnderRestriction :
     ∀ {e : OpenPartialHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
 
-theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
+theorem closedUnderRestriction {G : StructureGroupoid H} [ClosedUnderRestriction G]
     {e : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
+
+@[deprecated (since := "2026-11-23")] alias closedUnderRestriction' := closedUnderRestriction
 
 lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid H} [ClosedUnderRestriction G]
     {e e' : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s)
     (heq : EqOn e e' s) (hsub : e'.source ∩ s ⊆ e.source) : e'.restr s ∈ G :=
-  G.mem_of_eqOnSource (closedUnderRestriction' he (e'.open_source.inter hs))
+  G.mem_of_eqOnSource (closedUnderRestriction he (e'.open_source.inter hs))
     (Setoid.symm (restr_eqOnSource_of_eqOn' hs heq hsub))
 
 /-- The trivial restriction-closed groupoid, containing only open partial homeomorphisms equivalent
@@ -443,7 +445,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
-    convert closedUnderRestriction' G.id_mem hs
+    convert closedUnderRestriction G.id_mem hs
     ext <;> simp [hs.interior_eq]
   · intro h
     constructor

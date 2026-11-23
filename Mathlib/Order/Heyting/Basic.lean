@@ -407,12 +407,14 @@ theorem sup_sdiff_eq_sup (h : c ≤ a) : a ⊔ b \ c = a ⊔ b :=
 
 -- cf. `Set.union_sdiff_cancel'`
 @[to_dual none]
-theorem sup_sdiff_cancel' (hab : a ≤ b) (hbc : b ≤ c) : b ⊔ c \ a = c := by
+theorem sup_sdiff_cancel (hab : a ≤ b) (hbc : b ≤ c) : b ⊔ c \ a = c := by
   rw [sup_sdiff_eq_sup hab, sup_of_le_right hbc]
+
+@[deprecated (since := "2026-11-23")] alias sup_sdiff_cancel' := sup_sdiff_cancel
 
 @[to_dual none]
 theorem sup_sdiff_cancel_right (h : a ≤ b) : a ⊔ b \ a = b :=
-  sup_sdiff_cancel' le_rfl h
+  sup_sdiff_cancel le_rfl h
 
 @[to_dual none]
 theorem sdiff_sup_cancel (h : b ≤ a) : a \ b ⊔ b = a := by rw [sup_comm, sup_sdiff_cancel_right h]

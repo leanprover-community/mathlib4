@@ -125,7 +125,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
 theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
     a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
-    smul_ball'', smul_eq_mul, mem_ofPred_eq]
+    smul_ball', smul_eq_mul, mem_ofPred_eq]
   refine iUnion₂_subset_iff.mpr fun b hb c hc => ?_
   simp only [mem_iUnion, exists_prop]
   refine ⟨a * b, ?_, hc⟩
@@ -136,7 +136,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
 theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     a • approxOrderOf A n δ = approxOrderOf A n δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
-    smul_ball'', smul_eq_mul, mem_ofPred_eq]
+    smul_ball', smul_eq_mul, mem_ofPred_eq]
   replace han : ∀ {b : A}, orderOf b = n → orderOf (a * b) = n := by
     intro b hb
     rw [← hb] at han hn

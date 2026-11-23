@@ -203,7 +203,7 @@ theorem norm_fderiv_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
     (h_maps : MapsTo f (ball c R₁) (closedBall (f c) R₂)) (h₀ : 0 < R₁) :
     ‖fderiv ℂ f c‖ ≤ R₂ / R₁ := by
   have : 0 ≤ R₂ := nonempty_closedBall.mp <| h_maps.nonempty <| nonempty_ball.mpr h₀
-  refine norm_fderiv_le_of_lip' _ (by positivity) ?_
+  refine norm_fderiv_le_of_lip _ (by positivity) ?_
   filter_upwards [ball_mem_nhds _ h₀] with z hz
   simpa [dist_eq_norm_sub] using dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
 
@@ -331,13 +331,17 @@ This is an existence version of `affine_of_mapsTo_ball_of_norm_dslope_eq_div` ab
 TODO: once the deprecated alias `affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div` is gone,
 rename this theorem to `affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div`.
 -/
-theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div'
+theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
     [StrictConvexSpace ℝ E] (hd : DifferentiableOn ℂ f (ball c R₁))
     (h_maps : Set.MapsTo f (ball c R₁) (closedBall (f c) R₂))
     (h_z₀ : ∃ z₀ ∈ ball c R₁, ‖dslope f c z₀‖ = R₂ / R₁) :
     ∃ C : E, ‖C‖ = R₂ / R₁ ∧ Set.EqOn f (fun z => f c + (z - c) • C) (ball c R₁) :=
   let ⟨z₀, h_z₀, h_eq⟩ := h_z₀
   ⟨dslope f c z₀, h_eq, affine_of_mapsTo_ball_of_norm_dslope_eq_div hd h_maps h_z₀ h_eq⟩
+
+@[deprecated (since := "2026-11-23")]
+alias affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' :=
+  Complex.affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
 
 end DimOne
 

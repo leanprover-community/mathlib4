@@ -174,13 +174,17 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
   let ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
   ⟨_, ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
-theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
+theorem equivalent_weightedSumSquares_units_of_nondegenerate (Q : QuadraticForm K V)
     (hQ : (associated (R := K) Q).SeparatingLeft) :
     ∃ w : Fin (Module.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_separatingLeft hQ
   simp_rw [associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
+
+@[deprecated (since := "2026-11-23")]
+alias equivalent_weightedSumSquares_units_of_nondegenerate' :=
+  QuadraticForm.equivalent_weightedSumSquares_units_of_nondegenerate
 
 variable {ι S R : Type*}
 variable [Fintype ι] [CommSemiring R] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]

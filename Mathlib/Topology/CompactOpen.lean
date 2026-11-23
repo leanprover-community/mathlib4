@@ -255,7 +255,7 @@ variable [LocallyCompactPair Y Z]
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
 provided that `Y` is locally compact.
 This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
-theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
+theorem continuous_comp : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
   intro ⟨f, g⟩ K hK U hU (hKU : MapsTo (g ∘ f) K U)
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
@@ -266,10 +266,12 @@ theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1
     (eventually_mapsTo hLc hU hLU)).mono fun ⟨f', g'⟩ ⟨hf', hg'⟩ ↦
       hg'.comp <| hf'.mono_right interior_subset
 
+@[deprecated (since := "2026-11-23")] alias continuous_comp' := ContinuousMap.continuous_comp
+
 lemma _root_.Filter.Tendsto.compCM {α : Type*} {l : Filter α} {g : α → C(Y, Z)} {g₀ : C(Y, Z)}
     {f : α → C(X, Y)} {f₀ : C(X, Y)} (hg : Tendsto g l (𝓝 g₀)) (hf : Tendsto f l (𝓝 f₀)) :
     Tendsto (fun a ↦ (g a).comp (f a)) l (𝓝 (g₀.comp f₀)) :=
-  (continuous_comp'.tendsto (f₀, g₀)).comp (hf.prodMk_nhds hg)
+  (continuous_comp.tendsto (f₀, g₀)).comp (hf.prodMk_nhds hg)
 
 variable {X' : Type*} [TopologicalSpace X'] {a : X'} {g : X' → C(Y, Z)} {f : X' → C(X, Y)}
   {s : Set X'}
@@ -288,7 +290,7 @@ lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s)
 
 lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
-  continuous_comp'.comp (hf.prodMk hg)
+  continuous_comp.comp (hf.prodMk hg)
 
 end Functorial
 

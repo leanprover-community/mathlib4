@@ -331,15 +331,19 @@ theorem biUnion_range {f : ι → α} {g : α → Set β} : ⋃ x ∈ range f, g
   iSup_range
 
 @[simp]
-theorem iUnion_iUnion_eq' {f : ι → α} {g : α → Set β} :
+theorem iUnion_iUnion_eq {f : ι → α} {g : α → Set β} :
     ⋃ (x) (y) (_ : f y = x), g x = ⋃ y, g (f y) := by simpa using biUnion_range
+
+@[deprecated (since := "2026-11-23")] alias iUnion_iUnion_eq' := Set.iUnion_iUnion_eq
 
 theorem biInter_range {f : ι → α} {g : α → Set β} : ⋂ x ∈ range f, g x = ⋂ y, g (f y) :=
   iInf_range
 
 @[simp]
-theorem iInter_iInter_eq' {f : ι → α} {g : α → Set β} :
+theorem iInter_iInter_eq {f : ι → α} {g : α → Set β} :
     ⋂ (x) (y) (_ : f y = x), g x = ⋂ y, g (f y) := by simpa using biInter_range
+
+@[deprecated (since := "2026-11-23")] alias iInter_iInter_eq' := Set.iInter_iInter_eq
 
 variable {s : Set γ} {f : γ → α} {g : α → Set β}
 

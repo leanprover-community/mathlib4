@@ -367,7 +367,7 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)
     (h : Sigma.mk a b ∈ l) : kreplace a b l = l := by
-  refine (lookmap_congr ?_).trans (lookmap_id' (Option.guard fun (s : Sigma β) => a = s.1) ?_ _)
+  refine (lookmap_congr ?_).trans (lookmap_id (Option.guard fun (s : Sigma β) => a = s.1) ?_ _)
   · rintro ⟨a', b'⟩ h'
     dsimp [Option.guard]
     split_ifs

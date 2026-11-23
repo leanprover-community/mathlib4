@@ -192,16 +192,20 @@ theorem map_sub_one [AddGroup G] [One G] [AddGroup H] [AddConstMapClass F G H 1 
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
+theorem map_sub_nat [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) : f (x - n) = f x - n • b := by
   simpa using map_sub_nsmul f x n
 
+@[deprecated (since := "2026-11-23")] alias map_sub_nat' := AddConstMapClass.map_sub_nat
+
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
+theorem map_sub_ofNat [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
     f (x - ofNat(n)) = f x - ofNat(n) • b :=
-  map_sub_nat' f x n
+  map_sub_nat f x n
+
+@[deprecated (since := "2026-11-23")] alias map_sub_ofNat' := AddConstMapClass.map_sub_ofNat
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]

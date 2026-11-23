@@ -120,9 +120,11 @@ lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
       m ⊗ₜ[R] Finsupp.single i n := by
   simp [LinearEquiv.symm_apply_eq]
 
-lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
+lemma finsuppLeft_smul (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R S M N ι (s • t) = s • finsuppLeft R S M N ι t := by
   simp
+
+@[deprecated (since := "2026-11-23")] alias finsuppLeft_smul' := TensorProduct.finsuppLeft_smul
 
 variable (R M N ι) in
 /-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/

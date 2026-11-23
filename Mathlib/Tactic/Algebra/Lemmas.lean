@@ -138,9 +138,12 @@ theorem add_eq_zero {a b : A} (ha : a = 0) (hb : b = 0) :
   simp [ha, hb]
 
 /- ExProd.equateScalarsProd -/
-theorem smul_one_eq_smul_one' {r s : R} (h : r = s) :
+theorem smul_one_eq_smul_one {r s : R} (h : r = s) :
     r • (1 : A) = s • 1 := by
   simp [h]
+
+@[deprecated (since := "2026-11-23")]
+alias smul_one_eq_smul_one' := Mathlib.Tactic.Algebra.smul_one_eq_smul_one
 
 /- equateScalarsSum -/
 theorem add_eq_of_zero_add {a₁ a₂ b₁ b₂ : A}

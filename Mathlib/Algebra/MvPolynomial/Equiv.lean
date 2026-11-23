@@ -666,7 +666,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
       simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply,
         ite_eq_right hmj.symm] using! coeff_monomial m j.tail (1 : R)
 
-theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
+theorem eval_eq_eval_mv_eval (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
     eval (Fin.cons y s : Fin (n + 1) → R) f =
       Polynomial.eval y (Polynomial.map (eval s) (finSuccEquiv R n f)) := by
   -- turn this into a def `Polynomial.mapAlgHom`
@@ -686,6 +686,9 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
     comp_apply, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, Polynomial.map_X,
     Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ, Polynomial.map_C, eval_X, Polynomial.eval_C,
     implies_true, and_self, φ]
+
+@[deprecated (since := "2026-11-23")]
+alias eval_eq_eval_mv_eval' := MvPolynomial.eval_eq_eval_mv_eval
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : (Polynomial.map (eval s') f).coeff i = eval s' (f.coeff i) := by

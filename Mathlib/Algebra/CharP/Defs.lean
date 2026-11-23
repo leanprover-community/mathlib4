@@ -389,8 +389,10 @@ lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
 
 -- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
 /-- The characteristic is zero if the exponential characteristic is one. -/
-lemma charZero_of_expChar_one' [ExpChar R 1] : CharZero R :=
+lemma charZero_of_expChar_one [ExpChar R 1] : CharZero R :=
   (expChar_one_iff _).mp ‹_›
+
+@[deprecated (since := "2026-11-23")] alias charZero_of_expChar_one' := charZero_of_expChar_one
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by

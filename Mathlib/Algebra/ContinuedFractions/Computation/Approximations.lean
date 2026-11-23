@@ -466,7 +466,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
 sufficient for one's use case.
 -/
-theorem abs_sub_convergents_le' {b : K}
+theorem abs_sub_convergents_le {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
     |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by
   have not_terminatedAt_n : ¬(of v).TerminatedAt n := by
@@ -483,6 +483,9 @@ theorem abs_sub_convergents_le' {b : K}
     · conv_rhs => rw [mul_comm]
       gcongr
       exact le_of_succ_get?_den nth_partDen_eq
+
+@[deprecated (since := "2026-11-23")]
+alias abs_sub_convergents_le' := GenContFract.abs_sub_convergents_le
 
 end ErrorTerm
 

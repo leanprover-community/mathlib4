@@ -320,7 +320,7 @@ theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (�
   have : 0 < 1 - 2 / exp 1 := by
     rw [sub_pos, div_lt_one (exp_pos _)]
     exact exp_one_gt_two
-  rwa [le_sub_comm, div_eq_mul_one_div x, div_eq_mul_one_div x, ← mul_sub, div_sub', ←
+  rwa [le_sub_comm, div_eq_mul_one_div x, div_eq_mul_one_div x, ← mul_sub, div_sub, ←
     div_eq_mul_one_div, mul_div_assoc', one_le_div, ← div_le_iff₀ this]
   · exact zero_lt_two
   · exact two_ne_zero

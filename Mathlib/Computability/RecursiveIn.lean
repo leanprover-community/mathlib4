@@ -86,7 +86,7 @@ def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ
   Nat.RecursiveIn O fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f := by
-  simp [RecursiveIn, Part.map_id']
+  simp [RecursiveIn, Part.map_id]
 
 /-- A binary partial function is recursive in `O` if the curried form is. -/
 def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]

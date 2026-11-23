@@ -416,17 +416,21 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
     · exact mul_eq_zero_of_left h (f (y.coeff gh.2))
     · exact mul_eq_zero_of_right (f (x.coeff gh.1)) (hz h)
 
-theorem coeff_mul_left' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
+theorem coeff_mul_left [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     (x * y).coeff a =
       ∑ ij ∈ antidiagonal hs y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_left hs hxs
 
-theorem coeff_mul_right' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
+@[deprecated (since := "2026-11-23")] alias coeff_mul_left' := HahnSeries.coeff_mul_left
+
+theorem coeff_mul_right [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hys : y.support ⊆ s) :
     (x * y).coeff a =
       ∑ ij ∈ antidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_right hs hys
+
+@[deprecated (since := "2026-11-23")] alias coeff_mul_right' := HahnSeries.coeff_mul_right
 
 instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
   left_distrib x y z := by
@@ -581,8 +585,8 @@ variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z = x * (y * z) := by
   ext b
-  rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
-    coeff_mul_right' (y.isPWO_support.add z.isPWO_support) support_mul_subset]
+  rw [coeff_mul_left (x.isPWO_support.add y.isPWO_support) support_mul_subset,
+    coeff_mul_right (y.isPWO_support.add z.isPWO_support) support_mul_subset]
   simp only [coeff_mul, sum_mul, mul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>

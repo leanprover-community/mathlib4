@@ -425,8 +425,11 @@ theorem differentiableWithinAt_pi :
     (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).differentiableWithinAt⟩
 
 @[fun_prop]
-theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x) :
+theorem differentiableWithinAt_pi' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x) :
     DifferentiableWithinAt 𝕜 Φ s x := differentiableWithinAt_pi.2 hφ
+
+@[deprecated (since := "2026-11-23")]
+alias differentiableWithinAt_pi'' := differentiableWithinAt_pi'
 
 @[fun_prop]
 theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
@@ -440,8 +443,10 @@ theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, Differentiab
     (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).differentiableAt⟩
 
 @[fun_prop]
-theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x) :
+theorem differentiableAt_pi' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x) :
     DifferentiableAt 𝕜 Φ x := differentiableAt_pi.2 hφ
+
+@[deprecated (since := "2026-11-23")] alias differentiableAt_pi'' := differentiableAt_pi'
 
 @[fun_prop]
 theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
@@ -453,8 +458,10 @@ theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, Differentiab
     differentiableWithinAt_pi.2 fun i => h i x hx⟩
 
 @[fun_prop]
-theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s) :
+theorem differentiableOn_pi' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s) :
     DifferentiableOn 𝕜 Φ s := differentiableOn_pi.2 hφ
+
+@[deprecated (since := "2026-11-23")] alias differentiableOn_pi'' := differentiableOn_pi'
 
 @[fun_prop]
 theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
@@ -465,8 +472,10 @@ theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable �
   ⟨fun h i x => differentiableAt_pi.1 (h x) i, fun h x => differentiableAt_pi.2 fun i => h i x⟩
 
 @[fun_prop]
-theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x => Φ x i) :
+theorem differentiable_pi' (hφ : ∀ i, Differentiable 𝕜 fun x => Φ x i) :
     Differentiable 𝕜 Φ := differentiable_pi.2 hφ
+
+@[deprecated (since := "2026-11-23")] alias differentiable_pi'' := differentiable_pi'
 
 @[fun_prop]
 theorem differentiable_apply (i : ι) :

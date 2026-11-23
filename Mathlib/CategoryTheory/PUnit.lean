@@ -39,8 +39,10 @@ def punitExt (F G : C ⥤ Discrete PUnit.{w + 1}) : F ≅ G :=
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `punitExt` instead of this. -/
-theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
+theorem punit_ext (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
+
+@[deprecated (since := "2026-11-23")] alias punit_ext' := CategoryTheory.Functor.punit_ext
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=

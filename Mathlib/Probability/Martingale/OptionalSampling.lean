@@ -91,7 +91,7 @@ theorem stoppedValue_ae_eq_condExp_of_le_const_of_countable_range (h : Martingal
     stoppedValue f τ =ᵐ[μ] μ[f n | hτ.measurableSpace] := by
   have : Set.univ = ⋃ i ∈ Set.range τ, {x | τ x = i} := by
     ext1 x
-    simp only [Set.mem_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
+    simp only [Set.mem_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq,
       Set.mem_iUnion, Set.mem_ofPred_eq, exists_apply_eq_apply']
   nth_rw 1 [← @Measure.restrict_univ Ω _ μ]
   rw [this, ae_eq_restrict_biUnion_iff _ h_countable_range]
@@ -184,7 +184,7 @@ theorem condExp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       exact measurable_stoppedValue h.stronglyAdapted.isStronglyProgressive_of_discrete hτ
     · intro x hx
       simp only [hx, Set.indicator_of_notMem, not_false_iff]
-  exact condExp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
+  exact condExp_of_aestronglyMeasurable hσ.measurableSpace_le h_meas h_int
 
 /-- **Optional Sampling theorem**. If `τ` is a bounded stopping time and `σ` is another stopping
 time, then the value of a martingale `f` at the stopping time `min τ σ` is almost everywhere equal

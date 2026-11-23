@@ -400,9 +400,12 @@ theorem _root_.MeasureTheory.nullMeasurable_iff_eventuallyMeasurable (f : α →
 protected theorem _root_.Measurable.nullMeasurable (h : Measurable f) : NullMeasurable f μ :=
   h.eventuallyMeasurable
 
-protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
+protected theorem NullMeasurable.measurable (h : NullMeasurable f μ) :
     @Measurable (NullMeasurableSpace α μ) β _ _ f :=
   h
+
+@[deprecated (since := "2026-11-23")]
+protected alias NullMeasurable.measurable' := MeasureTheory.NullMeasurable.measurable
 
 omit [MeasurableSpace β] in
 theorem nullMeasurable_generateFrom {s : Set (Set β)}

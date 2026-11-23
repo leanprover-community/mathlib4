@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 * `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
   abbreviation of `IsLocalization (Submonoid.powers x) S`.
-* `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
+* `exists_reduced_fraction (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
   some `n : ℤ` and some `a : R` that is not divisible by `x`.
 
 ## Implementation notes
@@ -724,7 +724,7 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
 variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]
 variable [Algebra R B] [IsLocalization.Away x B] [IsDomain R] [WfDvdMonoid R]
 
-theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
+theorem exists_reduced_fraction {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.val x).mp y.property
@@ -746,5 +746,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_natCast, selfZPow_natCast,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]
   exact ⟨hyp1, congr_arg _ (IsLocalization.mk'_one _ _)⟩
+
+@[deprecated (since := "2026-11-23")] alias exists_reduced_fraction' := exists_reduced_fraction
 
 end NumDen

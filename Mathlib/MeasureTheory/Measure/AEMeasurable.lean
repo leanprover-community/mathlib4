@@ -410,10 +410,10 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
   · rw [← μ.ae_completion] at hft
     obtain ⟨f', hf'm, hf't, hff'⟩ :
         ∃ f' : α → β, NullMeasurable f' μ ∧ range f' ⊆ t ∧ f =ᵐ[μ] f' :=
-      h.measurable'.aemeasurable.exists_ae_eq_range_subset hft hne
+      h.measurable.aemeasurable.exists_ae_eq_range_subset hft hne
     rw [range_subset_iff] at hf't
     lift f' to α → t using hf't
-    replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
+    replace hf'm : NullMeasurable f' μ := hf'm.measurable.subtype_mk
     exact (measurable_subtypeVal.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
 
 section prop

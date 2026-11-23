@@ -404,8 +404,10 @@ instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
   Subtype.ext h
 
-theorem eq_zero' [IsEmpty α] (f : lp E p) : f = 0 :=
+theorem eq_zero [IsEmpty α] (f : lp E p) : f = 0 :=
   Subsingleton.elim f 0
+
+@[deprecated (since := "2026-11-23")] alias eq_zero' := lp.eq_zero
 
 protected theorem monotone {p q : ℝ≥0∞} (hpq : q ≤ p) : lp E q ≤ lp E p :=
   fun _ hf => Memℓp.of_exponent_ge hf hpq
@@ -543,7 +545,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp only [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
   · cases isEmpty_or_nonempty α
-    · simp only [lp.eq_zero' f, neg_zero, norm_zero]
+    · simp only [lp.eq_zero f, neg_zero, norm_zero]
     apply (lp.isLUB_norm (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, norm_neg] using lp.isLUB_norm f
   · suffices ‖-f‖ ^ p.toReal = ‖f‖ ^ p.toReal by
@@ -559,7 +561,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
+          · simp only [lp.eq_zero f, zero_add, norm_zero, le_refl]
           refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
           refine le_trans ?_ (add_mem_upperBounds_add
@@ -637,7 +639,7 @@ theorem norm_le_of_forall_le' [Nonempty α] {f : lp E ∞} (C : ℝ) (hCf : ∀ 
 theorem norm_le_of_forall_le {f : lp E ∞} {C : ℝ} (hC : 0 ≤ C) (hCf : ∀ i, ‖f i‖ ≤ C) :
     ‖f‖ ≤ C := by
   cases isEmpty_or_nonempty α
-  · simpa [eq_zero' f] using hC
+  · simpa [eq_zero f] using hC
   · exact norm_le_of_forall_le' C hCf
 
 theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
@@ -716,7 +718,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
   rcases p.trichotomy with (rfl | rfl | hp)
   · exact absurd rfl hp
   · cases isEmpty_or_nonempty α
-    · simp [lp.eq_zero' f]
+    · simp [lp.eq_zero f]
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
     simp_rw [← Set.range_comp, Function.comp_def] at hfc
     exact norm_le_of_forall_le (by positivity)

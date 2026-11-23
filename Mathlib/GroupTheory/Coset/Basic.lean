@@ -538,7 +538,7 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
   invFun a :=
     ⟨Quotient.out a.2.val * a.1.val,
       show QuotientGroup.mk _ ∈ t by
-        rw [mk_mul_of_mem _ a.1.property, out_eq']
+        rw [mk_mul_of_mem _ a.1.property, out_eq]
         exact a.2.property⟩
   left_inv := fun ⟨a, _⟩ => Subtype.ext <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]

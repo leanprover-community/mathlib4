@@ -122,7 +122,7 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
-theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
+theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 := by
   have help : ∀ a b : ZMod 4, a ≠ 3 → b ≠ 3 → a * b ≠ 3 := by decide
   rw [ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hn]
@@ -137,6 +137,8 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
+
+@[deprecated (since := "2026-11-23")] alias ZMod.isSquare_neg_one_iff' := ZMod.isSquare_neg_one_iff
 
 /-!
 ### Relation to sums of two squares

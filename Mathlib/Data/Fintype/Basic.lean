@@ -101,9 +101,11 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
     Finset.univ.image l.get = l.toFinset := by
   simp [univ_image_def]
 
-@[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
+@[simp] theorem Fin.univ_image_getElem [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (fun i : Fin l.length => f l[(i : Nat)]) = (l.map f).toFinset := by
   simp only [univ_image_def, List.ofFn_getElem_eq_map]
+
+@[deprecated (since := "2026-11-23")] alias Fin.univ_image_getElem' := Fin.univ_image_getElem
 
 theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by

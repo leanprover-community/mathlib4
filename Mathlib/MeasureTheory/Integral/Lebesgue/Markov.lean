@@ -43,7 +43,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
       exact hφ_le _
     _ = ∫⁻ x, φ x + indicator { x | φ x + ε ≤ g x } (fun _ => ε) x ∂μ := by
       rw [lintegral_add_left hφm, lintegral_indicator₀, setLIntegral_const]
-      exact measurableSet_le (hφm.nullMeasurable.measurable'.add_const _) hg.nullMeasurable
+      exact measurableSet_le (hφm.nullMeasurable.measurable.add_const _) hg.nullMeasurable
     _ ≤ ∫⁻ x, g x ∂μ := lintegral_mono_ae (hle.mono fun x hx₁ => ?_)
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]

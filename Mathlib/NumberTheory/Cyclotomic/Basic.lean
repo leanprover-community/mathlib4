@@ -294,7 +294,7 @@ theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension 
   exact (iff_union_singleton_one _ _ _).2 (trans S {1} A B C f.injective)
 
 theorem neZero_of_mem [IsCyclotomicExtension S A B] [IsDomain B] (hn : n ∈ S) : NeZero (n : B) :=
-  (exists_isPrimitiveRoot A B hn NeZero.out).choose_spec.neZero'
+  (exists_isPrimitiveRoot A B hn NeZero.out).choose_spec.neZero
 
 theorem neZero_of_mem' [IsCyclotomicExtension S A B] [IsDomain B] (hn : n ∈ S) : NeZero (n : A) :=
   (neZero_of_mem n S A B hn).nat_of_neZero (algebraMap A B)

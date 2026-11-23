@@ -36,13 +36,15 @@ protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf :
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
-lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+lemma tsum_const_smul {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
   ((Homeomorph.smul g).isClosedEmbedding.map_tsum f (g := show α ≃+ α from
     { DistribSMul.toAddMonoidHom _ g with
       invFun := DistribSMul.toAddMonoidHom _ g⁻¹
       left_inv a := by simp, right_inv a := by simp })).symm
+
+@[deprecated (since := "2026-11-23")] alias tsum_const_smul' := tsum_const_smul
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionSemiring`; no summability hypothesis. This could be made to work for a
@@ -52,7 +54,7 @@ lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [Conti
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp
-  · exact tsum_const_smul' (Units.mk0 g hg)
+  · exact tsum_const_smul (Units.mk0 g hg)
 
 end ConstSMul
 

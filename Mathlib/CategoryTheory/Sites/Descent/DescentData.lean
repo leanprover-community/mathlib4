@@ -589,13 +589,16 @@ lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
     simpa [fac] using R.downward_closed h d.left
 
 variable {F} in
-lemma IsPrestackFor.isSheafFor'
+lemma IsPrestackFor.isSheafFor
     {S₀ : C} (S : Over S₀) {R : Sieve S} (hF : F.IsPrestackFor (Sieve.overEquiv _ R).arrows)
     (M N : F.obj (.mk (op S₀))) :
     Presieve.IsSheafFor (F.presheafHom M N) R.arrows := by
   rw [isPrestackFor_iff_isSheafFor'] at hF
   obtain ⟨S, a, rfl⟩ := S.mk_surjective
   simpa using hF M N a
+
+@[deprecated (since := "2026-11-23")]
+alias IsPrestackFor.isSheafFor' := CategoryTheory.Pseudofunctor.IsPrestackFor.isSheafFor
 
 variable {J : GrothendieckTopology C}
 
@@ -628,7 +631,7 @@ lemma IsPrestack.of_isPrestackFor
     rw [isSheaf_iff_isSheaf_of_type]
     intro U S hS
     obtain ⟨U, u, rfl⟩ := Over.mk_surjective U
-    apply (hF _ _ hS).isSheafFor'
+    apply (hF _ _ hS).isSheafFor
 
 end Pseudofunctor
 

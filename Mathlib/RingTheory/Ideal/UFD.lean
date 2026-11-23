@@ -42,7 +42,7 @@ theorem isPrincipal_of_isPrincipal_isLocalizationAway_of_prime
     have hpb : map (algebraMap R S) p ≠ ⊥ := by simp [Ideal.map_eq_bot_iff_of_injective hi, hpbot]
     obtain ⟨g, hg⟩ := hp
     have hg0 : g ≠ 0 := fun hg0 ↦ hpb <| by simp [hg0, hg]
-    obtain ⟨a, n, hxa, hag⟩ := exists_reduced_fraction' x S hg0 hx.irreducible
+    obtain ⟨a, n, hxa, hag⟩ := exists_reduced_fraction x S hg0 hx.irreducible
     have hu : IsUnit (selfZPow x S n) :=
       IsUnit.of_mul_eq_one (selfZPow x S (- n)) (selfZPow_mul_neg x S n)
     refine ⟨a, Ideal.eq_of_map_algebraMap_le S x ?_ (by simp [IsPrime.mul_mem_left_iff hxp]) ?_⟩

@@ -29,7 +29,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
   subsets. Again, we prove multiple variations:
   - as an equality of `UniformSpace`s: `EquicontinuousOn.comap_uniformOnFun_eq`
   - in terms of `IsUniformInducing`: `EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi'`
-  - in terms of `IsInducing`: `EquicontinuousOn.inducing_uniformOnFun_iff_pi'`
+  - in terms of `IsInducing`: `EquicontinuousOn.inducing_uniformOnFun_iff_pi`
   - in terms of convergence along a filter: `EquicontinuousOn.tendsto_uniformOnFun_iff_pi'`
 * The **Arzela-Ascoli theorem** follows from the previous fact and Tykhonov's theorem.
   All of its variations can be found under the `ArzelaAscoli` namespace.
@@ -212,7 +212,7 @@ In particular, pointwise convergence and compact convergence coincide on an equi
 subset of `X → α`.
 
 Consider using `EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi'` and
-`EquicontinuousOn.inducing_uniformOnFun_iff_pi'` instead to avoid rewriting instances,
+`EquicontinuousOn.inducing_uniformOnFun_iff_pi` instead to avoid rewriting instances,
 as well as their unprimed versions in case `𝔖` covers `X`. -/
 theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -294,7 +294,7 @@ subset of `X → α`.
 
 This is a consequence of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `IsInducing`
 for convenience. -/
-lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
+lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
     IsInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -304,11 +304,15 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).domRestrict ∘ F)).toTopologicalSpace)
   rw [← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
 
+@[deprecated (since := "2026-11-23")]
+alias EquicontinuousOn.inducing_uniformOnFun_iff_pi' :=
+  EquicontinuousOn.inducing_uniformOnFun_iff_pi
+
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
 of uniform convergence on `𝔖` and pointwise convergence induce the same topology on `ι`.
 
-This is a specialization of `EquicontinuousOn.inducing_uniformOnFun_iff_pi'` to
+This is a specialization of `EquicontinuousOn.inducing_uniformOnFun_iff_pi` to
 the case where `𝔖` covers `X`. -/
 lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
@@ -320,7 +324,7 @@ lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
   -- homeomorphism between `(⋃₀ 𝔖) → α` and `X → α`.
   let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (Y := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
-  rw [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
+  rw [EquicontinuousOn.inducing_uniformOnFun_iff_pi 𝔖_compact F_eqcont,
       show domRestrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
 
@@ -418,7 +422,7 @@ and `F : ι → (X → α)`. Assume that:
 * For all `x ∈ ⋃₀ 𝔖`, the range of `i ↦ F i x` is contained in some fixed compact subset.
 
 Then `ι` is compact. -/
-theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {𝔖 : Set (Set X)}
+theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_ind : IsInducing (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_cl : IsClosed <| range <| UniformOnFun.ofFun 𝔖 ∘ F)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
@@ -427,7 +431,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   -- By equicontinuity, we know that the topology on `ι` is also the one induced by
   -- `domRestrict (⋃₀ 𝔖) ∘ F`.
   have : IsInducing (domRestrict (⋃₀ 𝔖) ∘ F) := by
-    rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont] at F_ind
+    rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi 𝔖_compact F_eqcont] at F_ind
   -- Thus, we just have to check that the range of this map is compact.
   rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
   -- But then we are working in a product space, where compactness can easily be proven using
@@ -442,6 +446,9 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.property)
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.property i)
+
+@[deprecated (since := "2026-11-23")]
+alias ArzelaAscoli.compactSpace_of_closed_inducing' := ArzelaAscoli.compactSpace_of_closed_inducing
 
 /-- A version of the **Arzela-Ascoli theorem**.
 
@@ -458,7 +465,7 @@ theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {�
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι :=
-  compactSpace_of_closed_inducing' 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
+  compactSpace_of_closed_inducing 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
 /-- A version of the **Arzela-Ascoli theorem**.

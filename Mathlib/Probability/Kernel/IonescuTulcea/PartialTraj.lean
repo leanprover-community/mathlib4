@@ -199,7 +199,7 @@ private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
     Kernel.id ×ₖ (η ∘ₖ (Kernel.id ×ₖ κ)) := by
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
-    deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
+    deterministic_prod_apply _ _ _ ms, id_prod_apply _ _ ms,
     comp_apply' _ _ _ (measurable_prodMk_left ms),
     lintegral_id_prod (η.measurable_coe (measurable_prodMk_left ms))]
 

@@ -46,16 +46,25 @@ lemma Filter.tendsto_div_const_iff' {G : Type*}
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
   convert! h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel, div_one]
 
-@[to_additive const_sub]
-theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
+@[to_additive]
+theorem Filter.Tendsto.const_div (b : G) {c : G} {f : α → G} {l : Filter α}
     (h : Tendsto f l (𝓝 c)) : Tendsto (b / f ·) l (𝓝 (b / c)) :=
   tendsto_const_nhds.div' h
 
-@[to_additive (attr := continuity) continuous_sub_left]
-lemma continuous_div_left' (a : G) : Continuous (a / ·) := by fun_prop
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.Filter.Tendsto.const_sub]
+alias Filter.Tendsto.const_div' := Filter.Tendsto.const_div
 
-@[to_additive (attr := continuity) continuous_sub_right]
-lemma continuous_div_right' (a : G) : Continuous (· / a) := by fun_prop
+@[to_additive (attr := continuity)]
+lemma continuous_div_left (a : G) : Continuous (a / ·) := by fun_prop
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.continuous_sub_left]
+alias continuous_div_left' := continuous_div_left
+
+@[to_additive (attr := continuity)]
+lemma continuous_div_right (a : G) : Continuous (· / a) := by fun_prop
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.continuous_sub_right]
+alias continuous_div_right' := continuous_div_right
 
 end ContinuousDiv
 
@@ -63,11 +72,14 @@ section DivInvTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
-@[to_additive tendsto_const_sub_iff]
-lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter α} :
+@[to_additive]
+lemma Filter.tendsto_const_div_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
+  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div b⟩
   convert! h.inv.mul_const b with k <;> rw [inv_div, div_mul_cancel]
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.Filter.tendsto_const_sub_iff]
+alias Filter.tendsto_const_div_iff' := Filter.tendsto_const_div_iff
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/

@@ -125,7 +125,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
-lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
+lemma isEmbedding_val_mk {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.val = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, val_injective⟩
@@ -135,13 +135,16 @@ lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M →
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 
+@[to_additive (attr := deprecated (since := "2026-11-23"))]
+alias isEmbedding_val_mk' := Units.isEmbedding_val_mk
+
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
 lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
     (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : IsEmbedding (val : Mˣ → M) :=
-  isEmbedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
+  isEmbedding_val_mk h fun u ↦ (val_inv_eq_inv_val u).symm
 
 @[to_additive]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=

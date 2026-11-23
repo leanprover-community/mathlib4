@@ -143,7 +143,7 @@ lemma LSeries_eq_zero_of_abscissaOfAbsConv_eq_top {f : ℕ → ℂ} (h : absciss
 open Filter Nat in
 /-- The `LSeries` of `f` is zero for large real arguments if and only if either `f n = 0`
 for all `n ≠ 0` or the L-series converges nowhere. -/
-lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
+lemma LSeries_eventually_eq_zero_iff {f : ℕ → ℂ} :
     (fun x : ℝ ↦ LSeries f x) =ᶠ[atTop] 0 ↔ (∀ n ≠ 0, f n = 0) ∨ abscissaOfAbsConv f = ⊤ := by
   by_cases h : abscissaOfAbsConv f = ⊤
   · simpa [h] using!
@@ -175,6 +175,9 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
             Ne.lt_top ha
     · simp [LSeries_congr (fun {n} ↦ H n) x, show (fun _ : ℕ ↦ (0 : ℂ)) = 0 from rfl]
 
+@[deprecated (since := "2026-11-23")]
+alias LSeries_eventually_eq_zero_iff' := LSeries_eventually_eq_zero_iff
+
 open Nat in
 /-- Assuming `f 0 = 0`, the `LSeries` of `f` is zero if and only if either `f = 0` or the
 L-series converges nowhere. -/
@@ -184,7 +187,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
   · simpa [h] using! LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
-    convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
+    convert (LSeries_eventually_eq_zero_iff.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)
       · simp [hf]
@@ -227,7 +230,7 @@ lemma LSeries.eq_of_LSeries_eventually_eq {f g : ℕ → ℂ} (hf : abscissaOfAb
   have ha : abscissaOfAbsConv (f - g) ≠ ⊤ :=
     lt_top_iff_ne_top.mp <| (abscissaOfAbsConv_sub_le f g).trans_lt <| max_lt hf hg
   simpa only [Pi.sub_apply, sub_eq_zero]
-    using (LSeries_eventually_eq_zero_iff'.mp hsub).resolve_right ha n hn
+    using (LSeries_eventually_eq_zero_iff.mp hsub).resolve_right ha n hn
 
 /-- If the `LSeries` of `f` and of `g` both converge somewhere, then they are equal if and only
 if `f n = g n` whenever `n ≠ 0`. -/

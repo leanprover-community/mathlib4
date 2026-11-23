@@ -518,13 +518,15 @@ instance : LawfulMonad
     (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
 
-theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
+theorem map_id {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
   rw [show f = id from funext H]; exact id_map o
+
+@[deprecated (since := "2026-11-23")] alias map_id' := Part.map_id
 
 @[simp]
 theorem bind_some_right (x : Part α) : x.bind some = x := by
   rw [bind_some_eq_map]
-  simp [map_id']
+  simp [map_id]
 
 @[simp]
 theorem pure_eq_some (a : α) : pure a = some a :=

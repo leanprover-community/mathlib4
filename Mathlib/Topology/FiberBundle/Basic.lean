@@ -557,13 +557,15 @@ instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) :=
 
 variable (b : B) (a : F)
 
-theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := by
+theorem open_source (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := by
   apply TopologicalSpace.GenerateOpen.basic
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
   simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
     mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
+
+@[deprecated (since := "2026-11-23")] alias open_source' := FiberBundleCore.open_source
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,
 registering additionally in its type that it is a local bundle trivialization. -/
@@ -575,10 +577,10 @@ def localTriv (i : ι) : Trivialization F Z.proj where
   proj_toFun p _ := by
     simp only [mfld_simps]
     rfl
-  open_source := Z.open_source' i
+  open_source := Z.open_source i
   open_target := (Z.isOpen_baseSet i).prod isOpen_univ
   continuousOn_toFun := by
-    rw [continuousOn_open_iff (Z.open_source' i)]
+    rw [continuousOn_open_iff (Z.open_source i)]
     intro s s_open
     apply TopologicalSpace.GenerateOpen.basic
     simp only [exists_prop, mem_iUnion, mem_singleton_iff]
@@ -770,7 +772,7 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F
 
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @ContinuousOn _ _ _ a.totalSpaceTopology e.toPartialEquiv.symm e.target := by
-  refine fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono ?_) U h)
+  refine fun z H U h => preimage_nhdsWithin_coinduced H (le_def.1 (nhds_mono ?_) U h)
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 
 theorem isOpen_source (e : Pretrivialization F (π F E)) :

@@ -564,7 +564,7 @@ theorem AffineIndepOn.of_comp {s : Set ι} {p : ι → P} (f : P →ᵃ[k] P₂)
 
 /-- The image of a family of points in affine space, under an injective affine transformation, is
 affine-independent. -/
-theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
+theorem AffineIndependent.map {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
   rcases isEmpty_or_nonempty ι with h | h
   · apply affineIndependent_of_subsingleton
@@ -575,21 +575,25 @@ theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f :
   have hf' : LinearMap.ker f.linear = ⊥ := by rwa [LinearMap.ker_eq_bot, f.linear_injective_iff]
   exact LinearIndependent.map' hai f.linear hf'
 
+@[deprecated (since := "2026-11-23")] alias AffineIndependent.map' := AffineIndependent.map
+
 /-- The image of a set of points in affine space, under an injective affine transformation, is
 affine-independent. -/
-theorem AffineIndepOn.map' {s : Set ι} {p : ι → P} (hai : AffineIndepOn k p s) (f : P →ᵃ[k] P₂)
+theorem AffineIndepOn.map {s : Set ι} {p : ι → P} (hai : AffineIndepOn k p s) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndepOn k (f ∘ p) s :=
-  AffineIndependent.map' hai f hf
+  AffineIndependent.map hai f hf
+
+@[deprecated (since := "2026-11-23")] alias AffineIndepOn.map' := AffineIndepOn.map
 
 /-- Injective affine maps preserve affine independence. -/
 theorem AffineMap.affineIndependent_iff {p : ι → P} (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     AffineIndependent k (f ∘ p) ↔ AffineIndependent k p :=
-  ⟨AffineIndependent.of_comp f, fun hai => AffineIndependent.map' hai f hf⟩
+  ⟨AffineIndependent.of_comp f, fun hai => AffineIndependent.map hai f hf⟩
 
 /-- Injective affine maps preserve affine independence. -/
 theorem AffineMap.affineIndepOn_iff {s : Set ι} {p : ι → P} (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndepOn k (f ∘ p) s ↔ AffineIndepOn k p s :=
-  ⟨AffineIndepOn.of_comp f, fun hai ↦ AffineIndepOn.map' hai f hf⟩
+  ⟨AffineIndepOn.of_comp f, fun hai ↦ AffineIndepOn.map hai f hf⟩
 
 /-- Affine equivalences preserve affine independence of families of points. -/
 theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) :

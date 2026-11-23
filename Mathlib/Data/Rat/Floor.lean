@@ -44,9 +44,11 @@ protected theorem floor_def' {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_de
 /--
 This variant of `ceil_def` uses the `Int.ceil` (for any `FloorRing`) rather than `Rat.ceil`.
 -/
-protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
+protected theorem ceil_def (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
   change -⌊-q⌋ = _
   rw [Rat.floor_def', num_neg_eq_neg_num, den_neg_eq_den]
+
+@[deprecated (since := "2026-11-23")] protected alias ceil_def' := Rat.ceil_def
 
 
 @[norm_cast]

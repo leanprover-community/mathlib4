@@ -362,7 +362,7 @@ variable {C}
     dsimp
     simp only [Int.reduceNeg, assoc, Int.negOnePow_neg, Int.negOnePow_one, neg_comp,
       Functor.map_neg, Functor.map_comp, smul_neg, Units.neg_smul, one_smul, neg_neg]
-    rw [shift_shift_neg', shift_shift_neg', shift_shiftFunctorCompIsoId_inv_app,
+    rw [shift_shift_neg, shift_shift_neg, shift_shiftFunctorCompIsoId_inv_app,
       shiftFunctorComm_hom_app_of_add_eq_zero _ _ (Int.add_right_neg 1)]
     simp
 

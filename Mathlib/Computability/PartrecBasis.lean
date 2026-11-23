@@ -134,7 +134,7 @@ theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
         (Part.ofOption (decode (α := List.Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
       exact
         (comp₁ g (this g hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
-          dsimp only [g]; simp [encodek, Part.map_id']
+          dsimp only [g]; simp [encodek, Part.map_id]
     fun f hf => by
     obtain ⟨c, rfl⟩ := exists_code.1 hf
     simpa [eval_eq_rfindOpt] using

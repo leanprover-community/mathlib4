@@ -110,11 +110,13 @@ lemma digits_of_two_le_of_pos {b : ℕ} (hb : 2 ≤ b) (hn : 0 < n) :
     Nat.digits b n = n % b :: Nat.digits b (n / b) := by
   rw [Nat.eq_add_of_sub_eq hb rfl, Nat.eq_add_of_sub_eq hn rfl, Nat.digits_add_two_add_one]
 
-theorem digits_def' :
+theorem digits_def :
     ∀ {b : ℕ} (_ : 1 < b) {n : ℕ} (_ : 0 < n), digits b n = (n % b) :: digits b (n / b)
   | 0, h => absurd h (by decide)
   | 1, h => absurd h (by decide)
   | b + 2, _ => digitsAux_def _ (by simp) _
+
+@[deprecated (since := "2026-11-23")] alias digits_def' := Nat.digits_def
 
 @[simp]
 theorem digits_of_lt (b x : ℕ) (hx : x ≠ 0) (hxb : x < b) : digits b x = [x] := by
@@ -283,7 +285,7 @@ theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
 
 theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
     digits b n = (n % b) :: digits b (n / b) :=
-  digits_def' h (Nat.pos_of_ne_zero w)
+  digits_def h (Nat.pos_of_ne_zero w)
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -390,7 +392,7 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
 
 theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     b.digits (b * m) = 0 :: b.digits m := by
-  rw [digits_def' hb (by positivity)]
+  rw [digits_def hb (by positivity)]
   simp [mul_div_right m (by positivity)]
 
 theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :

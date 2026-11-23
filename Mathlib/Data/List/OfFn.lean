@@ -38,9 +38,11 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
   simp; congr
 
 /-- Useful if `rw [← map_ofFn]` complains that `g ∘ f` is not the same as `fun i => g (f i)`. -/
-theorem ofFn_comp' {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
+theorem ofFn_comp {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     ofFn (fun i => g (f i)) = map g (ofFn f) :=
   map_ofFn.symm
+
+@[deprecated (since := "2026-11-23")] alias ofFn_comp' := List.ofFn_comp
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :

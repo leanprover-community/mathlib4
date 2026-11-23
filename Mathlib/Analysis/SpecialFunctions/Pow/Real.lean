@@ -458,14 +458,18 @@ theorem rpow_sub_one {x : ℝ} (hx : x ≠ 0) (y : ℝ) : x ^ (y - 1) = x ^ y / 
 lemma rpow_add_one' (hx : 0 ≤ x) (h : y + 1 ≠ 0) : x ^ (y + 1) = x ^ y * x := by
   rw [rpow_add' hx h, rpow_one]
 
-lemma rpow_one_add' (hx : 0 ≤ x) (h : 1 + y ≠ 0) : x ^ (1 + y) = x * x ^ y := by
+lemma rpow_one_add (hx : 0 ≤ x) (h : 1 + y ≠ 0) : x ^ (1 + y) = x * x ^ y := by
   rw [rpow_add' hx h, rpow_one]
+
+@[deprecated (since := "2026-11-23")] alias rpow_one_add' := Real.rpow_one_add
 
 lemma rpow_sub_one' (hx : 0 ≤ x) (h : y - 1 ≠ 0) : x ^ (y - 1) = x ^ y / x := by
   rw [rpow_sub' hx h, rpow_one]
 
-lemma rpow_one_sub' (hx : 0 ≤ x) (h : 1 - y ≠ 0) : x ^ (1 - y) = x / x ^ y := by
+lemma rpow_one_sub (hx : 0 ≤ x) (h : 1 - y ≠ 0) : x ^ (1 - y) = x / x ^ y := by
   rw [rpow_sub' hx h, rpow_one]
+
+@[deprecated (since := "2026-11-23")] alias rpow_one_sub' := Real.rpow_one_sub
 
 theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
   simp

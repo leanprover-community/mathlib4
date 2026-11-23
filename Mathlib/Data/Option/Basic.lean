@@ -150,8 +150,10 @@ theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f 
 theorem failure_eq_none {α} : failure = (none : Option α) := rfl
 
 @[simp]
-theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
+theorem guard_eq_some {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   grind [cases Option, _root_.guard]
+
+@[deprecated (since := "2026-11-23")] alias guard_eq_some' := Option.guard_eq_some
 
 /-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/

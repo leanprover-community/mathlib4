@@ -128,7 +128,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
   have : IsFiniteMeasure (volume.restrict (uIoc 0 (f a))) := Real.isFiniteMeasure_restrict_Ioc _ _
   have h_int : Integrable ({p : ℝ × ℝ | p.2 ≤ f p.1}.indicator fun p ↦ g p.1)
       ((volume.restrict (uIoc a b)).prod (volume.restrict (uIoc 0 (f a)))) :=
-    (hg.def'.comp_fst _).indicator₀ hmeas
+    (hg.def.comp_fst _).indicator₀ hmeas
   -- Layer cake representation of `f x * g x`, valid for every `x` in the interval
   have hlayer (x : ℝ) (hx : x ∈ Ι a b) :
       f x * g x = ∫ r in 0..f a, ({y | r ≤ f y}.indicator g) x := by
@@ -213,10 +213,10 @@ theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
   obtain ⟨L, hL_norm, hLI⟩ := exists_dual_vector'' ℝ (∫ x in a..b, f x • g x)
   obtain ⟨ξ, hξ, hξ_eq⟩ :=
     exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn hab hf hf_mon
-      (g := fun x ↦ L (g x)) (intervalIntegrable_iff.2 <| L.integrable_comp hg.def')
+      (g := fun x ↦ L (g x)) (intervalIntegrable_iff.2 <| L.integrable_comp hg.def)
   refine ⟨ξ, hξ, ?_⟩
   have hfg_interval : IntervalIntegrable (fun x ↦ f x • g x) volume a b :=
-    intervalIntegrable_iff.2 <| hg.def'.smul_of_top_right <|
+    intervalIntegrable_iff.2 <| hg.def.smul_of_top_right <|
       (hf_mon.memLp_isCompact isCompact_Icc).mono_measure <|
         Measure.restrict_mono_set volume (uIcc_of_le hab ▸ uIoc_subset_uIcc)
   have hg_aξ := hg.mono_set <| uIcc_subset_uIcc_left (by rwa [uIcc_of_le hab])

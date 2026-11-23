@@ -285,7 +285,9 @@ to be the degree of `E / separableClosure F E` as a natural number. It is define
 if such field extension is infinite. -/
 def finInsepDegree : ℕ := finrank (separableClosure F E) E
 
-theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
+theorem finInsepDegree_def : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
+
+@[deprecated (since := "2026-11-23")] alias finInsepDegree_def' := Field.finInsepDegree_def
 
 instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
 
@@ -344,7 +346,7 @@ theorem insepDegree_self : insepDegree F F = 1 := by
 
 @[simp]
 theorem finInsepDegree_self : finInsepDegree F F = 1 := by
-  rw [finInsepDegree_def', insepDegree_self, Cardinal.one_toNat]
+  rw [finInsepDegree_def, insepDegree_self, Cardinal.one_toNat]
 
 end Field
 
@@ -398,20 +400,26 @@ section Tower
 
 variable [Algebra E K] [IsScalarTower F E K]
 
-theorem lift_sepDegree_bot' : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
+theorem lift_sepDegree_bot : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
     Cardinal.lift.{w} (sepDegree F E) :=
   lift_sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
-theorem lift_insepDegree_bot' : Cardinal.lift.{v} (insepDegree F (⊥ : IntermediateField E K)) =
+@[deprecated (since := "2026-11-23")]
+alias lift_sepDegree_bot' := IntermediateField.lift_sepDegree_bot
+
+theorem lift_insepDegree_bot : Cardinal.lift.{v} (insepDegree F (⊥ : IntermediateField E K)) =
     Cardinal.lift.{w} (insepDegree F E) :=
   lift_insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+
+@[deprecated (since := "2026-11-23")]
+alias lift_insepDegree_bot' := IntermediateField.lift_insepDegree_bot
 
 variable {F}
 
 @[simp]
 theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
-  simpa only [Cardinal.toNat_lift] using! congr($(lift_insepDegree_bot' F E K).toNat)
+  simpa only [Cardinal.toNat_lift] using! congr($(lift_insepDegree_bot F E K).toNat)
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
@@ -423,7 +431,7 @@ theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDeg
 
 @[simp]
 theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = finInsepDegree F K := by
-  rw [finInsepDegree_def', insepDegree_top, ← finInsepDegree_def']
+  rw [finInsepDegree_def, insepDegree_top, ← finInsepDegree_def]
 
 variable (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 

@@ -54,7 +54,7 @@ theorem equivalent_weightedSumSquares_of_isAlgClosed [Invertible (2 : K)] {M : T
     [FiniteDimensional K M] (Q : QuadraticForm K M) (hQ : (associated Q).SeparatingLeft) :
     Equivalent Q (weightedSumSquares K (1 : Fin (Module.finrank K M) → K)) :=
   open scoped Classical in
-  let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
+  let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate hQ
   ⟨hw₁.trans (isometryEquivSumSquaresUnits w)⟩
 
 /-- All nondegenerate quadratic forms on an algebraically closed field of characteristic not equal

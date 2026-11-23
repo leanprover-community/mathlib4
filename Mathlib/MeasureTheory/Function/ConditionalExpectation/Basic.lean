@@ -155,7 +155,7 @@ theorem condExp_ae_eq_condExpL1 [CompleteSpace E]
   · rw [ite_eq_left hfi]
     by_cases hfm : StronglyMeasurable[m] f
     · rw [ite_eq_left hfm]
-      exact (condExpL1_of_aestronglyMeasurable' hfm.aestronglyMeasurable hfi).symm
+      exact (condExpL1_of_aestronglyMeasurable hfm.aestronglyMeasurable hfi).symm
     · rw [ite_eq_right hfm]
       exact aestronglyMeasurable_condExpL1.ae_eq_mk.symm
   rw [ite_eq_right hfi, condExpL1_undef hfi]
@@ -211,11 +211,14 @@ lemma condExp_congr_ae_trim (hm : m ≤ m₀) (hfg : f =ᵐ[μ] g) :
   StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm
     stronglyMeasurable_condExp stronglyMeasurable_condExp (condExp_congr_ae hfg)
 
-theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
+theorem condExp_of_aestronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfi : Integrable f μ) : μ[f | m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
   rw [condExp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
+
+@[deprecated (since := "2026-11-23")]
+alias condExp_of_aestronglyMeasurable' := MeasureTheory.condExp_of_aestronglyMeasurable
 
 @[fun_prop]
 theorem integrable_condExp : Integrable (μ[f | m]) μ := by

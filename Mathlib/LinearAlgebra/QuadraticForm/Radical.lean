@@ -45,16 +45,18 @@ def radical : Submodule R M where
 
 variable {Q}
 
-lemma mem_radical_iff' {m : M} :
+lemma mem_radical_iff {m : M} :
     m ∈ Q.radical ↔ Q m = 0 ∧ ∀ n : M, Q (m + n) = Q n := by
   simp +contextual [radical, QuadraticMap.polarBilin, LinearMap.ext_iff,
     QuadraticMap.polar, sub_sub, sub_eq_zero]
+
+@[deprecated (since := "2026-11-23")] alias mem_radical_iff' := QuadraticMap.mem_radical_iff
 
 /-- The radical of a quadratic form is preserved by isometry equivalences. -/
 @[simp] lemma IsometryEquiv.map_radical {Q' : QuadraticMap R M' P}
     (e : IsometryEquiv Q Q') : Q.radical.map e.toLinearMap = Q'.radical := by
   ext
-  simp [mem_radical_iff', ← e.map_app, -map_app, e.toEquiv.forall_congr_left]
+  simp [mem_radical_iff, ← e.map_app, -map_app, e.toEquiv.forall_congr_left]
 
 /-- The rank of the radical of a quadratic map is invariant under equivalences. -/
 lemma Equivalent.rank_radical_eq {Q' : QuadraticMap R M' P} (h : Equivalent Q Q') :
@@ -103,7 +105,7 @@ See `radical_eq_ker_polarBilin` for the equality when 2 is invertible in the
 coefficient ring. -/
 lemma radical_le_ker_polarBilin : Q.radical ≤ Q.polarBilin.ker := by
   intro m
-  simp +contextual [mem_radical_iff', LinearMap.ext_iff, QuadraticMap.polar]
+  simp +contextual [mem_radical_iff, LinearMap.ext_iff, QuadraticMap.polar]
 
 /--
 A quadratic map is said to be **nondegenerate** if its radical is 0,
@@ -125,7 +127,7 @@ If `2` is invertible in the coefficient ring,
 the radical of a quadratic map is the kernel of its polar bilinear map. -/
 lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   ext m
-  simp only [mem_radical_iff', LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
+  simp only [mem_radical_iff, LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     QuadraticMap.polarBilin_apply_apply, QuadraticMap.polar]
   refine ⟨by simp +contextual, fun h ↦ ?_⟩
   suffices Q m = 0 by grind
@@ -184,7 +186,7 @@ lemma radical_weightedSumSquares :
     radical (weightedSumSquares 𝕜 w) = Pi.spanSubset 𝕜 {i | w i = 0} := by
   classical
   ext v
-  simp only [mem_radical_iff', weightedSumSquares_apply, ← pow_two, smul_eq_mul, Pi.add_apply,
+  simp only [mem_radical_iff, weightedSumSquares_apply, ← pow_two, smul_eq_mul, Pi.add_apply,
     add_sq, mul_add, sum_add_distrib, add_eq_right, Pi.mem_spanSubset_iff]
   constructor
   · rintro ⟨hv, hvv'⟩ i

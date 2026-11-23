@@ -682,9 +682,11 @@ theorem idxOf_inj [BEq α] [LawfulBEq α] {l : List α} {x y : α} (hx : x ∈ l
   rw [← getElem_idxOf (idxOf_lt_length_iff.mpr hx)]
   simp [h]
 
-theorem get_reverse' (l : List α) (n) (hn') :
+theorem get_reverse (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
+
+@[deprecated (since := "2026-11-23")] alias get_reverse' := List.get_reverse
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
   refine ext_get (by convert h) (by grind)

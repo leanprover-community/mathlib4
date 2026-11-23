@@ -77,13 +77,13 @@ instance «structure» : L.Structure ((u : Filter α).Product M) :=
 theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
     (funMap f fun i => (x i : (u : Filter α).Product M)) =
       (fun a => funMap f fun i => x i a : (u : Filter α).Product M) := by
-  apply funMap_quotient_mk'
+  apply funMap_quotient_mk
 
 theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
   convert!
-    @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
+    @Term.realize_quotient_mk L _ ((u : Filter α).productSetoid M)
       (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
   induction t with
@@ -112,7 +112,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
     simp only [BoundedFormula.Realize, h2]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm]
     conv_lhs => enter [2, i]; erw [term_realize_cast]
-    apply relMap_quotient_mk'
+    apply relMap_quotient_mk
   | imp _ _ ih ih' =>
     simp only [BoundedFormula.Realize, ih v, ih' v]
     rw [Ultrafilter.eventually_imp]

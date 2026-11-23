@@ -142,7 +142,7 @@ lemma isConservative_pointSmallEtale
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
     exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).val, rfl⟩)
 
-lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
+lemma isConservativeFamilyOfPoints_pointSmallEtale (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale
       ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).invFun
         ⟨s, CommRingCat.ofHom
@@ -152,8 +152,12 @@ lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     simp only [Equiv.invFun_as_coe, Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
     exact ⟨s, default, by simp [SpecToEquivOfField]⟩)
 
+@[deprecated (since := "2026-11-23")]
+alias isConservativeFamilyOfPoints_pointSmallEtale' :=
+  AlgebraicGeometry.Scheme.isConservativeFamilyOfPoints_pointSmallEtale
+
 instance : GrothendieckTopology.HasEnoughPoints.{u} (smallEtaleTopology S) where
   exists_objectProperty :=
-    ⟨_, inferInstance, isConservativeFamilyOfPoints_pointSmallEtale' S⟩
+    ⟨_, inferInstance, isConservativeFamilyOfPoints_pointSmallEtale S⟩
 
 end AlgebraicGeometry.Scheme

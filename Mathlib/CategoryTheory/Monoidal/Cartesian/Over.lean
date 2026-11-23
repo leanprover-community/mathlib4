@@ -263,14 +263,18 @@ lemma prodComparisonIso_pullback_inv_left_fst_fst (f : X ⟶ Y) (A B : Over Y) :
   simp [CartesianMonoidalCategory.prodComparison, fst]
 
 @[simp]
-lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
+lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
       pullback.fst (pullback.fst gA gB ≫ gA) f ≫ pullback.fst _ _ =
         pullback.fst (pullback.snd gA f) (pullback.snd gB f) ≫ pullback.fst _ _ :=
   prodComparisonIso_pullback_inv_left_fst_fst ..
 
+@[deprecated (since := "2026-11-23")]
+alias prodComparisonIso_pullback_Spec_inv_left_fst_fst' :=
+  CategoryTheory.Over.prodComparisonIso_pullback_Spec_inv_left_fst_fst
+
 @[simp]
-lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
+lemma prodComparisonIso_pullback_inv_left_fst_snd (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
       pullback.fst (pullback.fst gA gB ≫ gA) f ≫ pullback.snd _ _ =
         pullback.snd _ _ ≫ pullback.fst _ _ := by
@@ -278,13 +282,21 @@ lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) 
     Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison, snd]
 
+@[deprecated (since := "2026-11-23")]
+alias prodComparisonIso_pullback_inv_left_fst_snd' :=
+  CategoryTheory.Over.prodComparisonIso_pullback_inv_left_fst_snd
+
 @[simp]
-lemma prodComparisonIso_pullback_inv_left_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
+lemma prodComparisonIso_pullback_inv_left_snd (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
       pullback.snd (pullback.fst gA gB ≫ gA) f = pullback.snd _ _ ≫ pullback.snd _ _ := by
   rw [← cancel_epi (prodComparisonIso (Over.pullback f) _ _).hom.left,
     Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison]
+
+@[deprecated (since := "2026-11-23")]
+alias prodComparisonIso_pullback_inv_left_snd' :=
+  CategoryTheory.Over.prodComparisonIso_pullback_inv_left_snd
 
 /-- The pullback of a monoid object is a monoid object. -/
 @[simps! -isSimp mul one]

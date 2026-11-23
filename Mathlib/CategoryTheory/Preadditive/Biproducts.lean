@@ -813,7 +813,7 @@ theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
 
 end
 
-theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
+theorem Biproduct.column_nonzero_of_iso {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
     {T : τ → C} [HasBiproduct T] (s : σ) (f : ⨁ S ⟶ ⨁ T) [IsIso f] :
     (∀ t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t = 0) → 𝟙 (S s) = 0 := by
   cases nonempty_fintype τ
@@ -829,6 +829,9 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
     grind [CategoryTheory.Limits.zero_comp, Finset.sum_const_zero]
   exact h₁.symm.trans h₀
 
+@[deprecated (since := "2026-11-23")]
+alias Biproduct.column_nonzero_of_iso' := CategoryTheory.Biproduct.column_nonzero_of_iso
+
 /-- If `f : ⨁ S ⟶ ⨁ T` is an isomorphism, and `s` is a non-trivial summand of the source,
 then there is some `t` in the target so that the `s, t` matrix entry of `f` is nonzero.
 -/
@@ -837,7 +840,7 @@ def Biproduct.columnNonzeroOfIso {σ τ : Type} [Fintype τ] {S : σ → C} [Has
     Trunc (Σ' t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t ≠ 0) := by
   classical
     apply truncSigmaOfExists
-    have t := Biproduct.column_nonzero_of_iso'.{v} s f
+    have t := Biproduct.column_nonzero_of_iso.{v} s f
     by_contra h
     simp only [not_exists_not] at h
     exact nz (t h)

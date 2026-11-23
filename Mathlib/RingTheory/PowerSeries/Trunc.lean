@@ -80,7 +80,9 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
   simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc]
 
-@[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
+@[simp] lemma trunc_zero {f : R⟦X⟧} : trunc 0 f = 0 := rfl
+
+@[deprecated (since := "2026-11-23")] alias trunc_zero' := PowerSeries.trunc_zero
 
 theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   simp +contextual [degree_lt_iff_coeff_zero, coeff_trunc]
@@ -89,7 +91,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff i f) * s ^ i := by
   cases n with
   | zero =>
-    rw [trunc_zero', range_zero, sum_empty, eval₂_zero]
+    rw [trunc_zero, range_zero, sum_empty, eval₂_zero]
   | succ n =>
     have := natDegree_trunc_lt f n
     rw [eval₂_eq_sum_range' (hn := this)]

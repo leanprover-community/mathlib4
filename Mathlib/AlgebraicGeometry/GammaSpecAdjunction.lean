@@ -358,9 +358,13 @@ lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
       (CommRingCat.ofHom (algebraMap _ _)).op := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma unop_locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
+lemma unop_locallyRingedSpaceAdjunction_counit_app (R : Type u) [CommRing R] :
     (locallyRingedSpaceAdjunction.counit.app (op ↧R)).unop =
       (CommRingCat.ofHom (algebraMap _ _)) := rfl
+
+@[deprecated (since := "2026-11-23")]
+alias unop_locallyRingedSpaceAdjunction_counit_app' :=
+  AlgebraicGeometry.ΓSpec.unop_locallyRingedSpaceAdjunction_counit_app
 
 lemma locallyRingedSpaceAdjunction_homEquiv_apply
     {X : LocallyRingedSpace} {R : CommRingCatᵒᵖ}
@@ -384,7 +388,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
   dsimp
   rw [← StructureSheaf.algebraMap_self_map _ U _ (homOfLE le_top).op, Category.assoc,
     NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
-    ← unop_locallyRingedSpaceAdjunction_counit_app']
+    ← unop_locallyRingedSpaceAdjunction_counit_app]
   simp_rw [← Γ_map_op]
   rw [← Γ.rightOp_map_unop, ← Category.assoc, ← unop_comp]
   erw [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply]

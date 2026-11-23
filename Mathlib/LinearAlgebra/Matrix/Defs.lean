@@ -362,10 +362,12 @@ theorem map_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix m n α)
 
 /-- The scalar action via `mul.toOppositeSMul` is transformed by the same map as the
 elements of the matrix, when `f` preserves multiplication. -/
-theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix m n α)
+theorem map_op_smul [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix m n α)
     (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂) :
     (MulOpposite.op r • A).map f = MulOpposite.op (f r) • A.map f :=
   ext fun _ _ => hf _ _
+
+@[deprecated (since := "2026-11-23")] alias map_op_smul' := Matrix.map_op_smul
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=

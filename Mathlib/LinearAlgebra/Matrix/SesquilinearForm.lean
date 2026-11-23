@@ -836,17 +836,29 @@ theorem separatingRight_toLinearMap₂'_iff_det_ne_zero :
     (Matrix.toLinearMap₂' R M).SeparatingRight (S₁ := R) (S₂ := R) ↔ M.det ≠ 0 := by
   simpa using separatingRight_iff_det_ne_zero
 
-theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+theorem separatingLeft_toLinearMap₂'_of_det_ne_zero (h : M.det ≠ 0) :
     (Matrix.toLinearMap₂' R M).SeparatingLeft (S₁ := R) (S₂ := R) :=
   separatingLeft_toLinearMap₂'_iff_det_ne_zero.mpr h
 
-theorem separatingRight_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+@[deprecated (since := "2026-11-23")]
+alias separatingLeft_toLinearMap₂'_of_det_ne_zero' :=
+  LinearMap.separatingLeft_toLinearMap₂'_of_det_ne_zero
+
+theorem separatingRight_toLinearMap₂'_of_det_ne_zero (h : M.det ≠ 0) :
     (Matrix.toLinearMap₂' R M).SeparatingRight (S₁ := R) (S₂ := R) :=
   separatingRight_toLinearMap₂'_iff_det_ne_zero.mpr h
 
-theorem nondegenerate_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+@[deprecated (since := "2026-11-23")]
+alias separatingRight_toLinearMap₂'_of_det_ne_zero' :=
+  LinearMap.separatingRight_toLinearMap₂'_of_det_ne_zero
+
+theorem nondegenerate_toLinearMap₂'_of_det_ne_zero (h : M.det ≠ 0) :
     (Matrix.toLinearMap₂' R M).Nondegenerate (S₁ := R) (S₂ := R) :=
   nondegenerate_toLinearMap₂'_iff_det_ne_zero.mpr h
+
+@[deprecated (since := "2026-11-23")]
+alias nondegenerate_toLinearMap₂'_of_det_ne_zero' :=
+  LinearMap.nondegenerate_toLinearMap₂'_of_det_ne_zero
 
 end DecidableEq
 

@@ -114,20 +114,24 @@ theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
 
-theorem derivWithin_fun_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
+theorem derivWithin_fun_inv (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
     derivWithin (fun x => (c x)⁻¹) s x = -derivWithin c s x / c x ^ 2 := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact (hc.hasDerivWithinAt.inv hx).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
+@[deprecated (since := "2026-11-23")] alias derivWithin_fun_inv' := derivWithin_fun_inv
+
 theorem derivWithin_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
     derivWithin (c⁻¹) s x = -derivWithin c s x / c x ^ 2 :=
-  derivWithin_fun_inv' hc hx
+  derivWithin_fun_inv hc hx
 
 @[simp]
-theorem deriv_fun_inv'' (hc : DifferentiableAt 𝕜 c x) (hx : c x ≠ 0) :
+theorem deriv_fun_inv (hc : DifferentiableAt 𝕜 c x) (hx : c x ≠ 0) :
     deriv (fun x => (c x)⁻¹) x = -deriv c x / c x ^ 2 :=
   (hc.hasDerivAt.inv hx).deriv
+
+@[deprecated (since := "2026-11-23")] alias deriv_fun_inv'' := deriv_fun_inv
 
 @[simp]
 theorem deriv_inv'' (hc : DifferentiableAt 𝕜 c x) (hx : c x ≠ 0) :

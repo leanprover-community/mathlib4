@@ -126,15 +126,20 @@ theorem lintegral_prod_id {f : (α × β) → ℝ≥0∞} (hf : Measurable f) (�
     ∫⁻ p, f p ∂(κ ×ₖ Kernel.id) b = ∫⁻ a, f (a, b) ∂κ b := by
   rw [Kernel.id, lintegral_prod_deterministic _ _ _ hf, id_eq]
 
-theorem deterministic_prod_apply' {f : α → β} (mf : Measurable f) (κ : Kernel α γ)
+theorem deterministic_prod_apply {f : α → β} (mf : Measurable f) (κ : Kernel α γ)
     [IsSFiniteKernel κ] (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
     ((Kernel.deterministic f mf) ×ₖ κ) a s = κ a (Prod.mk (f a) ⁻¹' s) := by
   rw [prod_apply' _ _ _ hs, lintegral_deterministic']
   exact measurable_measure_prodMk_left hs
 
-theorem id_prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (a : α) {s : Set (α × β)}
+@[deprecated (since := "2026-11-23")]
+alias deterministic_prod_apply' := ProbabilityTheory.Kernel.deterministic_prod_apply
+
+theorem id_prod_apply (κ : Kernel α β) [IsSFiniteKernel κ] (a : α) {s : Set (α × β)}
     (hs : MeasurableSet s) : (Kernel.id ×ₖ κ) a s = κ a (Prod.mk a ⁻¹' s) := by
-  rw [Kernel.id, deterministic_prod_apply' _ _ _ hs, id_eq]
+  rw [Kernel.id, deterministic_prod_apply _ _ _ hs, id_eq]
+
+@[deprecated (since := "2026-11-23")] alias id_prod_apply' := ProbabilityTheory.Kernel.id_prod_apply
 
 instance IsMarkovKernel.prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel α γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [Kernel.prod]; infer_instance

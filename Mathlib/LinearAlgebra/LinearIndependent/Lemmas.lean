@@ -162,7 +162,7 @@ section union
 
 open LinearMap Finsupp
 
-theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'}
+theorem linearIndependent_inl_union_inr {v : ι → M} {v' : ι' → M'}
     (hv : LinearIndependent R v) (hv' : LinearIndependent R v') :
     LinearIndependent R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) := by
   have : linearCombination R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) =
@@ -170,6 +170,9 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'}
       (sumFinsuppLEquivProdFinsupp R).toLinearMap := by ext (_ | _) <;> simp
   rw [LinearIndependent, this]
   simpa [LinearMap.coe_prodMap] using ⟨hv, hv'⟩
+
+@[deprecated (since := "2026-11-23")]
+alias linearIndependent_inl_union_inr' := linearIndependent_inl_union_inr
 
 theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (hs : LinearIndependent R (fun x => x : s → M))
@@ -181,7 +184,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
       (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.property, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.property, rfl⟩⟩)
       ⟨by rintro (_ | _) (_ | _) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
         by rintro ⟨_, ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩⟩ <;> aesop⟩
-  refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr' hs ht)
+  refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr hs ht)
   ext (_ | _) <;> rfl
 
 end union

@@ -70,7 +70,7 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lip
     ConjAct.toConjAct x • ι Q m ∈ LinearMap.range (ι Q) := by
   unfold lipschitzGroup at hx
   rw [ConjAct.units_smul_def, ConjAct.ofConjAct_toConjAct]
-  induction hx using Subgroup.closure_induction'' generalizing m with
+  induction hx using Subgroup.closure_induction' generalizing m with
   | mem x hx =>
     obtain ⟨a, ha⟩ := hx
     let := x.invertible
@@ -97,7 +97,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q) (b : M) :
       involute (Q := Q) ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   unfold lipschitzGroup at hx
-  induction hx using Subgroup.closure_induction'' generalizing b with
+  induction hx using Subgroup.closure_induction' generalizing b with
   | mem x hx =>
     obtain ⟨a, ha⟩ := hx
     let := x.invertible

@@ -79,7 +79,7 @@ theorem StructureGroupoid.trans_restricted {e e' : OpenPartialHomeomorph M H}
     {G : StructureGroupoid H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
     (e.subtypeRestr hs).symm ≫ₕ e'.subtypeRestr hs ∈ G :=
-  G.mem_of_eqOnSource (closedUnderRestriction' (G.compatible he he')
+  G.mem_of_eqOnSource (closedUnderRestriction (G.compatible he he')
     (e.isOpen_inter_preimage_symm s.is_open')) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
 
 section MaximalAtlas
@@ -175,7 +175,7 @@ private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
     rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
     exact e.open_source.inter hs
   have : (e.restr (e.source ∩ s)).symm ≫ₕ e' ∈ G := by
-    apply G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').1 hs'')
+    apply G.mem_of_eqOnSource (closedUnderRestriction (he e' he').1 hs'')
     exact e.restr_symm_trans (e.open_source.inter hs) hs'' inter_subset_left
   refine G.mem_of_eqOnSource this ?_
   exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
@@ -190,7 +190,7 @@ private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
   have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
     rw [← image_source_inter_eq']
     exact isOpen_image_source_inter e' hs
-  exact G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').2 ht) (e.symm_trans_restr e' hs)
+  exact G.mem_of_eqOnSource (closedUnderRestriction (he e' he').2 ht) (e.symm_trans_restr e' hs)
 
 /-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
 the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
@@ -315,7 +315,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [he, he']
     refine G.mem_of_eqOnSource ?_
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
-    apply closedUnderRestriction'
+    apply closedUnderRestriction
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.is_open'
 

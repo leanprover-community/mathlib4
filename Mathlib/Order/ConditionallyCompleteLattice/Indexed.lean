@@ -390,8 +390,10 @@ theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
 
-theorem le_ciSup_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
+theorem le_ciSup_iff {s : ι → α} {a : α} (h : BddAbove (range s)) :
     a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by simp [iSup, h, le_csSup_iff', upperBounds]
+
+@[deprecated (since := "2026-11-23")] alias le_ciSup_iff' := le_ciSup_iff
 
 theorem le_ciInf_iff' [Nonempty ι] {f : ι → α} {a : α} : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
   le_ciInf_iff (OrderBot.bddBelow _)

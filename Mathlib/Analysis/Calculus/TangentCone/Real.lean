@@ -60,7 +60,7 @@ theorem Convex.span_tangentConeAt (conv : Convex ℝ s) (hs : (interior s).Nonem
     Submodule.span ℝ (tangentConeAt ℝ s x) = ⊤ := by
   rcases hs with ⟨y, hy⟩
   suffices y - x ∈ interior (tangentConeAt ℝ s x) by
-    apply (Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
+    apply (Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior
     exact ⟨y - x, interior_mono Submodule.subset_span this⟩
   rw [mem_interior_iff_mem_nhds]
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy

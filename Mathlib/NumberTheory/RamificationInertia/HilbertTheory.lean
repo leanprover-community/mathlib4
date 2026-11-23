@@ -245,7 +245,7 @@ theorem IsDecompositionField.of_isGaloisGroup [h : IsGaloisGroup (stabilizer G P
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
   · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
-    simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
+    simp_rw [smul_div₀, subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       stabilizerEquiv_symm_apply_smul]
 
 /--
@@ -259,7 +259,7 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) E L] :
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
   · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
-    simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
+    simp_rw [smul_div₀, subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
 
 end of_isGaloisGroup

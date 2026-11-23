@@ -137,7 +137,7 @@ private lemma A_a_ne_zero {A : Δ m} (ha : A.val 1 0 = 0) (hm : m ≠ 0) : A.val
   left_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)
 
 /-- An auxiliary result bounding the size of the entries of the representatives in `reps` -/
-lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
+lemma reps_entries_le_m {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
     A.val i j ∈ Finset.Icc (-|m|) |m| := by
   suffices |A.val i j| ≤ |m| from Finset.mem_Icc.mpr <| abs_le.mp this
   obtain ⟨h10, h00, h01, h11⟩ := h
@@ -148,6 +148,8 @@ lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
   · simpa only [← abs_mul, A_c_eq_zero h10] using! h11.le.trans (le_mul_of_one_le_left h1.le h2)
   · simp_all
   · simpa only [← abs_mul, A_c_eq_zero h10] using! (le_mul_iff_one_le_left h1).mpr h2
+
+@[deprecated (since := "2026-11-23")] alias reps_entries_le_m' := FixedDetMatrices.reps_entries_le_m
 
 @[simp]
 lemma reps_zero_empty : reps 0 = ∅ := by
@@ -161,7 +163,7 @@ noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   let H := Finset.Icc (-|k|) |k|
   let H4 := Fin 2 → Fin 2 → H
   apply Fintype.ofInjective (β := H4)
-    (f := fun M i j ↦ ⟨M.val.val i j, reps_entries_le_m' M.property i j⟩)
+    (f := fun M i j ↦ ⟨M.val.val i j, reps_entries_le_m M.property i j⟩)
   intro M N h
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j

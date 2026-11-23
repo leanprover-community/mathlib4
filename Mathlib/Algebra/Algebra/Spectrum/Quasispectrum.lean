@@ -242,7 +242,9 @@ lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUn
     exact (Unitization.unitsFstOne_mulEquiv_quasiregular R).symm u |>.val.isUnit
   · exact ⟨(Unitization.unitsFstOne_mulEquiv_quasiregular R) ⟨hx.unit, by simp⟩, by simp⟩
 
-alias ⟨IsQuasiregular.isUnit', _⟩ := isQuasiregular_iff_isUnit'
+alias ⟨IsQuasiregular.isUnit, _⟩ := isQuasiregular_iff_isUnit'
+
+@[deprecated (since := "2026-11-23")] alias IsQuasiregular.isUnit' := IsQuasiregular.isUnit
 
 variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalRing A]
   [Module R A]

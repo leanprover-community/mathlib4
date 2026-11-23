@@ -889,13 +889,16 @@ theorem IsStableUnderBaseChange.universally_eq {P : MorphismProperty C}
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
   fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
 
-lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X ⟶ Y)
+lemma universally_mk (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X ⟶ Y)
     (H : ∀ {T : C} (f : T ⟶ Y) [HasPullback f g], P (pullback.fst f g)) :
     universally P g := by
   introv X' h
   have := h.hasPullback
   rw [← h.isoPullback_hom_fst, P.cancel_left_of_respectsIso]
   exact H ..
+
+@[deprecated (since := "2026-11-23")]
+alias universally_mk' := CategoryTheory.MorphismProperty.universally_mk
 
 end Universally
 

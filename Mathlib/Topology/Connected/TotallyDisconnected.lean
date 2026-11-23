@@ -273,13 +273,16 @@ theorem Continuous.connectedComponentsLift_comp_coe (h : Continuous f) :
     h.connectedComponentsLift ∘ (↑) = f :=
   rfl
 
-theorem connectedComponents_lift_unique' {β : Sort*} {g₁ g₂ : ConnectedComponents α → β}
+theorem connectedComponents_lift_unique {β : Sort*} {g₁ g₂ : ConnectedComponents α → β}
     (hg : g₁ ∘ ((↑) : α → ConnectedComponents α) = g₂ ∘ (↑)) : g₁ = g₂ :=
   ConnectedComponents.surjective_coe.injective_comp_right hg
 
+@[deprecated (since := "2026-11-23")]
+alias connectedComponents_lift_unique' := connectedComponents_lift_unique
+
 theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
     (hg : g ∘ (↑) = f) : g = h.connectedComponentsLift :=
-  connectedComponents_lift_unique' <| hg.trans h.connectedComponentsLift_comp_coe.symm
+  connectedComponents_lift_unique <| hg.trans h.connectedComponentsLift_comp_coe.symm
 
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by

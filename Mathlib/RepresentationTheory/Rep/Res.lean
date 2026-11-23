@@ -49,7 +49,9 @@ lemma resMap_id {X Y : Rep k G} (p : X ⟶ Y) : resMap (MonoidHom.id G) p = p :=
 
 @[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 
-lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
+lemma coe_res_obj_ρ (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
+
+@[deprecated (since := "2026-11-23")] alias coe_res_obj_ρ' := Rep.coe_res_obj_ρ
 
 lemma res_obj_V : (res f M).V = M.V := rfl
 

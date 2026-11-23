@@ -930,9 +930,11 @@ section Lmul
 variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
-theorem toMatrix_lmul' (x : S) (i j) :
+theorem toMatrix_lmul (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
   simp only [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
+
+@[deprecated (since := "2026-11-23")] alias toMatrix_lmul' := Algebra.toMatrix_lmul
 
 @[simp]
 theorem toMatrix_lsmul (x : R) :
@@ -965,9 +967,9 @@ theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b
   rfl
 
 theorem leftMulMatrix_eq_repr_mul (x : S) (i j) : leftMulMatrix b x i j = b.repr (x * b j) i := by
-  -- This is defeq to just `toMatrix_lmul' b x i j`,
+  -- This is defeq to just `toMatrix_lmul b x i j`,
   -- but the unfolding goes a lot faster with this explicit `rw`.
-  rw [leftMulMatrix_apply, toMatrix_lmul' b x i j]
+  rw [leftMulMatrix_apply, toMatrix_lmul b x i j]
 
 theorem leftMulMatrix_mulVec_repr (x y : S) :
     leftMulMatrix b x *ᵥ b.repr y = b.repr (x * y) :=

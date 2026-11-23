@@ -321,12 +321,12 @@ lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by li
     (page X data r hr).d pq pq' ≫
       (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁').hom ≫
       X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
-        (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ = 0 := by
+        (data.le₃₃ hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ = 0 := by
   by_cases h : (c r).Rel pq pq'
   · dsimp
     rw [pageD_eq X data r hr pq pq' h (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁))
       (homOfLE (data.le₁₂' pq' hi₁ hi₂)) (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃))
-      (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
+      (homOfLE (data.le₃₃ hrr' hr pq' hi₃ hi₃'))
       (homOfLE (by simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq))
       hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r _ _ h])
       (by rw [hi₃, data.hc₁₃ r _ _ h]) (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl
@@ -361,7 +361,7 @@ lemma isIso_mapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq')
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     IsIso (X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃'
       (data.le₀₁' r hr pq' hi₀ hi₁) (data.le₁₂' pq' hi₁ hi₂)
-      (data.le₂₃' r hr pq' hi₂ hi₃) (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂) := by
+      (data.le₂₃' r hr pq' hi₂ hi₃) (data.le₃₃ hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂) := by
   apply X.isIso_map_fourδ₄Toδ₃_of_isZero _ _ _ _ _ _ _ _ _ _
   refine X.isZero_H_obj_mk₁_i₃_le' data r r' hrr' hr pq' (fun _ hk ↦ ?_) _ (by lia) _ _ hi₃ hi₃'
   obtain rfl := (c r).prev_eq' hk
@@ -378,7 +378,7 @@ lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
       (X.dCokernelSequence_exact
       (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁))
       (homOfLE (data.le₁₂' pq' hi₁ hi₂)) (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃))
-      (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
+      (homOfLE (data.le₃₃ hrr' hr pq' hi₃ hi₃'))
       (show i₃' ⟶ data.i₃ r pq from homOfLE (by
         simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq)) _ rfl
       (n₀ - 1) n₀ n₁ n₂ (by simp) hn₁ hn₂)
@@ -390,7 +390,7 @@ lemma ccSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
     dsimp
     rw [pageD_eq X data r hr pq pq' h
           (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁)) (homOfLE (data.le₁₂' pq' hi₁ hi₂))
-          (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
+          (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃ hrr' hr pq' hi₃ hi₃'))
           (homOfLE (data.le₂₃' r hr pq (by rw [hi₃', data.i₃_next r r' pq pq' h]) rfl))
           hi₀ hi₁ (hi₂.trans (data.hc₀₂ r pq pq' h).symm)
           (hi₃.trans (data.hc₁₃ r pq pq' h).symm) (hi₃'.trans (data.i₃_next r r' pq pq' h)) rfl
@@ -414,7 +414,7 @@ lemma fac (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia
       hi₀' hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').ι ≫
     (cc X data r r' hrr' hr pq pq' i₀ i₁ i₂ i₃ i₃'
       hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁').π =
-  X.mapFourδ₄Toδ₃' i₀' i₁ i₂ i₃ i₃' _ _ _ (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ ≫
+  X.mapFourδ₄Toδ₃' i₀' i₁ i₂ i₃ i₃' _ _ _ (data.le₃₃ hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ ≫
     X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃'
       (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _ n₀ n₁ n₂ := by
   simp [← map_comp]
@@ -597,7 +597,7 @@ lemma spectralSequenceHomologyData_right_p
     (X.spectralSequencePageXIso data r hr pq'
       i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').hom ≫
         X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
-          (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ := rfl
+          (data.le₃₃ hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ := rfl
 
 lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :

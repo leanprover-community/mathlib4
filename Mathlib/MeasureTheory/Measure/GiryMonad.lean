@@ -280,9 +280,12 @@ theorem bind_zero_right' (m : Measure α) : bind m (fun _ => 0 : α → Measure 
 theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 := bind_zero_right' m
 
 @[fun_prop]
-theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) :
+theorem measurable_bind {g : α → Measure β} (hg : Measurable g) :
     Measurable fun m : Measure α => bind m g :=
   measurable_join.comp (measurable_map _ hg)
+
+@[deprecated (since := "2026-11-23")]
+alias measurable_bind' := MeasureTheory.Measure.measurable_bind
 
 @[fun_prop]
 theorem aemeasurable_map {g : α → β} {m : Measure (Measure α)} (hg : AEMeasurable g m.join) :

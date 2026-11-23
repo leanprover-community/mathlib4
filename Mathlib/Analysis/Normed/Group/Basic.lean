@@ -113,8 +113,11 @@ lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_
 
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add₄_le /-- **Triangle inequality** for the norm. -/]
-lemma norm_mul₄_le' : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ :=
+lemma norm_mul₄_le : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ :=
   norm_mul_le_of_le' norm_mul₃_le' le_rfl
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.norm_add₄_le]
+alias norm_mul₄_le' := norm_mul₄_le
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
@@ -738,33 +741,45 @@ section ESeminormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
 
-@[to_additive eNorm_add_le]
-lemma eNorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.eNorm_mul_le a b
+@[to_additive]
+lemma eNorm_mul_le (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.eNorm_mul_le a b
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.eNorm_add_le]
+alias eNorm_mul_le' := eNorm_mul_le
 
 @[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add_le]
-alias enorm_mul_le' := eNorm_mul_le'
+alias enorm_mul_le' := eNorm_mul_le
 
-@[to_additive eNorm_add_le_of_le]
-theorem eNorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
+@[to_additive]
+theorem eNorm_mul_le_of_le {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
     (h₁ : ‖a₁‖ₑ ≤ r₁) (h₂ : ‖a₂‖ₑ ≤ r₂) : ‖a₁ * a₂‖ₑ ≤ r₁ + r₂ :=
-  (eNorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
+  (eNorm_mul_le a₁ a₂).trans <| add_le_add h₁ h₂
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.eNorm_add_le_of_le]
+alias eNorm_mul_le_of_le' := eNorm_mul_le_of_le
 
 @[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add_le_of_le]
-alias enorm_mul_le_of_le' := eNorm_mul_le_of_le'
+alias enorm_mul_le_of_le' := eNorm_mul_le_of_le
 
 @[to_additive eNorm_add₃_le]
-lemma eNorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
-  eNorm_mul_le_of_le' (eNorm_mul_le' _ _) le_rfl
+lemma eNorm_mul₃_le {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
+  eNorm_mul_le_of_le (eNorm_mul_le _ _) le_rfl
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.eNorm_add₃_le]
+alias eNorm_mul₃_le' := eNorm_mul₃_le
 
 @[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add₃_le]
-alias enorm_mul₃_le' := eNorm_mul₃_le'
+alias enorm_mul₃_le' := eNorm_mul₃_le
 
 @[to_additive eNorm_add₄_le]
-lemma eNorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
-  eNorm_mul_le_of_le' eNorm_mul₃_le' le_rfl
+lemma eNorm_mul₄_le {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
+  eNorm_mul_le_of_le eNorm_mul₃_le le_rfl
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.eNorm_add₄_le]
+alias eNorm_mul₄_le' := eNorm_mul₄_le
 
 @[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add₄_le]
-alias enorm_mul₄_le' := eNorm_mul₄_le'
+alias enorm_mul₄_le' := eNorm_mul₄_le
 
 end ESeminormedMonoid
 
@@ -938,7 +953,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
 @[to_additive existing]
 theorem eNorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
-  m.apply_prod_le_sum_map _ eNorm_one'.le eNorm_mul_le'
+  m.apply_prod_le_sum_map _ eNorm_one'.le eNorm_mul_le
 
 @[deprecated (since := "2026-11-06")] alias enorm_multisetProd_le := eNorm_multisetProd_le
 
@@ -957,7 +972,7 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
 
 @[to_additive existing]
 theorem eNorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.apply_prod_le_sum_apply _ eNorm_one'.le eNorm_mul_le'
+  s.apply_prod_le_sum_apply _ eNorm_one'.le eNorm_mul_le
 
 @[deprecated (since := "2026-11-06")] alias enorm_prod_le := eNorm_prod_le
 
@@ -1004,12 +1019,15 @@ theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
   rw [mem_ball', dist_eq_norm_div]
 
 /-- A scaled ball is a ball. -/
-@[to_additive setOf_sub_mem_ball_eq_ball /-- A translated ball is a ball. -/]
-theorem setOf_div_mem_ball_eq_ball'' :
+@[to_additive /-- A translated ball is a ball. -/]
+theorem setOf_div_mem_ball_eq_ball :
     {x | x / a ∈ ball 1 r} = Metric.ball a r := by
   ext x
   rw [mem_ball_iff_norm'']
   simp
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.setOf_sub_mem_ball_eq_ball]
+alias setOf_div_mem_ball_eq_ball'' := setOf_div_mem_ball_eq_ball
 
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
@@ -1034,25 +1052,32 @@ theorem mem_closedBall_iff_nnNorm''' {r : ℝ≥0} : b ∈ closedBall a r ↔ �
 alias mem_closedBall_iff_nnnorm''' := mem_closedBall_iff_nnNorm'''
 
 /-- A scaled closed ball is a closed ball. -/
-@[to_additive setOf_sub_mem_closedBall_eq_closedBall
+@[to_additive
   /-- A translated closed ball is a closed ball. -/]
-theorem setOf_div_mem_closedBall_eq_closedBall'' :
+theorem setOf_div_mem_closedBall_eq_closedBall :
     {x | x / a ∈ closedBall 1 r} = Metric.closedBall a r := by
   ext x
   rw [mem_closedBall_iff_norm'']
   simp
+
+@[deprecated (since := "2026-11-23"),
+  to_additive existing _root_.setOf_sub_mem_closedBall_eq_closedBall]
+alias setOf_div_mem_closedBall_eq_closedBall'' := setOf_div_mem_closedBall_eq_closedBall
 
 -- Higher priority to fire before `mem_sphere`.
 @[to_additive (attr := simp high) mem_sphere_iff_norm]
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 
 /-- A scaled sphere is a sphere. -/
-@[to_additive setOf_sub_mem_sphere_eq_sphere /-- A translated sphere is a sphere. -/]
-theorem setOf_div_mem_sphere_eq_sphere'' :
+@[to_additive /-- A translated sphere is a sphere. -/]
+theorem setOf_div_mem_sphere_eq_sphere :
     {x | x / a ∈ sphere 1 r} = Metric.sphere a r := by
   ext x
   rw [mem_sphere_iff_norm']
   simp
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.setOf_sub_mem_sphere_eq_sphere]
+alias setOf_div_mem_sphere_eq_sphere'' := setOf_div_mem_sphere_eq_sphere
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
@@ -1113,9 +1138,11 @@ theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_inv_mul, ← eq_inv_mul_iff_mul_eq, mul_assoc]
 
 @[to_additive]
-theorem smul_ball'' : a • ball b r = ball (a • b) r := by
+theorem smul_ball' : a • ball b r = ball (a • b) r := by
   ext
   simp [mem_ball, Set.mem_smul_set, dist_eq_norm_inv_mul, ← eq_inv_mul_iff_mul_eq, mul_assoc]
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))] alias smul_ball'' := smul_ball'
 
 @[to_additive]
 theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=

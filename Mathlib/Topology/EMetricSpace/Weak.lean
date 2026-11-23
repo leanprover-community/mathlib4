@@ -85,19 +85,23 @@ theorem some_eball (a : α) (r : ENNReal) :
   | (y : α) =>
     exact ⟨y, h, rfl⟩
 
-lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+protected lemma edist_self {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : Option α, edist x x = 0
   | (_ : α) => by simp
   | none => rfl
 
-lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+@[deprecated (since := "2026-11-23")] alias edist_self' := Option.edist_self
+
+protected lemma edist_comm {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y : Option α, edist x y = edist y x
   | (_ : α), (_ : α) => by simp [m.edist_comm]
   | (_ : α), none => by simp
   | none, (_ : α) => by simp
   | none, none => by simp
 
-lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+@[deprecated (since := "2026-11-23")] alias edist_comm' := Option.edist_comm
+
+protected lemma edist_triangle {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y z : Option α, edist x z ≤ edist x y + edist y z
   | (_ : α), (_ : α), (_ : α) => by simp [m.edist_triangle]
   | none, (_ : α), (_ : α) => by simp
@@ -107,6 +111,8 @@ lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetric
   | none, (_ : α), none => by simp
   | (_ : α), none, none => by simp
   | none, none, none => by simp
+
+@[deprecated (since := "2026-11-23")] alias edist_triangle' := Option.edist_triangle
 
 theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
     Metric.eball (none : Option α) r = {none} := by
@@ -123,12 +129,13 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
   edist := edist
-  edist_self := h_edist ▸ edist_self' m
-  edist_comm := h_edist ▸ edist_comm' m
-  edist_triangle := h_edist ▸ edist_triangle' m
+  edist_self := h_edist ▸ Option.edist_self m
+  edist_comm := h_edist ▸ Option.edist_comm m
+  edist_triangle := h_edist ▸ Option.edist_triangle m
   topology_le s so := by
     apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist edist
-      (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
+      (h_edist ▸ Option.edist_self m) (h_edist ▸ Option.edist_comm m)
+      (h_edist ▸ Option.edist_triangle m))).mpr
     intro x xs
     suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
     match x with

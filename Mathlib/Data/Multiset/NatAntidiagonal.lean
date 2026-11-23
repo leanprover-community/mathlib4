@@ -64,11 +64,14 @@ theorem antidiagonal_succ' {n : ℕ} :
   rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, Multiset.add_comm, antidiagonal,
     map_coe, coe_add, List.singleton_append, cons_coe]
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+theorem antidiagonal_succ_succ {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) ::ₘ (n + 2, 0) ::ₘ (antidiagonal n).map (Prod.map Nat.succ Nat.succ) := by
   rw [antidiagonal_succ, antidiagonal_succ', map_cons, map_map, Prod.map_apply]
   rfl
+
+@[deprecated (since := "2026-11-23")]
+alias antidiagonal_succ_succ' := Multiset.Nat.antidiagonal_succ_succ
 
 theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = antidiagonal n := by
   rw [antidiagonal, map_coe, List.Nat.map_swap_antidiagonal, coe_reverse]

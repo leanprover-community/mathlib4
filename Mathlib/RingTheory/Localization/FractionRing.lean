@@ -692,7 +692,7 @@ protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
     obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
     obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
     simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
-      IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
+      IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀,
       ← algebraMap.coe_smul', smul_algebraMap]⟩
 
 variable {A B} in
@@ -706,7 +706,7 @@ theorem fixingSubgroup_range_algebraMap :
   refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
   · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+      IsScalarTower.algebraMap_apply A B L, smul_div₀, ← algebraMap.smul', h]
   · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply A K L, h]
 

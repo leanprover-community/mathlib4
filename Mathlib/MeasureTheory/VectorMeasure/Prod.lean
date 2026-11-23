@@ -255,7 +255,7 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_vectorMeasure_prod_left
 
 /-- The vector measure integral is a.e.-measurable.
 This shows that the integrand of (the right-hand-side of) Fubini's theorem is a.e.-measurable. -/
-theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_vectorMeasure_prod_right'
+theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_vectorMeasure_prod_right
     {B : G →L[ℝ] F →L[ℝ] H} [SFinite ν.variation] {μ : Measure X}
     ⦃f : X × Y → G⦄ (hf : AEStronglyMeasurable f (μ.prod ν.variation)) :
     AEStronglyMeasurable (fun x ↦ ∫ᵛ y, f (x, y) ∂[B; ν]) μ :=
@@ -263,12 +263,16 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_vectorMeasure_prod_ri
     hf.stronglyMeasurable_mk.integral_vectorMeasure_prod_right',
     by filter_upwards [Measure.ae_ae_of_ae_prod hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
 
+@[deprecated (since := "2026-11-23")]
+alias _root_.MeasureTheory.AEStronglyMeasurable.integral_vectorMeasure_prod_right' :=
+  _root_.MeasureTheory.AEStronglyMeasurable.integral_vectorMeasure_prod_right
+
 theorem _root_.MeasureTheory.Integrable.integral_vectorMeasure_prod_left {B : G →L[ℝ] F →L[ℝ] H}
     [SFinite ν.variation]
     {μ : Measure X} ⦃f : X × Y → G⦄ (hf : Integrable f (μ.prod ν.variation)) :
     Integrable (fun x ↦ ∫ᵛ y, f (x, y) ∂[B; ν]) μ := by
   apply Integrable.mono (hf.integral_norm_prod_left.const_mul ‖B‖)
-    (hf.aestronglyMeasurable.integral_vectorMeasure_prod_right')
+    (hf.aestronglyMeasurable.integral_vectorMeasure_prod_right)
   filter_upwards with x
   grw [norm_integral_le_integral_norm]
   exact le_abs_self _

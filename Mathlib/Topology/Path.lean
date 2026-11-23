@@ -222,8 +222,10 @@ theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
 
-theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
+theorem extend_extends {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
+
+@[deprecated (since := "2026-11-23")] alias extend_extends' := Path.extend_extends
 
 @[simp]
 theorem extend_range {a b : X} (γ : Path a b) :
@@ -233,7 +235,7 @@ theorem extend_range {a b : X} (γ : Path a b) :
 theorem image_extend_of_subset (γ : Path x y) {s : Set ℝ} (h : I ⊆ s) :
     γ.extend '' s = range γ :=
   (γ.extend_range ▸ image_subset_range _ _).antisymm <| range_subset_iff.mpr <| fun t ↦
-    ⟨t, h t.property, extend_extends' _ _⟩
+    ⟨t, h t.property, extend_extends _ _⟩
 
 theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ≤ 0) : γ.extend t = a :=
@@ -611,7 +613,7 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
   ext x
   rw [cast_coe]
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.property
-  rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
+  rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends]
 
 /-! #### Reparametrising a path -/
 

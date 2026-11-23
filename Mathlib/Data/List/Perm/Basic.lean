@@ -165,7 +165,7 @@ theorem rel_perm_imp (hr : RightUnique r) : (Forall₂ r ⇒ Forall₂ r ⇒ (·
   have : ((flip (Forall₂ r) ∘r Forall₂ r) ∘r Perm) b d := by
     rwa [← forall₂_comp_perm_eq_perm_comp_forall₂, ← Relation.comp_assoc] at this
   let ⟨b', ⟨_, hbc, hcb⟩, hbd⟩ := this
-  have : b' = b := right_unique_forall₂' hr hcb hbc
+  have : b' = b := right_unique_forall₂ hr hcb hbc
   this ▸ hbd
 
 theorem rel_perm (hr : BiUnique r) : (Forall₂ r ⇒ Forall₂ r ⇒ (· ↔ ·)) Perm Perm :=

@@ -1241,9 +1241,11 @@ theorem mem_closure_range_iff_nat {e : β → α} {a : α} :
   (mem_closure_iff_nhds_basis nhds_basis_ball_inv_nat_succ).trans <| by
     simp only [mem_ball, dist_comm, exists_range_iff, forall_const]
 
-theorem mem_of_closed' {s : Set α} (hs : IsClosed s) {a : α} :
+theorem mem_of_closed {s : Set α} (hs : IsClosed s) {a : α} :
     a ∈ s ↔ ∀ ε > 0, ∃ b ∈ s, dist a b < ε := by
   simpa only [hs.closure_eq] using @mem_closure_iff _ _ s a
+
+@[deprecated (since := "2026-11-23")] alias mem_of_closed' := Metric.mem_of_closed
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by

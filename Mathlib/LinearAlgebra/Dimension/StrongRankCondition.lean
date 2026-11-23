@@ -122,13 +122,15 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
 Another auxiliary lemma for `Basis.le_span`, which does not require assuming the basis is finite,
 but still assumes we have a finite spanning set.
 -/
-theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
+theorem basis_le_span {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   have := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Nat.cast_le]
   exact Basis.le_span'' b s
+
+@[deprecated (since := "2026-11-23")] alias basis_le_span' := basis_le_span
 
 -- Note that if `R` satisfies the strong rank condition,
 -- this also follows from `linearIndependent_le_span` below.
@@ -139,7 +141,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
     #(range v) ≤ #J := by
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
-    convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
+    convert Cardinal.lift_le.{v}.2 (basis_le_span v hJ)
     simp
   · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
@@ -171,7 +173,7 @@ open Submodule Finsupp
 
 -- An auxiliary lemma for `linearIndependent_le_span'`,
 -- with the additional assumption that the linearly independent family is finite.
-theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
+theorem linearIndependent_le_span_aux {ι : Type*} [Fintype ι] (v : ι → M)
     (i : LinearIndependent R v) (w : Set M) [Fintype w] (s : range v ≤ span R w) :
     Fintype.card ι ≤ Fintype.card w := by
   -- We construct an injective linear map `(ι → R) →ₗ[R] (w → R)`,
@@ -187,6 +189,9 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
                Span.finsupp_linearCombination_repr] at h
     exact i h
 
+@[deprecated (since := "2026-11-23")]
+alias linearIndependent_le_span_aux' := linearIndependent_le_span_aux
+
 /-- If `R` satisfies the strong rank condition,
 then any linearly independent family `v : ι → M`
 contained in the span of some finite `w : Set M`,
@@ -199,7 +204,7 @@ lemma LinearIndependent.finite_of_le_span_finite {ι : Type*} (v : ι → M) (i 
     let v' := fun x : (t : Set ι) => v x
     have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
     have s' : range v' ≤ span R w := (range_comp_subset_range _ _).trans s
-    simpa using linearIndependent_le_span_aux' v' i' w s'
+    simpa using linearIndependent_le_span_aux v' i' w s'
 
 /-- If `R` satisfies the strong rank condition,
 then for any linearly independent family `v : ι → M`
@@ -212,7 +217,7 @@ theorem linearIndependent_le_span' {ι : Type*} (v : ι → M) (i : LinearIndepe
   let := Fintype.ofFinite ι
   rw [Cardinal.mk_fintype]
   simp only [Nat.cast_le]
-  exact linearIndependent_le_span_aux' v i w s
+  exact linearIndependent_le_span_aux v i w s
 
 /-- If `R` satisfies the strong rank condition,
 then for any linearly independent family `v : ι → M`

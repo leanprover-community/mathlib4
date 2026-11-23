@@ -66,11 +66,14 @@ theorem InftyValuation.map_mul' (x y : RatFunc F) :
     · rw [hy, mul_zero, ite_eq_left (Eq.refl _), mul_zero]
     · simp_all [RatFunc.intDegree_mul]
 
-theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
+protected theorem InftyValuation.map_add_le_max (x y : RatFunc F) :
     inftyValuationDef F (x + y) ≤ max (inftyValuationDef F x) (inftyValuationDef F y) := by
   unfold inftyValuationDef
   have := @RatFunc.intDegree_add_le F
   aesop
+
+@[deprecated (since := "2026-11-23")]
+alias InftyValuation.map_add_le_max' := RatFunc.InftyValuation.map_add_le_max
 
 @[simp]
 theorem inftyValuation_of_ne_zero {x : RatFunc F} (hx : x ≠ 0) :
@@ -85,7 +88,7 @@ def inftyValuation : Valuation (RatFunc F) ℤᵐ⁰ where
   map_zero' := InftyValuation.map_zero' F
   map_one' := InftyValuation.map_one' F
   map_mul' := InftyValuation.map_mul' F
-  map_add_le_max' := InftyValuation.map_add_le_max' F
+  map_add_le_max' := InftyValuation.map_add_le_max F
 
 theorem inftyValuation_apply {x : RatFunc F} : inftyValuation F x = inftyValuationDef F x :=
   rfl

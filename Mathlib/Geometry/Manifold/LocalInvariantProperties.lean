@@ -606,7 +606,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       · rintro h hx
         rcases h ⟨hx, hux⟩ with ⟨e, heG, hef, hex⟩
         refine ⟨e.restr (interior u), ?_, ?_, ?_⟩
-        · exact closedUnderRestriction' heG isOpen_interior
+        · exact closedUnderRestriction heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
         · simp only [*, hu.interior_eq, mfld_simps]
@@ -645,7 +645,7 @@ theorem _root_.OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff {G : Struct
   constructor
   · intro hf h2x
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
-    refine ⟨e.restr f.source, closedUnderRestriction' he f.open_source, ?_, ?_, hxe, ?_⟩
+    refine ⟨e.restr f.source, closedUnderRestriction he f.open_source, ?_, ?_, hxe, ?_⟩
     · simp_rw [OpenPartialHomeomorph.restr_source]
       exact inter_subset_right.trans interior_subset
     · intro x' hx'
@@ -706,7 +706,7 @@ theorem HasGroupoid.comp
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine ⟨_, hs.inter φ.open_source, ?_, ?_⟩
       · simp only [hx, hφ_dom, mfld_simps]
-      · refine G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) ?_
+      · refine G₁.mem_of_eqOnSource (closedUnderRestriction hφG₁ hs) ?_
         rw [OpenPartialHomeomorph.restr_source_inter]
         refine OpenPartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono ?_)
         mfld_set_tac }

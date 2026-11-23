@@ -237,7 +237,7 @@ theorem sdiff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=
 @[deprecated (since := "2026-06-03")] alias diff_subset_compl := sdiff_subset_compl
 
 theorem union_sdiff_cancel' {s t u : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ u) : t ∪ u \ s = u :=
-  sup_sdiff_cancel' h₁ h₂
+  sup_sdiff_cancel h₁ h₂
 
 @[deprecated (since := "2026-06-03")] alias union_diff_cancel' := union_sdiff_cancel'
 

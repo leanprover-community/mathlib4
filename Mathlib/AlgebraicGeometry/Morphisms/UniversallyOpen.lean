@@ -140,7 +140,7 @@ lemma Flat.generalizingMap [Flat f] : GeneralizingMap f := by
 @[stacks 01UA]
 instance (priority := low) UniversallyOpen.of_flat [Flat f] [LocallyOfFinitePresentation f] :
     UniversallyOpen f :=
-  ⟨universally_mk' _ _ fun _ _ ↦ isOpenMap_of_generalizingMap _ (Flat.generalizingMap _)⟩
+  ⟨universally_mk _ _ fun _ _ ↦ isOpenMap_of_generalizingMap _ (Flat.generalizingMap _)⟩
 
 nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
     UniversallyOpen f := by
@@ -153,7 +153,7 @@ nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
       (this _ ⟨_, rfl, isField_of_isIntegral_of_subsingleton _⟩)
   obtain ⟨K, rfl, hK⟩ := hY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  refine ⟨universally_mk' _ _ fun {T} g _ ↦ ?_⟩
+  refine ⟨universally_mk _ _ fun {T} g _ ↦ ?_⟩
   wlog hT : ∃ R, T = Spec R generalizing T
   · refine (IsZariskiLocalAtTarget.iff_of_openCover T.affineCover).mpr fun i ↦ ?_
     refine (MorphismProperty.cancel_left_of_respectsIso _

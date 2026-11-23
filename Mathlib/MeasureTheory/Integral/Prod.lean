@@ -138,11 +138,15 @@ theorem MeasureTheory.AEStronglyMeasurable.comp_snd {γ} [TopologicalSpace γ] {
 
 /-- The Bochner integral is a.e.-measurable.
   This shows that the integrand of (the right-hand-side of) Fubini's theorem is a.e.-measurable. -/
-theorem MeasureTheory.AEStronglyMeasurable.integral_prod_right' [SFinite ν] [NormedSpace ℝ E]
+theorem MeasureTheory.AEStronglyMeasurable.integral_prod_right [SFinite ν] [NormedSpace ℝ E]
     ⦃f : α × β → E⦄ (hf : AEStronglyMeasurable f (μ.prod ν)) :
     AEStronglyMeasurable (fun x => ∫ y, f (x, y) ∂ν) μ :=
   ⟨fun x => ∫ y, hf.mk f (x, y) ∂ν, hf.stronglyMeasurable_mk.integral_prod_right', by
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
+
+@[deprecated (since := "2026-11-23")]
+alias MeasureTheory.AEStronglyMeasurable.integral_prod_right' :=
+  MeasureTheory.AEStronglyMeasurable.integral_prod_right
 
 theorem MeasureTheory.AEStronglyMeasurable.prodMk_left [SFinite ν] {f : α × β → X}
     (hf : AEStronglyMeasurable f (μ.prod ν)) :
@@ -230,7 +234,7 @@ theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMe
 theorem integrable_prod_iff ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     Integrable f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) ν) ∧ Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp [Integrable, h1f, hasFiniteIntegral_prod_iff', h1f.norm.integral_prod_right',
+  simp [Integrable, h1f, hasFiniteIntegral_prod_iff', h1f.norm.integral_prod_right,
     h1f.prodMk_left]
 
 /-- A binary function is integrable if the function `x ↦ f (x, y)` is integrable for almost every
@@ -333,7 +337,7 @@ variable [NormedSpace ℝ E]
 
 theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (fun x => ∫ y, f (x, y) ∂ν) μ := by
-  apply Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right'
+  apply Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right
   filter_upwards with x
   grw [norm_integral_le_integral_norm]
   exact le_abs_self _

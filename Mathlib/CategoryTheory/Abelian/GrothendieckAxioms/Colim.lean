@@ -38,7 +38,7 @@ namespace Limits
 `φ : X₁ ⟶ X₂` is a monomorphism in `J ⥤ C`, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of colimit cocones for `X₁` and `X₂` in such a way that `f`
 identifies to `colim.map φ`, then `f` is a monomorphism. -/
-lemma colim.map_mono' [HasColimitsOfShape J C]
+lemma colim.map_mono [HasColimitsOfShape J C]
     [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms]
     {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [Mono φ]
     {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
@@ -54,16 +54,20 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
         colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
         IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
 
+@[deprecated (since := "2026-11-23")] alias colim.map_mono' := CategoryTheory.Limits.colim.map_mono
+
 /-- Assume that `φ : X₁ ⟶ X₂` is a natural transformation in `J ⥤ C` which
 consists of epimorphisms, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of cocones `c₁` and `c₂` for `X₁` and `X₂`, in such
 a way that `c₂` is colimit and `f` is compatible with `φ`, then `f` is an epimorphism. -/
-lemma colim.map_epi'
+lemma colim.map_epi
     {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Epi (φ.app j)]
     (c₁ : Cocone X₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
     (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Epi f where
   left_cancellation {Z} g₁ g₂ h := hc₂.hom_ext (fun j ↦ by
     rw [← cancel_epi (φ.app j), ← reassoc_of% hf, h, reassoc_of% hf])
+
+@[deprecated (since := "2026-11-23")] alias colim.map_epi' := CategoryTheory.Limits.colim.map_epi
 
 attribute [local instance] IsFiltered.isConnected
 
@@ -83,7 +87,7 @@ lemma IsColimit.mono_ι_app_of_isFiltered
         dsimp
         simp only [Category.id_comp, ← X.map_comp, Under.w] }
   have := NatTrans.mono_of_mono_app f
-  exact colim.map_mono' f (isColimitConstCocone _ _)
+  exact colim.map_mono f (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by cat_disch)
 
 section
@@ -148,7 +152,7 @@ instance isStableUnderColimitsOfShape_monomorphisms
   condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ hφ := by
     have (j : J) : Mono (f.app j) := hf _
     have := NatTrans.mono_of_mono_app f
-    apply colim.map_mono' f hc₁ hc₂ φ (by simp [hφ])
+    apply colim.map_mono f hc₁ hc₂ φ (by simp [hφ])
 
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where

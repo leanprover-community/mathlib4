@@ -360,9 +360,11 @@ variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
   (shiftFunctorAdd C i j).app _
 
-theorem shift_shift' (i j : A) :
+theorem shift_shift (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   simp
+
+@[deprecated (since := "2026-11-23")] alias shift_shift' := CategoryTheory.shift_shift
 
 variable (A)
 
@@ -439,15 +441,19 @@ lemma shiftFunctorCompIsoId_naturality_1 (i j : A) (hij : i + j = 0) :
     (shiftFunctorCompIsoId C i j hij).hom.app Y = f :=
   NatIso.naturality_1 (shiftFunctorCompIsoId C i j hij) f
 
-theorem shift_shift_neg' (i : A) :
+theorem shift_shift_neg (i : A) :
     f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app X ≫
       f ≫ (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)) f).symm
 
-theorem shift_neg_shift' (i : A) :
+@[deprecated (since := "2026-11-23")] alias shift_shift_neg' := CategoryTheory.shift_shift_neg
+
+theorem shift_neg_shift (i : A) :
     f⟦-i⟧'⟦i⟧' = (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).hom.app X ≫ f ≫
       (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)) f).symm
+
+@[deprecated (since := "2026-11-23")] alias shift_neg_shift' := CategoryTheory.shift_neg_shift
 
 theorem shift_equiv_triangle (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' ≫ (shiftNegShift (X⟦n⟧) n).hom = 𝟙 (X⟦n⟧) :=

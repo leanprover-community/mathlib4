@@ -229,7 +229,7 @@ private noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZer
       trans (↑((a * b).num * a.den * b.den) : R)
       · simp_rw [Int.cast_mul, Int.cast_natCast]
         ring
-      rw [Rat.mul_num_den' a b]
+      rw [Rat.mul_num_den a b]
       simp
     map_add' := by
       intro a b

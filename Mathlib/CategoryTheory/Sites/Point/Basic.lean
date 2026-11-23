@@ -218,7 +218,7 @@ lemma toPresheafFiber_jointly_surjective₂ (p₁ p₂ : ToType (Φ.presheafFibe
       (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p₁ p₂
   exact ⟨_, _, z₁, z₂, rfl, rfl⟩
 
-lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))) :
+lemma toPresheafFiber_eq_iff (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))) :
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
@@ -228,6 +228,9 @@ lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (
     exact ⟨_, f, _, hf, hf'⟩
   · rintro ⟨Y, f, y, hf, hf'⟩
     exact ⟨op (Functor.elementsMk _ _ y), ⟨f, hf⟩, hf'⟩
+
+@[deprecated (since := "2026-11-23")]
+alias toPresheafFiber_eq_iff' := CategoryTheory.GrothendieckTopology.Point.toPresheafFiber_eq_iff
 
 variable (f : P ⟶ Q)
 
@@ -244,7 +247,7 @@ lemma toPresheafFiber_map_injective [Presheaf.IsLocallyInjective J f] :
       (hp : f.app _ p₁ = f.app _ p₂), Φ.toPresheafFiber X x P p₁ = Φ.toPresheafFiber X x P p₂ by
     rintro q₁ q₂ h
     obtain ⟨X, x, p₁, p₂, rfl, rfl⟩ := Φ.toPresheafFiber_jointly_surjective₂ q₁ q₂
-    simp only [toPresheafFiber_naturality_apply, toPresheafFiber_eq_iff'] at h
+    simp only [toPresheafFiber_naturality_apply, toPresheafFiber_eq_iff] at h
     obtain ⟨Y, g, y, rfl, h⟩ := h
     simp only [← NatTrans.naturality_apply] at h
     simpa using this _ y _ _ h

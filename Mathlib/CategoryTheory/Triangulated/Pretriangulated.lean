@@ -204,11 +204,11 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
     (inv_rot_of_distTriang _ hT₁) (inv_rot_of_distTriang _ hT₂) (c⟦-1⟧') a (by
     dsimp
     simp only [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
-      Functor.map_comp, shift_shift_neg', Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
+      Functor.map_comp, shift_shift_neg, Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
   refine ⟨a, ⟨ha₁, ?_⟩⟩
   dsimp only [Triangle.invRotate, Triangle.mk] at ha₂
   rw [← cancel_mono ((shiftEquiv C 1).counitIso.inv.app T₂.obj₃), assoc, assoc, ← ha₂]
-  simp only [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
+  simp only [shiftEquiv'_counitIso, shift_neg_shift, assoc, Iso.inv_hom_id_app_assoc]
 
 /-- Obvious triangles `0 ⟶ X ⟶ X ⟶ 0⟦1⟧` are distinguished -/
 lemma contractible_distinguished₁ (X : C) :

@@ -447,7 +447,9 @@ variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
   · apply eq_inv_of_mul_eq_one_right
     rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
 
-theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+theorem smul_div₀ (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
   rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
+
+@[deprecated (since := "2026-11-23")] alias smul_div₀' := smul_div₀
 
 end MulDistribMulAction

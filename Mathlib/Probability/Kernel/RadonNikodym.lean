@@ -228,9 +228,11 @@ noncomputable
 def rnDeriv (κ η : Kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
   ENNReal.ofReal (rnDerivAux κ (κ + η) a x) / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
 
-lemma rnDeriv_def' (κ η : Kernel α γ) :
+lemma rnDeriv_def (κ η : Kernel α γ) :
     rnDeriv κ η = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
       / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := (rfl)
+
+@[deprecated (since := "2026-11-23")] alias rnDeriv_def' := ProbabilityTheory.Kernel.rnDeriv_def
 
 @[fun_prop]
 lemma measurable_rnDeriv (κ η : Kernel α γ) :
@@ -340,7 +342,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   have : withDensity η (rnDeriv κ η)
       = withDensity (withDensity (κ + η)
         (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x))) (rnDeriv κ η) := by
-    rw [rnDeriv_def']
+    rw [rnDeriv_def]
     congr
     exact (withDensity_one_sub_rnDerivAux κ η).symm
   rw [this, ← withDensity_mul, Kernel.withDensity_apply']

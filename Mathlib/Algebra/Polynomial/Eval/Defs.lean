@@ -156,12 +156,14 @@ theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
 @[simp]
 theorem eval₂_X_mul : eval₂ f x (X * p) = eval₂ f x p * x := by rw [X_mul, eval₂_mul_X]
 
-theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f x p * f a := by
+theorem eval₂_mul_C (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f x p * f a := by
   rw [eval₂_mul_noncomm, eval₂_C]
   intro k
   by_cases hk : k = 0
   · simp only [hk, h, coeff_C_zero]
   · simp only [coeff_C_of_ne_zero hk, map_zero, Commute.zero_left]
+
+@[deprecated (since := "2026-11-23")] alias eval₂_mul_C' := Polynomial.eval₂_mul_C
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -330,7 +332,7 @@ theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
 theorem eval_mul_C_of_commute (h : Commute a x) : (p * C a).eval x = p.eval x * a := by
-  rw [eval, eval₂_mul_C'] <;> simp [h]
+  rw [eval, eval₂_mul_C] <;> simp [h]
 
 /-- Polynomial evaluation commutes with `List.sum`. -/
 theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=

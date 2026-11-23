@@ -165,12 +165,16 @@ theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
     vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
 
 @[simp]
-theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
+theorem head_val (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
   rfl
 
+@[deprecated (since := "2026-11-23")] alias head_val' := Matrix.head_val
+
 @[simp]
-theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
+theorem tail_val (B : Fin m.succ → n' → α) (j : n') :
     (vecTail fun i => B i j) = fun i => vecTail B i j := rfl
+
+@[deprecated (since := "2026-11-23")] alias tail_val' := Matrix.tail_val
 
 section DotProduct
 

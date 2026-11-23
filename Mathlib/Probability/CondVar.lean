@@ -91,7 +91,7 @@ lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X; μ | m] =ᵐ[μ] Var[Y; μ | 
 lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
     (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
-  condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
+  condExp_of_aestronglyMeasurable _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
 
 lemma integrable_condVar : Integrable Var[X; μ | m] μ := integrable_condExp

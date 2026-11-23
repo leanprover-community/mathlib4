@@ -82,8 +82,10 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
     · simpa [h'] using lookmap_map_eq _ h l
     · simp [lookmap_cons_some _ _ h', h _ _ h']
 
-theorem lookmap_id' (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookmap f = l := by
+theorem lookmap_id (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookmap f = l := by
   rw [← map_id (l.lookmap f), lookmap_map_eq, map_id]; exact h
+
+@[deprecated (since := "2026-11-23")] alias lookmap_id' := List.lookmap_id
 
 @[simp, grind =]
 theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by

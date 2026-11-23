@@ -640,10 +640,14 @@ theorem tendsto_of_forall_isClosed_limsup_le
   exact (limsup_comp (fun i ↦ μs i F) u _).trans_le
     (limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩)
 
-lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
+lemma tendsto_of_forall_isClosed_limsup_real_le {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
     Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
+
+@[deprecated (since := "2026-11-23")]
+alias tendsto_of_forall_isClosed_limsup_real_le' :=
+  MeasureTheory.tendsto_of_forall_isClosed_limsup_real_le
 
 /-- A different version of the (C) → (T) implication of the portmanteau theorem:
 If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence. -/
@@ -700,7 +704,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
   -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
   rcases F.eq_or_neBot with rfl | hne
   · simp
-  refine fun h ↦ tendsto_of_forall_isClosed_limsup_real_le' fun s hs ↦ ?_
+  refine fun h ↦ tendsto_of_forall_isClosed_limsup_real_le fun s hs ↦ ?_
   refine le_of_forall_pos_le_add fun ε ε_pos ↦ ?_
   let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω
   have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) :=

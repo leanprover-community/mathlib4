@@ -80,7 +80,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.inductionOn' q fun T =>
       congr(Quotient.mk'' $(by rw [inv_one]; apply one_smul Gᵐᵒᵖ T))
 
-theorem smul_diff' (h : H) :
+theorem smul_diff (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   let := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, Nat.card_eq_fintype_card,
@@ -91,13 +91,15 @@ theorem smul_diff' (h : H) :
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.property)
 
+@[deprecated (since := "2026-11-23")] alias smul_diff' := Subgroup.smul_diff
+
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
       calc
         h ^ H.index = diff (MonoidHom.id H) (op ((h⁻¹ : H) : G) • α) α := by
-          rw [← diff_inv, smul_diff', diff_self, one_mul, inv_pow, inv_inv]
+          rw [← diff_inv, smul_diff, diff_self, one_mul, inv_pow, inv_inv]
         _ = 1 ^ H.index := (Quotient.exact' hα).trans (one_pow H.index).symm
 
 theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
@@ -108,7 +110,7 @@ theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.Quotie
         ⟨(powCoprime hH).symm (diff (MonoidHom.id H) β α),
           (diff_inv _ _ _).symm.trans
             (inv_eq_one.mpr
-              ((smul_diff' β α ((powCoprime hH).symm (diff (MonoidHom.id H) β α))⁻¹).trans
+              ((smul_diff β α ((powCoprime hH).symm (diff (MonoidHom.id H) β α))⁻¹).trans
                 (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_cancel])))⟩)
 
 theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}

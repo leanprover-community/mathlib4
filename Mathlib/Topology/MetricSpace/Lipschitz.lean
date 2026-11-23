@@ -64,10 +64,12 @@ section Metric
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ] {K : ℝ≥0} {f : α → β}
   {x y : α} {r : ℝ}
 
-protected theorem of_dist_le' {K : ℝ} (h : ∀ x y, dist (f x) (f y) ≤ K * dist x y) :
+protected theorem of_dist_le {K : ℝ} (h : ∀ x y, dist (f x) (f y) ≤ K * dist x y) :
     LipschitzWith (Real.toNNReal K) f :=
   of_dist_le_mul fun x y =>
     le_trans (h x y) <| by gcongr; apply Real.le_coe_toNNReal
+
+@[deprecated (since := "2026-11-23")] protected alias of_dist_le' := LipschitzWith.of_dist_le
 
 protected theorem mk_one (h : ∀ x y, dist (f x) (f y) ≤ dist x y) : LipschitzWith 1 f :=
   of_dist_le_mul <| by simpa only [NNReal.coe_one, one_mul] using h
@@ -77,7 +79,7 @@ doesn't assume `0≤K`. -/
 protected theorem of_le_add_mul' {f : α → ℝ} (K : ℝ) (h : ∀ x y, f x ≤ f y + K * dist x y) :
     LipschitzWith (Real.toNNReal K) f :=
   have I : ∀ x y, f x - f y ≤ K * dist x y := fun x y => sub_le_iff_le_add'.2 (h x y)
-  LipschitzWith.of_dist_le' fun x y => abs_sub_le_iff.2 ⟨I x y, dist_comm y x ▸ I y x⟩
+  LipschitzWith.of_dist_le fun x y => abs_sub_le_iff.2 ⟨I x y, dist_comm y x ▸ I y x⟩
 
 /-- For functions to `ℝ`, it suffices to prove `f x ≤ f y + K * dist x y`; this version
 assumes `0≤K`. -/
@@ -219,10 +221,12 @@ section Metric
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
-protected theorem of_dist_le' {K : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y) :
+protected theorem of_dist_le {K : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y) :
     LipschitzOnWith (Real.toNNReal K) f s :=
   of_dist_le_mul fun x hx y hy =>
     le_trans (h x hx y hy) <| by gcongr; apply Real.le_coe_toNNReal
+
+@[deprecated (since := "2026-11-23")] protected alias of_dist_le' := LipschitzOnWith.of_dist_le
 
 protected theorem mk_one (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ dist x y) :
     LipschitzOnWith 1 f s :=
@@ -234,7 +238,7 @@ protected theorem of_le_add_mul' {f : α → ℝ} (K : ℝ)
     (h : ∀ x ∈ s, ∀ y ∈ s, f x ≤ f y + K * dist x y) : LipschitzOnWith (Real.toNNReal K) f s :=
   have I : ∀ x ∈ s, ∀ y ∈ s, f x - f y ≤ K * dist x y := fun x hx y hy =>
     sub_le_iff_le_add'.2 (h x hx y hy)
-  LipschitzOnWith.of_dist_le' fun x hx y hy =>
+  LipschitzOnWith.of_dist_le fun x hx y hy =>
     abs_sub_le_iff.2 ⟨I x hx y hy, dist_comm y x ▸ I y hy x hx⟩
 
 /-- For functions to `ℝ`, it suffices to prove `f x ≤ f y + K * dist x y`; this version

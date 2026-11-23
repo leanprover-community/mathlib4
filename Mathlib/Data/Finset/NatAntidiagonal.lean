@@ -91,7 +91,7 @@ theorem antidiagonal_succ' (n : ℕ) :
   rw [cons_val, map_val]
   exact Multiset.Nat.antidiagonal_succ'
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+theorem antidiagonal_succ_succ {n : ℕ} :
     antidiagonal (n + 2) =
       cons (0, n + 2)
         (cons (n + 2, 0)
@@ -102,6 +102,9 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
         (by simp) := by
   simp_rw [antidiagonal_succ (n + 1), antidiagonal_succ', Finset.map_cons, map_map]
   rfl
+
+@[deprecated (since := "2026-11-23")]
+alias antidiagonal_succ_succ' := Finset.Nat.antidiagonal_succ_succ
 
 theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le <| antidiagonal.fst_le hlk

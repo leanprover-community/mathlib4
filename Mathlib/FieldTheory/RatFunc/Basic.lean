@@ -1121,8 +1121,7 @@ section Char
 instance [Field K] {p : ℕ} [CharP K p] : CharP K⟮X⟯ p :=
   charP_of_injective_algebraMap' K p
 
-instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar K⟮X⟯ p :=
-  ExpChar.of_injective_algebraMap' K p
+instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar K⟮X⟯ p := .of_injective_algebraMap K p
 
 instance [Field K] [CharZero K] : CharZero K⟮X⟯ :=
   Algebra.charZero_of_charZero K _

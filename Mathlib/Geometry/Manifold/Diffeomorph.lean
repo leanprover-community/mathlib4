@@ -232,9 +232,11 @@ theorem symm_trans_self (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.trans h = Diffeomo
   ext h.apply_symm_apply
 
 @[simp]
-theorem symm_trans' (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) :
+theorem symm_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) :
     (h₁.trans h₂).symm = h₂.symm.trans h₁.symm :=
   rfl
+
+@[deprecated (since := "2026-11-23")] alias symm_trans' := Diffeomorph.symm_trans
 
 @[simp]
 theorem symm_toEquiv (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.toEquiv = h.toEquiv.symm :=

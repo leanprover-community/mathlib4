@@ -117,7 +117,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
     have : ∀ᵐ a ∂μ, ‖F' a‖ ≤ b a := by
       apply (h_diff.and h_lipsch).mono
       rintro a ⟨ha_diff, ha_lip⟩
-      exact ha_diff.le_of_lip' (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) ha_lip)
+      exact ha_diff.le_of_lip (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) ha_lip)
     b_int.mono' hF'_meas this
   refine ⟨hF'_int, ?_⟩
   /- Discard the trivial case where `E` is not complete, as all integrals vanish. -/
@@ -247,7 +247,7 @@ open scoped Interval in
 `F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a`
 with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
 of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
+theorem hasFDerivAt_integral_of_dominated_of_fderiv_le' [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
@@ -263,6 +263,10 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
           bound_integrable.1 h_diff.1).sub
       (hasFDerivAt_integral_of_dominated_of_fderiv_le hs hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
         bound_integrable.2 h_diff.2)
+
+@[deprecated (since := "2026-11-23")]
+alias hasFDerivAt_integral_of_dominated_of_fderiv_le'' :=
+  hasFDerivAt_integral_of_dominated_of_fderiv_le'
 
 /-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
 if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`

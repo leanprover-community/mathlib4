@@ -50,7 +50,7 @@ lemma mono_of_isColimit_monoOver : Mono f := by
   let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
     { app j := (F.obj j).obj.hom }
   have := NatTrans.mono_of_mono_app α
-  exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
+  exact colim.map_mono α hc (isColimitConstCocone J X) f (by simpa using hf)
 
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, the colimit of `F` (computed in `C`) gives

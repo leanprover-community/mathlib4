@@ -888,7 +888,9 @@ theorem toContinuousLinearMap_toLinearIsometry :
 
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e := rfl
 
-theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
+theorem coe_coe' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
+
+@[deprecated (since := "2026-11-23")] alias coe_coe'' := LinearIsometryEquiv.coe_coe'
 
 theorem map_zero : e 0 = 0 :=
   e.toLinearEquiv.map_zero

@@ -155,7 +155,7 @@ instance [HasSummableGeomSeries A] :
   have key : IsQuasiregular (-((1 - r)⁻¹ • a)) :=
     .of_norm_lt_one <| by rwa [norm_neg, norm_smul, norm_inv, inv_mul_lt_one₀ hr]
   rw [← isUnit_map_iff (unitizationAlgEquiv 𝕜)]
-  convert key.isUnit' 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
+  convert key.isUnit 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
   ext <;> simp [hx, smul_inv_smul₀, hr₁]
 
 end WithLp

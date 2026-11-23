@@ -411,7 +411,7 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
   · simp only [IsPrimitiveRoot.one_right_iff, mem_primitiveRoots zero_lt_one]
   · rwa [mem_primitiveRoots zero_lt_one, IsPrimitiveRoot.one_right_iff] at hx
 
-theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
+theorem neZero {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
   refine .of_not_dvd R (p := p) fun hpn ↦ ?_
   obtain ⟨n, rfl⟩ := hpn
@@ -421,6 +421,8 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
   refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.out.one_lt) <|
     frobenius_inj R p ?_).elim
   rw [frobenius_def, ← pow_mul', hζ.pow_eq_one, map_one]
+
+@[deprecated (since := "2026-11-23")] alias neZero' := IsPrimitiveRoot.neZero
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=

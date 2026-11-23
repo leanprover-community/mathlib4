@@ -1422,8 +1422,10 @@ section Sigma
 
 variable {α : Type*} {β : α → Type*} {i j : α} {s : Set (β i)}
 
-lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' Sigma.mk i '' s = ∅ := by
+lemma sigma_mk_preimage_image (h : i ≠ j) : Sigma.mk j ⁻¹' Sigma.mk i '' s = ∅ := by
   simp [image, h]
+
+@[deprecated (since := "2026-11-23")] alias sigma_mk_preimage_image' := sigma_mk_preimage_image
 
 lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' Sigma.mk i '' s = s := by
   simp [image]

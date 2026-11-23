@@ -337,15 +337,24 @@ def mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) : ρ.Equiv 
   cont := e.continuous
   isIntertwining' := he
 
-lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearEquiv_mk {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
     (mk e he).toContinuousLinearEquiv = e := rfl
 
-lemma toContIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+@[deprecated (since := "2026-11-23")]
+alias toContinuousLinearEquiv_mk' := ContRepresentation.Equiv.toContinuousLinearEquiv_mk
+
+lemma toContIntertwiningMap_mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
     (mk e he).toContIntertwiningMap = ⟨e.toContinuousLinearMap, he⟩ := rfl
 
+@[deprecated (since := "2026-11-23")]
+alias toContIntertwiningMap_mk' := ContRepresentation.Equiv.toContIntertwiningMap_mk
+
 @[simp]
-lemma toContinuousLinearMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearMap_mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
     (mk e he).toContinuousLinearMap = e.toContinuousLinearMap := rfl
+
+@[deprecated (since := "2026-11-23")]
+alias toContinuousLinearMap_mk' := ContRepresentation.Equiv.toContinuousLinearMap_mk
 
 lemma toContinuousLinearEquiv_injective :
     Function.Injective (toContinuousLinearEquiv : (σ.Equiv ρ) → _) :=

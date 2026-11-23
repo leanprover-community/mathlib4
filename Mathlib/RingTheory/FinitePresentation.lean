@@ -136,7 +136,7 @@ theorem iff :
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
 variables are indexed by a fintype by a finitely generated ideal. -/
-theorem iff_quotient_mvPolynomial' :
+theorem iff_quotient_mvPolynomial :
     FinitePresentation R A ↔
       ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
         Surjective f ∧ (RingHom.ker f.toRingHom).FG := by
@@ -153,13 +153,16 @@ theorem iff_quotient_mvPolynomial' :
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     simpa using! Submodule.fg_bot
 
+@[deprecated (since := "2026-11-23")]
+alias iff_quotient_mvPolynomial' := Algebra.FinitePresentation.iff_quotient_mvPolynomial
+
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
 theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v) [Finite ι] :
     FinitePresentation R (MvPolynomial ι A) := by
   have hfp : FinitePresentation R A := inferInstance
-  rw [iff_quotient_mvPolynomial'] at hfp ⊢
+  rw [iff_quotient_mvPolynomial] at hfp ⊢
   -- Make universe level `v` explicit so it matches that of `ι`
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom

@@ -122,7 +122,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
-theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
+theorem coeff_pow_of_natDegree_le_of_eq_ite {m n o : ℕ} {a : R} {p : R[X]}
     (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h
@@ -132,6 +132,10 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ‹_› ?_)
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
+
+@[deprecated (since := "2026-11-23")]
+alias coeff_pow_of_natDegree_le_of_eq_ite' :=
+  Mathlib.Tactic.ComputeDegree.coeff_pow_of_natDegree_le_of_eq_ite
 
 section SMul
 
@@ -353,7 +357,7 @@ def dispatchLemma
         | .inr ``HMul.hMul =>
           π ``natDegree_mul_le_of_le ``degree_mul_le_of_le ``coeff_mul_add_of_le_natDegree_of_eq_ite
         | .inr ``HPow.hPow =>
-          π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite'
+          π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite
         | .inr ``Neg.neg =>
           π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg_of_eq
         | .inr ``Polynomial.X =>

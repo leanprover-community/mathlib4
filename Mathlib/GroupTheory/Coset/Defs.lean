@@ -201,8 +201,10 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
     _ ↔ _ := by rw [leftRel_apply]
 
 @[to_additive]
-theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
+theorem out_eq (a : α ⧸ s) : mk a.out = a :=
   Quotient.out_eq' a
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))] alias out_eq' := QuotientGroup.out_eq
 
 variable (s)
 
@@ -264,7 +266,7 @@ theorem mk_eq_one_iff : (a : α ⧸ s) = (1 : α) ↔ a ∈ s := by
 
 @[to_additive (attr := simp)]
 theorem out_mem_iff {a : α ⧸ s} : a.out ∈ s ↔ a = (1 : α) := by
-  rw [← mk_eq_one_iff, out_eq']
+  rw [← mk_eq_one_iff, out_eq]
 
 end QuotientGroup
 

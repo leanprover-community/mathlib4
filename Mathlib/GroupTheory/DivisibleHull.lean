@@ -240,7 +240,7 @@ instance : Module ℚ (DivisibleHull M) where
       all_goals
       simp [← natCast_zsmul, smul_smul]
       ring_nf
-    rw [Rat.mul_num_den']
+    rw [Rat.mul_num_den]
 
 theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
   simp [← Int.cast_smul_eq_zsmul ℚ a, qsmul_mk]

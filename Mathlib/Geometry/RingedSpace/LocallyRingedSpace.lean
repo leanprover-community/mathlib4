@@ -181,10 +181,13 @@ theorem comp_toShHom {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z
     (f ≫ g).toShHom = f.toShHom ≫ g.toShHom :=
   rfl
 
-/-- A variant of `id_toShHom'` that works with `𝟙 X` instead of `id X`. -/
-@[simp] theorem id_toShHom' (X : LocallyRingedSpace.{u}) :
+/-- A variant of `id_toShHom` that works with `𝟙 X` instead of `id X`. -/
+@[simp] theorem id_toShHom (X : LocallyRingedSpace.{u}) :
     Hom.toShHom (𝟙 X) = 𝟙 X.toSheafedSpace :=
   rfl
+
+@[deprecated (since := "2026-11-23")]
+alias id_toShHom' := AlgebraicGeometry.LocallyRingedSpace.id_toShHom
 
 theorem comp_base {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=

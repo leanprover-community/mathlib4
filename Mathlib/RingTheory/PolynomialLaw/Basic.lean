@@ -238,12 +238,15 @@ theorem ground_apply (m : M) : f.ground m = TensorProduct.lid R N (f.toFun' R (1
 instance : CoeFun (M →ₚₗ[R] N) (fun _ ↦ M → N) where
   coe := ground
 
-theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
+theorem one_tmul_ground_apply {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
   · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
+
+@[deprecated (since := "2026-11-23")]
+alias one_tmul_ground_apply' := PolynomialLaw.one_tmul_ground_apply
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a
   linear map. -/

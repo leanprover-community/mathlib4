@@ -74,11 +74,13 @@ theorem Finset.smul_prod' {r : M} {f : γ → N} {s : Finset γ} :
     (r • ∏ x ∈ s, f x) = ∏ x ∈ s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom N r) f s
 
-theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → N} (r : M) :
+theorem smul_finprod {ι : Sort*} [Finite ι] {f : ι → N} (r : M) :
     r • ∏ᶠ x : ι, f x = ∏ᶠ x : ι, r • (f x) := by
   cases nonempty_fintype (PLift ι)
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
     Finset.smul_prod']
+
+@[deprecated (since := "2026-11-23")] alias smul_finprod' := smul_finprod
 
 variable {G : Type*} [Group G] [MulDistribMulAction G N]
 

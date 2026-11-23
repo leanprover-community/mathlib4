@@ -579,7 +579,7 @@ theorem isInvariant_of_isIntegral [Algebra.IsIntegral A B] : Algebra.IsInvariant
     algebraMap B L b / algebraMap B L (algebraMap A B a) := by
     rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
   obtain ⟨b, rfl⟩ := hAB.isInvariant b
-    (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
+    (by simpa [ha, hxy, smul_div₀, ← algebraMap.coe_smul'] using h)
   use algebraMap A K b / algebraMap A K a
   rw [hxy, map_div₀, hc, hc]
 

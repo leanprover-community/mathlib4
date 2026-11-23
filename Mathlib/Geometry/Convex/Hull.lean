@@ -73,7 +73,10 @@ variable (R) in
 @[simp] lemma convexHull_nonempty : (convexHull R s).Nonempty ↔ s.Nonempty := by
   simp [← ne_empty_iff_nonempty]
 
-protected alias ⟨_, Set.Nonempty.convexHull'⟩ := convexHull_nonempty
+protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty
+
+@[deprecated (since := "2026-11-23")]
+protected alias Set.Nonempty.convexHull' := Convexity.Set.Nonempty.convexHull
 
 variable (R x) in
 @[simp] lemma convexHull_singleton : convexHull R {x} = {x} :=

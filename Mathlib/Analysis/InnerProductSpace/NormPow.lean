@@ -40,7 +40,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
         = (fun x : E ↦ ‖x‖ ^ p) := by simp [zero_lt_one.trans hp |>.ne']
       _ = (fun x : E ↦ ‖x‖ * ‖x‖ ^ (p - 1)) := by
           ext x
-          rw [← rpow_one_add' (norm_nonneg x) (by positivity)]
+          rw [← rpow_one_add (norm_nonneg x) (by positivity)]
           ring_nf
       _ =o[𝓝 0] (fun x : E ↦ ‖x‖ * 1) := by
         refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by simp).mpr ?_

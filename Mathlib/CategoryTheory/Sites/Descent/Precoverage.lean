@@ -395,7 +395,7 @@ lemma IsPrestack.of_precoverage
       Over.forget_obj] at hR
     obtain ⟨R', hR'⟩ := (Sieve.overEquiv _).symm.surjective (Sieve.generate R)
     rw [Presieve.isSheafFor_iff_generate]
-    apply IsPrestackFor.isSheafFor'
+    apply IsPrestackFor.isSheafFor
     simpa [Sieve.overEquiv_generate, ← Sieve.arrows_generate_map_eq_functorPushforward]
       using hF _ _ hR
 

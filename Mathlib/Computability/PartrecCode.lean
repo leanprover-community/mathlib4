@@ -546,7 +546,7 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
       refine ⟨comp (rfind' cf) (pair Code.id zero), ?_⟩
-      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id']
+      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id]
   · rintro ⟨c, rfl⟩
     induction c with
     | zero => exact Nat.Partrec.zero
@@ -613,7 +613,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       ∀ {k k₂ n x : ℕ} {o₁ o₂ : Option ℕ},
         k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) →
           x ∈ do { guard (n ≤ k); o₁ } → x ∈ do { guard (n ≤ k₂); o₂ } := by
-      simp only [Option.mem_def, bind, Option.bind_eq_some_iff, Option.guard_eq_some',
+      simp only [Option.mem_def, bind, Option.bind_eq_some_iff, Option.guard_eq_some,
         exists_and_left, exists_const, and_imp]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
@@ -651,7 +651,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | k + 1, c, n, x, h => by
     induction c generalizing x n <;>
     simp only [eval, evaln, Option.bind_eq_bind, Option.mem_def, Option.bind_eq_some_iff,
-      Option.guard_eq_some', exists_const] at h ⊢
+      Option.guard_eq_some, exists_const] at h ⊢
     case zero => simpa [pure, PFun.pure] using h.2.symm
     case succ => simpa using h.2.symm
     case left => simpa using h.2.symm
@@ -679,7 +679,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         refine fun y h₁ h₂ ↦ ⟨y, IH _ ?_, hg _ _ h₂⟩
         have := evaln_mono k.le_succ h₁
         simp only [evaln, unpaired, unpair_pair, Option.bind_eq_bind, Option.mem_def,
-          Option.bind_eq_some_iff, Option.guard_eq_some', exists_const] at this
+          Option.bind_eq_some_iff, Option.guard_eq_some, exists_const] at this
         exact this.2
     case rfind' cf hf =>
       simp only [Part.map_eq_map, Part.mem_map_iff, mem_rfind]
@@ -707,21 +707,21 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | pair cf cg hf hg =>
     simp only [eval, Seq.seq, Part.map_eq_map, Part.mem_bind_iff, Part.mem_map_iff,
       evaln, Option.map_eq_map, Option.bind_eq_bind, Option.mem_def, Option.bind_eq_some_iff,
-      Option.guard_eq_some', Option.map_eq_some_iff, exists_exists_and_eq_and, exists_const] at h ⊢
+      Option.guard_eq_some, Option.map_eq_some_iff, exists_exists_and_eq_and, exists_const] at h ⊢
     obtain ⟨x, hx, y, hy, rfl⟩ := h; obtain ⟨k₁, hk₁⟩ := hf hx; obtain ⟨k₂, hk₂⟩ := hg hy
     exact ⟨max k₁ k₂, ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
       evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁, _,
       evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂, rfl⟩⟩
   | comp cf cg hf hg =>
     simp only [eval, Part.bind_eq_bind, Part.mem_bind_iff, evaln, Option.bind_eq_bind,
-      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some', exists_const] at h ⊢
+      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some, exists_const] at h ⊢
     obtain ⟨y, hy, hx⟩ := h; obtain ⟨k₁, hk₁⟩ := hg hy; obtain ⟨k₂, hk₂⟩ := hf hx
     exact ⟨max k₁ k₂, ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
       evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁,
       evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂⟩⟩
   | prec cf cg hf hg =>
     simp only [eval, unpaired, evaln, Option.bind_eq_bind, Option.mem_def,
-      Option.bind_eq_some_iff, Option.guard_eq_some', exists_const] at h ⊢
+      Option.bind_eq_some_iff, Option.guard_eq_some, exists_const] at h ⊢
     revert h
     generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
     induction n₂ generalizing x n with
@@ -742,7 +742,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
           evaln_mono (Nat.succ_le_succ <| le_max_left _ _) ?_,
           evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
       simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some_iff,
-        Option.guard_eq_some', exists_and_left, exists_const]
+        Option.guard_eq_some, exists_and_left, exists_const]
       exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
   | rfind' cf hf =>
     simp only [eval, Part.map_eq_map, Part.mem_map_iff, mem_rfind, decide_eq_false_iff_not] at h ⊢
@@ -753,7 +753,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
     generalize n.unpair.2 = m
     intro hy₁ hy₂
     induction y generalizing m with simp only [evaln, unpair_pair, Option.bind_eq_bind,
-      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some', exists_const]
+      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some, exists_const]
     | zero =>
       simp only [zero_add, decide_eq_true_eq, exists_eq_right] at hy₁
       rcases hf hy₁ with ⟨k, hk⟩
@@ -774,7 +774,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
         evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂
   | _ =>
     simp only [eval, evaln, pure, PFun.pure, PFun.coe_val, Part.mem_some_iff, Option.bind_eq_bind,
-      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some', Option.some.injEq,
+      Option.mem_def, Option.bind_eq_some_iff, Option.guard_eq_some, Option.some.injEq,
       exists_const, exists_and_right] at h ⊢
     exact ⟨⟨_, le_rfl⟩, h.symm⟩
 
@@ -1033,13 +1033,13 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
   ⟨curry cg (encode cF),
     funext fun n =>
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
-        simp [F, g, eg', eF', Part.map_id']⟩
+        simp [F, g, eg', eF', Part.map_id]⟩
 
 /-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (primrec₂_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp
-    fun c e => funext fun n => by simp [e.symm, ef, Part.map_id']
+    fun c e => funext fun n => by simp [e.symm, ef, Part.map_id]
 
 end
 

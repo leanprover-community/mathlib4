@@ -54,7 +54,7 @@ theorem hasProd_powerSeriesMk_card_restricted [IsTopologicalSemiring R]
   convert hasProd_genFun (fun i c ↦ if p i then (1 : R) else 0) using 1
   · ext1 i
     split_ifs
-    · rw [tsum_eq_zero_add' ?_]
+    · rw [tsum_eq_zero_add ?_]
       · simp
       simp_rw [pow_mul, pow_add]
       apply Summable.mul_right

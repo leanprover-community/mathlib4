@@ -136,9 +136,12 @@ theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
   rw [← centralizer_univ, ← coe_top, ← hs, centralizer_closure, centralizer_eq_iInf]
 
 @[to_additive]
-theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
+theorem center_eq_infi {s : Set G} (hs : closure s = ⊤) :
     center G = ⨅ g : s, centralizer {(g : G)} := by
   rw [center_eq_iInf hs, ← iInf_subtype'']
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))]
+alias center_eq_infi' := Subgroup.center_eq_infi
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive

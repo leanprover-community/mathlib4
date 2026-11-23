@@ -418,19 +418,23 @@ lemma shift_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSha
   obtain ⟨K, L, φ, ⟨e⟩⟩ := hT
   exact ⟨_, _, _, ⟨Functor.mapIso _ e ≪≫ CochainComplex.mappingCone.shiftTrianglehIso φ n⟩⟩
 
-lemma invRotate_distinguished_triangle' (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+lemma invRotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
     (hT : T ∈ distinguishedTriangles C) : T.invRotate ∈ distinguishedTriangles C :=
   isomorphic_distinguished _
     (shift_distinguished_triangle _ (rotate_distinguished_triangle' _
       (rotate_distinguished_triangle' _ hT)) _) _
     ((invRotateIsoRotateRotateShiftFunctorNegOne _).app T)
 
+@[deprecated (since := "2026-11-23")]
+alias invRotate_distinguished_triangle' :=
+  HomotopyCategory.Pretriangulated.invRotate_distinguished_triangle
+
 lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
   constructor
   · exact rotate_distinguished_triangle' T
   · intro hT
-    exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
+    exact isomorphic_distinguished _ (invRotate_distinguished_triangle T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
 open CochainComplex.mappingCone in
