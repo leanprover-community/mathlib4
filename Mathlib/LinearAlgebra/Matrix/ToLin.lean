@@ -926,16 +926,10 @@ lemma LinearMap.toMatrix_prod (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
         (toMatrix v₂ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂)) := by
   ext (i | i) (j | j) <;> simp [toMatrix_apply]
 
-lemma LinearMap.toMatrix_prodMap' (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
+lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
       .fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
   simp [toMatrix_prod, LinearMap.ext_iff]
-
-lemma LinearMap.toMatrix_prodMap
-    (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
-    toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) :=
-  LinearMap.toMatrix_prodMap' v₁ v₂ v₁ v₂ φ₁ φ₂
 
 end ToMatrix
 
