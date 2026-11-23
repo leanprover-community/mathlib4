@@ -41,9 +41,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
-    congr_arg (I.map ·) (RingHom.ext <| one_smul M) |>.trans I.map_id
+    congr_arg (I.map ·) (MulSemiringAction.toRingHom_one M R) |>.trans I.map_id
   mul_smul _ _ I :=
-    congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
+    congr_arg (I.map ·) (MulSemiringAction.toRingHom_mul M R _ _) |>.trans (I.map_map _ _).symm
   smul_zero _ := Ideal.map_bot
   smul_add _ I J := Ideal.map_sup _ I J
 

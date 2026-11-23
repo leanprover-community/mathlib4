@@ -50,9 +50,9 @@ This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
-  one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
+  one_smul S := (congr_arg (S.map ·) (MulSemiringAction.toRingHom_one M R)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f => S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
+    (congr_arg (S.map ·) (MulSemiringAction.toRingHom_mul M R _ _)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
 
