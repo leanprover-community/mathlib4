@@ -5,8 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
+
+import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-!  # Derivatives of parametric circle integrals
 

@@ -5,10 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 
 /-!
 # Precoverages
