@@ -109,7 +109,7 @@ theorem transcendental_iff_injective {x : A} :
 /-- An element `x` is transcendental over `R` if and only if the kernel of the ring homomorphism
 `Polynomial.aeval x` is the zero ideal. This is similar to `algebraicIndependent_iff_ker_eq_bot`. -/
 theorem transcendental_iff_ker_eq_bot {x : A} :
-    Transcendental R x ↔ (aeval (R := R) x).toRingHom.ker  = ⊥ := by
+    Transcendental R x ↔ (aeval (R := R) x).ker  = ⊥ := by
   simp [transcendental_iff_injective, ← RingHom.injective_iff_ker_eq_bot]
 
 theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :

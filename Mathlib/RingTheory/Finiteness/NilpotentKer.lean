@@ -24,13 +24,13 @@ lemma Module.finite_of_surjective_of_ker_le_nilradical
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T]
     [Module.Finite R T] (f : S →ₐ[R] T)
-    (hf₁ : Function.Surjective f) (hf₂ : f.toRingHom.ker ≤ nilradical S)
-    (hf₃ : f.toRingHom.ker.FG) :
+    (hf₁ : Function.Surjective f) (hf₂ : f.ker ≤ nilradical S)
+    (hf₃ : f.ker.FG) :
     Module.Finite R S := by
-  have : Module.Finite R (S ⧸ f.toRingHom.ker) :=
+  have : Module.Finite R (S ⧸ f.ker) :=
     let e := Ideal.quotientKerAlgEquivOfSurjective hf₁
     .of_surjective e.symm.toLinearMap e.symm.surjective
-  generalize hI : f.toRingHom.ker = I at *
+  generalize hI : f.ker = I at *
   suffices ∀ i, Module.Finite R (S ⧸ I ^ i) by
     obtain ⟨n, hn : _ = ⊥⟩ := hf₃.isNilpotent_iff_le_nilradical.mpr hf₂
     let e : (S ⧸ I ^ n) ≃ₐ[R] S := hn ▸ (AlgEquiv.quotientBot R S)

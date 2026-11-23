@@ -57,8 +57,10 @@ def comap (f : R →+* S) (I : Ideal S) : Ideal R where
 @[simp]
 theorem coe_comap (f : R →+* S) (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
+@[deprecated "syntactic equality" (since := "2026-11-23")]
 lemma comap_coe (f : R →+* S) (I : Ideal S) : I.comap f = I.comap f := rfl
 
+@[deprecated "syntactic equality" (since := "2026-11-23")]
 lemma map_coe (f : R →+* S) (I : Ideal R) : I.map f = I.map f := rfl
 
 variable {f : R →+* S}
@@ -151,19 +153,17 @@ theorem gc_map_comap : GaloisConnection (Ideal.map f) (Ideal.comap f) := fun _ _
 theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
-@[simp]
+@[deprecated comap_id +typeChanged (since := "2026-11-23")]
 lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
-    Ideal.comap (AlgHom.id R S) I = I :=
-  I.comap_id
+    Ideal.comap (AlgHom.id R S) I = I := by simp
 
 @[simp]
 theorem map_id : I.map id = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
 
-@[simp]
+@[deprecated map_id +typeChanged (since := "2026-11-23")]
 lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
-    Ideal.map (AlgHom.id R S) I = I :=
-  I.map_id
+    Ideal.map (AlgHom.id R S) I = I := by simp
 
 theorem comap_comap {T : Type*} [Semiring T] {I : Ideal T} (f : R →+* S) (g : S →+* T) :
     (I.comap g).comap f = I.comap (g.comp f) :=
@@ -485,7 +485,7 @@ theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) : (I.map f).map f.symm = I :=
   then `comap f (comap f.symm I) = I`. -/
 @[simp]
 theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
-    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
+    (I.comap (f.symm : S →+* R)).comap f = I := by
   rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
 
@@ -497,12 +497,10 @@ theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
   · exact Ideal.comap_le_map_of_inverse f.symm.toRingHom f.toRingHom I (Equiv.right_inv' _)
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
-@[simp]
 theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
   (map_comap_of_equiv f).symm
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
-@[simp]
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
 
@@ -798,12 +796,12 @@ theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
 theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   ext; simp
 
+@[deprecated "syntactic tautology" (since := "2026-11-23")]
 theorem ker_coe_toRingHom : ker (f : R →+* S) = ker f := rfl
 
-@[simp]
+@[deprecated ker_coe_equiv (since := "2026-11-23")]
 theorem ker_equiv (f : R ≃+* S) :
-    ker (f : R →+* S) = ⊥ := by
-  ext; simp
+    ker (f : R →+* S) = ⊥ := by simp
 
 lemma ker_equiv_comp (f : R →+* S) (e : S ≃+* T) :
     ker ((e : S →+* T).comp f) = RingHom.ker f := by

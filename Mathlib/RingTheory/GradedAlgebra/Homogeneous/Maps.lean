@@ -32,7 +32,7 @@ variable {A B C σ τ ω ι : Type*}
 /-- Map a homogeneous ideal along a graded ring homomorphism. The underlying ideal is
 (definitionally) equal to `Ideal.map`. -/
 def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
-  __ := I.toIdeal.map f.toRingHom
+  __ := I.toIdeal.map f
   is_homogeneous' i b hb := by
     rw [Ideal.map] at hb
     induction hb using Submodule.span_induction generalizing i with
@@ -41,7 +41,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
       Ideal.add_mem, *]
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
-      rw [GradedRingHom.coe_toRingHom, ← f.map_directSumDecompose]
+      rw [← f.map_directSumDecompose]
       exact Ideal.mem_map_of_mem _ (I.is_homogeneous' _ ha)
     | smul a₁ a₂ ha₂ ih =>
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
@@ -51,7 +51,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
 The underlying ideal is (definitionally) equal to `Ideal.comap`, whose underlying set is
 definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
-  __ := I.toIdeal.comap f.toRingHom
+  __ := I.toIdeal.comap f
   is_homogeneous' n a ha := by
     rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff]
     simpa using I.is_homogeneous' _ ha
@@ -77,8 +77,8 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 @[simp] lemma toIdeal_map : (I.map f).toIdeal = I.toIdeal.map f := rfl
 
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
-  inferInstanceAs (J.toIdeal.comap f.toRingHom).IsPrime
   -- this shows that the simpNF already has the instance
+  inferInstanceAs (J.toIdeal.comap f.toRingHom).IsPrime
 
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 
