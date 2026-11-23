@@ -5,7 +5,6 @@ Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -14,6 +13,8 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 
 /-!
 # Dual vector spaces

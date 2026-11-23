@@ -5,8 +5,9 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.Reverse
+
+import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # A list of coefficients of a polynomial

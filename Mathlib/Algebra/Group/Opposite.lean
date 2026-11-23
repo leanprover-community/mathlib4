@@ -5,11 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
 
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Tactic.Conv
 
 /-!

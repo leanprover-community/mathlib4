@@ -6,10 +6,10 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # The basics of valuation theory.
