@@ -110,7 +110,7 @@ variable {C X}
 
 /-- The underlying presheaf of a sheaf -/
 abbrev Sheaf.presheaf (F : X.Sheaf C) : TopCat.Presheaf C X :=
-  F.1
+  F.obj
 
 variable (C X)
 
@@ -135,11 +135,11 @@ instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
-theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
+theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).hom.app t = 𝟙 _ :=
   rfl
 
 theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
-    (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
+    (f ≫ g).hom.app t = f.hom.app t ≫ g.hom.app t :=
   rfl
 
 end Sheaf
@@ -155,7 +155,7 @@ lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
     s = t := by
   have := (isSheaf_iff_isSheaf_of_type _ _).mp
     ((Presheaf.isSheaf_iff_isSheaf_forget (C := Opens X) (A' := A) _ F (forget _)).mp hF)
-  choose V hV hxV H using fun x : U.unop ↦ hst x.1 x.2
+  choose V hV hxV H using fun x : U.unop ↦ hst x.val x.property
   refine (this.isSheafFor (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
   · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.ofArrows_mk _ _ _, hxV _⟩
   · rintro _ _ ⟨x⟩; exact H x

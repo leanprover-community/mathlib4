@@ -245,6 +245,7 @@ theorem subgroupClosure_range_simple : Subgroup.closure (range cs.simple) = ⊤ 
 @[deprecated (since := "2026-11-08")]
 alias subgroup_closure_range_simple := subgroupClosure_range_simple
 
+open scoped Pointwise in
 /-- The simple reflections of `W` generate `W` as a monoid. -/
 theorem submonoidClosure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
   have : range cs.simple = range cs.simple ∪ (range cs.simple)⁻¹ := by

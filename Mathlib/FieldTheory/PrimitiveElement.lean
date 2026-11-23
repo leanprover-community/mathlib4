@@ -272,13 +272,13 @@ theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
   have := isAlgebraic_of_finite_intermediateField F E
-  have : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
+  have : ∀ K : IF, FiniteDimensional F K.val := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral _)
-  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
-  have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
-    le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
+  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.val)
+  have htop : ⨆ K : IF, K.val = ⊤ := le_top.antisymm fun x _ ↦
+    le_iSup (fun K : IF ↦ K.val) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
-  exact topEquiv.toLinearEquiv.finiteDimensional
+  exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
@@ -298,7 +298,7 @@ theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
   obtain ⟨α, hprim⟩ := h
   have hfin := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) α)
   rw [hprim] at hfin
-  exact topEquiv.toLinearEquiv.finiteDimensional
+  exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]
@@ -398,8 +398,9 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   let : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
-  · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
-      Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
+  · exact ⟨{ φ.toRingHom with commutes' := fun _ ↦ rfl }, fun ψ ↦
+      AlgHom.restrictScalars_injective F <|
+        Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
   · exact fun x ↦ (IsIntegral.of_finite F x).minpoly_splits_tower_top (hA x)
 
 end Field

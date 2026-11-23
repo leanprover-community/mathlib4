@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The lattice of ideals in a ring
 

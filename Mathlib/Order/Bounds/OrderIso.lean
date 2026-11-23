@@ -6,7 +6,11 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Order.Bounds.Image
-public import Mathlib.Order.Hom.Set
+
+import Mathlib.Order.Hom.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order isomorphisms and bounds.

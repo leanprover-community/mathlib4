@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials on an algebra over a field
 
@@ -231,7 +234,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 /-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
-    { l : K // l ∈ (minpoly F x.1).aroots K } :=
+    { l : K // l ∈ (minpoly F x.val).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩

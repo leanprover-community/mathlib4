@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Action.Monoidal
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linearization of `G`-sets as representations
 

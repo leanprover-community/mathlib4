@@ -199,7 +199,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
     [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
-    exact comap_mono h.1⟩
+    exact comap_mono h.borel_le⟩
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
@@ -324,7 +324,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds_def, iInf_subtype']
   refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
-  exact i.2.2.measurableSet.principal_isMeasurablyGenerated
+  exact i.property.2.measurableSet.principal_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
 each `a`. This cannot be an `instance` because it depends on a non-instance `hs : MeasurableSet s`.
@@ -689,7 +689,7 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
-    (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
+    (MeasurableEmbedding.subtypeVal h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=

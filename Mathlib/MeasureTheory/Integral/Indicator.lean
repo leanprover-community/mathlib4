@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about indicator functions, their integrals, and measures
 

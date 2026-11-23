@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Akra-Bazzi theorem: the polynomial growth condition
 

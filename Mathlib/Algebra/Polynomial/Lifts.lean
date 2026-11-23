@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Subring
 
 import Mathlib.Algebra.Polynomial.Monic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials that lift
 

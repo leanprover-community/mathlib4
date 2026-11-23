@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial sets
 
@@ -187,6 +190,13 @@ end adjunctions
 augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
+
+/-- Given `X : SSet`, this is the augmented simplicial set given by
+the natural transformation from `X` to the constant functor with value `PUnit`. -/
+abbrev toAugmented (X : SSet.{u}) : Augmented.{u} where
+  left := X
+  right := PUnit
+  hom.app _ := ↾fun _ ↦ .unit
 
 section applications
 variable {S : SSet}

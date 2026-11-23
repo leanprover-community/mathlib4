@@ -12,6 +12,9 @@ public import Mathlib.Topology.Instances.Nat
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.Order.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas around weak (pseudo) extended metric spaces.
 

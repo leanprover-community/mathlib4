@@ -800,13 +800,13 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         apply lt_of_le_of_lt (MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint _ M _) _
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
             hdj.mono (fun x ↦ inter_subset_right)
-          exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
+          exact I.on_injective Subtype.val_injective (fun x ↦ x.property)
         · exact lt_of_le_of_lt (measure_mono (by simp)) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
         refine eq_univ_iff_forall.2 fun i ↦ ?_
-        refine ne_of_gt (hρ (i : G) (hms i.2) _ ?_)
+        refine ne_of_gt (hρ (i : G) (hms i.property) _ ?_)
         exact inter_mem_nhdsWithin s (by simpa)
       rw [this] at C
       have : Countable m := countable_univ_iff.mp C

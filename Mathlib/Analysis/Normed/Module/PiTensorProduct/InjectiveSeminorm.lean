@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 
 import Mathlib.LinearAlgebra.Isomorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
 
@@ -67,6 +70,7 @@ theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
   apply LinearMap.mkContinuous_norm_le _ (by positivity)
 
+set_option linter.deprecated.syntax false in
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
@@ -97,7 +101,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-    (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
+    (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.val x := by
   simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
@@ -143,7 +147,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
       LinearMap.codRestrict_apply, f', f'₀]
     | add _ _ hx hy => simp only [map_add, Submodule.coe_add, hx, hy]
   suffices h : ‖lift f'.toMultilinearMap x‖ ≤ ‖f'‖ * injectiveSeminorm x by
-    change ‖(e (lift f'.toMultilinearMap x)).1‖ ≤ _ at h
+    change ‖(e (lift f'.toMultilinearMap x)).val‖ ≤ _ at h
     rw [heq] at h
     exact h.trans (by gcongr)
   have hle : Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
