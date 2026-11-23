@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # GCD domains are integrally closed
 -/
