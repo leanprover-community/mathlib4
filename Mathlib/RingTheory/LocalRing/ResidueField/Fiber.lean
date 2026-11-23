@@ -25,7 +25,6 @@ open Algebra TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
@@ -80,12 +79,12 @@ noncomputable def Fiber.algEquivQuotient :
     letI pSp := pRp.map (algebraMap Rp Sp)
     p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
   (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans
-    { __ := Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
+    (.ofCommutes (Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
         rw [← Ideal.map_coe includeRight, Ideal.map_map]
         congr
         ext
-        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
-      commutes' := by simp }
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl]))
+      (by simp))
 
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
 noncomputable def Fiber.algEquivAux₁ :
@@ -146,7 +145,8 @@ variable (R S) in
 noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     comap (algebraMap R S) ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
   toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
-    (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal (Algebra.ofId _ _) congr($(q.2.symm).asIdeal))
+    (Ideal.ResidueField.mapₐ p.asIdeal q.val.asIdeal (Algebra.ofId _ _)
+        congr($(q.property.symm).asIdeal))
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _).toRingHom, RingHom.ker_isPrime _⟩
   invFun q := ⟨q.comap Algebra.TensorProduct.includeRight.toRingHom, by
     simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← comap_comp_apply,
@@ -181,10 +181,12 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
     · intro H x hx
       obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
       rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
-      · replace hx : s ∈ q₁.1.asIdeal := by simpa using! hx
+      · replace hx : s ∈ q₁.val.asIdeal := by simpa using! hx
         simpa using! H hx
-      · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
-      · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
+      · rw [← q₂.property] at hr
+        simpa [IsScalarTower.algebraMap_apply R S q₂.val.asIdeal.ResidueField]
+      · rw [← q₁.property] at hr
+        simpa [IsScalarTower.algebraMap_apply R S q₁.val.asIdeal.ResidueField]
 
 variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
@@ -193,8 +195,9 @@ and the prime spectrum of `κ(p) ⊗[R] S`. -/
 noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
     p.primesOver S ≃o PrimeSpectrum (p.Fiber S) :=
-  .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
-    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+  .trans ⟨⟨fun q ↦ ⟨⟨q, q.property.1⟩, PrimeSpectrum.ext q.property.2.over.symm⟩,
+    fun q ↦ ⟨q.val.asIdeal, ⟨q.val.isPrime, ⟨congr($(q.property).asIdeal).symm⟩⟩⟩,
+    fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`
@@ -223,5 +226,5 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
 
 @[simp]
 theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply (q : PrimeSpectrum (p.Fiber S)) :
-    (primesOverOrderIsoFiber R S p).symm q = q.1.comap Algebra.TensorProduct.includeRight :=
+    (primesOverOrderIsoFiber R S p).symm q = q.asIdeal.comap Algebra.TensorProduct.includeRight :=
   rfl

@@ -82,7 +82,7 @@ theorem map_id (M : CStarMatrix m n A) : M.map id = M := by
 @[simp]
 theorem map_id' (M : CStarMatrix m n A) : M.map (·) = M := map_id M
 
-theorem map_map {C : Type*} {M : Matrix m n A} {f : A → B} {g : B → C} :
+theorem map_map {C : Type*} {M : CStarMatrix m n A} {f : A → B} {g : B → C} :
     (M.map f).map g = M.map (g ∘ f) := by ext; rfl
 
 theorem map_injective {f : A → B} (hf : Function.Injective f) :

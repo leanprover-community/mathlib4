@@ -64,7 +64,7 @@ structure. -/
 @[instance_reducible]
 def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
-  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
+  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.property)
   Fintype.ofFinset (s.toFinset.attach.biUnion fun x => (t x).toFinset) fun x => by simp
 
 instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
@@ -145,7 +145,7 @@ theorem Finite.biUnion' {ι} {s : Set ι} (hs : s.Finite) {t : ∀ i ∈ s, Set 
     (ht : ∀ i (hi : i ∈ s), (t i hi).Finite) : (⋃ i ∈ s, t i ‹_›).Finite := by
   have := hs.to_subtype
   rw [biUnion_eq_iUnion]
-  apply finite_iUnion fun i : s => ht i.1 i.2
+  apply finite_iUnion fun i : s => ht i.val i.property
 
 theorem Finite.biUnion {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).Finite) : (⋃ i ∈ s, t i).Finite :=
@@ -176,7 +176,8 @@ lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j 
     (⋃ i, s i).Finite ↔ (∀ i, (s i).Finite) ∧ {i | (s i).Nonempty}.Finite where
   mp h := by
     refine ⟨fun i ↦ h.subset <| subset_iUnion _ _, ?_⟩
-    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i := ⟨i.2.choose, mem_iUnion.2 ⟨i.1, i.2.choose_spec⟩⟩
+    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i :=
+      ⟨i.property.choose, mem_iUnion.2 ⟨i.val, i.property.choose_spec⟩⟩
     have u_inj : Function.Injective u := by
       rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
       ext
@@ -240,7 +241,7 @@ lemma Finite.of_finite_fibers (f : α → β) {s : Set α} (himage : (f '' s).Fi
 theorem finite_subset_iUnion {s : Set α} (hs : s.Finite) {ι} {t : ι → Set α} (h : s ⊆ ⋃ i, t i) :
     ∃ I : Set ι, I.Finite ∧ s ⊆ ⋃ i ∈ I, t i := by
   have := hs.to_subtype
-  choose f hf using show ∀ x : s, ∃ i, x.1 ∈ t i by simpa [subset_def] using h
+  choose f hf using show ∀ x : s, ∃ i, x.val ∈ t i by simpa [subset_def] using h
   refine ⟨range f, finite_range f, fun x hx => ?_⟩
   rw [biUnion_range, mem_iUnion]
   exact ⟨⟨x, hx⟩, hf _⟩
@@ -358,7 +359,7 @@ theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] 
   simp only [pi_def, biInter_eq_iInter, preimage_iUnion]
   have := hI.fintype.finite
   refine iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => ?_)
-  exact preimage_mono <| hs i i.2 h
+  exact preimage_mono <| hs i i.property h
 
 theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] [Finite ι]
     {α : ι → Type*} {s : ∀ i, ι' → Set (α i)} (hs : ∀ i, Monotone (s i)) :

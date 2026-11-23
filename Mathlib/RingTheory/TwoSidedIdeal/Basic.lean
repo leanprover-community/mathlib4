@@ -197,17 +197,17 @@ theorem smulMemClass_mulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R w
 
 @[deprecated (since := "2026-11-05")] alias instSMulMemClassMulOpposite := smulMemClass_mulOpposite
 
-instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
+instance : Add I where add x y := ⟨x.val + y.val, I.add_mem x.property y.property⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
-instance : SMul ℕ I where smul n x := ⟨n • x.1, I.nsmul_mem n x.2⟩
+instance : SMul ℕ I where smul n x := ⟨n • x.val, I.nsmul_mem n x.property⟩
 
-instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
+instance : Neg I where neg x := ⟨-x.val, I.neg_mem x.property⟩
 
-instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
+instance : Sub I where sub x y := ⟨x.val - y.val, I.sub_mem x.property y.property⟩
 
-instance : SMul ℤ I where smul n x := ⟨n • x.1, I.zsmul_mem n x.2⟩
+instance : SMul ℤ I where smul n x := ⟨n • x.val, I.zsmul_mem n x.property⟩
 
 instance addCommGroup : AddCommGroup I :=
   Function.Injective.addCommGroup _ Subtype.coe_injective

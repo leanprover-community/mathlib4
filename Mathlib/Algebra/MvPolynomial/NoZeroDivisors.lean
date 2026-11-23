@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir, Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+
+import Mathlib.Algebra.MvPolynomial.Division
 
 /-!
 # Multivariate polynomials over integral domains
