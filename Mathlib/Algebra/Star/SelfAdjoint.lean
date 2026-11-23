@@ -707,7 +707,7 @@ instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [Trivial
 /--
 All elements of a commutative star magma are normal.
 
-See {library_note}`lower instance priority`
+See {library_note}`lower instance priority`.
 -/
 instance (priority := 100) IsStarNormal.all [CommMagma R] [StarMul R] (x : R) :
     IsStarNormal x where

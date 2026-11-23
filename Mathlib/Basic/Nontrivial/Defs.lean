@@ -85,7 +85,7 @@ instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
 
 /--
-See {library_note}`lower instance priority`
+See {library_note}`lower instance priority`.
 
 Note that since this and `instNonemptyOfInhabited` are the most "obvious" way to find a nonempty
 instance if no direct instance can be found, we give this a higher priority than the usual `100`.

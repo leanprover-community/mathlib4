@@ -923,13 +923,13 @@ instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
 /--
 A Haar measure on a σ-compact space is σ-finite.
 
-See {library_note}`lower instance priority`
+See {library_note}`lower instance priority`.
 -/
 @[to_additive
 /--
 A Haar measure on a σ-compact space is σ-finite.
 
-See {library_note}`lower instance priority`
+See {library_note}`lower instance priority`.
 -/]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
