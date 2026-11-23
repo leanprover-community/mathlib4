@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
+
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -175,8 +176,10 @@ theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
-theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (h : d ≠ 0) :
+theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) (d : Nat) :
     mkRat n₁ d + mkRat n₂ d = mkRat (n₁ + n₂) d := by
+  rcases eq_or_ne d 0 with rfl | h
+  · simp
   rw [mkRat_add_mkRat _ _ h h, ← add_mul, mkRat_mul_right h]
 
 section Casts

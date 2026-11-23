@@ -103,7 +103,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
 
 @[macro_inline]
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
-  coe a := a.1
+  coe a := a.val
   coe_injective _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
@@ -114,7 +114,7 @@ scoped notation:max "𝔸ᶠ[" R ", " K "]" => FiniteAdeleRing R K
 variable {R K}
 
 lemma cofinite_mem_adicCompletionIntegers (a : FiniteAdeleRing R K) : ∀ᶠ v in Filter.cofinite,
-    a v ∈ v.adicCompletionIntegers K := a.2
+    a v ∈ v.adicCompletionIntegers K := a.property
 
 theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
   simpa [mem_adicCompletionIntegers] using a.cofinite_mem_adicCompletionIntegers
@@ -173,11 +173,11 @@ theorem isUnit_iff {a : 𝔸ᶠ[R, K]} :
   rw [RestrictedProduct.isUnit_iff]
   simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
     Filter.eventually_cofinite, not_and_or, Set.ofPred_or]
-  simpa using! fun _ _ ↦ a.2
+  simpa using! fun _ _ ↦ a.property
 
 theorem unitsEquiv_finite_valued_eq_one (a : 𝔸ᶠ[R, K]ˣ) :
-    ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).1 = 1 := by
-  filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun _ h ↦
+    ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).val = 1 := by
+  filter_upwards [(RestrictedProduct.unitsEquiv _ a).property] using fun _ h ↦
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
 theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v, a v ≠ 0)
@@ -187,7 +187,7 @@ theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v,
   exact ⟨ha₀, ha⟩
 
 theorem hasFiniteMulSupport_valued (a : 𝔸ᶠ[R, K]ˣ) :
-    (fun v ↦ Valued.v (a.1 v)).HasFiniteMulSupport := by
+    (fun v ↦ Valued.v (a.val v)).HasFiniteMulSupport := by
   simp only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq]
   exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one _
 

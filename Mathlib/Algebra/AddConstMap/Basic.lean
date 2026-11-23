@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
 
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
@@ -508,7 +508,7 @@ def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
   toFun f := ⟨fun x ↦ f ⟨Int.fract x, Int.fract_nonneg _, Int.fract_lt_one _⟩ + ⌊x⌋ • a, fun x ↦ by
     simp [add_one_zsmul, add_assoc]⟩
   invFun f x := f x
-  left_inv _ := by ext x; simp [Int.fract_eq_self.2 x.2, Int.floor_eq_zero_iff.2 x.2]
+  left_inv _ := by ext x; simp [Int.fract_eq_self.2 x.property, Int.floor_eq_zero_iff.2 x.property]
   right_inv f := by ext x; simp [map_fract]
 
 end FloorRing

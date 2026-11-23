@@ -5,8 +5,9 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.Kernels
+
+import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 /-!
 # Subcategories of abelian categories

@@ -93,8 +93,9 @@ lemma cardinal_eq_of_mem_nhds_zero
   have B : ∀ n, #(c ^ n • s :) = #s := by
     intro n
     have : (c ^ n • s :) ≃ s :=
-    { toFun := fun x ↦ ⟨(c ^ n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
-      invFun := fun x ↦ ⟨(c^n) • x.1, smul_mem_smul_set x.2⟩
+    { toFun := fun x ↦ ⟨(c ^ n)⁻¹ • x.val,
+        (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.property⟩
+      invFun := fun x ↦ ⟨(c^n) • x.val, smul_mem_smul_set x.property⟩
       left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel₀ (cn_ne n)]
       right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel₀ (cn_ne n)] }
     exact Cardinal.mk_congr this

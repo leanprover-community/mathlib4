@@ -89,7 +89,7 @@ lemma exists_mvPolynomial_eq_of_adjoin {R A σ : Type*}
     [CommSemiring R] [CommSemiring A] [Algebra R A]
     {S : Set A} {f : σ → A} (hS : S ⊆ Set.range f)
     (a : adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a :=
-  exists_mvPolynomial_aeval_eq_of_mem_adjoin hS a.2
+  exists_mvPolynomial_aeval_eq_of_mem_adjoin hS a.property
 
 /--
 Proving a fact about `a : R[x]` is the same as proving it for

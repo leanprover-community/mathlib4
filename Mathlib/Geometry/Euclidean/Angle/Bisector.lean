@@ -6,7 +6,8 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Projection
-public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+
+import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 
 /-!
 # Angle bisectors.

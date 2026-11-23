@@ -50,9 +50,9 @@ def continuousMapPresheafIsoUlift :
     continuousMapPresheaf T ≅
       Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj ↧(ULift T) :=
   NatIso.ofComponents fun U ↦ equivEquivIso <|
-    (ContinuousMap.uliftEquiv U.1 T).symm.trans
+    (ContinuousMap.uliftEquiv U.unop T).symm.trans
     (TopCat.Hom.equivContinuousMap
-      (TopCat.uliftFunctor.obj <| Scheme.forgetToTop.obj U.1)
+      (TopCat.uliftFunctor.obj <| Scheme.forgetToTop.obj U.unop)
       (TopCat.uliftFunctor.obj ↧T)).symm
 
 lemma isSheaf_zariskiTopology_continuousMapPresheaf :
@@ -78,7 +78,7 @@ lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     · refine Topology.IsQuotientMap.lift this x fun a b hfab ↦ ?_
       obtain ⟨c, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback a b hfab
       congrm $(h (pullback.fst (Spec.map f) (Spec.map f))
-       (pullback.snd _ _) pullback.condition).1 c
+       (pullback.snd _ _) pullback.condition).toFun c
     · apply Topology.IsQuotientMap.lift_comp
     · intro y hy
       rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
