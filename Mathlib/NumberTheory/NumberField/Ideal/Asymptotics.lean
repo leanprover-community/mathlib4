@@ -33,7 +33,7 @@ namespace NumberField.Ideal
 
 open scoped nonZeroDivisors Real
 
-open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule
+open Filter InfinitePlace mixedEmbedding fundamentalCone Submodule
 open NumberField.Units
 
 open scoped Topology
@@ -54,22 +54,13 @@ private theorem tendsto_norm_le_and_mk_eq_div_atTop_aux₁ (hJ : ClassGroup.mk0 
   exact fun _ ↦
     (mul_le_mul_iff_of_pos_left (Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))).symm
 
-open scoped Classical in
 private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
-    ↑({x | x ∈ (toMixed K) ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm ((toMixed K) x) ≤ s} ∩
-      (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
-        ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
-  rw [ZLattice.coe_comap]
-  refine (((toMixed K).toEquiv.image _).trans (Equiv.subtypeEquivProp ?_)).trans
-    (Equiv.subtypeSubtypeEquivSubtypeInter _ (mixedEmbedding.norm · ≤ s)).symm
-  ext
-  simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
-    mem_idealLattice, FractionalIdeal.coe_mk0]
-  constructor
-  · rintro ⟨_, ⟨⟨hx₁, hx₂⟩, _, ⟨x, hx₃, rfl⟩, h⟩, rfl⟩
-    exact ⟨⟨hx₁, x, hx₃, h⟩, hx₂⟩
-  · rintro ⟨⟨hx₁, ⟨x, hx₂, rfl⟩⟩, hx₃⟩
-    exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by simp [hx₂], rfl⟩⟩, rfl⟩
+    ↑({x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ s} ∩
+      (idealLattice K (FractionalIdeal.mk0 K J) : Set (mixedSpace K)))
+        ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} :=
+  (Set.equivOfEq (t := {x | x ∈ idealSet K J ∧ mixedEmbedding.norm x ≤ s})
+    (by ext; simp only [idealSet, Set.mem_inter_iff, Set.mem_ofPred_eq]; tauto)).trans
+    (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ idealSet K J) (mixedEmbedding.norm · ≤ s)).symm
 
 variable (C) in
 /--
@@ -83,20 +74,15 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K) /
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
-  have h₁ : ∀ s : ℝ,
-    {x | x ∈ toMixed K ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm (toMixed K x) ≤ s} =
-      toMixed K ⁻¹' {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ s} := fun _ ↦ rfl
   have h₂ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   have h₃ : (absNorm J.val : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
+  have h := (idealLattice K (FractionalIdeal.mk0 K J)).tendsto_card_le_div
+    MeasureTheory.volume (fun _ _ hx hr ↦ smul_mem_of_mem hx hr.ne')
+    (fun _ _ hr ↦ by rw [mixedEmbedding.norm_smul, mixedEmbedding.finrank, abs_of_nonneg hr])
+    (h₂ ▸ isBounded_normLeOne K) (h₂ ▸ measurableSet_normLeOne K) (h₂ ▸ volume_frontier_normLeOne K)
   convert!
-    ((ZLattice.covolume.tendsto_card_le_div'
-              (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
-                (toMixed K).toLinearMap)
-              (F := fun x ↦ mixedEmbedding.norm (toMixed K x)) (X :=
-              (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-              ((toMixed K).antilipschitzWith.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
-          (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
+    (h.mul_const ((absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹)).comp
       (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J)) using
     2 with s
   · simp_rw [Ideal.tendsto_norm_le_and_mk_eq_div_atTop_aux₁ K hJ, id_eq,
@@ -105,21 +91,14 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
       ← mul_assoc, mul_comm _ (torsionOrder K : ℝ)⁻¹, mul_comm _ (torsionOrder K : ℝ), mul_assoc]
     rw [inv_mul_cancel_left₀ (Nat.cast_ne_zero.mpr (torsionOrder_ne_zero K)), inv_mul_cancel₀ h₃,
       mul_one]
-  · rw [h₁, h₂, MeasureTheory.measureReal_def, (volumePreserving_toMixed K).measure_preimage
-      (measurableSet_normLeOne K).nullMeasurableSet, volume_normLeOne, ZLattice.covolume_comap
-      _ _ _ (volumePreserving_toMixed K), covolume_idealLattice, ENNReal.toReal_mul,
-      ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_pow, ENNReal.toReal_ofNat,
-      ENNReal.coe_toReal, NNReal.coe_real_pi, ENNReal.toReal_ofReal (regulator_pos K).le,
-      FractionalIdeal.coe_mk0, FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, div_eq_mul_inv,
-      div_eq_mul_inv, mul_inv, mul_inv, mul_inv, inv_pow, inv_inv]
+  · rw [h₂, MeasureTheory.measureReal_def, volume_normLeOne, covolume_idealLattice,
+      ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_pow,
+      ENNReal.toReal_ofNat, ENNReal.coe_toReal, NNReal.coe_real_pi,
+      ENNReal.toReal_ofReal (regulator_pos K).le, FractionalIdeal.coe_mk0,
+      FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, div_eq_mul_inv, div_eq_mul_inv, mul_inv,
+      mul_inv, mul_inv, inv_pow, inv_inv]
     ring_nf
     rw [mul_inv_cancel_right₀ h₃]
-  · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
-  · rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
-  · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
-  · rw [h₁, ← (toMixed K).coe_toHomeomorph, ← Homeomorph.preimage_frontier,
-      (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage
-      measurableSet_frontier.nullMeasurableSet, h₂, volume_frontier_normLeOne]
 
 /--
 The limit of the number of nonzero integral ideals of norm `≤ s` divided by `s` when `s → +∞`.

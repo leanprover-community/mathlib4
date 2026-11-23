@@ -122,6 +122,11 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
 theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
 
+@[simp]
+theorem _root_.Module.Basis.equiv_basisSingleOne (b : Basis ι R M) :
+    b.equiv Finsupp.basisSingleOne (Equiv.refl ι) = b.repr :=
+  b.ext' fun i ↦ by simp
+
 variable (ι R) in
 lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=
   Finsupp.basisSingleOne.linearIndependent

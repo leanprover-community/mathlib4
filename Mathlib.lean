@@ -825,6 +825,7 @@ public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.Algebra.Module.Lattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.Lattice.Full
 public import Mathlib.Algebra.Module.Lattice.Summable
@@ -2056,6 +2057,7 @@ public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.MetricSpace
 public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.Convex.NNReal
+public import Mathlib.Analysis.Convex.Parallelepiped
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
@@ -4817,6 +4819,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
+public import Mathlib.Geometry.Convex.Parallelepiped
 public import Mathlib.Geometry.Convex.Segment
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
@@ -5878,6 +5881,7 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Parallelepiped
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
