@@ -496,13 +496,13 @@ section semilinearEquivOfRingEquiv
 variable {A B : Type*} (K L : Type*) [CommRing A] [CommRing B] [CommRing K] [CommRing L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] (f : A ≃+* B)
 
-local instance : RingHomInvPair (f : A →+* B) f.symm :=
+local instance : RingHomInvPair f.toRingHom f.symm.toRingHom :=
   RingHomInvPair.of_ringEquiv f
 
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces a semilinear equivalence
 fraction rings `K ≃ₛₗ[f.toRingHom] L`. -/
-noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
+noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[f.toRingHom] L :=
 { ringEquivOfRingEquiv f with
   map_smul' r x := by simp [Algebra.smul_def] }
 
@@ -521,10 +521,10 @@ lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [CommRing M]
     [Algebra C M] [IsFractionRing C M] (g : B ≃+* C) :
-    let : RingHomCompTriple f (g : B →+* C) (f.trans g : A →+* C) := ⟨rfl⟩
-    let : RingHomCompTriple g.symm (f.symm : B →+* A) ((f.trans g).symm : C →+* A) := ⟨rfl⟩
+    let : RingHomCompTriple f.toRingHom g.toRingHom (f.trans g).toRingHom := ⟨rfl⟩
+    let : RingHomCompTriple g.symm.toRingHom f.symm.toRingHom (f.trans g).symm.toRingHom := ⟨rfl⟩
     (semilinearEquivOfRingEquiv K M (f.trans g)) =
-      LinearEquiv.trans (σ₁₃ := (f.trans g)) (σ₃₁ := (f.trans g).symm)
+      LinearEquiv.trans (σ₁₃ := (f.trans g).toRingHom) (σ₃₁ := (f.trans g).symm.toRingHom)
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a

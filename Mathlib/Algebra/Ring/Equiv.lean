@@ -848,12 +848,6 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 
--- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
-theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
-    (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
-  rfl
-
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   simp

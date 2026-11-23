@@ -538,7 +538,7 @@ def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ �
 
 @[simp]
 lemma mapAlgHom_apply [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂)
-    (x : MvPolynomial σ S₁) : mapAlgHom f x = map f x := rfl
+    (x : MvPolynomial σ S₁) : mapAlgHom f x = map f.toRingHom x := rfl
 
 @[simp]
 theorem mapAlgHom_id [Algebra R S₁] :
@@ -547,9 +547,8 @@ theorem mapAlgHom_id [Algebra R S₁] :
 
 @[simp]
 theorem toRingHom_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
-      (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
-  RingHom.mk_coe _ _ _ _ _
+    (mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂).toRingHom =
+      (map f.toRingHom : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) := rfl
 
 @[deprecated toRingHom_mapAlgHom (since := "2026-05-05")]
   alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
@@ -582,13 +581,20 @@ theorem aeval_def (p : MvPolynomial σ R) : aeval f p = eval₂ (algebraMap R S�
 theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (algebraMap R S₁) f p :=
   rfl
 
-theorem coe_aeval_eq_eval₂Hom : RingHomClass.toRingHom (aeval f) = eval₂Hom (algebraMap R S₁) f :=
+theorem ringHomOfClass_aeval_eq_eval₂Hom :
+    RingHom.ofClass (aeval f) = eval₂Hom (algebraMap R S₁) f :=
   rfl
 
+@[deprecated (since := "2026-11-23")] alias coe_aeval_eq_eval₂Hom :=
+  ringHomOfClass_aeval_eq_eval₂Hom
+
 @[simp]
-lemma coe_aeval_eq_eval :
-    RingHomClass.toRingHom (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁) = eval f :=
+lemma ringHomOfClass_aeval_eq_eval :
+    RingHom.ofClass (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁) = eval f :=
   rfl
+
+@[deprecated (since := "2026-11-23")] alias coe_aeval_eq_eval :=
+  ringHomOfClass_aeval_eq_eval
 
 @[simp]
 lemma aeval_eq_eval : (aeval f : MvPolynomial σ S₁ → S₁) = eval f := rfl
@@ -639,7 +645,7 @@ theorem map_aeval_eq_aeval_map {R₂ : Type*} [CommSemiring R₂] [Algebra R₂ 
 theorem aeval_range : (aeval f).range = Algebra.adjoin R (Set.range f) := by
   apply le_antisymm
   · rintro x ⟨p, rfl⟩
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
+    simp only [AlgHom.toRingHom_eq_ofClass, RingHom.coe_ofClass]
     induction p using induction_on with
     | C a => exact aeval_C f a ▸ Subsemiring.subset_closure (Or.inl (Set.mem_range_self a))
     | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
@@ -764,7 +770,7 @@ variable [Algebra S R] [Algebra S A]
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A) (X : σ → A) : MvPolynomial σ R →ₐ[S] A :=
-  { eval₂Hom (↑f) X with
+  { eval₂Hom f.toRingHom X with
     commutes' := fun r => by
       simp [IsScalarTower.algebraMap_eq S R (MvPolynomial σ R), algebraMap_eq] }
 
@@ -784,14 +790,14 @@ theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
   _root_.map_ofNat _ _
 
 @[simp]
-theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C = g :=
+theorem aevalTower_comp_C : (aevalTower g y).toRingHom.comp C = g.toRingHom :=
   RingHom.ext <| aevalTower_C _ _
 
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 
 theorem aevalTower_comp_algebraMap :
-    (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
+    (aevalTower g y).toRingHom.comp (algebraMap R (MvPolynomial σ R)) = g.toRingHom :=
   aevalTower_comp_C _ _
 
 theorem aevalTower_toAlgHom (x : R) :

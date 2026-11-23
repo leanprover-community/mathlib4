@@ -291,7 +291,7 @@ lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R 
   ext; simp
 
 @[simp] lemma rid_comp_includeLeftRingHom :
-    (Algebra.TensorProduct.rid R S A : A ⊗[R] R →+* A).comp includeLeftRingHom = .id A := by
+    (Algebra.TensorProduct.rid R S A).toRingHom.comp includeLeftRingHom = .id A := by
   ext; simp
 
 section
@@ -533,8 +533,8 @@ lemma mapRingHom_comp_includeLeftRingHom :
 
 @[simp]
 lemma mapRingHom_comp_includeRight :
-    (mapRingHom fR fS fT HS HT).comp (RingHomClass.toRingHom includeRight) =
-      (RingHomClass.toRingHom includeRight).comp fT := by ext; simp
+    (mapRingHom fR fS fT HS HT).comp includeRight.toRingHom =
+      includeRight.toRingHom.comp fT := by ext; simp
 
 end mapRingHom
 
@@ -574,8 +574,8 @@ theorem map_comp_includeLeft (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
   AlgHom.ext <| by simp
 
 @[simp] lemma map_comp_includeLeftRingHom (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
-    (map f g : A ⊗[R] B →+* C ⊗[R] D).comp includeLeftRingHom =
-      includeLeftRingHom.comp (f : A →+* C) := by ext; simp
+    (map f g).toRingHom.comp includeLeftRingHom =
+      includeLeftRingHom.comp f.toRingHom := by ext; simp
 
 @[simp]
 theorem map_restrictScalars_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] D) :

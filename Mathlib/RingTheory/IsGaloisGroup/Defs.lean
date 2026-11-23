@@ -116,7 +116,7 @@ theorem of_ringHom_surjective [hG : IsGaloisGroup G A B] [CommSemiring A']
 theorem of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
     (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
     IsGaloisGroup G A' B :=
-  .of_ringHom_surjective G A A' B e he e.surjective
+  .of_ringHom_surjective G A A' B e.toRingHom he e.surjective
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
