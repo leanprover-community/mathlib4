@@ -35,6 +35,20 @@ particular, this applies to discrete `M`.
 
 open Topology Module
 
+section Metric
+
+variable {G : Type*} [Group G] [MetricSpace G] [IsTopologicalGroup G] [ProperSpace G]
+
+/-- A discrete subgroup of a proper metric group meets every bounded set in a finite set. -/
+@[to_additive /-- A discrete additive subgroup of a proper metric group meets every bounded set
+in a finite set. -/]
+theorem SubgroupClass.finite_inter_of_isBounded {S : Type*} [SetLike S G] [SubgroupClass S G]
+    (H : S) [DiscreteTopology H] {s : Set G} (hs : Bornology.IsBounded s) : (s ∩ H).Finite :=
+  have h := SetLike.isDiscrete_iff_discreteTopology.mpr ‹DiscreteTopology H›
+  Metric.finite_isBounded_inter_isClosed h hs ((Subgroup.ofClass H).isClosed_of_isDiscrete h)
+
+end Metric
+
 variable {R : Type*} [CommRing R]
 
 namespace Submodule
