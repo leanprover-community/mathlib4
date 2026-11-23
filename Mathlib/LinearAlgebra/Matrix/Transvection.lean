@@ -336,20 +336,21 @@ namespace Pivot
 variable {R} {r : ℕ} (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) R)
 
 open Unit Sum TransvectionStruct
+open scoped Ring
 
 /-- A list of transvections such that multiplying on the left with these transvections will replace
 the last column with zeroes, when the last coefficient is a unit. -/
 noncomputable def listTransvecCol : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) R) :=
   List.ofFn fun i : Fin r =>
     transvection (inl i) (inr unit) <|
-      -M (inl i) (inr unit) * Ring.inverse (M (inr unit) (inr unit))
+      -M (inl i) (inr unit) * (M (inr unit) (inr unit))⁻¹ʳ
 
 /-- A list of transvections such that multiplying on the right with these transvections will replace
 the last row with zeroes, when the last coefficient is a unit. -/
 noncomputable def listTransvecRow : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) R) :=
   List.ofFn fun i : Fin r =>
     transvection (inr unit) (inl i) <|
-      -M (inr unit) (inl i) * Ring.inverse (M (inr unit) (inr unit))
+      -M (inr unit) (inl i) * (M (inr unit) (inr unit))⁻¹ʳ
 
 @[simp]
 theorem length_listTransvecCol : (listTransvecCol M).length = r := by simp [listTransvecCol]
@@ -358,7 +359,7 @@ theorem listTransvecCol_getElem {i : ℕ} (h : i < (listTransvecCol M).length) :
     (listTransvecCol M)[i] =
       letI i' : Fin r := ⟨i, length_listTransvecCol M ▸ h⟩
       transvection (inl i') (inr unit) <|
-        -M (inl i') (inr unit) * Ring.inverse (M (inr unit) (inr unit)) := by
+        -M (inl i') (inr unit) * (M (inr unit) (inr unit))⁻¹ʳ := by
   simp [listTransvecCol]
 
 @[simp]
@@ -368,7 +369,7 @@ theorem listTransvecRow_getElem {i : ℕ} (h : i < (listTransvecRow M).length) :
     (listTransvecRow M)[i] =
       letI i' : Fin r := ⟨i, length_listTransvecRow M ▸ h⟩
       transvection (inr unit) (inl i') <|
-        -M (inr unit) (inl i') * Ring.inverse (M (inr unit) (inr unit)) := by
+        -M (inr unit) (inl i') * (M (inr unit) (inr unit))⁻¹ʳ := by
   simp [listTransvecRow]
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
@@ -407,7 +408,7 @@ theorem listTransvecCol_mul_last_col (hM : IsUnit (M (inr unit) (inr unit))) (i 
     have A :
       (listTransvecCol M)[n] =
         transvection (inl n') (inr unit)
-          (-M (inl n') (inr unit) * Ring.inverse (M (inr unit) (inr unit))) := by
+          (-M (inl n') (inr unit) * (M (inr unit) (inr unit))⁻¹ʳ) := by
       simp [n', listTransvecCol]
     simp only [Matrix.mul_assoc, A, List.prod_cons]
     by_cases h : n' = i
@@ -446,7 +447,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
     have :
       (listTransvecRow M)[k]? =
         ↑(transvection (inr Unit.unit) (inl k')
-            (-M (inr Unit.unit) (inl k') * Ring.inverse (M (inr Unit.unit) (inr Unit.unit)))) := by
+            (-M (inr Unit.unit) (inl k') * (M (inr Unit.unit) (inr Unit.unit))⁻¹ʳ)) := by
       simp only [k', listTransvecRow, hkr, dite_eq_left, List.getElem?_ofFn]
     simp only [List.take_add_one, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
@@ -482,7 +483,7 @@ theorem mul_listTransvecRow_last_row (hM : IsUnit (M (inr unit) (inr unit))) (i 
     have A :
       (listTransvecRow M)[n]? =
         ↑(transvection (inr unit) (inl n')
-        (-M (inr unit) (inl n') * Ring.inverse (M (inr unit) (inr unit)))) := by
+        (-M (inr unit) (inl n') * (M (inr unit) (inr unit))⁻¹ʳ)) := by
       simp only [n', listTransvecRow, hnr, dite_eq_left, List.getElem?_ofFn]
     simp only [List.take_add_one, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
@@ -561,10 +562,10 @@ theorem exists_isTwoBlockDiagonal_and_last_eq_of_isUnit (hM : IsUnit (M (inr uni
           M (inr unit) (inr unit) := by
   let L : List (TransvectionStruct (Fin r ⊕ Unit) R) :=
     List.ofFn fun i : Fin r =>
-      ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) * Ring.inverse (M (inr unit) (inr unit))⟩
+      ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) * (M (inr unit) (inr unit))⁻¹ʳ⟩
   let L' : List (TransvectionStruct (Fin r ⊕ Unit) R) :=
     List.ofFn fun i : Fin r =>
-      ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) * Ring.inverse (M (inr unit) (inr unit))⟩
+      ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) * (M (inr unit) (inr unit))⁻¹ʳ⟩
   refine ⟨L, L', ?_⟩
   have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, Function.comp_def]
   have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, Function.comp_def]
