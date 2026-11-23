@@ -429,7 +429,7 @@ end convexBodySum
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Module ZSpan Real Submodule
+open MeasureTheory MeasureTheory.Measure Module Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
@@ -439,35 +439,40 @@ open scoped Classical in
 /-- The bound that appears in **Minkowski Convex Body theorem**, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
 `NumberField.mixedEmbedding.volume_fundamentalDomain_idealLatticeBasis_eq` and
-`NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis` for the computation of
+`NumberField.mixedEmbedding.volume_halfOpenParallelepiped_latticeBasis` for the computation of
 `volume (fundamentalDomain (idealLatticeBasis K))`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
-  volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) *
+  volume (halfOpenParallelepiped ℝ (fractionalIdealLatticeBasis K I)) *
     (2 : ℝ≥0∞) ^ (finrank ℝ (mixedSpace K))
 
 open scoped Classical in
-theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
-    volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
-      .ofReal (FractionalIdeal.absNorm I.val) * volume (fundamentalDomain (latticeBasis K)) := by
+theorem volume_halfOpenParallelepiped_fractionalIdealLatticeBasis :
+    volume (halfOpenParallelepiped ℝ (fractionalIdealLatticeBasis K I)) =
+      .ofReal (FractionalIdeal.absNorm I.val) *
+        volume (halfOpenParallelepiped ℝ (latticeBasis K)) := by
   let e : (Module.Free.ChooseBasisIndex ℤ I) ≃ (Module.Free.ChooseBasisIndex ℤ (𝓞 K)) := by
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,
       fractionalIdeal_rank]
-  rw [← fundamentalDomain_reindex (fractionalIdealLatticeBasis K I) e,
-    measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
-  · rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
+  rw [← halfOpenParallelepiped_comp_equiv (fractionalIdealLatticeBasis K I) e.symm,
+    addHaar_halfOpenParallelepiped_eq volume (latticeBasis K),
+    show (fractionalIdealLatticeBasis K I) ∘ e.symm = (mixedEmbedding K) ∘
         (basisOfFractionalIdeal K I) ∘ e.symm by
-      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
-    rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
+      ext1; simp only [Function.comp_apply, fractionalIdealLatticeBasis_apply],
+    mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
+
+@[deprecated (since := "2026-11-23")]
+alias volume_fundamentalDomain_fractionalIdealLatticeBasis :=
+  volume_halfOpenParallelepiped_fractionalIdealLatticeBasis
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
   -- FIXME: Make `finiteness` work all the way
-  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top (by finiteness)
+  exact ENNReal.mul_lt_top (isBounded_halfOpenParallelepiped _).measure_lt_top (by finiteness)
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
   -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.
-  ENNReal.mul_pos (by classical exact ZSpan.measure_fundamentalDomain_ne_zero _) <|
+  ENNReal.mul_pos (by classical exact addHaar_halfOpenParallelepiped_ne_zero volume _) <|
     ENNReal.pow_ne_zero two_ne_zero _
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
@@ -480,7 +485,8 @@ the computation of this volume), then there exists a nonzero algebraic number `a
 that `w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBodyLT K f)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund :=
+    (fractionalIdealLatticeBasis K I).isAddFundamentalDomain_halfOpenParallelepiped volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT_neg_mem K f) (convexBodyLT_convex K f) h
   rw [mem_span_fractionalIdealLatticeBasis] at hx
@@ -494,7 +500,8 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
     (h : minkowskiBound K I < volume (convexBodyLT' K f w₀)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
       |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund :=
+    (fractionalIdealLatticeBasis K I).isAddFundamentalDomain_halfOpenParallelepiped volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT'_neg_mem K f w₀) (convexBodyLT'_convex K f w₀) h
   rw [mem_span_fractionalIdealLatticeBasis] at hx
@@ -584,7 +591,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   -- Some inequalities that will be useful later on
   have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
   have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
-  have h_fund := ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have h_fund :=
+    (fractionalIdealLatticeBasis K I).isAddFundamentalDomain_halfOpenParallelepiped volume
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
       h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)
       (convexBodySum_compact K B) h
