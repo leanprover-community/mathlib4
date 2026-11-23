@@ -171,7 +171,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
   simp [mem_acceptsFrom]
 
 variable (M) in
-theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
+theorem cons_preimage_toSet_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.stepSet S a)).toSet := by
   ext x; simp [cons_mem_acceptsFrom M]
 
@@ -182,9 +182,14 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
   simp [mem_acceptsFrom]
 
 variable (M) in
-theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
+theorem append_preimage_toSet_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.evalFrom S x)).toSet := by
   ext y; simp [append_mem_acceptsFrom M]
+
+@[deprecated (since := "2026-11-23")]
+alias cons_preimage_acceptsFrom := cons_preimage_toSet_acceptsFrom
+@[deprecated (since := "2026-11-23")]
+alias append_preimage_acceptsFrom := append_preimage_toSet_acceptsFrom
 
 variable (M) in
 @[simp]

@@ -103,10 +103,10 @@ instance : One (Language α) where one := ofSet {[]}
 instance : Inhabited (Language α) where default := 0
 
 /-- The sum of two languages is their union. -/
-instance : Add (Language α) where add l m := ofSet (l.toSet ∪ m.toSet)
+instance : Add (Language α) where add := (· ⊔ ·)
 
 /-- The subtraction of two languages is their difference. -/
-instance : Sub (Language α) where sub l m := ofSet (l.toSet \ m.toSet)
+instance : Sub (Language α) where sub := (· \ ·)
 
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
@@ -191,20 +191,20 @@ instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
 instance instSemiring : Semiring (Language α) where
-  add_assoc _ _ _ := Language.ext (union_assoc ..)
-  zero_add _ := Language.ext (empty_union _)
-  add_zero _ := Language.ext (union_empty _)
-  add_comm _ _ := Language.ext (union_comm ..)
-  mul_assoc _ _ _ := Language.ext (image2_assoc append_assoc)
-  zero_mul _ := Language.ext image2_empty_left
-  mul_zero _ := Language.ext image2_empty_right
-  one_mul l := Language.ext (by simp)
-  mul_one l := Language.ext (by simp)
+  add_assoc _ _ _ := by ext1; exact union_assoc ..
+  zero_add _ := by ext1; exact empty_union _
+  add_zero _ := by ext1; exact union_empty _
+  add_comm _ _ := by ext1; exact union_comm ..
+  mul_assoc _ _ _ := by ext; simp
+  zero_mul _ := by ext; simp
+  mul_zero _ := by ext; simp
+  one_mul l := by ext; simp
+  mul_one l := by ext; simp
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
   natCast_succ n := by cases n <;> ext <;> simp
-  left_distrib _ _ _ := Language.ext image2_union_right
-  right_distrib _ _ _ := Language.ext image2_union_left
+  left_distrib _ _ _ := by ext1; exact image2_union_right
+  right_distrib _ _ _ := by ext1; exact image2_union_left
   nsmul := nsmulRec
 
 theorem add_self (l : Language α) : l + l = l :=
@@ -213,10 +213,10 @@ theorem add_self (l : Language α) : l + l = l :=
 /-- Maps the alphabet of a language. -/
 def map (f : α → β) : Language α →+* Language β where
   toFun l := ofSet (List.map f '' l.toSet)
-  map_zero' := Language.ext (image_empty _)
-  map_one' := Language.ext image_singleton
-  map_add' _ _ := Language.ext (image_union ..)
-  map_mul' _ _ := Language.ext (image_image2_distrib fun _ _ ↦ map_append)
+  map_zero' := by ext; simp
+  map_one' := by ext; simp
+  map_add' _ _ := by ext1; exact image_union ..
+  map_mul' _ _ := by ext; simp
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
@@ -225,15 +225,15 @@ theorem map_id (l : Language α) : map id l = l := by simp [map]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
 
-@[simp] lemma map_singleton (f : α → β) (x : List α) : map f {x} = {x.map f} :=
-  Language.ext image_singleton
+@[simp] lemma map_singleton (f : α → β) (x : List α) : map f {x} = {x.map f} := by
+  ext1; exact image_singleton
 
 /-- Pulls back the alphabet of a language along `f`. -/
 @[simps apply]
 def comap (f : α → β) : Language β →+ Language α where
   toFun l := ofSet (List.map f ⁻¹' l.toSet)
-  map_zero' := Language.ext preimage_empty
-  map_add' _ _ := Language.ext (preimage_union ..)
+  map_zero' := by ext; simp
+  map_add' _ _ := by ext; simp
 
 lemma mem_comap (f : α → β) (l : Language β) (x : List α) : x ∈ comap f l ↔ x.map f ∈ l := .rfl
 
@@ -312,7 +312,7 @@ theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
   rw [kstar_eq_iSup_pow, kstar_eq_iSup_pow]
   simp_rw [← map_pow]
-  apply Language.ext
+  ext
   simp [map, image_iUnion]
 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
@@ -389,8 +389,8 @@ lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
-lemma reverse_eq_image (l : Language α) : l.reverse = ofSet (List.reverse '' l.toSet) :=
-  Language.ext ((reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
+lemma reverse_eq_image (l : Language α) : l.reverse = ofSet (List.reverse '' l.toSet) := by
+  ext1; exact ((reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
 lemma toSet_reverse (l : Language α) : l.reverse.toSet = List.reverse ⁻¹' l.toSet :=
   rfl
@@ -401,8 +401,8 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 @[simp]
 lemma reverse_one : (1 : Language α).reverse = 1 := by ext; simp
 
-lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := fun _ ↦
-  Language.ext (List.reverse_involutive.preimage _)
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := fun _ ↦ by
+  ext; simp
 
 lemma reverse_bijective : Function.Bijective (reverse : Language α → _) :=
   reverse_involutive.bijective
@@ -421,20 +421,18 @@ lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse 
 
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
-  apply Language.ext
+  ext1
   simp only [toSet_mul, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
     List.reverse_append]
   apply image2_swap
 
 @[simp]
 lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse := by
-  apply Language.ext
-  simp [toSet_reverse, preimage_iUnion]
+  ext; simp [toSet_reverse]
 
 @[simp]
 lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse := by
-  apply Language.ext
-  simp [toSet_reverse, preimage_iInter]
+  ext; simp [toSet_reverse]
 
 variable (α) in
 /-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
