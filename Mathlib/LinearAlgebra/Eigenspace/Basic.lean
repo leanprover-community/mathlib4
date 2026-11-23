@@ -128,7 +128,7 @@ lemma genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} :
 
 lemma genEigenspace_eq_iSup_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞) :
     f.genEigenspace μ k = ⨆ l : {l : ℕ // l ≤ k}, f.genEigenspace μ l := by
-  simp_rw [genEigenspace_nat, genEigenspace_coe, iSup_subtype]
+  simp_rw [genEigenspace_nat, coe_genEigenspace, iSup_subtype]
 
 lemma genEigenspace_top (f : End R M) (μ : R) :
     f.genEigenspace μ ⊤ = ⨆ k : ℕ, f.genEigenspace μ k := by
