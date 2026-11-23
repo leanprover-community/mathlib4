@@ -167,7 +167,7 @@ theorem toBialgHom_eq_ofClass (f : A ≃ₐc[R] B) : f.toBialgHom = .ofClass f :
 @[deprecated (since := "2026-11-22")] alias toBialgHom_eq_coe := toBialgHom_eq_ofClass
 
 @[simp]
-theorem coe_toCoalgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
+theorem coe_toCoalgEquiv : ⇑(e : A ≃ₗc[R] B) = e :=
   rfl
 
 @[simp]
@@ -295,11 +295,13 @@ def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = Bial
   right_inv := BialgHom.ext_iff.1 h₁
 
 @[simp]
+theorem coe_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    ⇑(ofBialgHom f g h₁ h₂) = f := rfl
+
+@[simp]
 theorem toBialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).toBialgHom = f :=
   rfl
-
-@[deprecated (since := "2026-11-22")] alias coe_ofBialgHom := toBialgHom_ofBialgHom
 
 theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
