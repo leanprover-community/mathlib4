@@ -40,7 +40,7 @@ submodules.
 This is `TensorProduct.exists_finite_submodule_of_setFinite` for an arbitrary family of modules.
 -/
 theorem exists_finite_submodule_of_setFinite {R ι : Type*} [CommSemiring R] {E : ι → Type*}
-    [∀ i, AddCommGroup (E i)] [∀ i, Module R (E i)] (s : Set (⨂[R] i, E i)) (hs : s.Finite) :
+    [∀ i, AddCommMonoid (E i)] [∀ i, Module R (E i)] (s : Set (⨂[R] i, E i)) (hs : s.Finite) :
     ∃ (p : Π i, Submodule R (E i)), (∀ i, Module.Finite R (p i)) ∧ s ⊆ (mapIncl p).range := by
   simp_rw [Module.Finite.iff_fg]
   induction s, hs using Set.Finite.induction_on with
