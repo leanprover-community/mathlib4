@@ -5,9 +5,8 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Topology.Order.ProjIcc
-public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -162,15 +161,15 @@ def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
 theorem extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
     F.extend t x = f₀ x := by
   rw [← F.apply_zero]
-  exact ContinuousMap.congr_fun (Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
+  congrm $(Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t) (x : X) :
     F.extend t x = f₁ x := by
   rw [← F.apply_one]
-  exact ContinuousMap.congr_fun (Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
+  congrm $(Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
-  ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
+  congr($(Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x)
 
 @[simp]
 theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
@@ -239,9 +238,10 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
     (F.trans G) x =
       if h : (x.1 : ℝ) ≤ 1 / 2 then
-        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
+        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.2.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   show ite _ _ _ = _ by
     split_ifs <;>
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
@@ -489,9 +489,10 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G
     (x : I × X) :
     (F.trans G) x =
       if h : (x.1 : ℝ) ≤ 1 / 2 then
-        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
+        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.2.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   Homotopy.trans_apply _ _ _
 
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
@@ -599,9 +600,10 @@ def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : Homotopy
 theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
     (F.trans G) x =
       if h : (x.1 : ℝ) ≤ 1 / 2 then
-        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
+        F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.property.1, h⟩⟩, x.2)
       else
-        G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.2.2⟩⟩, x.2) :=
+        G (⟨2 * x.1 - 1,
+          unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.property.2⟩⟩, x.2) :=
   Homotopy.trans_apply _ _ _
 
 theorem symm_trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) :
@@ -620,7 +622,7 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
 @[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
     (g.comp f₀).HomotopyRel (g.comp f₁) S where
   toHomotopy := .comp (.refl g) F.toHomotopy
-  prop' t x hx := congr_arg g (F.prop t x hx)
+  prop' t x hx := congr(g $(F.prop t x hx))
 
 end HomotopyRel
 
@@ -636,7 +638,7 @@ variable {S : Set X}
 
 /-- If two maps are homotopic relative to a set, then they are homotopic. -/
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
-  h.map fun F ↦ F.1
+  h.map fun F ↦ F.toHomotopy
 
 /-- If two maps are homotopic relative to a set, then they agree on it. -/
 theorem fst_eq_snd ⦃f₀ f₁ : C(X, Y)⦄ (h : HomotopicRel f₀ f₁ S) {x : X} (hx : x ∈ S) :

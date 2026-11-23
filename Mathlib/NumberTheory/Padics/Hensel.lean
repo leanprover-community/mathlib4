@@ -5,11 +5,12 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Identities
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+import Mathlib.Algebra.Polynomial.Identities
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
 # Hensel's lemma on `ℤ_p`
@@ -206,7 +207,6 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     _ < ‖F.derivative.aeval a‖ := (mul_lt_iff_lt_one_right (deriv_norm_pos hnorm)).2
       (T_pow' hnorm _)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = Padic.lift _ h1) :
     ∃ q : ℤ_[p], F.aeval z' = q * z1 ^ 2 := by
@@ -266,22 +266,21 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
 
 private def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
   | 0 => ⟨a, ih_0 hnorm⟩
-  | k + 1 => ih_n hnorm (newton_seq_aux k).2
+  | k + 1 => ih_n hnorm (newton_seq_aux k).property
 
 private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
-  (newton_seq_aux hnorm n).1
+  (newton_seq_aux hnorm n).val
 
 local notation "newton_seq" => newton_seq_gen hnorm
 
 private theorem newton_seq_deriv_norm (n : ℕ) :
     ‖F.derivative.aeval (newton_seq n)‖ = ‖F.derivative.aeval a‖ :=
-  (newton_seq_aux hnorm n).2.1
+  (newton_seq_aux hnorm n).property.1
 
 private theorem newton_seq_norm_le (n : ℕ) :
     ‖F.aeval (newton_seq n)‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n :=
-  (newton_seq_aux hnorm n).2.2
+  (newton_seq_aux hnorm n).property.2
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_norm_eq (n : ℕ) :
     ‖newton_seq (n + 1) - newton_seq n‖ =
     ‖F.aeval (newton_seq n)‖ / ‖F.derivative.aeval (newton_seq n)‖ := by
@@ -402,7 +401,6 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_dist_to_a :
     ∀ n : ℕ, 0 < n → ‖newton_seq n - a‖ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖
   | 1, _h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]

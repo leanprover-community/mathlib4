@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # `NonUnitalSubring`s
@@ -366,7 +365,7 @@ open NonUnitalRingHom
 
 /-- The ring homomorphism associated to an inclusion of `NonUnitalSubring`s. -/
 def inclusion {S T : NonUnitalSubring R} (h : S ≤ T) : S →ₙ+* T :=
-  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.2
+  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.property
 
 end NonUnitalSubring
 

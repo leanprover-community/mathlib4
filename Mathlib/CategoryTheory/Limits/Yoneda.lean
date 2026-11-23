@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit properties relating to the (co)yoneda embedding.
 
@@ -42,7 +45,6 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app _ := ↾fun _ ↦ by cat_disch }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -78,7 +80,6 @@ section
 
 variable {J : Type w} [Category.{t} J]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
@@ -125,7 +126,6 @@ noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
@@ -213,10 +213,11 @@ instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := 
 
 instance [LocallySmall.{w'} C] :
     PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
-  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
-    have := preservesLimitsOfShape_of_natIso (J := J) (Functor.associator _ _ _ ≪≫
-      shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor.{w'} K).symm
-    exact preservesLimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}⟩)
+  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦
+    have := preservesLimitsOfShape_of_natIso (J := J)
+      (shrinkCoyonedaObjCompUliftFunctorIso.{w'} K).symm
+    preservesLimitsOfShape_of_reflects_of_preserves
+      (shrinkCoyoneda.{w'}.obj K) uliftFunctor.{v}⟩)
 
 namespace Functor
 

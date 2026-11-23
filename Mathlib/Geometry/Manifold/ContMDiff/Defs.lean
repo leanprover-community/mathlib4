@@ -117,7 +117,7 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert! (h.comp_inter _ (this.of_le hmn)).mono_of_mem_nhdsWithin _ using 1
+    convert (h.comp_inter _ (this.of_le hmn)).mono_of_mem_nhdsWithin _ using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -134,7 +134,7 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
       simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-    convert! (this.of_le hmn).comp _ h _
+    convert (this.of_le hmn).comp _ h _
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
@@ -216,7 +216,7 @@ def ContMDiff (n : ℕ∞ω) (f : M → M') :=
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
     ContMDiffWithinAt I I' m f s x := by
   simp only [ContMDiffWithinAt] at hf ⊢
-  exact ⟨hf.1, hf.2.of_le (mod_cast le)⟩
+  exact ⟨hf.continuousWithinAt, hf.prop.of_le (mod_cast le)⟩
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
   ContMDiffWithinAt.of_le hf le
@@ -314,7 +314,6 @@ theorem continuousWithinAt_iff_source :
       simp [this]
     · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffWithinAt_iff_source :
@@ -394,7 +393,6 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I n M
           ((e.extend I).symm ⁻¹' s ∩ range I) (e.extend I x) :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An alternative version of `contMDiffWithinAt_iff_of_mem_maximalAtlas` which takes a
 chart `e'` in the target in the maximal atlas, but uses the preferred chart on the domain. -/
 theorem contMDiffWithinAt_iff_of_mem_maximalAtlas'
@@ -525,14 +523,14 @@ theorem contMDiffOn_iff [IsManifold I n M] [IsManifold I' n M'] :
               (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) := by
   constructor
   · intro h
-    refine ⟨fun x hx => (h x hx).1, fun x y z hz => ?_⟩
+    refine ⟨fun x hx => (h x hx).continuousWithinAt, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
     have : w ∈ s := by simp only [w, hz, mfld_simps]
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert! ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
@@ -620,9 +618,9 @@ theorem ContMDiff.of_succ (h : ContMDiff I I' (n + 1) f) : ContMDiff I I' n f :=
 
 /-! ### `C^n` functions are continuous -/
 
-theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
+nonrec theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
     ContinuousWithinAt f s x :=
-  hf.1
+  hf.continuousWithinAt
 
 theorem ContMDiffAt.continuousAt (hf : ContMDiffAt I I' n f x) : ContinuousAt f x :=
   (continuousWithinAt_univ _ _).1 <| ContMDiffWithinAt.continuousWithinAt hf
@@ -637,8 +635,8 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 theorem contMDiffWithinAt_infty :
     ContMDiffWithinAt I I' ∞ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
-  ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
+  ⟨fun h n => ⟨h.continuousWithinAt, contDiffWithinAt_infty.1 h.prop n⟩, fun H =>
+    ⟨(H 0).continuousWithinAt, contDiffWithinAt_infty.2 fun n => (H n).prop⟩⟩
 
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
@@ -783,7 +781,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   -- Then `(extChartAt I x).symm '' v` is the neighborhood we are looking for.
   refine ⟨(extChartAt I x).symm '' v, ?_, ?_⟩
   · rw [← map_extChartAt_symm_nhdsWithin (I := I),
-      h.1.nhdsWithin_extChartAt_symm_preimage_inter_range (I := I) (I' := I')]
+      h.continuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range (I := I) (I' := I')]
     exact image_mem_map hmem
   · have hv₁ : (extChartAt I x).symm '' v ⊆ (extChartAt I x).source :=
       image_subset_iff.2 fun y hy ↦ (extChartAt I x).map_target (hsub hy).1

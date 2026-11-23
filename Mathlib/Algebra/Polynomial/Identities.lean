@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Identities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
@@ -64,5 +67,6 @@ end Polynomial
 @[deprecated powAddExpansion (since := "2026-09-10")]
 alias Polynomial.powAddExpansion := powAddExpansion
 
-@[deprecated powSubPowFactor (since := "2026-09-10")]
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated "Use `geom_sum₂_mul` instead." (since := "2026-09-10")]
 alias Polynomial.powSubPowFactor := powSubPowFactor

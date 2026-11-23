@@ -5,8 +5,9 @@ Authors: John Nicol, Haobo Ma, Wenlin Zhang
 -/
 module
 
-public import Mathlib.Data.ZMod.Factorial
 public import Mathlib.FieldTheory.Finite.Basic
+
+import Mathlib.Data.ZMod.Factorial
 
 /-!
 # Wilson's theorem.
@@ -101,8 +102,7 @@ theorem half_factorial_sq_eq_neg_one (hp : p % 4 ≠ 3) :
 theorem prod_Ico_one_prime : ∏ x ∈ Ico 1 p, (x : ZMod p) = -1 := by
   -- Porting note: was `conv in Ico 1 p =>`
   conv =>
-    congr
-    congr
+    enter [1, 1]
     rw [← Nat.add_one_sub_one p, succ_sub (Fact.out (p := p.Prime)).pos]
   rw [← prod_natCast, Finset.prod_Ico_id_eq_factorial, wilsons_lemma]
 

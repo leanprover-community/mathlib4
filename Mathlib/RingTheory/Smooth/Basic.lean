@@ -5,14 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Unramified.Basic
 
-/-!
+import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
+/-!
 # Smooth morphisms
 
 An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.
@@ -43,7 +42,6 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
   `H¹(L_{A/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
 - `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
   the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
-
 -/
 
 @[expose] public section
@@ -108,7 +106,6 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     simpa using! (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P := Generators.mvPolynomial R σ
   have : Subsingleton ↥P.toExtension.ker :=
@@ -133,12 +130,12 @@ theorem exists_lift
   · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
   · intro B _ I J hIJ h₁ h₂ _ g
     let : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
-      { (DoubleQuot.quotQuotEquivQuotSup I J).trans
-          (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
-        commutes' := fun x => rfl }
+      .ofCommutes ((DoubleQuot.quotQuotEquivQuotSup I J).trans
+          (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)))
+        fun x => rfl
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
     obtain ⟨g', rfl⟩ := h₁ g'
-    replace e := congr_arg this.toAlgHom.comp e
+    replace e := congr(this.toAlgHom.comp $e)
     conv_rhs at e =>
       rw [← AlgHom.comp_assoc, AlgEquiv.comp_symm, AlgHom.id_comp]
     exact ⟨g', e⟩
@@ -157,7 +154,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
+  congr($(FormallySmooth.comp_lift I hI g) x)
 
 variable {C : Type*} [CommRing C] [Algebra R C]
 
@@ -294,7 +291,7 @@ theorem iff_split_injection
   rw [formallySmooth_iff, and_comm,
     Module.Projective.iff_split_of_projective (KaehlerDifferential.mapBaseChange R P A)
       (mapBaseChange_surjective R P A hf), ← kerCotangentToTensor_injective_iff hf]
-  convert!
+  convert
     (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae' (g :=
           (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out
       1 2) using 2
@@ -409,7 +406,8 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective _ _ I hI (f.comp (IsScalarTower.toAlgHom R A B))
   let := f'.toRingHom.toAlgebra
-  obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI { f with commutes' := AlgHom.congr_fun e.symm }
+  obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI
+    { f.toRingHom with commutes' := AlgHom.congr_fun e.symm }
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
 
@@ -419,7 +417,7 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallySmooth R B] :
   algebraize [(algebraMap A C).comp (algebraMap R A)]
   obtain ⟨g, hg⟩ := Algebra.FormallySmooth.comp_surjective _ _ I hI (f.restrictScalars R)
   suffices g.comp (IsScalarTower.toAlgHom R A B) = IsScalarTower.toAlgHom R A C from
-    ⟨{ __ := g, commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
+    ⟨{ g.toRingHom with commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
   apply Algebra.FormallyUnramified.comp_injective _ hI
   rw [← AlgHom.comp_assoc, hg]
   exact AlgHom.ext f.commutes
@@ -484,7 +482,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   have : ∀ x : M, IsUnit (algebraMap R Q x) := by
     intro x
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
-    convert! (IsLocalization.map_units Rₘ x).map f
+    convert (IsLocalization.map_units Rₘ x).map f
     simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
   let : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
@@ -504,7 +502,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   let := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   let : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
+    refine { (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R)).toRingHom with commutes' := ?_ }
     intro r
     change
       (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)

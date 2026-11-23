@@ -5,12 +5,15 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
-public import Mathlib.CategoryTheory.Abelian.Indization
-public import Mathlib.CategoryTheory.Limits.Indization.Category
-public import Mathlib.CategoryTheory.Generator.Indization
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Abelian.Indization
+
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
+import Mathlib.CategoryTheory.Generator.Indization
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # AB axioms in the category of ind-objects

@@ -5,13 +5,8 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.WithConv
 public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-! # Intrinsic star operation on linear maps
@@ -286,6 +281,7 @@ theorem mem_eigenspace_intrinsicStar_iff (f : WithConv (End R V)) (α : R) (x : 
     x ∈ (star f).ofConv.eigenspace α ↔ star x ∈ f.ofConv.eigenspace (star α) := by
   simp_rw [mem_eigenspace_iff, intrinsicStar_apply, star_eq_iff_star_eq, star_smul, eq_comm]
 
+open scoped Pointwise in
 @[simp]
 theorem spectrum_intrinsicStar (f : WithConv (End R V)) :
     spectrum R (star f).ofConv = star (spectrum R f.ofConv) := by

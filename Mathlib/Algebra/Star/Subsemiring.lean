@@ -5,8 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Star.NonUnitalSubsemiring
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Star subrings

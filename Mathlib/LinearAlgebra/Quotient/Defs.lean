@@ -22,7 +22,6 @@ public import Mathlib.Logic.Small.Basic
 * `Submodule.Quotient.module`: `M ⧸ p` is a module
 * `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
-
 -/
 
 @[expose] public section
@@ -116,15 +115,15 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
-  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+  smul_comm _x _y := Quotient.ind' fun _z => congr(mk $(smul_comm ..))
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
-  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+  smul_assoc _x _y := Quotient.ind' fun _z => congr(mk $(smul_assoc ..))
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr(mk $(op_smul_eq_smul ..))
 
 end SMul
 

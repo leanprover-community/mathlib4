@@ -6,9 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.FunLike.IsApply
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Relation isomorphisms form a group
@@ -105,8 +104,8 @@ variable [Preorder α]
 
 instance : Mul (α →o α) where mul f g := f.comp g
 instance : One (α →o α) where one := .id
-instance : IsMulApplyEqComp (α →o α) α where
-instance : IsOneApplyEqSelf (α →o α) α where
+instance : IsMulApplyEqComp (α →o α) where
+instance : IsOneApplyEqSelf (α →o α) where
 
 lemma mul_eq_comp (f g : α →o α) : (f * g : α →o α) = f.comp g := rfl
 lemma one_eq_id : (1 : α →o α) = .id := rfl

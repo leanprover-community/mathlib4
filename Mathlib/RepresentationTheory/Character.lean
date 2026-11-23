@@ -5,10 +5,11 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Characters of representations
@@ -132,7 +133,7 @@ end Group
 section Orthogonality
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+  [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]
@@ -143,6 +144,8 @@ algebraically closed field whose characteristic doesn't divide the order of the 
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
+  have := ρ.asModuleEquiv.finiteDimensional
+  have := σ.asModuleEquiv.finiteDimensional
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa [finrank_eq_zero_of_subsingleton]
@@ -223,7 +226,7 @@ equivariant maps from `V` to `W`.
 theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
-  conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
+  conv_lhs => enter [2, 2, _]; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']

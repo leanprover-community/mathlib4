@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+
 import Mathlib.Topology.MetricSpace.Infsep
 
 /-!

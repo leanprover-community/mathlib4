@@ -5,10 +5,11 @@ Authors: Felix Weilacher
 -/
 module
 
-public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.MetricSpace.Polish
-public import Mathlib.Topology.MetricSpace.CantorScheme
-public import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Topology.Perfect
+
+import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets
@@ -48,11 +49,11 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
     exact ⟨ne_of_gt ε_pos, by simp⟩
   have := hC.closure_nhds_inter x xC this Metric.isOpen_eball
   refine ⟨this.1, this.2, ?_, ?_⟩
-  · rw [IsClosed.closure_subset_iff hC.closed]
+  · rw [IsClosed.closure_subset_iff hC.isClosed]
     apply inter_subset_right
   rw [Metric.ediam_closure]
   apply le_trans (Metric.ediam_mono inter_subset_left)
-  convert! Metric.ediam_eball_le (x := x)
+  convert Metric.ediam_eball_le (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> simp
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
@@ -94,7 +95,7 @@ theorem Perfect.exists_nat_bool_injection
       exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by
-    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.isClosed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1
@@ -109,9 +110,9 @@ theorem Perfect.exists_nat_bool_injection
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
     cases x n
-    · convert! (h0 _ _ _).2.2.2
+    · convert (h0 _ _ _).2.2.2
       rw [PiNat.res_length]
-    convert! (h1 _ _ _).2.2.2
+    convert (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction

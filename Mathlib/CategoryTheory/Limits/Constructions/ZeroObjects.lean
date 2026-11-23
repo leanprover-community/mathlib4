@@ -5,8 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits involving zero objects

@@ -5,11 +5,11 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Quotient
 public import Mathlib.Algebra.Group.Action.Opposite
-public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Quotient
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Cosets
@@ -131,11 +131,11 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -257,6 +257,14 @@ theorem preimage_mk_one (N : Subgroup α) :
     mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
   rw [← image_singleton, preimage_image_mk_eq_mul]
   simp
+
+@[to_additive (attr := simp)]
+theorem mk_eq_one_iff : (a : α ⧸ s) = (1 : α) ↔ a ∈ s := by
+  simpa using congr(a ∈ $(preimage_mk_one s))
+
+@[to_additive (attr := simp)]
+theorem out_mem_iff {a : α ⧸ s} : a.out ∈ s ↔ a = (1 : α) := by
+  rw [← mk_eq_one_iff, out_eq']
 
 end QuotientGroup
 

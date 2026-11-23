@@ -12,9 +12,7 @@ public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
-
 # The root system base associated to a Lie algebra basis
-
 -/
 
 @[expose] public section
@@ -105,7 +103,7 @@ def baseSupportEquiv : ι ≃ b.base.support :=
     coroot (b.baseSupportEquiv i) = b.h' i := by
   let := b.isCartanSubalgebra
   suffices b.h' i ∈ corootSpace (b.baseSupp' i) by
-    have _i : IsAddTorsionFree L := .of_isTorsionFree K L
+    have _i : HasUniqueDiv L := .of_isTorsionFree K L
     exact (eq_coroot_of_mem_corootSpace_of_two (b.baseSupp' i).val this (by simp [baseSupp'])).symm
   have h_mem : ⁅b.e i, b.f i⁆ ∈ H := by
     nth_rw 1 [(b.sl2 i).lie_e_f, b.cartan_eq_lieSpan]
@@ -169,8 +167,19 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
       rintro - ⟨i, rfl⟩
       simpa only [← (ef_sl2 i).lie_e_f, SetLike.mem_coe] using lie_mem _ (e_mem_S i) (f_mem_S i)
     simpa [H_le]
+  #adaptation_note /-- nightly-2026-10-07
+  The `suffices` proof here was previously solved by `grind`. Previously, `grind` did not introduce
+  any arguments because of the `noImplicitLambda` metadata produced by `have` / `suffices`.
+  This lead to a variable `α : H.root` in scope which `grind` could use in `h`. However, after
+  https://github.com/leanprover/lean4/pull/15745, `grind` simply introduces the subtype `H.root`
+  with `cases eager Subtype`, leading to no value of type `α : H.root` being in scope and instead
+  only its components `val : Weight K (↥H) L` and `property : val ∈ {α | ¬α.IsZero}`. Because it
+  eagerly reduces the `Subtype.val` application in the goal here, it ends up not being able to
+  match against `h`, causing it to fail.
+  -/
   suffices h : ∀ α : H.root,
-    rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule by grind
+      rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule from
+    fun α => (h α).1
   refine fun α ↦ b.induction_add (p := fun α ↦
     rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule) α ?_ ?_ ?_
   · rintro β hβ
@@ -195,7 +204,7 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
         exact mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L _ _ (e_mem ⟨j, hj⟩) hx
       simpa [toSubmodule_rootSpace_eq_span _ (H.isNonZero_coe_root k) _ hlie hmem] using
         lie_mem S (e_mem_S ⟨j, hj⟩) (hip hx)
-    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using DFunLike.congr_fun hk x
+    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using congr($hk x)
       replace hk : (⇑(-i).val + ⇑(-j).val) = ⇑(-k).val := by simp [hk, -neg_add_rev, neg_add]
       have h_ne_bot : rootSpace H (⇑(-j).val + ⇑(-i).val) ≠ ⊥ := by
         rw [add_comm, hk]; exact (-k).val.genWeightSpace_ne_bot

@@ -6,13 +6,15 @@ Authors: Paul Reichert
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-public import Mathlib.CategoryTheory.Limits.HasLimits
+
+import Mathlib.CategoryTheory.Abelian.Subobject
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Grothendieck categories
 
 This file defines Grothendieck categories and proves basic facts about them.
@@ -40,7 +42,6 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 ## References
 
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
-
 -/
 
 public section

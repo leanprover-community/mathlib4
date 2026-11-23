@@ -6,7 +6,6 @@ Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 module
 
 public import Mathlib.RingTheory.Bialgebra.Convolution
-public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
@@ -158,7 +157,8 @@ lemma isGroupLikeElem_of (m : M) : IsGroupLikeElem R (of A M m) := isGroupLikeEl
 /-- The `R`-bialgebra map from the group algebra on the group-like elements of `A` to `A`. -/
 @[expose, simps!]
 def liftGroupLikeBialgHom : R[GroupLike R A] →ₐc[R] A :=
-  .ofAlgHom (lift R A (GroupLike R A) { toFun g := g.1, map_one' := by simp, map_mul' := by simp })
+  .ofAlgHom
+    (lift R A (GroupLike R A) { toFun g := g.val, map_one' := by simp, map_mul' := by simp })
     (by ext; simp) (by ext; simp)
 
 variable (R A M) in
@@ -289,7 +289,7 @@ def mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) : G →* H where
 lemma single_mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) (g : G) (r : R) :
     single (mapDomainOfBialgHom f g) r = f (single g r) := by
   rw [← mul_one r, ← smul_eq_mul, ← smul_single, ← smul_single, map_smul]
-  exact congr(r • $(single_mapDomainOfBialgHomFun_one f g))
+  congrm r • $(single_mapDomainOfBialgHomFun_one f g)
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) :

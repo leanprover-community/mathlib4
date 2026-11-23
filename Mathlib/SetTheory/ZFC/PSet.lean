@@ -5,10 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Aesop
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.SetNotation
-public import Aesop
-public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -157,14 +156,6 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨b, cb⟩ := γβ c
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
-
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
-  Iff.rfl
-
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
-  Iff.rfl
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
@@ -361,7 +352,7 @@ def omega : PSet :=
 
 /-- The pre-set separation operation `{x ∈ a | p x}` -/
 protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
-  ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩
+  ⟨{ a // p (x.Func a) }, fun y => x.Func y.val⟩
 
 instance : Sep PSet PSet :=
   ⟨PSet.sep⟩
@@ -374,7 +365,7 @@ theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨p, fun y => x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p => ⟨p, fun y => x.Func y.val⟩⟩
 
 @[simp]
 theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x

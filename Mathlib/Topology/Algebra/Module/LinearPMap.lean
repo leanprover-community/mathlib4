@@ -6,7 +6,6 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.Topology.Algebra.Module.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-!
@@ -145,7 +144,7 @@ structure HasCore (f : E →ₗ.[R] F) (S : Submodule R E) : Prop where
 
 theorem hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
     (f.domRestrict S).closure = f :=
-  h.2
+  h.closure_eq
 
 /-- For every unbounded operator `f` the submodule `f.domain` is a core of its closure.
 

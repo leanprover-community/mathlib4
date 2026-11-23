@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Presentable.IsDiscrete
 
 /-!
 # Comma categories are accessible
@@ -42,7 +43,6 @@ identify to `f.right`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 universe w
@@ -65,7 +65,7 @@ variable [F₁.IsCardinalAccessible κ]
   [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
@@ -185,11 +185,11 @@ variable {F₁ F₂} (f : Comma F₁ F₂)
 where both the first and second objects of `g` are `κ`-presentable. -/
 private abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `X ⟶ f.left`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `X ⟶ f.left`
 where `X` is `κ`-presentable. -/
 private abbrev J₁ := CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `Y ⟶ f.right`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `Y ⟶ f.right`
 where `Y` is `κ`-presentable. -/
 private abbrev J₂ := CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right
 
@@ -216,7 +216,7 @@ definitional properties.) -/
 private def π₁ : J κ f ⥤ J₁ κ f where
   obj g := g.fst
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
-    (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).left)
 
 /-- The second projection `J κ f ⥤ J₂ κ f`. (Note: this functor could be
 defined using `CostructuredArrow.map₂`, but it would not have the same
@@ -225,7 +225,7 @@ definitional properties.) -/
 private def π₂ : J κ f ⥤ J₂ κ f where
   obj g := g.snd
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
-    (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).right)
 
 variable {κ f}
 
@@ -412,9 +412,9 @@ private instance : (π₂ κ f).Final := by
 instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
   isDenseAt f :=
     ⟨Comma.fstSndJointlyReflectColimit
-      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).invFun
         ((isCardinalPresentable C₁ κ).ι.denseAt f.left))
-      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).invFun
         ((isCardinalPresentable C₂ κ).ι.denseAt f.right))⟩
 
 end isCardinalAccessibleCategory

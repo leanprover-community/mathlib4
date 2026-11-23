@@ -5,11 +5,9 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Functor
-public import Mathlib.CategoryTheory.Shift.Adjunction
-public import Mathlib.CategoryTheory.Adjunction.Additive
-public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+
+import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
 # The adjoint functor is triangulated
@@ -30,7 +28,6 @@ is triangulated as soon as one of the adjoint functors is triangulated.
 We finally specialize these structures to equivalences of categories, and prove that,
 if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
-
 -/
 
 public section
@@ -51,7 +48,6 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
-set_option backward.defeqAttrib.useBackward true in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
@@ -64,8 +60,8 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       (F.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
     dsimp at h h₁ h₂ ⊢
     have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
-      simpa [homEquiv_apply] using DFunLike.congr_arg (adj.homEquiv _ _) h₁
-    have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
+      simpa [homEquiv_apply] using congr(adj.homEquiv _ _ $h₁)
+    have h₂' : g ≫ (G.commShiftIso 1).inv.app T.obj₁ =
         adj.homEquiv _ _ h ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
       simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
@@ -78,12 +74,12 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       obtain ⟨ψ, rfl⟩ := Triangle.coyoneda_exact₃ _ mem φ (by
         dsimp
         simp only [homEquiv_unit, Functor.comp_obj] at hφ
-        rw [← cancel_mono ((G.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
+        rw [← cancel_mono ((G.commShiftIso 1).inv.app T.obj₁), assoc, h₂', zero_comp,
           homEquiv_unit, assoc, reassoc_of% hφ, zero_comp])
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
-      have eq := DFunLike.congr_arg (adj.homEquiv _ _) hα
+      have eq := congr(adj.homEquiv _ _ $hα)
       simp only [homEquiv_counit, homEquiv_unit, comp_id,
         Functor.map_comp, unit_naturality_assoc, right_triangle_components] at eq
       have eq' := comp_distTriang_mor_zero₁₂ _ mem
@@ -96,16 +92,16 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         exact hφ
       · intro φ
         obtain ⟨ψ, hψ⟩ := Triangle.coyoneda_exact₁ _ mem (φ ≫ G.map T.mor₃ ≫
-          (G.commShiftIso (1 : ℤ)).hom.app T.obj₁) (by
+          (G.commShiftIso 1).hom.app T.obj₁) (by
             dsimp
             rw [assoc, assoc, ← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
               comp_distTriang_mor_zero₃₁ _ hT, G.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
         obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ adj.homEquiv _ _ h := ⟨_, rfl⟩
         have hα₀ : α ≫ G.map T.mor₃ = 0 := by
-          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).hom.app T.obj₁),
+          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G 1).hom.app T.obj₁),
             assoc, sub_comp, assoc, assoc, hψ, zero_comp, sub_eq_zero,
-            ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).inv.app T.obj₁), assoc,
+            ← cancel_mono ((Functor.commShiftIso G 1).inv.app T.obj₁), assoc,
             assoc, assoc, assoc, h₂', Iso.hom_inv_id_app, comp_id]
         suffices ∃ (β : Y ⟶ Z), β ≫ adj.homEquiv _ _ h = α by
           obtain ⟨β, hβ⟩ := this
@@ -115,7 +111,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         obtain ⟨β, hβ⟩ := T.coyoneda_exact₃ hT ((adj.homEquiv _ _).symm α)
           ((adj.homEquiv _ _).injective (by simpa [homEquiv_unit, homEquiv_counit] using hα₀))
         refine ⟨adj.homEquiv _ _ β ≫ f, ?_⟩
-        simpa [homEquiv_unit, h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
+        simpa [homEquiv_unit, h₁'] using congr((adj.homEquiv _ _).toFun $hβ.symm))
     refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
     refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) ?_ ?_ ?_
     · simp
