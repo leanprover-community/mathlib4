@@ -40,6 +40,11 @@ lemma ValuationSubring.toLocalSubring_injective :
     Function.Injective (ValuationSubring.toLocalSubring (K := K)) :=
   fun _ _ h ↦ ValuationSubring.toSubring_injective congr(($h).toSubring)
 
+@[simp]
+lemma ValuationSubring.toLocalSubring_inj {A B : ValuationSubring K} :
+    A.toLocalSubring = B.toLocalSubring ↔ A = B :=
+  toLocalSubring_injective.eq_iff
+
 lemma LocalSubring.map_maximalIdeal_eq_top_of_isMax {R : LocalSubring K}
     (hR : IsMax R) {S : Subring K} (hS : R.toSubring < S) :
     (maximalIdeal R.toSubring).map (Subring.inclusion hS.le) = ⊤ := by

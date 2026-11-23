@@ -100,6 +100,12 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
       (HomogeneousSubmodule.toSubmodule : HomogeneousSubmodule 𝒜 ℳ → Submodule A M) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ fun (h : x = y) ↦ by simp [h]
 
+variable {𝒜 ℳ} in
+@[simp]
+theorem HomogeneousSubmodule.toSubmodule_inj {p q : HomogeneousSubmodule 𝒜 ℳ} :
+    p.toSubmodule = q.toSubmodule ↔ p = q :=
+  (HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ).eq_iff
+
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
   coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h

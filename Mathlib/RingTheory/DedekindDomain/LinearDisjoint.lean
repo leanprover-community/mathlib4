@@ -184,7 +184,7 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
       Submodule.restrictScalars R₁ (1 : Submodule B L) := by
   classical
   have h₂' : F₁ ⊔ F₂ = ⊤ := by
-    rwa [← sup_toSubalgebra_of_isAlgebraic_right, ← top_toSubalgebra, toSubalgebra_inj] at h₂
+    rwa [← sup_toSubalgebra_of_isAlgebraic_right, toSubalgebra_eq_top] at h₂
   have : Finite ι := Module.Finite.finite_basis b
   have h_main := congr_arg (Submodule.restrictScalars R₁) <|
     congr(coeToSubmodule $((1 : FractionalIdeal B⁰ L).dual_dual R₁ F₁))

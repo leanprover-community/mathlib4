@@ -121,6 +121,18 @@ theorem top_toSubalgebra : (⊤ : IntermediateField F E).toSubalgebra = ⊤ :=
 theorem top_toSubfield : (⊤ : IntermediateField F E).toSubfield = ⊤ :=
   rfl
 
+@[simp]
+theorem toSubalgebra_eq_top {K : IntermediateField F E} : K.toSubalgebra = ⊤ ↔ K = ⊤ := by
+  rw [← top_toSubalgebra, toSubalgebra_inj]
+
+@[simp]
+theorem toSubalgebra_eq_bot {K : IntermediateField F E} : K.toSubalgebra = ⊥ ↔ K = ⊥ := by
+  rw [← bot_toSubalgebra, toSubalgebra_inj]
+
+@[simp]
+theorem toSubfield_eq_top {K : IntermediateField F E} : K.toSubfield = ⊤ ↔ K = ⊤ :=
+  toSubfield_injective.eq_iff' top_toSubfield
+
 @[simp, norm_cast]
 theorem coe_inf (S T : IntermediateField F E) : (↑(S ⊓ T) : Set E) = (S : Set E) ∩ T :=
   rfl

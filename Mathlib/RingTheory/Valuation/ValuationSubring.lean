@@ -79,6 +79,10 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
+@[simp]
+theorem toSubring_inj {A B : ValuationSubring K} : A.toSubring = B.toSubring ↔ A = B :=
+  toSubring_injective.eq_iff
+
 instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 
 instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
@@ -88,6 +92,10 @@ instance : Top (ValuationSubring K) :=
 
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
+
+@[simp]
+theorem toSubring_eq_top {A : ValuationSubring K} : A.toSubring = ⊤ ↔ A = ⊤ :=
+  toSubring_injective.eq_iff' toSubring_top
 
 @[simp]
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=

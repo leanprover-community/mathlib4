@@ -55,6 +55,12 @@ theorem toSubmodule_injective :
     (toSubmodule : LieRinehartSubalgebra A L → Submodule A L).Injective :=
   fun ⟨s, _⟩ t ↦ by congr!
 
+variable {A L} in
+@[simp]
+theorem toSubmodule_inj {L₁ L₂ : LieRinehartSubalgebra A L} :
+    L₁.toSubmodule = L₂.toSubmodule ↔ L₁ = L₂ :=
+  toSubmodule_injective.eq_iff
+
 instance : SetLike (LieRinehartSubalgebra A L) L where
   coe L' := L'.carrier
   coe_injective := SetLike.coe_injective.comp toSubmodule_injective

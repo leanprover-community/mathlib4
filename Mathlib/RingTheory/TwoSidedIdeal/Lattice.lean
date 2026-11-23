@@ -139,10 +139,41 @@ lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
 @[simp]
 lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
 
+@[simp] lemma ringCon_eq_top {I : TwoSidedIdeal R} : I.ringCon = ⊤ ↔ I = ⊤ := by
+  rw [← top_ringCon, ringCon_inj]
+
+@[simp] lemma ringCon_eq_bot {I : TwoSidedIdeal R} : I.ringCon = ⊥ ↔ I = ⊥ := by
+  rw [← bot_ringCon, ringCon_inj]
+
 lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
     (1 : R) ∈ I ↔ I = ⊤ :=
   ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
 
 alias ⟨eq_top, one_mem⟩ := one_mem_iff
+
+section NonUnitalNonAssocRing
+variable {R : Type*} [NonUnitalNonAssocRing R] {I : TwoSidedIdeal R}
+
+@[simp] lemma ofRingCon_top : ofRingCon (⊤ : RingCon R) = ⊤ := rfl
+@[simp] lemma ofRingCon_bot : ofRingCon (⊥ : RingCon R) = ⊥ := rfl
+
+@[simp] lemma coe_eq_univ : (I : Set R) = .univ ↔ I = ⊤ := by
+  rw [← coe_top, SetLike.coe_set_eq]
+
+@[simp] lemma op_top : (⊤ : TwoSidedIdeal R).op = ⊤ := by ext; simp
+@[simp] lemma op_bot : (⊥ : TwoSidedIdeal R).op = ⊥ := by ext; simp
+@[simp] lemma unop_top : (⊤ : TwoSidedIdeal Rᵐᵒᵖ).unop = ⊤ := by ext; simp
+@[simp] lemma unop_bot : (⊥ : TwoSidedIdeal Rᵐᵒᵖ).unop = ⊥ := by ext; simp
+
+@[simp] lemma op_eq_top : I.op = ⊤ ↔ I = ⊤ := by rw [← op_top, op_inj]
+@[simp] lemma op_eq_bot : I.op = ⊥ ↔ I = ⊥ := by rw [← op_bot, op_inj]
+
+@[simp] lemma unop_eq_top {I : TwoSidedIdeal Rᵐᵒᵖ} : I.unop = ⊤ ↔ I = ⊤ := by
+  rw [← unop_top, unop_inj]
+
+@[simp] lemma unop_eq_bot {I : TwoSidedIdeal Rᵐᵒᵖ} : I.unop = ⊥ ↔ I = ⊥ := by
+  rw [← unop_bot, unop_inj]
+
+end NonUnitalNonAssocRing
 
 end TwoSidedIdeal

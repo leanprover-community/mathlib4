@@ -188,6 +188,13 @@ lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).In
 lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
+@[simp] lemma toAddSubgroup_inj {s t : Subring R} : s.toAddSubgroup = t.toAddSubgroup ↔ s = t :=
+  toAddSubgroup_injective.eq_iff
+
+-- Not `@[simp]` since `simp` can prove it via `Subsemiring.toSubmonoid_inj`.
+lemma toSubmonoid_inj {s t : Subring R} : s.toSubmonoid = t.toSubmonoid ↔ s = t :=
+  toSubmonoid_injective.eq_iff
+
 instance : PartialOrder (Subring R) := .ofSetLike (Subring R)
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)

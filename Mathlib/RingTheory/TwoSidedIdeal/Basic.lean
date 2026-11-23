@@ -44,7 +44,7 @@ namespace TwoSidedIdeal
 
 section NonUnitalNonAssocRing
 
-variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
+variable {R : Type*} [NonUnitalNonAssocRing R] (I J : TwoSidedIdeal R)
 
 instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
   obtain ⟨I, J, h⟩ : Nontrivial (RingCon R) := inferInstance
@@ -110,6 +110,15 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl
+
+variable {I J} in
+@[simp] lemma ringCon_inj : I.ringCon = J.ringCon ↔ I = J := ringCon_injective.eq_iff
+
+lemma ofRingCon_injective : Function.Injective (ofRingCon : RingCon R → TwoSidedIdeal R) :=
+  fun _ _ h ↦ congr(($h).ringCon)
+
+@[simp] lemma ofRingCon_inj {c d : RingCon R} : ofRingCon c = ofRingCon d ↔ c = d :=
+  ofRingCon_injective.eq_iff
 
 lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=
   orderIsoRingCon.map_rel_iff.symm
@@ -255,6 +264,26 @@ def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
   toFun := op
   invFun := unop
   map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
+
+@[simp] lemma unop_op (I : TwoSidedIdeal R) : I.op.unop = I := by ext; simp
+
+@[simp] lemma op_unop (I : TwoSidedIdeal Rᵐᵒᵖ) : I.unop.op = I := by ext; simp
+
+lemma op_injective : Function.Injective (op : TwoSidedIdeal R → TwoSidedIdeal Rᵐᵒᵖ) :=
+  Function.LeftInverse.injective unop_op
+
+lemma unop_injective : Function.Injective (unop : TwoSidedIdeal Rᵐᵒᵖ → TwoSidedIdeal R) :=
+  Function.LeftInverse.injective op_unop
+
+@[simp] lemma op_inj {I J : TwoSidedIdeal R} : I.op = J.op ↔ I = J := op_injective.eq_iff
+
+@[simp] lemma unop_inj {I J : TwoSidedIdeal Rᵐᵒᵖ} : I.unop = J.unop ↔ I = J :=
+  unop_injective.eq_iff
+
+@[simp] lemma op_le_op {I J : TwoSidedIdeal R} : I.op ≤ J.op ↔ I ≤ J := opOrderIso.le_iff_le
+
+@[simp] lemma unop_le_unop {I J : TwoSidedIdeal Rᵐᵒᵖ} : I.unop ≤ J.unop ↔ I ≤ J :=
+  opOrderIso.symm.le_iff_le
 
 end NonUnitalNonAssocRing
 

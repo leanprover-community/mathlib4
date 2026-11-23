@@ -109,6 +109,11 @@ attribute [simp] mulSaturated SaturatedAddSubmonoid.addSaturated
 theorem toSubmonoid_injective : (toSubmonoid (M := M)).Injective :=
   fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ eq ↦ by congr
 
+@[to_additive (attr := simp)]
+theorem toSubmonoid_inj {s₁ s₂ : SaturatedSubmonoid M} :
+    s₁.toSubmonoid = s₂.toSubmonoid ↔ s₁ = s₂ :=
+  toSubmonoid_injective.eq_iff
+
 @[to_additive (attr := ext)]
 lemma ext {s₁ s₂ : SaturatedSubmonoid M} (h : s₁.toSubmonoid = s₂.toSubmonoid) : s₁ = s₂ :=
   toSubmonoid_injective h

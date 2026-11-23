@@ -850,6 +850,11 @@ theorem toNonUnitalSubalgebra_bot :
   ext x
   simp only [mem_bot, NonUnitalStarSubalgebra.mem_toNonUnitalSubalgebra, NonUnitalAlgebra.mem_bot]
 
+@[simp]
+theorem toNonUnitalSubalgebra_eq_bot {S : NonUnitalStarSubalgebra R A} :
+    S.toNonUnitalSubalgebra = ⊥ ↔ S = ⊥ :=
+  NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' toNonUnitalSubalgebra_bot
+
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
   simp only [Set.ext_iff, NonUnitalStarAlgebra.mem_bot, SetLike.mem_coe, Set.mem_singleton_iff,

@@ -113,6 +113,10 @@ instance : Coe (PointedCone R E) (ConvexCone R E) where
 theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCone R E) :=
   fun _ _ => by simp [toConvexCone]
 
+@[simp, norm_cast]
+theorem toConvexCone_inj : (C₁ : ConvexCone R E) = C₂ ↔ C₁ = C₂ :=
+  toConvexCone_injective.eq_iff
+
 @[simp]
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]

@@ -223,6 +223,15 @@ theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : Subsemiring R → AddSubmonoid R)
   | _, _, h => ext (SetLike.ext_iff.mp h :)
 
+@[simp]
+theorem toSubmonoid_inj {S₁ S₂ : Subsemiring R} : S₁.toSubmonoid = S₂.toSubmonoid ↔ S₁ = S₂ :=
+  toSubmonoid_injective.eq_iff
+
+@[simp]
+theorem toAddSubmonoid_inj {S₁ S₂ : Subsemiring R} :
+    S₁.toAddSubmonoid = S₂.toAddSubmonoid ↔ S₁ = S₂ :=
+  toAddSubmonoid_injective.eq_iff
+
 lemma toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
   fun S₁ S₂ h => SetLike.ext'_iff.2

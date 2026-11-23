@@ -824,6 +824,10 @@ theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := b
   ext
   simp only [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
 
+-- This lemma isn't simp because `NonUnitalSubalgebra.toSubmodule` is reducible.
+theorem toSubmodule_eq_bot {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊥ ↔ S = ⊥ :=
+  NonUnitalSubalgebra.toSubmodule_injective.eq_iff' toSubmodule_bot
+
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]

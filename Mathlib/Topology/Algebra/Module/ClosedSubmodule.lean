@@ -95,6 +95,12 @@ instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (
 @[simp, norm_cast] lemma toSubmodule_le_toSubmodule {s t : ClosedSubmodule R M} :
     s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t := .rfl
 
+@[simp, norm_cast] lemma toSubmodule_inj {s t : ClosedSubmodule R M} :
+    s.toSubmodule = t.toSubmodule ↔ s = t := toSubmodule_injective.eq_iff
+
+@[simp, norm_cast] lemma toCloseds_inj {s t : ClosedSubmodule R M} :
+    s.toCloseds = t.toCloseds ↔ s = t := toCloseds_injective.eq_iff
+
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
@@ -160,6 +166,9 @@ instance : OrderTop (ClosedSubmodule R M) where
 
 @[simp, norm_cast] lemma toSubmodule_top : toSubmodule (⊤ : ClosedSubmodule R M) = ⊤ := rfl
 
+@[simp, norm_cast] lemma toSubmodule_eq_top {s : ClosedSubmodule R M} : s.toSubmodule = ⊤ ↔ s = ⊤ :=
+  toSubmodule_injective.eq_iff' toSubmodule_top
+
 @[simp, norm_cast] lemma coe_top : ((⊤ : ClosedSubmodule R M) : Set M) = .univ := rfl
 
 @[simp] lemma mem_top : x ∈ (⊤ : ClosedSubmodule R M) := trivial
@@ -172,6 +181,9 @@ instance instOrderBot : OrderBot (ClosedSubmodule R M) where
   bot_le s := bot_le (a := s.toSubmodule)
 
 @[simp, norm_cast] lemma toSubmodule_bot : toSubmodule (⊥ : ClosedSubmodule R M) = ⊥ := rfl
+
+@[simp, norm_cast] lemma toSubmodule_eq_bot {s : ClosedSubmodule R M} : s.toSubmodule = ⊥ ↔ s = ⊥ :=
+  toSubmodule_injective.eq_iff' toSubmodule_bot
 
 @[simp, norm_cast] lemma coe_bot : ((⊥ : ClosedSubmodule R M) : Set M) = {0} := rfl
 

@@ -187,7 +187,7 @@ theorem zeroLocus_empty : zeroLocus 𝒜 (∅ : Set A) = Set.univ :=
 
 @[simp]
 theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜)) = ⊤ := by
-  simpa using! (gc_ideal _).u_top
+  exact HomogeneousIdeal.toIdeal_eq_top.mp (gc_ideal _).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus 𝒜 s = ∅ :=
   Set.eq_empty_iff_forall_notMem.mpr fun x hx =>

@@ -105,6 +105,10 @@ theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) :
   cases t
   congr
 
+@[simp]
+theorem toLowerSet_inj : s.toLowerSet = t.toLowerSet ↔ s = t :=
+  toLowerSet_injective.eq_iff
+
 instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective _ _ h := toLowerSet_injective <| SetLike.coe_injective h
@@ -207,6 +211,10 @@ instance : OrderTop (Ideal P) where
 @[simp]
 theorem top_toLowerSet : (⊤ : Ideal P).toLowerSet = ⊤ :=
   rfl
+
+@[simp]
+theorem toLowerSet_eq_top {s : Ideal P} : s.toLowerSet = ⊤ ↔ s = ⊤ :=
+  toLowerSet_injective.eq_iff' top_toLowerSet
 
 @[simp]
 theorem coe_top : ((⊤ : Ideal P) : Set P) = univ :=

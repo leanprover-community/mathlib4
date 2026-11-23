@@ -1228,6 +1228,10 @@ theorem toAffineSubspace_top : ((⊤ : Submodule k V) : AffineSubspace k V) = �
   rfl
 
 @[simp]
+theorem toAffineSubspace_eq_top {p : Submodule k V} : (p : AffineSubspace k V) = ⊤ ↔ p = ⊤ := by
+  rw [← toAffineSubspace_top, toAffineSubspace_inj]
+
+@[simp]
 theorem toAffineSubspace_bot : ((⊥ : Submodule k V) : AffineSubspace k V) = {0} :=
   rfl
 

@@ -80,6 +80,11 @@ theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
 
+-- Not `@[simp]` since `simp` can prove it via `HomogeneousSubmodule.toSubmodule_inj`.
+theorem HomogeneousIdeal.toIdeal_inj {I J : HomogeneousIdeal 𝒜} :
+    I.toIdeal = J.toIdeal ↔ I = J :=
+  HomogeneousIdeal.toIdeal_injective.eq_iff
+
 @[simp] lemma toIdeal_le_toIdeal_iff {I J : HomogeneousIdeal 𝒜} :
     I.toIdeal ≤ J.toIdeal ↔ I ≤ J := Iff.rfl
 
@@ -329,6 +334,14 @@ theorem toIdeal_top : (⊤ : HomogeneousIdeal 𝒜).toIdeal = (⊤ : Ideal A) :=
 @[simp]
 theorem toIdeal_bot : (⊥ : HomogeneousIdeal 𝒜).toIdeal = (⊥ : Ideal A) :=
   rfl
+
+@[simp]
+theorem toIdeal_eq_top {I : HomogeneousIdeal 𝒜} : I.toIdeal = ⊤ ↔ I = ⊤ :=
+  toIdeal_injective.eq_iff' toIdeal_top
+
+@[simp]
+theorem toIdeal_eq_bot {I : HomogeneousIdeal 𝒜} : I.toIdeal = ⊥ ↔ I = ⊥ :=
+  toIdeal_injective.eq_iff' toIdeal_bot
 
 @[simp]
 theorem toIdeal_sup (I J : HomogeneousIdeal 𝒜) : (I ⊔ J).toIdeal = I.toIdeal ⊔ J.toIdeal :=

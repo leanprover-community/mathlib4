@@ -45,6 +45,11 @@ theorem toSubsemiring_injective :
     (toSubsemiring : HomogeneousSubsemiring 𝒜 → Subsemiring A).Injective :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
 
+@[simp]
+theorem toSubsemiring_inj {S T : HomogeneousSubsemiring 𝒜} :
+    S.toSubsemiring = T.toSubsemiring ↔ S = T :=
+  toSubsemiring_injective.eq_iff
+
 instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
   coe_injective _ _ h := toSubsemiring_injective <| SetLike.coe_injective h

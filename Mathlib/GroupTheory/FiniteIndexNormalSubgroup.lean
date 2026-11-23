@@ -46,6 +46,11 @@ theorem toSubgroup_injective : Function.Injective
   dsimp at h
   rw [h]
 
+@[to_additive (attr := simp)]
+theorem toSubgroup_inj {H K : FiniteIndexNormalSubgroup G} :
+    H.toSubgroup = K.toSubgroup ↔ H = K :=
+  toSubgroup_injective.eq_iff
+
 @[to_additive]
 instance : SetLike (FiniteIndexNormalSubgroup G) G where
   coe U := U.toSubgroup

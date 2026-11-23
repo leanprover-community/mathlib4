@@ -163,6 +163,14 @@ theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=
 theorem bot_toSubmonoid : (⊥ : Subgroup G).toSubmonoid = ⊥ :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem toSubmonoid_eq_top {H : Subgroup G} : H.toSubmonoid = ⊤ ↔ H = ⊤ := by
+  rw [← top_toSubmonoid, toSubmonoid_inj]
+
+@[to_additive (attr := simp)]
+theorem toSubmonoid_eq_bot {H : Subgroup G} : H.toSubmonoid = ⊥ ↔ H = ⊥ := by
+  rw [← bot_toSubmonoid, toSubmonoid_inj]
+
 @[to_additive]
 theorem eq_bot_iff_forall : H = ⊥ ↔ ∀ x ∈ H, x = (1 : G) :=
   toSubmonoid_injective.eq_iff.symm.trans <| Submonoid.eq_bot_iff_forall _

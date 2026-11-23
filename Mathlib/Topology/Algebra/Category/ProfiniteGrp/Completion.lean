@@ -44,6 +44,12 @@ theorem toFiniteIndexNormalSubgroup_injective [CompactSpace G] [ContinuousMul G]
   apply toSubgroup_injective
   exact congrArg (fun L : FiniteIndexNormalSubgroup G ↦ (L : Subgroup G)) h
 
+@[to_additive (attr := simp)]
+theorem toFiniteIndexNormalSubgroup_inj [CompactSpace G] [ContinuousMul G]
+    {H K : OpenNormalSubgroup G} :
+    H.toFiniteIndexNormalSubgroup = K.toFiniteIndexNormalSubgroup ↔ H = K :=
+  toFiniteIndexNormalSubgroup_injective.eq_iff
+
 end OpenNormalSubgroup
 
 namespace ProfiniteGrp

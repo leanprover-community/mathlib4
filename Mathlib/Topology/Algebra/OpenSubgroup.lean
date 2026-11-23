@@ -70,6 +70,10 @@ instance hasCoeSubgroup : CoeTC (OpenSubgroup G) (Subgroup G) :=
 theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+@[to_additive (attr := simp, norm_cast)]
+theorem toSubgroup_inj {U V : OpenSubgroup G} : (U : Subgroup G) = V ↔ U = V :=
+  toSubgroup_injective.eq_iff
+
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.toSubgroup
@@ -132,6 +136,10 @@ theorem coe_top : ((⊤ : OpenSubgroup G) : Set G) = Set.univ :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_top : ((⊤ : OpenSubgroup G) : Subgroup G) = ⊤ :=
   rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem toSubgroup_eq_top {U : OpenSubgroup G} : (U : Subgroup G) = ⊤ ↔ U = ⊤ :=
+  toSubgroup_injective.eq_iff' toSubgroup_top
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toOpens_top : ((⊤ : OpenSubgroup G) : Opens G) = ⊤ :=
@@ -494,6 +502,11 @@ theorem toSubgroup_injective : Function.Injective
   ext
   dsimp at h
   rw [h]
+
+-- Not `@[simp]` since its LHS simplifies via `OpenSubgroup.toSubgroup_inj`.
+@[to_additive]
+theorem toSubgroup_inj {H K : OpenNormalSubgroup G} : H.toSubgroup = K.toSubgroup ↔ H = K :=
+  toSubgroup_injective.eq_iff
 
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where

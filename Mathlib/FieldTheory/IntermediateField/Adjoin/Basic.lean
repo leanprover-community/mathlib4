@@ -296,13 +296,11 @@ variable {K : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
-  rw [← toSubalgebra_inj, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff,
-    bot_toSubalgebra]
+  rw [← toSubalgebra_eq_bot, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff]
 
 @[simp]
 theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
-  rw [← toSubalgebra_inj, ← finrank_eq_finrank_subalgebra, Subalgebra.finrank_eq_one_iff,
-    bot_toSubalgebra]
+  rw [← toSubalgebra_eq_bot, ← finrank_eq_finrank_subalgebra, Subalgebra.finrank_eq_one_iff]
 
 @[simp]
 protected theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by
@@ -350,8 +348,7 @@ theorem isSimpleOrder_of_finrank_prime (hp : Nat.Prime (Module.finrank F E)) :
   refine { toNontrivial := ?_, eq_bot_or_eq_top := ?_ }
   · exact ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
   · intro K
-    simpa [← toSubalgebra_strictMono.apply_eq_bot_iff, ← toSubalgebra_strictMono.apply_eq_top_iff]
-      using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra
+    simpa using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff

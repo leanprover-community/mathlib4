@@ -347,6 +347,20 @@ lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
 
 @[simp] lemma top_asIdeal : (⊤ : TwoSidedIdeal R).asIdeal = ⊤ := rfl
 
+lemma asIdeal_injective : Function.Injective (asIdeal : TwoSidedIdeal R → Ideal R) :=
+  fun I J h ↦ by ext x; rw [← mem_asIdeal, h, mem_asIdeal]
+
+@[simp] lemma asIdeal_inj {I J : TwoSidedIdeal R} : asIdeal I = asIdeal J ↔ I = J :=
+  asIdeal_injective.eq_iff
+
+@[simp] lemma asIdeal_le_asIdeal {I J : TwoSidedIdeal R} : asIdeal I ≤ asIdeal J ↔ I ≤ J := .rfl
+
+@[simp] lemma asIdeal_eq_top {I : TwoSidedIdeal R} : asIdeal I = ⊤ ↔ I = ⊤ := by
+  rw [← top_asIdeal, asIdeal_inj]
+
+@[simp] lemma asIdeal_eq_bot {I : TwoSidedIdeal R} : asIdeal I = ⊥ ↔ I = ⊥ := by
+  rw [← bot_asIdeal, asIdeal_inj]
+
 instance (I : TwoSidedIdeal R) : I.asIdeal.IsTwoSided :=
   ⟨fun _ ↦ by simpa using I.mul_mem_right _ _⟩
 
@@ -361,6 +375,29 @@ lemma mem_asIdealOpposite {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
     x ∈ asIdealOpposite I ↔ x.unop ∈ I := by
   simpa [asIdealOpposite, asIdeal, TwoSidedIdeal.mem_iff, RingCon.op_iff] using
     ⟨I.ringCon.symm, I.ringCon.symm⟩
+
+lemma asIdealOpposite_injective :
+    Function.Injective (asIdealOpposite : TwoSidedIdeal R → Ideal Rᵐᵒᵖ) := fun I J h ↦ by
+  ext x; rw [← MulOpposite.unop_op x, ← mem_asIdealOpposite, h, mem_asIdealOpposite]
+
+@[simp] lemma asIdealOpposite_inj {I J : TwoSidedIdeal R} :
+    asIdealOpposite I = asIdealOpposite J ↔ I = J := asIdealOpposite_injective.eq_iff
+
+@[simp] lemma asIdealOpposite_le_asIdealOpposite {I J : TwoSidedIdeal R} :
+    asIdealOpposite I ≤ asIdealOpposite J ↔ I ≤ J := by
+  simp only [le_iff_mem_imp_mem, mem_asIdealOpposite, MulOpposite.forall, MulOpposite.unop_op]
+
+@[simp] lemma bot_asIdealOpposite : (⊥ : TwoSidedIdeal R).asIdealOpposite = ⊥ := by
+  ext; simp [mem_asIdealOpposite]
+
+@[simp] lemma top_asIdealOpposite : (⊤ : TwoSidedIdeal R).asIdealOpposite = ⊤ := by
+  ext; simp [mem_asIdealOpposite]
+
+@[simp] lemma asIdealOpposite_eq_top {I : TwoSidedIdeal R} : asIdealOpposite I = ⊤ ↔ I = ⊤ := by
+  rw [← top_asIdealOpposite, asIdealOpposite_inj]
+
+@[simp] lemma asIdealOpposite_eq_bot {I : TwoSidedIdeal R} : asIdealOpposite I = ⊥ ↔ I = ⊥ := by
+  rw [← bot_asIdealOpposite, asIdealOpposite_inj]
 
 end Ring
 
@@ -408,6 +445,12 @@ lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I := by 
 lemma asIdeal_toTwoSided (I : Ideal R) [I.IsTwoSided] : I.toTwoSided.asIdeal = I := by
   ext
   simp
+
+@[simp]
+lemma toTwoSided_inj {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
+    I.toTwoSided = J.toTwoSided ↔ I = J where
+  mp h := by rw [← asIdeal_toTwoSided I, h, asIdeal_toTwoSided]
+  mpr := by rintro rfl; rfl
 
 instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSided) where
   prf I _ := ⟨I.toTwoSided, asIdeal_toTwoSided ..⟩

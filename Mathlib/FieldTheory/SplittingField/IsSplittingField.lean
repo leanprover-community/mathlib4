@@ -177,7 +177,7 @@ theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsInte
 /-- Characterize `IsSplittingField` with `IntermediateField.adjoin` instead of `Algebra.adjoin`. -/
 theorem isSplittingField_iff_intermediateField : p.IsSplittingField K L ↔
     (p.map (algebraMap K L)).Splits ∧ IntermediateField.adjoin K (p.rootSet L) = ⊤ := by
-  rw [← IntermediateField.toSubalgebra_injective.eq_iff,
+  rw [← IntermediateField.toSubalgebra_eq_top,
       IntermediateField.adjoin_toSubalgebra_of_isAlgebraic fun _ ↦ isAlgebraic_of_mem_rootSet]
   exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
 

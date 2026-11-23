@@ -86,6 +86,10 @@ protected alias isOpen_setOf_rel := DiscreteQuotient.isOpen_setOfPred_rel
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
+@[simp]
+lemma toSetoid_inj {S T : DiscreteQuotient X} : S.toSetoid = T.toSetoid ↔ S = T :=
+  toSetoid_injective.eq_iff
+
 /-- Construct a discrete quotient from a clopen set. -/
 def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩

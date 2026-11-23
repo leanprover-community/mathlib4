@@ -251,7 +251,7 @@ instance (P : RingPreordering F) : P.HasIdealSupport where
 
 @[deprecated Subsemiring.IsPreordering.isPointed +typeChanged (since := "2026-10-28"), simp]
 theorem support_eq_bot (P : RingPreordering F) : P.support = ⊥ := by
-  simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
+  exact Submodule.toAddSubgroup_eq_bot.mp (supportAddSubgroup_eq_bot P)
 
 @[deprecated "no replacement" (since := "2026-10-28")]
 instance (P : RingPreordering F) : P.support.IsPrime := by simpa using Ideal.isPrime_bot

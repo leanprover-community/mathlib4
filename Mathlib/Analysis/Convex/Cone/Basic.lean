@@ -73,6 +73,11 @@ instance : Coe (ProperCone R E) (PointedCone R E) := ⟨toPointedCone⟩
 lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCone R E) :=
   ClosedSubmodule.toSubmodule_injective
 
+-- Not `@[simp]` since `simp` can prove it via `ClosedSubmodule.toSubmodule_inj`.
+@[norm_cast]
+lemma toPointedCone_inj : C₁.toPointedCone = C₂.toPointedCone ↔ C₁ = C₂ :=
+  toPointedCone_injective.eq_iff
+
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
@@ -101,6 +106,10 @@ lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
 @[simp, norm_cast] lemma coe_bot : (⊥ : ProperCone R E) = ({0} : Set E) := rfl
 @[simp, norm_cast] lemma toPointedCone_bot : (⊥ : ProperCone R E).toPointedCone = ⊥ := rfl
+
+-- Not `@[simp]` since `simp` can prove it via `ClosedSubmodule.toSubmodule_eq_bot`.
+lemma toPointedCone_eq_bot : C.toPointedCone = ⊥ ↔ C = ⊥ :=
+  toPointedCone_injective.eq_iff' toPointedCone_bot
 
 end T1Space
 

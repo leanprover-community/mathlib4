@@ -150,6 +150,9 @@ lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
+@[simp] lemma toSubsemigroup_inj {s t : NonUnitalSubsemiring R} :
+    s.toSubsemigroup = t.toSubsemigroup ↔ s = t := toSubsemigroup_injective.eq_iff
+
 instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/

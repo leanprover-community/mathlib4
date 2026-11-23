@@ -43,6 +43,11 @@ lemma toSubmodule_injective :
   rintro ⟨_, _⟩
   congr!
 
+@[simp]
+lemma toSubmodule_inj {ρ₁ ρ₂ : Subrepresentation ρ} :
+    ρ₁.toSubmodule = ρ₂.toSubmodule ↔ ρ₁ = ρ₂ :=
+  toSubmodule_injective.eq_iff
+
 instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective := SetLike.coe_injective.comp toSubmodule_injective

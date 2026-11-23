@@ -710,6 +710,10 @@ theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
 
 theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := rfl
 
+@[simp]
+theorem toSubalgebra_eq_bot {S : StarSubalgebra R A} : S.toSubalgebra = ⊥ ↔ S = ⊥ :=
+  StarSubalgebra.toSubalgebra_injective.eq_iff' bot_toSubalgebra
+
 theorem mem_bot {x : A} : x ∈ (⊥ : StarSubalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
 @[simp, norm_cast]

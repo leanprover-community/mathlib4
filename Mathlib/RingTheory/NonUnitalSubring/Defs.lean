@@ -206,6 +206,11 @@ theorem toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
+@[simp]
+theorem toNonUnitalSubsemiring_inj {S T : NonUnitalSubring R} :
+    S.toNonUnitalSubsemiring = T.toNonUnitalSubsemiring ↔ S = T :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
 @[gcongr, mono]
 theorem toNonUnitalSubsemiring_strictMono :
     StrictMono (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R) := fun _ _ =>
@@ -220,6 +225,11 @@ theorem toAddSubgroup_injective :
     Function.Injective (toAddSubgroup : NonUnitalSubring R → AddSubgroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
+@[simp]
+theorem toAddSubgroup_inj {S T : NonUnitalSubring R} :
+    S.toAddSubgroup = T.toAddSubgroup ↔ S = T :=
+  toAddSubgroup_injective.eq_iff
+
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono :
     StrictMono (toAddSubgroup : NonUnitalSubring R → AddSubgroup R) := fun _ _ => id
@@ -231,6 +241,11 @@ theorem toAddSubgroup_mono : Monotone (toAddSubgroup : NonUnitalSubring R → Ad
 theorem toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubring R → Subsemigroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
+
+-- Not `@[simp]` since `simp` can prove it via `NonUnitalSubsemiring.toSubsemigroup_inj`.
+theorem toSubsemigroup_inj {S T : NonUnitalSubring R} :
+    S.toSubsemigroup = T.toSubsemigroup ↔ S = T :=
+  toSubsemigroup_injective.eq_iff
 
 @[gcongr, mono]
 theorem toSubsemigroup_strictMono :

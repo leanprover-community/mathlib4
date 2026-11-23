@@ -46,6 +46,10 @@ attribute [instance] isLocalRing
 lemma toSubring_injective : Function.Injective (toSubring (R := R)) := by
   rintro ⟨a, b⟩ ⟨c, d⟩ rfl; rfl
 
+@[simp]
+lemma toSubring_inj {S T : LocalSubring R} : S.toSubring = T.toSubring ↔ S = T :=
+  toSubring_injective.eq_iff
+
 /-- Copy of a local subring with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
 protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : LocalSubring R :=

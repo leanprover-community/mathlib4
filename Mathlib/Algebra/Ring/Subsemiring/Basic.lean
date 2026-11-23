@@ -255,6 +255,12 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 @[simp] theorem toAddSubmonoid_top : (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
 
+@[simp] theorem toSubmonoid_eq_top {S : Subsemiring R} : S.toSubmonoid = ⊤ ↔ S = ⊤ := by
+  rw [← toSubmonoid_top, toSubmonoid_inj]
+
+@[simp] theorem toAddSubmonoid_eq_top {S : Subsemiring R} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by
+  rw [← toAddSubmonoid_top, toAddSubmonoid_inj]
+
 section NonAssocSemiring
 
 variable (R)
