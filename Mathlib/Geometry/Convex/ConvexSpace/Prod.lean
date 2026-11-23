@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of convex spaces
 
@@ -108,7 +111,7 @@ instance : ConvexSpace R (ι →₀ X) := .mk
     classical
     refine .onFinset (w.weights.support.biUnion Finsupp.support) (fun i ↦ w.iConvexComb (· i)) ?_
     rintro i hi
-    contrapose! hi
+    contrapose hi
     simp_all)
   (by simp)
   (fun w ↦ by ext; simp [iConvexComb_assoc])

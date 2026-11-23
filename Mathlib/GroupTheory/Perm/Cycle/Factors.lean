@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.List.Iterate
 public import Mathlib.Data.Set.Pairwise.List
-public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.GroupTheory.NoncommPiCoprod
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.Group
 
 /-!
@@ -438,7 +438,7 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       have key : ∀ x ∈ σ.support ∩ τ.support, σ x = τ x := by
         intro x hx
         rw [h x (mem_support.mp (mem_of_mem_inter_left hx)), hτl x (mem_of_mem_inter_right hx)]
-      convert! hτ
+      convert hτ
       refine h3.eq_on_support_inter_nonempty_congr (h1 _ hτ) key ?_ ha
       exact key a (mem_inter_of_mem ha hτa)
 
@@ -465,8 +465,8 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   without a linear order. -/
 def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
-    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+  Quotient.recOnSubsingleton (@univ α _).val (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
+    (show ∀ x, f x ≠ x → x ∈ (@univ α _).val from fun _ _ => mem_univ _)
 
 section CycleFactorsFinset
 
@@ -477,7 +477,8 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
     (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } ↦
-      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.2.2.1 _ h1) l.2.2.2⟩)
+      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.property.2.1 _ h1)
+        l.property.2.2⟩)
     fun ⟨_, hl⟩ ⟨_, hl'⟩ ↦
     Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
       list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
@@ -794,7 +795,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       (∀ τ : Perm β, τ ∈ l → τ.IsCycle) → l.Pairwise Disjoint → P l.prod by
     classical
       let x := σ.truncCycleFactors.out
-      exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
+      exact congr(P $(x.property.1)).mp (this x.val x.property.2.1 x.property.2.2)
   intro l
   induction l with
   | nil => exact fun _ _ => base_one

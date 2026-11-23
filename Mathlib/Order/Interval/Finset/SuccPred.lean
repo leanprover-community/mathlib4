@@ -241,7 +241,7 @@ lemma Ici_succ_eq_Ioi (a : α) : Ici (succ a) = Ioi a := coe_injective <| by sim
 end SuccOrder
 
 section PredOrder
-variable [PredOrder α] {a a : α}
+variable [PredOrder α] {a : α}
 
 lemma Ioi_pred_eq_Ici_of_not_isMin (ha : ¬ IsMin a) : Ioi (pred a) = Ici a :=
   coe_injective <| by simpa using Set.Ioi_pred_eq_Ici_of_not_isMin ha

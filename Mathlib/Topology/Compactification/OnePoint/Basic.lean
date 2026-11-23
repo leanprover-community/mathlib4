@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -406,9 +407,10 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
   toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
   invFun f :=
     { toFun := fun x => match x with
-        | ∞ => Classical.choose f.2
-        | some x => f.1 x
-      continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }
+        | ∞ => Classical.choose f.property
+        | some x => f.val x
+      continuous_toFun :=
+        continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.property }
   left_inv f := by
     ext x
     refine OnePoint.rec ?_ ?_ x
@@ -509,7 +511,7 @@ instance : CompactSpace (OnePoint X) where
 instance [T0Space X] : T0Space (OnePoint X) := by
   refine ⟨fun x y hxy => ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
-  exacts [rfl, congr_arg some h.eq]
+  exacts [rfl, congr(some $h.eq)]
 
 /-- The one point compactification of a `T1Space` space is a `T1Space`. -/
 instance [T1Space X] : T1Space (OnePoint X) where

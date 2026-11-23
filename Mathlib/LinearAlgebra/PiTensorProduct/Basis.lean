@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis for `PiTensorProduct`
 

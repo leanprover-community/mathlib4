@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `recover` tactic modifier
 
@@ -69,6 +72,6 @@ elab "recover " tacs:tacticSeq : tactic => do
       unassigned := unassigned.insert mvarId
     let unassignedMVarDependencies ← getUnassignedGoalMVarDependencies mvarId
     unassigned := unassigned.insertMany unassignedMVarDependencies.toList
-  setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
+  setGoals ((← getGoals) ++ unassigned.toList).eraseDups
 
 end Mathlib.Tactic

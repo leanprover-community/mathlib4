@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits and colimits in the over and under categories
@@ -61,7 +63,6 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 

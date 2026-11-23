@@ -51,11 +51,11 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 (g x)) := by
   /- Any point can be represented as a sum of `y ∈ LinearMap.ker g` and a fixed point `z`. -/
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y, g y = 0 ∧ ∃ z, IsFixedPt f z ∧ x = y + z :=
-    ⟨x - g x, by simp [hg_proj], g x, (g x).2, by simp⟩
+    ⟨x - g x, by simp [hg_proj], g x, (g x).property, by simp⟩
   /- For a fixed point, the theorem is trivial,
   so it suffices to prove it for `y ∈ LinearMap.ker g`. -/
   suffices Tendsto (birkhoffAverage 𝕜 f _root_.id · y) atTop (𝓝 0) by
-    have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
+    have hgz : g z = z := congr($(hg_proj ⟨z, hz⟩).val)
     simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
       using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
   /- By continuity, it suffices to prove the theorem on a dense subset of `LinearMap.ker g`.

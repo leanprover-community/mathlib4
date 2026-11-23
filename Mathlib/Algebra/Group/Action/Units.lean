@@ -88,14 +88,9 @@ example {M} [CommMonoid M] :
   ext
   rfl
 
-/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
-
-Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
-@[simp]
-lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
-    u₁ • u₂ = u₁ * u₂ := by
-  ext
-  rfl
+@[deprecated smul_eq_mul +typeChanged (since := "2026-10-06")]
+protected lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+    u₁ • u₂ = u₁ * u₂ := _root_.smul_eq_mul _ _
 
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
@@ -136,7 +131,7 @@ variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
 /-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
 with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
 we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
-i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`, while
 `Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.
 In particular, if `M` is cancellative, then we obtain `∀ (g : G) (m : M), g • m = m`,

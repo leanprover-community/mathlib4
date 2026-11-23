@@ -1,20 +1,25 @@
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Basic.ENNReal.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.NumberTheory.ArithmeticFunction.Misc
-import Mathlib.NumberTheory.Chebyshev
-import Mathlib.Tactic.Positivity
-import Mathlib.Topology.Algebra.InfiniteSum.Order
+module
+
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.Basic.ENNReal.Basic
+public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Euclidean.Volume.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+public import Mathlib.NumberTheory.Chebyshev
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
+
 set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
@@ -667,3 +672,29 @@ example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by 
 
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+
+/- ## `Convexity.StdSimplex.weights` -/
+
+section Convexity
+variable {R M : Type*} [PartialOrder R] [Semiring R]
+
+example (w : Convexity.StdSimplex R M) : 0 ≤ w.weights := by positivity
+
+example [Nontrivial R] (w : Convexity.StdSimplex R M) : 0 < w.weights := by positivity
+
+example [Nontrivial R] (w : Convexity.StdSimplex R M) : w.weights ≠ 0 := by positivity
+
+example (w : Convexity.StdSimplex R M) (i : M) : 0 ≤ w.weights i := by positivity
+
+example [IsOrderedRing R] (w : Convexity.StdSimplex R M) (i j : M) : 0 ≤ w.weights i * w.weights j := by positivity
+
+end Convexity
+
+/- ## Geometry -/
+
+variable {V P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+example {n : ℕ} [NeZero n] (s : Affine.Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
+  positivity
+example {n : ℕ} (s : Affine.Simplex ℝ P n) : 0 < s.volume := by positivity

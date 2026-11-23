@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The splitting of a simplicial set
 
@@ -16,7 +19,6 @@ Let `X` be a simplicial set. The fact that any simplex `x : X _⦋n⦌` can be
 written in a unique way as `X.map f.op y` for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌`
 and a nondegenerate simplex `y : X _⦋m⦌` is translated in this file
 as the data of a splitting of `X`.
-
 -/
 
 @[expose] public section

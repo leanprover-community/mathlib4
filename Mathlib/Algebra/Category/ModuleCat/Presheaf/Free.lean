@@ -5,8 +5,11 @@ Authors: Johan Commelin, Joel Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The free presheaf of modules on a presheaf of sets
@@ -22,7 +25,6 @@ adjoint to the forget functor.
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section

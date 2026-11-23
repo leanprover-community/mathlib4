@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugacy of elements of finite groups
 -/
@@ -30,7 +33,7 @@ instance [Finite α] : Finite (ConjClasses α) :=
   Quotient.finite _
 
 instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b =>
-  inferInstanceAs (Decidable (∃ c : αˣ, c.1 * a = b * c.1))
+  inferInstanceAs (Decidable (∃ c : αˣ, c.val * a = b * c.val))
 
 instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
     Fintype (conjugatesOf a) :=

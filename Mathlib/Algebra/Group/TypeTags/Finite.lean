@@ -6,8 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Fintype.Card
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Finite`, `Infinite` and `Fintype` are preserved by `Additive` and `Multiplicative`.
