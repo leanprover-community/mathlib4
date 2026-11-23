@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subalgebras of an algebra of prime dimension
 

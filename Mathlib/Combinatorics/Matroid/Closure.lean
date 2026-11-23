@@ -105,7 +105,7 @@ lemma IsFlat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
   refine ⟨fun I X hI hIX ↦ subset_iInter fun i ↦ ?_,
     (iInter_subset _ (Classical.arbitrary _)).trans (hFs _).subset_ground⟩
   obtain ⟨J, hIJ, hJ⟩ := hI.indep.subset_isBasis_of_subset (hI.subset.trans (iInter_subset _ i))
-  refine subset_union_right.trans ((hFs i).1 (X := Fs i ∪ X) hIJ ?_)
+  refine subset_union_right.trans ((hFs i).subset_of_isBasis_of_isBasis (X := Fs i ∪ X) hIJ ?_)
   convert hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
   rw [← union_assoc, union_eq_self_of_subset_right hIJ.subset]
 
@@ -114,11 +114,11 @@ in which the `IsClosed` sets correspond to flats.
 (We can't define such an operator on all of `Set α`,
 since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
-  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.1) fun s hs ↦ by
+  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.val) fun s hs ↦ by
     obtain (rfl | hne) := s.eq_empty_or_nonempty
     · simp
     have _ := hne.coe_sort
-    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
+    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.val.val) (fun F ↦ hs F.val F.property)
     ext
     aesop
 
@@ -182,7 +182,7 @@ lemma IsFlat.closure (hF : M.IsFlat F) : M.closure F = F :=
 
 variable (X) in
 @[simp] lemma isFlat_closure : M.IsFlat (M.closure X) := by
-  rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
+  rw [closure, sInter_eq_iInter]; exact .iInter (·.property.1)
 
 lemma isFlat_iff_closure_eq : M.IsFlat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ isFlat_closure F)⟩
 
@@ -329,8 +329,9 @@ lemma Indep.closure_eq_setOfPred_isBasis_insert (hI : M.Indep I) :
   rw [subset_antisymm_iff, closure_def, subset_sInter_iff, and_iff_right (sInter_subset_of_mem _)]
   · rintro F' ⟨hF', hIF'⟩ e (he : M.IsBasis I (insert e I))
     rw [inter_eq_left.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
-    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.2
-    exact (hF'.1 hJ (he.isBasis_union_of_subset hJ.indep hIJ)) (Or.inr (mem_insert _ _))
+    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.subset_ground
+    exact (hF'.subset_of_isBasis_of_isBasis hJ (he.isBasis_union_of_subset hJ.indep hIJ))
+      (Or.inr (mem_insert _ _))
   exact ⟨hF, inter_subset_left.trans hIF.subset⟩
 
 @[deprecated (since := "2026-07-09")]

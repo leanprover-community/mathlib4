@@ -178,7 +178,7 @@ instance : PreservesLimits (Ind.yoneda (C := C)) :=
   preservesLimits_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
 
 theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
-  X.2
+  X.property
 
 /-- Pick a presentation of an ind-object `X` using choice. -/
 noncomputable def Ind.presentation (X : Ind C) : IndObjectPresentation ((Ind.inclusion C).obj X) :=
@@ -277,8 +277,9 @@ noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompInd
 instance [HasColimitsOfShape WalkingParallelPair C] :
     HasColimitsOfShape WalkingParallelPair (Ind C) := by
   refine ⟨fun F => ?_⟩
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
-    (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).property
+    (F.obj WalkingParallelPair.one).property
+    (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 
@@ -291,7 +292,7 @@ of diagrams. -/
 theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
     ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
       Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.2 B.2
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.property B.property
     (Ind.inclusion _ |>.map f) (Ind.inclusion _ |>.map f)
   refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero

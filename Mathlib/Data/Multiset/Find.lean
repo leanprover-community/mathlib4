@@ -9,6 +9,9 @@ public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finding subsingleton elements within multisets
 
@@ -78,28 +81,23 @@ theorem find?_eq_some_iff {a : α} {s : Multiset α} (hp) :
     · dsimp [Set.Subsingleton] at hp
       specialize hp ⟨mem_cons_self _ _, ‹p x›⟩
       grind
-    · simp_rw [ih]
-      grind
+    · grind
 
 variable {p} in
 @[simp, grind =]
 theorem find?_eq_none_iff {s : Multiset α} (hp) :
     s.find? p hp = none ↔ ∀ a ∈ s, ¬ p a := by
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | cons x s ih =>
-    rw [find?_cons]
-    dsimp [Set.Subsingleton] at hp
-    grind
+  induction s using Multiset.induction_on <;> grind [find?_zero, find?_cons]
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
-theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s : Multiset α}
-    (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
-    s.find? p₁ hp₁ = s.find? p₂
-      (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
+theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s t : Multiset α}
+    (hs : s = t) (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
+    s.find? p₁ hp₁ = t.find? p₂
+      (by simp_rw +contextual [← hs, ← exists_prop, ← h, exists_prop, hp₁]) := by
+  subst hs
   induction s using Quotient.ind
-  exact List.find?_congr fun x hx ↦ by simp [h x (by simpa using hx)]
+  exact List.find?_congr rfl fun x hx ↦ by simp [h x (by simpa using hx)]
 
 theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp.setSubsingleton = some (s.choose p hp) := by

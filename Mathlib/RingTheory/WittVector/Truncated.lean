@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.InitTail
 
 /-!
-
 # Truncated Witt vectors
 
 The ring of truncated Witt vectors (of length `n`) is a quotient of the ring of Witt vectors.
@@ -466,7 +465,7 @@ theorem lift_unique (g : S →+* 𝕎 R) (g_compat : ∀ k, (WittVector.truncate
 @[simps]
 def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂) (hk : k₁ ≤ k₂),
     (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁ } ≃ (S →+* 𝕎 R) where
-  toFun f := lift f.1 f.2
+  toFun f := lift f.val f.property
   invFun g :=
     ⟨fun k => (truncate k).comp g, by
       intro _ _ h

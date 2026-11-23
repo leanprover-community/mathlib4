@@ -6,9 +6,10 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.GroupTheory.OrderOfElement
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 
 /-!
@@ -17,7 +18,6 @@ public import Mathlib.GroupTheory.OrderOfElement
 A finite order element in a normed ring has norm 1.
 
 The values of additive characters on finite cancellative monoids have norm 1.
-
 -/
 
 public section
@@ -31,7 +31,7 @@ protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
   ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
 
 example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.property, h⟩).norm_eq_one
 
 @[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
     (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one

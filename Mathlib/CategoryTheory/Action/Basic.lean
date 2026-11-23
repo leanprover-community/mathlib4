@@ -15,6 +15,9 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
 
@@ -272,16 +275,16 @@ abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
-  coe f := f.1
+  coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
-  hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
+  hom f := ⟨ConcreteCategory.hom (C := V) f.hom, fun g => by
     ext
-    simpa using congr($(f.2 g) _)⟩
+    simpa using congr($(f.comm g) _)⟩
   ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
-    simpa [ConcreteCategory.hom_ofHom] using congr($(f.2 g) x)⟩
+    simpa [ConcreteCategory.hom_ofHom] using congr($(f.property g) x)⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := V)
@@ -312,7 +315,6 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
   ext
   rw [Iso.conj_apply_asHom, Iso.eq_inv_comp]; simp [f.hom.comm]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
@@ -449,14 +451,12 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapActi
 
 variable (G : Type*) [Monoid G]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.mapAction` is functorial in the functor. -/
 @[simps! hom inv]
 def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.mapAction` preserves isomorphisms of functors. -/
 @[simps! hom inv]
 def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
@@ -465,7 +465,6 @@ def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
 
 end Functor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/
 @[simps functor inverse]

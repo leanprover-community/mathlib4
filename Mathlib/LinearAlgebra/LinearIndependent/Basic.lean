@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
+
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Linear independence
@@ -39,7 +40,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 public section
@@ -162,7 +162,7 @@ theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
   rw [LinearIndepOn, LinearIndepOn]
   convert Iff.rfl using 2
   ext x
-  exact h.symm x.2
+  exact h.symm x.property
 
 theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn v w s) :
     LinearIndepOn R w s :=
@@ -316,7 +316,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
-    ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
+    ⟨fun x => ⟨x.val, h x.property⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp_def]
@@ -498,6 +498,10 @@ theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
     LinearIndepOn R id (s ∪ t) ↔
     LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
   rw [linearIndepOn_union_iff hdj, image_id, image_id]
+
+theorem disjoint_span_of_linearIndepOn_id_union {s t : Set M} (hdj : Disjoint s t)
+    (hli : LinearIndepOn R id (s ∪ t)) : Disjoint (span R s) (span R t) :=
+  ((linearIndepOn_id_union_iff hdj).mp hli).2.2
 
 open LinearMap
 

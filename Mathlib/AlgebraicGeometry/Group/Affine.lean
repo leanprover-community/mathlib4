@@ -209,7 +209,6 @@ attribute [local simp] AlgHom.toUnder in
 instance instMonObjSpecAsOverSpec [Bialgebra R A] : MonObj ((Spec A).asOver (Spec R)) :=
   ((bialgSpec R).obj <| .op <| .of R A).mon
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma one_spec_asOver_spec [Bialgebra R A] :
     η[(Spec A).asOver (Spec R)] = LaxMonoidal.ε (algSpec R) ≫
@@ -271,11 +270,12 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
     WithConv (S →ₐ[R] T) ≃*
       ((Spec ↧T).asOver (Spec ↧R) ⟶ (Spec ↧S).asOver (Spec ↧R)) where
   toFun f := (Spec.map (CommRingCat.ofHom f.ofConv.toRingHom)).asOver _
-  invFun f := ⟨(Spec.preimage f.left).hom, by
-    suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
-      CommRingCat.ofHom (algebraMap R T) from fun r ↦ congr($this r)
-    apply Spec.map_injective
-    simpa [-comp_over] using! f.w⟩
+  invFun f := ⟨{ (Spec.preimage f.left).hom with
+    commutes' := by
+      suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
+        CommRingCat.ofHom (algebraMap R T) from fun r ↦ congr($this r)
+      apply Spec.map_injective
+      simpa [-comp_over] using! f.w }⟩
   left_inv f := by
     apply WithConv.ofConv_injective
     apply AlgHom.toRingHom_injective
@@ -375,7 +375,6 @@ lemma pullbackSpecIso'_symmetry [Algebra R T] :
   simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_fst, Category.assoc,
     pullbackSpecIso_inv_snd, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Algebra R T] :
     (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver (Spec ↧S) where
   comp_over := by

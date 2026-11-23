@@ -36,7 +36,6 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
 This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
 `Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
-
 -/
 
 @[expose] public section
@@ -88,9 +87,11 @@ theorem isDiscrete_iff_forall_mem_exists_isClosed {S : Set X} :
   rw [isDiscrete_iff_forall_subset_exists_isOpen]
   constructor <;> intro h s sS
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
-    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by
+      rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff, -inf_of_le_left]⟩
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
-    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by
+      rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff, -inf_of_le_left]⟩
 
 theorem isClosed_of_subset_discrete_closed {s t : Set X} (sd : s ⊆ t)
     (ht : IsDiscrete t) (tc : IsClosed t) : IsClosed s := by
@@ -164,7 +165,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  let := hs.1
+  let := hs.to_subtype
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
@@ -209,7 +210,7 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ IsDiscrete s :=
-  ⟨fun h ↦ ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact h⟩,
+  ⟨fun h ↦ ⟨continuous_subtypeVal.discrete_of_tendsto_cofinite_cocompact h⟩,
    fun hs' ↦ hs.tendsto_coe_cofinite_of_isDiscrete hs'⟩
 
 end cofinite_cocompact
@@ -307,7 +308,7 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
     IsDiscrete (s ∩ U) := by
   rw [(by simp : ((s ∩ U) : Set X) = ((sᶜ ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [← Filter.mem_iff_inf_principal_compl]
-  simp_all [← Set.compl_sdiff, mem_codiscreteWithin]
+  simp_all [Set.union_comm, mem_codiscreteWithin]
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect

@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Init
 
 /-! Tests for the `oldObtain` linter. -/
 

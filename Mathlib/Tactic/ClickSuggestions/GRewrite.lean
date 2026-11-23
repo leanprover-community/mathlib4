@@ -19,7 +19,7 @@ namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta Mathlib.Tactic ProofWidgets
 
-/-- `GRewritePos` contains the ìnformation about a given subexpression position needed for
+/-- `GRewritePos` contains the information about a given subexpression position needed for
 applying a  `grw` lemma. -/
 structure GrwPos where
   /-- The name of the relation. -/
@@ -157,10 +157,10 @@ deriving Inhabited
 
 instance : Ord GrwKey where
   compare a b :=
-    (compare a.1 b.1).then <|
-    (compare a.2 b.2).then <|
-    (compare a.3 b.3).then
-    (compare a.4 b.4)
+    (compare a.numGoals b.numGoals).then <|
+    (compare a.nameLength b.nameLength).then <|
+    (compare a.replacementSize b.replacementSize).then
+    (compare a.name b.name)
 
 /-- Whether the two suggestions are duplicates of each other. -/
 def GrwKey.isDuplicate (a b : GrwKey) : MetaM Bool :=

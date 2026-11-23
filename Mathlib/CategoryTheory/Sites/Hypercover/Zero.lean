@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Precoverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 0-hypercovers
 
@@ -570,15 +573,15 @@ end PreZeroHypercover
 @[simps -isSimp]
 def Presieve.preZeroHypercover {S : C} (R : Presieve S) : PreZeroHypercover.{max u v} S where
   I₀ := R.uncurry
-  X i := i.1.1
-  f i := i.1.2
+  X i := i.val.1
+  f i := i.val.2
 
 @[simp]
 lemma Presieve.presieve₀_preZeroHypercover {S : C} (R : Presieve S) :
     R.preZeroHypercover.presieve₀ = R := by
   refine le_antisymm ?_ ?_
   · rintro - - ⟨i⟩
-    exact i.2
+    exact i.property
   · intro Y f h
     let i : R.uncurry := ⟨⟨Y, f⟩, h⟩
     exact .mk i
@@ -618,9 +621,9 @@ def PreZeroHypercover.toShrink {S : C} (E : PreZeroHypercover.{w} S) : E.Hom E.s
 /-- The deduplication of `E` refines `E`. -/
 noncomputable
 def PreZeroHypercover.fromShrink {S : C} (E : PreZeroHypercover.{w} S) : E.shrink.Hom E where
-  s₀ i := (Presieve.ofArrows_surj _ _ i.2).choose
-  h₀ i := eqToHom (Presieve.ofArrows_surj _ _ i.2).choose_spec.1.symm
-  w₀ i := (Presieve.ofArrows_surj _ _ i.2).choose_spec.2.symm
+  s₀ i := (Presieve.ofArrows_surj _ _ i.property).choose
+  h₀ i := eqToHom (Presieve.ofArrows_surj _ _ i.property).choose_spec.1.symm
+  w₀ i := (Presieve.ofArrows_surj _ _ i.property).choose_spec.2.symm
 
 section
 
@@ -642,18 +645,18 @@ lemma Precoverage.RespectsIso.of_forall_exists_iso [J.RespectsIso] {S : C} {R T 
   choose YT eT hReg using hTR
   let E : PreZeroHypercover S :=
     { I₀ := R.uncurry ⊕ T.uncurry
-      X i := i.elim (fun j ↦ j.1.1) (fun j ↦ YT _ j.2)
+      X i := i.elim (fun j ↦ j.val.1) (fun j ↦ YT _ j.property)
       f i :=
         match i with
-        | .inl i => by exact i.1.2
-        | .inr i => by exact (eT _ i.2).hom ≫ i.1.2 }
+        | .inl i => by exact i.val.2
+        | .inr i => by exact (eT _ i.property).hom ≫ i.val.2 }
   let F : PreZeroHypercover S :=
     { I₀ := R.uncurry ⊕ T.uncurry
-      X i := i.elim (fun j ↦ YR _ j.2) (fun j ↦ j.1.1)
+      X i := i.elim (fun j ↦ YR _ j.property) (fun j ↦ j.val.1)
       f i :=
         match i with
-        | .inl i => by exact (eR _ i.2).hom ≫ i.1.2
-        | .inr i => by exact i.1.2 }
+        | .inl i => by exact (eR _ i.property).hom ≫ i.val.2
+        | .inr i => by exact i.val.2 }
   let e : E ≅ F := by
     refine PreZeroHypercover.isoMk (Equiv.refl _) (fun i ↦ ?_) (fun i ↦ ?_)
     · match i with
@@ -664,14 +667,14 @@ lemma Precoverage.RespectsIso.of_forall_exists_iso [J.RespectsIso] {S : C} {R T 
     refine le_antisymm ?_ fun Y g hg ↦ .mk (Sum.inl (⟨⟨Y, g⟩, hg⟩ : R.uncurry))
     rintro - - ⟨i⟩
     match i with
-    | .inl i => exact i.2
+    | .inl i => exact i.property
     | .inr i => apply hReg
   have hFT : F.presieve₀ = T := by
     refine le_antisymm ?_ fun Y g hg ↦ .mk (Sum.inr (⟨⟨Y, g⟩, hg⟩ : T.uncurry))
     rintro - - ⟨i⟩
     match i with
     | .inl i => apply hTeg
-    | .inr i => exact i.2
+    | .inr i => exact i.property
   rw [← hFT]
   apply RespectsIso.of_iso e
   rwa [hER]

@@ -27,7 +27,6 @@ set_option linter.unusedVariables false
 This file contains tests for the flexible linter which require heavier imports, such as the
 mathlib tactics `norm_num`, `ring`, `group`, `positivity` or `module`.
 In essence, it verifies how certain mathlib tactics are treated.
-
 -/
 
 -- `norm_num` is allowed after `simp`.
@@ -102,6 +101,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
   simp
   abel
 
+set_option warn.abelTransparency false in
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
@@ -209,6 +209,7 @@ example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   assumption
 
 -- So are `abel_nf!` and `group`.
+set_option warn.abelTransparency false in
 #guard_msgs in
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   simp

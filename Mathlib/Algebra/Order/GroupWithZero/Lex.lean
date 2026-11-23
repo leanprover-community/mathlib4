@@ -24,7 +24,6 @@ the plain product `αˣ × βˣ` would not be linearly ordered.
 ## TODO
 
 Create the "LinOrdCommGrpWithZero" category.
-
 -/
 
 @[expose] public section

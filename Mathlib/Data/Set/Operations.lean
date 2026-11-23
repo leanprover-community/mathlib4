@@ -9,12 +9,9 @@ module
 public import Mathlib.Basic.SProd
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.Subtype
-public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Aesop.BuiltinRules
-import Aesop.Frontend.Tactic
-import Aesop.Main
+import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about sets
@@ -152,7 +149,7 @@ theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f
 
 /-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f '' s`. -/
 def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
-  ⟨f p.1, mem_image_of_mem f p.2⟩
+  ⟨f p.val, mem_image_of_mem f p.property⟩
 
 /-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
 def kernImage (f : α → β) (s : Set α) : Set β := {y | ∀ ⦃x⦄, f x = y → x ∈ s}
@@ -194,16 +191,16 @@ def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_
 
 lemma rangeFactorization_eq_iff {ι : Sort*} {α : Type*} {f : ι → α} (a : ι) (b : Set.range f) :
     Set.rangeFactorization f a = b ↔ f a = b := by
-  rw [Set.rangeFactorization, ← b.coe_eta b.2, Subtype.ext_iff]
+  rw [Set.rangeFactorization, ← b.coe_eta b.property, Subtype.ext_iff]
 
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
-noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
+noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.property.choose
 
 -- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
-  x.2.choose_spec
+  x.property.choose_spec
 
 @[simp]
 theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
@@ -241,13 +238,15 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
     (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
-  aesop
+  grind
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
     t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
-  aesop
+  grind
 
 end Prod
 

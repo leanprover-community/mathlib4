@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex combinations
 
@@ -74,7 +77,7 @@ theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerM
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
 
-lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E] [SMulCommClass R' R R]
+lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E]
     [IsScalarTower R' R R] [SMulCommClass R R' E] [IsScalarTower R' R E] (hc : c ≠ 0) :
     t.centerMass (c • w) z = t.centerMass w z := by
   simp [centerMass, -smul_assoc, smul_assoc c, ← smul_sum, smul_inv₀, smul_smul_smul_comm, hc]
@@ -225,13 +228,13 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     (∑ᶠ i, w i • z i) ∈ s := by
   have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
-    rw [finsum, dite_eq_right H] at h₁
+    rw [finsum_def', dite_eq_right H] at h₁
     exact zero_ne_one h₁
   have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
   rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine hs.sum_mem (fun _ _ => h₀ _) ?_ fun i hi => hz _ ?_
-  · rwa [finsum, dite_eq_left hfin_w] at h₁
+  · rwa [finsum_def', dite_eq_left hfin_w] at h₁
   · rwa [hfin_w.mem_toFinset] at hi
 
 theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
@@ -299,7 +302,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   rw [s.centroid_eq_centerMass hs]
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
-  · have hs_card : (#s : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
+  · have hs_card : (#s : R) ≠ 0 := by simp [hs]
     simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 
@@ -529,10 +532,10 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   classical
   refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
-  simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
+  simp_rw [Set.subset_def, mem_inter_iff, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
-  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
+  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w <| by
     simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,
@@ -585,17 +588,17 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
     _ = ∑ g : ∀ i, κ i, (∏ i, w i (g i)) • f i (g i) := by
       simp only [Finset.sum_apply, Pi.smul_apply]
     _ = ∑ j : κ i, ∑ g : {g : ∀ k, κ k // g i = j},
-          (∏ k, w k (g.1 k)) • f i ((g : ∀ i, κ i) i) := by
+          (∏ k, w k (g.val k)) • f i ((g : ∀ i, κ i) i) := by
       rw [← Fintype.sum_fiberwise fun g : ∀ k, κ k ↦ g i]
-    _ = ∑ j : κ i, (∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.1 k)) • f i j := by
+    _ = ∑ j : κ i, (∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.val k)) • f i j := by
       simp_rw [sum_smul]
       congr! with j _ g _
-      exact g.2
+      exact g.property
     _ = ∑ j : κ i, w i j • f i j := ?_
     _ = x i := hf _
   congr! with j _
   calc
-    ∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.1 k)
+    ∑ g : {g : ∀ k, κ k // g i = j}, ∏ k, w k (g.val k)
       = ∑ g ∈ piFinset fun k ↦ if hk : k = i then hk ▸ {j} else univ, ∏ k, w k (g k) :=
       Finset.sum_bij' (fun g _ ↦ g) (fun g hg ↦ ⟨g, by simpa using mem_piFinset.1 hg i⟩)
         (by aesop) (by simp) (by simp) (by simp) (by simp)

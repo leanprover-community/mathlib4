@@ -88,7 +88,7 @@ lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [Decidabl
   simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
     mem_center_iff, scalar_apply]
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, by simpa [Units.ext_iff] using congr(GeneralLinearGroup.det $hr),
-    by simpa [Units.ext_iff] using hr⟩, fun ⟨r, hr1, hr⟩ ↦ ⟨⟨r, g⁻¹.1 i i, ?_, ?_⟩,
+    by simpa [Units.ext_iff] using hr⟩, fun ⟨r, hr1, hr⟩ ↦ ⟨⟨r, g⁻¹.val i i, ?_, ?_⟩,
       by simp [Units.ext_iff, hr]⟩⟩
   · simpa [-mul_inv_cancel, ← hr, ← pow_succ',
       Nat.sub_one_add_one Fintype.card_pos.ne.symm] using

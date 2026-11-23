@@ -25,7 +25,6 @@ Similar results are obtained when `W` has a right calculus of fractions.
 ## References
 
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
 -/
 
 @[expose] public section

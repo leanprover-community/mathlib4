@@ -71,16 +71,20 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 
 @[simp, norm_cast]
-theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
+theorem nnNorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
-theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
+theorem nnNorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_star := nnNorm_star
 
 instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
@@ -158,7 +162,7 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
 def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
-    toFun := fun a => !₂[a.1, a.2, a.3, a.4]
+    toFun := fun a => !₂[a.re, a.imI, a.imJ, a.imK]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
 
