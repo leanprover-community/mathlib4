@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Polynomial.SignRight
 public import Mathlib.FieldTheory.RatFunc.Basic
 
+import Mathlib.Basic.Sign.Basic
+
 /-!
 # The Cauchy index of a rational function
 
