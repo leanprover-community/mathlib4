@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -269,6 +269,13 @@ lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
   intro f g h
   ext m
   simpa using Flat.tensorProduct_mk_injective R N S congr($h (1 ⊗ₜ[R] m))
+
+@[simp] lemma _root_.LinearMap.baseChange_inj [FaithfulSMul R S] [Flat R N] {f g : M →ₗ[R] N} :
+    f.baseChange S = g.baseChange S ↔ f = g := (baseChangeHom_injective ..).eq_iff
+
+@[simp] lemma _root_.LinearMap.isIdempotentElem_baseChange_iff [FaithfulSMul R S] [Flat R M]
+    {f : M →ₗ[R] M} : IsIdempotentElem (f.baseChange S) ↔ IsIdempotentElem f := by
+  simp [IsIdempotentElem, ← baseChange_mul]
 
 end Algebra
 

@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.CharAndCard
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 
+import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.NumberTheory.MulChar.Lemmas
 
 /-!

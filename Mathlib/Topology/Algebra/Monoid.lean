@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
+
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids

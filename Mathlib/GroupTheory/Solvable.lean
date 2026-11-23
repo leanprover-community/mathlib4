@@ -6,11 +6,11 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.GroupTheory.Abelianization.Defs
-public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.GroupTheory.Perm.ViaEmbedding
 
 /-!
 # Solvable Groups

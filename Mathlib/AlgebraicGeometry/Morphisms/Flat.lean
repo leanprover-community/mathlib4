@@ -5,11 +5,12 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+
+import Mathlib.Algebra.Category.Ring.Under.Limits
 
 /-!
 # Flat morphisms

@@ -7,10 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
