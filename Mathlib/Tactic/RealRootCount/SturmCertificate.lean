@@ -17,7 +17,8 @@ number of distinct real roots of the polynomial.
 ## Main definitions
 
 - `SturmCertificate`: the certificate.
-- `checkSturm`: check that the `SturmCertificate` represents a valid Sturm sequence.
+- `SturmCertificate.entries?`: validate the certificate and compute the entries of the Sturm
+  sequence that it describes.
 - `realRootCount?`: validate the certificate and compute the number of distinct real roots of the
   certificate's polynomial.
 - `realRootCountIoo?`: validate the certificate and compute the number of distinct real roots in an
@@ -97,36 +98,28 @@ structure SturmCertificate where
   /-- The steps that give the entries of the Sturm sequence after `s` and its derivative. -/
   steps : List SturmStep
 
-/-- The sequence of polynomials that starts with `p` and `q` and continues with the `r` of each
-`SturmStep`, without the last one. In steps that pass `checkSteps` the last `r` is the zero
-entry `[]` that ends the sequence. -/
-def chain (p q : List ℤ) : List SturmStep → List (List ℤ)
-  | [] => [p]
-  | s :: ss => p :: chain q s.r ss
+/-- Reconstruct the entries of a Sturm sequence from its first two entries `p` and `q` and the list
+`steps`, without the final zero remainder. The function returns `none` if a step is invalid or the
+sequence does not end with a zero remainder. -/
+def sturmEntries? (p q : List ℤ) (steps : List SturmStep) : Option (List (List ℤ)) :=
+  match q, steps with
+  | [], [] => some [p]
+  | q, s :: ss => if s.check p q then (sturmEntries? q s.r ss).map (p :: ·) else none
+  | _, _ => none
 
-/-- The sequence of polynomials of the Sturm sequence that the certificate describes. -/
-def SturmCertificate.entries (d : SturmCertificate) : List (List ℤ) :=
-  chain d.s (coeffDerivative d.s) d.steps
-
-/-- Check each step in the Sturm sequence that starts with `p` and `q`, and that the sequence
-ends with the zero entry `[]`. -/
-def checkSteps : List ℤ → List ℤ → List SturmStep → Bool
-  | _, [], [] => true
-  | p, q, s :: ss => s.check p q && checkSteps q s.r ss
-  | _, _, _ => false
-
-/-- Check that the `SturmCertificate` represents a valid Sturm sequence. -/
-def checkSturm (d : SturmCertificate) : Bool :=
-  coeffLead d.s != 0 && checkSteps d.s (coeffDerivative d.s) d.steps
+/-- The sequence of polynomials of the Sturm sequence that the certificate describes.
+The function returns `none` if the certificate is invalid. -/
+def SturmCertificate.entries? (d : SturmCertificate) : Option (List (List ℤ)) :=
+  if coeffLead d.s != 0 then sturmEntries? d.s (coeffDerivative d.s) d.steps else none
 
 /-- Compute the number of real roots of the polynomial in the `SturmCertificate`.
 The function returns `none` if the certificate is invalid. -/
 def realRootCount? (d : SturmCertificate) : Option ℕ :=
-  let sturmSeq := d.entries
-  let atTop := (sturmSeq.map coeffLead).signVariations
-  let atBot :=
-    (sturmSeq.map fun e => let l := coeffLead e; if e.length % 2 = 0 then -l else l).signVariations
-  if checkSturm d then some (atBot - atTop) else none
+  d.entries?.map fun sturmSeq =>
+    let atTop := (sturmSeq.map coeffLead).signVariations
+    let atBot := (sturmSeq.map fun e =>
+      let l := coeffLead e; if e.length % 2 = 0 then -l else l).signVariations
+    atBot - atTop
 
 /-- Compute the integer `d ^ (p.length - 1) * f (n / d)`, where `f` is the polynomial
 that `p` represents and d > 0. -/
@@ -140,11 +133,13 @@ open interval from `an / ad` to `bn / bd`.  The function returns `none` if the c
 invalid, `ad` or `bd` is zero, `an / ad < bn / bd` is false, or an endpoint is a root of the
 certificate's polynomial. -/
 def realRootCountIoo? (d : SturmCertificate) (an : ℤ) (ad : ℕ) (bn : ℤ) (bd : ℕ) : Option ℕ :=
-  let sturmSeq := d.entries
-  let atA := (sturmSeq.map (evalScaled an ad)).signVariations
-  let atB := (sturmSeq.map (evalScaled bn bd)).signVariations
-  if checkSturm d && 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.s != 0 &&
-      evalScaled bn bd d.s != 0 then some (atA - atB) else none
+  if 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.s != 0 &&
+      evalScaled bn bd d.s != 0 then
+    d.entries?.map fun sturmSeq =>
+      let atA := (sturmSeq.map (evalScaled an ad)).signVariations
+      let atB := (sturmSeq.map (evalScaled bn bd)).signVariations
+      atA - atB
+  else none
 
 end Mathlib.Tactic.RealRootCount
 
