@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product and direct limits commute with each other.
 
@@ -19,7 +22,6 @@ as `R`-modules.
 
 * `TensorProduct.directLimitLeft : DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M)`
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`
-
 -/
 
 @[expose] public section
@@ -112,14 +114,14 @@ variable [DirectedSystem G (f · · ·)]
 
 instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
   map_self i x := by
-    convert! LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
+    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ _ _ x := by
-    convert! ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
   map_self i x := by
-    convert! LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
+    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ h₁ h₂ x := by
-    convert! ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 end TensorProduct

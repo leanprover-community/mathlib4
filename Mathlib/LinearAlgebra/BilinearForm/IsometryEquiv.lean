@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric equivalences with respect to bilinear forms
 
@@ -52,6 +55,7 @@ namespace IsometryEquiv
 variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂}
   {B₃ : LinearMap.BilinForm R M₃}
 
+@[macro_inline]
 instance : EquivLike (B₁.IsometryEquiv B₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
@@ -85,7 +89,7 @@ def symm (f : B₁.IsometryEquiv B₂) : B₂.IsometryEquiv B₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by
       intro _ _; rw [← f.map_app]; congr
-      repeat exact f.toLinearEquiv.apply_symm_apply _ }
+      all_goals exact f.toLinearEquiv.apply_symm_apply _ }
 
 /-- The composition of two isometric equivalences between bilinear forms. -/
 @[trans]

@@ -16,7 +16,6 @@ to parallel the API for conditionally complete lattices where possible. For the 
 theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
 unnecessary. Otherwise the names here share the same names as their counterparts in
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
-
 -/
 public section
 
@@ -119,12 +118,12 @@ protected theorem DirectedOn.lt_csSup_of_lt (hd : DirectedOn (· ≤ ·) s) (hs 
 theorem csSup_singleton (a : α) : sSup {a} = a :=
   isGreatest_singleton.csSup_eq
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem csInf_Ici {α : Type*} [ConditionallyCompletePartialOrderInf α] {a : α} :
     sInf (Ici a) = a :=
   isLeast_Ici.csInf_eq
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem csInf_Ico {α : Type*} [ConditionallyCompletePartialOrderInf α] {a b : α} (h : a < b) :
     sInf (Ico a b) = a :=
   (isLeast_Ico h).csInf_eq
@@ -133,14 +132,6 @@ theorem csInf_Ico {α : Type*} [ConditionallyCompletePartialOrderInf α] {a b : 
 theorem csInf_Icc {α : Type*} [ConditionallyCompletePartialOrderInf α] {a b : α}
     (h : a ≤ b) : sInf (Icc a b) = a :=
   (isLeast_Icc h).csInf_eq
-
-@[to_dual existing, simp]
-theorem csSup_Iic : sSup (Iic a) = a :=
-  isGreatest_Iic.csSup_eq
-
-@[to_dual existing, simp]
-theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
-  (isGreatest_Ioc h).csSup_eq
 
 @[simp]
 theorem csSup_Icc {a b : α} (h : a ≤ b) : sSup (Icc a b) = b :=

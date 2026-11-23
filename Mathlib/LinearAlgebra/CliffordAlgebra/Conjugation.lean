@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-public import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Conjugations
@@ -29,7 +28,6 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_involute_commute`
 * `CliffordAlgebra.involute_mem_evenOdd_iff`
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
-
 -/
 
 @[expose] public section
@@ -65,8 +63,8 @@ theorem involute_involute : ∀ a : CliffordAlgebra Q, involute (involute a) = a
 /-- `CliffordAlgebra.involute` as an `AlgEquiv`. -/
 @[simps!]
 def involuteEquiv : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra Q :=
-  AlgEquiv.ofAlgHom involute involute (AlgHom.ext <| involute_involute)
-    (AlgHom.ext <| involute_involute)
+  AlgEquiv.ofAlgHom involute involute (AlgHom.ext involute_involute)
+    (AlgHom.ext involute_involute)
 
 end Involute
 
@@ -121,7 +119,7 @@ protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
-  AlgHom.congr_fun reverseOpEquiv.symm_comp
+  AlgHom.congr_fun (reverseOpEquiv (R := R)).symm_comp
 
 @[simp]
 theorem reverse_comp_reverse :
@@ -196,7 +194,7 @@ section Involute
 theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
     p.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       p.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap :=
-  Submodule.map_equiv_eq_comap_symm involuteEquiv.toLinearEquiv _
+  Submodule.map_equiv_eq_comap_symm (involuteEquiv (R := R)).toLinearEquiv _
 
 @[simp]
 theorem ι_range_map_involute :

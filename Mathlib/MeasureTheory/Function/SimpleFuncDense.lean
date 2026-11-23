@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Density of simple functions
@@ -160,7 +160,7 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
   refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
   simp -iota only [Nat.range_casesOn, closure_union, range_comp]
   exact
-    Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
+    Subset.trans (image_closure_subset_closure_image continuous_subtypeVal)
       subset_union_right
 
 theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions based on membership of a sequence of sets
 
@@ -29,7 +32,6 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 * `disjoint_memPartition`: the sets in `memPartition f n` are disjoint
 * `sUnion_memPartition`: the union of the sets in `memPartition f n` is `univ`
 * `finite_memPartition`: `memPartition f n` is finite
-
 -/
 
 @[expose] public section

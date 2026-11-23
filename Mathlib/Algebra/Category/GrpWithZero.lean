@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.CategoryTheory.Category.Bipointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of groups with zero
 
@@ -83,8 +86,8 @@ instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
-  hom := ofHom (.ofClass e)
-  inv := ofHom (.ofClass e.symm)
+  hom := ofHom e
+  inv := ofHom e.symm
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.Opposite
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Support of homological complexes
 
@@ -22,7 +21,6 @@ when the conditions above are satisfied for those `i'` that are of the form `e.f
 (These two predicates are not made typeclasses because in most practical applications,
 they are equivalent to `K.IsSupported e'` or `K.IsStrictlySupported e'` for a
 complementary embedding `e'`.)
-
 -/
 
 public section
@@ -152,7 +150,6 @@ section
 variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
-set_option backward.defeqAttrib.useBackward true in
 instance map_isStrictlySupported [K.IsStrictlySupported e] :
     ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e where
   isZero i' hi' := by

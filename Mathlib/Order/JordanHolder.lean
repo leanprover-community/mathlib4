@@ -5,13 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.ModularLattice
-public import Mathlib.Data.List.Sort
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Logic.Equiv.Functor
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.RelSeries
+
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Functor
 
 /-!
 # Jordan-Hölder Theorem
@@ -116,7 +115,7 @@ theorem Iso.rel
     (h_rel : ∀ {x y}, IsMaximal x (x ⊔ y) → e (x, x ⊔ y) (x ⊓ y, y))
     {x y : X × X} (h_iso : Iso x y) : e x y := by
   have : IsEquiv (X × X) e := { refl _ := h_refl, symm _ _ := h_symm, trans _ _ _ := h_trans }
-  refine Relation.EqvGen.eqvGen_le ?_ _ _ h_iso
+  refine Relation.eqvGen_le ?_ _ _ h_iso
   rintro ⟨a, b⟩ ⟨c, d⟩ ⟨h, rfl : b = a ⊔ d, rfl : c = a ⊓ d⟩
   exact h_rel h
 
@@ -222,7 +221,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
   have hi : (i : ℕ) < (s.length - 1).succ := by
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
-    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
+    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.isLt) (by simpa [last, s.inj, Fin.ext_iff] using hx)
   exact ⟨⟨↑i, hi⟩, by simp⟩
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
@@ -244,7 +243,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_ofPred_eq] at this
-  convert! this using 3
+  convert this using 3
   exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
@@ -388,7 +387,7 @@ theorem length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero
     {s₁ s₂ : CompositionSeries X} (hb : s₁.head = s₂.head)
     (ht : s₁.last = s₂.last) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
   have : Fin.last s₂.length = (0 : Fin s₂.length.succ) :=
-    s₂.injective (hb.symm.trans ((congr_arg s₁ (Fin.ext (by simp [hs₁]))).trans ht)).symm
+    s₂.injective (hb.symm.trans (congr(s₁ $(Fin.ext (by simp [hs₁]))).trans ht)).symm
   simpa [Fin.ext_iff]
 
 theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : CompositionSeries X}

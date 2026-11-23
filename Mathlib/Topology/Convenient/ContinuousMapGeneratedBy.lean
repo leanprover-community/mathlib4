@@ -18,7 +18,6 @@ the composition `g ∘ f` is continuous.
 ## References
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
-
 -/
 
 universe v v' t u
@@ -94,6 +93,7 @@ structure ContinuousMapGeneratedBy where
   toFun : Y → Z
   prop : ContinuousGeneratedBy X toFun
 
+@[macro_inline]
 instance : FunLike (ContinuousMapGeneratedBy X Y Z) Y Z where
   coe f := f.toFun
   coe_injective _ _ _ := by aesop

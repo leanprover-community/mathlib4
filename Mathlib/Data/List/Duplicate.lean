@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # List duplicates
 
@@ -17,7 +20,6 @@ public import Mathlib.Data.List.Nodup
 ## Implementation details
 
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
-
 -/
 
 public section

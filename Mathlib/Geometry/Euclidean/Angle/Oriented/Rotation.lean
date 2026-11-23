@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rotations by oriented angles.
 
@@ -16,7 +19,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 ## Main definitions
 
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
-
 -/
 
 @[expose] public section
@@ -65,7 +67,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
-      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
@@ -74,7 +76,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp)
     (by
       ext x
-      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,

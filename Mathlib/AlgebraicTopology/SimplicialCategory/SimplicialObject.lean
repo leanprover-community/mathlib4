@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 public import Mathlib.CategoryTheory.Functor.FunctorHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of simplicial objects is simplicial
 
@@ -18,7 +21,6 @@ In this file, we deduce that `SimplicialObject D` is enriched over `SSet.{v} D`
 (when `D : Type u` and `[Category.{v} D]`) and that `SimplicialObject D`
 is actually a simplicial category. In particular, the category of simplicial
 sets is a simplicial category.
-
 -/
 
 public section

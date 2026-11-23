@@ -9,8 +9,10 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.RingTheory.RingHom.Integral
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Integral morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is integral if the preimage
@@ -18,7 +20,6 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is integral.
-
 -/
 
 public section
@@ -98,9 +99,6 @@ lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
     (arrowIsoΓSpecOfIsAffine φ).symm, inferInstance]
 
-set_option backward.isDefEq.respectTransparency.types false in
-instance : IsMultiplicative @IsIntegralHom where
-
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
     IsIntegralHom (Limits.coprod.desc f g) := by
   refine hasAffineProperty.coprodDesc_affineAnd RingHom.isIntegral_respectsIso ?_ _ _ ‹_› ‹_›
@@ -150,7 +148,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
   rw [SpecMap_iff]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
-  algebraize [φ.1, Polynomial.mapRingHom φ.1]
+  algebraize [φ.hom', Polynomial.mapRingHom φ.hom']
   exact H₁.universally_isClosedMap (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
     (isPullback_SpecMap_of_isPushout _ _ _ _

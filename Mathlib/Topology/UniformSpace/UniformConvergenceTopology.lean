@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Topology.Coherent
 public import Mathlib.Topology.UniformSpace.Equiv
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.UniformApproximation
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -386,7 +384,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
     IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
-  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective congr($H _)
 
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -701,11 +699,12 @@ protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDire
     (𝓤 (α →ᵤ[𝔖] β)).HasAntitoneBasis fun n ↦ UniformOnFun.gen 𝔖 (t n) (V n) := by
   have := hb.nonempty
   refine ⟨(UniformOnFun.hasBasis_uniformity_of_covering_of_basis 𝔖
-    ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
+    ht hmono.directed_le hex hb.toHasBasis).to_hasBasis ?_
+      fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
   · rintro ⟨k, l⟩ -
     rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
-    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
-  · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
+    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.antitone hln)⟩
+  · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.antitone h)
 
 protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n) :
@@ -853,7 +852,8 @@ protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) �
     (h𝔖 : 𝔖₂ ⊆ 𝔖₁) : 𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
   calc
     𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₁) := iInf_le_iInf_of_subset h𝔖
-    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := iInf₂_mono fun _i _hi => UniformSpace.comap_mono <| UniformFun.mono hu
+    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
+      iInf₂_mono fun _i _hi => UniformSpace.comap_monotone <| UniformFun.mono hu
 
 /-- If `x : α` is in some `S ∈ 𝔖`, then evaluation at `x` is uniformly continuous on
 `α →ᵤ[𝔖] β`. -/
@@ -937,7 +937,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
-  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective congr($H _)
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
@@ -1018,7 +1018,7 @@ protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖
   intro U hU
   rcases h𝔖 with ⟨V, hV, hVx⟩
   filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
-    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    (inter_mem hVx <| hc <| mem_nhds_left _ hU)]
     with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
 
 /-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,
@@ -1081,7 +1081,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
       have H := @UniformOnFun.inf_eq α (β × γ) 𝔖
         (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)
       apply_fun (fun u ↦ @uniformity (α →ᵤ[𝔖] β × γ) u) at H
-      convert! H.symm using 1
+      convert H.symm using 1
       rw [UniformOnFun.comap_eq, UniformOnFun.comap_eq]
       erw [inf_uniformity]
       rw [uniformity_comap, uniformity_comap]
@@ -1198,7 +1198,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly
   lift f to α → s using hf with f' hf'
   rw [tendstoUniformly_iff_tendsto] at h
   have : Tendsto (fun q ↦ (f' q.2, F' q.1 q.2)) (p ×ˢ ⊤) (𝓤 s) :=
-    h.of_tendsto_comp isUniformEmbedding_subtype_val.comap_uniformity.le
+    h.of_tendsto_comp isUniformEmbedding_subtypeVal.comap_uniformity.le
   apply UniformContinuous.comp_tendstoUniformly hg ?_
   rwa [← tendstoUniformly_iff_tendsto] at this
 

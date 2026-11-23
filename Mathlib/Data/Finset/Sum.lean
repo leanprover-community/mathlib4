@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Multiset.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint sum of finsets
 
@@ -32,10 +35,10 @@ variable {α β γ : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (α ⊕ β) :=
-  ⟨s.1.disjSum t.1, s.2.disjSum t.2⟩
+  ⟨s.val.disjSum t.val, s.nodup.disjSum t.nodup⟩
 
 @[simp]
-theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
+theorem val_disjSum : (s.disjSum t).val = s.val.disjSum t.val :=
   rfl
 
 @[simp]

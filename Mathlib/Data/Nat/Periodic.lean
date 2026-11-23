@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Nat.Count
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodic Functions on ℕ
 
@@ -46,7 +49,7 @@ theorem filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [
     (pp : Periodic p a) : card (filter p (Ico n (n + a))) = a.count p := by
   classical
   rw [count_eq_card_filter_range, Finset.card, Finset.filter_val, Finset.range_val, ←
-    multiset_Ico_map_mod n, ← map_count_True_eq_filter_card, ← map_count_True_eq_filter_card,
+    multiset_Ico_map_mod n, ← map_count_true_eq_filter_card, ← map_count_true_eq_filter_card,
     map_map]
   congr; funext n
   exact (pp.map_mod_nat n).symm
