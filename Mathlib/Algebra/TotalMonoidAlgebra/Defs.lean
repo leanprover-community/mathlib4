@@ -579,12 +579,10 @@ def uniqueRingEquiv [Subsingleton M] : R⟦M⟧ ≃+* R where
   toAddEquiv :=
     letI : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
     coeffAddEquiv.trans <| .funUnique M R
-  map_mul' x y := by
+  map_mul' _ _ := by
     let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
     have : mulAntidiagonal (default : M) = {(1, 1)} := by
-      ext ⟨a, b⟩
-      suffices a * b = default ↔ a = 1 ∧ b = 1 by simpa
-      refine ⟨fun _ ↦ ⟨?_, ?_⟩, fun _ ↦ ?_⟩ <;> subsingleton
+      simp [eq_singleton_iff_unique_mem, eq_iff_true_of_subsingleton]
     refine (coeff_mul ..).trans ?_
     simp [this, Unique.eq_default]
 
