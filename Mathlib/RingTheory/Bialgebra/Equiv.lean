@@ -147,7 +147,7 @@ theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toBialgHom = e₂.toB
 
 @[simp]
 protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
-    ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
+    ⇑(ofClass f) = f := rfl
 
 end
 
@@ -301,11 +301,13 @@ def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = Bial
   right_inv := BialgHom.ext_iff.1 h₁
 
 @[simp]
+theorem coe_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    ⇑(ofBialgHom f g h₁ h₂) = f := rfl
+
+@[simp]
 theorem toBialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).toBialgHom = f :=
   rfl
-
-@[deprecated (since := "2026-11-22")] alias coe_ofBialgHom := toBialgHom_ofBialgHom
 
 theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
