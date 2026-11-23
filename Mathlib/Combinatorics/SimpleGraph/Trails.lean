@@ -39,13 +39,15 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
+variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 
 namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
 abbrev IsTrail.edgesFinset (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, Multiset.coe_nodup.mpr h.edges_nodup⟩
+
+variable [DecidableEq V]
 
 theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
     Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
@@ -182,6 +184,8 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] (ht : p.IsEu
   simp
 
 end Walk
+
+variable [DecidableEq V]
 
 variable (G) in
 /-- A graph is Eulerian if it contains a closed Eulerian trail. -/
