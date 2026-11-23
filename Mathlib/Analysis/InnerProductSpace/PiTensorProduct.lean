@@ -262,6 +262,10 @@ noncomputable def isEmptyIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] 𝕜 :=
 @[simp]
 lemma isEmptyIsometry_apply (x : ⨂[𝕜] i, E i) : isEmptyIsometry ι x = isEmptyEquiv ι x := rfl
 
+@[simp]
+lemma toLinearEquiv_isEmptyIsometry :
+    isEmptyIsometry ι (𝕜 := 𝕜) (E := E).toLinearEquiv = isEmptyEquiv ι := rfl
+
 end IsEmpty
 
 section Subsingleton
@@ -283,6 +287,10 @@ noncomputable def subsingletonIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] E i�
 @[simp]
 lemma subsingletonIsometry_apply (x : ⨂[𝕜] i, E i) :
     subsingletonIsometry i₀ x = subsingletonEquiv i₀ x := rfl
+
+@[simp]
+lemma toLinearEquiv_subsingletonIsometry :
+    subsingletonIsometry i₀ (𝕜 := 𝕜) (E := E).toLinearEquiv = subsingletonEquiv i₀ := rfl
 
 end Subsingleton
 
