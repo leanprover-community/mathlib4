@@ -133,11 +133,11 @@ theorem discr_quadraticAlgebra_eq {a b : ℤ}
     (h1 : QuadraticAlgebra.discr a b ≠ 1) :
     -- This is needed to get a number field
     haveI : Fact (¬ IsSquare (QuadraticAlgebra.discr (a : ℚ) (b : ℚ))) :=
-      ⟨by rw [QuadraticAlgebra.Int.discr_intCast, Rat.isSquare_intCast_iff]
+      ⟨by rw [QuadraticAlgebra.discr_intCast, Rat.isSquare_intCast_iff]
           exact h.eq_one_of_isSquare.mt h1⟩
     discr (QuadraticAlgebra ℚ a b) = QuadraticAlgebra.discr a b := by
   have : Fact (¬ IsSquare (QuadraticAlgebra.discr (a : ℚ) (b : ℚ))) :=
-    ⟨by rw [QuadraticAlgebra.Int.discr_intCast, Rat.isSquare_intCast_iff]
+    ⟨by rw [QuadraticAlgebra.discr_intCast, Rat.isSquare_intCast_iff]
         exact h.eq_one_of_isSquare.mt h1⟩
   exact discr_eq_quadraticAlgebra_discr
     (QuadraticAlgebra.Int.algEquivIntegralClosure h).toRingEquiv.symm
@@ -147,13 +147,14 @@ See the implementation notes in the module docstring for the `Fact` assumption. 
 theorem discr_quadraticAlgebra {D : ℤ} [Fact (¬ IsSquare (D : ℚ))]
     (hD : Int.IsFundamentalDiscr D) (hD1 : D ≠ 1) :
     discr (QuadraticAlgebra ℚ (D : ℚ) 0) = D := by
-  have hd : QuadraticAlgebra.discr (D / 4) (D % 4) = D := hD.discr_ediv_four_emod_four
+  have hd : QuadraticAlgebra.discr (D / 4) (D % 4) = D :=
+    QuadraticAlgebra.discr_ediv_emod hD.emod_four_eq_zero_or_one
   have : Fact (¬ IsSquare (QuadraticAlgebra.discr ((D / 4 : ℤ) : ℚ) ((D % 4 : ℤ) : ℚ))) :=
-    ⟨by rw [QuadraticAlgebra.Int.discr_intCast, hd]; exact Fact.out⟩
+    ⟨by rw [QuadraticAlgebra.discr_intCast, hd]; exact Fact.out⟩
   let e : QuadraticAlgebra ℚ (D : ℚ) 0 ≃ₐ[ℚ] QuadraticAlgebra ℚ (D / 4 : ℤ) (D % 4 : ℤ) := by
     refine (QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two.mpr
       ⟨(isUnit_of_invertible 2).unit, ?_⟩).some
-    grind [IsUnit.unit_spec, QuadraticAlgebra.Int.discr_intCast, QuadraticAlgebra.discr_def]
+    grind [IsUnit.unit_spec, QuadraticAlgebra.discr_intCast, QuadraticAlgebra.discr_def]
   rw [discr_eq_discr_of_algEquiv _ e, discr_quadraticAlgebra_eq (by rwa [hd]) (by rwa [hd]), hd]
 
 /-- The discriminant of `ℚ(√d)` is `4 * d` when `d` is squarefree and `d ≡ 2, 3 [ZMOD 4]`.
