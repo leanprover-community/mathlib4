@@ -5651,6 +5651,7 @@ public import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Covering.Besicovitch
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Covering.ClosedBallCovering
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
 public import Mathlib.MeasureTheory.Covering.Differentiation
 public import Mathlib.MeasureTheory.Covering.LiminfLimsup
