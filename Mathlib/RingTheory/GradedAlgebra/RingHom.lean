@@ -94,9 +94,9 @@ initialize_simps_projections GradedRingHom (toFun → apply)
 attribute [coe] GradedRingHom.toRingHom
 
 @[simp]
-theorem ofClass_eq_toRingHom (f : 𝒜 →+*ᵍ ℬ) : .ofClass f = f.toRingHom := rfl
+theorem ringHomOfClass_eq_toRingHom (f : 𝒜 →+*ᵍ ℬ) : .ofClass f = f.toRingHom := rfl
 
-@[deprecated (since := "2026-11-22")] alias toRingHom_eq_toRingHom := ofClass_eq_toRingHom
+@[deprecated (since := "2026-11-22")] alias toRingHom_eq_toRingHom := ringHomOfClass_eq_toRingHom
 
 @[simp]
 theorem coe_toRingHom (f : 𝒜 →+*ᵍ ℬ) : ⇑f.toRingHom = f := rfl

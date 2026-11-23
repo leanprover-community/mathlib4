@@ -133,7 +133,7 @@ set_option backward.isDefEq.respectTransparency.types false in
   ext x : 2
   obtain ⟨c, rfl⟩ := x.mk_surjective
   simp only [val_localRingHom, val_mk, RingHom.comp_apply]
-  simp only [GradedRingHom.ofClass_eq_toRingHom, Localization.localRingHom_mk,
+  simp only [GradedRingHom.ringHomOfClass_eq_toRingHom, Localization.localRingHom_mk,
     GradedRingHom.coe_toRingHom]
   -- I sincerely apologise for your eyes.
   erw [stalkIso'_symm_mk]
