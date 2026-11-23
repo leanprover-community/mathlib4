@@ -153,7 +153,6 @@ namespace IsCovariantDerivativeOn
 
 section trivial_bundle
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 lemma trivial :
