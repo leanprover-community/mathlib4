@@ -133,8 +133,8 @@ The following results are related to the equivalent characterizations in
 - `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
   linear disjointness is preserved by isomorphisms, provided that one of the field is algebraic.
 
-- `IntermediateField.relfinrank_sup_eq_finrank_inf`,
-  `IntermediateField.finrank_sup_mul_finrank_inf_eq`:
+- `IntermediateField.finrank_sup_mul_finrank_inf_eq`,
+  `IntermediateField.relfinrank_sup_eq_finrank_inf`:
   if `A` is a Galois extension, then the product of the ranks of `A ⊔ B` and `A ⊓ B` is equal to
   the product of the ranks of `A` and `B`, and if moreover `A` is finite, then the relative rank
   of `A ⊔ B` over `A` is equal to the rank of `B` over `A ⊓ B`.
@@ -449,15 +449,13 @@ theorem finrank_right_eq_finrank [Module.Finite F B] (h₁ : A.LinearDisjoint B)
 over `F`, then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_right_eq_finrank [FiniteDimensional F A] (h₁ : A ⊔ B = ⊤)
     (h : finrank B E = finrank F A) : A.LinearDisjoint B := by
-  refine IntermediateField.LinearDisjoint.of_basis_left (Module.finBasis F A) <|
+  refine of_basis_left (Module.finBasis F A) <|
     linearIndependent_of_top_le_span_of_card_eq_finrank ?_ (by simp [h])
-  have := congr_arg Subalgebra.toSubmodule <| congr_arg toSubalgebra h₁
-  rw [top_toSubalgebra, Algebra.top_toSubmodule, ← restrictScalars_adjoin_intermediateField,
-    restrictScalars_toSubalgebra, Subalgebra.restrictScalars_toSubmodule,
-    adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right,
-    Submodule.restrictScalars_eq_top_iff] at this
-  exact (this.symm.trans
-    (Subalgebra.adjoin_eq_span_basis B A.toSubalgebra (Module.finBasis F A))).le
+  have h₂ : adjoin B (A : Set E) = ⊤ := restrictScalars_injective F <| by
+    rw [restrictScalars_adjoin_intermediateField, h₁, restrictScalars_top]
+  refine (Eq.trans ?_ (Subalgebra.adjoin_eq_span_basis B A.toSubalgebra (finBasis F A))).le
+  rw [coe_toSubalgebra, ← adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right, h₂]
+  simp
 
 private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F A] (h₁ : A ⊔ B = ⊤)
     (h₂ : A ⊓ B = ⊥) : A.LinearDisjoint B := by
@@ -621,7 +619,7 @@ theorem adjoin_finrank_eq_finrank_right (H : A.LinearDisjoint L) :
     finrank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
       subset_adjoin L (A : Set E))) = finrank F L := by
   by_cases hL : FiniteDimensional F L
-  · simp only [finrank, H.adjoin_rank_eq_rank_right_of_isAlgebraic_right]
+  · simp [finrank, H.adjoin_rank_eq_rank_right_of_isAlgebraic_right]
   rw [finrank_of_not_finite hL, finrank_of_not_finite]
   contrapose hL
   have : Finite (Free.ChooseBasisIndex F L) := by
