@@ -133,8 +133,8 @@ theorem map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalHom
 @[simps apply]
 noncomputable def mapEquiv (f : R ≃+* S) :
     IsLocalRing.ResidueField R ≃+* IsLocalRing.ResidueField S where
-  toFun := map (f : R →+* S)
-  invFun := map (f.symm : S →+* R)
+  toFun := map f.toRingHom
+  invFun := map f.symm.toRingHom
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
   map_mul' := map_mul _
@@ -147,7 +147,7 @@ theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
 @[simp]
 theorem mapEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapEquiv (e₁.trans e₂) = (mapEquiv e₁).trans (mapEquiv e₂) :=
-  RingEquiv.toRingHom_injective <| map_comp (e₁ : R →+* S) (e₂ : S →+* T)
+  RingEquiv.toRingHom_injective <| map_comp e₁.toRingHom e₂.toRingHom
 
 @[simp]
 theorem mapEquiv_refl : mapEquiv (RingEquiv.refl R) = RingEquiv.refl _ :=
@@ -223,7 +223,7 @@ variable [Algebra R S] [Algebra R T]
 See `mapAlgHom'` for a variant where the base ring `R` is also quotiented. -/
 noncomputable def mapAlgHom (e : S →ₐ[R] T) [IsLocalHom e] :
     ResidueField S →ₐ[R] ResidueField T where
-  __ := map e
+  __ := map e.toRingHom
   commutes' x := by
     simp [IsScalarTower.algebraMap_apply R S (ResidueField S),
       IsScalarTower.algebraMap_apply R T (ResidueField T)]

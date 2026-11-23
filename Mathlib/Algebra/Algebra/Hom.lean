@@ -398,7 +398,14 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
   map_one' := rfl
   map_mul' _ _ := rfl
 
+-- see note [lower instance priority]
+@[instance 100]
+theorem _root_.isLocalHom_algHom_toRingHom (f : A →ₐ[R] B) [IsLocalHom f] :
+    IsLocalHom f.toRingHom :=
+  ⟨IsLocalHom.map_nonunit (f := f)⟩
+
 end Semiring
+
 end AlgHom
 
 namespace IsScalarTower

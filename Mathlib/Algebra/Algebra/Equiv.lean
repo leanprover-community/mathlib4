@@ -193,11 +193,12 @@ instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEqu
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 
-@[simp]
+@[deprecated "Syntactic Equality" (since := "2026-11-23"), nolint synTaut]
 lemma toRingEquiv_toRingHom {A₁ A₂ : Type*} [Semiring R] [NonAssocSemiring A₁] [NonAssocSemiring A₂]
     [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂) : e.toRingEquiv.toRingHom = e.toRingHom :=
   rfl
 
+@[simp]
 theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringEquiv := coe_toRingEquiv

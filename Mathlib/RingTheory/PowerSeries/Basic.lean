@@ -619,8 +619,9 @@ theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R
 
 theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
-    rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
-  convert rescale_map (φ : R →+* S) _ _
+    rescale (algebraMap A S a) (f.map φ.toRingHom) =
+      (rescale (algebraMap A R a) f).map φ.toRingHom := by
+  convert rescale_map φ.toRingHom _ _
   simp
 
 end CommSemiring
@@ -751,7 +752,7 @@ def mapAlgHom (φ : A →ₐ[R] B) :
   MvPowerSeries.mapAlgHom φ
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
-    mapAlgHom φ f = f.map φ :=
+    mapAlgHom φ f = f.map φ.toRingHom :=
   MvPowerSeries.mapAlgHom_apply φ f
 
 end Algebra

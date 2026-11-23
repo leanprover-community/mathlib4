@@ -445,9 +445,7 @@ theorem eval₂_subst
       eval₂ (algebraMap R T) (fun s ↦ eval₂ (algebraMap S T) b (a s)) f := by
   let ε : MvPowerSeries τ S →ₐ[R] T := (aeval hb).restrictScalars R
   have hε : Continuous ε := continuous_aeval hb
-  simpa only [AlgHom.coe_restrictScalars', AlgHom.toRingHom_eq_coe,
-    AlgHom.coe_restrictScalars, RingHom.coe_coe, ε, coe_aeval]
-    using comp_subst_apply ha hε f
+  simpa [ε, coe_aeval] using comp_subst_apply ha hε f
 
 variable {υ : Type*}
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

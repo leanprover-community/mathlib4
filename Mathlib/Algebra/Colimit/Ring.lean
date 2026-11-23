@@ -262,28 +262,28 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 `lim G ⟶ lim G'`.
 -/
 def congr (e : (i : ι) → G i ≃+* G' i)
-    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i)) :
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i).toRingHom) :
     DirectLimit G (fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   RingEquiv.ofRingHom
-    (map (e ·) he)
-    (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
+    (map (fun i ↦ (e i).toRingHom) he)
+    (map (fun i ↦ (e i).symm.toRingHom) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
       have eq1 := congr($(he i j h) ((e i).symm x))
-      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-        RingEquiv.apply_symm_apply] at eq1 ⊢
+      simp only [RingEquiv.toRingHom_eq_ofClass, RingHom.coe_comp, RingHom.coe_ofClass,
+        Function.comp_apply, RingEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of (e : (i : ι) → G i ≃+* G' i)
-    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i).toRingHom)
     {i : ι} (g : G i) :
     congr e he (of G _ i g) = of G' (fun _ _ h ↦ f' _ _ h) i (e i g) :=
   map_apply_of _ he _
 
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+* G' i)
-    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i).toRingHom)
     {i : ι} (g : G' i) :
     (congr e he).symm (of G' _ i g) = of G (fun _ _ h ↦ f _ _ h) i ((e i).symm g) := by
-  simp only [congr, RingEquiv.ofRingHom_symm_apply, map_apply_of, RingHom.coe_coe]
+  simp [congr]
 
 end functorial
 

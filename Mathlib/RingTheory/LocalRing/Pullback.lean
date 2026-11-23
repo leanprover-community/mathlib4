@@ -136,19 +136,19 @@ variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C
 theorem isUnit_pullback_mk_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {a : A × B}
     (a_in : a ∈ f.pullback g) : IsUnit (⟨a, a_in⟩ : f.pullback g) ↔
       IsUnit a.1 ∧ IsUnit a.2 :=
-  RingHom.isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) a_in
+  RingHom.isUnit_pullback_mk_iff f.toRingHom g.toRingHom a_in
 
 theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=
-  RingHom.surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) h
+  RingHom.surjective_pullbackFst_of_surjective f.toRingHom g.toRingHom h
 
 theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h : Function.Surjective f) : Function.Surjective (pullbackSnd f g) :=
-  RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
+  RingHom.surjective_pullbackSnd_of_surjective f.toRingHom g.toRingHom h
 
 theorem isLocalRing_pullback [IsLocalRing A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     [IsLocalHom g] : IsLocalRing (f.pullback g) :=
-  RingHom.isLocalRing_pullback (f : A →+* C) (g : B →+* C)
+  RingHom.isLocalRing_pullback f.toRingHom g.toRingHom
 
 end Ring
 

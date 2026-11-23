@@ -36,7 +36,7 @@ theorem isLocalHom_ringHomOfClass {F : Type*} [FunLike F R S]
 
 -- see note [lower instance priority]
 @[instance 100]
-theorem isLocalHom_toRingHom (f : R ≃+* S) [IsLocalHom f] : IsLocalHom f.toRingHom :=
+theorem isLocalHom_ringEquiv_toRingHom (f : R ≃+* S) [IsLocalHom f] : IsLocalHom f.toRingHom :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 @[instance]

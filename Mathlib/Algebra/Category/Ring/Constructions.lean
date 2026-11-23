@@ -106,8 +106,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
       rw [this]
     apply Algebra.TensorProduct.ext'
     intro a b
-    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, AlgHom.toRingHom_eq_coe,
-      Algebra.TensorProduct.productMap_apply_tmul, AlgHom.coe_mk]
+    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, Algebra.TensorProduct.productMap_apply_tmul,
+      AlgHom.coe_mk]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.hom.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
@@ -176,7 +176,7 @@ lemma closure_range_union_range_eq_top_of_isPushout
   let e := ((isPushout_tensorProduct R A B).isoIsPushout A B H).commRingCatIsoToRingEquiv
   rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
     ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
-  simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
+  simp only [← Set.range_comp, ← RingHom.coe_comp]
   rw [← hom_comp, ← hom_comp, IsPushout.inl_isoIsPushout_inv, IsPushout.inr_isoIsPushout_inv,
     hom_ofHom, hom_ofHom]
   exact le_top.trans (Algebra.TensorProduct.closure_range_union_range_eq_top R A B).ge

@@ -82,14 +82,14 @@ theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation 
   suffices (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom by
     rw [this]
     exact hf.2
-  have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
+  have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp e.toRingHom
     f.toRingHom := by
     have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
       e.toAlgHom.toRingHom.comp f.toRingHom := rfl
-    have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
+    have h1 : e.toRingHom = e.toAlgHom.toRingHom := rfl
     rw [h, h1]
   rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
-    RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
+    RingHom.ker_toRingHom_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
 
 variable (R)
 
@@ -150,7 +150,8 @@ theorem iff_quotient_mvPolynomial' :
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
-    refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
+    refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f.toRingHom ?_ hf.2
+      equiv.symm.surjective
     simpa using! Submodule.fg_bot
 
 universe v in
@@ -168,9 +169,9 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · rw [AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
+  · rw [AlgEquiv.toRingHom_toAlgHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
-  · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.toRingHom_mapAlgHom, MvPolynomial.ker_map]
+  · rw [MvPolynomial.toRingHom_mapAlgHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
 
 variable (R A B)
@@ -355,8 +356,8 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
     refine add_mem ?_ hy
-    simp only [RXn, RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
-      show f y = 0 from leI hy, add_zero, hh'] at hx
+    simp only [AlgHom.toRingHom_eq_ofClass, RingHom.coe_ofClass, RingHom.mem_ker, map_add, hh',
+      show f y = 0 from leI hy, add_zero, RXn] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this
       rwa [hs]
@@ -372,8 +373,8 @@ theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     [FinitePresentation R A] [FinitePresentation R B] : (RingHom.ker f.toRingHom).FG := by
   obtain ⟨n, g, hg, _⟩ := FinitePresentation.out (R := R) (A := A)
   convert (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
-  simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
-  rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
+  simp_rw [RingHom.ker_eq_comap_bot, AlgHom.comp_toRingHom]
+  rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective g.toRingHom hg]
 
 end FinitePresentation
 
@@ -487,16 +488,16 @@ lemma polynomial_induction
     refine fg_ker _ _ _ (hg.comp (MvPolynomial.C_surjective (Fin 0))) ?_
     rw [← comap_ker]
     convert hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
-    simp only [RingEquiv.toRingHom_eq_coe, ← MvPolynomial.isEmptyRingEquiv_symm_toRingHom]
+    simp only [← MvPolynomial.isEmptyRingEquiv_symm_toRingHom, RingEquiv.toRingHom_eq_ofClass]
     exact Ideal.comap_symm (MvPolynomial.isEmptyRingEquiv R (Fin 0))
   | succ n IH =>
     let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] MvPolynomial (Fin n) R[X] :=
       (MvPolynomial.renameEquiv R (finSuccEquiv n)).trans (MvPolynomial.optionEquivRight R (Fin n))
-    have he : (ker (g'.comp <| RingHomClass.toRingHom e.symm)).FG := by
+    have he : (ker (g'.comp <| e.symm.toRingHom)).FG := by
       rw [← RingHom.comap_ker]
       convert hg'.map e.toAlgHom.toRingHom using 1
       exact Ideal.comap_symm e.toRingEquiv
-    have := IH (R := R[X]) (S := S) (g'.comp e.symm) (hg.comp e.symm.surjective) he
+    have := IH (R := R[X]) (S := S) (g'.comp e.symm.toRingHom) (hg.comp e.symm.surjective) he
     convert comp _ _ _ _ _ (polynomial _) this using 1
     rw [comp_assoc, comp_assoc]
     congr 1 with r
@@ -542,7 +543,7 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : (RingHom.ker f.toRingHom).FG) :
     f.FinitePresentation := by
   -- Porting note: added `convert`
-  convert! RingHom.FinitePresentation.of_surjective f hf hker
+  convert! RingHom.FinitePresentation.of_surjective f.toRingHom hf hker
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType ↔ f.FinitePresentation :=
   RingHom.FinitePresentation.of_finiteType

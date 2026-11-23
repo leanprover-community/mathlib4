@@ -232,7 +232,7 @@ lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
 end Matrix
 
 theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
-    matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
+    matPolyEquiv ((expand K k).toRingHom.mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   ext m i j
   rw [coeff_sub, coeff_C, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
