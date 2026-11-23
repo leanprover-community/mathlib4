@@ -182,15 +182,30 @@ end trivial_bundle
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
-/-- The trivial connection on the trivial bundle is analytic. -/
-lemma trivial_isAnalytic [IsManifold I ω M] [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
-    : ContMDiffCovariantDerivative (trivial I M F) ω where
-  contMDiff := ⟨by
+/-- The trivial connection on the trivial bundle over a C^(k+1) manifold is C^k. -/
+lemma trivial_contMDiff (k : WithTop ℕ∞) [IsManifold I 1 M] [IsManifold I (k + 1) M]
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    : ContMDiffCovariantDerivative (trivial I M F) k where
+  contMDiff := by
+    constructor
     intro σ hσ
     rw [Bundle.Trivial.contMDiffOn_section_iff] at hσ
     intro x hx
     exact (hσ x hx).mvfderiv isOpen_univ (mem_univ x)
-   ⟩
+
+/-- The trivial connection on the trivial bundle over a C^∞ manifold is C^∞. -/
+lemma trivial_smooth [IsManifold I ∞ M]
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    : ContMDiffCovariantDerivative (trivial I M F) ∞ :=
+  have : IsManifold I (∞ + 1) M := by simp [*]
+  trivial_contMDiff ∞
+
+/-- The trivial connection on the trivial bundle over an analytic manifold is analytic. -/
+lemma trivial_analytic [IsManifold I ω M]
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    : ContMDiffCovariantDerivative (trivial I M F) ω :=
+  have : IsManifold I (ω + 1) M := by simp [*]
+  trivial_contMDiff ω
 
 noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
