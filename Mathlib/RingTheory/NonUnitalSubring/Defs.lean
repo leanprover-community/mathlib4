@@ -225,7 +225,7 @@ theorem toAddSubgroup_injective :
     Function.Injective (toAddSubgroup : NonUnitalSubring R → AddSubgroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
-@[simp]
+-- Not `@[simp]` since `simp` can prove it via `toNonUnitalSubsemiring_inj`.
 theorem toAddSubgroup_inj {S T : NonUnitalSubring R} :
     S.toAddSubgroup = T.toAddSubgroup ↔ S = T :=
   toAddSubgroup_injective.eq_iff

@@ -146,12 +146,15 @@ instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective := SetLike.coe_injective.comp toAddSubmonoid_injective
 
+@[simp] lemma carrier_eq_coe (s : NonUnitalSubsemiring R) : s.carrier = s := rfl
+
 lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
-@[simp] lemma toSubsemigroup_inj {s t : NonUnitalSubsemiring R} :
-    s.toSubsemigroup = t.toSubsemigroup ↔ s = t := toSubsemigroup_injective.eq_iff
+-- Not `@[simp]` since `simp` can already prove it.
+lemma toSubsemigroup_inj {s t : NonUnitalSubsemiring R} :
+    s.toSubsemigroup = t.toSubsemigroup ↔ s = t := by simp
 
 instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 

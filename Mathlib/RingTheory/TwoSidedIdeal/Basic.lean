@@ -117,7 +117,8 @@ variable {I J} in
 lemma ofRingCon_injective : Function.Injective (ofRingCon : RingCon R → TwoSidedIdeal R) :=
   fun _ _ h ↦ congr(($h).ringCon)
 
-@[simp] lemma ofRingCon_inj {c d : RingCon R} : ofRingCon c = ofRingCon d ↔ c = d :=
+-- Not `@[simp]` since `simp` can prove it via `ofRingCon.injEq`.
+lemma ofRingCon_inj {c d : RingCon R} : ofRingCon c = ofRingCon d ↔ c = d :=
   ofRingCon_injective.eq_iff
 
 lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=

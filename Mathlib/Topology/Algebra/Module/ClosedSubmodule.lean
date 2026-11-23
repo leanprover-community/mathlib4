@@ -98,7 +98,8 @@ instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (
 @[simp, norm_cast] lemma toSubmodule_inj {s t : ClosedSubmodule R M} :
     s.toSubmodule = t.toSubmodule ↔ s = t := toSubmodule_injective.eq_iff
 
-@[simp, norm_cast] lemma toCloseds_inj {s t : ClosedSubmodule R M} :
+-- Not `@[simp]` since `simp` can already prove it.
+@[norm_cast] lemma toCloseds_inj {s t : ClosedSubmodule R M} :
     s.toCloseds = t.toCloseds ↔ s = t := toCloseds_injective.eq_iff
 
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/

@@ -227,7 +227,7 @@ theorem toAddSubmonoid_injective :
 theorem toSubmonoid_inj {S₁ S₂ : Subsemiring R} : S₁.toSubmonoid = S₂.toSubmonoid ↔ S₁ = S₂ :=
   toSubmonoid_injective.eq_iff
 
-@[simp]
+-- Not `@[simp]` since `simp` can already prove it.
 theorem toAddSubmonoid_inj {S₁ S₂ : Subsemiring R} :
     S₁.toAddSubmonoid = S₂.toAddSubmonoid ↔ S₁ = S₂ :=
   toAddSubmonoid_injective.eq_iff
