@@ -782,6 +782,24 @@ theorem map_nonZeroDivisors_le [IsLocalization M S] :
     (nonZeroDivisors R).map (algebraMap R S) ≤ nonZeroDivisors S :=
   (toLocalizationMap M S).map_nonZeroDivisors_le
 
+section MulSemiringAction
+
+variable {G A K : Type*} [Group G] [CommRing A] [MulSemiringAction G A]
+
+theorem _root_.nonZeroDivisors_le_comap_toRingHom (g : G) :
+    nonZeroDivisors A ≤ (nonZeroDivisors A).comap (MulSemiringAction.toRingHom G A g) :=
+  fun _ ↦ smul_mem_nonZeroDivisors g
+
+variable [CommRing K] [Algebra A K] [IsLocalization (nonZeroDivisors A) K] [MulSemiringAction G K]
+  [SMulDistribClass G A K]
+
+theorem map_toRingHom_apply (g : G) (x : K) :
+    map K (MulSemiringAction.toRingHom G A g) (nonZeroDivisors_le_comap_toRingHom g) x = g • x :=
+  RingHom.congr_fun (g := MulSemiringAction.toRingHom G K g)
+    (ringHom_ext (nonZeroDivisors A) <| RingHom.ext fun a ↦ by simp [algebraMap.smul']) x
+
+end MulSemiringAction
+
 end IsLocalization
 
 namespace Localization

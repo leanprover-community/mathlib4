@@ -78,23 +78,20 @@ local notation "map_f" => (IsLocalization.map (S := K) L f hf)
 lemma mem_extended_iff (x : L) : x ∈ I.extended L hf ↔ x ∈ span B (map_f '' I) := by
   constructor <;> { intro hx; simpa }
 
-/-- Extension of fractional ideals only depends on the ring homomorphism, which allows rewriting
-it without having to transport the proof that it maps `M` into `N`. -/
+/-- Extensions of a fractional ideal along equal ring homomorphisms are equal. -/
 theorem extended_congr {f' : A →+* B} (hf' : M ≤ Submonoid.comap f' N) (h : f = f') :
     I.extended L hf = I.extended L hf' := by
-  subst h
-  rfl
+  simp [h]
 
 @[simp]
 lemma coeToSubmodule_extended_eq_span : I.extended L hf = span B (map_f '' I) := by
   ext; simp [mem_coeToSubmodule, mem_extended_iff]
 @[deprecated (since := "2026-11-09")] alias coe_extended_eq_span := coeToSubmodule_extended_eq_span
 
+@[gcongr]
 theorem extended_mono {I J : FractionalIdeal M K} (h : I ≤ J) :
-    I.extended L hf ≤ J.extended L hf := by
-  rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_extended_eq_span,
-    coeToSubmodule_extended_eq_span]
-  exact span_mono (Set.image_mono h)
+    I.extended L hf ≤ J.extended L hf :=
+  span_mono (Set.image_mono h)
 
 @[simp]
 theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
@@ -258,22 +255,23 @@ section RingHomId
 variable {A : Type*} [CommRing A] {M : Submonoid A} (K : Type*) [CommRing K] [Algebra A K]
   [IsLocalization M K]
 
+/-- Extending a fractional ideal along the identity gives back the same fractional ideal. -/
 @[simp]
-theorem extended_id (I : FractionalIdeal M K) (hf : M ≤ M.comap (RingHom.id A)) :
+theorem extended_id (I : FractionalIdeal M K) (hf : M ≤ M.comap (RingHom.id A) := le_refl M) :
     I.extended K (f := RingHom.id A) hf = I := by
   simp only [← coeToSubmodule_inj, coeToSubmodule_extended_eq_span, IsLocalization.map_id,
     Set.image_id']
   exact Submodule.span_eq _
 
+/-- The canonical equivalence between the fractional ideals of two localizations of `A` at `M` is
+the extension of fractional ideals along the identity of `A`. -/
 theorem canonicalEquiv_eq_extended (K' : Type*) [CommRing K'] [Algebra A K'] [IsLocalization M K']
-    (I : FractionalIdeal M K) :
-    canonicalEquiv M K K' I = I.extended K' (f := RingHom.id A)
-      (fun _ h ↦ Submonoid.mem_comap.mpr h : M ≤ M.comap (RingHom.id A)) := by
-  have : canonicalEquiv M K K' I = map (IsLocalization.algEquiv M K K').toAlgHom I := by
-    ext; simp
-  rw [this, ← coeToSubmodule_inj, coe_map, coeToSubmodule_extended_eq_span,
-    ← Submodule.span_eq (Submodule.map _ _)]
-  rfl
+    (I : FractionalIdeal M K)
+    (hf : M ≤ M.comap (RingHom.id A) := fun _ h ↦ Submonoid.mem_comap.mpr h) :
+    canonicalEquiv M K K' I = I.extended K' (f := RingHom.id A) hf := by
+  rw [canonicalEquiv_eq_map, ← coeToSubmodule_inj, coeToSubmodule_extended_eq_span K' hf,
+    coe_map, ← Submodule.span_eq (Submodule.map _ _)]
+  simp [coeToSet_coeToSubmodule]
 
 end RingHomId
 
@@ -371,22 +369,15 @@ open scoped nonZeroDivisors
 variable {R : Type*} [CommRing R] {G : Type*} [Group G] [MulSemiringAction G R]
   {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
--- TODO: find a better home for this lemma.
-theorem _root_.nonZeroDivisors_le_comap_toRingHom (g : G) :
-    R⁰ ≤ R⁰.comap (MulSemiringAction.toRingHom G R g) :=
-  fun _ ↦ smul_mem_nonZeroDivisors g
-
 /-- The action of a group `G` on a commutative ring `R` by ring automorphisms induces an action
 on the fractional ideals of a fraction ring `K` of `R`, by extension of fractional ideals.
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
 protected def pointwiseMulSemiringAction : MulSemiringAction G (FractionalIdeal R⁰ K) where
-  smul g I := I.extended K (f := MulSemiringAction.toRingHom G R g)
-    (nonZeroDivisors_le_comap_toRingHom g)
+  smul g I := I.extended K (nonZeroDivisors_le_comap_toRingHom g)
   smul_one _ := extended_one _ _
-  one_smul I := (extended_congr K _ I _ (RingHom.ext <| one_smul G)).trans
-    (extended_id K I fun _ h ↦ h)
+  one_smul I := (extended_congr K _ I _ (RingHom.ext <| one_smul G)).trans (extended_id K I)
   smul_mul _ _ _ := extended_mul _ _ _ _
   mul_smul g h I := (extended_congr K _ I _ (RingHom.ext <| mul_smul g h)).trans
     (extended_extended _ _ I _).symm
@@ -405,12 +396,12 @@ theorem pointwise_smul_def (g : G) (I : FractionalIdeal R⁰ K) :
 theorem canonicalEquiv_smul (K' : Type*) [CommRing K'] [Algebra R K'] [IsFractionRing R K'] (g : G)
     (I : FractionalIdeal R⁰ K) :
     canonicalEquiv R⁰ K K' (g • I) = g • canonicalEquiv R⁰ K K' I := by
-  rw [canonicalEquiv_eq_extended, canonicalEquiv_eq_extended, pointwise_smul_def,
+  rw [canonicalEquiv_eq_extended K K', canonicalEquiv_eq_extended K K', pointwise_smul_def,
     pointwise_smul_def, extended_extended, extended_extended]
 
 @[simp, norm_cast]
 theorem coeIdeal_smul (g : G) (I : Ideal R) :
-    (↑(g • I) : FractionalIdeal R⁰ K) = g • (I : FractionalIdeal R⁰ K) := by
+    ((g • I : Ideal R) : FractionalIdeal R⁰ K) = g • (I : FractionalIdeal R⁰ K) := by
   rw [pointwise_smul_def, extended_coeIdeal_eq_map, Ideal.pointwise_smul_def]
 
 instance : CovariantClass G (FractionalIdeal R⁰ K) HSMul.hSMul LE.le :=
@@ -418,15 +409,9 @@ instance : CovariantClass G (FractionalIdeal R⁰ K) HSMul.hSMul LE.le :=
 
 variable [MulSemiringAction G K] [SMulDistribClass G R K]
 
-theorem _root_.IsFractionRing.map_toRingHom_apply (g : G) (x : K) :
-    IsLocalization.map K (MulSemiringAction.toRingHom G R g)
-      (nonZeroDivisors_le_comap_toRingHom g) x = g • x :=
-  RingHom.congr_fun (g := MulSemiringAction.toRingHom G K g)
-    (IsLocalization.ringHom_ext R⁰ <| RingHom.ext fun a ↦ by simp [algebraMap.smul']) x
-
 theorem smul_mem_pointwise_smul (g : G) (x : K) (I : FractionalIdeal R⁰ K) :
     x ∈ I → g • x ∈ g • I :=
-  fun hx ↦ subset_span ⟨x, hx, IsFractionRing.map_toRingHom_apply g x⟩
+  fun hx ↦ subset_span ⟨x, hx, IsLocalization.map_toRingHom_apply g x⟩
 
 theorem mem_pointwise_smul_iff_inv_smul_mem {g : G} {I : FractionalIdeal R⁰ K} {x : K} :
     x ∈ g • I ↔ g⁻¹ • x ∈ I :=
@@ -436,7 +421,7 @@ theorem mem_pointwise_smul_iff_inv_smul_mem {g : G} {I : FractionalIdeal R⁰ K}
 @[simp]
 theorem smul_spanSingleton (g : G) (x : K) :
     g • spanSingleton R⁰ x = spanSingleton R⁰ (g • x) := by
-  rw [pointwise_smul_def, extended_spanSingleton, IsFractionRing.map_toRingHom_apply]
+  rw [pointwise_smul_def, extended_spanSingleton, IsLocalization.map_toRingHom_apply]
 
 end Pointwise
 
