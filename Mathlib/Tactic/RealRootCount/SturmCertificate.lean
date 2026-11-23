@@ -68,20 +68,22 @@ def coeffAddSmul [Semiring R] (c : R) : List R → List R → List R
 def coeffMul [Semiring R] (p q : List R) : List R :=
   p.foldr (fun c acc => coeffAddSmul c q (0 :: acc)) []
 
-/-- A step of the Sturm sequence.
+/-- A step of a Sturm sequence.
 
-`r` is a polynomial which satisfies the equation `a • p + b * q + c • r = 0` and `r` is of lower
-degree than `q`. It follows from these two conditions that `r = (a / c) • (- p % q)` and so if `p`
-and `q` are positive multiples of consecutive entries of a Sturm sequence then `r` is a positive
-multiple of the next entry. -/
+Let `p` and `q` be positive multiples of two consecutive entries of a Sturm sequence. `SturmStep`
+stores `a`, `b`, `c` and `r` that satisfy `a • p + b * q + c • r = 0`, where `a` and `c` are
+positive and `r` is of lower degree than `q`.
+
+These conditions give `r = (a / c) • (-p % q)`, i.e. `r` is a positive multiple of the next entry
+in the sequence. -/
 structure SturmStep where
-  /-- The positive integer factor of `p`. -/
+  /-- The positive integer that multiplies `p`. -/
   a : ℤ
-  /-- The coefficients of the polynomial factor `b` of `q`. -/
+  /-- The coefficient list of the polynomial that multiplies `q`. -/
   b : List ℤ
-  /-- The positive integer factor of `r`. -/
+  /-- The positive integer that multiplies `r`. -/
   c : ℤ
-  /-- The coefficients of `r`, a positive multiple of the next entry in the Sturm sequence. -/
+  /-- The coefficient list of a positive multiple of the next entry of the Sturm sequence. -/
   r : List ℤ
 
 namespace SturmStep
