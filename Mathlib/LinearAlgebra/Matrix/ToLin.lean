@@ -915,10 +915,18 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
-variable [DecidableEq m] {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁']
-  [AddCommMonoid M₂'] [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
+variable [DecidableEq m]
 
-lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
+lemma LinearMap.toMatrix_prodMap
+    (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
+    toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
+      Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
+  ext (i | i) (j | j) <;> simp [toMatrix_apply]
+
+variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+  [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
+
+lemma LinearMap.toMatrix_prodMap' (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
   ext (i | i) (j | j) <;> simp [toMatrix_apply]
