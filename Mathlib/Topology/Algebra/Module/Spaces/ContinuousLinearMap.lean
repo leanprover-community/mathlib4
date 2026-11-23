@@ -434,7 +434,7 @@ theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E F 𝕜' 𝕜'') = r
 
 end RestrictScalars
 
-section RestrictScalars₁₂
+section BilinearRestrictScalars
 
 variable {𝕜 𝕜' 𝕝 𝕝' : Type*}
   [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
@@ -456,16 +456,23 @@ variable {E F F' : Type*}
 
 variable (𝕝 𝕝') in
 /-- A `𝕜,𝕜'`-bilinear map induces a `𝕝,𝕝`-bilinear map. -/
-def restrictScalars₁₂ (f : E →L[𝕜] F →L[𝕜'] F') : E →L[𝕝] F →L[𝕝'] F' where
-  toFun x := (f x).restrictScalars 𝕝'
-  map_add' := by simp
-  map_smul' := by simp
+def bilinearRestrictScalars (f : E →L[𝕜] F →L[𝕜'] F') : E →L[𝕝] F →L[𝕝'] F' :=
+  (restrictScalarsL 𝕜' F F' 𝕝' 𝕝) ∘L (f.restrictScalars 𝕝)
+
+variable (f : E →L[𝕜] F →L[𝕜'] F')
+
+theorem bilinearRestrictScalars_eq_restrictScalarsL_comp_restrictScalars :
+    f.bilinearRestrictScalars 𝕝 𝕝' = (restrictScalarsL 𝕜' F F' 𝕝' 𝕝) ∘L (f.restrictScalars 𝕝) := rfl
+
+theorem bilinearRestrictScalars_eq_restrictScalars_restrictScalarsL_comp [SMulCommClass 𝕝' 𝕜 F'] :
+    f.bilinearRestrictScalars 𝕝 𝕝' = restrictScalars 𝕝 ((restrictScalarsL 𝕜' F F' 𝕝' 𝕜).comp f) :=
+  rfl
 
 @[simp]
-theorem restrictScalars₁₂_apply (f : E →L[𝕜] F →L[𝕜'] F') (x : E) :
-    f.restrictScalars₁₂ 𝕝 𝕝' x = (f x).restrictScalars 𝕝' := rfl
+theorem bilinearRestrictScalars_apply (f : E →L[𝕜] F →L[𝕜'] F') (x : E) :
+    f.bilinearRestrictScalars 𝕝 𝕝' x = (f x).restrictScalars 𝕝' := rfl
 
-end RestrictScalars₁₂
+end BilinearRestrictScalars
 
 section Prod
 
