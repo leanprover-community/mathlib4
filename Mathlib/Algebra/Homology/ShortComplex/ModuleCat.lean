@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology and exactness of short complexes of modules
 
 In this file, the homology of a short complex `S` of abelian groups is identified
 with the quotient of `LinearMap.ker S.g` by the image of the morphism
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`.
-
 -/
 
 @[expose] public section

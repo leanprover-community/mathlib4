@@ -11,9 +11,7 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
-
 # Lemmas about square of maximal ideal of local ring
-
 -/
 
 public section

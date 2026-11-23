@@ -63,7 +63,6 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
   * `LieAlgebra.isEngelian_of_isNoetherian`
   * `LieModule.isNilpotent_iff_forall`
   * `LieAlgebra.isNilpotent_iff_forall`
-
 -/
 
 @[expose] public section
@@ -185,7 +184,7 @@ theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
     ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
-  obtain ⟨x, hx₁, hx₂⟩ := IsConcreteLE.exists_of_lt hK₂
+  obtain ⟨x, hx₁, hx₂⟩ := exists_mem_notMem_of_lt hK₂
   let K' : LieSubalgebra R L :=
     { (R ∙ x) ⊔ (K : Submodule R L) with
       lie_mem' := fun {y z} => LieSubalgebra.lie_mem_sup_of_mem_normalizer hx₁ }

@@ -191,7 +191,7 @@ def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : C
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
       (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
-      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul, RingHom.id_apply])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -472,7 +472,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     rintro ⟨n, c⟩
     have A := calc
       ‖q c.length‖₊ * rq ^ n ≤ ‖q c.length‖₊ * rq ^ c.length :=
-        mul_le_mul' le_rfl (pow_le_pow_of_le_one rq.2 hrq.1.le c.length_le)
+        mul_le_mul' le_rfl (pow_le_pow_of_le_one rq.property hrq.1.le c.length_le)
       _ ≤ Cq := hCq _
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
@@ -569,7 +569,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
     (compChangeOfVariables m M N i hi).2.blocksFun
-        ⟨j, (compChangeOfVariables_length m M N hi).symm ▸ j.2⟩ =
+        ⟨j, (compChangeOfVariables_length m M N hi).symm ▸ j.isLt⟩ =
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
@@ -742,7 +742,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     apply hδ
     have : y ∈ Metric.eball (0 : E) δ :=
       (Metric.eball_subset_eball (le_trans (min_le_left _ _) (min_le_right _ _))) hy
-    simpa [-Set.mem_insert_iff, edist_eq_enorm_sub, h'y]
+    simpa [-Set.mem_insert_iff, eDist_eq_eNorm_sub, h'y]
   /- Now the proof starts. To show that the sum of `q.comp p` at `y` is `g (f (x + y))`,
     we will write `q.comp p` applied to `y` as a big sum over all compositions.
     Since the sum is summable, to get its convergence it suffices to get
@@ -775,7 +775,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     have : Tendsto (fun (z : ℕ × F) ↦ q.partialSum z.1 z.2)
         (atTop ×ˢ 𝓝 (f (x + y) - f x)) (𝓝 (g (f x + (f (x + y) - f x)))) := by
       apply Hg.tendsto_partialSum_prod (y := f (x + y) - f x)
-      · simpa [edist_eq_enorm_sub] using! fy_mem.2
+      · simpa [eDist_eq_eNorm_sub] using! fy_mem.2
       · simpa using! fy_mem.1
     simpa using! this.comp A
   -- Third step: the sum over all compositions in `compPartialSumTarget 0 n n` converges to
@@ -807,7 +807,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
+          rwa [eNorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same
@@ -920,7 +920,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
     rcases eq_zero_or_pos c.length with h'c | h'c
     · have : ∑ j : Fin c.length, c.blocksFun j = 0 := by
         apply Finset.sum_eq_zero (fun j hj ↦ ?_)
-        have := j.2
+        have := j.isLt
         grind
       rw [this]
       exact mul_pos (by grind) hn
@@ -1094,7 +1094,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin (a.gather b).length) : Composition ((a.gather b).blocksFun i) where
   blocks :=
     (a.blocks.splitWrtComposition b)[i.val]'(by
-      rw [length_splitWrtComposition, ← length_gather]; exact i.2)
+      rw [length_splitWrtComposition, ← length_gather]; exact i.isLt)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
@@ -1104,16 +1104,17 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
-    Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
+    Composition.length
+        (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩) =
       Composition.blocksFun b i :=
-  show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
+  show List.length ((splitWrtComposition a.blocks b)[i.val]) = blocksFun b i by
     rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _), blocksFun,
       get_eq_getElem]
 
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
-    blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
-        ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
+    blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩)
+        ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.isLt⟩ =
       blocksFun a (embedding b i j) := by
   unfold sigmaCompositionAux
   rw [blocksFun, get_eq_getElem, getElem_of_eq (getElem_splitWrtComposition _ _ _ _),

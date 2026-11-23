@@ -27,7 +27,6 @@ The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
-
 -/
 
 @[expose] public section
@@ -78,10 +77,10 @@ def swapFactorsAux :
         swapFactorsAux l (swap x (f x) * f) fun {y} hy =>
           have : f y ≠ y ∧ y ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hy
           List.mem_of_ne_of_mem this.2 (h this.1)
-      ⟨swap x (f x)::m.1, by
-        rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
+      ⟨swap x (f x)::m.val, by
+        rw [List.prod_cons, m.property.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
-        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
+        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.property.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is nonunique and depends on the linear order structure.
@@ -94,8 +93,8 @@ def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   a list of transpositions. -/
 def truncSwapFactors [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
-    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+  Quotient.recOnSubsingleton (@univ α _).val (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
+    (show ∀ x, f x ≠ x → x ∈ (@univ α _).val from fun _ _ => mem_univ _)
 
 /-- An induction principle for permutations. If `P` holds for the identity permutation, and
 is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
@@ -165,7 +164,8 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
 
 /-- set of all pairs (⟨a, b⟩ : Σ a : fin n, fin n) such that b < a -/
 def finPairsLT (n : ℕ) : Finset (Σ _ : Fin n, Fin n) :=
-  (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
+  (univ : Finset (Fin n)).sigma fun a =>
+    (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.isLt
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
   simp only [finPairsLT, Fin.lt_def, true_and, mem_attachFin, mem_range, mem_univ,
@@ -454,16 +454,16 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
 theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p (f x) ↔ p x)
     (h₂ : ∀ x, f x ≠ x → p x) : sign (subtypePerm f h₁) = sign f := by
   let l := (truncSwapFactors (subtypePerm f h₁)).out
-  have hl' : ∀ g' ∈ l.1.map ofSubtype, IsSwap g' := fun g' hg' =>
+  have hl' : ∀ g' ∈ l.val.map ofSubtype, IsSwap g' := fun g' hg' =>
     let ⟨g, hg⟩ := List.mem_map.1 hg'
-    hg.2 ▸ (l.2.2 _ hg.1).of_subtype_isSwap
-  have hl'₂ : (l.1.map ofSubtype).prod = f := by
-    rw [l.1.prod_hom ofSubtype, l.2.1, ofSubtype_subtypePerm _ h₂]
+    hg.2 ▸ (l.property.2 _ hg.1).of_subtype_isSwap
+  have hl'₂ : (l.val.map ofSubtype).prod = f := by
+    rw [l.val.prod_hom ofSubtype, l.property.1, ofSubtype_subtypePerm _ h₂]
   conv =>
-    congr
-    rw [← l.2.1]
+    enter [1]
+    rw [← l.property.1]
   simp_rw [← hl'₂]
-  rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]
+  rw [sign_prod_list_swap l.property.2, sign_prod_list_swap hl', List.length_map]
 
 theorem sign_eq_sign_of_equiv [DecidableEq β] [Fintype β] (f : Perm α) (g : Perm β) (e : α ≃ β)
     (h : ∀ x, e (f x) = g (e x)) : sign f = sign g := by
@@ -480,10 +480,10 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
       sign_eq_sign_of_equiv _ _
         (Equiv.ofBijective
           (fun x : { x // f x ≠ x } =>
-            (⟨i x.1 x.2, by
-                have : f (f x) ≠ f x := mt (fun h => f.injective h) x.2
-                rw [← h _ x.2 this]
-                exact mt (hi _ _ this x.2) x.2⟩ :
+            (⟨i x.val x.property, by
+                have : f (f x) ≠ f x := mt (fun h => f.injective h) x.property
+                rw [← h _ x.property this]
+                exact mt (hi _ _ this x.property) x.property⟩ :
               { y // g y ≠ y }))
           ⟨fun ⟨_, _⟩ ⟨_, _⟩ h => Subtype.ext (hi _ _ _ _ (Subtype.mk.inj h)), fun ⟨y, hy⟩ =>
             let ⟨x, hfx, hx⟩ := hg y hy

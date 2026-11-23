@@ -30,8 +30,6 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 - https://stacks.math.columbia.edu/tag/00TH
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
-
 -/
 
 @[expose] public section
@@ -96,7 +94,7 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   simp only [Algebra.smul_def, map_mul, mul_assoc, mul_left_comm _ (g s)]
   congr 1
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← hf', pow_two, ← sub_mul]
-  refine Ideal.mul_mem_mul ?_ m.2
+  refine Ideal.mul_mem_mul ?_ m.property
   simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg (algebraMap P S p))
 
 /--
@@ -128,7 +126,7 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero g hf' hg).comp (kerToTensor R P S) = LinearMap.id := by
-  ext x; simp [RingHom.mem_ker.mp x.2]
+  ext x; simp [RingHom.mem_ker.mp x.property]
 
 end ofSection
 
@@ -162,8 +160,8 @@ def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
   toFun x := σ x - l (1 ⊗ₜ .D _ _ (σ x))
   map_one' := by simp [sectionOfRetractionKerToTensorAux_prop l hl (σ 1) 1 (by simp [hσ])]
   map_mul' a b := by
-    have (x y : _) : (l x).1 * (l y).1 = 0 := by
-      rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l x).2 (l y).2
+    have (x y : _) : (l x).val * (l y).val = 0 := by
+      rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l x).property (l y).property
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a * b)) (σ a * σ b) (by simp [hσ]),
       Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, Submodule.coe_add,
       SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, this, sub_zero]
@@ -224,13 +222,14 @@ noncomputable
 def retractionKerToTensorEquivSection :
     { l // l ∘ₗ (kerToTensor R P S) = LinearMap.id } ≃
       { g // (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S } where
-  toFun l := ⟨_, toAlgHom_comp_sectionOfRetractionKerToTensor _ l.2 hf' hf⟩
-  invFun g := ⟨_, retractionOfSectionOfKerSqZero_comp_kerToTensor _ hf' g.2⟩
+  toFun l := ⟨_, toAlgHom_comp_sectionOfRetractionKerToTensor _ l.property hf' hf⟩
+  invFun g := ⟨_, retractionOfSectionOfKerSqZero_comp_kerToTensor _ hf' g.property⟩
   left_inv l := by
     ext s p
     obtain ⟨s, rfl⟩ := hf s
-    have (x y : _) : (l.1 x).1 * (l.1 y).1 = 0 := by
-      rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l.1 x).2 (l.1 y).2
+    have (x y : _) : (l.val x).val * (l.val y).val = 0 := by
+      rw [← Ideal.mem_bot, ← hf', pow_two]
+      exact Ideal.mul_mem_mul (l.val x).property (l.val y).property
     simp only [AlgebraTensorModule.curry_apply,
       Derivation.coe_comp, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Derivation.coeFn_coe,
       Function.comp_apply, curry_apply, retractionOfSectionOfKerSqZero_tmul_D,
@@ -337,7 +336,7 @@ def retractionKerCotangentToTensorEquivSection :
       e₂.toLinearMap ∘ₗ (kerToTensor R P' S).restrictScalars P ∘ₗ e₁.toLinearMap := by
     ext x
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.1).symm
+    exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.val).symm
   refine Equiv.trans ?_ (retractionKerToTensorEquivSection (R := R) h₂ h₁)
   refine ⟨fun ⟨l, hl⟩ ↦ ⟨⟨e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap, ?_⟩, ?_⟩,
     fun ⟨l, hl⟩ ↦ ⟨e₁.symm.toLinearMap ∘ₗ l.restrictScalars P ∘ₗ e₂.symm.toLinearMap, ?_⟩, ?_, ?_⟩
@@ -392,7 +391,7 @@ lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   · rw [injective_iff_map_eq_zero]
     intro x hx
     obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-    have hx : x.1 ∈ P.ker ^ 2 := by
+    have hx : x.val ∈ P.ker ^ 2 := by
       apply_fun Cotangent.val at hx
       simp only [map_mk, Hom.toAlgHom_apply, val_mk, val_zero, Ideal.toCotangent_eq_zero,
         Extension.ker_infinitesimal] at hx

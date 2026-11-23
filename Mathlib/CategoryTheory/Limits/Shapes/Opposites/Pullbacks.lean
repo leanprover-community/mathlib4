@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
 
 We construct pullbacks and pushouts in the opposite categories.
-
 -/
 
 @[expose] public section

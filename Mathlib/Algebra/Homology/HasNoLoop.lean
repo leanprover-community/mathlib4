@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Homology.ComplexShape
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex shapes with no loop
 
 Let `c : ComplexShape ι`. We define a type class `c.HasNoLoop`
 which expresses that `¬ c.Rel i i` for all `i : ι`.
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on `R`-coalgebras
 
@@ -20,7 +23,6 @@ In this file, we declare a `MonoidalCategory` instance on the category of coalge
 fields given by the definitions in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of modules,
 using `Monoidal.induced`.
-
 -/
 
 @[expose] public section
@@ -37,9 +39,9 @@ open scoped TensorProduct MonoidalCategory
 noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (CoalgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
-  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
-  whiskerRight f X := ofHom (f.1.rTensor X)
-  tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
+  whiskerLeft X _ _ f := ofHom (f.toCoalgHom'.lTensor X)
+  whiskerRight f X := ofHom (f.toCoalgHom'.rTensor X)
+  tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.toCoalgHom' g.toCoalgHom')
   tensorUnit := ↧R
   associator X Y Z := (Coalgebra.TensorProduct.assoc R R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso

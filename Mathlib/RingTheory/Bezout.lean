@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
-
 # Bézout rings
 
 A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are principal.
@@ -17,7 +16,6 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
 - `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
-
 -/
 
 public section
@@ -67,7 +65,7 @@ theorem tfae [IsBezout R] [IsDomain R] :
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine RelEmbedding.wellFounded ?_ h
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
-        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
+        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).principal
       choose f hf using this
       exact
         { toFun := f

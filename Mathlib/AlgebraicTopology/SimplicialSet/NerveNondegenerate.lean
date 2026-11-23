@@ -8,13 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The nondegenerate simplices in the nerve of a partially ordered type
 
 In this file, we show that if `X` is a partially ordered type,
 then an `n`-simplex `s` of the nerve is nondegenerate iff
 the monotone map `s.obj : Fin (n + 1) → X` is strictly monotone.
-
 -/
 
 public section

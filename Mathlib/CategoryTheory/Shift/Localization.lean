@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Shift.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shift induced on a localized category
 
@@ -17,7 +20,6 @@ on `C` satisfies `W.IsCompatibleWithShift A` when for all `a : A`,
 a morphism `f` is in `W` iff `f⟦a⟧'` is. When this compatibility is satisfied,
 then the corresponding localized category can be equipped with
 a shift by `A`, and the localization functor is compatible with the shift.
-
 -/
 
 @[expose] public section
@@ -30,7 +32,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   (A : Type w) [AddMonoid A] [HasShift C A]
-  (G : Type w) [AddGroup G] [HasShift C G]
+
 
 namespace MorphismProperty
 
@@ -42,7 +44,7 @@ class IsCompatibleWithShift : Prop where
   we take its inverse image by the shift functor by `a` -/
   condition : ∀ (a : A), W.inverseImage (shiftFunctor C a) = W
 
-variable [W.IsCompatibleWithShift A] [W.IsCompatibleWithShift G]
+variable [W.IsCompatibleWithShift A]
 
 namespace IsCompatibleWithShift
 
@@ -68,6 +70,8 @@ when `a : A` and `W` is compatible with the shift by `A`. -/
 abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
   functor := shiftFunctor C a
   map := by rw [MorphismProperty.IsCompatibleWithShift.condition]
+
+variable (G : Type w) [AddGroup G] [HasShift C G] [W.IsCompatibleWithShift G]
 
 instance (g : G) : (W.shiftLocalizerMorphism g).IsLocalizedEquivalence :=
   LocalizerMorphism.IsLocalizedEquivalence.of_equivalence _

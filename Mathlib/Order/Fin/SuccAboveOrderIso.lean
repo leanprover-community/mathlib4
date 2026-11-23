@@ -12,7 +12,6 @@ public import Mathlib.Data.Fintype.Basic
 
 Given `i : Fin (n + 2)`, we show that `Fin.succAboveOrderEmb` induces
 an order isomorphism `Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2)))`.
-
 -/
 
 @[expose] public section

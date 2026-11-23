@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms from K-projective complexes in the derived category
 
@@ -22,7 +25,6 @@ We obtain that a morphism between `K`-projective cochain complexes is a quasi-is
 iff it is a homotopy equivalence. In particular, a morphism between chain complexes
 indexed by `ℕ` which consist of projective objects is a quasi-isomorphism iff
 it is a homotopy equivalence.
-
 -/
 
 @[expose] public section

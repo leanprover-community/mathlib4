@@ -24,7 +24,6 @@ Similarly as for accessible functors, we define a type class `IsPresentable`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section
@@ -131,9 +130,8 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAcce
   have := isCardinalAccessible_of_le G (by simp : κG ≤ κF ⊔ κG)
   exact isAccessible_of_isCardinalAccessible (F ⋙ G) (κF ⊔ κG)
 
-instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) := by
-  have : Fact Cardinal.aleph0.IsRegular := Cardinal.fact_isRegular_aleph0
-  exact ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
+instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) :=
+  ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
 
 end
 

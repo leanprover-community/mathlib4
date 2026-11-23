@@ -5,9 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
+
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
@@ -27,7 +28,6 @@ variable {R R' A T B ι : Type*}
 namespace AddMonoidAlgebra
 
 /-!
-
 ## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
@@ -78,7 +78,6 @@ variable [Semiring R]
 section ExplicitDegrees
 
 /-!
-
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
 a type with *b*ot or *t*op respectively.
 -/
