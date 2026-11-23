@@ -6,13 +6,14 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.Periodic
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
 # Euler's totient function

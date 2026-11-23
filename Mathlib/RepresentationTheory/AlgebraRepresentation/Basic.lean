@@ -6,7 +6,8 @@ Authors: Stepan Nesterov
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations

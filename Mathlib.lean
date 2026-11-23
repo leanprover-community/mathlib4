@@ -1,4 +1,4 @@
-module  -- shake: keep-all --deprecated_module: ignore
+module -- shake: keep-all -- deprecated_module: ignore
 
 public import Std
 public import Batteries
@@ -5102,6 +5102,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 public import Mathlib.GroupTheory.QuotientGroup.ModEq
 public import Mathlib.GroupTheory.QuotientGroup.Simple
+public import Mathlib.GroupTheory.QuotientGroup.UnitsModPow
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.RegularWreathProduct
 public import Mathlib.GroupTheory.ResiduallyFinite
@@ -5300,6 +5301,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
+public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
@@ -7753,6 +7755,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic

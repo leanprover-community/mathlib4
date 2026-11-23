@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
 set_option doc.verso true

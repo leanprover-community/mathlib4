@@ -432,8 +432,6 @@ notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
 @[deprecated SetRel.ball +typeChanged (since := "2026-09-01")]
 def ball (x : β) (V : Set (β × β)) : Set β := SetRel.ball (SetRel.inv V) x
 
-open UniformSpace (ball)
-
 @[deprecated SetRel.refl +typeChanged (since := "2026-09-01")]
 lemma mem_ball_self (x : α) {V : SetRel α α} : V ∈ 𝓤 α → x ∈ ball x V := refl_mem_uniformity
 
