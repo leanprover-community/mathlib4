@@ -92,7 +92,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   convert Ideal.mk_ker.symm
   ext a
   · dsimp [-TensorProduct.algebraMap_apply]
-    rw [aeval_C, AlgEquiv.commutes]
+    erw [aeval_C, AlgEquiv.commutes]
     simp [← Ideal.Quotient.mk_algebraMap, I]
   · simpa [e] using! Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
