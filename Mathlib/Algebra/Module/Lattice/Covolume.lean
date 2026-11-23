@@ -43,10 +43,6 @@ measure on `E`.
 * `Submodule.tendsto_card_le_div`: for a cone `X` and `F` homogeneous of degree `finrank ℝ E`,
   the number of points `x ∈ X ∩ L` with `F x ≤ c` is asymptotically
   `c * μ {x ∈ X | F x ≤ 1} / covolume L μ`.
-
-## TODO
-
-Deprecate `Mathlib.Algebra.Module.ZLattice.Covolume` in favour of this file.
 -/
 
 @[expose] public section
