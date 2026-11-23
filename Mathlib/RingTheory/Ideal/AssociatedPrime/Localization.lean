@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associated primes of localized module
 

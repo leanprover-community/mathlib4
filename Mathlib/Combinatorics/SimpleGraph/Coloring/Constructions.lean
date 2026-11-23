@@ -11,6 +11,9 @@ public import Mathlib.Data.Fin.Parity
 
 import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Concrete colorings of common graphs
 

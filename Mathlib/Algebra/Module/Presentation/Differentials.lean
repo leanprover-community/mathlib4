@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of the module of differentials
 

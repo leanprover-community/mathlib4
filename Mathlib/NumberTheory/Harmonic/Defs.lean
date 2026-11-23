@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Rat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 This file defines the harmonic numbers.
 

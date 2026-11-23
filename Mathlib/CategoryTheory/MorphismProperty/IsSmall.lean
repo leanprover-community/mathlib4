@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 import Mathlib.Logic.Small.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small classes of morphisms
 

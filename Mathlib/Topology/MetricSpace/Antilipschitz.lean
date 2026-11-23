@@ -9,6 +9,9 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.UniformSpace.CompleteSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antilipschitz functions
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graded rings of finite type
 

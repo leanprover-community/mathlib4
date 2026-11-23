@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi instances for ring
 

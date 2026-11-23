@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.CompMap
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product and composition of kernels
 

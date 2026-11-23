@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Center
 import Mathlib.LinearAlgebra.Transvection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions on projectivization
 

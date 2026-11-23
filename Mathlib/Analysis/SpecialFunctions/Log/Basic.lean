@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Factorization.Defs
 
 import Mathlib.Analysis.Normed.Module.RCLike.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real logarithm
 

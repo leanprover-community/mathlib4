@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases and matrices
 
