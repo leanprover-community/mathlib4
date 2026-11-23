@@ -140,10 +140,14 @@ def evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) : ℤ :=
   | [] => 0
   | c :: p => c * d ^ p.length + n * evalScaled n d p
 
-/-- Compute the number of real roots of the polynomial in the `SturmCertificate` that are in the
-open interval from `an / ad` to `bn / bd`.  The function returns `none` if the certificate is
+/-- Compute the number of distinct real roots of the polynomial in the `SturmCertificate` that are
+in the open interval from `an / ad` to `bn / bd`. The function returns `none` if the certificate is
 invalid, `ad` or `bd` is zero, `an / ad < bn / bd` is false, or an endpoint is a root of the
-certificate's polynomial. -/
+certificate's polynomial.
+
+Each endpoint is given by a separate numerator and denominator instead of a rational number because
+we want the kernel computation to use integer arithmetic only, and the result does not depend on the
+numerator and denominator being coprime. -/
 def realRootCountIoo? (d : SturmCertificate) (an : ℤ) (ad : ℕ) (bn : ℤ) (bd : ℕ) : Option ℕ :=
   if 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.s != 0 &&
       evalScaled bn bd d.s != 0 then
