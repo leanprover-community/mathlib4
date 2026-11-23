@@ -469,8 +469,9 @@ lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
       fun j ↦ (aeval P.val) <| pderiv (u j) x.val := by
   ext j
-  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
-    Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply, Extension.cotangentComplex_mk]
+  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    Function.comp_apply, Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply,
+    Extension.cotangentComplex_mk]
   simp only [toExtension_Ring, P.cotangentSpaceBasis_repr_tmul, one_mul]
 
 universe w' u' v'

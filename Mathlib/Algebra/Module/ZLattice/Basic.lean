@@ -722,8 +722,9 @@ theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K]
 instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
-    rw [ZLattice.coe_comap, LinearEquiv.coe_toLinearMap, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
-      ← ContinuousLinearEquiv.coe_toLinearEquiv, ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span,
+    rw [ZLattice.coe_comap, LinearEquiv.coe_toLinearMap, e.coe_toLinearEquiv,
+      ← e.image_symm_eq_preimage, ← ContinuousLinearEquiv.coe_toLinearEquiv,
+      ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span,
       IsZLattice.span_top, Submodule.map_top, e.symm.range]
 
 @[simp]

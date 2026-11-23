@@ -851,8 +851,8 @@ theorem of_comp_lift :
 @[simp]
 theorem mk_lift {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
-    Function.comp_apply]
+  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp [extend_eq ha f hf]
 

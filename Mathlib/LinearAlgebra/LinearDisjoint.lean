@@ -238,7 +238,8 @@ theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
   have : i = Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S) := by
     ext x
     simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
-  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.injective_comp] at H
+  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- The zero module is linearly disjoint with any other submodules. -/

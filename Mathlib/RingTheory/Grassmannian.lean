@@ -172,8 +172,9 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     induction z using TensorProduct.inductionOn with
     | tmul c m =>
       simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
-         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_toLinearMap,
-         LinearEquiv.coe_baseChange, LinearMap.quotKerEquivOfSurjective_apply_mk]
+         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans,
+         LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
+         LinearMap.quotKerEquivOfSurjective_apply_mk]
       simp [fAB, baseChangeMkQ]
     | add x y hx hy =>
       simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_add] at *

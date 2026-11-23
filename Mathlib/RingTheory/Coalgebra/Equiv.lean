@@ -320,7 +320,8 @@ structure on `B`. -/
     congr 1
     ext x
     simpa only [toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass, LinearMap.coe_comp,
-      LinearEquiv.coe_toLinearMap, Function.comp_apply, ← (ℛ R _).eq, map_sum, TensorProduct.map_tmul,
+      LinearEquiv.coe_toLinearMap, Function.comp_apply, ← (ℛ R _).eq, map_sum,
+      TensorProduct.map_tmul,
       LinearMap.coe_ofClass, CoalgHom.coe_ofClass, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
       symm_apply_apply, LinearMap.lTensor_comp_map, TensorProduct.sum_tmul,
       TensorProduct.assoc_tmul, TensorProduct.tmul_sum] using (sum_map_tmul_tmul_eq f f f x).symm

@@ -208,8 +208,8 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
   simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R R _ _),
-    ← LinearEquiv.coe_toLinearMap, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_toLinearMap,
-    EquivLike.injective_comp, lmap_injective]
+    ← LinearEquiv.coe_toLinearMap, ← coe_comp, directSumRight_comp_rTensor, coe_comp,
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
 
 theorem dfinsupp_iff : Flat R (Π₀ i, M i) ↔ ∀ i, Flat R (M i) := directSum_iff ..

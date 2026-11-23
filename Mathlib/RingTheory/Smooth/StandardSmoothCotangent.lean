@@ -202,7 +202,8 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
   · intro i
     apply sectionCotangent_zero_of_notMem_range _ _
     simp [← hcompl.compl_eq]
-  · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_toLinearMap]
+  · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc,
+      LinearEquiv.coe_toLinearMap]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker
     convert (Pi.basisFun S σ).linearIndependent
     classical

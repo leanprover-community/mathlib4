@@ -287,8 +287,8 @@ lemma iInf_ker_coroot'_eq :
 
 @[simp] lemma rootSpan_map_toPerfPair :
     (P.rootSpan R).map (P.toPerfPair : M →ₗ[R] Dual R N) = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, LinearEquiv.coe_toLinearMap,
-    toPerfPair_comp_root]
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ,
+    LinearEquiv.coe_toLinearMap, toPerfPair_comp_root]
 
 @[simp] lemma corootSpan_map_flip_toPerfPair :
     (P.corootSpan R).map (P.toLinearMap.flip.toPerfPair : N →ₗ[R] Dual R M) =
