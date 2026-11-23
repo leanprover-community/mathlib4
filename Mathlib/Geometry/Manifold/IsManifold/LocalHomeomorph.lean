@@ -20,33 +20,34 @@ Pushing the charts of `M` forward along `f` gives a charted space structure
 `IsLocalHomeomorph.chartedSpaceOfRightInverse` on `M'`, where the chart at `y : M'` is the local
 inverse of `f` at `g y : M`, followed by the chart of `M` at `g y`.
 
-This file shows that, for this structure, if `f` satisfies a certain condition `Foo I n f`, then
-`M'` is a `C^n` manifold. It also shows that `f` and its local inverses are then `C^n`, and
-characterizes the `C^n` maps out of `M'`.
+This file shows that, for this structure, if `f` satisfies a certain condition
+`ContMDiffTransitions I n f`, then `M'` is a `C^n` manifold. It also shows that `f` and its local
+inverses are then `C^n`, and characterizes the `C^n` maps out of `M'`.
 
 ## Main definitions
 
-* `Foo I n f`: any two points `x`, `y` with `f x = f y` are related by a map `σ : M → M` with
-  `σ x = y` which preserves `f` near `x` and is `C^n` at `x`.
+* `ContMDiffTransitions I n f`: any two points `x`, `y` with `f x = f y` are related by a map
+  `σ : M → M` with `σ x = y` which preserves `f` near `x` and is `C^n` at `x`.
 
 ## Main results
 
 All results are for the charted space structure `hf.chartedSpaceOfRightInverse hg` on `M'`:
 
-* `IsLocalHomeomorph.isManifold_of_rightInverse`: if `M` is a `C^n` manifold and `Foo I n f`
-  holds, then `M'` is a `C^n` manifold.
-* `IsLocalHomeomorph.contMDiff_of_rightInverse`: if `Foo I n f` holds, then `f` is `C^n`.
-* `IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse`: if `Foo I n f` holds, then the
-  local inverses of `f` are `C^n` on their sources.
-* `IsLocalHomeomorph.contMDiff_iff_contMDiff_comp`: if `Foo I n f` holds, then a map
-  `φ : M' → N` is `C^n` if and only if `φ ∘ f : M → N` is.
+* `IsLocalHomeomorph.isManifold_of_rightInverse`: if `M` is a `C^n` manifold and
+  `ContMDiffTransitions I n f` holds, then `M'` is a `C^n` manifold.
+* `IsLocalHomeomorph.contMDiff_of_rightInverse`: if `ContMDiffTransitions I n f` holds, then `f`
+  is `C^n`.
+* `IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse`: if `ContMDiffTransitions I n f`
+  holds, then the local inverses of `f` are `C^n` on their sources.
+* `IsLocalHomeomorph.contMDiff_iff_contMDiff_comp`: if `ContMDiffTransitions I n f` holds, then a
+  map `φ : M' → N` is `C^n` if and only if `φ ∘ f : M → N` is.
 
 ## TODO
 
 * Show that `f` is a local diffeomorphism. This follows from the results above, but the current
   API for `IsLocalDiffeomorphAt` is limited I believe.
 * I believe the converse is true: if `f` is a `C^n` local diffeomorphism for this structure,
-  then `Foo I n f` holds.
+  then `ContMDiffTransitions I n f` holds.
 
 ## Tags
 
@@ -66,20 +67,20 @@ variable {M : Type*} [TopologicalSpace M]
   {f : M → M'} (hf : IsLocalHomeomorph f)
   {g : M' → M} (hg : Function.RightInverse g f)
 
-/-! ### The Foo condition -/
+/-! ### The ContMDiffTransitions condition -/
 
 variable (I n f) in
-/-- TODO: find a proper name for `Foo` and add a docstring. -/
-def Foo : Prop := ∀ {x y : M}, f x = f y → ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
+/-- Any two points `x`, `y` with `f x = f y` are related by a map `σ : M → M` with `σ x = y`
+which preserves `f` near `x` and is `C^n` at `x`. -/
+def ContMDiffTransitions : Prop :=
+  ∀ {x y : M}, f x = f y → ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
 namespace IsLocalHomeomorph
 
--- TODO: when `Foo` has a name/description change "if `f` satisfies the condition" in the docs
-
-/-- If `f` satisfies the condition, the transition map between two local inverses of `f`
+/-- If `ContMDiffTransitions I n f` holds, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
 lemma contMDiffOn_localInverseAt_symm_trans
-    (h : Foo I n f) (x y : M) :
+    (h : ContMDiffTransitions I n f) (x y : M) :
     CMDiff[((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y).source] n
       ((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y) := by
   set τ := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
@@ -96,10 +97,10 @@ lemma contMDiffOn_localInverseAt_symm_trans
 
 /-! ### Manifold structure -/
 
-/-- If `M` is a `C^n` manifold and `f` satisfies the condition, then `M'` is a `C^n` manifold
-for the charts `hf.chartedSpaceOfRightInverse hg` pushed forward from `M`. -/
+/-- If `M` is a `C^n` manifold and `ContMDiffTransitions I n f` holds, then `M'` is a `C^n`
+manifold for the charts `hf.chartedSpaceOfRightInverse hg` pushed forward from `M`. -/
 theorem isManifold_of_rightInverse [IsManifold I n M]
-    (h : Foo I n f) :
+    (h : ContMDiffTransitions I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -133,8 +134,8 @@ lemma contMDiffAt_of_rightInverse (y : M') :
     filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hgy] with z hz
     exact (extChartAt I y).right_inv hz
 
-/-- If `f` satisfies the condition, then `f` is `C^n`. -/
-theorem contMDiff_of_rightInverse (h : Foo I n f) :
+/-- If `ContMDiffTransitions I n f` holds, then `f` is `C^n`. -/
+theorem contMDiff_of_rightInverse (h : ContMDiffTransitions I n f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n f := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -191,9 +192,10 @@ lemma contMDiff_of_contMDiff_comp {φ : M' → N} (hφ : CMDiff n (φ ∘ f)) :
     CMDiff n φ :=
   fun y ↦ hf.contMDiffAt_of_contMDiffAt_comp hg (hφ (g y))
 
-/-- If `f` satisfies the condition, then `φ : M' → N` is `C^n` if and only if `φ ∘ f` is. -/
+/-- If `ContMDiffTransitions I n f` holds, then `φ : M' → N` is `C^n` if and only if `φ ∘ f`
+is. -/
 theorem contMDiff_iff_contMDiff_comp
-    (h : Foo I n f) {φ : M' → N} :
+    (h : ContMDiffTransitions I n f) {φ : M' → N} :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff n φ ↔ CMDiff n (φ ∘ f) :=
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -209,10 +211,10 @@ lemma contMDiff_comp_rightInverse_of_contMDiff {F : M → N}
 
 /-! ### Smoothness of the local inverses of `f` -/
 
-/-- If `f` satisfies the condition, then for every `x : M` the local inverse of `f` at `x` is `C^n`
-on its source. -/
+/-- If `ContMDiffTransitions I n f` holds, then for every `x : M` the local inverse of `f` at `x`
+is `C^n` on its source. -/
 theorem contMDiffOn_localInverseAt_rightInverse
-    (h : Foo I n f) (x : M) :
+    (h : ContMDiffTransitions I n f) (x : M) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     CMDiff[(hf.localInverseAt x).source] n (hf.localInverseAt x) := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
