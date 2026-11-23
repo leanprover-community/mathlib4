@@ -297,14 +297,10 @@ lemma linearIndependent_iff_linearIndepOn_finset :
     Fintype.linearIndependent_iffₛ.1 (H s) (f ∘ Subtype.val) (g ∘ Subtype.val)
       (by simpa only [← s.sum_coe_sort] using! eq) ⟨i, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
-
 @[deprecated linearIndependent_iff_linearIndepOn_finset +typeChanged (since := "2026-11-23")]
 theorem linearIndependent_iff_finset_linearIndependent :
     LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
-  ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'ₛ.2 fun s f g eq i hi ↦
-    Fintype.linearIndependent_iffₛ.1 (H s) (f ∘ Subtype.val) (g ∘ Subtype.val)
-      (by simpa only [← s.sum_coe_sort] using! eq) ⟨i, hi⟩⟩
+  linearIndependent_iff_linearIndepOn_finset
 
 set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_iff_linearIndepOn_finset :
