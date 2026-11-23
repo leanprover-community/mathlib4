@@ -221,9 +221,9 @@ ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
 @[no_expose]
 noncomputable def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
-    { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
-        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]) with
-      commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
+    (.ofCommutes (ringEquivOfRingEquiv P P' (RingEquiv.refl R)
+        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]))
+      fun _ => ringEquivOfRingEquiv_eq _ _)
 
 @[simp]
 theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
@@ -291,7 +291,7 @@ variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
     ∃ x, x ≠ 0 ∧ algebraMap R K x ∈ I := by
   obtain ⟨y : K, y_mem, y_notMem⟩ :=
-    IsConcreteLE.exists_of_lt (bot_lt_iff_ne_bot.mpr hI)
+    exists_mem_notMem_of_lt (bot_lt_iff_ne_bot.mpr hI)
   have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
@@ -372,7 +372,7 @@ theorem _root_.IsFractional.div_of_ne_zero {I J : Submodule R₁ K} :
     IsFractional R₁⁰ I → IsFractional R₁⁰ J → J ≠ 0 → IsFractional R₁⁰ (I / J)
   | ⟨aI, haI, hI⟩, ⟨aJ, haJ, hJ⟩, h => by
     obtain ⟨y, mem_J, notMem_zero⟩ :=
-      IsConcreteLE.exists_of_lt (show 0 < J by simpa only using! bot_lt_iff_ne_bot.mpr h)
+      exists_mem_notMem_of_lt (show 0 < J by simpa only using! bot_lt_iff_ne_bot.mpr h)
     obtain ⟨y', hy'⟩ := hJ y mem_J
     use aI * y'
     constructor

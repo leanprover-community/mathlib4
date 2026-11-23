@@ -11,10 +11,10 @@ public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Data.Int.CharZero
-public import Mathlib.Data.Nat.Cast.Order.Basic
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Further basic results about `Algebra`.

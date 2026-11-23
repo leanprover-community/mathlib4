@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
+
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 
 /-!
 # Unique factorization
