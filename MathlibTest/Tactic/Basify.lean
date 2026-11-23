@@ -181,6 +181,7 @@ example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by
 /-- Metadata should not affect atom formation. -/
 example : ‖(2 : ℝ)‖ₑ = ofNat(2) := by
   basify
+  guard_target = ‖(2 : ℝ)‖ = 2
   norm_num
 
 /-- Metadata in an argument's type. An argument (a : no_index ℝ≥0∞) gets stripped of its metadata
