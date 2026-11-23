@@ -6,7 +6,8 @@ Authors: Devon Tuma
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.Jacobson.Ring
+
+import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
 # Nullstellensatz

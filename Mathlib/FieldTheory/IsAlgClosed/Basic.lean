@@ -5,12 +5,12 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Perfect
-public import Mathlib.RingTheory.Localization.Integral
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Algebraically Closed Field

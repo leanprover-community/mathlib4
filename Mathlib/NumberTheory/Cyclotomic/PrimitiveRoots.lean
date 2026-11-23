@@ -5,13 +5,13 @@ Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+import Mathlib.Data.PNat.Prime
 import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Primitive roots in cyclotomic fields

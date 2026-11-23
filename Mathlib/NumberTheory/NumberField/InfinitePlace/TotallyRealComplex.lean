@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 import Mathlib.FieldTheory.PrimeField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Totally real and totally complex number fields
 

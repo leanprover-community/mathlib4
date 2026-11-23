@@ -5,10 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Set.Basic
 
 import Batteries.Tactic.Congr
+import Mathlib.Data.Option.Basic
 
 /-!
 # Partial Equivalences

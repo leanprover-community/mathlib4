@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 import Mathlib.RingTheory.Nakayama
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about square of maximal ideal of local ring
 -/

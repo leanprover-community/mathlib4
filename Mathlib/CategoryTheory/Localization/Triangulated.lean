@@ -64,7 +64,6 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
   obtain ⟨T', e', hT'⟩ := h
   exact ⟨T', e ≪≫ e', hT'⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by

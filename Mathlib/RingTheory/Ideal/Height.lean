@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Height of an Ideal
 

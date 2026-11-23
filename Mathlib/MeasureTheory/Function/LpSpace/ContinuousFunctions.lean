@@ -10,6 +10,9 @@ public import Mathlib.Topology.ContinuousMap.Compact
 
 import Mathlib.Analysis.Normed.Operator.NormedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous functions in Lp space
 

@@ -15,6 +15,9 @@ public import Mathlib.RingTheory.Nakayama
 
 import Mathlib.LinearAlgebra.Dimension.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The module `I ⧸ I ^ 2`
 

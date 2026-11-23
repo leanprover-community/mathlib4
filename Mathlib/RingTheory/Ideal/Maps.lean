@@ -1067,7 +1067,7 @@ theorem ker_le_comap {K : Ideal S} (f : R →+* S) : RingHom.ker f ≤ comap f K
 instance map_isPrime_of_equiv (f : R ≃+* S) {I : Ideal R} [IsPrime I] :
     IsPrime (map f I) := by
   rw [map_comap_of_equiv]
-  exact Ideal.IsPrime.comap f.symm.toRingHom
+  exact Ideal.IsPrime.comap (RingEquiv.ofClass f).symm
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : R →+* S} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by

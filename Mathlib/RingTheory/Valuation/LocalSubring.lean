@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.RingTheory.Polynomial.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuation subrings are exactly the maximal local subrings
 

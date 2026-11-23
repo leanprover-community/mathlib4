@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 public import Mathlib.SetTheory.Cardinal.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dieudonné measure
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.Smooth.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formally smooth algebras and adic completion
 

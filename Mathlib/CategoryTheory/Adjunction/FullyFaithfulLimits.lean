@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Limits
 
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of colimits and reflective adjunctions
 

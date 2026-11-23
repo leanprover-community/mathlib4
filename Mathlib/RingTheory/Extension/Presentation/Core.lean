@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentations on subrings
 

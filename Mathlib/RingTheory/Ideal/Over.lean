@@ -161,8 +161,8 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] (f : B →ₐ[A] C) (h : P = Q.comap
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] (σ : B ≃ₐ[A] C) (h : Q = P.map σ.toRingHom) :
     Q.LiesOver p := by
-  rw [← show _ = P.map σ.toRingHom from comap_symm σ.toRingEquiv] at h
-  exact of_eq_comap p σ.symm.toAlgHom h
+  rw [← show _ = P.map σ.toRingHom from comap_symm (.ofClass σ)] at h
+  exact of_eq_comap p (AlgEquiv.ofClass σ).symm h
 
 variable {p} in
 instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).LiesOver p :=
@@ -317,7 +317,7 @@ variable {P} {E : Type*} (σ : B ≃ₐ[A] C)
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
-  .ofCommutes (quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h) <| by
+  .ofCommutes (quotientEquiv P Q (.ofClass σ) h) <| by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 

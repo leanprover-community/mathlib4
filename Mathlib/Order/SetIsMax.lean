@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Order.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal elements of subsets
 

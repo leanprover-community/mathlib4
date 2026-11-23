@@ -10,6 +10,9 @@ public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Kernel.Composition.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A predicate for having a specified conditional distribution
 

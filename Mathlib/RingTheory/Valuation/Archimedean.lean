@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring of integers under a given valuation in a multiplicatively archimedean codomain
 -/

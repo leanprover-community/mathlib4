@@ -6,10 +6,10 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 module
 
 public import Mathlib.RingTheory.Extension.Generators
-public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.MvPolynomial.Localization
 
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.RingTheory.FinitePresentation
 
 /-!
 # Presentations of algebras

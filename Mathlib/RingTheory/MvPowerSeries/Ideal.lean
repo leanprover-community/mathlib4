@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.BigOperators
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about ideals of `MvPowerSeries`
 

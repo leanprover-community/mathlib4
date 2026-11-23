@@ -8,8 +8,9 @@ module
 public import Mathlib.RingTheory.Derivation.ToSquareZero
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # The module of Kähler differentials

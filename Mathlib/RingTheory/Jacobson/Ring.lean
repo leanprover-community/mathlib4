@@ -5,9 +5,10 @@ Authors: Devon Tuma
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories of coherent sheaves
 

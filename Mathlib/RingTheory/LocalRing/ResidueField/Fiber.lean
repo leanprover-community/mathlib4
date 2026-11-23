@@ -25,7 +25,6 @@ open Algebra TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=

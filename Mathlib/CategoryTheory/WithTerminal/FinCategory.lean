@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
 public import Mathlib.Data.Fintype.Option
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `WithTerminal C` and `WithInitial C` are finite whenever `C` is
 

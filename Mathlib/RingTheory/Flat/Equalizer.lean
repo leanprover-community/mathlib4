@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Algebra.Module.SnakeLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change along flat modules preserves equalizers
 
