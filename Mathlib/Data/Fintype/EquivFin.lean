@@ -567,7 +567,8 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [ht]
 
-/-- An infinite type admits an injective self-map that is not surjective.
+/-- An infinite type is **Dedekind-infinite**: it admits an injective self-map that is not
+surjective.
 
 On a finite type every injective self-map is instead surjective, by
 `Finite.injective_iff_surjective`. -/
@@ -587,6 +588,38 @@ theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
   obtain ⟨x, hx⟩ := hsurj (g.symm (Sum.inl 0))
   rcases hgx : g x <;>
   grind [g.symm.injective]
+
+/-- A type is infinite if and only if it admits an injective self-map that is not surjective. -/
+theorem exists_injective_not_surjective_iff (α : Type*) :
+    Infinite α ↔ ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
+  refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
+  · have := h
+    exact exists_injective_not_surjective α
+  · rw [← not_finite_iff_infinite]
+    intro h
+    have := h
+    exact hf' (Finite.injective_iff_surjective.mp hf)
+
+/-- An infinite type admits a surjective self-map that is not injective.
+
+On a finite type every surjective self-map is instead injective, by
+`Finite.injective_iff_surjective`. -/
+theorem exists_surjective_not_injective (α : Type*) [Infinite α] :
+    ∃ f : α → α, Surjective f ∧ ¬ Injective f := by
+  obtain ⟨f, hf, hf'⟩ := exists_injective_not_surjective α
+  refine ⟨invFun f, invFun_surjective hf, fun hg ↦ hf' fun y ↦ ?_⟩
+  exact ⟨invFun f y, hg (leftInverse_invFun hf (invFun f y))⟩
+
+/-- A type is infinite if and only if it admits a surjective self-map that is not injective. -/
+theorem exists_surjective_not_injective_iff (α : Type*) :
+    Infinite α ↔ ∃ f : α → α, Surjective f ∧ ¬ Injective f := by
+  refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
+  · have := h
+    exact exists_surjective_not_injective α
+  · rw [← not_finite_iff_infinite]
+    intro h
+    have := h
+    exact hf' (Finite.injective_iff_surjective.mpr hf)
 
 /-- An infinite type is equivalent to a proper subset of itself.
 
