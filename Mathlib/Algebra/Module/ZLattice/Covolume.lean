@@ -3,7 +3,7 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
@@ -54,6 +54,8 @@ the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 `volume_image_eq_volume_div_covolume'`. When the same result exists in the
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 -/
+
+deprecated_module "Use Mathlib.Algebra.Module.Lattice.Covolume" (since := "2026-11-23")
 
 @[expose] public section
 
