@@ -105,7 +105,7 @@ theorem supr_inertia_primeSpectrum_eq_top (S G : Type*) [CommRing S] [Module.Fin
   have : H.Normal := by
     refine Subgroup.normal_iff_map_conj_eq.mpr fun g ↦ ?_
     rw [Subgroup.map_iSup]
-    exact (MulAction.toPerm g).iSup_congr fun P ↦ P.1.inertia_smul g
+    exact (MulAction.toPerm g).iSup_congr fun P ↦ P.asIdeal.inertia_smul g
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
   let := mulSemiringActionQuotient G R S H
   let := mulSemiringActionOfNormal G R S H
@@ -129,7 +129,7 @@ theorem supr_inertia_maximalSpectrum_eq_top (S G : Type*) [CommRing S] [Module.F
     ⨆ m : MaximalSpectrum S, m.asIdeal.inertia G = ⊤ := by
   rw [eq_top_iff, ← supr_inertia_primeSpectrum_eq_top S G, iSup_le_iff]
   intro p
-  obtain ⟨m, hm, hpm⟩ := p.1.exists_le_maximal p.2.ne_top
+  obtain ⟨m, hm, hpm⟩ := p.asIdeal.exists_le_maximal p.isPrime.ne_top
   exact le_iSup_of_le ⟨m, hm⟩ (AddSubgroup.inertia_mono G hpm)
 
 end NumberField
