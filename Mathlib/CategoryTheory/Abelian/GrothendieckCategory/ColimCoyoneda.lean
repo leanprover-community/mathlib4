@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
 

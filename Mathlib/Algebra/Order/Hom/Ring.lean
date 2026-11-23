@@ -141,6 +141,10 @@ instance : RingHomClass (α →+*o β) α β where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
 
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl
 
@@ -316,8 +320,9 @@ instance : RingEquivClass (α ≃+*o β) α β where
 instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
 
 @[simp]
-theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β] [RingEquivClass F α β]
-    (f : F) : ⇑(ofClass f) = f := rfl
+protected theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β]
+    [RingEquivClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
@@ -407,9 +412,11 @@ theorem trans_toRingEquiv (f : α ≃+*o β) (g : β ≃+*o γ) :
 
 /-- `simp`-normal form of `trans_toRingEquiv`. -/
 @[simp]
-theorem trans_toRingEquiv_aux (f : α ≃+*o β) (g : β ≃+*o γ) :
+theorem ringEquivOfClass_trans (f : α ≃+*o β) (g : β ≃+*o γ) :
     .ofClass (OrderRingIso.trans f g) = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias trans_toRingEquiv_aux := ringEquivOfClass_trans
 
 @[simp]
 theorem trans_apply (f : α ≃+*o β) (g : β ≃+*o γ) (a : α) : f.trans g a = g (f a) :=

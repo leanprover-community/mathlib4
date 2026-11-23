@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.GradedObject.Unitor
 public import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structures on graded objects
 

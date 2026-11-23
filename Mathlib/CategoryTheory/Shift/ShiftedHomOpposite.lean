@@ -116,7 +116,6 @@ lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite
   simp [opEquiv'_symm_apply, opEquiv_symm_apply, shiftFunctorAdd'_add_zero,
     opShiftFunctorEquivalence_zero_unitIso_inv_app]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (x : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦m + n⟧)) :
     (opEquiv' (m + n) a a'' (by lia)).symm x =
