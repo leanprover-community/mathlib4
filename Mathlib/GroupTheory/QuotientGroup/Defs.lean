@@ -283,9 +283,9 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
 group homomorphisms `G/N →* M`. -/
 @[to_additive (attr := simps) /-- The bijection between `AddGroup` homomorphisms `φ : G →+ M` with
 normal `AddSubgroup` `N ≤ ker(φ)` and `AddGroup` homomorphisms `G/N →+ M`. -/]
-def liftHomEquiv : (G ⧸ N →* M) ≃ {φ : G →* M // N ≤ φ.ker} where
-  toFun f := ⟨f.comp <| mk' N, fun _ h ↦ by simp [eq_one_iff _ |>.mpr h]⟩
-  invFun f := lift _ _ fun _ h ↦ f.prop h
+def liftHomEquiv : {φ : G →* M // N ≤ φ.ker} ≃ (G ⧸ N →* M) where
+  toFun f := lift _ _ f.prop
+  invFun f := ⟨f.comp <| mk' N, fun _ h ↦ by simp [eq_one_iff _ |>.mpr h]⟩
 
 @[to_additive]
 lemma injective_lift_iff (φ : G →* M) (HN : N ≤ φ.ker) :
