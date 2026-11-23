@@ -183,7 +183,7 @@ end trivial_bundle
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 /-- The trivial connection on the trivial bundle is analytic. -/
-lemma trivial_isSmooth [IsManifold I ω M] [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+lemma trivial_isAnalytic [IsManifold I ω M] [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
     : ContMDiffCovariantDerivative (trivial I M F) ω where
   contMDiff := ⟨by
     intro σ hσ
