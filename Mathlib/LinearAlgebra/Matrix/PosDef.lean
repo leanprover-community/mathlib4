@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
-public import Mathlib.Data.Int.Interval
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Data.Int.Interval
+import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-! # Positive Definite Matrices
 
@@ -342,7 +343,7 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_of_forall_finset {ι : Type*} {κ
     M.PosSemidef ↔ ∀ i, (M.submatrix (f i) (f i)).PosSemidef := by
   refine ⟨fun h i ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   exact funext hg ▸ (h i).submatrix g
 
 omit [Fintype m] in
@@ -528,7 +529,7 @@ theorem _root_.Matrix.posDef_iff_submatrix_of_forall_finset {ι : Type*} {κ : �
     M.PosDef ↔ ∀ i, (M.submatrix (f i) (f i)).PosDef := by
   refine ⟨fun h i ↦ h.submatrix (hf_inj i), fun h ↦ posDef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   have hfg : f i ∘ g = (↑) := funext hg
   exact hfg ▸ (h i).submatrix (.of_comp (hfg ▸ Subtype.coe_injective))
 

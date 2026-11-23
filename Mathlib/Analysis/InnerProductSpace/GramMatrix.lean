@@ -6,9 +6,9 @@ Authors: Peter Pfaffelhuber
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Analysis.Matrix.Order
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # Gram Matrices
 

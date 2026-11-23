@@ -141,14 +141,14 @@ lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
   | insert i s hi hs =>
     rw [Finset.sum_insert hi, IndepFun.charFunDual_map_add_eq_mul, Finset.prod_insert hi, hs]
     · exact fun i hi ↦ (mX i (mem_insert_of_mem hi))
-    · exact hX.precomp (g := fun x : s ↦ ⟨x.1, mem_insert_of_mem x.2⟩) (fun _ ↦ by simp)
+    · exact hX.precomp (g := fun x : s ↦ ⟨x.val, mem_insert_of_mem x.property⟩) (fun _ ↦ by simp)
     · exact mX i (mem_insert_self i s)
     · exact Finset.aemeasurable_sum s (fun i hi ↦ (mX i (mem_insert_of_mem hi)))
     symm
     convert
       iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩) (f :=
-        fun (x : (insert i s : Finset ι)) ↦ X x.1) (s := {x | x.1 ∈ s}) hX (fun i ↦ (mX i.1 i.2))
-        (by simpa)
+        fun (x : (insert i s : Finset ι)) ↦ X x.val) (s := {x | x.val ∈ s}) hX
+        (fun i ↦ (mX i.val i.property)) (by simpa)
     let e : ((insert i s) : Finset ι) → ι := Subtype.val
     convert (Finset.sum_of_injOn Subtype.val ?_ ?_ ?_ ?_).symm
     · simp
