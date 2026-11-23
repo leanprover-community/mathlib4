@@ -5,7 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Summable
+public import Mathlib.Algebra.Module.Lattice.Summable
+public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
@@ -106,14 +107,14 @@ lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
     (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by simp)
 
--- helper lemma to connect to the ZLattice API
+-- helper lemma to connect to the lattice API
 lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
   rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
   simp
 
-instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
+instance : L.lattice.IsFullLattice ℝ := L.lattice_eq_span_range_basis ▸ inferInstance
 
 instance : IsZLattice ℝ L.lattice := by
   simp_rw [L.lattice_eq_span_range_basis]
@@ -225,8 +226,8 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
       (fun (l : L.lattice) (z : ℂ) ↦ if l.val = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
       ℘[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
-    (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
-    Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
+    (fun _ _ ↦ (Submodule.IsLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _)
+    fun r hr ↦ Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
   · simpa using! show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
@@ -341,8 +342,8 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.val = l₀ then 0 else -2 / (z - l) ^ 3) ℘'[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := fun _ ↦ (16 * ‖·‖ ^ (-3 : ℝ))) _
-    (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
-    Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
+    (fun _ _ ↦ (Submodule.IsLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _)
+    fun r hr ↦ Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
   · simp
@@ -607,7 +608,7 @@ def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻�
 
 lemma hasSum_sumInvPow (x : ℂ) {r : ℕ} (hr : 2 < r) :
     HasSum (fun l : L.lattice ↦ ((l - x) ^ r)⁻¹) (L.sumInvPow x r) := by
-  refine Summable.hasSum (.of_norm_bounded (ZLattice.summable_norm_sub_zpow _
+  refine Summable.hasSum (.of_norm_bounded (Submodule.IsLattice.summable_norm_sub_zpow _
     (-r) (by simpa) x) fun l ↦ ?_)
   rw [← zpow_natCast, ← zpow_neg, ← norm_zpow]
 
@@ -689,7 +690,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
       simpa [mul_comm] using ((Real.hasFPowerSeriesOnBall_ofScalars_mul_add_zero 1 2).hasSum
         (y := κ⁻¹) (by simpa [eNorm_eq_nnNorm])).summable
     have H₂ : Summable fun l : L.lattice ↦ ‖l - x‖ ^ (-3 : ℤ) * ‖z - x‖ :=
-      (ZLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
+      (Submodule.IsLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
     refine (H₁.mul_of_nonneg H₂ (by intro; positivity) (by intro; positivity)).of_norm_bounded ?_
     intro p
     split_ifs with hp

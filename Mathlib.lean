@@ -827,6 +827,7 @@ public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.Algebra.Module.Lattice.Basic
 public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.Lattice.Full
+public import Mathlib.Algebra.Module.Lattice.Summable
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
