@@ -182,35 +182,15 @@ end trivial_bundle
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
--- TODO: does it make sense to speak of analytic connections? if so, change the definition of
--- regularity and use ∞ from `open scoped ContDiff` instead.
-
-/-- The trivial connection on the trivial bundle is smooth -/
-lemma trivial_isSmooth : ContMDiffCovariantDerivative (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
+/-- The trivial connection on the trivial bundle is analytic. -/
+lemma trivial_isSmooth [IsManifold I ω M] [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    : ContMDiffCovariantDerivative (trivial I M F) ω where
   contMDiff := ⟨by
     intro σ hσ
-    dsimp only [trivial]
-    sorry /-
-    -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well
-    simp only [trivial]
-    -- use a local trivialisation
-    intro x
-    specialize hX x
-    -- TODO: use contMDiffOn instead, to get something like
-    -- have hX' : ContMDiffOn 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (∞ + 1)
-    --  (T% σ) (trivializationAt x).baseSet := hX.contMDiffOn
-    -- then want a version contMDiffOn_totalSpace
-    rw [contMDiffAt_totalSpace] at hX ⊢
-    simp only [Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply]
-    refine ⟨contMDiff_id _, ?_⟩
-    obtain ⟨h₁, h₂⟩ := hX
-    -- ... hopefully telling me
-    -- have h₂scifi : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E') ∞
-    --   (fun x ↦ σ x) (trivializationAt _).baseSet_ := sorry
-    simp at h₂
-    -- now use ContMDiffOn.congr and contDiff_infty_iff_fderiv,
-    -- or perhaps a contMDiffOn version of this lemma?
-    sorry -/⟩
+    rw [Bundle.Trivial.contMDiffOn_section_iff] at hσ
+    intro x hx
+    exact (hσ x hx).mvfderiv isOpen_univ (mem_univ x)
+   ⟩
 
 noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
