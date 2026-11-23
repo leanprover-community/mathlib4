@@ -22,6 +22,113 @@ Don't be afraid to ask. TODO!
 open Bundle Filter Module NormedSpace Topology Set
 open scoped Manifold ContDiff
 
+section prelim
+
+lemma _root_.mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {s : Set M} (g : M → F) {x : M} (hx : s ∈ 𝓝 x)
+    : d[s] g x = d% g x := by
+  ext v
+  change fromTangentSpace (g x) ((mfderiv[s] g x v)) = _
+  rw [mfderivWithin_of_mem_nhds hx]
+  rfl
+
+lemma _root_.IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {s : Set M} (hs : IsOpen s) {g : M → F} {x : M} (hx : x ∈ s)
+    : d[s] g x = d% g x :=
+  mvfderivWithin_of_mem_nhds g <| hs.mem_nhds hx
+
+lemma _root_.Bundle.Trivial.contMDiffWithinAt_section_iff
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
+    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+    {s : B → F} {a : Set B} {x₀ : B} {n : ℕ∞ω}
+    : CMDiffAt[a] n (T% s) x₀ ↔ CMDiffAt[a] n s x₀ := by
+  rw [Bundle.contMDiffWithinAt_section_iff]
+  rfl
+
+lemma _root_.Bundle.Trivial.contMDiffOn_section_iff
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
+    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+    {s : B → F} {a : Set B} {n : ℕ∞ω}
+    : CMDiff[a] n (T% s) ↔ CMDiff[a] n s := by
+  unfold ContMDiffOn
+  refine forall₂_congr fun x hx ↦ ?_
+  apply Bundle.Trivial.contMDiffWithinAt_section_iff
+
+lemma _root_.Bundle.Trivial.contMDiffAt_section_iff
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
+    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+    {s : B → F} {x₀ : B} {n : ℕ∞ω}
+    : CMDiffAt n (T% s) x₀ ↔ CMDiffAt n s x₀ := by
+  rw [Bundle.contMDiffAt_section_iff]
+  rfl
+
+lemma _root_.ContMDiffWithinAt.mvfderiv
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
+    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} {n : ℕ∞ω}
+    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+    [IsManifold IB 1 B] [IsManifold IB (n + 1) B] -- Aaaargggh
+    {s : B → F} {a : Set B} {x₀ : B} (ha : IsOpen a) (hx₀ : x₀ ∈ a)
+    (hs : ContMDiffWithinAt IB 𝓘(𝕜, F) (n + 1) s a x₀)
+    : ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, EB →L[𝕜] F)) n
+        (fun x : B ↦ TotalSpace.mk' (EB →L[𝕜] F) x (d% s x)) a x₀ := by
+  have : IsManifold IB n B := IsManifold.of_le (by norm_num : n ≤ n + 1)
+  have : ContMDiffVectorBundle n EB (fun x : B ↦ TangentSpace IB x) IB :=
+    TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
+  rw [← Bundle.Trivial.contMDiffWithinAt_section_iff] at hs
+  let φ : (x : B) → TangentSpace IB x →L[𝕜] Trivial B F x := d% s
+  have := @ContMDiffWithinAt.clm_bundle_of_apply' (B := B) (IB := IB) (F₁ := EB) (F₂ := F)
+    (E₁ := TangentSpace IB) (E₂ := Trivial B F) (k := n) (φ := φ) (l := n)
+  apply this<;> clear this
+  · assumption
+  · assumption
+  intro X hX
+  unfold φ
+  rw [Bundle.Trivial.contMDiffWithinAt_section_iff] at hs
+  have foo {X : Π x : B, TangentSpace% x} := hs.mvfderivWithin (X := X) (m := n)
+  specialize foo (X := X) hX.self_of_nhds le_rfl ha.uniqueMDiffOn hx₀
+  suffices ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (d% s x) (X x)) a x₀ by
+    exact contMDiffWithinAt_section_iff.mpr this
+  apply foo.congr
+  · intro y hy
+    symm
+    rw [ha.mvfderivWithin hy]
+  · rw [ha.mvfderivWithin hx₀]
+
+
+lemma _root_.ContMDiffAt.mvfderiv'
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
+    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} {n : ℕ∞ω}
+    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+    [IsManifold IB 1 B] [IsManifold IB (n + 1) B] -- Aaaargggh
+    {s : B → F} {x₀ : B}
+    (hs : ContMDiffAt IB 𝓘(𝕜, F) (n + 1) s x₀)
+    : ContMDiffAt IB (IB.prod 𝓘(𝕜, EB →L[𝕜] F)) n
+        (fun x : B ↦ TotalSpace.mk' (EB →L[𝕜] F) x (d% s x)) x₀ :=
+  ContMDiffWithinAt.mvfderiv isOpen_univ (mem_univ x₀) hs
+
+end prelim
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 @[expose] public section
@@ -175,98 +282,6 @@ lemma _root_.CovariantDerivative.exists_one_form
     cov σ x = d% σ x + A x (σ x) := by
   simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 
-#click_suggestions
-
-lemma _root_.mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {s : Set M} (g : M → F) {x : M} (hx : s ∈ 𝓝 x)
-    : d[s] g x = d% g x := by
-  ext v
-  change fromTangentSpace (g x) ((mfderiv[s] g x v)) = _
-  rw [mfderivWithin_of_mem_nhds hx]
-  rfl
-
-lemma _root_.IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {s : Set M} (hs : IsOpen s) {g : M → F} {x : M} (hx : x ∈ s)
-    : d[s] g x = d% g x :=
-  mvfderivWithin_of_mem_nhds g <| hs.mem_nhds hx
-
-lemma _root_.Bundle.Trivial.contMDiffWithinAt_section_iff
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
-    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
-    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-    {s : B → F} {a : Set B} {x₀ : B} {n : ℕ∞ω}
-    : CMDiffAt[a] n (T% s) x₀ ↔ CMDiffAt[a] n s x₀ := by
-  rw [Bundle.contMDiffWithinAt_section_iff]
-  rfl
-
-lemma _root_.Bundle.Trivial.contMDiffAt_section_iff
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
-    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
-    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-    {s : B → F} {x₀ : B} {n : ℕ∞ω}
-    : CMDiffAt n (T% s) x₀ ↔ CMDiffAt n s x₀ := by
-  rw [Bundle.contMDiffAt_section_iff]
-  rfl
-
-lemma _root_.ContMDiffWithinAt.mvfderiv
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
-    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} {n : ℕ∞ω}
-    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-    [IsManifold IB 1 B] [IsManifold IB (n + 1) B] -- Aaaargggh
-    {s : B → F} {a : Set B} {x₀ : B} (ha : IsOpen a) (hx₀ : x₀ ∈ a)
-    (hs : ContMDiffWithinAt IB 𝓘(𝕜, F) (n + 1) s a x₀)
-    : ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, EB →L[𝕜] F)) n
-        (fun x : B ↦ TotalSpace.mk' (EB →L[𝕜] F) x (d% s x)) a x₀ := by
-  have : IsManifold IB n B := IsManifold.of_le (by norm_num : n ≤ n + 1)
-  have : ContMDiffVectorBundle n EB (fun x : B ↦ TangentSpace IB x) IB :=
-    TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
-  rw [← Bundle.Trivial.contMDiffWithinAt_section_iff] at hs
-  let φ : (x : B) → TangentSpace IB x →L[𝕜] Trivial B F x := d% s
-  have := @ContMDiffWithinAt.clm_bundle_of_apply' (B := B) (IB := IB) (F₁ := EB) (F₂ := F)
-    (E₁ := TangentSpace IB) (E₂ := Trivial B F) (k := n) (φ := φ) (l := n)
-  apply this<;> clear this
-  · assumption
-  · assumption
-  intro X hX
-  unfold φ
-  rw [Bundle.Trivial.contMDiffWithinAt_section_iff] at hs
-  have foo {X : Π x : B, TangentSpace% x} := hs.mvfderivWithin (X := X) (m := n)
-  specialize foo (X := X) hX.self_of_nhds le_rfl ha.uniqueMDiffOn hx₀
-  suffices ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (d% s x) (X x)) a x₀ by
-    exact contMDiffWithinAt_section_iff.mpr this
-  apply foo.congr
-  · intro y hy
-    symm
-    rw [ha.mvfderivWithin hy]
-  · rw [ha.mvfderivWithin hx₀]
-
-
-lemma _root_.ContMDiffAt.mvfderiv'
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
-    {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} {n : ℕ∞ω}
-    {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-    [IsManifold IB 1 B] [IsManifold IB (n + 1) B] -- Aaaargggh
-    {s : B → F} {x₀ : B}
-    (hs : ContMDiffAt IB 𝓘(𝕜, F) (n + 1) s x₀)
-    : ContMDiffAt IB (IB.prod 𝓘(𝕜, EB →L[𝕜] F)) n
-        (fun x : B ↦ TotalSpace.mk' (EB →L[𝕜] F) x (d% s x)) x₀ :=
-  ContMDiffWithinAt.mvfderiv isOpen_univ (mem_univ x₀) hs
 
 lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
