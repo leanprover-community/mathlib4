@@ -414,11 +414,11 @@ theorem trans_toRingEquiv (f : α ≃+*o β) (g : β ≃+*o γ) :
 
 /-- `simp`-normal form of `trans_toRingEquiv`. -/
 @[simp]
-theorem ringEquivOfClass_trans_aux (f : α ≃+*o β) (g : β ≃+*o γ) :
+theorem ringEquivOfClass_trans (f : α ≃+*o β) (g : β ≃+*o γ) :
     .ofClass (OrderRingIso.trans f g) = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
   rfl
 
-@[deprecated (since := "2026-11-22")] alias trans_toRingEquiv_aux := ringEquivOfClass_trans_aux
+@[deprecated (since := "2026-11-22")] alias trans_toRingEquiv_aux := ringEquivOfClass_trans
 
 @[simp]
 theorem trans_apply (f : α ≃+*o β) (g : β ≃+*o γ) (a : α) : f.trans g a = g (f a) :=
