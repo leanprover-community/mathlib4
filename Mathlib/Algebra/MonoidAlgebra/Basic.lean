@@ -134,7 +134,10 @@ variable (R M) in
 lemma ringEquivOfClass_uniqueAlgEquiv [Unique M] :
     .ofClass (uniqueAlgEquiv R (A := A) M) = uniqueRingEquiv (R := A) M := rfl
 
-@[deprecated (since := "2026-11-22")] alias toRingEquiv_uniqueAlgEquiv :=
+@[deprecated (since := "2026-11-23")] alias _root_.AddMonoidAlgebra.toRingEquiv_uniqueAlgEquiv :=
+    AddMonoidAlgebra.ringEquivOfClass_uniqueAlgEquiv
+
+@[to_additive existing, deprecated (since := "2026-11-22")] alias toRingEquiv_uniqueAlgEquiv :=
   ringEquivOfClass_uniqueAlgEquiv
 
 variable (R M) in
@@ -142,7 +145,11 @@ variable (R M) in
 lemma ringEquivOfClass_symm_uniqueAlgEquiv [Unique M] :
     .ofClass (uniqueAlgEquiv R (A := A) M).symm = (uniqueRingEquiv (R := A) M).symm := rfl
 
-@[deprecated (since := "2026-11-22")] alias toRingEquiv_symm_uniqueAlgEquiv :=
+@[deprecated (since := "2026-11-23")] alias
+    _root_.AddMonoidAlgebra.toRingEquiv_symm_uniqueAlgEquiv :=
+    AddMonoidAlgebra.ringEquivOfClass_symm_uniqueAlgEquiv
+
+@[to_additive existing, deprecated (since := "2026-11-22")] alias toRingEquiv_symm_uniqueAlgEquiv :=
   ringEquivOfClass_symm_uniqueAlgEquiv
 
 variable (R) in
