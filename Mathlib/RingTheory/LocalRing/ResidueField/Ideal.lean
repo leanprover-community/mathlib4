@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.SurjectiveOnStalks
+
+import Mathlib.RingTheory.Localization.FractionRing
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -5,9 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.RingTheory.Adjoin.Basic
 
 set_option doc.verso true

@@ -6,8 +6,9 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Ideal
+
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Submodules in localizations of commutative rings

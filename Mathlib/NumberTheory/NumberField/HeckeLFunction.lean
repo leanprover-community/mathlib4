@@ -9,8 +9,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
 public import Mathlib.NumberTheory.LSeries.Basic
 public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.NumberTheory.NumberField.AdeleRing
-public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
+import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

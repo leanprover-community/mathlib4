@@ -5,11 +5,12 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Orientation
-public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Oriented two-dimensional real inner product spaces

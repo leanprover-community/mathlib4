@@ -6,9 +6,10 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
+
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Canonical embedding of a number field
