@@ -578,8 +578,10 @@ def baseChange :
     commutes' _ := by ext <;> simp [Algebra.algebraMap_eq_smul_one] }
 
 @[simp]
-theorem coe_baseChange :
-    baseChange S a b = mapRingHom (algebraMap R S) a b := rfl
+theorem toRingHom_baseChange :
+    (baseChange S a b).toRingHom = mapRingHom (algebraMap R S) a b := rfl
+
+@[deprecated (since := "2026-11-23")] alias coe_baseChange := toRingHom_baseChange
 
 /-- The `QuadraticAlgebra R a b`-algebra structure on the base change of `QuadraticAlgebra R a b`
 along `R → S`. This is not an instance, since for `R = S` it clashes with `Algebra.id`. -/

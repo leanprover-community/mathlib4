@@ -62,9 +62,15 @@ lemma comap_ofClass [RingHomClass F R S] (I : Ideal S) :
 
 @[deprecated (since := "2026-11-22")] alias comap_coe := comap_ofClass
 
+lemma comap_toRingHom (f : R ≃+* S) (I : Ideal S) :
+    I.comap f.toRingHom = I.comap f := rfl
+
 lemma map_ofClass [RingHomClass F R S] (I : Ideal R) : I.map (RingHom.ofClass f) = I.map f := rfl
 
 @[deprecated (since := "2026-11-22")] alias map_coe := map_ofClass
+
+lemma map_toRingHom (f : R ≃+* S) (I : Ideal R) :
+    I.map f.toRingHom = I.map f := rfl
 
 variable {f}
 

@@ -98,6 +98,9 @@ def toAlgEquiv (f : A ≃ₐc[R] B) : A ≃ₐ[R] B :=
     map_add' := map_add f.toCoalgEquiv
     map_smul' := map_smul f.toBialgHom }
 
+/-- The ring homomorphism underlying a bialgebra equivalence. -/
+def toRingHom (f : A ≃ₐc[R] B) : A →+* B := f.toAlgEquiv.toRingHom
+
 /-- The equivalence of types underlying a bialgebra equivalence. -/
 def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f => f.toCoalgEquiv.toEquiv
 
@@ -285,8 +288,8 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : e.symm.toBialgHom.comp e.toBialgHom = .id R A :=
   BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
-lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
-@[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
+lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : (e : A ≃+* B).toRingHom = e.toRingHom := rfl
+@[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : (e : A ≃ₐ[R] B).toRingHom = e.toRingHom := rfl
 
 /-- If a bialgebra morphism has an inverse, it is a bialgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
