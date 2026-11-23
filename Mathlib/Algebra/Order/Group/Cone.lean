@@ -118,7 +118,7 @@ theorem coneLinearlyOrderedGroupEquiv_symm_apply (l : LinearOrder G) (h : IsOrde
 
 end CommGroup
 
-/-! ### Deprecated -/
+/-! ## Deprecated -/
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
