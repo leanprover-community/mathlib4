@@ -9,6 +9,9 @@ public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.Probability.Moments.Variance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covariance in Banach spaces
 

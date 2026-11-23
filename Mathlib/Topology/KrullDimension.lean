@@ -76,7 +76,7 @@ lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding 
   rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
   refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
   intro a b hlt
-  exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
+  exact ⟨⟨b, a.property.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
 
 attribute [local instance] specializationOrder in
 lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSober X] [T0Space X]

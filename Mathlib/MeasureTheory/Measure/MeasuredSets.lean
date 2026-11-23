@@ -42,7 +42,7 @@ unused parameter `μ`, to be able to define a distance on it given by `edist s t
 def MeasuredSets (μ : Measure α) : Type _ := {s : Set α // MeasurableSet s}
 
 instance : SetLike (MeasuredSets μ) α where
-  coe s := s.1
+  coe s := s.val
   coe_injective := Subtype.coe_injective
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
@@ -185,7 +185,8 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     Dense ((SetLike.coe : MeasuredSets μ → Set α) ⁻¹' C) := by
   rw [EMetric.dense_iff]
   rintro s ε εpos
-  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
+  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.property εpos with
+    ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
   simpa [MeasuredSets.edist_def] using! ht
@@ -198,7 +199,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
     Dense ((SetLike.coe : MeasuredSets μ → Set α) ⁻¹' (supClosure C)) := by
   rw [EMetric.dense_iff]
   rintro s ε εpos
-  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
+  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.property εpos
     with ⟨t, tC, ht⟩
   refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
   rw [h]

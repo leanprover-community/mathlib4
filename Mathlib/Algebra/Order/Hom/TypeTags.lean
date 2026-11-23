@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
-public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Order.Hom.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order Monoid Isomorphisms on `Additive` and `Multiplicative`.

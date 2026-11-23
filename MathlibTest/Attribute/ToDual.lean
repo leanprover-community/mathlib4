@@ -420,7 +420,9 @@ def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β
 -- so we get this warning.
 /--
 warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
-Please silence this warning and add a translation manually. Errors:
+If this translation is not needed, feel free to silence this warning.
+Otherwise, please silence this warning and add a translation manually.
+Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α

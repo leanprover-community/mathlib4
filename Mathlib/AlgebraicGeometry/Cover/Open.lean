@@ -59,7 +59,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X := by
     f x := ⟨(e x).inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
     mem₀ := by
       rw [presieve₀_mem_precoverage_iff]
-      refine ⟨fun x ↦ ⟨x, ⟨(e x).hom.base ⟨x, (U x).2⟩, ?_⟩⟩, inferInstance⟩
+      refine ⟨fun x ↦ ⟨x, ⟨(e x).hom.base ⟨x, (U x).property⟩, ?_⟩⟩, inferInstance⟩
       change ((((e x).hom ≫ (e x).inv).base ≫ (X.ofRestrict _).base)) ⟨x, _⟩ = x
       cat_disch }
 
@@ -92,8 +92,8 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : Comp
     exact ⟨⟨y, hy⟩, hy'⟩
   exact
     { I₀ := t
-      X := fun x => 𝒰.X (𝒰.idx x.1)
-      f := fun x => 𝒰.f (𝒰.idx x.1)
+      X := fun x => 𝒰.X (𝒰.idx x.val)
+      f := fun x => 𝒰.f (𝒰.idx x.val)
       mem₀ := by
         rw [presieve₀_mem_precoverage_iff]
         exact ⟨h, inferInstance⟩ }

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 public import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Split simplicial objects in preadditive categories
 

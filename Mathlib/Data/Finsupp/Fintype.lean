@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Single
 public import Mathlib.Data.Fintype.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness and infiniteness of `Finsupp`
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
 
@@ -37,7 +40,7 @@ instance : SMul Mᵈᵐᵃ (Lp E p μ) where
   smul c f := Lp.compMeasurePreserving (mk.symm c • ·) (measurePreserving_smul _ _) f
 
 @[to_additive (attr := simp)]
-theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).1 = c • f.1 := rfl
+theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).val = c • f.val := rfl
 
 @[to_additive]
 theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| mk.symm c • ·) :=

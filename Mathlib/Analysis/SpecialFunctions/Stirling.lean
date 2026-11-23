@@ -112,6 +112,16 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
     simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by grind
+  #adaptation_note /-- Since nightly-2026-11-18 (lean4#16525 changed which basis equation the
+  `grind` commutative-ring solver uses to simplify a monomial), `grind` no longer closes the sum
+  value on its own, so the identity is supplied explicitly. -/
+  have key : (1 - r)⁻¹ * r / 3 = (1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1)) := by
+    have h0 : (2 * ((n : ℝ) + 1) + 1) ≠ 0 := by positivity
+    have h1 : ((n : ℝ) + 1) ≠ 0 := by positivity
+    have h2 : ((n : ℝ) + 2) ≠ 0 := by positivity
+    have hsub : 1 - r = 4 * ((n : ℝ) + 1) * ((n : ℝ) + 2) / (2 * ((n : ℝ) + 1) + 1) ^ 2 := by
+      rw [hr]; field_simp; ring
+    rw [hsub, hr]; push_cast; field_simp; ring
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le

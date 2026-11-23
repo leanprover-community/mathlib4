@@ -314,7 +314,7 @@ theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
-  simp [ker, ← top_le_iff, IsConcreteLE.le_iff, f.ext_iff]
+  simp [ker, ← top_le_iff, le_iff_mem_imp_mem, f.ext_iff]
 
 @[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
   rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]
@@ -537,14 +537,14 @@ set_option backward.isDefEq.respectTransparency false in
 additive subgroups that are less than or equal to `H`. -/]
 def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G // H' ≤ H } where
   toFun H' := ⟨H'.map H.subtype, map_subtype_le H'⟩
-  invFun sH' := sH'.1.subgroupOf H
+  invFun sH' := sH'.val.subgroupOf H
   left_inv H' := comap_map_eq_self_of_injective H.subtype_injective H'
-  right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.2)
+  right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.property)
   map_rel_iff' := by simp
 
 @[to_additive (attr := simp)]
 lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :
-    (MapSubtype.orderIso H).symm sH' = sH'.1.subgroupOf H :=
+    (MapSubtype.orderIso H).symm sH' = sH'.val.subgroupOf H :=
   rfl
 
 @[to_additive]
