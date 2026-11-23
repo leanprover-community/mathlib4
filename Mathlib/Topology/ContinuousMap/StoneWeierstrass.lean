@@ -564,12 +564,8 @@ lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0
   | add f g _ _ hf hg => exact add_mem hf hg
   | zero => exact zero_mem _
   | mul f g _ _ _ hg => exact Ideal.mul_mem_left _ f hg
-  | smul r f _ hf =>
-    simp at hf
-    simp [hf]
-  | star f _ hf =>
-    simp at hf
-    simp [hf]
+  | smul r f _ hf => simpa using Or.inr hf
+  | star f _ hf => simpa using hf
 
 lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     (StarAlgebra.adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ∩
@@ -581,9 +577,7 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     simp_rw [adjoin_id_eq_span_one_add, Set.mem_add, SetLike.mem_coe, mem_span_singleton] at hf₁
     obtain ⟨-, ⟨r, rfl⟩, f, hf, rfl⟩ := hf₁
     have := nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf
-    simp at hf₂ this
-    simp [this] at hf₂
-    simpa [hf₂]
+    simp_all
   · simp only [Set.mem_inter_iff, SetLike.mem_coe]
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
