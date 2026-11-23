@@ -13,6 +13,9 @@ public import Mathlib.Topology.Sheaves.Skyscraper
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves over Abelian categories
 

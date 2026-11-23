@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equalizer of two morphisms of functors, as a subfunctor
 

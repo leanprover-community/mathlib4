@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.Comp
 public import Mathlib.Probability.Kernel.Composition.MapComap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about compositions and maps of kernels
 

@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.Order.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological properties of ℝ
 -/

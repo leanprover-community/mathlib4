@@ -1000,7 +1000,6 @@ lemma preservesBinaryProducts_of_preservesBinaryBiproducts [PreservesBinaryBipro
 end
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary products
 preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLimit (pair X Y) F] :
@@ -1071,7 +1070,6 @@ lemma preservesBinaryCoproducts_of_preservesBinaryBiproducts [PreservesBinaryBip
 end
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
 preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBinaryCoproduct {X Y : C}

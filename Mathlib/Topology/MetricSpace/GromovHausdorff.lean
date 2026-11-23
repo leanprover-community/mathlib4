@@ -12,6 +12,9 @@ public import Mathlib.Topology.MetricSpace.Kuratowski
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.MetricSpace.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gromov-Hausdorff distance
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of bialgebras
 

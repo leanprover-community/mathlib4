@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A finite flat module `M` is locally free if `rankAtStalk M` is constant
 -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual space, linear maps and matrices.
 

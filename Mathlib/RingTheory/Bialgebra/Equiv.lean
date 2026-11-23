@@ -146,6 +146,10 @@ theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toBialgHom = e₂.toB
 protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
     ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
 
+@[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
+    ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
+
 end
 
 section
