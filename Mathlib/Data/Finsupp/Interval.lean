@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Finsupp
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals of finitely supported functions
 
@@ -67,9 +70,6 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
     rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
 
-@[deprecated (since := "2025-12-15")]
-alias rangeIcc_toFun := rangeIcc_apply
-
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
@@ -119,19 +119,18 @@ theorem card_uIcc :
 
 end Lattice
 
-section CanonicallyOrdered
+section IsBotZeroClass
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
   [OrderBot α] [LocallyFiniteOrder α]
 variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  classical simp_rw [Iic_eq_Icc, card_Icc, Finsupp.bot_eq_zero, support_zero, empty_union,
-      zero_apply, bot_eq_zero]
+  simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 theorem card_Iio : #(Iio f) = ∏ i ∈ f.support, #(Iic (f i)) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
-end CanonicallyOrdered
+end IsBotZeroClass
 
 end Finsupp

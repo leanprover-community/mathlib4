@@ -5,9 +5,11 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Bounded linear maps
@@ -56,11 +58,11 @@ artifact, really.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter (Tendsto)
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
 section Semiring
 
@@ -76,6 +78,7 @@ inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`.
 
 (We put only the typeclasses strictly necessary for the definition, although the main case of
 interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.) -/
+@[wikidata Q2342396]
 structure IsBoundedLinearMap : Prop
     extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
@@ -132,7 +135,7 @@ theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e :=
-  ⟨(-hf.1.mk' _).isLinear, by simpa using hf.2⟩
+  ⟨(-hf.toIsLinearMap.mk' _).isLinear, by simpa using hf.bound⟩
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e + g e :=
@@ -150,7 +153,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
     IsBoundedLinearMap 𝕜 (g ∘ f) :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
-  (hg.1.mk' _).comp (hf.1.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
+  (hg.toIsLinearMap.mk' _).comp (hf.toIsLinearMap.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
     show ‖g (f x)‖ ≤ _ by grw [hMg, hMf, mul_assoc]
 
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
@@ -160,7 +163,7 @@ theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
   hf.toContinuousLinearMap.continuous
 
 theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
-  (hf.1.mk' _).map_zero ▸ hf.tendsto 0
+  (hf.toIsLinearMap.mk' _).map_zero ▸ hf.tendsto 0
 
 section
 
@@ -308,7 +311,7 @@ theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedL
 
 namespace IsBoundedLinearMap
 
-variable {f g : E → F}
+variable {f : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :
@@ -394,7 +397,7 @@ theorem isBoundedBilinearMap_apply : IsBoundedBilinearMap 𝕜 fun p : (E →L[�
 theorem isBoundedBilinearMap_smulRight :
     IsBoundedBilinearMap 𝕜 fun p =>
       (ContinuousLinearMap.smulRight : StrongDual 𝕜 E → F → E →L[𝕜] F) p.1 p.2 :=
-  (smulRightL 𝕜 E F).isBoundedBilinearMap
+  (StrongDual.smulRightL 𝕜 E F).isBoundedBilinearMap
 
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
@@ -521,7 +524,7 @@ theorem Continuous.continuousLinearMapCoprod
 
 end
 
-namespace ContinuousLinearEquiv
+section OpenEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -537,12 +540,13 @@ In this section we establish that the set of continuous linear equivalences betw
 spaces is an open subset of the space of linear maps between them.
 -/
 
-protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
+protected theorem ContinuousLinearEquiv.isOpen [CompleteSpace E] :
+    IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_mem_range]
   refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := (isBoundedBilinearMap_comp (𝕜 := 𝕜) (F := F) (G := E)).continuous_right
-  convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
+  convert show IsOpen (O ⁻¹' {x | IsUnit x}) from Units.isOpen.preimage h_O using 1
   ext f'
   constructor
   · rintro ⟨e', rfl⟩
@@ -552,8 +556,16 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
     ext x
     simp [O, hw]
 
-protected theorem nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
+protected theorem ContinuousLinearEquiv.nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
     range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F) ∈ 𝓝 (e : E →L[𝕜] F) :=
   IsOpen.mem_nhds ContinuousLinearEquiv.isOpen (by simp)
 
-end ContinuousLinearEquiv
+theorem ContinuousLinearMap.isOpen_setOfPred_isInvertible [CompleteSpace E] :
+    IsOpen {T : E →L[𝕜] F | T.IsInvertible} :=
+  ContinuousLinearEquiv.isOpen
+
+protected theorem ContinuousLinearMap.IsInvertible.eventually_nhds [CompleteSpace E]
+    {T : E →L[𝕜] F} (hT : T.IsInvertible) : ∀ᶠ S in 𝓝 T, S.IsInvertible :=
+  ContinuousLinearMap.isOpen_setOfPred_isInvertible.eventually_mem hT
+
+end OpenEquiv

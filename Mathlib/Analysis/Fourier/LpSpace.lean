@@ -6,10 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
-
 # The Fourier transform on $L^p$
 
 In this file we define the Fourier transform on $L^2$ as a linear isometry equivalence.
@@ -25,7 +23,6 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
   transform on $L^2$.
 * `MeasureTheory.Lp.fourier_toTemperedDistribution_eq`: The Fourier transform on $L^2$ agrees with
   the Fourier transform on `𝓢'(E, F)`.
-
 -/
 
 @[expose] public section
@@ -38,7 +35,9 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
-open SchwartzMap MeasureTheory FourierTransform ComplexInnerProductSpace
+open SchwartzMap MeasureTheory FourierTransform
+
+open scoped ComplexInnerProductSpace
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
@@ -46,6 +45,7 @@ namespace MeasureTheory.Lp
 
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
+@[wikidata Q6520159]
 def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
   (fourierEquiv ℂ 𝓢(E, F)).extendOfIsometry
     (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
@@ -103,9 +103,6 @@ theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f
   rw [one_mul]
   exact (norm_fourier_toL2_eq f).le
 
-@[deprecated (since := "2025-12-31")]
-alias SchwartzMap.toLp_fourierTransform_eq := SchwartzMap.toLp_fourier_eq
-
 @[simp]
 theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
@@ -113,11 +110,8 @@ theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (
   use 1
   intro f
   rw [one_mul]
-  convert (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
+  convert! (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
   simp
-
-@[deprecated (since := "2025-12-31")]
-alias SchwartzMap.toLp_fourierTransformInv_eq := SchwartzMap.toLp_fourierInv_eq
 
 namespace MeasureTheory.Lp
 

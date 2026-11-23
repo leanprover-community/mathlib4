@@ -5,11 +5,13 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Transfer normed algebraic structures across `Equiv`s

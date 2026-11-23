@@ -5,7 +5,10 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Torsor.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Affine space

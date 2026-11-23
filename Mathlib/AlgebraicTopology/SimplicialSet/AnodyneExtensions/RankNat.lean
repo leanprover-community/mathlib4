@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-public import Mathlib.Data.Finite.Sigma
+
+import Mathlib.Basic.Finite.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Existence of a rank function to natural numbers
@@ -14,27 +18,30 @@ public import Mathlib.Data.Finite.Sigma
 In this file, we show that if `P : A.Pairing` is
 a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
-
 -/
 
 @[expose] public section
 
 universe u
 
-open Simplicial
+open scoped Simplicial
 
-namespace SSet.Subcomplex.Pairing
+namespace SSet.Subcomplex
 
-variable {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+variable {X : SSet.{u}} {A : X.Subcomplex}
+
+namespace Pairing
+
+variable (P : A.Pairing)
 
 instance (y : P.II) : Finite { x // P.AncestralRel x y } := by
   let T := { x : P.II // P.AncestralRel x y }
-  let U := Σ (d : Fin (P.p y).1.dim), ⦋d⦌ ⟶ ⦋(P.p y).1.1.1.1⦌
-  let ψ : U → X.S := fun ⟨d, f⟩ ↦ S.mk (X.map f.op (P.p y).1.simplex)
-  have h (t : T) : ∃ u, ψ u = t.1.1.toS := by
-    obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 t.2.2.le
-    refine ⟨⟨⟨t.1.1.dim, ?_⟩, f⟩, ?_⟩
-    · simpa using SSet.N.dim_lt_of_lt t.2.2
+  let U := Σ (d : Fin (P.p y).val.dim), ⦋d⦌ ⟶ ⦋(P.p y).val.toN.toS.dim⦌
+  let ψ : U → X.S := fun ⟨d, f⟩ ↦ S.mk (X.map f.op (P.p y).val.simplex)
+  have h (t : T) : ∃ u, ψ u = t.val.val.toS := by
+    obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 t.property.2.le
+    refine ⟨⟨⟨t.val.val.dim, ?_⟩, f⟩, ?_⟩
+    · simpa using SSet.N.dim_lt_of_lt t.property.2
     · rwa [SSet.S.ext_iff]
   choose φ hφ using h
   apply Finite.of_injective φ
@@ -47,10 +54,10 @@ variable {y : P.II} (hy : Acc P.AncestralRel y)
 
 /-- Auxiliary definition for `SSet.Subcomplex.Pairing.Rank`. -/
 noncomputable def rank' : ℕ :=
-  Acc.recOn hy (fun y _ r ↦ ⨆ (x : { x // P.AncestralRel x y }), r x x.2 + 1)
+  Acc.recOn hy (fun y _ r ↦ ⨆ (x : { x // P.AncestralRel x y }), r x x.property + 1)
 
 lemma rank'_eq :
-    P.rank' hy = ⨆ (x : { x // P.AncestralRel x y }), P.rank' (hy.inv x.2) + 1 := by
+    P.rank' hy = ⨆ (x : { x // P.AncestralRel x y }), P.rank' (hy.inv x.property) + 1 := by
   change P.rank' (Acc.intro y fun _ => hy.inv) = _
   rfl
 
@@ -94,4 +101,22 @@ lemma isRegular_iff_nonempty_weakRankFunction [P.IsProper] :
     P.IsRegular ↔ Nonempty (P.WeakRankFunction ℕ) :=
   ⟨fun _ ↦ inferInstance, fun ⟨h⟩ ↦ h.isRegular⟩
 
-end SSet.Subcomplex.Pairing
+end Pairing
+
+namespace PairingCore
+
+variable (P : A.PairingCore)
+
+lemma isRegular_iff_nonempty_rankFunction [P.IsProper] :
+    P.IsRegular ↔ Nonempty (P.RankFunction ℕ) := by
+  rw [← isRegular_pairing_iff, Pairing.isRegular_iff_nonempty_rankFunction]
+  exact (P.rankFunctionEquiv ℕ).symm.nonempty_congr
+
+lemma isRegular_iff_nonempty_weakRankFunction [P.IsProper] :
+    P.IsRegular ↔ Nonempty (P.WeakRankFunction ℕ) := by
+  rw [← isRegular_pairing_iff, Pairing.isRegular_iff_nonempty_weakRankFunction]
+  exact (P.weakRankFunctionEquiv ℕ).symm.nonempty_congr
+
+end PairingCore
+
+end SSet.Subcomplex

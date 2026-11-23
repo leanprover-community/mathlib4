@@ -3,10 +3,12 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, David Renshaw
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Int.NatAbs
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Int.NatAbs
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 # IMO 1985 Q2
@@ -32,6 +34,8 @@ In this range of $k$, $kj\bmod n ≠ j$, so
   using rule 2 then rule 1.
 -/
 
+public section
+
 namespace Imo1985Q2
 
 open Nat
@@ -49,7 +53,7 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
   | base => rw [one_mul, Nat.mod_eq_of_lt hj.2]
   | succ k hk₁ ih =>
     have nej : (k + 1) * j % n ≠ j := by
-      by_contra! h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
+      by_contra h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
       replace h : (k + 1) % n = 1 % n := Nat.ModEq.cancel_right_of_coprime cpj h
       rw [Nat.mod_eq_of_lt hk.2, Nat.mod_eq_of_lt (by lia)] at h
       lia

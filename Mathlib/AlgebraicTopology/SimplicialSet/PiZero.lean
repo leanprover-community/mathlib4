@@ -24,14 +24,15 @@ of a simplicial sets. We also introduce typeclasses
 ## References:
 
 - [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite TypeCat
+open CategoryTheory Limits Opposite TypeCat
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -111,7 +112,7 @@ lemma mapπ₀_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (x : π₀ X) :
 @[simps]
 def π₀Functor : SSet.{u} ⥤ Type u where
   obj X := π₀ X
-  map f := TypeCat.ofHom <| mapπ₀ f
+  map f := ↾(mapπ₀ f)
 
 /-- The map `π₀.mk : X _⦋0⦌ ⟶ π₀ X` for all simplicial sets `X`,
 as a natural transformation. -/
@@ -128,13 +129,13 @@ of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
 def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
   Cofork.IsColimit.mk _
     (fun s ↦ ↾π₀.lift s.π (fun x₀ x₁ e ↦ by
-      simpa only [← e.src_eq, ← e.tgt_eq] using
-        ConcreteCategory.congr_hom s.condition e.edge))
+      simpa only [← e.src_eq, ← e.tgt_eq] using!
+        congr($s.condition e.edge)))
     (fun s ↦ rfl)
     (fun s m hm ↦ by
       ext (x : π₀ X)
       induction x
-      exact ConcreteCategory.congr_hom hm _)
+      congrm $hm _)
 
 /-- The colimit cofork exhibiting the natural transformation
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`
@@ -150,7 +151,7 @@ of the two face maps `δ (0 : Fin 2)` and `δ 1`, considered
 as natural transformations. -/
 def isColimitCoforkπ₀Functor : IsColimit coforkπ₀Functor.{u} :=
   evaluationJointlyReflectsColimits _ (fun X ↦
-    (isColimitMapCoconeCoforkEquiv _ _).2 X.isColimitCoforkπ₀)
+    (isColimitMapCoconeCoforkEquiv _ _).invFun X.isColimitCoforkπ₀)
 
 variable (X)
 

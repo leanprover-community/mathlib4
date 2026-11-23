@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
@@ -89,7 +88,7 @@ namespace RCLike
 @[simp, rclike_simps]
 theorem reCLM_norm : ‖(reCLM : StrongDual ℝ K)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
+  convert! ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
   simp
 
 @[simp, rclike_simps]

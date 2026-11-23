@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves for the quasi-compact topology
 
@@ -27,6 +30,7 @@ open Scheme
 
 variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf of types is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings

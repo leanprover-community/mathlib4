@@ -6,10 +6,11 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 module
 
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Countable.Small
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Basic.Countable.Small
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Deterministic Finite Automata
@@ -51,7 +52,7 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 
 universe u v
 
-open Computability
+open scoped Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -136,16 +137,8 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  refine
-    ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
-                    x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
-  · rw [List.take_append_drop, List.take_append_drop]
-  · simp only [List.length_drop, List.length_take]
-    omega
-  · intro h
-    have hlen' := congr_arg List.length h
-    simp only [List.length_drop, List.length, List.length_take] at hlen'
-    omega
+  refine ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n, x.drop m, ?_⟩
+  refine ⟨by simp, by grind, fun h ↦ by grind [congr($(h).length)], rfl, ?_⟩
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
       M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←
@@ -183,7 +176,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
   rw [Set.mem_singleton_iff] at ha' hc'
-  substs ha' hc'
+  subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 
@@ -306,7 +299,7 @@ theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : �
   ext x
   simp only [acceptsFrom]
   rw [Language.add_def, Set.mem_union]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, union_step, ih]
@@ -335,7 +328,7 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom, Language.mem_inf]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Logic.Small.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small instances for pointwise operations
 -/
@@ -16,9 +19,9 @@ public section
 
 universe u
 
-variable {α β : Type*} (s t : Set α)
+variable {α : Type*} (s t : Set α)
 
-open Pointwise
+open scoped Pointwise
 
 instance small_set_zero [Zero α] : Small.{u} (0 : Set α) := small_single _
 instance small_set_one [One α] : Small.{u} (1 : Set α) := small_single _

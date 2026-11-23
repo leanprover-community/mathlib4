@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.Order.Atoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about ordered structures and ordered instances on subgroups
 -/
@@ -44,6 +47,8 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G)
 
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
+@[to_additive /-- In an additive group that satisfies the normalizer condition, every maximal
+additive subgroup is normal -/]
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
   normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
@@ -77,7 +82,8 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
+@[to_additive
+/-- An additive subgroup of an additive ordered group is an additive ordered group. -/]
 instance toIsOrderedMonoid [CommGroup G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl

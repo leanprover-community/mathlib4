@@ -136,29 +136,30 @@ def ofJ : WeierstrassCurve F :=
   else if j = 1728 then ofJ1728 F else ofJNe0Or1728 j
 
 lemma ofJ_0_of_three_ne_zero (h3 : (3 : F) ≠ 0) : ofJ 0 = ofJ0 F := by
-  rw [ofJ, if_pos rfl, if_neg h3]
+  rw [ofJ, ite_eq_left rfl, ite_eq_right h3]
 
 lemma ofJ_0_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 0 = ofJ1728 F := by
-  rw [ofJ, if_pos rfl, if_pos h3]
+  rw [ofJ, ite_eq_left rfl, ite_eq_left h3]
 
 lemma ofJ_0_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 0 = ofJ0 F := by
-  rw [ofJ, if_pos rfl, if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
+  rw [ofJ, ite_eq_left rfl,
+    ite_eq_right ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
 lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 1728 = ofJ1728 F := by
-  rw [ofJ, if_pos (by linear_combination 576 * h3), if_pos h3]
+  rw [ofJ, ite_eq_left (by linear_combination 576 * h3), ite_eq_left h3]
 
 lemma ofJ_1728_of_two_ne_zero (h2 : (2 : F) ≠ 0) : ofJ 1728 = ofJ1728 F := by
   by_cases h3 : (3 : F) = 0
   · exact ofJ_1728_of_three_eq_zero h3
   · rw [ofJ, show (1728 : F) = 2 ^ 6 * 3 ^ 3 by norm_num1,
-      if_neg (mul_ne_zero (pow_ne_zero 6 h2) (pow_ne_zero 3 h3)), if_pos rfl]
+      ite_eq_right (mul_ne_zero (pow_ne_zero 6 h2) (pow_ne_zero 3 h3)), ite_eq_left rfl]
 
 lemma ofJ_1728_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 1728 = ofJ0 F := by
-  rw [ofJ, if_pos (by linear_combination 864 * h2),
-    if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
+  rw [ofJ, ite_eq_left (by linear_combination 864 * h2),
+    ite_eq_right ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
 lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j = ofJNe0Or1728 j := by
-  rw [ofJ, if_neg h0, if_neg h1728]
+  rw [ofJ, ite_eq_right h0, ite_eq_right h1728]
 
 instance : (ofJ j).IsElliptic := by
   by_cases h0 : j = 0

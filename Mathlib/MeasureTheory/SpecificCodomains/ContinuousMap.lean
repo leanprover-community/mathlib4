@@ -5,9 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Specific results about `ContinuousMap`-valued integration
@@ -47,7 +46,6 @@ to approach integration valued in a functional space `ℱ`. More precisely:
   should always consider the family `fun x ↦ ℱ.mkD (f x) 0`, *even if your `f` always lands in `ℱ`*.
   This allows for a unified setting with the case where `f x` belongs to `ℱ` for *almost every `x`*,
   and also avoids entering dependent-types hell.
-
 -/
 
 public section
@@ -95,9 +93,9 @@ lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set Y} [CompactSpace s]
     (bound : X → ℝ)
     (bound_int : HasFiniteIntegral bound μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ y ∈ s, ‖f x y‖ ≤ bound x) :
-    HasFiniteIntegral (fun x ↦ mkD (s.restrict (f x)) g) μ := by
+    HasFiniteIntegral (fun x ↦ mkD (s.domRestrict (f x)) g) μ := by
   refine hasFiniteIntegral_mkD_of_bound _ _ ?_ bound bound_int ?_
-  · simpa [← continuousOn_iff_continuous_restrict]
+  · simpa [← continuousOn_iff_continuous_domRestrict]
   · simpa
 
 lemma aeStronglyMeasurable_mkD_of_uncurry [CompactSpace Y] [TopologicalSpace X]
@@ -118,7 +116,7 @@ open Set in
 lemma aeStronglyMeasurable_mkD_restrict_of_uncurry {t : Set Y} [CompactSpace t] [TopologicalSpace X]
     [OpensMeasurableSpace X] [SecondCountableTopologyEither X (C(t, E))]
     (f : X → Y → E) (g : C(t, E)) (f_cont : ContinuousOn (Function.uncurry f) (univ ×ˢ t)) :
-    AEStronglyMeasurable (fun x ↦ mkD (t.restrict (f x)) g) μ :=
+    AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) μ :=
   continuous_mkD_restrict_of_uncurry _ _ f_cont |>.aestronglyMeasurable
 
 open Set in
@@ -127,7 +125,7 @@ lemma aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry {s : Set X} {t : Set
     [SecondCountableTopologyEither X (C(t, E))]
     (hs : MeasurableSet s) (f : X → Y → E) (g : C(t, E))
     (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ t)) :
-    AEStronglyMeasurable (fun x ↦ mkD (t.restrict (f x)) g) (μ.restrict s) :=
+    AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) (μ.restrict s) :=
   continuousOn_mkD_restrict_of_uncurry _ _ f_cont |>.aestronglyMeasurable hs
 
 end ContinuousMap

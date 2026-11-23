@@ -18,10 +18,9 @@ located here.
 
 public section
 
+open Real NNReal ENNReal Filter Set
 
-noncomputable section
-
-open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
+open scoped Topology
 
 /-!
 ## Limits at `+∞`
@@ -81,6 +80,12 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_neg_iff hb₀).mpr hb₁
 
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (b ^ · : ℝ → ℝ) atTop atTop := by
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  exact log_pos hb
+
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
@@ -107,12 +112,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
@@ -147,19 +152,11 @@ nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
   exact mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)
 
 theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
-    Tendsto (fun x : ℝ≥0∞ => x ^ y) (𝓝 ⊤) (𝓝 ⊤) := by
-  rw [ENNReal.tendsto_nhds_top_iff_nnreal]
-  intro x
-  obtain ⟨c, _, hc⟩ :=
-    (atTop_basis_Ioi.tendsto_iff atTop_basis_Ioi).mp (NNReal.tendsto_rpow_atTop hy) x trivial
-  have hc' : Set.Ioi ↑c ∈ 𝓝 (⊤ : ℝ≥0∞) := Ioi_mem_nhds ENNReal.coe_lt_top
-  filter_upwards [hc'] with a ha
-  by_cases ha' : a = ⊤
-  · simp [ha', hy]
-  lift a to ℝ≥0 using ha'
-  simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
-  rw [← ENNReal.coe_rpow_of_nonneg _ hy.le]
-  exact mod_cast hc a ha
+    Tendsto (fun x : ℝ≥0∞ ↦ x ^ y) (𝓝 ∞) (𝓝 ∞) := by
+  rw [nhds_top_basis_Ici.tendsto_iff nhds_top_basis_Ici]
+  intro x hx
+  refine ⟨x ^ y⁻¹, (rpow_lt_top_of_nonneg (inv_nonneg.2 hy.le) hx.ne), ?_⟩
+  exact fun _ ↦ (rpow_inv_le_iff hy).1
 
 end Limits
 
@@ -310,7 +307,7 @@ theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠
 /-- If `a ≤ 1`, then `x = O(x ^ a)` as `x → 0`, `x ≥ 0`. -/
 theorem IsBigO.id_rpow_of_le_one {a : ℝ} (ha : a ≤ 1) :
     (id : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) := by
-  simpa using rpow_rpow_nhdsGE_zero_of_le ha (by simp)
+  simpa using! rpow_rpow_nhdsGE_zero_of_le ha (by simp)
 
 end Asymptotics
 

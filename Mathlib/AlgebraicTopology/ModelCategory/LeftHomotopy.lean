@@ -22,7 +22,6 @@ relation on `X ⟶ Y`.
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
-
 -/
 
 @[expose] public section
@@ -65,7 +64,6 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
   h := h.h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a precylinder `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -81,6 +79,24 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y}
 def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) where
   h := h.h ≫ p
+
+/-- Left homotopies in a full subcategory identify to left homotopies in the
+ambient category. -/
+noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
+    {Q : Precylinder X} {f g : X ⟶ Y} :
+    Q.LeftHomotopy f g ≃ (Q.map P.ι).LeftHomotopy f.hom g.hom where
+  toFun h :=
+    { h := h.h.hom
+      h₀ := by
+        dsimp
+        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+      h₁ := by
+        dsimp
+        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+  invFun h :=
+    { h := P.homMk h.h
+      h₀ := by ext; exact h.h₀
+      h₁ := by ext; exact h.h₁ }
 
 end LeftHomotopy
 
@@ -247,7 +263,6 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder

@@ -1,9 +1,11 @@
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Combinatorics.Optimization.ValuedCSP
-import Mathlib.Data.Fin.Tuple.Curry
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Combinatorics.Optimization.ValuedCSP
+public import Mathlib.Data.Fin.Tuple.Curry
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Tactic.Positivity
 
 /-!
 # VCSP examples
@@ -39,7 +41,7 @@ private def exampleFiniteValuedInstance : exampleFiniteValuedCSP.Instance (Fin 2
 
 example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
   intro s
-  convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
+  convert_to! 0 ≤ exampleFiniteValuedInstance.evalSolution s
   · simp [exampleFiniteValuedInstance, ValuedCSP.Instance.evalSolution]
     exact Rat.zero_add 0
   rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]

@@ -7,15 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits in concrete categories
@@ -33,7 +34,6 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
-
 -/
 
 @[expose] public section
@@ -82,7 +82,6 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
@@ -102,7 +101,7 @@ variable [ConcreteCategory.{w} C FC]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `ToType X` is a
 singleton. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
   Types.isTerminalEquivUnique (ToType X) <| IsTerminal.isTerminalObj (forget C) X h
@@ -127,7 +126,11 @@ variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 noncomputable def terminalEquiv : ToType (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
-noncomputable instance : Unique (ToType (⊤_ C)) where
+-- We use the `{}` binder for the `FunLike` instance in order to get the right synthOrder.
+noncomputable instance
+    {FC : C → C → Type*} {CC : C → Type w} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
+    [ConcreteCategory.{w} C FC] [PreservesLimit (Functor.empty.{0} C) (forget C)] :
+    Unique (ToType (⊤_ C)) where
   default := (terminalEquiv C).symm PUnit.unit
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
@@ -173,12 +176,12 @@ noncomputable def prodEquiv : ToType (X₁ ⨯ X₂) ≃ ToType X₁ × ToType X
 @[simp]
 lemma prodEquiv_apply_fst (x : ToType (X₁ ⨯ X₂)) :
     (prodEquiv X₁ X₂ x).fst = (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) x := by
-  simpa using congr_hom (prodComparison_fst (forget C) X₁ X₂) x
+  simpa using! congr_hom (prodComparison_fst (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_apply_snd (x : ToType (X₁ ⨯ X₂)) :
     (prodEquiv X₁ X₂ x).snd = (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) x := by
-  simpa using congr_hom (prodComparison_snd (forget C) X₁ X₂) x
+  simpa using! congr_hom (prodComparison_snd (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_symm_apply_fst (x : ToType X₁ × ToType X₂) :
@@ -207,7 +210,7 @@ elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
-    Types.pullbackIsoPullback (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)).toEquiv
+    Types.pullbackIsoPullback (↾f₁) (↾f₂)).toEquiv
 
 /-- Constructor for elements in a pullback in a concrete category. -/
 noncomputable def pullbackMk (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
@@ -223,13 +226,13 @@ lemma pullbackMk_surjective (x : ToType (pullback f₁ f₂)) :
 lemma pullbackMk_fst (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_hom (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_fst (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_fst (↾f₁) (↾f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_hom (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_snd (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_snd (↾f₁) (↾f₂)) _)
 
 end Pullbacks
 
@@ -278,33 +281,32 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
       ConcreteCategory.comp_apply]
     simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : J.L, ToType (I.left i) // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
-      have a := x.2 (WalkingMulticospan.Hom.fst i)
-      have b := x.2 (WalkingMulticospan.Hom.snd i)
+    ⟨fun _ => x.val (WalkingMulticospan.left _), fun i => by
+      have a := x.property (WalkingMulticospan.Hom.fst i)
+      have b := x.property (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
       exact a⟩
   invFun x :=
     { val := fun j =>
         match j with
-        | WalkingMulticospan.left _ => x.1 _
-        | WalkingMulticospan.right b => I.fst b (x.1 _)
+        | WalkingMulticospan.left _ => x.val _
+        | WalkingMulticospan.right b => I.fst b (x.val _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
-        · simp
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl
         · rfl
         · dsimp
-          exact (x.2 b').symm
-        · simp }
+          exact (x.property b').symm
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl }
   left_inv := by
     intro x; ext (a | b)
     · rfl
-    · rw [← x.2 (WalkingMulticospan.Hom.fst b)]
+    · rw [← x.property (WalkingMulticospan.Hom.fst b)]
       rfl
   right_inv := by
     intro x
@@ -348,10 +350,8 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
   · left
     use y
-    rfl
   · right
     use j, y
-    rfl
 
 theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]

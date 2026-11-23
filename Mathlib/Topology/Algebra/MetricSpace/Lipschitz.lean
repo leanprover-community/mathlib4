@@ -5,8 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Topology.Algebra.Order.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lipschitz continuous functions
@@ -41,7 +45,7 @@ lemma LipschitzOnWith.cauchySeq_comp {s : Set α} {f : α → β} (hf : Lipschit
   · intro n m N hn hm
     have A n : u n ∈ s := h'u (mem_range_self _)
     apply (hf.dist_le_mul _ (A n) _ (A m)).trans
-    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.2
+    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.property
   · rw [← mul_zero (K : ℝ)]
     exact blim.const_mul _
 
@@ -71,7 +75,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
   have (x) (hx : x ∈ s) : ∃ K' : ℝ≥0, ∀ y ∈ s.diff (ball x (ε x hx)),
       edist (f x) (f y) ≤ K' * edist x y := by
     let ⟨K', hK'⟩ := (hs.diff isOpen_ball).bddAbove_image
-      (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.diff_subset)
+      (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.sdiff_subset)
         (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne'
     refine ⟨.mk (K' ⊔ 0) le_sup_right, fun y hy ↦ ?_⟩
     simp_rw [edist_nndist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
@@ -87,28 +91,29 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
   /- For every `z ∈ t` we can show that `f` satisfies the Lipschitz condition with bound
   `K z hz + 2 * K' z hz` for all points `x ∈ s ∩ ball z (ε z hz / 2)` and `y ∈ s`, so `f` is
   Lipschitz on `s` with the supremum of these bounds over all `z ∈ t` as its bound. -/
-  use t.sup fun i ↦ K _ i.2 + 2 * K' _ i.2
+  use t.sup fun i ↦ K _ i.property + 2 * K' _ i.property
   intro x hx y hy
   let ⟨z, hz, hx'⟩ := mem_iUnion₂.1 <| ht hx
-  by_cases hy' : y ∈ ball z.1 (ε _ z.2)
+  by_cases hy' : y ∈ ball z.val (ε _ z.property)
   · /- For `y ∈ ball z (ε z hz)` this follows from `f` being Lipschitz with bound `K z hz`
     on `ball z (ε z hz)`. -/
-    refine (hf _ z.2 ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩ ⟨hy', hy⟩).trans <|
-      mul_le_mul_of_nonneg_right ?_ <| zero_le _
-    exact ENNReal.coe_le_coe.2 <| t.le_sup_of_le hz <| le_self_add
+    refine (hf _ z.property ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩ ⟨hy', hy⟩).trans <|
+      mul_le_mul_of_nonneg_right ?_ zero_le
+    exact ENNReal.coe_le_coe.2 <| t.le_sup_of_le hz le_self_add
   · /- For `y ∉ ball z (ε z hz)` this follows by using the triangle inequality, bounding
     the distances from `f z` to `f x` and `f y` using the bounds `K z hz` and `K' z hz`, and then
     using the triangle inequality again for `edist z y ≤ edist x z + edist x y ≤ 2 * edist x y`. -/
     calc edist (f x) (f y)
       _ ≤ edist (f z) (f x) + edist (f z) (f y) := edist_triangle_left _ _ _
-      _ ≤ (K _ z.2) * edist z.1 x + edist (f z) (f y) := add_le_add_left
-        (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩) _
-      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * edist z.1 y :=
-        add_le_add_right (hK' _ z.2 _ ⟨hy, hy'⟩) _
-      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * (edist x z.1 + edist x y) := by
-        gcongr; exact edist_triangle_left z.1 y x
-      _ ≤ (K _ z.2) * edist x y + (K' _ z.2) * (edist x y + edist x y) := by
+      _ ≤ (K _ z.property) * edist z.val x + edist (f z) (f y) := add_le_add_left
+        (hf _ z.property ⟨mem_ball_self <| hε _ z.property, z.property⟩
+          ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩) _
+      _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * edist z.val y :=
+        add_le_add_right (hK' _ z.property _ ⟨hy, hy'⟩) _
+      _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * (edist x z.val + edist x y) := by
+        gcongr; exact edist_triangle_left z.val y x
+      _ ≤ (K _ z.property) * edist x y + (K' _ z.property) * (edist x y + edist x y) := by
         simp_rw [edist_dist, dist_comm _ x]
         gcongr <;> linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
-      _ = ↑(K _ z.2 + 2 * K' _ z.2) * edist x y := by push_cast; ring
+      _ = ↑(K _ z.property + 2 * K' _ z.property) * edist x y := by push_cast; ring
       _ ≤ _ := by gcongr; exact .trans (by rfl) (t.le_sup hz)

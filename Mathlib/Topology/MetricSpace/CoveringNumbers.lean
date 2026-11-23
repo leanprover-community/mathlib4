@@ -6,9 +6,6 @@ Authors: Rémy Degenne, Markus Himmel, Lorenzo Luccioli, Alessio Rondelli, Etien
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.EMetricSpace.Diam
-public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Cover
 
 /-!
@@ -50,12 +47,11 @@ in the set), but we have the following inequality:
 ## References
 
 * [R. Vershynin, *High-dimensional probability*][vershynin2018high]
-
 -/
 
 @[expose] public section
 
-open EMetric Set
+open Set
 open scoped ENNReal NNReal
 
 namespace Metric
@@ -238,7 +234,7 @@ lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
   have : Nonempty { s : Set X // s ⊆ A ∧ IsCover ε A s } := ⟨C', hC'_subset, hC'_cover⟩
   let h := ENat.exists_eq_iInf (fun C : {s : Set X // s ⊆ A ∧ IsCover ε A s} ↦ (C : Set X).encard)
   obtain ⟨C, hC⟩ := h
-  refine ⟨C, C.2.1, ?_, C.2.2, ?_⟩
+  refine ⟨C, C.property.1, ?_, C.property.2, ?_⟩
   · refine Set.encard_lt_top_iff.mp ?_
     simp only [hC, iInf_lt_top, encard_lt_top_iff, Subtype.exists, exists_prop]
     exact ⟨C', ⟨hC'_subset, hC'_cover⟩, hC'_fin⟩
@@ -246,7 +242,6 @@ lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     simp_rw [iInf_subtype, iInf_and]
     rfl
 
-open Classical in
 /-- A finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
 It is defined as the empty set if no such finite cover exists. -/
 noncomputable
@@ -281,7 +276,7 @@ lemma exists_set_encard_eq_packingNumber (h : packingNumber ε A ≠ ⊤) :
   simp_rw [iSup_subtype, iSup_and] at h_exists
   specialize h_exists h.lt_top
   obtain ⟨C, hC⟩ := h_exists
-  refine ⟨C, C.2.1, ?_, C.2.2, ?_⟩
+  refine ⟨C, C.property.1, ?_, C.property.2, ?_⟩
   · refine Set.encard_ne_top_iff.mp ?_
     rwa [hC]
   · rw [hC]
@@ -335,14 +330,14 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
   intro C hC_cover D hD_subset hD_separated
   -- For each point in D, choose a point in C which is ε-close to it
   let f : D → C := fun x ↦
-    ⟨(hC_cover (hD_subset x.2)).choose, (hC_cover (hD_subset x.2)).choose_spec.1⟩
-  have hf' (x : D) : edist x.1 (f x) ≤ ε := (hC_cover (hD_subset x.2)).choose_spec.2
+    ⟨(hC_cover (hD_subset x.property)).choose, (hC_cover (hD_subset x.property)).choose_spec.1⟩
+  have hf' (x : D) : edist x.val (f x) ≤ ε := (hC_cover (hD_subset x.property)).choose_spec.2
   -- `⊢ D.encard ≤ C.encard`
   -- It suffices to prove that `f` is injective
   simp only [← Set.toENat_cardinalMk]
   gcongr
   refine Cardinal.mk_le_of_injective (f := f) fun x y hxy ↦ Subtype.ext ?_
-  apply Set.Pairwise.eq hD_separated x.2 y.2
+  apply Set.Pairwise.eq hD_separated x.property y.property
   simp only [not_lt]
   calc
     edist (x : X) y ≤ edist (x : X) (f x) + edist (f x : X) y := edist_triangle ..
@@ -385,13 +380,12 @@ See `Isometry.coveringNumber_image` for the version in an `EMetricSpace`, in whi
 a consequence of being an isometry. -/
 lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_inj : Set.InjOn f A) :
     coveringNumber ε (f '' A) = coveringNumber ε A := by
-  classical
   refine le_antisymm ?_ ?_
   · simp only [coveringNumber, le_iInf_iff]
     intro C hC_subset hC_cover
     refine (iInf_le _ (C.image f)).trans ?_
     simp only [Set.image_subset_iff]
-    have : ↑C ⊆ f ⁻¹' (f '' A) := hC_subset.trans (Set.subset_preimage_image f A)
+    have : ↑C ⊆ f ⁻¹' f '' A := hC_subset.trans (Set.subset_preimage_image f A)
     refine (iInf_le _ this).trans ?_
     rw [hf.isCover_image_iff]
     refine (iInf_le _ hC_cover).trans ?_
@@ -399,7 +393,7 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
   · simp only [coveringNumber, le_iInf_iff]
     intro C hC_subset hC_cover
     obtain ⟨C', hC'_subset, rfl⟩ : ∃ C', C' ⊆ A ∧ C = C'.image f := by
-      have (x : C) : ∃ y ∈ A, f y = x := by simpa using hC_subset x.2
+      have (x : C) : ∃ y ∈ A, f y = x := by simpa using hC_subset x.property
       choose g hg_mem hg using this
       refine ⟨Set.range g, ?_, ?_⟩
       · rwa [Set.range_subset_iff]

@@ -5,14 +5,13 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
 
-/-!
+import Mathlib.Algebra.FiveLemma
 
+/-!
 # Adic completion as tensor product
 
 In this file we examine properties of the natural map
@@ -35,7 +34,6 @@ As a corollary we obtain
 - Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
   ring. This is mostly composing with the isomorphism to `R^n` and checking that the diagram
   commutes.
-
 -/
 
 @[expose] public section
@@ -62,14 +60,13 @@ def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] Adi
         simp
       map_smul' r x := by
         apply LinearMap.ext
-        simp }
+        simp [mul_smul] }
 
 @[simp]
 lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 /-- `ofTensorProduct` is functorial in `M`. -/
 lemma ofTensorProduct_naturality (f : M →ₗ[R] N) :
@@ -99,6 +96,23 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
@@ -113,12 +127,46 @@ def ofTensorProductInvOfPiFintype :
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
   f.trans g
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
 lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
   simp
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
 lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
     ofTensorProduct I (ι → R) ∘ₗ ofTensorProductInvOfPiFintype I ι = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
@@ -129,7 +177,7 @@ lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (ofTensorProduct I (ι → R))
     (ofTensorProductInvOfPiFintype I ι)
     (ofTensorProduct_comp_ofTensorProductInvOfPiFintype I ι)
@@ -146,7 +194,6 @@ lemma ofTensorProduct_bijective_of_pi_of_fintype [Finite ι] :
 
 end PiFintype
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite `R`-module, then the canonical map
 `AdicCompletion I R ⊗[R] M →ₗ AdicCompletion I M` is surjective. -/
 lemma ofTensorProduct_surjective_of_finite [Module.Finite R M] :
@@ -170,7 +217,6 @@ variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
 
 /-!
-
 ### Noetherian case
 
 Suppose `R` is Noetherian. Then we show that the canonical map
@@ -193,7 +239,6 @@ by the previous section the first vertical map is surjective.
 
 Moreover, both rows are exact by right-exactness of the tensor product and exactness of adic
 completions over Noetherian rings. Hence we conclude by the 5-lemma.
-
 -/
 
 open CategoryTheory
@@ -202,13 +247,13 @@ section
 
 variable {ι : Type} (f : (ι → R) →ₗ[R] M)
 
-/- The first horizontal arrow in the top row. -/
+/-- The first horizontal arrow in the top row. -/
 private
 def lTensorKerIncl : AdicCompletion I R ⊗[R] LinearMap.ker f →ₗ[AdicCompletion I R]
     AdicCompletion I R ⊗[R] (ι → R) :=
   AlgebraTensorModule.map LinearMap.id (LinearMap.ker f).subtype
 
-/- The second horizontal arrow in the top row. -/
+/-- The second horizontal arrow in the top row. -/
 private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f
@@ -238,7 +283,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (lTensorf I M f)
     (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
-    (map I <| (LinearMap.ker f).subtype)
+    (map I (LinearMap.ker f).subtype)
     (map I f)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
@@ -247,7 +292,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (ofTensorProduct I M)
     0
     0
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype)
+    (ofTensorProduct_naturality I (LinearMap.ker f).subtype)
     (ofTensorProduct_naturality I f)
     rfl
     rfl
@@ -305,7 +350,6 @@ variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
 variable [Module.Finite R M] [Module.Finite R N]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensor_map_id_left_eq_map :
     (AlgebraTensorModule.map LinearMap.id f) =
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Left resolutions which preserve the zero object
@@ -31,7 +35,6 @@ on the elements of `M`. Then, `Λ.reduced.F.obj M` will be obtained
 from the free `R`-module on `M` by factoring out the direct factor
 corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
-
 -/
 
 @[expose] public section
@@ -48,25 +51,23 @@ namespace LeftResolution
 variable [Preadditive C] [Preadditive A] [ι.Additive]
 
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
-@[simps]
+@[simps, implicit_reducible]
 def karoubi.F' : A ⥤ Karoubi C where
   obj X := ⟨Λ.F.obj X, 𝟙 _ - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map {X Y} f := ⟨Λ.F.map f - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map_comp _ _ := by simp [← Functor.map_comp]
 
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def karoubi.F : Karoubi A ⥤ Karoubi C := (functorExtension₁ A C).obj (karoubi.F' Λ)
 
 instance : (karoubi.F Λ).PreservesZeroMorphisms where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
 @[simps]
 def karoubi.π' : toKaroubi A ⋙ F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ toKaroubi A where
   app X := ⟨Λ.π.app X, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `(karoubi.π' Λ).app X` is a retract of `(toKaroubi _).map (Λ.π.app X)`. -/
 def karoubi.retractArrow (X : A) :
     RetractArrow ((karoubi.π' Λ).app X) ((toKaroubi _).map (Λ.π.app X)) where
@@ -85,13 +86,11 @@ instance (X : A) : Epi ((karoubi.π' Λ).app X) :=
 def karoubi.π : karoubi.F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ 𝟭 (Karoubi A) :=
   whiskeringLeftObjToKaroubiFullyFaithful.preimage (karoubi.π' Λ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma karoubi.π_app_toKaroubi_obj (X : A) :
     (karoubi.π Λ).app ((toKaroubi _).obj X) = (karoubi.π' Λ).app X := by
   simp [π, whiskeringLeftObjToKaroubiFullyFaithful]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : A) : Epi ((karoubi.π Λ).app ((toKaroubi _).obj X)) := by
   rw [karoubi.π_app_toKaroubi_obj]
   infer_instance
@@ -103,7 +102,7 @@ instance (X : Karoubi A) : Epi ((karoubi.π Λ).app X) :=
 /-- Given `ι : C ⥤ A`, this is the extension of `Λ : LeftResolution ι` to
 `LeftResolution ((functorExtension₂ C A).obj ι)`, where
 `(functorExtension₂ C A).obj ι : Karoubi C ⥤ Karoubi A` is the extension of `ι`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def karoubi : LeftResolution ((functorExtension₂ C A).obj ι) where
   F := karoubi.F Λ
   π := karoubi.π Λ

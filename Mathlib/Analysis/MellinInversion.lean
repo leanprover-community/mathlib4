@@ -46,7 +46,6 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
@@ -70,10 +69,6 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourier_eq', mul_comm (_ / _)]
 
-@[deprecated (since := "2025-11-16")]
-alias mellin_eq_fourierIntegral := mellin_eq_fourier
-
-set_option backward.isDefEq.respectTransparency false in
 theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
@@ -90,9 +85,6 @@ theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
     simp [fourierInv_eq', mul_comm (Real.log _)]
-
-@[deprecated (since := "2025-11-16")]
-alias mellinInv_eq_fourierIntegralInv := mellinInv_eq_fourierInv
 
 variable [CompleteSpace E]
 
@@ -114,7 +106,7 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
     simp_rw [neg_mul_eq_neg_mul] at this
     exact this
   replace hfx : ContinuousAt g (-Real.log x) := by
-    refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
+    refine ContinuousAt.fun_smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
     simpa [Real.exp_log hx] using hfx
   calc
     mellinInv σ (mellin f) x
@@ -130,6 +122,3 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
       norm_cast
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
         inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
-
-@[deprecated (since := "2025-11-16")]
-alias mellin_inversion := mellinInv_mellin_eq

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Combinatorics.Enumerative.Composition
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -30,10 +29,6 @@ related results.
 
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
-
-## TODO
-
-Link this to Young diagrams.
 
 ## Tags
 
@@ -102,12 +97,12 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 
 /-- An element `s` of `Sym σ n` induces a partition given by its multiplicities. -/
 def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
-  parts := s.1.dedup.map s.1.count
+  parts := s.val.dedup.map s.val.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    change ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.val.toFinset, count a s.val = n
     rw [toFinset_sum_count_eq]
-    exact s.2
+    exact s.property
 
 variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
@@ -123,8 +118,8 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 `Sym τ n` corresponding to a given partition. -/
 def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
-  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
-  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.property]⟩
+  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.property]⟩
   left_inv := by intro x; simp
   right_inv := by intro x; simp
 
@@ -165,6 +160,7 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
@@ -214,9 +210,11 @@ def countRestricted (n : ℕ) (m : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
 
 /-- The finset of those partitions in which every part is odd. -/
+@[oeis A000009 "cardinality"]
 def odds (n : ℕ) : Finset n.Partition := restricted n (¬ Even ·)
 
 /-- The finset of those partitions in which each part is used at most once. -/
+@[oeis A000009 "cardinality"]
 def distincts (n : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun c => c.parts.Nodup
 
@@ -228,6 +226,34 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
+
+/-- If `1 ≤ a` and `a ≤ n`, partitions of `n` containing `a` as a part are equivalent to
+partitions of `n - a`. The forward map removes one occurrence of `a`, and the inverse adds `a` as
+a part. -/
+def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
+    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
+  toFun p := by
+    refine ⟨p.val.parts.erase a, ?_, ?_⟩
+    · intro _ hi
+      exact p.val.parts_pos (p.val.parts.erase_subset a hi)
+    · have hs : a + (p.val.parts.erase a).sum = n := by
+        simpa [p.val.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.property)
+      lia
+  invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
+  left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
+  right_inv q := Partition.ext <| erase_cons_head a q.parts
+
+@[simp]
+theorem partitionWithPartEquiv_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : {p : n.Partition // a ∈ p.parts}) :
+    (partitionWithPartEquiv ha1 ha p).parts = p.val.parts.erase a := by
+  dsimp [partitionWithPartEquiv]
+
+@[simp]
+theorem partitionWithPartEquiv_symm_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : (n - a).Partition) :
+    ((partitionWithPartEquiv ha1 ha).symm p).val.parts = a ::ₘ p.parts := by
+  dsimp [partitionWithPartEquiv]
 
 end Partition
 

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.LinearAlgebra.CrossProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm of cross-products
 
@@ -24,7 +27,6 @@ namespace InnerProductGeometry
 
 open scoped RealInnerProductSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L2 norm of the cross product of two real vectors (of type `EuclideanSpace ℝ (Fin 3)`)
 equals the product of their individual norms times the sine of the angle between them. -/
 lemma norm_ofLp_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :

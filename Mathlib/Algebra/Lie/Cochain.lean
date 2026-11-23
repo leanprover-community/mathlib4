@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
+
 This file defines low degree cochains of Lie algebras with coefficients given by a module. They are
 useful in the construction of central extensions, so we treat these easier cases separately from the
 general theory of Lie algebra cohomology.
@@ -26,8 +27,7 @@ general theory of Lie algebra cohomology.
 * construction and classification of central extensions
 
 ## References
-* [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
-
+* [H. Cartan, S. Eilenberg, *Homological Algebra*][cartan-eilenberg-1956]
 -/
 
 @[expose] public section
@@ -52,15 +52,16 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
-  coe := fun a x ↦ a.1 x
-  coe_injective' _ _ h := by
+  coe := fun a x ↦ a.val x
+  coe_injective _ _ h := by
     ext
-    exact congrFun (congrArg DFunLike.coe (congrFun h _)) _
+    congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
-  map_add a := a.1.map_add
-  map_smulₛₗ a := a.1.map_smul
+  map_add a := a.val.map_add
+  map_smulₛₗ a := a.val.map_smul
 
 @[simp]
 lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
@@ -68,7 +69,7 @@ lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L 
 @[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
     a x x = 0 :=
-  a.2 x
+  a.property x
 
 lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
   rw [neg_eq_iff_add_eq_zero, add_comm]
@@ -95,7 +96,6 @@ end
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- The coboundary operator taking degree 1 cochains to degree 2 cochains. -/
-@[simps]
 def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
   toFun f :=
     { val :=
@@ -113,30 +113,28 @@ def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
 lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
 
+@[deprecated d₁₂_apply_apply +typeChanged (since := "2026-10-06")]
+lemma d₁₂_apply_coe_apply_apply (f : oneCochain R L M) (x y : L) :
+    (d₁₂ R L M f).val x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
+
 lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
   simp [trivial_lie_zero]
 
-set_option backward.privateInPublic true in
-/-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
-private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun x :=
-    { toFun y :=
-        { toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
-          map_add' _ _ := by simp; abel
-          map_smul' _ _ := by abel_nf; simp }
-      map_add' _ _ := by ext; simp; abel
-      map_smul' _ _ := by ext; abel_nf; simp }
-  map_add' _ _ := by ext; simp; abel
-  map_smul' _ _ := by ext; abel_nf; simp
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun := d₂₃_aux R L M
-  map_add' _ _ := by ext; simp [d₂₃_aux]; abel
-  map_smul' _ _ := by ext; simp [d₂₃_aux]; abel_nf; simp
+  toFun a := {
+    toFun x := {
+      toFun y := {
+        toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
+        map_add' _ _ := by simp; abel
+        map_smul' _ _ := by simp [smul_sub] }
+      map_add' _ _ := by ext; simp; abel
+      map_smul' _ _ := by ext; simp [smul_sub] }
+    map_add' _ _ := by ext; simp; abel
+    map_smul' _ _ := by ext; simp [smul_sub] }
+  map_add' _ _ := by ext; simp; abel
+  map_smul' _ _ := by ext; simp [smul_sub]
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
@@ -146,12 +144,11 @@ lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
 
 lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
   ext a x y z
-  have (a : oneCochain R L M) (x : L) : d₁₂ R L M a x = (d₁₂ R L M a).val x := rfl
-  simp only [LinearMap.comp_apply, d₂₃_apply, LinearMap.zero_apply, this,
-    d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
+  simp only [LinearMap.comp_apply, d₂₃_apply, LinearMap.zero_apply,
+    d₁₂_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
-    rw [congr_arg a (leibniz_lie y z x), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
+    rw [congr(a $(leibniz_lie y z x)), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
   simp only [lie_lie, sub_add_cancel, map_sub, ← lie_skew x y, ← lie_skew x z, ← lie_skew y z,
     lie_neg, map_neg, this]
   abel

@@ -5,8 +5,12 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.Kernels
+
+import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subcategories of abelian categories
@@ -14,7 +18,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Kernels
 Let `C` be an abelian category. Given `P : ObjectProperty C` which contains
 zero, is closed under kernels, cokernels and finite products, we show that the
 full subcategory defined by `P` is abelian.
-
 -/
 
 public section

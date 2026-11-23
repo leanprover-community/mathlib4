@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Algebra.Order.Interval.Set.Instances
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Topological (sub)algebras
@@ -28,7 +28,6 @@ algebra homomorphisms between the topological `R`-algebras `A` and `B` is denote
 
 See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
 the topological `R`-algebras `A` and `B`.
-
 -/
 
 @[expose] public section
@@ -87,17 +86,13 @@ variable [ContinuousSMul R A]
 @[simps]
 def algebraMapCLM : R →L[R] A :=
   { Algebra.linearMap R A with
-    toFun := algebraMap R A
-    cont := continuous_algebraMap R A }
+    toFun := algebraMap R A }
 
 theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
 
 theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
-
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
 
 lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
     toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
@@ -145,9 +140,10 @@ variable [TopologicalSpace A]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
+@[macro_inline]
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
@@ -160,14 +156,14 @@ instance : AlgHomClass (A →A[R] B) R A B where
   map_zero f    := map_zero f.toAlgHom
   commutes f r  := f.toAlgHom.commutes r
 
-@[simp]
-theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
+attribute [coe] ContinuousAlgHom.toAlgHom
+
+instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
 
 @[simp, norm_cast]
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
-  cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
+  cases f; cases g; simp only [mk.injEq]
 
-@[simp]
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
 @[simp]
@@ -177,10 +173,10 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
 theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
 instance : ContinuousMapClass (A →A[R] B) A B where
-  map_continuous f := f.2
+  map_continuous f := f.cont
 
 @[fun_prop]
-protected theorem continuous (f : A →A[R] B) : Continuous f := f.2
+protected theorem continuous (f : A →A[R] B) : Continuous f := f.cont
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [Ring E₁] [Ring E₂] [Algebra R E₁] [Algebra R E₂] [IsUniformAddGroup E₁]
@@ -206,7 +202,7 @@ def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
     commutes' := fun r => by
       simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_copy, AlgHomClass.commutes f r] }
+        MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous
 
 @[simp]
@@ -254,7 +250,6 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
 /-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
 def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where
   toLinearMap := e.toAlgHom.toLinearMap
-  cont := by dsimp; fun_prop
 
 @[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
 
@@ -298,8 +293,8 @@ theorem _root_.DenseRange.topologicalClosure_map_subalgebra
     [IsSemitopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
     (hs : s.topologicalClosure = ⊤) : (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
   rw [SetLike.ext'_iff] at hs ⊢
-  simp only [Subalgebra.topologicalClosure_coe, coe_top, ← dense_iff_closure_eq, Subalgebra.coe_map,
-    AlgHom.coe_coe] at hs ⊢
+  simp only [Subalgebra.topologicalClosure_coe, coe_top, ← dense_iff_closure_eq,
+    Subalgebra.coe_map] at hs ⊢
   exact hf'.dense_image f.continuous hs
 
 end Semiring
@@ -343,7 +338,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 /-- Composition of continuous algebra homomorphisms. -/
 def comp (g : B →A[R] C) (f : A →A[R] B) : A →A[R] C :=
-  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.2.comp f.2⟩
+  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.cont.comp f.cont⟩
 
 @[simp, norm_cast]
 theorem coe_comp (h : B →A[R] C) (f : A →A[R] B) :
@@ -403,7 +398,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 /-- The Cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
-  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩
+  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.cont.prodMk f₂.cont⟩
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
@@ -415,12 +410,9 @@ theorem prod_apply (f₁ : A →A[R] B) (f₂ : A →A[R] C) (x : A) :
     f₁.prod f₂ x = (f₁ x, f₂ x) :=
   rfl
 
-variable {F : Type*}
-
 instance {D : Type*} [UniformSpace D] [CompleteSpace D]
     [Semiring D] [Algebra R D] [T2Space B]
-    [FunLike F D B] [AlgHomClass F R D B] [ContinuousMapClass F D B]
-    (f g : F) : CompleteSpace (AlgHom.equalizer f g) :=
+    (f g : D →A[R] B) : CompleteSpace (AlgHom.equalizer f.toAlgHom g.toAlgHom) :=
   isClosed_eq (map_continuous f) (map_continuous g) |>.completeSpace_coe
 
 variable (R A B)
@@ -529,7 +521,7 @@ theorem coe_rangeRestrict (f : A →A[R] B) :
 
 /-- `Subalgebra.val` as a `ContinuousAlgHom`. -/
 def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
-  cont := continuous_subtype_val
+  cont := continuous_subtypeVal
   toAlgHom := p.val
 
 @[simp, norm_cast]
@@ -608,7 +600,7 @@ theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologi
   subset_closure
 
 theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A _ s
+    IsClosed (s.topologicalClosure : Set A) := by convert! @isClosed_closure A _ s
 
 theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
@@ -625,12 +617,19 @@ lemma Subalgebra.topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A
     (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
   topologicalClosure_minimal (adjoin_le_centralizer_centralizer R s) (Set.isClosed_centralizer _)
 
+instance Subalgebra.isMulCommutative_topologicalClosure [T2Space A] (s : Subalgebra R A)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemiring.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 /-- This is really a statement about topological algebra isomorphisms,
 but we don't have those, so we use the clunky approach of talking about
@@ -657,7 +656,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
@@ -674,9 +673,8 @@ theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
-open scoped IsMulCommutative in
-instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  fast_instance% commSemiringTopologicalClosure _ mul_comm
+instance isMulCommutative [T2Space A] (x : A) : IsMulCommutative (elemental R x) := by
+  unfold elemental; infer_instance
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsSemitopologicalSemiring A] [Algebra R A] (x : A) :
@@ -704,13 +702,13 @@ variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
 variable [Algebra R A] [IsSemitopologicalRing A]
 
+open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
-
-instance [T2Space A] {x : A} : CommRing (elemental R x) where
-  mul_comm := mul_comm
+  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end Ring

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity on `ℂ`
 -/
@@ -27,7 +30,6 @@ namespace QuasispectrumRestricts
 local notation "σₙ" => quasispectrum
 variable {A : Type*} [NonUnitalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a : A} :
     QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,

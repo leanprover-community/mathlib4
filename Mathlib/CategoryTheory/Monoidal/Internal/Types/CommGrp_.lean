@@ -5,8 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `CommGrp (Type u) ≌ CommGrpCat.{u}`
@@ -29,11 +32,12 @@ namespace CommGrpTypeEquivalenceCommGrp
 
 instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm := fun x y => by
+      convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
-  obj A := CommGrpCat.of A.X
+  obj A := ↧A.X
   map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/

@@ -7,12 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 
-/-!
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
+/-!
 # Yoneda presheaves on topologically concrete categories
 
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
@@ -36,7 +36,7 @@ A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a 
 @[simps]
 def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
-  map f := TypeCat.ofHom (fun g ↦ ContinuousMap.comp g (F.map f.unop).hom)
+  map f := ↾fun g ↦ ContinuousMap.comp g (F.map f.unop).hom
 
 /--
 A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topological
@@ -44,8 +44,8 @@ space `Y`.
 -/
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
-  obj X := C((unop X).1, Y)
-  map f := TypeCat.ofHom fun g ↦ ContinuousMap.comp g
+  obj X := C((unop X).carrier, Y)
+  map f := ↾fun g ↦ ContinuousMap.comp g
     (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
@@ -54,7 +54,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac {α : Type} (X : α → TopCat) :
     piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
     (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
-    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by
+    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).carrier))).inv ≫ (Types.productIso _).inv := by
   rw [← Category.assoc, Iso.eq_comp_inv]
   ext
   simp [yonedaPresheaf', piComparison, ← opCoproductIsoProduct_inv_comp_ι]

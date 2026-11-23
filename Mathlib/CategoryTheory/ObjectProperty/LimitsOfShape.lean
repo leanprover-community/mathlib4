@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Limits.Presentation
 
 import Mathlib.CategoryTheory.Adjunction.Limits
@@ -28,15 +27,6 @@ is essentially small.
 
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
-
-
-## TODO
-
-* formalize the closure of `P` under finite limits (which require
-  iterating over `ℕ`), and more generally the closure under limits
-  indexed by a category whose type of arrows has a cardinality
-  that is bounded by a certain regular cardinal (@joelriou)
-
 -/
 
 @[expose] public section
@@ -177,7 +167,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
     ObjectProperty.Small.{w} (P.strictLimitsOfShape J) := by
   refine small_of_surjective
     (f := fun (F : { F : J ⥤ P.FullSubcategory // HasLimit (F ⋙ P.ι) }) ↦
-      (⟨_, letI := F.2; ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
+      (⟨_, letI := F.property; ⟨F.val ⋙ P.ι, fun j ↦ (F.val.obj j).property⟩⟩)) ?_
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
@@ -208,6 +198,13 @@ instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where
   limitsOfShape_le _ _ := by trivial
 
 export IsClosedUnderLimitsOfShape (limitsOfShape_le)
+
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderLimitsOfShape J] :
+    (⨅ i, P i).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    simp only [le_iInf_iff]
+    intro i
+    exact (limitsOfShape_monotone _ (iInf_le _ _)).trans (limitsOfShape_le (P i) J)
 
 section
 
@@ -264,8 +261,9 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
     (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert (inferInstance :
-    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  convert
+    (inferInstance :
+      ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 

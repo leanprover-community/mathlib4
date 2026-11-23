@@ -7,7 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
@@ -19,14 +21,15 @@ a non degenerate simplex to the subcomplex of `X` it generates.
 
 Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -64,7 +67,8 @@ def induction {motive : X.N → Sort*}
 
 @[simp]
 lemma induction_mk {motive : X.N → Sort*}
-    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) {n : ℕ} (s : X.nonDegenerate n) :
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) {n : ℕ}
+    (s : X.nonDegenerate n) :
   induction (motive := motive) mk (N.mk s.val s.property) = mk n s := rfl
 
 lemma ext_iff (x y : X.N) :
@@ -90,6 +94,7 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
@@ -102,6 +107,7 @@ lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
     obtain rfl : y = x := by simpa using hf
     simp at h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
@@ -160,10 +166,11 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
   · induction s using N.induction with
     | mk n x =>
       intro hx
-      simp only [Subfunctor.ofSection_le_iff, mk_dim, mk_simplex] at hx ⊢
+      simp only [Subfunctor.ofSection_le_iff, mk_simplex] at hx ⊢
       exact h _ _ hx
-  · simpa using h (N.mk _ x.prop) (by simpa)
+  · simpa using! h (N.mk _ x.prop) (by simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.op.N ≃ X.N`. -/
 @[simps -isSimp apply symm_apply]
@@ -181,6 +188,7 @@ def opEquiv : X.op.N ≃o X.N where
     · rintro ⟨f, hf⟩
       exact ⟨SimplexCategory.rev.map f, by simp [op_map, ← hf]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
 that is induced by an isomorphism `X ≅ Y`. -/
@@ -238,9 +246,10 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
   have := isSplitEpi_of_epi f
   exact ⟨(section_ f).op, by simp [← hf, ← Functor.map_comp_apply, ← op_comp]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
-  existsUnique_of_exists_of_unique (by
+  (Function.Injective.existsUnique_iff_exists (fun _ _ ↦ N.subcomplex_injective)).2 (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
     obtain ⟨m, f, _, y, rfl⟩ := X.exists_nonDegenerate x
     refine ⟨N.mk _ y.prop, le_antisymm ?_ ?_⟩
@@ -255,7 +264,6 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
         ← op_comp, ← op_comp, Category.assoc, IsSplitEpi.id, Category.comp_id]
     · simp only [Subcomplex.ofSimplex_le_iff]
       exact ⟨f.op, rfl⟩)
-    (fun y₁ y₂ h₁ h₂ ↦ N.subcomplex_injective (by rw [h₁, h₂]))
 
 /-- This is the non degenerate simplex of a simplicial set which
 generates the same subcomplex as a given simplex. -/
@@ -274,7 +282,7 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
     ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Epi f ∧ X.map f.op y.simplex = x.simplex := by
   obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
   obtain ⟨m, f, _, z, rfl⟩ := X.exists_nonDegenerate x
-  obtain rfl : y = N.mk _ z.2 := by
+  obtain rfl : y = N.mk _ z.property := by
     rw [toN_eq_iff] at hy
     rw [← N.subcomplex_injective_iff, hy]
     exact subcomplex_eq_of_epi _ _ f rfl

@@ -5,10 +5,9 @@ Authors: Johan Commelin, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Logic.Relation
+public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.ToDual
+public import Mathlib.Logic.Relation
 
 /-!
 # Shapes of homological complexes
@@ -88,11 +87,18 @@ def refl (ι : Type*) : ComplexShape ι where
 
 /-- The reverse of a `ComplexShape`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'
   prev_eq w w' := c.next_eq w w'
+
+/-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
+case of `c.symm.Rel`. -/
+@[instance_reducible]
+def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
+    DecidableRel c.symm.Rel :=
+  fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl
 
 @[simp]
 theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
@@ -120,13 +126,10 @@ def trans (c₁ c₂ : ComplexShape ι) : ComplexShape ι where
     exact c₁.prev_eq w₁ w₁'
 
 @[to_dual]
-instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := by
-  constructor
-  rintro ⟨j, rij⟩ ⟨k, rik⟩
-  congr
-  exact c.next_eq rij rik
+instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } :=
+  Subtype.subsingleton_iff.mpr fun _ _ rij rik ↦ c.next_eq rij rik
 
-open Classical in
+open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
@@ -141,13 +144,13 @@ def next (c : ComplexShape ι) (i : ι) : ι :=
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
   rw [next]
-  rw [dif_pos]
+  rw [dite_eq_left]
   exact Exists.choose_spec ⟨j, h⟩
 
 @[to_dual]
 lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
-  dif_neg (by simpa using hj)
+  dite_eq_right (by simpa using hj)
 
 @[to_dual]
 lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
@@ -157,6 +160,7 @@ lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
+@[implicit_reducible]
 def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
@@ -165,7 +169,7 @@ def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α w
 /-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
-@[to_dual existing (attr := simps) up']
+@[implicit_reducible, to_dual existing (attr := simps) up']
 def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
@@ -177,7 +181,7 @@ theorem up'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[to_dual (attr := simps!) down
+@[to_dual (attr := simps!, implicit_reducible) down
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/]
 def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=

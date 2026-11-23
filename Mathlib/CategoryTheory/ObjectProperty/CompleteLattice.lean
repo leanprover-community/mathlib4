@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Order.CompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ObjectProperty is a complete lattice
-
 -/
 
 public section
@@ -96,6 +98,13 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     ((⨆ (a : α), P a)).IsClosedUnderIsomorphisms := by
   simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self,
     isoClosure_iSup, isoClosure_eq_self]
+
+instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
+    ((⨅ (a : α), P a)).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    intro a
+    exact (P a).prop_of_iso e (h a)
 
 end
 

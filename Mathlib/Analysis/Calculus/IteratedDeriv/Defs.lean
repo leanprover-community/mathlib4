@@ -46,7 +46,7 @@ iterated Fréchet derivative.
 noncomputable section
 
 open scoped Topology ContDiff
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -312,7 +312,7 @@ differentiation operation. -/
 theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   ext x
   rw [← iteratedDerivWithin_univ]
-  convert iteratedDerivWithin_eq_iterate (F := F)
+  convert! iteratedDerivWithin_eq_iterate (F := F)
   simp [derivWithin_univ]
 
 theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :

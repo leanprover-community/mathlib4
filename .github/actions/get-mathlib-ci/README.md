@@ -25,7 +25,7 @@ then use the local action:
 
 ```yaml
 - name: Checkout local actions
-  uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+  uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
   with:
     ref: ${{ github.workflow_sha }}
     fetch-depth: 1
@@ -71,5 +71,4 @@ action output instead of duplicating the pinned SHA in the workflow:
   run: |
     echo "Resolved ref: ${{ steps.get_mathlib_ci.outputs.ref }}"
     echo "Scripts dir: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}"
-    echo "Raw URL: https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/create-adaptation-pr.sh"
 ```

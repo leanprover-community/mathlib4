@@ -8,12 +8,14 @@ module
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinants of maps in the complex numbers as a vector space over `ℝ`
 
 This file provides results about the determinants of maps in the complex numbers as a vector
 space over `ℝ`.
-
 -/
 
 public section
@@ -21,17 +23,14 @@ public section
 
 namespace Complex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of `conjAe`, as a linear map. -/
 @[simp]
-theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by
+theorem det_conjAe : conjAe.toLinearEquiv.toLinearMap.det = -1 := by
   rw [← LinearMap.det_toMatrix basisOneI, toMatrix_conjAe, Matrix.det_fin_two_of]
   simp
 
 /-- The determinant of `conjAe`, as a linear equiv. -/
 @[simp]
-theorem linearEquiv_det_conjAe : LinearEquiv.det conjAe.toLinearEquiv = -1 := by
-  rw [← Units.val_inj, LinearEquiv.coe_det, AlgEquiv.toLinearEquiv_toLinearMap, det_conjAe,
-    Units.coe_neg_one]
+theorem linearEquiv_det_conjAe : conjAe.toLinearEquiv.det = -1 := by simp [← Units.val_inj]
 
 end Complex

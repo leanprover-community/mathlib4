@@ -9,6 +9,9 @@ public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Congruence.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining a monoid given by generators and relations
 
@@ -125,12 +128,12 @@ from `PresentedMonoid rels → M`. -/
 @[to_additive /-- The extension of a map `f : α → M` that satisfies the given relations to an
 additive-monoid homomorphism from `PresentedAddMonoid rels → M` -/]
 def lift : PresentedMonoid rels →* M :=
-  Con.lift _ (FreeMonoid.lift f) (Con.conGen_le h)
+  Con.lift _ (FreeMonoid.lift f) (Con.conGen_le.2 h)
 
 @[to_additive]
 theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
     (hg : ∀ a : α, g (of rels a) = f a) : g = lift f h :=
-  Con.lift_unique (Con.conGen_le h) g (FreeMonoid.hom_eq hg)
+  Con.lift_unique (Con.conGen_le.2 h) g (FreeMonoid.hom_eq hg)
 
 @[to_additive (attr := simp)]
 theorem lift_of {x : α} : lift f h (of rels x) = f x := rfl

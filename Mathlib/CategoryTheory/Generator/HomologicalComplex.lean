@@ -9,13 +9,15 @@ public import Mathlib.Algebra.Homology.Double
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.CategoryTheory.Generator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators of the category of homological complexes
 
 Let `c : ComplexShape ι` be a complex shape with no loop.
 If a category `C` has a separator, then `HomologicalComplex C c`
 has a separating family, and a separator when suitable coproducts exist.
-
 -/
 
 @[expose] public section
@@ -52,7 +54,7 @@ lemma isSeparating_separatingFamily :
   rintro _ ⟨a⟩ p
   have H := evalCompCoyonedaCorepresentable c (X a) j
   apply H.homEquiv.symm.injective
-  simpa only [H.homEquiv_symm_comp] using h _
+  simpa only [H.homEquiv_symm_comp] using! h _
     (ObjectProperty.ofObj_apply _ ⟨a, j⟩) (H.homEquiv.symm p)
 
 end
@@ -63,7 +65,7 @@ lemma isSeparator_coproduct_separatingFamily {X : C} (hX : IsSeparator X) :
     IsSeparator (∐ (fun i ↦ separatingFamily c (fun (_ : Unit) ↦ X) ⟨⟨⟩, i⟩)) := by
   let φ (i : ι) := separatingFamily c (fun (_ : Unit) ↦ X) ⟨⟨⟩, i⟩
   refine isSeparator_of_isColimit_cofan
-    (isSeparating_separatingFamily c (X := fun (_ : Unit) ↦ X) (by simpa using hX))
+    (isSeparating_separatingFamily c (X := fun (_ : Unit) ↦ X) (by simpa using! hX))
       (c := Cofan.mk (∐ φ) (fun ⟨_, i⟩ ↦ Sigma.ι φ i)) ?_
   exact IsColimit.ofWhiskerEquivalence
     (Discrete.equivalence (Equiv.punitProd.{0} ι).symm) (coproductIsCoproduct φ)

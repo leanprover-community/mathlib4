@@ -6,12 +6,13 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Taylor's theorem
@@ -55,7 +56,7 @@ open scoped Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type*}
+variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
@@ -140,7 +141,7 @@ theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
     HasDerivAt (fun y => (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
   simp_rw [sub_eq_neg_add]
   rw [← neg_one_mul, mul_comm (-1 : ℝ), mul_assoc, mul_comm (-1 : ℝ), ← mul_assoc]
-  convert ((hasDerivAt_id t).neg.add_const x).pow (n + 1)
+  convert! ((hasDerivAt_id t).neg.add_const x).pow (n + 1)
   simp only [Nat.cast_add, Nat.cast_one]
 
 theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : ℕ} {s t : Set ℝ}
@@ -152,7 +153,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
-    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
+    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt
     rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
@@ -191,21 +192,23 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
       (hf.differentiableOn_iteratedDerivWithin (mod_cast coe_lt_succ) hs_unique).mono h
     specialize hk hf.of_succ ((hdiff y hy).mono_of_mem_nhdsWithin hs')
-    convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
-      (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
+    convert
+      hk.add
+        (hasDerivWithinAt_taylor_coeff_within hs'_unique (nhdsWithin_mono _ h self_mem_nhdsWithin)
+          hf') using 1
     exact (add_sub_cancel _ _).symm
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
 Version for open intervals -/
-theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ} (hx : a < b)
+theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ}
     (ht : t ∈ Ioo a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Ioo a b)) :
     HasDerivAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) t :=
   have h_nhds : Ioo a b ∈ 𝓝 t := isOpen_Ioo.mem_nhds ht
   have h_nhds' : Ioo a b ∈ 𝓝[Icc a b] t := nhdsWithin_le_nhds h_nhds
-  (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx) h_nhds' ht
+  (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc (ht.1.trans ht.2)) h_nhds' ht
     Ioo_subset_Icc_self hf <| (hf' t ht).mono_of_mem_nhdsWithin h_nhds').hasDerivAt h_nhds
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -250,8 +253,9 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
-      (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x) using 1
+    convert
+      Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl)) (f := fun x ↦
+        f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
     · intro x hx
       refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
@@ -281,7 +285,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
     Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n)
       (𝓝[s] x₀) (𝓝 0) := by
-  convert _root_.taylor_tendsto hs hx₀s hf using 2 with x
+  convert _root_.taylor_tendsto hs hx₀s hf with x
   simp [div_eq_inv_mul]
 
 
@@ -308,9 +312,8 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   rcases exists_ratio_hasDerivAt_eq_ratio_slope (fun t => taylorWithinEval f n (uIcc x₀ x) t x)
       (fun t => ((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t) hx₁
       (continuousOn_taylorWithinEval (uniqueDiffOn_Icc hx₁) hf)
-      (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hx₁ hy hf hf')
+      (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hy hf hf')
     g g' gcont gdiff with ⟨y, hy, h⟩
-  use y, hy
   -- The rest is simplifications and trivial calculations
   grind [uIoo, smul_eq_mul, taylorWithinEval_self]
 
@@ -346,7 +349,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
     (hf : ContDiffOn ℝ (n + 1) f (uIcc x₀ x)) :
     ∃ x' ∈ uIoo x₀ x, f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
       iteratedDeriv (n + 1) f x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
-  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_Icc (by grind)
+  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_uIcc hx
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIcc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
@@ -384,10 +387,11 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 The difference of `f` and its `n`-th Taylor polynomial can be estimated by
 `C * (x - a)^(n+1) / n!` where `C` is a bound for the `n+1`-th iterated derivative of `f`. -/
-theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (hab : a ≤ b)
+theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) (hx : x ∈ Icc a b)
     (hC : ∀ y ∈ Icc a b, ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤ C) :
     ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) / n ! := by
+  have hab : a ≤ b := hx.1.trans hx.2
   rcases eq_or_lt_of_le hab with (rfl | h)
   · rw [Icc_self, mem_singleton_iff] at hx
     simp [hx]
@@ -404,7 +408,6 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     gcongr
     · rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
       gcongr
-      exact sub_nonneg.2 hyx.le
     -- Estimate the iterated derivative by `C`
     · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector-valued functions:
@@ -425,9 +428,11 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 There exists a constant `C` such that for all `x ∈ Icc a b` the difference of `f` and its `n`-th
 Taylor polynomial can be estimated by `C * (x - a)^(n+1)`. -/
-theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ} (hab : a ≤ b)
+theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) :
     ∃ C, ∀ x ∈ Icc a b, ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) := by
+  rcases lt_or_ge b a with hba | hab
+  · exact ⟨0, fun x hx ↦ absurd (hx.1.trans hx.2) hba.not_ge⟩
   rcases eq_or_lt_of_le hab with (rfl | h)
   · refine ⟨0, fun x hx => ?_⟩
     have : x = a := by simpa [← le_antisymm_iff] using hx
@@ -437,7 +442,7 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   use SupSet.sSup (g '' Icc a b) / (n !)
   intro x hx
   rw [div_mul_eq_mul_div₀]
-  refine taylor_mean_remainder_bound hab hf hx fun y => ?_
+  refine taylor_mean_remainder_bound hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
 /-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem
@@ -470,11 +475,10 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
       iteratedDerivWithin_zero, one_smul, deriv_const', div_one, zero_smul,
       intervalIntegral.integral_zero, sub_zero] at hf
     rw [← hf]
-    apply intervalIntegral.integral_congr_ae
-    filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
-    grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+    refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
+    rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+    rfl
   | succ n ih =>
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     specialize ih (by grind)
     simp only [taylorWithinEval_succ, mul_inv_rev]
     rw [sub_add_eq_sub_sub, ih]
@@ -492,12 +496,12 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
         congr
         field_simp
         grind
-    · apply intervalIntegral.integral_congr_ae
-      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
+    · refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
       rw [iteratedDerivWithin_succ]
       congr
-      · rw [Nat.factorial]; grind
-      · grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+      · rw [Nat.factorial, Nat.cast_mul, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+      · rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+        rfl
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
 
@@ -520,9 +524,8 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
     fun_prop
   · rcases hk.eq_or_lt with rfl | hk
     · exact hf₂
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     replace hf₁ := hf₁.of_le (m := k.succ) (by norm_cast)
-    grind [ContDiffOn.absolutelyContinuousOnInterval,
+    grind [ContDiffOn.absolutelyContinuousOnInterval, uniqueDiffOn_uIcc,
       contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
@@ -538,7 +541,7 @@ theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
       ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
   rcases eq_or_ne x₀ x with rfl | this
   · simp
-  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
   apply taylor_integral_remainder_aux
   intro k hk
   apply intervalIntegral.integral_smul_deriv_eq_deriv_smul_of_hasDerivAt

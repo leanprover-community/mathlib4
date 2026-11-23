@@ -5,11 +5,15 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-public import Mathlib.CategoryTheory.Sites.Limits
-/-!
 
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Sites.Limits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Colimits in categories of extensive sheaves
 
 This file proves that `J`-shaped colimits of `A`-valued sheaves for the extensive topology are
@@ -32,6 +36,7 @@ section
 variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
     (G : J ⥤ Sheaf (extensiveTopology C) A) :
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by

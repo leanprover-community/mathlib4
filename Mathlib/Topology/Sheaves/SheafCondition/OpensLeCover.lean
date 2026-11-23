@@ -113,8 +113,8 @@ def generateEquivalenceOpensLe_functor' :
       fun f : Over Y => (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) ⥤
     OpensLeCover U where
   obj f :=
-    ⟨f.1.left,
-      let ⟨_, h, _, ⟨i, hY⟩, _⟩ := f.2
+    ⟨f.obj.left,
+      let ⟨_, h, _, ⟨i, hY⟩, _⟩ := f.property
       ⟨i, hY ▸ h.le⟩⟩
   map g := ObjectProperty.homMk g.hom.left
 
@@ -128,9 +128,10 @@ def generateEquivalenceOpensLe_inverse' (hY : Y = iSup U) :
     OpensLeCover U ⥤
     (ObjectProperty.FullSubcategory fun f : Over Y =>
       (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) where
-  obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩, homOfLE <| hY ▸ (V.2.choose_spec.trans (le_iSup U (V.2.choose)))⟩,
-    ⟨U V.2.choose, V.2.choose_spec.hom, homOfLE <| hY ▸ le_iSup U V.2.choose,
-      ⟨V.2.choose, rfl⟩, rfl⟩⟩
+  obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩,
+      homOfLE <| hY ▸ (V.property.choose_spec.trans (le_iSup U (V.property.choose)))⟩,
+    ⟨U V.property.choose, V.property.choose_spec.hom, homOfLE <| hY ▸ le_iSup U V.property.choose,
+      ⟨V.property.choose, rfl⟩, rfl⟩⟩
   map g := ObjectProperty.homMk (Over.homMk g.hom)
 
 /-- Given a family of opens `U` and an open `Y` equal to the union of opens in `U`, we may
@@ -157,16 +158,16 @@ def whiskerIsoMapGenerateCocone (hY : Y = iSup U) :
     (F.mapCone (opensLeCoverCocone U).op).whisker (generateEquivalenceOpensLe U hY).op.functor ≅
       F.mapCone (Sieve.generate (presieveOfCoveringAux U Y)).arrows.cocone.op where
   hom :=
-    { hom := F.map (eqToHom (congr_arg op hY.symm))
+    { hom := F.map (eqToHom congr(op $hY.symm))
       w := fun j => by
-        erw [← F.map_comp]
         dsimp
+        rw [← F.map_comp]
         congr 1 }
   inv :=
-    { hom := F.map (eqToHom (congr_arg op hY))
+    { hom := F.map (eqToHom congr(op $hY))
       w := fun j => by
-        erw [← F.map_comp]
         dsimp
+        rw [← F.map_comp]
         congr 1 }
   hom_inv_id := by
     ext
@@ -196,7 +197,8 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
     (hR : Sieve.generate R ∈ Opens.grothendieckTopology X Y) :
     IsLimit (F.mapCone (opensLeCoverCocone (coveringOfPresieve Y R)).op) ≃
       IsLimit (F.mapCone (Sieve.generate R).arrows.cocone.op) := by
-  convert isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
+  convert
+    isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
       (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 1
   rw [covering_presieve_eq_self R]
 
@@ -216,7 +218,7 @@ theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover :=
     fun h ↦ (Presheaf.isSheaf_iff_isLimit _ _).mpr fun Y S ↦ ?_⟩
   rw [← Sieve.generate_sieve S]
   intro hS
-  rw [← (isLimitOpensLeEquivGenerate₂ F S.1 hS).nonempty_congr]
+  rw [← (isLimitOpensLeEquivGenerate₂ F S.arrows hS).nonempty_congr]
   apply h
 
 end

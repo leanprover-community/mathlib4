@@ -6,7 +6,12 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Archimedean.Defs
+
+import Mathlib.Data.Rat.Floor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Submonoids of archimedean monoids

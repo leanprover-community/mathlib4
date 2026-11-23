@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
+public import Mathlib.SetTheory.ZFC.Class
 public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
@@ -123,7 +124,7 @@ theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
-  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
+  ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.property⟩
 
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
 the standard one. -/
@@ -156,20 +157,19 @@ theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
 
 theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔ x = y ∨ x ∈ y := by
   constructor
-  · revert hx hy
-    refine Sym2.GameAdd.recursion mem_wf ?_ x y
-    intro x y IH hx hy hxy
+  · intro hxy
+    induction x, y using Sym2.GameAdd.recursion mem_wf with | ind x y IH
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
-    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.diff_nonempty.2 hyx)
-      have hmy : m ∈ y := by simp only [Set.mem_diff, SetLike.mem_coe] at hm; exact hm.1
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.sdiff_nonempty.2 hyx)
+      have hmy : m ∈ y := by simp only [Set.mem_sdiff, SetLike.mem_coe] at hm; exact hm.1
       have hmx : m ⊆ x := by
         intro z hzm
         by_contra hzx
         exact hm' _ ⟨hy.mem_trans hzm hmy, hzx⟩ hzm
       obtain rfl | H := IH m x (Sym2.GameAdd.fst_snd hmy) (hy.mem hmy) hx hmx
       · exact Or.inr hmy
-      · cases Set.notMem_of_mem_diff hm H
+      · cases Set.notMem_of_mem_sdiff hm H
   · rintro (rfl | h)
     · rfl
     · exact hy.subset_of_mem h
@@ -183,9 +183,8 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hz.mem_trans hx hy
 
 theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
-  refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
-  revert hx hy
-  refine Sym2.GameAdd.recursion mem_wf (fun x y IH hx hy hyx z hzy ↦ ?_) x y
+  refine ⟨fun hyx z hzy => ?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
+  induction x, y using Sym2.GameAdd.recursion mem_wf generalizing z with | ind x y IH
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 
@@ -210,8 +209,6 @@ protected theorem trichotomous (h : x.IsOrdinal) : Std.Trichotomous (Subrel (· 
     intro ⟨a, ha⟩ ⟨b, hb⟩
     simpa using mem_trichotomous (h.mem ha) (h.mem hb)
 
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := IsOrdinal.trichotomous
-
 /-- An ordinal is a transitive set, trichotomous under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     x.IsOrdinal ↔ x.IsTransitive ∧ Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) where
@@ -225,12 +222,9 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
 
-@[deprecated (since := "2026-01-24")]
-alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_trichotomous
-
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
-  trichotomous := h.trichotomous.1
+  trichotomous := h.trichotomous.trichotomous
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
@@ -286,20 +280,19 @@ decreasing_by exact a.toOrd.prop
 @[simp]
 theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
-  rfl
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.val.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.val.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
-decreasing_by rename_i x; exact x.2
+decreasing_by rename_i x; exact x.property
 
 /-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
@@ -349,7 +342,7 @@ theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔
   exact fun h ↦ not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
 theorem toZFSet_strictMono : StrictMono toZFSet :=
-  fun _ _ h ↦ by simpa [ssubset_iff_subset_not_subset] using ⟨h.le, h⟩
+  fun _ _ h ↦ by rw [ssubset_iff_subset_not_subset]; simp [h, h.le]
 
 theorem toZFSet_injective : Function.Injective toZFSet :=
   toZFSet_strictMono.injective
@@ -362,13 +355,9 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 theorem toZFSet_add_one (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
-@[deprecated toZFSet_add_one (since := "2026-02-24")]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) :=
-  toZFSet_add_one o
-
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
-  simpa [← coe_toZFSet, cardinalMk_coe_sort, Cardinal.mk_Iio_ordinal, ← lift_card] using
+  simpa [← coe_toZFSet, cardinalMk_coe_sort, cardinalMk_Iio, ← lift_card] using
     Cardinal.mk_image_eq (s := Iio o) toZFSet_injective
 
 end Ordinal
@@ -400,9 +389,20 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
   toFun o := ⟨_, isOrdinal_toZFSet o⟩
-  invFun x := rank x.1
+  invFun x := rank x.val
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
+
+open scoped ZFClass in
+/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
+theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ univ := by
+  rintro ⟨x, hx, -⟩
+  suffices IsOrdinal x by
+    apply ZFClass.cmem_irrefl (A := x)
+    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
+  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
+    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
+  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

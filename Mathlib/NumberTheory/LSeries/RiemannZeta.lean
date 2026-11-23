@@ -6,7 +6,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
-public import Mathlib.Analysis.PSeriesComplex
+
+import Mathlib.Analysis.PSeriesComplex
 
 /-!
 # Definition of the Riemann zeta function
@@ -83,7 +84,7 @@ lemma HurwitzZeta.completedCosZeta₀_zero (s : ℂ) :
 
 lemma completedRiemannZeta_eq (s : ℂ) :
     completedRiemannZeta s = completedRiemannZeta₀ s - 1 / s - 1 / (1 - s) := by
-  simp_rw [completedRiemannZeta, completedRiemannZeta₀, completedHurwitzZetaEven_eq, if_true]
+  simp_rw [completedRiemannZeta, completedRiemannZeta₀, completedHurwitzZetaEven_eq, ite_true]
 
 /-- The modified completed Riemann zeta function `Λ(s) + 1 / s + 1 / (1 - s)` is entire. -/
 theorem differentiable_completedZeta₀ : Differentiable ℂ completedRiemannZeta₀ :=
@@ -116,12 +117,13 @@ lemma completedRiemannZeta_residue_one :
 -/
 
 /-- The Riemann zeta function `ζ(s)`. -/
+@[wikidata Q187235]
 def riemannZeta := hurwitzZetaEven 0
 
 lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
 
 lemma HurwitzZeta.cosZeta_zero : cosZeta 0 = riemannZeta := by
-  simp_rw [cosZeta, riemannZeta, hurwitzZetaEven, if_true, completedHurwitzZetaEven_zero,
+  simp_rw [cosZeta, riemannZeta, hurwitzZetaEven, ite_true, completedHurwitzZetaEven_zero,
     completedCosZeta_zero]
 
 lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
@@ -147,11 +149,25 @@ lemma analyticOn_riemannZeta :
 
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
-  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
+  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, ite_true]
 
 lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
   rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
+
+/-- Definition of the zeta function in terms of `completedRiemannZeta₀`. -/
+lemma riemannZeta_eq_completedRiemannZeta₀ {s : ℂ} (hs : s ≠ 0) : riemannZeta s =
+    (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) / (π ^ (-s / 2) * Gamma (s / 2)) := by
+  rw [riemannZeta_def_of_ne_zero hs, completedRiemannZeta_eq, Gammaℝ]
+
+/-- Version of `completedRiemannZeta₀` that avoids `s ≠ 0` -/
+lemma riemannZeta_eq_mul_completedRiemannZeta₀ (s : ℂ) :
+    riemannZeta s = (s * completedRiemannZeta₀ s - 1 - s / (1 - s)) /
+      (2 * π ^ (-s / 2) * Gamma (s / 2 + 1)) := by
+  rcases eq_or_ne s 0 with rfl | hs
+  · simp [riemannZeta_zero]
+  · rw [riemannZeta_eq_completedRiemannZeta₀ hs, Gamma_add_one (s / 2) (by grind)]
+    field
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
@@ -163,8 +179,10 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
     riemannZeta (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * cos (π * s / 2) * riemannZeta s := by
   rw [riemannZeta, hurwitzZetaEven_one_sub 0 hs (Or.inr hs'), cosZeta_zero, hurwitzZetaEven_zero]
 
-/-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
-million dollars. -/
+/-- A formal statement of the **Riemann hypothesis**. See
+[leanprover-community/riemann-hypothesis](https://github.com/leanprover-community/riemann-hypothesis)
+for a construction of a term of type `RiemannHypothesis`. -/
+@[wikidata Q205966]
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 
@@ -222,8 +240,8 @@ lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (
   · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
-lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
-  exact hurwitzZetaEven_residue_one 0
+lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) :=
+  hurwitzZetaEven_residue_one 0
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1, expressed using `tsum`. -/
 theorem tendsto_sub_mul_tsum_nat_cpow :

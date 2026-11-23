@@ -6,8 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
+
 /-!
 # Cover-preserving functors between sites.
 
@@ -32,15 +33,12 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
 * https://stacks.math.columbia.edu/tag/00WU
-
 -/
 
 public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
-
-noncomputable section
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits
@@ -60,7 +58,7 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
-  ⟨fun hS => by simpa using hS⟩
+  ⟨fun hS => by simpa using! hS⟩
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -111,7 +109,6 @@ end
 
 open Limits.WalkingCospan
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
@@ -145,11 +142,11 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
   constructor
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
-  apply (ℱ.1.mapIso e.op).toEquiv.injective
-  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← Functor.map_comp_apply]
-  simpa using
+  apply (ℱ.obj.mapIso e.op).toEquiv.injective
+  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.obj.mapIso_hom, ← Functor.map_comp_apply]
+  simpa using!
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
-      (F.map_injective <| by simpa using he)
+      (F.map_injective <| by simpa using! he)
 
 variable {F J K}
 
@@ -159,13 +156,55 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by
     apply existsUnique_of_exists_of_unique
-    · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
+    · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.property _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.property).isSeparated _
+        (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
-      simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
+      simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
+
+variable (F J K) in
+/-- Continuous functors send covering sieves to covering sieves.
+The converse is false, see [SGA4, III, Exemple 1.9.3][sga-4-tome-1]. -/
+lemma CoverPreserving.of_isContinuous [F.IsContinuous J K] : CoverPreserving J K F where
+  cover_preserve {X S} hS := by
+    rw [K.mem_iff_isSheafFor_closedSieves]
+    obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
+    rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward,
+      ← Presieve.isSheafFor_iff_generate, Presieve.map_ofArrows]
+    have := Functor.op_comp_isSheaf_of_isSheaf_type F J (classifier_isSheaf K) _ hS
+    rw [Sieve.ofArrows, ← Presieve.isSheafFor_iff_generate] at this
+    rw [Presieve.isSheafFor_arrows_iff] at this ⊢
+    intro x hx
+    refine this x fun i j Z gi gj hgij ↦ hx _ _ _ _ _ ?_
+    simp [← Functor.map_comp, hgij]
+
+/-- If `F` is flat, it is continuous if and only if it preserves covers. -/
+lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
+    F.IsContinuous J K ↔ CoverPreserving J K F := by
+  refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
+  apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+/-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
+functor preserves all `1`-hypercovers. -/
+lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
+    [PreservesLimitsOfShape WalkingCospan F] (H : CoverPreserving J K F) :
+    Functor.PreservesOneHypercovers.{w} F J K := by
+  refine fun {U} E ↦ ⟨?_, fun i₁ i₂ W p₁ p₂ h ↦ ?_⟩
+  · simp [PreZeroHypercover.sieve₀_map, H.cover_preserve E.mem₀]
+  · let P : C := pullback (E.f i₁) (E.f i₂)
+    have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
+      hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+    have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
+    rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesPullbacks _ _ _
+      pullback.condition] at this
+    refine K.superset_covering ?_
+      (K.pullback_stable (IsPullback.lift (.map _ (.of_hasPullback _ _)) p₁ p₂ h) this)
+    simp [PreOneHypercover.pullback_sieve₁]
 
 end CategoryTheory

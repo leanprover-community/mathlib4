@@ -59,12 +59,12 @@ variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
 instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
-  coe_injective' K L h := by
+  coe_injective K L h := by
     cases K
     cases L
     congr
 
-instance : PartialOrder (ConvexBody V) := .ofSetLike (ConvexBody V) V
+instance : PartialOrder (ConvexBody V) := .ofSetLike (ConvexBody V)
 
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
@@ -118,7 +118,7 @@ instance : SMul ℕ (ConvexBody V) where
 @[simp, norm_cast]
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
-  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
+  | n + 1, K => congr($(coe_nsmul n K) + _)
 
 noncomputable instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
@@ -180,9 +180,6 @@ theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : 
   apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
 
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
-
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
 noncomputable instance : PseudoMetricSpace (ConvexBody V) where
@@ -199,9 +196,6 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 

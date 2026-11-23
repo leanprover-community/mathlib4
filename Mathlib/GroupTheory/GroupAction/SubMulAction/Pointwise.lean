@@ -5,8 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise monoid structures on SubMulAction
@@ -15,13 +18,12 @@ This file provides `SubMulAction.Monoid` and weaker typeclasses, which show that
 inherit the same pointwise multiplications as sets.
 
 To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
-
 -/
 
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 

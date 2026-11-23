@@ -8,9 +8,14 @@ module
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.SuperFactorial
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Pochhammer
+
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Polynomial.Pochhammer
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Vandermonde matrix
@@ -73,14 +78,14 @@ namespace Matrix
 
 /-- A matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
 def rectVandermonde {α : Type*} (v w : α → R) (n : ℕ) : Matrix α (Fin n) R :=
-  .of fun i j ↦ (v i) ^ j.1 * (w i) ^ j.rev.1
+  .of fun i j ↦ (v i) ^ j.val * (w i) ^ j.rev.val
 
 /-- A square matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
 def projVandermonde (v w : Fin n → R) : Matrix (Fin n) (Fin n) R :=
   rectVandermonde v w n
 
 /-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`. -/
-def vandermonde (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j ↦ (v i) ^ j.1
+def vandermonde (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j ↦ (v i) ^ j.val
 
 lemma vandermonde_eq_projVandermonde (v : Fin n → R) : vandermonde v = projVandermonde v 1 := by
   simp [projVandermonde, rectVandermonde, vandermonde]
@@ -88,10 +93,10 @@ lemma vandermonde_eq_projVandermonde (v : Fin n → R) : vandermonde v = projVan
 /-- We don't mark this as `@[simp]` because the RHS is not simp-nf,
 and simplifying the RHS gives a bothersome `Nat` subtraction. -/
 theorem projVandermonde_apply {v w : Fin n → R} {i j : Fin n} :
-    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
+    projVandermonde v w i j = (v i) ^ j.val * (w i) ^ j.rev.val := rfl
 
 theorem rectVandermonde_apply {α : Type*} {v w : α → R} {i : α} {j : Fin n} :
-    rectVandermonde v w n i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
+    rectVandermonde v w n i j = (v i) ^ j.val * (w i) ^ j.rev.val := rfl
 
 @[simp]
 theorem vandermonde_apply (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) := rfl
@@ -127,11 +132,11 @@ theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} 
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [rectVandermonde_apply]
   rw [rectVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
-  simpa [Nat.sub_eq_zero_iff_le] using hlt
+  simpa [Nat.sub_eq_zero_iff_le] using! hlt
 
 theorem projVandermonde_apply_of_ne_zero
     {v w : Fin (n + 1) → K} {i j : Fin (n + 1)} (hw : w i ≠ 0) :
-    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
+    projVandermonde v w i j = (v i) ^ j.val * (w i) ^ n / (w i) ^ j.val := by
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
 theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :
@@ -140,7 +145,7 @@ theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n +
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [projVandermonde_apply]
   rw [projVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
-  simpa [Nat.sub_eq_zero_iff_le] using hlt
+  simpa [Nat.sub_eq_zero_iff_le] using! hlt
 
 theorem projVandermonde_comp {v w : Fin n → R} (f : Fin n → Fin n) :
     projVandermonde (v ∘ f) (w ∘ f) = (projVandermonde v w).submatrix f id := rfl
@@ -267,10 +272,11 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
-  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
+  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂_eq_sum]
   simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
+  rw [Polynomial.sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this,
+    ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
@@ -300,7 +306,7 @@ private lemma of_eval_descPochhammer_eq_mul_of_choose {n : ℕ} (v : Fin n → �
     (of fun i j : Fin n => (descPochhammer ℤ j).eval (v i : ℤ)).det =
     (∏ i : Fin n, Nat.factorial i) *
       (of fun i j : Fin n => (Nat.choose (v i) j : ℤ)).det := by
-  convert det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
+  convert! det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _

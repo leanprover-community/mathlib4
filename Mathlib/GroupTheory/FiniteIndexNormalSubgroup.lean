@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-index normal subgroups
 
@@ -48,11 +51,11 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (FiniteIndexNormalSubgroup G) G where
-  coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe U := U.toSubgroup
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive]
-instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G) G
+instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (FiniteIndexNormalSubgroup G) G where
@@ -138,7 +141,7 @@ theorem toSubgroup_comap (f : G →* H) (K : FiniteIndexNormalSubgroup H) :
     ((comap f K : FiniteIndexNormalSubgroup G) : Subgroup G) = (K : Subgroup H).comap f :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem comap_mono (f : G →* H) {K L : FiniteIndexNormalSubgroup H} (h : K ≤ L) :
     comap f K ≤ comap f L :=
   fun _ hx ↦ h hx

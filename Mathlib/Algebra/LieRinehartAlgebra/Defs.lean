@@ -20,7 +20,6 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 * [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
   Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
-
 -/
 
 @[expose] public section
@@ -44,8 +43,6 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
     [Module A L] [LieRingModule L A] [LieRinehartRing A L]
     [CommRing R] [Algebra R A] [LieAlgebra R L] : Prop extends
     IsScalarTower R A L, LieModule R L A
-
-namespace LieRinehartAlgebra
 
 variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
   [CommRing A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
@@ -71,6 +68,8 @@ instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra. -/
 instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
+
+namespace LieRinehartAlgebra
 
 /-- A morphism of Lie-Rinehart algebras, from `(A₁, L₁)` to `(A₂, L₂)`, consists of a pair of maps
 `(σ, F)` where `σ : A₁ → A₂` is a morphism of algebras and `F` is a morphism of Lie algebras, which
@@ -122,7 +121,7 @@ protected def comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (g : L₂ →ₗ⁅σ₂
 
 /-- The identity morphism of a Lie-Rinehart algebra over the identity algebra homomorphism of the
 underlying algebra. -/
-protected def id : L₁ →ₗ⁅AlgHom.id R A₁⁆ L₁ where
+protected def id : L₁ →ₗ⁅.id R A₁⁆ L₁ where
   __ := LieHom.id
   map_smul_apply' _ _ := by simp
   apply_lie' _ _ := by simp
@@ -131,11 +130,10 @@ end Hom
 
 variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A₁ L₁) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`. -/
-def anchor : L₁ →ₗ⁅AlgHom.id R A₁⁆ Derivation R A₁ A₁ where
+def anchor : L₁ →ₗ⁅.id R A₁⁆ Derivation R A₁ A₁ where
   toFun x := .mk' (LieModule.toEnd R L₁ A₁ x) fun a b ↦ by
     simp [mul_comm b]
   map_add' _ _ := by ext; simp

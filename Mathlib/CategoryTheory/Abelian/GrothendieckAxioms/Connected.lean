@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
 /-!
 # Pulling back connected colimits
@@ -23,7 +25,6 @@ only get `hom_ext` for morphisms *from* a colimit, so this is something a bit sp
 The connectedness assumption on `J` is necessary: take `C` to be the category of abelian groups,
 let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ ℤ)`. Then the hypotheses of
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
-
 -/
 
 @[expose] public section
@@ -50,7 +51,6 @@ noncomputable def IsColimit.pullbackOfHasExactColimitsOfShape [HasPullbacks C]
   have := hc.isIso_colimMap_ι
   apply hpull.isIso_snd_of_isIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Detecting equality of morphisms factoring through a connected colimit by pulling back along
 the inclusions of the colimit. -/
 theorem IsColimit.pullback_hom_ext [HasPullbacks C] [HasColimitsOfShape J C]
@@ -60,7 +60,7 @@ theorem IsColimit.pullback_hom_ext [HasPullbacks C] [HasColimitsOfShape J C]
     f ≫ g = f ≫ h := by
   refine (hc.pullbackOfHasExactColimitsOfShape f).hom_ext (fun j => ?_)
   rw [← cancel_epi (pullbackObjIso _ _ _).inv]
-  simpa using hf j
+  simpa using! hf j
 
 /-- Detecting vanishing of a morphism factoring through a connected colimit by pulling back along
 the inclusions of the colimit. -/
@@ -87,7 +87,6 @@ noncomputable def IsLimit.pushoutOfHasExactLimitsOfShape [HasPushouts C]
   have := hc.isIso_limMap_π
   apply hpush.isIso_inr_of_isIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Detecting equality of morphisms factoring through a connected limit by pushing out along
 the projections of the limit. -/
 theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
@@ -97,7 +96,7 @@ theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
     g ≫ f = h ≫ f := by
   refine (hc.pushoutOfHasExactLimitsOfShape f).hom_ext (fun j => ?_)
   rw [← cancel_mono (pushoutObjIso _ _ _).hom]
-  simpa using hf j
+  simpa using! hf j
 
 /-- Detecting vanishing of a morphism factoring through a connected limit by pushing out along the
 projections of the limit. -/

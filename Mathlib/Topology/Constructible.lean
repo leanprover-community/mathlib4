@@ -6,10 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanSubalgebra
-public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
@@ -133,11 +130,11 @@ lemma IsRetrocompact.isOpen_inter (hs : IsRetrocompact s) (ht : IsRetrocompact t
 
 lemma IsRetrocompact_iff_isSpectralMap_subtypeVal :
     IsRetrocompact s ↔ IsSpectralMap (Subtype.val : s → X) := by
-  refine ⟨fun hs ↦ ⟨continuous_subtype_val, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
+  refine ⟨fun hs ↦ ⟨continuous_subtypeVal, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
   · rw [IsEmbedding.subtypeVal.isCompact_iff, image_preimage_eq_inter_range,
-      Subtype.range_coe_subtype, setOf_mem_eq, inter_comm]
+      Subtype.range_coe_subtype, ofPred_mem_eq, inter_comm]
     exact hs htcomp htopen
-  · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtype_val
+  · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtypeVal
 
 @[stacks 005B]
 lemma IsRetrocompact.image_of_isEmbedding (hs : IsRetrocompact s) (hfemb : IsEmbedding f)
@@ -160,7 +157,7 @@ lemma IsRetrocompact.preimage_of_isClosedEmbedding {s : Set Y} (hf : IsClosedEmb
     (hf' : IsCompact (range f)ᶜ) (hs : IsRetrocompact s) : IsRetrocompact (f ⁻¹' s) := by
   rintro U hUcomp hUopen
   have hfUopen : IsOpen (f '' U ∪ (range f)ᶜ) := by
-    simpa [← range_diff_image hf.injective, sdiff_eq, compl_inter, union_comm]
+    simpa [← range_sdiff_image hf.injective, sdiff_eq, compl_inter, union_comm]
       using (hf.isClosedMap _ hUopen.isClosed_compl).isOpen_compl
   have hfUcomp : IsCompact (f '' U ∪ (range f)ᶜ) := (hUcomp.image hf.continuous).union hf'
   simpa [inter_union_distrib_left, inter_left_comm, inter_eq_right.2 (image_subset_range ..),
@@ -269,7 +266,7 @@ lemma IsConstructible.image_of_isOpenEmbedding (hfopen : IsOpenEmbedding f)
       hfopen.isOpenMap _ hUopen
   | union s hs t ht hs' ht' => rw [image_union]; exact hs'.union ht'
   | compl s hs hs' =>
-    rw [← range_diff_image hfopen.injective]
+    rw [← range_sdiff_image hfopen.injective]
     exact (hfcomp.isConstructible hfopen.isOpen_range).sdiff hs'
 
 @[stacks 09YG]
@@ -278,7 +275,7 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
   induction hs using IsConstructible.empty_union_induction with
   | open_retrocompact U hUopen hUcomp =>
     have hfU : IsOpen (f '' U ∪ (range f)ᶜ) := by
-      simpa [← range_diff_image hf.injective, sdiff_eq, compl_inter, union_comm]
+      simpa [← range_sdiff_image hf.injective, sdiff_eq, compl_inter, union_comm]
         using (hf.isClosedMap _ hUopen.isClosed_compl).isOpen_compl
     suffices h : IsRetrocompact (f '' U ∪ (range f)ᶜ) by
       simpa [union_inter_distrib_right, inter_eq_left.2 (image_subset_range ..)]
@@ -289,7 +286,7 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
       hf.continuous).union <| hfcomp hVcomp hVopen
   | union s hs t ht hs' ht' => rw [image_union]; exact hs'.union ht'
   | compl s hs hs' =>
-    rw [← range_diff_image hf.injective]
+    rw [← range_sdiff_image hf.injective]
     exact (hfcomp.isConstructible hf.isClosed_range.isOpen_compl).of_compl.sdiff hs'
 
 lemma isConstructible_preimage_iff_of_isOpenEmbedding {s : Set Y} (hf : IsOpenEmbedding f)
@@ -303,14 +300,18 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     (h₁ : ∀ i, IsRetrocompact (X := X) (U i)) (h₂ : ∀ i, IsQuasiSeparated (α := X) (U i)) :
     QuasiSeparatedSpace X where
   inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
-    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).2) (by simp [hU.iSup_set_eq_univ])
-    convert t.isCompact_biUnion fun i _ ↦ h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁)
-      (h₁ i hc₁ ho₁) Set.inter_subset_left ((U i).2.inter ho₂) (h₁ i hc₂ ho₂)
+    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).is_open')
+      (by simp [hU.iSup_set_eq_univ])
+    convert
+      t.isCompact_biUnion fun i _ ↦
+        h₂ i _ _ Set.inter_subset_left ((U i).is_open'.inter ho₁) (h₁ i hc₁ ho₁)
+          Set.inter_subset_left ((U i).is_open'.inter ho₂) (h₁ i hc₂ ho₂)
     apply subset_antisymm
     · rintro x ⟨hx₁, hx₂⟩
       obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)
       exact Set.mem_iUnion₂.mpr ⟨i, hi, by simpa [*]⟩
-    · aesop (add simp Set.subset_def)
+    · rw [Set.subset_def]
+      simp +contextual
 
 section CompactSpace
 
@@ -353,7 +354,7 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
     have := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis _ basis isCompact_basis
     obtain ⟨s, hs, rfl⟩ := (this _).1 ⟨hU.2.isCompact, hU.1⟩
     obtain ⟨t, ht, rfl⟩ := (this _).1 ⟨hV.2.isCompact, hV.1⟩
-    simp_rw [iUnion_diff]
+    simp_rw [iUnion_sdiff]
     induction s, hs using Set.Finite.induction_on with
     | empty => simpa using sdiff (Classical.arbitrary _) {Classical.arbitrary _}
     | @insert i s hi hs ih =>
@@ -398,9 +399,9 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
   change IsConstructible
     (inclusion inter_subset_left ⁻¹' (U ↓∩ s) ∩ inclusion inter_subset_right ⁻¹' (V ↓∩ t))
   exact .inter (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
@@ -437,9 +438,9 @@ lemma IsLocallyConstructible.union (hs : IsLocallyConstructible s) (ht : IsLocal
     ext; simp
   rw [this]
   exact .union (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
 
 lemma IsLocallyConstructible.iUnion [Finite ι] {f : ι → Set X}
     (hf : ∀ i, IsLocallyConstructible (f i)) : IsLocallyConstructible (⋃ i, f i) :=
@@ -498,18 +499,19 @@ lemma IsLocallyConstructible.inter_of_isOpen_isCompact
 
 variable {ι : Type*} {U : ι → Opens X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsLocallyConstructible.of_isOpenCover
     (hU : IsOpenCover U) (H : ∀ i, IsLocallyConstructible ((U i : Set X) ↓∩ s)) :
     IsLocallyConstructible s := by
   intro x
   have ⟨i, hi⟩ := hU.exists_mem x
   have ⟨V, hVx, hV, hV'⟩ := H i ⟨x, hi⟩
-  refine ⟨_, (U i).2.isOpenEmbedding_subtypeVal.image_mem_nhds.mpr hVx,
-      (U i).2.isOpenMap_subtype_val _ hV, ?_⟩
+  refine ⟨_, (U i).is_open'.isOpenEmbedding_subtypeVal.image_mem_nhds.mpr hVx,
+      (U i).is_open'.isOpenMap_subtypeVal _ hV, ?_⟩
   let e : V ≃ₜ Subtype.val '' V :=
     (Equiv.Set.image _ V Subtype.val_injective).toHomeomorphOfIsInducing
-      ((U i).2.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing
-  convert hV'.preimage_of_isOpenEmbedding e.symm.isOpenEmbedding
+      ((U i).is_open'.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing
+  convert! hV'.preimage_of_isOpenEmbedding e.symm.isOpenEmbedding
   ext ⟨_, x, hx, rfl⟩
   simp [e, Equiv.toHomeomorphOfIsInducing]
 
@@ -520,19 +522,19 @@ lemma IsLocallyConstructible.of_isOpenCover'
     IsLocallyConstructible s :=
   .of_isOpenCover hU fun i ↦ by
     rw [← Subtype.preimage_coe_inter_self]
-    exact (H i).preimage_of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal
+    exact (H i).preimage_of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal
 
 lemma IsLocallyConstructible.iff_of_isOpenCover
     (hU : IsOpenCover U) :
     IsLocallyConstructible s ↔ ∀ i, IsLocallyConstructible ((U i : Set X) ↓∩ s) :=
-  ⟨fun H i ↦ H.preimage_of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal,
+  ⟨fun H i ↦ H.preimage_of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal,
     fun H ↦ .of_isOpenCover hU H⟩
 
 lemma IsLocallyConstructible.iff_isConstructible_of_isOpenCover
     [PrespectralSpace X] [QuasiSeparatedSpace X]
     (hU : IsOpenCover U) (hU' : ∀ i, IsCompact (U i : Set X)) :
     IsLocallyConstructible s ↔ ∀ i, IsConstructible (s ∩ U i) :=
-  ⟨fun H i ↦ H.inter_of_isOpen_isCompact (U i).2 (hU' i),
+  ⟨fun H i ↦ H.inter_of_isOpen_isCompact (U i).is_open' (hU' i),
     fun H ↦ .of_isOpenCover' hU fun i ↦ (H i).isLocallyConstructible⟩
 
 end Topology

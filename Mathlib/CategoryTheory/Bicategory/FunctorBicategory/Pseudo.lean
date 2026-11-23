@@ -19,6 +19,8 @@ We scope this instance to the `CategoryTheory.Pseudofunctor.StrongTrans` namespa
 potential future conflicts with other bicategory instances on `Pseudofunctor B C`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 public section
 
 namespace CategoryTheory.Pseudofunctor
@@ -75,6 +77,7 @@ abbrev rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
 
 variable (B C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A bicategory structure on pseudofunctors, with strong transformations as 1-morphisms.
 
 Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace. -/

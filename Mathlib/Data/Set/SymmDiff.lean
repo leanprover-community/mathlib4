@@ -21,11 +21,13 @@ variable {α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
-@[grind =] theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
-  Iff.rfl
+@[grind =] theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := .rfl
 
-protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s :=
-  rfl
+protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s := rfl
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
   @symmDiff_le_sup (Set α) _ _ _
@@ -35,8 +37,8 @@ theorem symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t :=
   symmDiff_eq_bot
 
 @[simp]
-theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
+theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t := by
+  simp [← ne_empty_iff_nonempty]
 
 theorem inter_symmDiff_distrib_left (s t u : Set α) : s ∩ t ∆ u = (s ∩ t) ∆ (s ∩ u) :=
   inf_symmDiff_distrib_left _ _ _

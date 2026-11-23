@@ -5,15 +5,17 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Images in the category of types
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section
@@ -35,7 +37,7 @@ instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
-  TypeCat.ofHom (Subtype.val)
+  ↾(Subtype.val)
 
 instance : Mono (Image.ι f) :=
   (mono_iff_injective _).2 Subtype.val_injective
@@ -44,12 +46,12 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  TypeCat.ofHom (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
+  ↾fun x => F'.e (Classical.indefiniteDescription _ x.property).val
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
-  rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  rw [F'.fac, (Classical.indefiniteDescription _ x.property).property]
   rfl
 
 end
@@ -58,7 +60,7 @@ end
 def monoFactorisation : MonoFactorisation f where
   I := Image f
   m := Image.ι f
-  e := TypeCat.ofHom (Set.rangeFactorization f)
+  e := ↾(Set.rangeFactorization f)
 
 /-- the factorisation through a mono has the universal property of the image. -/
 noncomputable def isImage : IsImage (monoFactorisation f) where
@@ -74,9 +76,9 @@ instance : HasImages (Type u) where
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (TypeCat.ofHom (fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.2), by
+      (↾fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.property), by
         rw [elementwise_of% st.w]
-        rw [Classical.choose_spec x.property]⟩⟩)) rfl
+        rw [Classical.choose_spec x.property]⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -104,7 +106,6 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       comp_apply, (hF p _).choose_spec]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/

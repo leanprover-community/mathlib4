@@ -27,7 +27,6 @@ There are a handful of definitions in this file, given `X : Profinite`:
   induced by `X.isoAsLimitConeLift`.
 6. `X.asLimit` is a term of type `IsLimit X.asLimitCone`.
 7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
-
 -/
 
 @[expose] public section
@@ -45,7 +44,7 @@ variable (X : Profinite.{u})
 
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
-  obj S := FintypeCat.of S
+  obj S := ↧S
   map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
@@ -58,6 +57,7 @@ def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
     π := { app := fun S => CompHausLike.ofHom (Y := X.diagram.obj S) _
             ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   CompHausLike.isIso_of_bijective _
     (by

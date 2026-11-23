@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Data.Nat.Cast.Order.Ring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
@@ -41,6 +43,5 @@ theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟a ≤ 1 :=
 theorem invOf_lt_one [Invertible a] (h : 1 < a) : ⅟a < 1 :=
   mul_invOf_self a ▸ lt_mul_of_one_lt_left (invOf_pos.2 <| one_pos.trans h) h
 
-theorem pos_invOf_of_invertible_cast [Nontrivial R] (n : ℕ)
-    [Invertible (n : R)] : 0 < ⅟(n : R) :=
+theorem pos_invOf_of_invertible_cast (n : ℕ) [Invertible (n : R)] : 0 < ⅟(n : R) :=
   invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (R := R) n

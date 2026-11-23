@@ -5,11 +5,9 @@ Authors: Tomáš Skřivan
 -/
 module
 
-
 public meta import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.ToBatteries
-public meta import Std.Do
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -123,21 +121,15 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) :
+    (unfoldPred : Meta.Config → ConstantInfo → CoreM Bool) :
     MetaM MaybeFunctionData := do
   withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
-
-  let unfold := fun e : Expr => do
-    if let some n := e.getAppFn'.constName? then
-      pure ((unfoldPred n) || (← isReducible n))
-    else
-      pure false
-
   let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
+    let fx' := (← withCanUnfoldPred unfoldPred <| Mor.whnf (f.beta #[x]).eta) |>
+      headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -186,37 +178,43 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
       return .none
 
 
+/-- The result of `FunctionData.decomposition` and `FunctionData.peeloffArgDecomposition`. -/
+inductive DecompositionResult
+  /-- The function can be decomposed in a non-trivial way. -/
+  | comp (f g : Expr)
+  /-- The function is in uncurried form. -/
+  | uncurried
+  /-- The decomposition failed for some other reason. -/
+  | failed
+
 /-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
 
-Returns none if:
+Returns `DecompositionResult.failed` if:
   - `n=0`
   - `yₙ` contains `x`
   - `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f` -/
-def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
-  unless fData.args.size > 0 do return none
+def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM DecompositionResult := do
+  unless fData.args.size > 0 do return .failed
   withLCtx fData.lctx fData.insts do
     let n := fData.args.size
     let x := fData.mainVar
     let yₙ := fData.args[n-1]!
 
     if yₙ.expr.containsFVar x.fvarId! then
-      return none
+      return .failed
 
     if fData.args.size = 1 &&
        fData.mainVar == fData.fn then
-      return none
+      return .failed
 
     let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
     let gBody' := if let some coe := yₙ.coe then coe.app gBody' else gBody'
     let g' ← mkLambdaFVars #[x] gBody'
     let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
-    return (f',g')
+    return .comp f' g'
 
-
-/-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
-
-Returns none if the decomposition would produce composition with identity function. -/
-def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
+/-- Decompose function `f = (← fData.toExpr)` into composition of two functions. -/
+def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResult := do
 
     let mut lctx := fData.lctx
     let insts := fData.insts
@@ -231,6 +229,10 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     if fn.containsFVar xId then
       return ← fData.peeloffArgDecomposition
 
+    -- constant function can't be decomposed
+    if fData.mainArgs.size == 0 then
+      return .failed
+
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
 
@@ -241,7 +243,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       let yId ← withLCtx lctx insts mkFreshFVarId
       let yType ← withLCtx lctx insts (inferType yVal')
       if yType.containsFVar fData.mainVar.fvarId! then
-        return none
+        return .failed
       lctx := lctx.mkLocalDecl yId (xName.appendAfter (toString argId)) yType
       let yVar := Expr.fvar yId
       yVars := yVars.push yVar
@@ -255,12 +257,14 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       >>=
       mkUncurryFun yVars.size
 
-    -- check if is non-triviality
+    -- check non-triviality
     let f' ← fData.toExpr
-    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
-      return none
+    if ← withReducibleAndInstances <| isDefEq f' f then
+      return .uncurried
+    if ← withReducibleAndInstances <| isDefEq f' g then
+      return .failed
 
-    return (f, g)
+    return .comp f g
 
 
 /-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.

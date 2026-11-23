@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Ring.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PUnit` is a GCD monoid
 
@@ -20,7 +23,7 @@ public section
 namespace PUnit
 
 -- This is too high-powered and should be split off also
-instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
+instance : StrongNormalizedGCDMonoid PUnit where
   gcd _ _ := unit
   lcm _ _ := unit
   normUnit _ := 1
@@ -35,6 +38,8 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   lcm_zero_right := by subsingleton
   normalize_gcd := by subsingleton
   normalize_lcm := by subsingleton
+
+instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit := inferInstance
 
 @[simp]
 theorem gcd_eq {x y : PUnit} : gcd x y = unit :=

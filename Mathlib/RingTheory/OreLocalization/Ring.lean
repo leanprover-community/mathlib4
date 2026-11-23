@@ -9,13 +9,14 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Module and Ring instances of Ore Localizations
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
-
 -/
 
 @[expose] public section
@@ -99,8 +100,8 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
 lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+  congrm $(AddCommMonoid.uniqueNatModule.uniq inst).smul n x
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
@@ -143,7 +144,7 @@ def universalHom : R[S⁻¹] →+* T :=
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
-      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
+      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_ofClass,
         Submonoid.smul_def]
       simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
@@ -166,7 +167,8 @@ theorem universalHom_commutes {r : R} : universalHom f fS hf (numeratorHom r) = 
 
 theorem universalHom_unique (φ : R[S⁻¹] →+* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalHom f fS hf :=
-  RingHom.coe_monoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
+  RingHom.toMonoidHom_injective <|
+    universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
 
 end UMP
 
@@ -185,8 +187,8 @@ instance : Ring R[S⁻¹] where
 lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+  congrm $(AddCommGroup.uniqueIntModule.uniq inst).smul n x
 
 open nonZeroDivisors
 
@@ -197,7 +199,7 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
   rcases h with ⟨u, v, h₁, h₂⟩
   simp only [S.coe_one, mul_one, Submonoid.smul_def, smul_eq_mul] at h₁ h₂
   rw [← h₂, ← sub_eq_zero, ← mul_sub] at h₁
-  exact (sub_eq_zero.mp (hS u.2 _ h₁)).symm
+  exact (sub_eq_zero.mp (hS u.property _ h₁)).symm
 
 end Ring
 

@@ -5,9 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The transfinite iteration of a successor structure
@@ -16,7 +18,6 @@ Given a successor structure `Φ : SuccStruct C`
 (see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -76,6 +77,7 @@ lemma arrowMk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
 
 variable (J)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
   nonempty_isColimit i hi := ⟨by
     let e : (Set.principalSegIio i).monotone.functor ⋙
@@ -83,8 +85,8 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
       NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
         rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
         apply Arrow.mk_injective
-        simpa using Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
-    refine (IsColimit.precomposeInvEquiv e _).1 ?_
+        simpa using! Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
+    refine (IsColimit.precomposeInvEquiv e _).toFun ?_
     refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
     refine Cocone.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
     rintro ⟨k, hk⟩

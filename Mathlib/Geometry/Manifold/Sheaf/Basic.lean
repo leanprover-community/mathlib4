@@ -77,13 +77,13 @@ and let `M`, `M'` be charted spaces modelled on the model spaces of those groupo
 a sheaf of types on `M` which, to each open set `U` in `M`, associates the type of bundled
 functions from `U` to `M'` satisfying the lift of `P`. -/
 def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) :
-    TopCat.Sheaf (Type u) (TopCat.of M) :=
+    TopCat.Sheaf (Type u) ↧M :=
   TopCat.subsheafToTypes (hG.localPredicate M M')
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').obj.obj U) fun _ => ↑(unop U) → M' where
-  coe a := a.1
+  coe a := a.val
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').obj.obj U) : ChartedSpace.LiftProp P f :=
-  f.2
+  f.property

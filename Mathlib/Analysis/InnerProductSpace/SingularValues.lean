@@ -6,7 +6,8 @@ Authors: Niels Voss, Arnav Mehta
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.LinearAlgebra.Eigenspace.Zero
+
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Singular values for finite-dimensional linear maps
@@ -101,8 +102,9 @@ theorem singularValues_nonneg (i : ℕ) : 0 ≤ T.singularValues i := by
   rw [singularValues, Finsupp.embDomain_apply, Finsupp.ofSupportFinite_coe]
   split_ifs <;> positivity
 
-theorem singularValues_pos_iff_ne_zero (i : ℕ) : 0 < T.singularValues i ↔ T.singularValues i ≠ 0 :=
-  by grind [T.singularValues_nonneg i]
+theorem singularValues_pos_iff_ne_zero (i : ℕ) :
+    0 < T.singularValues i ↔ T.singularValues i ≠ 0 := by
+  grind [T.singularValues_nonneg i]
 
 /--
 Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
@@ -121,7 +123,7 @@ theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi :
   T.singularValues_fin hn ⟨i, hi⟩
 
 theorem singularValues_of_finrank_le {i : ℕ} (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
-  apply Finsupp.embDomain_notin_range
+  apply Finsupp.embDomain_of_notMem_range
   simp [hi]
 
 theorem sq_singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n) :
@@ -153,7 +155,7 @@ this.
 -/
 theorem injective_iff_forall_lt_finrank_singularValues_pos :
     Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
-  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 4 0
+  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 5 1
   rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← not_iff_not, this.not_left]
   push Not
   constructor

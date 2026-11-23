@@ -6,15 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
 -/
 
 @[expose] public section
@@ -493,7 +494,6 @@ def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy
     Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
   (h.compRight ψ₁).trans (h'.compLeft φ₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
 between morphisms in `ShortComplex C`. -/
 @[simps]
@@ -508,7 +508,6 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
   comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
@@ -541,9 +540,9 @@ variable {φ₁ φ₂}
 lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
-  · dsimp; rw [h.comm₁]; abel
-  · dsimp; rw [h.comm₂]; abel
-  · dsimp; rw [h.comm₃]; abel
+  · simp [h.comm₁]; abel
+  · simp [h.comm₂]; abel
+  · simp [h.comm₃]; abel
 
 variable (S₁ S₂)
 

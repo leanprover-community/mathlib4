@@ -5,10 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Units.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Group.Units.Opposite
 public import Mathlib.Algebra.Module.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multiplication on the left/right as additive automorphisms
@@ -29,7 +32,7 @@ variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
 @[simps! +simpRhs]
-def mulLeft : Rˣ →* AddAut R :=
+def mulLeft : Rˣ →* Multiplicative (AddAut R) :=
   DistribMulAction.toAddAut _ _
 
 /-- Right multiplication by a unit of a semiring as an additive automorphism. -/

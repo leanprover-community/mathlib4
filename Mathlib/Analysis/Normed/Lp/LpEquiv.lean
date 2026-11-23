@@ -35,7 +35,6 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 * Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
-
 -/
 
 @[expose] public section
@@ -52,13 +51,6 @@ variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : 
 section Finite
 
 variable [Finite α]
-
-/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
-theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
-  rcases p.trichotomy with (rfl | rfl | _h)
-  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
-  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
-  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
 
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
@@ -110,6 +102,11 @@ theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f 
 
 theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
+  rfl
+
+@[simp]
+theorem lpPiLpₗᵢ_symm_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) (a : E i) :
+    (lpPiLpₗᵢ E 𝕜).symm (PiLp.single p i a) = lp.single p i a :=
   rfl
 
 end Equivₗᵢ
@@ -180,15 +177,16 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF with commutes' := fun _k ↦ rfl }
+  { RingEquiv.lpBCF with map_smul' _ _ := rfl }
 
 
 variable {α 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α 𝕜 f : α → A) = f :=
+theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) :
+    (AlgEquiv.lpBCF (A := A) α 𝕜 f : α → A) = f :=
   rfl
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜).symm f : α → A) = f :=
+theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF (A := A) α 𝕜).symm f : α → A) = f :=
   rfl
 
 end RingAlgebra

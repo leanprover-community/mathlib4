@@ -6,14 +6,17 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.Logic.Small.Basic
+
+import Mathlib.Logic.Small.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Small classes of morphisms
 
 A class of morphisms `W : MorphismProperty C` is `w`-small
 if the corresponding set in `Set (Arrow C)` is.
-
 -/
 
 public section
@@ -49,7 +52,7 @@ lemma isSmall_iff_eq_ofHoms :
       W = ofHoms f := by
   constructor
   · intro
-    refine ⟨Shrink.{w} W.toSet, _, _, fun i ↦ ((equivShrink _).symm i).1.hom, ?_⟩
+    refine ⟨Shrink.{w} W.toSet, _, _, fun i ↦ ((equivShrink _).symm i).val.hom, ?_⟩
     ext A B f
     rw [ofHoms_iff]
     constructor
@@ -71,6 +74,12 @@ instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
     simp only [Set.mem_iUnion] at hf
     obtain ⟨i, hf⟩ := hf
     exact ⟨⟨i, ⟨_, hf⟩⟩, rfl⟩
+
+instance {α : Type t} [Small.{w} α] (W : α → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
+    IsSmall.{w} (⨆ i, W i) := by
+  choose α A B f hf using fun i ↦ (isSmall_iff_eq_ofHoms.{w} (W i)).1 inferInstance
+  simp only [hf, iSup_ofHoms]
+  infer_instance
 
 end MorphismProperty
 

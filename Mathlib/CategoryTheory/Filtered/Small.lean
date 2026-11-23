@@ -5,9 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.Tactic.DepRewrite
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
@@ -43,10 +41,10 @@ inductive filteredClosure : ObjectProperty C
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, ObjectProperty.homMk (leftToMax _ _),
-      ObjectProperty.homMk (rightToMax _ _), trivial⟩
+    ⟨⟨max j.obj j'.obj, filteredClosure.max j.property j'.property⟩,
+      ObjectProperty.homMk (leftToMax _ _), ObjectProperty.homMk (rightToMax _ _), trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.2 j'.2 f.hom f'.hom⟩,
+    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.property j'.property f.hom f'.hom⟩,
       ObjectProperty.homMk (coeqHom f.hom f'.hom),
       ObjectProperty.hom_ext _ (coeq_condition _ _)⟩
 
@@ -100,6 +98,7 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 
 end FilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
@@ -108,12 +107,10 @@ theorem small_fullSubcategory_filteredClosure :
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · #adaptation_note
-        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
-      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization,
+          FilteredClosureSmall.bundledAbstractFilteredClosure]
         rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
@@ -210,10 +207,10 @@ inductive cofilteredClosure : ObjectProperty C
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where
   cone_objs j j' :=
-    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩,
+    ⟨⟨min j.obj j'.obj, cofilteredClosure.min j.property j'.property⟩,
     ObjectProperty.homMk (minToLeft _ _), ObjectProperty.homMk (minToRight _ _), trivial⟩
   cone_maps {j j'} f f' :=
-    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.2 j'.2 f.hom f'.hom⟩,
+    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.property j'.property f.hom f'.hom⟩,
     ObjectProperty.homMk (eqHom f.hom f'.hom), ObjectProperty.hom_ext _ (eq_condition _ _)⟩
 
 namespace CofilteredClosureSmall
@@ -252,6 +249,7 @@ private noncomputable def abstractCofilteredClosureRealization : AbstractCofilte
 
 end CofilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (cofilteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists
@@ -261,12 +259,10 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · #adaptation_note
-      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
-    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization,
+        CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩

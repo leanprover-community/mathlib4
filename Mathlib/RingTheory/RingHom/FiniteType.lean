@@ -5,13 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
-public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
+import Mathlib.RingTheory.Localization.InvSubmonoid
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # The meta properties of finite-type ring homomorphisms.
 
 ## Main results
@@ -23,7 +26,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
 * `RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
-
 -/
 
 public section
@@ -46,7 +48,7 @@ theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType := by
   refine finiteType_stableUnderComposition.respectsIso (fun {R S} _ _ e ↦ ?_)
   algebraize [e.toRingHom]
   apply Algebra.FiniteType.equiv (inferInstanceAs <| Algebra.FiniteType R R) <|
-    .ofRingEquiv (congrFun rfl)
+    .ofCommutes (e := e) (congrFun rfl)
 
 theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
   apply IsStableUnderBaseChange.mk
@@ -81,7 +83,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   algebraize [f]
   replace H : ∀ r ∈ s, Algebra.FiniteType R (Localization.Away (r : S)) := by
-    intro r hr; simp_rw [RingHom.FiniteType] at H; convert H ⟨r, hr⟩; ext
+    intro r hr; simp_rw [RingHom.FiniteType] at H; convert! H ⟨r, hr⟩; ext
     simp_rw [Algebra.smul_def]; rfl
   exact Algebra.FiniteType.of_span_eq_top_target s hs H
 

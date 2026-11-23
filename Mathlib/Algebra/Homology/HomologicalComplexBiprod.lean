@@ -5,16 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.Additive
 
-/-! Binary biproducts of homological complexes
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
+
+/-! # Binary biproducts of homological complexes
 
 In this file, it is shown that if two homological complex `K` and `L` in
 a preadditive category are such that for all `i : ι`, the binary biproduct
 `K.X i ⊞ L.X i` exists, then `K ⊞ L` exists, and there is an isomorphism
 `biprodXIso K L i : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`.
-
 -/
 
 @[expose] public section

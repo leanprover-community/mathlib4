@@ -6,15 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.Limits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Generators in the category of sheaves
 
 In this file, we show that if `J : GrothendieckTopology C` and `A` is a preadditive
 category which has a separator (and suitable coproducts), then `Sheaf J A` has a separator.
-
 -/
 
 @[expose] public section
@@ -63,7 +64,7 @@ variable (A) in
 instance hasSeparator [HasSeparator A] [Preadditive A] [HasCoproducts.{u} A] :
     HasSeparator (Sheaf J A) where
   hasSeparator := ⟨_, isSeparator J (S := fun (_ : Unit) ↦ separator A)
-      (by simpa using isSeparator_separator A)⟩
+      (by simpa using! isSeparator_separator A)⟩
 
 end Sheaf
 

@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Adjoin.FG
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁
 

@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Topology.Instances.Int
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on the natural numbers

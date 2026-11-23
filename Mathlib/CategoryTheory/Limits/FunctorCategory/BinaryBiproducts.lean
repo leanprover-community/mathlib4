@@ -5,8 +5,11 @@ Authors: Leopold Mayer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Biproducts in functor categories
@@ -37,6 +40,8 @@ def pointwiseBinaryBicone : BinaryBicone F G where
   inl := { app X := biprod.inl }
   inr := { app X := biprod.inr }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
 def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where

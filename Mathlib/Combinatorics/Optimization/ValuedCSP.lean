@@ -5,13 +5,9 @@ Authors: Martin Dvorak
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
-
 # General-Valued Constraint Satisfaction Problems
 
 General-Valued CSP is a very broad class of problems in discrete optimization.
@@ -32,7 +28,6 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
-
 -/
 
 @[expose] public section

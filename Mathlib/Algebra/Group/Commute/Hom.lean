@@ -6,8 +6,12 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
+
+import Mathlib.Algebra.Group.Commute.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multiplicative homomorphisms respect semiconjugation and commutation.

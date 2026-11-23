@@ -5,12 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.Analysis.Convex.Segment
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
@@ -39,13 +36,11 @@ Concretely, the empty set is star-convex at every point.
 
 ## TODO
 
-Balanced sets are star-convex.
-
 The closure of a star-convex set is star-convex.
 
-Star-convex sets are contractible.
-
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
+
+Replace with `Convexity.IsStarConvexSet`.
 -/
 
 @[expose] public section
@@ -138,7 +133,7 @@ theorem starConvex_iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → 
 theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact starConvex_iUnion fun s => hS _ s.2
+  exact starConvex_iUnion fun s => hS _ s.property
 
 theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x s)
     (ht : StarConvex 𝕜 y t) : StarConvex 𝕜 (x, y) (s ×ˢ t) := fun _ hy _ _ ha hb hab =>

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cumulative distribution function of a real probability measure
 
@@ -51,6 +54,7 @@ namespace ProbabilityTheory
 /-- Cumulative distribution function of a real measure. The definition currently makes sense only
 for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)` (see
 `ProbabilityTheory.cdf_eq_real`). -/
+@[wikidata Q386228]
 noncomputable
 def cdf (μ : Measure ℝ) : StieltjesFunction ℝ :=
   condCDF ((dirac Unit.unit).prod μ) Unit.unit
@@ -75,7 +79,7 @@ lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCDF_atT
 
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
   have h := lintegral_condCDF ((dirac Unit.unit).prod μ) x
-  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using h
+  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using! h
 
 lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic x) := by
   rw [measureReal_def, ← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
@@ -102,10 +106,9 @@ lemma cdf_measure_stieltjesFunction (f : StieltjesFunction ℝ) (hf0 : Tendsto f
 
 open unitInterval in
 lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
-    cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
-  haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
+    cdf (μ.map Subtype.val) x.val = μ.real (Icc 0 x) := by
   rw [ProbabilityTheory.cdf_eq_real,
-    map_measureReal_apply measurable_subtype_coe measurableSet_Iic, subtype_Iic_eq_Icc]
+    map_measureReal_apply measurable_subtypeVal measurableSet_Iic, subtype_Iic_eq_Icc]
 
 end ProbabilityTheory
 

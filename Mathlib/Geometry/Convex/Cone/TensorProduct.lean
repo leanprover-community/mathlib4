@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.TensorProduct.Defs
 
 /-!
 # Tensor products of cones
@@ -41,7 +40,6 @@ We define the minimal and maximal tensor products of pointed cones:
 ## References
 
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
-
 -/
 
 @[expose] public section
@@ -64,19 +62,19 @@ noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone 
 of the dual cones. -/
 noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
-  .dual (dualDistrib R G H) (minTensorProduct (.dual (dualPairing R G).flip C₁)
-    (.dual (dualPairing R H).flip C₂))
+  .dual (dualDistrib R G H) (minTensorProduct (.dual (Dual.eval R G) C₁)
+    (.dual (Dual.eval R H) C₂))
 
 /-- Characterization of the maximal tensor product: `z` lies in `maxTensorProduct C₁ C₂` iff
 all pairings with elementary dual tensors are nonnegative. -/
 @[simp]
 theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
     z ∈ maxTensorProduct (R := R) C₁ C₂ ↔
-      ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
-      ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
+      ∀ φ ∈ PointedCone.dual (Dual.eval R G) C₁,
+      ∀ ψ ∈ PointedCone.dual (Dual.eval R H) C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
   simp only [maxTensorProduct, minTensorProduct, dual_hull, mem_dual, Set.forall_mem_image2,
-    SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
+    SetLike.mem_coe, mem_dual]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
@@ -101,8 +99,8 @@ theorem tmul_subset_minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCon
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
-    minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
-  exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
+    minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ :=
+  Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 variable {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H} {z : G ⊗[R] H}
 
@@ -162,6 +160,6 @@ theorem maxTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
       ((dualDistrib R G H) ((φ.comp f) ⊗ₜ[R] (ψ.comp g))) :=
     TensorProduct.ext' fun x y ↦ by simp [map_tmul]
   convert hw (φ.comp f) (fun x hx ↦ hφ ⟨x, hx, rfl⟩) (ψ.comp g) (fun y hy ↦ hψ ⟨y, hy, rfl⟩)
-  exact DFunLike.congr_fun h_eq w
+  congrm $h_eq w
 
 end PointedCone

@@ -22,7 +22,9 @@ continuity, continuous function
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {X Y Z : Type*}
 
@@ -32,7 +34,7 @@ open TopologicalSpace
 -- when topologies are not those provided by instances.
 theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
+  ⟨fun hf => hf.isOpen_preimage, fun h => ⟨h⟩⟩
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
@@ -199,7 +201,7 @@ theorem Continuous.closure_preimage_subset (hf : Continuous f) (t : Set Y) :
 
 theorem Continuous.frontier_preimage_subset (hf : Continuous f) (t : Set Y) :
     frontier (f ⁻¹' t) ⊆ f ⁻¹' frontier t :=
-  diff_subset_diff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
+  sdiff_subset_sdiff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
 protected theorem Set.MapsTo.closure {t : Set Y} (h : MapsTo f s t)
@@ -221,6 +223,10 @@ theorem closure_image_closure (h : Continuous f) :
 theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
+
+lemma nonempty_preimage_closure_image (h : Continuous f) (t : Set X) (ht : t.Nonempty) :
+    (f ⁻¹' (closure (f '' t))).Nonempty :=
+  (Nonempty.mono (closure_subset_preimage_closure_image h (s := t)) (closure_nonempty_iff.mpr ht))
 
 theorem continuous_iff_image_closure_subset_closure_image :
     Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) where
@@ -252,7 +258,7 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 
 section DenseRange
 
-variable {α ι : Type*} (f : α → X) (g : X → Y)
+variable {α : Type*} (f : α → X) (g : X → Y)
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/
@@ -269,11 +275,15 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 
 @[simp]
-lemma denseRange_subtype_val {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
+lemma denseRange_subtypeVal {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
   simp [DenseRange]
 
-theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) :=
-  denseRange_subtype_val.2 h
+theorem Dense.denseRange_subtypeVal (h : Dense s) : DenseRange ((↑) : s → X) :=
+  _root_.denseRange_subtypeVal.2 h
+
+@[deprecated (since := "2026-11-10")] alias denseRange_subtype_val := denseRange_subtypeVal
+@[deprecated (since := "2026-11-10")]
+alias Dense.denseRange_val := Dense.denseRange_subtypeVal
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)
     (hs : Dense s) : range f ⊆ closure (f '' s) := by
@@ -288,7 +298,7 @@ theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuo
 /-- If `f` has dense range and `s` is an open set in the codomain of `f`, then the image of the
 preimage of `s` under `f` is dense in `s`. -/
 theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) (hs : IsOpen s) :
-    s ⊆ closure (f '' (f ⁻¹' s)) := by
+    s ⊆ closure (f '' f ⁻¹' s) := by
   rw [image_preimage_eq_inter_range]
   exact hf.open_subset_closure_inter hs
 

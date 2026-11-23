@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher differentiability in one dimension
 
@@ -19,7 +22,7 @@ to use. In this file, we reformulate some higher smoothness results in terms of 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open scoped ContDiff
 
@@ -120,7 +123,7 @@ theorem ContDiff.differentiable_deriv_two (h : ContDiff 𝕜 2 f) : Differentiab
 @[fun_prop]
 protected lemma ContDiffAt.derivWithin {x : 𝕜} (H : ContDiffAt 𝕜 n f x) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (deriv f) x := by
-  simpa using ContDiffWithinAt.derivWithin (s := .univ) H.contDiffWithinAt (by simp) hmn
+  simpa using! ContDiffWithinAt.derivWithin (s := .univ) H.contDiffWithinAt (by simp) hmn
 
 @[fun_prop]
 theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n (deriv f) := by

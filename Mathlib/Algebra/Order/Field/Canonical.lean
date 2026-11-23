@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonically ordered semifields
 -/
@@ -22,8 +25,8 @@ variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α where
   bot := 0
-  bot_le := zero_le
-  zero_le := zero_le
+  bot_le _ := zero_le
+  isBot_zero _ := zero_le
   mul_lt_mul_of_pos_left _a ha _b _c hbc :=
     have : PosMulStrictMono α := PosMulReflectLT.toPosMulStrictMono _
     mul_lt_mul_of_pos_left hbc ha

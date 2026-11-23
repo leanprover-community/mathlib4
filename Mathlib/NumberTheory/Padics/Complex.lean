@@ -92,7 +92,7 @@ instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
 theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 
 /-- The coercion of the valuation of `x : PadicAlgCl p` to `ℝ` agrees with its norm. -/
-@[simp] theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
+theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
 
 /-- The valuation of `p : PadicAlgCl p` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
@@ -110,7 +110,7 @@ instance : RankOne (PadicAlgCl.valued p).v where
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
-    have hp : Nat.Prime p := hp.1
+    have hp : Nat.Prime p := hp.out
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
@@ -172,7 +172,7 @@ instance : RankOne (PadicComplex.valued p).v where
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
-    have hp : Nat.Prime p := hp.1
+    have hp : Nat.Prime p := hp.out
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
@@ -206,13 +206,13 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
 theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
   apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
   · exact uniformContinuous_norm
-  · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
-    letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
+  · let S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
+    let := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
     simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
-    erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
-    exact (PadicAlgCl.valuation_coe p x).symm
+    rw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends,
+      ← PadicAlgCl.valuation_coe]
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
 theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
@@ -220,14 +220,18 @@ theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
   exact norm_eq_norm' p
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `PadicAlgCl p`. -/
-theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
+theorem nnNorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
   ext
   exact norm_extends p x
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_extends := nnNorm_extends
+
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends the norm on `ℚ_[p]`. -/
-theorem nnnorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
+theorem nnNorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
   ext
   simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_extends' := nnNorm_extends'
 
 /-- The norm on `ℂ_[p]` is nontrivial. -/
 instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where

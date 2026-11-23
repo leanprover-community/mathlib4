@@ -1,7 +1,9 @@
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Geometry.Manifold.Notation
+module
 
-/-! ## Tests for the differential geometry elaborators for spheres in metric spaces
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Geometry.Manifold.Notation
+
+/-! # Tests for the differential geometry elaborators for spheres in metric spaces
 
 **Note.**
 This file also acts as a test for the delaborators corresponding to the custom elaborators,
@@ -204,6 +206,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Metric.sphere 0 1)` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Metric.sphere 0 1` is not a closed real interval
@@ -230,10 +235,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
       Found no fact `finrank ℝ E'' = n + 1` in the local context
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField ↑(Metric.sphere 0 1)
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `↑(Metric.sphere 0 1)` among local instances.

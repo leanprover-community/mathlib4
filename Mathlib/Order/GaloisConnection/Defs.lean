@@ -6,7 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -27,12 +30,11 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 assert_not_exists CompleteLattice RelIso
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
-  {b₁ b₂ : β}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
@@ -43,6 +45,8 @@ def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α)
 
 to_dual_insert_cast GaloisConnection := by
   rw [forall_comm]; simp only [Iff.comm]
+
+to_dual_name_hint U L
 
 namespace GaloisConnection
 
@@ -74,7 +78,7 @@ theorem l_le {a : α} {b : β} : a ≤ u b → l a ≤ b :=
 
 @[to_dual l_u_le]
 theorem le_u_l (a) : a ≤ u (l a) :=
-  gc.le_u <| le_rfl
+  gc.le_u le_rfl
 
 @[to_dual]
 theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
@@ -232,7 +236,7 @@ def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l
     GaloisInsertion l u where
   choice x _ := l x
   gc := GaloisConnection.monotone_intro hu hl h_u_l fun b => le_of_eq (h_l_u b)
-  le_l_u b := le_of_eq <| (h_l_u b).symm
+  le_l_u b := le_of_eq (h_l_u b).symm
   choice_eq _ _ := rfl
 
 /-- Make a `GaloisInsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
@@ -246,12 +250,12 @@ def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder �
     choice_eq := fun _ _ => rfl }
 
 /-- Lift the bottom along a Galois connection -/
-@[to_dual (attr := implicit_reducible) /-- Lift the top along a Galois connection -/]
+@[to_dual (attr := instance_reducible) /-- Lift the top along a Galois connection -/]
 def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [PartialOrder β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where
   bot := l ⊥
-  bot_le _ := gc.l_le <| bot_le
+  bot_le _ := gc.l_le bot_le
 
 namespace GaloisInsertion
 
@@ -265,9 +269,6 @@ theorem l_u_eq [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) (b : �
 theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) :
     LeftInverse l u :=
   gi.l_u_eq
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.GaloisCoinsertion.u_l_leftInverse := GaloisCoinsertion.leftInverse_u_l
 
 @[to_dual]
 theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
@@ -298,7 +299,7 @@ end GaloisInsertion
 `α` and `β`. -/]
 def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β → α} :
     GaloisCoinsertion l u → GaloisInsertion (toDual ∘ u ∘ ofDual) (toDual ∘ l ∘ ofDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨x.choice, x.gc.dual, x.u_l_le, x.choice_eq⟩
 
 /-- Make a `GaloisInsertion` between `α` and `β` from a `GaloisCoinsertion` between `αᵒᵈ` and
 `βᵒᵈ`. -/
@@ -306,4 +307,4 @@ def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β �
 and `βᵒᵈ`. -/]
 def GaloisCoinsertion.ofDual [Preorder α] [Preorder β] {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} :
     GaloisCoinsertion l u → GaloisInsertion (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨x.choice, x.gc.dual, x.u_l_le, x.choice_eq⟩

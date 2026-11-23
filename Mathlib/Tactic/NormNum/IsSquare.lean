@@ -25,7 +25,7 @@ open Qq
 
 theorem isSquare_nat_of_isNat (a n : ℕ) (h : IsNat a n) (m : ℕ) (hm : m * m = n) :
     IsSquare a :=
-  ⟨m, h.1.trans hm.symm⟩
+  ⟨m, h.out.trans hm.symm⟩
 
 /-- If `m ^ 2 < n < (m + 1) ^ 2`, then `n` is not a square.
 We write this condition as `k < n ≤ k + 2 * m`, where `k = m * m`. -/
@@ -40,12 +40,12 @@ theorem not_isSquare_nat_of_isNat (a n : ℕ) (h : IsNat a n) (m k : ℕ) (hm : 
   grind
 
 theorem iff_isSquare_int_of_isNat (a : ℤ) (n : ℕ) (h : IsNat a n) : IsSquare n ↔ IsSquare a := by
-  simp [h.1, Int.isSquare_natCast_iff]
+  simp [h.out, Int.isSquare_natCast_iff]
 
 theorem iff_isSquare_of_isInt_int (a : ℤ) (n : ℕ) (h : IsInt a (.negOfNat n)) :
     n = 0 ↔ IsSquare a := by
-  refine ⟨fun h' ↦ by simp [h.1, h'], fun ⟨b, hb⟩ ↦ ?_⟩
-  rw [h.1, Int.cast_negOfNat] at hb
+  refine ⟨fun h' ↦ by simp [h.out, h'], fun ⟨b, hb⟩ ↦ ?_⟩
+  rw [h.out, Int.cast_negOfNat] at hb
   rcases eq_or_ne b 0 with rfl | hb₀
   · simp_all
   · refine absurd hb (ne_of_lt ?_)
@@ -53,12 +53,12 @@ theorem iff_isSquare_of_isInt_int (a : ℤ) (n : ℕ) (h : IsInt a (.negOfNat n)
 
 theorem iff_isSquare_of_isNat_rat (a : ℚ) (n : ℕ) (h : IsNat a n) :
     IsSquare n ↔ IsSquare a := by
-  simp [h.1]
+  simp [h.out]
 
 theorem iff_isSquare_of_isInt_rat (a : ℚ) (n : ℕ) (h : IsInt a (.negOfNat n)) :
     n = 0 ↔ IsSquare a := by
-  refine ⟨fun h' ↦ by simp [h.1, h'], fun ⟨b, hb⟩ ↦ ?_⟩
-  rw [h.1, Int.cast_negOfNat] at hb
+  refine ⟨fun h' ↦ by simp [h.out, h'], fun ⟨b, hb⟩ ↦ ?_⟩
+  rw [h.out, Int.cast_negOfNat] at hb
   rcases eq_or_ne b 0 with rfl | hb₀
   · simp_all
   · refine absurd hb (ne_of_lt ?_)
@@ -166,12 +166,12 @@ def evalIsSquareRat : NormNumExt where eval {u αP} e := do
           assertInstancesCommute
           return .isTrue q(isSquare_of_isNNRat_rat $a $n $d $pn $pd $pa)
         | .mk false pd =>
-          let ⟨e, he⟩ := Tactic.NormNum.proveNatGCD n d
+          let ⟨e, he⟩ := proveNatGCD n d
           have : $e =Q 1 := ⟨⟩
           assertInstancesCommute
           return .isFalse q(not_isSquare_of_isNNRat_rat_of_den $a $n $d $pd $he $pa)
       | .mk false pn =>
-        let ⟨e, he⟩ := Tactic.NormNum.proveNatGCD n d
+        let ⟨e, he⟩ := proveNatGCD n d
         have : $e =Q 1 := ⟨⟩
         assertInstancesCommute
         return .isFalse q(not_isSquare_of_isNNRat_rat_of_num $a $n $d $pn $he $pa)

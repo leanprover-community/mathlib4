@@ -5,12 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # The Orthogonal-reflection construction
@@ -58,7 +60,6 @@ errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section
@@ -71,13 +72,11 @@ open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
-    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+lemma MorphismProperty.isClosedUnderCardinalFilteredColimits_isLocal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.IsClosedUnderColimitsOfShape J where
-  colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    W.isLocal.IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := ⟨fun Z ⟨p⟩ X Y f hf ↦ by
     obtain ⟨_, _⟩ := hW f hf
     refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
     · obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₁
@@ -90,16 +89,24 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
       rw [← p.w u, ← p.w v, reassoc_of% ((p.prop_diag_obj j₃ _ hf).1 huv)]
     · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
-      exact ⟨g ≫ p.ι.app j, by simp⟩
+      exact ⟨g ≫ p.ι.app j, by simp⟩⟩
+
+open ObjectProperty in
+@[deprecated isClosedUnderCardinalFilteredColimits_isLocal +typeChanged (since := "2026-09-20")]
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.IsClosedUnderColimitsOfShape J := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  exact IsClosedUnderCardinalFilteredColimits.isCardinalClosedUnderColimitsOfShape W.isLocal κ J
 
 lemma MorphismProperty.isCardinalAccessible_ι_isLocal
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasCardinalFilteredColimits C κ]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.ι.IsCardinalAccessible κ where
-  preservesColimitOfShape J _ _ := by
-    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
-    infer_instance
+    W.isLocal.ι.IsCardinalAccessible κ := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  infer_instance
 
 namespace OrthogonalReflection
 
@@ -108,7 +115,7 @@ variable (Z : C)
 /-- Given `W : MorphismProperty C` and `Z : C`, this is the index type
 parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
-def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
+def D₁ : Type _ := Σ (f : W.toSet), f.val.left ⟶ Z
 
 instance [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C] :
     Small.{w} (D₁ (W := W) (Z := Z)) := by
@@ -124,12 +131,12 @@ lemma D₁.hasCoproductsOfShape [MorphismProperty.IsSmall.{w} W]
 variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `X`. -/
-def D₁.obj₁ (d : D₁ W Z) : C := d.1.1.left
+def D₁.obj₁ (d : D₁ W Z) : C := d.1.val.left
 
 variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `Y`. -/
-def D₁.obj₂ (d : D₁ W Z) : C := d.1.1.right
+def D₁.obj₂ (d : D₁ W Z) : C := d.1.val.right
 
 section
 
@@ -151,14 +158,14 @@ variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
-  Sigma.ι_desc _ _
+  Sigma.ι_comp_desc _ _
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
 /-- The coproduct of all the morphisms `f` indexed by all diagrams
 consisting of a morphism `f : X ⟶ Y` satisfying `W` and of a morphism `d : X ⟶ Z`. -/
 noncomputable abbrev D₁.t : ∐ (obj₁ (W := W) (Z := Z)) ⟶ ∐ (obj₂ (W := W) (Z := Z)) :=
-  Limits.Sigma.map (fun d ↦ d.1.1.hom)
+  Limits.Sigma.map (fun d ↦ d.1.val.hom)
 
 variable {W Z} in
 /-- The inclusion of a summand in `∐ obj₂`. -/
@@ -170,7 +177,7 @@ set_option backward.isDefEq.respectTransparency false in -- Needed below
 variable {W Z} in
 @[reassoc]
 lemma D₁.ι_comp_t (d : D₁ W Z) :
-    Sigma.ι _ d ≫ D₁.t W Z = d.1.1.hom ≫ Sigma.ι obj₂ d := by
+    Sigma.ι _ d ≫ D₁.t W Z = d.1.val.hom ≫ Sigma.ι obj₂ d := by
   apply ι_colimMap
 
 variable {W Z} in
@@ -201,7 +208,8 @@ noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 a map `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 def D₂ : Type _ :=
   Σ (f : W.toSet),
-    { pq : (f.1.right ⟶ step W Z) × (f.1.right ⟶ step W Z) // f.1.hom ≫ pq.1 = f.1.hom ≫ pq.2 }
+    { pq : (f.val.right ⟶ step W Z) × (f.val.right ⟶ step W Z) //
+      f.val.hom ≫ pq.1 = f.val.hom ≫ pq.2 }
 
 /-- The shape of the multicoequalizer of all pairs of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
@@ -220,6 +228,7 @@ instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
   dsimp [D₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
 
 attribute [local instance] essentiallySmall_of_small_of_locallySmall in
@@ -233,15 +242,15 @@ end
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
 noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C where
-  left d := d.1.1.right
+  left d := d.1.val.right
   right _ := step W Z
-  fst d := d.2.1.1
-  snd d := d.2.1.2
+  fst d := d.2.val.1
+  snd d := d.2.val.2
 
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
- `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+`g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
 
 /-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with
@@ -274,6 +283,7 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_isLocal_toSucc :
     W.isLocal.isLocal (toSucc W Z) := by
@@ -282,16 +292,14 @@ lemma isLocal_isLocal_toSucc :
     simp only [Category.assoc] at h
     dsimp
     ext d
-    · apply (hT d.1.1.hom d.1.2).1
+    · apply (hT d.1.val.hom d.1.property).1
       simp only [← D₁.ι_comp_t_assoc, pushout.condition_assoc, h]
     · exact h
-  · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.1.hom d.1.2).2 (d.2 ≫ g)
+  · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.val.hom d.1.property).2 (d.2 ≫ g)
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
-      (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
+      (fun d ↦ (hT d.1.val.hom d.1.property).1 (by simp [reassoc_of% d.2.property])), by simp⟩
 
-@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
-  isLocal_isLocal_toSucc
-
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
@@ -312,7 +320,7 @@ lemma isIso_toSucc_iff :
     ext d
     · simp only [Category.assoc] at hf
       simp only [Category.comp_id, ← Category.assoc]
-      refine D₂.condition _ d.1.2 ?_
+      refine D₂.condition _ d.1.property ?_
       rw [Category.assoc, Category.assoc, Category.assoc,
         ← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
         ← D₁.ι_comp_t_assoc, pushout.condition]
@@ -404,7 +412,6 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ
@@ -432,7 +439,6 @@ lemma isLocal_reflectionObj :
     obtain ⟨g', hg'⟩ := iteration_map_succ_surjectivity f hf g
     exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
 as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
@@ -440,7 +446,7 @@ noncomputable def corepresentableBy :
     ⟨_, isLocal_reflectionObj Z hW⟩ where
   homEquiv {A} :=
     (ObjectProperty.fullyFaithfulι _).homEquiv.trans
-      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.property))
 
 variable (W κ)
 
@@ -448,7 +454,7 @@ lemma isRightAdjoint_ι :
     W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
-  simpa using (corepresentableBy Z hW).isCorepresentable
+  simpa using! (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 

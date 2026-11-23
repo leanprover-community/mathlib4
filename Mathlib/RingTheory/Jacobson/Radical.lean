@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Jacobson radical of modules and rings
@@ -22,7 +23,8 @@ intersection of all maximal submodules of `M`.
 an `R`-module, which is equal to the intersection of all maximal left ideals of `R`. It turns out
 it is in fact a two-sided ideal, and equals the intersection of all maximal right ideals of `R`.
 
-## Reference
+## References
+
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
@@ -48,7 +50,7 @@ variable {R R₂ M M₂}
 theorem le_comap_jacobson : jacobson R M ≤ comap f (jacobson R₂ M₂) := by
   conv_rhs => rw [jacobson, sInf_eq_iInf', comap_iInf]
   refine le_iInf_iff.mpr fun S m hm ↦ ?_
-  obtain h | h := isCoatom_comap_or_eq_top f S.2
+  obtain h | h := isCoatom_comap_or_eq_top f S.property
   · exact mem_sInf.mp hm _ h
   · simpa only [h] using mem_top
 
@@ -68,7 +70,7 @@ theorem map_jacobson_of_ker_le (surj : Function.Surjective f)
   le_antisymm (map_jacobson_le f) <| by
     rw [jacobson, sInf_eq_iInf'] at le
     conv_rhs => rw [jacobson, sInf_eq_iInf', map_iInf_of_ker_le surj le]
-    exact le_iInf fun m ↦ sInf_le (isCoatom_map_of_ker_le surj (le_iInf_iff.mp le m) m.2)
+    exact le_iInf fun m ↦ sInf_le (isCoatom_map_of_ker_le surj (le_iInf_iff.mp le m) m.property)
 
 theorem comap_jacobson_of_ker_le (surj : Function.Surjective f)
     (le : LinearMap.ker f ≤ jacobson R M) :
@@ -99,7 +101,7 @@ theorem jacobson_quotient_jacobson : jacobson R (M ⧸ jacobson R M) = ⊥ := by
 
 theorem jacobson_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] : jacobson R M < ⊤ := by
   obtain ⟨m, hm, -⟩ := (eq_top_or_exists_le_coatom (⊥ : Submodule R M)).resolve_left bot_ne_top
-  exact (sInf_le <| Set.mem_setOf.mpr hm).trans_lt hm.1.lt_top
+  exact (sInf_le <| Set.mem_ofPred.mpr hm).trans_lt hm.1.lt_top
 
 example [Nontrivial M] [Module.Finite R M] : jacobson R M < ⊤ := jacobson_lt_top R M
 
@@ -108,7 +110,7 @@ variable {ι} (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M
 theorem jacobson_pi_le : jacobson R (Π i, M i) ≤ Submodule.pi Set.univ (jacobson R <| M ·) := by
   simp_rw [← iInf_comap_proj, jacobson, sInf_eq_iInf', comap_iInf, le_iInf_iff]
   intro i m
-  exact iInf_le_of_le ⟨_, (isCoatom_comap_iff <| LinearMap.proj_surjective i).mpr m.2⟩ le_rfl
+  exact iInf_le_of_le ⟨_, (isCoatom_comap_iff <| LinearMap.proj_surjective i).mpr m.property⟩ le_rfl
 
 /-- A product of modules with trivial Jacobson radical (e.g. simple modules) also has trivial
 Jacobson radical. -/
@@ -125,7 +127,6 @@ variable (M : Type*) [AddCommGroup M] [Module R M]
 namespace Ring
 
 /-- The Jacobson radical of a ring `R` is the Jacobson radical of `R` as an `R`-module. -/
--- TODO: replace all `Ideal.jacobson ⊥` by this.
 abbrev jacobson : Ideal R := Module.jacobson R R
 
 theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by

@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The full subcategory associated to a property of objects
 
 Given a category `C` and `P : ObjectProperty C`, we define
 a category structure on the type `P.FullSubcategory`
 of objects in `C` satisfying `P`.
-
 -/
 
 @[expose] public section
@@ -55,6 +57,7 @@ lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
+@[implicit_reducible]
 def ι : P.FullSubcategory ⥤ C :=
   inducedFunctor FullSubcategory.obj
 
@@ -66,7 +69,7 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
 theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
   rfl
 
-lemma prop_ι_obj (X) : P (P.ι.obj X) := X.2
+lemma prop_ι_obj (X) : P (P.ι.obj X) := X.property
 
 @[simp]
 lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
@@ -76,12 +79,9 @@ lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
 lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.id_def := FullSubcategory.id_hom
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
-
 variable {P} in
 /-- Constructor for morphisms in a full subcategory. -/
-@[simps]
+@[simps, implicit_reducible]
 def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
   hom := f
 
@@ -131,9 +131,9 @@ variable {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
 an induced functor `P.FullSubcategory ⥤ P'.FullSubcategory`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ιOfLE (h : P ≤ P') : P.FullSubcategory ⥤ P'.FullSubcategory where
-  obj X := ⟨X.1, h _ X.2⟩
+  obj X := ⟨X.obj, h _ X.property⟩
   map f := homMk f.hom
 
 /-- If `h : P ≤ P'`, then `ιOfLE h` is fully faithful. -/
@@ -157,7 +157,7 @@ variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
 
 /-- A functor which maps objects to objects satisfying a certain property induces a lift through
     the full subcategory of objects satisfying that property. -/
-@[simps]
+@[simps, implicit_reducible]
 def lift : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := homMk (F.map f)
@@ -166,11 +166,9 @@ def lift : C ⥤ FullSubcategory P where
     original functor. This is actually true definitionally. -/
 def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
 
-@[simp]
 lemma ι_obj_lift_obj (X : C) :
     P.ι.obj ((P.lift F hF).obj X) = F.obj X := rfl
 
-@[simp]
 lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
     P.ι.map ((P.lift F hF).map f) = F.map f := rfl
 

@@ -24,7 +24,6 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᵒᵖᴸ C`.
 * `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
-
 -/
 
 @[expose] public section
@@ -96,6 +95,9 @@ namespace OplaxFunctor
 
 attribute [to_app (attr := reassoc (attr := simp))]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [simp, to_app (attr := reassoc)] map₂_leftUnitor map₂_rightUnitor
 
 section
@@ -134,6 +136,7 @@ theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
   simp only [Category.assoc]
   rw [← F.map₂_rightUnitor]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity oplax functor. -/
 @[simps]
@@ -166,6 +169,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of oplax functors. -/
 --@[simps]

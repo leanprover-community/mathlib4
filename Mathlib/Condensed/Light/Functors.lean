@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from categories of topological spaces to light condensed sets
 
@@ -20,7 +23,6 @@ sets.
 
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda sheaf functor.
-
 -/
 
 @[expose] public section
@@ -48,6 +50,7 @@ instance : lightProfiniteToLightCondSet.Full :=
 instance : lightProfiniteToLightCondSet.Faithful :=
   inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 -/
@@ -56,8 +59,8 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
   dsimp% NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
-      hom := TypeCat.ofHom (fun f ↦ { toFun := f.hom })
-      inv := TypeCat.ofHom (fun f ↦ InducedCategory.homMk (TopCat.ofHom f)) }
+      hom := ↾fun f ↦ { toFun := f.hom }
+      inv := ↾fun f ↦ InducedCategory.homMk (TopCat.ofHom f) }
 
 /--
 The functor from `LightProfinite` to `LightCondSet` preserves countable limits.

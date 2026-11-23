@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Wrenna Robson, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Closure
 
 /-!
@@ -39,7 +39,7 @@ concept, formal concept analysis, intent, extent, object, attribute
 
 open Function OrderDual Order Set
 
-variable {ι : Sort*} {α β γ : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}
+variable {ι : Sort*} {α β : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}
 
 /-! ### Lower and upper polars -/
 
@@ -281,14 +281,14 @@ attribute [simp] upperPolar_extent lowerPolar_intent
 theorem ext (h : c.extent = d.extent) : c = d := by
   obtain ⟨s₁, t₁, rfl, _⟩ := c
   obtain ⟨s₂, t₂, rfl, _⟩ := d
-  substs h
+  subst h
   rfl
 
 /-- See `Concept.ext` for a version using the extent. -/
 theorem ext' (h : c.intent = d.intent) : c = d := by
   obtain ⟨s₁, t₁, _, rfl⟩ := c
   obtain ⟨s₂, t₂, _, rfl⟩ := d
-  substs h
+  subst h
   rfl
 
 theorem extent_injective : Injective (@extent α β r) := fun _ _ => ext
@@ -514,7 +514,7 @@ theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
     (isExtent_extent c).lowerPolar_upperPolar_subset⟩
 
 theorem le_ofObjects_of_extent_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
-  simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
+  simpa using! (lowerPolar_anti r).comp (upperPolar_anti r) h
 
 @[simp]
 theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by

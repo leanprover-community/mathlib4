@@ -5,9 +5,13 @@ Authors: Vlad Tsyrklevich
 -/
 module
 
-public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Matching
+
+import Mathlib.Combinatorics.Hall.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Hall's Marriage Theorem
@@ -35,7 +39,7 @@ namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
+/-- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
 the subgraph including only the edges between `x` and `f x` for all `x` in `p`. -/
 private
 abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
@@ -49,8 +53,8 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
     split_ifs at h
     · exact h ▸ h₂ ⟨v, by assumption⟩
     · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
-  edge_vert {v w} := by grind
-  symm {x y} := by grind
+  edge_vert := by grind
+  symm.symm := by grind
 
 variable [G.LocallyFinite] {p₁ p₂ : Set V}
 
@@ -67,7 +71,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
     rw [Set.ncard_coe_finset, Finset.card_image_of_injective _ Subtype.val_injective] at this
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
   have (x : p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
-    isBipartiteWith_neighborSet_subset h₁ x.2 <| Set.mem_toFinset.mp <| hf₂ x
+    isBipartiteWith_neighborSet_subset h₁ x.property <| Set.mem_toFinset.mp <| hf₂ x
   use hall_subgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
   refine ⟨by simp, fun v hv ↦ ?_⟩
   simp only [Set.mem_union, Set.mem_range, Subtype.exists] at hv ⊢
@@ -75,7 +79,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
   · exact ⟨f ⟨v, h'⟩, by simp_all⟩
   · use x
     have := hx₂ ▸ this ⟨x, hx₁⟩
-    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
+    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_false_right, forall_exists_index, true_and]
     exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
@@ -119,11 +123,11 @@ theorem exists_isPerfectMatching_of_forall_ncard_le
   classical
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
   use hall_subgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
-  have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by
+  have : p₁ ∪ Set.range (fun v ↦ (b v).val) = Set.univ := by
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
   refine ⟨fun v _ ↦ ?_, Subgraph.isSpanning_iff.mpr this⟩
-  simp only [dite_else_false]
+  simp only [dite_false_right]
   split
   · exact existsUnique_eq'
   · obtain ⟨x, _⟩ := hb₁.existsUnique ⟨v, by grind⟩

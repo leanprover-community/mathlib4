@@ -5,8 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sigma types
@@ -64,8 +66,7 @@ theorem eta : ∀ x : Σ a, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
 protected theorem eq {α : Type*} {β : α → Type*} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
-    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
-  | ⟨_, _⟩, _, rfl, rfl => rfl
+    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂ := by grind
 
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
 theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
@@ -169,12 +170,8 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   ext ja jb
   unfold Sigma.curry
   obtain rfl | ha := eq_or_ne ia ja
-  · obtain rfl | hb := eq_or_ne ib jb
-    · simp
-    · simp only [update_self]
-      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
-      rintro h
-      injection h
+  · simp
+    grind
   · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm

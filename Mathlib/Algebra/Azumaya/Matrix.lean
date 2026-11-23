@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+import Mathlib.LinearAlgebra.TensorProduct.Basis
+
 /-!
 # Matrix algebra is an Azumaya algebra over R
 
@@ -17,7 +19,6 @@ is an Azumaya algebra where `R` is a commutative ring.
 ## Main Results
 
 - `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
-
 -/
 
 public section
@@ -37,7 +38,7 @@ abbrev AlgHom.mulLeftRightMatrix_inv :
   toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
     f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
   map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
-  map_smul' r f := by simp [SemigroupAction.mul_smul, Finset.smul_sum]
+  map_smul' r f := by simp [mul_smul, Finset.smul_sum]
 
 lemma AlgHom.mulLeftRightMatrix.inv_comp :
     (AlgHom.mulLeftRightMatrix_inv R n).comp
@@ -57,7 +58,7 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
     map_smul, stdBasis_eq_single, LinearMap.coe_sum, Finset.sum_apply,
     LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   ext k l
-  simp [sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
+  simp [Matrix.sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
 
 namespace IsAzumaya
 

@@ -47,8 +47,6 @@ public section
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure
 
-noncomputable section
-
 open scoped MeasureTheory NNReal ENNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}
@@ -76,7 +74,7 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
   rw [← Measure.withDensity_rnDeriv_eq _ _ hμν,
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _ hμν]
-  exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
+  exact ae_of_all _ (fun x hx ↦ hx.pos)
 
 lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
@@ -137,8 +135,8 @@ lemma rnDeriv_withDensity_left {μ ν : Measure α} [SigmaFinite μ] [SigmaFinit
   have h := rnDeriv_withDensity_left_of_absolutelyContinuous hμ'ν hfν
   have h1 : μ'.rnDeriv ν =ᵐ[ν] μ.rnDeriv ν :=
     Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)
-  have h2 : (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν := by
-    exact rnDeriv_withDensity_withDensity_rnDeriv_left μ ν hf_ne_top
+  have h2 : (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν :=
+    rnDeriv_withDensity_withDensity_rnDeriv_left μ ν hf_ne_top
   filter_upwards [h, h1, h2] with x hx hx1 hx2
   rw [← hx2, hx, hx1]
 
@@ -366,7 +364,7 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
   calc ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν
     ≤ ∫ x in t, (μ.rnDeriv ν x).toReal ∂ν := by
-        refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
+        refine setIntegral_mono_set ?_ ?_ (subset_toMeasurable ..).eventuallySubset
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
   _ = (withDensity ν (rnDeriv μ ν)).real t := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
@@ -508,7 +506,7 @@ lemma _root_.MeasurableEmbedding.rnDeriv_map_aux (hf : MeasurableEmbedding f)
   · exact (Measure.measurable_rnDeriv _ _).comp hf.measurable
   · exact Measure.measurable_rnDeriv _ _
   rw [← hf.lintegral_map, Measure.setLIntegral_rnDeriv hμν]
-  have hs_eq : s = f ⁻¹' (f '' s) := by rw [hf.injective.preimage_image]
+  have hs_eq : s = f ⁻¹' f '' s := by rw [hf.injective.preimage_image]
   have : SigmaFinite (ν.map f) := hf.sigmaFinite_map
   rw [hs_eq, ← hf.restrict_map, Measure.setLIntegral_rnDeriv (hf.absolutelyContinuous_map hμν),
     hf.map_apply]

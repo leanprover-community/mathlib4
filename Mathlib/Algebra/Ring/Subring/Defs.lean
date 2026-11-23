@@ -88,7 +88,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 namespace SubringClass
@@ -161,6 +161,7 @@ end SubringClass
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
+@[wikidata Q929536]
 structure Subring (R : Type u) [NonAssocRing R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/
@@ -179,7 +180,7 @@ lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).In
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toSubsemiring_injective
 
 lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
@@ -187,7 +188,7 @@ lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).In
 lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R)
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
@@ -328,29 +329,23 @@ protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 protected theorem pow_mem {R : Type*} [Ring R] (s : Subring R) {x : R} (hx : x ∈ s) (n : ℕ) :
     x ^ n ∈ s := pow_mem hx n
 
-@[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (x : s) : (↑(-x) : R) = -↑x :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = 0 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = 1 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_pow {R} [Ring R] (s : Subring R) (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
-  SubmonoidClass.coe_pow x n
+  rfl
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩

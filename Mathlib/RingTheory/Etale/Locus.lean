@@ -46,13 +46,18 @@ lemma mem_etaleLocus_iff {p : PrimeSpectrum A} : p ∈ etaleLocus R A ↔ IsEtal
 lemma IsEtaleAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsEtaleAt R p] [IsEtaleAt A P] : IsEtaleAt R P := by
+  let := Localization.AtPrime.algebraOfLiesOver p P
   have : FormallyEtale (Localization.AtPrime p) (Localization.AtPrime P) :=
     .localization_base p.primeCompl
   exact FormallyEtale.comp R (Localization.AtPrime p) _
 
-lemma etaleLocus_eq_unramfiedLocus_inter_smoothLocus :
+lemma etaleLocus_eq_unramifiedLocus_inter_smoothLocus :
     etaleLocus R A = unramifiedLocus R A ∩ smoothLocus R A :=
   Set.ext fun _ ↦ FormallyEtale.iff_formallyUnramified_and_formallySmooth
+
+@[deprecated (since := "2026-09-17")]
+alias etaleLocus_eq_unramfiedLocus_inter_smoothLocus :=
+  etaleLocus_eq_unramifiedLocus_inter_smoothLocus
 
 lemma etaleLocus_eq_compl_support :
     etaleLocus R A = (Module.support A Ω[A⁄R])ᶜ ∩ (Module.support A (H1Cotangent R A))ᶜ := by
@@ -86,7 +91,7 @@ lemma etaleLocus_eq_univ_iff :
 variable [FinitePresentation R A]
 
 lemma isOpen_etaleLocus : IsOpen (etaleLocus R A) := by
-  rw [etaleLocus_eq_unramfiedLocus_inter_smoothLocus]
+  rw [etaleLocus_eq_unramifiedLocus_inter_smoothLocus]
   exact isOpen_unramifiedLocus.inter isOpen_smoothLocus
 
 lemma basicOpen_subset_etaleLocus_iff_etale {f : A} :

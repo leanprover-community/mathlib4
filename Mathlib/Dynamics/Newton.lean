@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Identities
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
@@ -29,12 +26,11 @@ as Hensel's lemma and the Jordan-Chevalley decomposition.
   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
   `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
   Jordan-Chevalley decomposition of linear endomorphisms.
-
 -/
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 

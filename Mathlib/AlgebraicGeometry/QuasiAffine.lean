@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Quasi-affine schemes
 
 ## Main results
@@ -17,7 +16,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 - `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
-
 -/
 
 @[expose] public section
@@ -56,11 +54,13 @@ lemma IsQuasiAffine.of_isImmersion
   have : IsImmersion X.toSpecΓ := .of_comp _ (Spec.map f.appTop)
   constructor
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
-    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU) (X.toSpecΓ ''ᵁ U).2
+    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU)
+    (X.toSpecΓ ''ᵁ U).is_open'
   simp_rw [← toSpecΓ_preimage_basicOpen]
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩
@@ -84,7 +84,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by
-    convert this <;> rw [toSpecΓ_preimage_basicOpen]
+    convert! this <;> rw [toSpecΓ_preimage_basicOpen]
   rw [← Opens.toSpecΓ_SpecMap_presheaf_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
   exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)
@@ -102,11 +102,12 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
 @[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover :=
   X.openCoverOfIsOpenCover (fun i : { r // IsAffineOpen (X.basicOpen (U := ⊤) r) } ↦
-    X.basicOpen i.1) <| top_le_iff.mp fun x _ ↦ by
+    X.basicOpen i.val) <| top_le_iff.mp fun x _ ↦ by
   obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
@@ -126,11 +127,11 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
       CommRingCat.Hom.hom (f.appTop ≫ X.presheaf.map _)
     rw [f.map_appLE, Scheme.Hom.appLE]
   refine isPullback_of_openCover _ _ _ _ Y.openCoverBasicOpenTop fun r ↦ ?_
-  let e : pullback f (Y.basicOpen r.1).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
-    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.1) ≪≫
-    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.2.preimage f)
-  refine .of_iso ((this r.1).op.map Scheme.Spec) e.symm r.2.isoSpec.symm (.refl _) (.refl _)
-    ?_ ?_ (by simp) (by simp)
+  let e : pullback f (Y.basicOpen r.val).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.val)) :=
+    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.val) ≪≫
+    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.property.preimage f)
+  refine .of_iso ((this r.val).op.map Scheme.Spec) e.symm r.property.isoSpec.symm (.refl _)
+    (.refl _) ?_ ?_ (by simp) (by simp)
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
     simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,

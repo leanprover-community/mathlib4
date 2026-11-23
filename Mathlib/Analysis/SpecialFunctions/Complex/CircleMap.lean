@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -18,13 +17,14 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 * `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$.
 
 ## Tags
-
 -/
 
 @[expose] public section
 noncomputable section circleMap
 
 open Complex Function Metric Real
+
+open scoped ComplexConjugate
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
@@ -38,6 +38,11 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
+
+@[simp]
+theorem nnNorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_circleMap_zero := nnNorm_circleMap_zero
 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
@@ -55,6 +60,27 @@ theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
+
+theorem norm_circleMap_sub_le (c : ℂ) (R : ℝ) (θ : ℝ) (x : ℂ) :
+    ‖circleMap c R θ - x‖ ≤ |R| + dist c x := by
+  rw [← dist_eq_norm, ← mem_sphere.1 (circleMap_mem_sphere' c R θ)]
+  exact dist_triangle _ _ _
+
+/-- If `w` does not lie on the circle `sphere c |R|`, there is a radius `d > 0` such that all
+points of `ball w d` keep distance at least `d` from every point `circleMap c R θ` of the circle. -/
+theorem exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ} (hw : w ∉ sphere c |R|) :
+    ∃ d > 0, ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
+  have hd₀ : 0 < abs (dist w c - |R|) :=
+    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
+  refine ⟨abs (dist w c - |R|) / 2, by positivity, fun x hx θ ↦ ?_⟩
+  rw [mem_ball] at hx
+  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
+  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
+    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
+      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
+  have h₃ := dist_triangle (circleMap c R θ) x w
+  rw [← dist_eq_norm]
+  linarith
 
 @[simp]
 theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
@@ -82,11 +108,53 @@ lemma circleMap_zero_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R�
 
 lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
-  simp [circleMap_zero, mul_pow, ← Complex.exp_nat_mul, ← mul_assoc]
+  simp [circleMap_zero, mul_pow, ← Complex.exp_natCast_mul, ← mul_assoc]
 
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
-  simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+  simp [circleMap_zero, mul_zpow, ← Complex.exp_intCast_mul, ← mul_assoc]
+
+lemma conj_circleMap_zero (r θ : ℝ) :
+    conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by
+  simp [circleMap_zero, ← exp_conj]
+
+lemma conj_circleMap (c : ℂ) (r θ : ℝ) :
+    conj (circleMap c r θ) = circleMap (conj c) r (-θ) :=
+  sub_left_injective (b := conj c) <| by simp [← map_sub, conj_circleMap_zero]
+
+lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ := by
+  simp [circleMap_zero]
+
+lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
+  simp [circleMap_zero]
+
+@[simp] lemma circleMap_zero_norm_arg (z : ℂ) : circleMap 0 ‖z‖ z.arg = z := by
+  rw [circleMap_zero, norm_mul_exp_arg_mul_I]
+
+/--
+Law of cosines for the chord between two points `circleMap c r θ` and `circleMap c s φ`.
+-/
+lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
+    ‖circleMap c r θ - circleMap c s φ‖ ^ 2 =
+      r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
+  suffices ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 = r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) by
+    simpa [circleMap] using this ..
+  rw [← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
+  simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
+
+/--
+Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
+point `a`. The bound is sharp: equality holds for `a = 0` and `θ = π`.
+-/
+theorem mul_abs_sin_le_norm_circleMap_zero_sub (r θ : ℝ) (a : ℂ) :
+    r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
+  obtain hr | hr := le_total r 0
+  · exact (mul_nonpos_of_nonpos_of_nonneg hr (abs_nonneg _)).trans (norm_nonneg _)
+  refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
+  conv_rhs => rw [← circleMap_zero_norm_arg a, norm_circleMap_sub_circleMap_sq]
+  rw [mul_pow, sq_abs, Real.sin_sq_eq_half_sub, mul_div_cancel₀ _ two_ne_zero]
+  nlinarith [Real.cos_le_one (θ - a.arg), Real.neg_one_le_cos (θ - a.arg), norm_nonneg a,
+    sq_nonneg (r - ‖a‖), mul_nonneg hr (norm_nonneg a)]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
@@ -121,7 +189,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
     I_ne_zero, or_false] at hn
   norm_cast at hn
   simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
-    Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
+    Nat.abs_ofNat, abs_pi] at h_dist
   simp (disch := positivity) at h_dist
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]

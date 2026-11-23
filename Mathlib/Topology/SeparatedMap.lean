@@ -5,9 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
+
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -56,7 +55,7 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
   refine continuous_induced_rng.mpr (.prodMk ?_ ?_) <;>
-    apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
+    apply_rules [continuous_fst, continuous_snd, continuous_subtypeVal, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
   points in `X` with the same image in `Y` can be separated by open neighborhoods. -/
@@ -108,7 +107,7 @@ theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A �
   rw [isSeparatedMap_iff_isClosed_diagonal] at sep ⊢
   rw [← preimage_map_fst_pullbackDiagonal]
   refine sep.preimage (Continuous.mapPullback ?_ ?_) <;>
-  apply_rules [continuous_fst, continuous_subtype_val, Continuous.comp]
+  apply_rules [continuous_fst, continuous_subtypeVal, Continuous.comp]
 
 theorem IsSeparatedMap.comp_left {A} {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
     (inj : g.Injective) : IsSeparatedMap (g ∘ f) := fun x₁ x₂ he ↦ sep x₁ x₂ (inj he)
@@ -140,7 +139,7 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
   refine ⟨?_, fun h x ↦ ?_⟩
   · rintro h x x' hx (rfl : x = x')
     obtain ⟨U, hn, hi⟩ := h x
-    exact ⟨_, Filter.prod_mem_prod hn hn, fun {p} hp ↦ hi hp.1 hp.2 p.2⟩
+    exact ⟨_, Filter.prod_mem_prod hn hn, fun {p} hp ↦ hi hp.1 hp.2 p.property⟩
   · obtain ⟨t, ht, t_sub⟩ := h x x rfl rfl
     obtain ⟨t₁, h₁, t₂, h₂, prod_sub⟩ := Filter.mem_prod_iff.mp ht
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,
@@ -181,12 +180,12 @@ include h₁ h₂
 
 theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
     IsClosed {a | g₁ a = g₂ a} :=
-  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
+  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr($he a)⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
 theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
     IsOpen {a | g₁ a = g₂ a} :=
-  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
+  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr($he a)⟩
   (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by fun_prop : Continuous g)
 
 end eqLocus
@@ -208,14 +207,14 @@ theorem eq_of_comp_eq
 
 theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
-  rw [← Set.restrict_eq_restrict_iff] at he ⊢
-  rw [continuousOn_iff_continuous_restrict] at h₁ h₂
+  rw [← Set.domRestrict_eq_domRestrict_iff] at he ⊢
+  rw [continuousOn_iff_continuous_domRestrict] at h₁ h₂
   rw [isPreconnected_iff_preconnectedSpace] at hs
   exact sep.eq_of_comp_eq inj h₁ h₂ he ⟨a, has⟩ ha
 
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', p (g a) = p (g a')) (a a') : g a = g a' :=
-  congr_fun (sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a
+  congr($(sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a)
 
 theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, p (g a) = p (g a'))

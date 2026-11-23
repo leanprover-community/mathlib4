@@ -5,15 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.SuccPred.Limit
-public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -63,7 +57,6 @@ his code, he found that the approach described above had already
 been used in the pioneering formalization work in Lean 3 by
 Reid Barton in 2018 towards the model category structure on
 topological spaces.
-
 -/
 
 @[expose] public section
@@ -173,6 +166,7 @@ lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
   cases hf
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `Φ : SuccStruct C` and `f` is a morphism in `C` which
 satisfies `Φ.prop f`, then this is the isomorphism of arrows
 between `f` and `Φ.toSuccArrow X`. -/
@@ -265,7 +259,7 @@ variable (iter : Φ.Iteration j)
 
 lemma obj_succ (i : J) (hi : i < j) :
     iter.F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ = Φ.succ (iter.F.obj ⟨i, hi.le⟩) :=
-  congr_arg Comma.right (iter.arrowSucc_eq i hi)
+  congr($(iter.arrowSucc_eq i hi).right)
 
 lemma prop_map_succ (i : J) (hi : i < j) :
     Φ.prop (iter.F.map (homOfLE (Order.le_succ i) :
@@ -275,8 +269,9 @@ lemma prop_map_succ (i : J) (hi : i < j) :
 lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     letI := hasColimitsOfShape_of_isSuccLimit C i hi
     iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
-  congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
+  congr($(iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi)).right)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The iteration on a limit element identifies to the colimit of the
 value on smaller elements. -/
@@ -320,10 +315,10 @@ variable {k₁ k₂ h₁₂ h₂} (h : MapEq F G k₁ k₂ h₁₂ h₂)
 include h
 
 lemma src : F.obj ⟨k₁, h₁₂.trans h₂⟩ = G.obj ⟨k₁, h₁₂.trans h₂⟩ :=
-  congr_arg Comma.left h
+  congr($(h).left)
 
 lemma tgt : F.obj ⟨k₂, h₂⟩ = G.obj ⟨k₂, h₂⟩ :=
-  congr_arg Comma.right h
+  congr($(h).right)
 
 lemma w :
     F.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) =
@@ -359,6 +354,7 @@ lemma ext (h : ∀ (k₁ k₂ : K) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ x)
 
 end subsingleton
 
+set_option backward.defeqAttrib.useBackward true in
 open subsingleton in
 instance subsingleton : Subsingleton (Φ.Iteration j) where
   allEq iter₁ iter₂ := by
@@ -401,7 +397,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
         simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
       · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
         have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
-          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
+          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.property)
         by_cases h₅ : k₁ < j
         · dsimp [MapEq]
           simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
@@ -409,6 +405,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
           apply mapEq_refl
           simp only [obj_limit _ _ h₁, this]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
     iter₁.F.obj ⟨k, h₁⟩ = iter₂.F.obj ⟨k, h₂⟩ := by

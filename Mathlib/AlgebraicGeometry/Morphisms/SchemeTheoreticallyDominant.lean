@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
@@ -13,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 # Scheme-theoretically dominant morphisms
 
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
+
 ## Main results
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
@@ -21,7 +21,6 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
   is equivalent to dominant.
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
   quasicompact + scheme-theoretically dominant is stable under flat base change.
-
 -/
 
 public section
@@ -89,14 +88,13 @@ lemma IsSchemeTheoreticallyDominant.isReduced (f : X ⟶ Y) [IsSchemeTheoretical
     [QuasiCompact f] [IsReduced X] : IsReduced Y :=
   ⟨fun _ ↦ isReduced_of_injective _ (f.app_injective _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
     [IsSchemeTheoreticallyDominant f] [QuasiCompact f] [Flat g] :
     IsSchemeTheoreticallyDominant (pullback.snd f g) := by
   rw [isSchemeTheoreticallyDominant_iff]
   let h𝒰 := Y.isBasis_affineOpens.isOpenCover_mem_and_le
     (S.isBasis_affineOpens.isOpenCover.comap g.base.hom)
-  refine Scheme.IdealSheafData.ext_of_iSup_eq_top (fun U ↦ ⟨_, by exact U.2.1⟩) h𝒰 ?_
+  refine Scheme.IdealSheafData.ext_of_iSup_eq_top (fun U ↦ ⟨_, by exact U.property.1⟩) h𝒰 ?_
   rintro ⟨⟨V, ⟨U, hU⟩⟩, hV, hVU : V ≤ g ⁻¹ᵁ U⟩
   simp only [Scheme.Hom.ker_apply, Scheme.IdealSheafData.ideal_bot, Pi.bot_apply, ← le_bot_iff]
   intro x hx

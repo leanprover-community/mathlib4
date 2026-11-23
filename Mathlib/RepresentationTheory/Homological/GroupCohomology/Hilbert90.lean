@@ -46,7 +46,6 @@ statement is clearer.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
   for all $1 ≤ n.$
-
 -/
 
 @[expose] public section
@@ -94,7 +93,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
   simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
-    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
+    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_ofClass] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
@@ -107,9 +106,9 @@ first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
   uniq := fun a => H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
-    refine (coboundariesOfIsMulCoboundary₁ ?_).2
-    rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
-      (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
+    refine (coboundariesOfIsMulCoboundary₁ ?_).property
+    rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.val
+      (isMulCocycle₁_of_mem_cocycles₁ _ x.property) with ⟨β, hβ⟩
     use β
 
 variable {K L} [IsGalois K L]
@@ -120,8 +119,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
 `(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
 theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
-    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.hom
-      (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
+    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.asHom.hom
+      (toAdditive.symm <| ofMul x))).val = algebraMap K L (Algebra.norm K (x : L)) := by
   simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
 
 variable [IsCyclic (L ≃ₐ[K] L)] {g : Gal(L/K)}
@@ -133,7 +132,6 @@ that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
 such that `y/g y = x`. -/
 theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, y / g y = x := by
-  classical
   suffices H : ∀ x, Algebra.norm K x = 1 → ∃ y : Lˣ, g y / y = x by
     have hxinv : Algebra.norm K x⁻¹ = 1 := by simp [Algebra.norm_inv, hx]
     obtain ⟨y, hy⟩ := H _ hxinv
@@ -151,10 +149,10 @@ theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     with ⟨y, hy⟩
   use toMul <| toAdditive y
   have := Units.ext_iff.1 congr(toMul <| toAdditive $hy)
-  simp only [ofAlgebraAutOnUnits.eq_1, sub_hom, hom_id,
+  simp only [sub_hom, hom_id,
     Representation.IntertwiningMap.sub_toLinearMap, Representation.IntertwiningMap.toLinearMap_id,
     LinearMap.sub_apply, Representation.IntertwiningMap.coe_toLinearMap, applyAsHom_apply,
-    ofMulDistribMulAction_ρ_apply_apply, AlgEquiv.smul_units_def, LinearMap.id_coe, id_eq,
+    LinearMap.id_coe, id_eq,
     toAdditive_symm_apply, toAdditive_apply, toMul_ofMul, IsUnit.unit_spec, xu] at this
   rw [← this, toMul_sub]
   simp
@@ -179,7 +177,7 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
     IsIntegralClosure.isLocalization A K L B
   let η' : Lˣ := Units.mk0 (algebraMap B L η) (fun h ↦ by simp [h] at hη)
   obtain ⟨ε, hε⟩ := exists_div_of_norm_eq_one hg hη
-  obtain ⟨a, b, h⟩ := IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid B A⁰) ε.1
+  obtain ⟨a, b, h⟩ := IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid B A⁰) ε.val
   obtain ⟨t, ht, ht'⟩ := b.prop
   have : t • IsLocalization.mk' L a b = algebraMap _ _ a := by
     rw [Algebra.smul_def, IsScalarTower.algebraMap_apply A B L, ht', IsLocalization.mk'_spec']
@@ -190,8 +188,7 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
     exact zero_ne_one hη
   · replace hε := hε.symm
     rw [← h, eq_div_iff_mul_eq] at hε
-    · replace hε := congr_arg (t • ·) hε
-      simp only at hε
+    · replace hε := congr(t • $hε)
       rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t, ← g.toAlgHom_apply,
         ← AlgHom.map_smul_of_tower, this] at hε
       apply IsIntegralClosure.algebraMap_injective B A L

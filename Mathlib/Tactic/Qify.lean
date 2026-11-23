@@ -5,11 +5,11 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
+public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Int.Cast.Lemmas
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `qify` tactic
@@ -24,6 +24,7 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   h : ¬↑x * ↑y * ↑z < 0
   ⊢ ↑c < ↑a + 3 * ↑b
   -/
+
   sorry
 ```
 -/

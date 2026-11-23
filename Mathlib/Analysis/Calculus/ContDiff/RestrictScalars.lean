@@ -6,10 +6,14 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-### Restricting Scalars in Iterated Fréchet Derivatives
+# Restricting Scalars in Iterated Fréchet Derivatives
 
 This file establishes standard theorems on restriction of scalars for iterated Fréchet derivatives,
 comparing iterated derivatives with respect to a field `𝕜'` to iterated derivatives with respect to
@@ -25,7 +29,9 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
   {x : E} {f : E → F} {n : ℕ} {s : Set E}
 
-open ContinuousMultilinearMap Topology
+open ContinuousMultilinearMap
+
+open scoped Topology
 
 /-- Derivation rule for compositions of scalar restriction with continuous multilinear maps. -/
 lemma fderivWithin_restrictScalars_comp

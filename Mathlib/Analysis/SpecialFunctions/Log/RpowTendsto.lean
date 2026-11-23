@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The logarithm as a limit of powers
 
@@ -62,10 +65,8 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
   have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p ∧ p < pbound := nhdsGT_basis 0 |>.mem_of_mem pbound_pos
   have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=
     Eventually.filter_mono nhdsWithin_le_nhds <| eventually_le_nhds (by positivity)
-  have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by
-    fun_prop (disch := assumption)
-  have hcont' : ContinuousOn (fun x => ‖log x‖) s := by
-    fun_prop (disch := assumption)
+  have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by fun_prop
+  have hcont' : ContinuousOn (fun x => ‖log x‖) s := by fun_prop
   filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
   intro x hx
   have hx' : ‖p * log x‖ ≤ 1 := calc

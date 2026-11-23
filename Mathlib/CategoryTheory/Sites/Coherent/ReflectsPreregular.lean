@@ -6,10 +6,12 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
-public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Reflecting the property of being preregular
 
 We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`, such that for every

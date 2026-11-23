@@ -6,11 +6,10 @@ Authors: Yuval Filmus
 
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-public import Mathlib.Analysis.Complex.Trigonometric
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
@@ -58,11 +57,11 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
   convert geom_sum_mul (exp (k / n * π * I)) n using 1
   · simp_rw [sum_mul]
     congr! 1 with i hi
-    rw [← Complex.exp_nat_mul, ← Complex.exp_add]
+    rw [← Complex.exp_natCast_mul, ← Complex.exp_add]
     grind
-  · rw [← Complex.exp_nat_mul,
+  · rw [← Complex.exp_natCast_mul,
       show (n * (k / n * π * I)) = k * (π * I) by field [show (n : ℂ) ≠ 0 by aesop],
-      Complex.exp_int_mul, Complex.exp_pi_mul_I]
+      Complex.exp_intCast_mul, Complex.exp_pi_mul_I]
 
 /-- Weighted sum of `P (x)` where `x` goes over `cos ((2 * i + 1) / (2 * n) * π)` for
   `0 ≤ i < n`. -/
@@ -89,7 +88,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
-    rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
+    rw [← mul_sum, mul_eq_zero_iff_left (by simp)] at this
     simpa [T_real_cos]
   suffices (∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) : ℂ) = 0 by norm_cast at this ⊢
   suffices ∑ i ∈ range n, 2 * Complex.cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by aesop
@@ -99,7 +98,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
     Int.cast_neg, neg_div, neg_mul, neg_mul, Complex.exp_neg,
     neg_div, neg_mul, neg_mul, Complex.exp_neg, this, ← add_mul, mul_eq_zero_of_left]
   set z := exp (k / (2 * n) * π * I) with hz
-  have hz₂ : exp (k / n * π * I) = z ^ 2 := by rw [hz, ← Complex.exp_nat_mul]; grind
+  have hz₂ : exp (k / n * π * I) = z ^ 2 := by rw [hz, ← Complex.exp_natCast_mul]; grind
   rw [hz₂, ← inv_pow z 2]
   field [show z ≠ 0 by grind [Complex.exp_ne_zero],
     show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind [exp_sub_one_ne_zero]]
@@ -110,7 +109,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]
-  rw [← Sequence.span_degreeLT (chebyshevTsequence ℝ) (by simp),
+  rw [← Sequence.span_degreeLT (chebyshevTSequence ℝ) (by simp),
     show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
     Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
   obtain ⟨c, rfl⟩ := hmem
@@ -118,7 +117,7 @@ theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degr
   rw [MeasureTheory.integral_finsetSum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hrange
-    simp_rw [chebyshevTsequence]
+    simp_rw [chebyshevTSequence]
     by_cases i = 0
     case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>

@@ -111,7 +111,7 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
 
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by cat_disch) :
     PullbackCone f g where
   pt := W
@@ -142,7 +142,6 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -188,9 +187,9 @@ def isLimitAux' (t : PullbackCone f g)
           l ≫ t.fst = s.fst ∧
             l ≫ t.snd = s.snd ∧ ∀ {m}, m ≫ t.fst = s.fst → m ≫ t.snd = s.snd → m = l }) :
     Limits.IsLimit t :=
-  PullbackCone.isLimitAux t (fun s => (create s).1) (fun s => (create s).2.1)
-    (fun s => (create s).2.2.1) fun s _ w =>
-    (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  PullbackCone.isLimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1) fun s _ w =>
+    (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
 `PullbackCone.mk` is a limit cone.
@@ -242,6 +241,7 @@ section Flip
 variable (t : PullbackCone f g)
 
 /-- The pullback cone obtained by flipping `fst` and `snd`. -/
+@[implicit_reducible]
 def flip : PullbackCone g f := PullbackCone.mk _ _ t.condition.symm
 
 @[simp] lemma flip_pt : t.flip.pt = t.pt := rfl
@@ -253,7 +253,6 @@ def flipFlipIso : t.flip.flip ≅ t := PullbackCone.ext (Iso.refl _) (by simp) (
 
 variable {t}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
   IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -328,7 +327,7 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
 
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
-@[simps]
+@[implicit_reducible, simps]
 def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : PushoutCocone f g where
   pt := W
   ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
@@ -359,7 +358,6 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
@@ -404,8 +402,9 @@ def isColimitAux' (t : PushoutCocone f g)
           t.inl ≫ l = s.inl ∧
             t.inr ≫ l = s.inr ∧ ∀ {m}, t.inl ≫ m = s.inl → t.inr ≫ m = s.inr → m = l }) :
     IsColimit t :=
-  isColimitAux t (fun s => (create s).1) (fun s => (create s).2.1) (fun s => (create s).2.2.1)
-    fun s _ w => (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  isColimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1)
+    fun s _ w => (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 
 theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k l : t.pt ⟶ W}
@@ -461,6 +460,7 @@ section Flip
 variable (t : PushoutCocone f g)
 
 /-- The pushout cocone obtained by flipping `inl` and `inr`. -/
+@[implicit_reducible]
 def flip : PushoutCocone g f := PushoutCocone.mk _ _ t.condition.symm
 
 @[simp] lemma flip_pt : t.flip.pt = t.pt := rfl
@@ -472,7 +472,6 @@ def flipFlipIso : t.flip.flip ≅ t := PushoutCocone.ext (Iso.refl _) (by simp) 
 
 variable {t}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
   IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -527,12 +526,14 @@ variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 /-- The (not necessarily limiting) `PullbackCone h i` implicit in the statement
 that we have `CommSq f g h i`.
 -/
+@[implicit_reducible]
 def cone (s : CommSq f g h i) : PullbackCone h i :=
   PullbackCone.mk _ _ s.w
 
 /-- The (not necessarily limiting) `PushoutCocone f g` implicit in the statement
 that we have `CommSq f g h i`.
 -/
+@[implicit_reducible]
 def cocone (s : CommSq f g h i) : PushoutCocone f g :=
   PushoutCocone.mk _ _ s.w
 

@@ -5,15 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.Algebra.MvPolynomial.CommRing
+
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
-
 # Krull dimension and non-zero-divisors
 
 ## Main results
@@ -33,6 +32,7 @@ lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
   rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
     ringKrullDim (R ⧸ Ideal.span {r}) + 1 ≤ ringKrullDim R := by
@@ -40,7 +40,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   · rw [hr', ringKrullDim_eq_bot_of_subsingleton]
     simp
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
-    rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
+    rwa [Set.nonempty_coe_sort, ← Set.ne_empty_iff_nonempty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
   have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial
@@ -48,11 +48,11 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     Order.krullDim_eq_iSup_length, ← WithBot.coe_one, ← WithBot.coe_add,
     ENat.iSup_add, WithBot.coe_le_coe, iSup_le_iff]
   intro l
-  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.1.asIdeal) bot_le
+  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.val.asIdeal) bot_le
   let p' : PrimeSpectrum R := ⟨p, hp.1.1⟩
   have hp' : p' < l.head := lt_of_le_of_ne hp' fun h ↦ Set.disjoint_iff.mp
     (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hp)
-    ⟨show r ∈ p by simpa [← h] using l.head.2, hr⟩
+    ⟨show r ∈ p by simpa [← h] using l.head.property, hr⟩
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 
@@ -68,7 +68,7 @@ open Polynomial in
 lemma ringKrullDim_succ_le_ringKrullDim_polynomial :
     ringKrullDim R + 1 ≤ ringKrullDim R[X] :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, coeff_C_zero⟩)
-    X_mem_nonzeroDivisors coeff_X_zero
+    X_mem_nonZeroDivisors coeff_X_zero
 
 open MvPolynomial in
 @[simp]
@@ -91,7 +91,6 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
     grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     ringKrullDim R + ENat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
@@ -102,22 +101,30 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
     suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
-    rw [WithBot.eq_top_iff_forall_ge]
+    rw [ENat.WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
-    have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
+    have := Function.invFun_surjective (f := ι)
+      ((Infinite.natEmbedding σ).inj'.comp Fin.val_injective)
     refine le_trans ?_ (ringKrullDim_le_of_surjective
       (rename (R := R) _).toRingHom (rename_surjective _ this))
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)
-    simp only [ENat.some_eq_coe, Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add,
-      Nat.cast_one]
+    simp only [Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add, Nat.cast_one]
     trans n + 1
     · norm_cast
       simp
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
 
+/-- If `R` is non-trivial, a polynomial ring in an infinite number of variables has infinite height,
+i.e. `dim R[X₁, ...] = ∞`. -/
+@[simp]
+lemma ringKrullDim_mvPolynomial_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
+    ringKrullDim (MvPolynomial σ R) = ⊤ := by
+  have := ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (R := R) σ
+  simpa [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
+
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
-    MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X
+    MvPowerSeries.X_mem_nonZeroDivisors constantCoeff_X

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 public import Mathlib.Algebra.Category.Grp.Biproducts
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
@@ -20,7 +19,6 @@ Let `F` be an abelian sheaf on `(C, J)`.
 In this file, we obtain a long exact Mayer-Vietoris sequence:
 
 `... ⟶ H^n(S.X₄, F) ⟶ H^n(S.X₂, F) ⊞ H^n(S.X₃, F) ⟶ H^n(S.X₁, F) ⟶ H^{n + 1}(S.X₄, F) ⟶ ...`
-
 -/
 
 @[expose] public section

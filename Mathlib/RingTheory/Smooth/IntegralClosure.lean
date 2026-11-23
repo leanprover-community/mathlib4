@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
 /-!
@@ -41,11 +40,11 @@ def TensorProduct.toIntegralClosure
     S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (.id _ _) (integralClosure R B).val).codRestrict _ fun x ↦ by
   induction x with
-  | zero => simp
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
-    convert ((y.2.map (Algebra.TensorProduct.includeRight
-      (R := R) (A := S))).tower_top (A := S)).smul x
+    convert!
+      ((y.property.map (Algebra.TensorProduct.includeRight (R := R) (A := S))).tower_top
+        (A := S)).smul x
     simp [smul_tmul']
 
 lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :
@@ -63,10 +62,10 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
     Function.Bijective (toIntegralClosure R T B) := by
   let e := (Algebra.TensorProduct.cancelBaseChange ..).symm.trans <|
       (Algebra.TensorProduct.congr (.refl (R := T) (A₁ := T)) (.ofBijective _ H)).trans <|
-      (AlgEquiv.ofBijective _ H').trans <|
+      (AlgEquiv.ofBijective _ H').trans
       (AlgEquiv.mapIntegralClosure (Algebra.TensorProduct.cancelBaseChange ..))
   convert e.bijective
-  rw [← e.coe_algHom]
+  rw [← e.coe_toAlgHom]
   congr 1
   ext; simp [e, toIntegralClosure]
 
@@ -74,16 +73,16 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     {s : Set S} (hs : Ideal.span s = ⊤) (Sᵣ : s → Type*) [∀ r, CommRing (Sᵣ r)]
     [∀ r, Algebra S (Sᵣ r)] [∀ r, Algebra R (Sᵣ r)] [∀ r, IsScalarTower R S (Sᵣ r)]
-    [∀ r, IsLocalization.Away r.1 (Sᵣ r)]
+    [∀ r, IsLocalization.Away r.val (Sᵣ r)]
     (H : ∀ r, Function.Bijective (toIntegralClosure R (Sᵣ r) B)) :
     Function.Bijective (toIntegralClosure R S B) := by
-  have (r : s) : IsLocalizedModule.Away r.1
+  have (r : s) : IsLocalizedModule.Away r.val
       (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
         (AlgHom.id R (integralClosure R B))).toLinearMap := by
     let := (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
       (AlgHom.id R (integralClosure R B))).toAlgebra
     refine isLocalizedModule_iff_isLocalization.mpr ?_
-    refine IsLocalization.tensorProduct_tensorProduct _ _ (.powers r.1) _ ?_
+    refine IsLocalization.tensorProduct_tensorProduct _ _ (.powers r.val) _ ?_
     ext; simp [RingHom.algebraMap_toAlgebra]
   let φ (r : s) : integralClosure S (S ⊗[R] B) →ₐ[S] integralClosure (Sᵣ r) (Sᵣ r ⊗[R] B) :=
     ((Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)).comp
@@ -92,15 +91,15 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     simp only [AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply,
       Subalgebra.mem_restrictScalars, Subtype.forall, mem_integralClosure_iff]
     exact fun a ha ↦ (ha.map _).tower_top
-  have (r : s) : IsLocalizedModule.Away r.1 (φ r).toLinearMap := by
+  have (r : s) : IsLocalizedModule.Away r.val (φ r).toLinearMap := by
     let := (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
           (AlgHom.id R B)).toAlgebra
     let := (φ r).toAlgebra
     have : IsScalarTower (integralClosure S (S ⊗[R] B)) (integralClosure (Sᵣ r) (Sᵣ r ⊗[R] B))
         (Sᵣ r ⊗[R] B) := .of_algebraMap_eq' rfl
-    have : IsLocalization (Algebra.algebraMapSubmonoid (S ⊗[R] B) (Submonoid.powers r.1))
+    have : IsLocalization (Algebra.algebraMapSubmonoid (S ⊗[R] B) (Submonoid.powers r.val))
         (Sᵣ r ⊗[R] B) := by
-      refine IsLocalization.tensorProduct_tensorProduct _ _ (.powers r.1) _ ?_
+      refine IsLocalization.tensorProduct_tensorProduct _ _ (.powers r.val) _ ?_
       ext; simp [RingHom.algebraMap_toAlgebra]
     refine isLocalizedModule_iff_isLocalization.mpr ?_
     exact IsLocalization.integralClosure ..
@@ -109,17 +108,18 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     (fun r ↦ (Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)).toLinearMap)
     (fun r ↦ integralClosure (Sᵣ r) ((Sᵣ r) ⊗[R] B))
     (fun r ↦ (φ r).toLinearMap) fun r ↦ ?_
-  convert show Function.Bijective ((toIntegralClosure R (Sᵣ r) B).toLinearMap.restrictScalars S)
-    from H r using 1
+  convert
+    show Function.Bijective ((toIntegralClosure R (Sᵣ r) B).toLinearMap.restrictScalars S) from
+      H r using 1
   congr!
-  refine IsLocalizedModule.ext (.powers r.1) (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
+  refine IsLocalizedModule.ext (.powers r.val) (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
     (AlgHom.id R (integralClosure R B))).toLinearMap
-    (IsLocalizedModule.map_units (S := .powers r.1) (φ r).toLinearMap) ?_
+    (IsLocalizedModule.map_units (S := .powers r.val) (φ r).toLinearMap) ?_
   ext x
-  exact congr($(IsLocalizedModule.map_apply (.powers r.1)
-      ((Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
-        (AlgHom.id R (integralClosure R B))).toLinearMap)
-      (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).1)
+  congrm $(IsLocalizedModule.map_apply (.powers r.val)
+   ((Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
+     (AlgHom.id R (integralClosure R B))).toLinearMap)
+   (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).val
 
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 /-- Base changing to `MvPolynomial σ R` preserves integral closure. -/
@@ -129,50 +129,53 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
   refine ⟨toIntegralClosure_injective_of_flat, ?_⟩
   rintro ⟨x, hx⟩
   let e₀ : MvPolynomial σ R ⊗[R] B ≃ₐ[R] MvPolynomial σ B :=
-    MvPolynomial.scalarRTensorAlgEquiv
+    (Algebra.TensorProduct.comm R _ _).trans
+      ((MvPolynomial.algebraTensorAlgEquiv R B).restrictScalars R)
+  let e₁ := (Algebra.TensorProduct.comm R (MvPolynomial σ R) (integralClosure R B)).trans
+    ((MvPolynomial.algebraTensorAlgEquiv R (integralClosure R B)).restrictScalars R)
   let e : MvPolynomial σ R ⊗[R] B ≃ₐ[MvPolynomial σ R] MvPolynomial σ B :=
-    { toRingEquiv := e₀.toRingEquiv, commutes' r := by
-        change e₀.toRingHom.comp (algebraMap _ _) r = _
-        congr 1
-        ext <;> simp [e₀, MvPolynomial.scalarRTensorAlgEquiv, MvPolynomial.coeff_map,
-          ← Algebra.algebraMap_eq_smul_one, apply_ite (algebraMap _ _), MvPolynomial.coeff_X'] }
+    .ofCommutes e₀.toRingEquiv fun r ↦ by
+      change e₀.toRingHom.comp (algebraMap _ _) r = _
+      congr 1
+      ext <;> simp [e₀, MvPolynomial.coeff_X]
   have := MvPolynomial.isIntegral_iff_isIntegral_coeff.mp (hx.map e)
   obtain ⟨y, hy⟩ : e x ∈ RingHom.range (MvPolynomial.map (integralClosure R B).val.toRingHom) := by
     refine MvPolynomial.mem_range_map_iff_coeffs_subset.mpr ?_
     simp [Set.subset_def, mem_integralClosure_iff, MvPolynomial.mem_coeffs_iff,
       @forall_comm B, this]
-  refine ⟨MvPolynomial.scalarRTensorAlgEquiv.symm y, Subtype.ext <| e.injective (.trans ?_ hy)⟩
-  obtain ⟨y, rfl⟩ := (MvPolynomial.scalarRTensorAlgEquiv (R := R)).surjective y
+  refine ⟨e₁.symm y, Subtype.ext <| e.injective (.trans ?_ hy)⟩
+  obtain ⟨y, rfl⟩ := e₁.surjective y
   dsimp [TensorProduct.toIntegralClosure, e]
   simp only [AlgEquiv.symm_apply_apply]
   have : e₀.toAlgHom.comp
       (Algebra.TensorProduct.map (AlgHom.id R (MvPolynomial σ R)) (integralClosure R B).val) =
-      (MvPolynomial.mapAlgHom (integralClosure R B).val).comp
-      MvPolynomial.scalarRTensorAlgEquiv.toAlgHom := by
-    ext <;> simp [e₀, MvPolynomial.coeff_map, MvPolynomial.scalarRTensorAlgEquiv]
-  exact congr($this y)
+      (MvPolynomial.mapAlgHom (integralClosure R B).val).comp e₁.toAlgHom := by
+    ext <;> simp [e₀, e₁, MvPolynomial.coeff_map, MvPolynomial.coeff_one,
+      apply_ite ((↑) : (integralClosure R B) → B)]
+  congrm $this y
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- Localization preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
     (M : Submonoid R) [IsLocalization M S] :
     Function.Bijective (toIntegralClosure R S B) := by
-  classical
   let φ : integralClosure R B →ₐ[R] integralClosure S (S ⊗[R] B) :=
     AlgHom.codRestrict (Algebra.TensorProduct.includeRight.comp (integralClosure R B).val)
       ((integralClosure S (S ⊗[R] B)).restrictScalars R) fun ⟨x, hx⟩ ↦ by
     refine .of_comp (f := algebraMap R S) ?_
-    convert RingHom.IsIntegralElem.map hx
-      (Algebra.TensorProduct.includeRight : B →ₐ[R] S ⊗[R] B).toRingHom
+    convert!
+      RingHom.IsIntegralElem.map hx
+        (Algebra.TensorProduct.includeRight : B →ₐ[R] S ⊗[R] B).toRingHom
     simp [← IsScalarTower.algebraMap_eq]
   let := φ.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
   have : IsScalarTower (integralClosure R B) (integralClosure S (S ⊗[R] B)) (S ⊗[R] B) :=
     .of_algebraMap_eq' rfl
   have := IsLocalization.integralClosure (S := B) M (Rf := S) (Sf := S ⊗[R] B)
-  convert (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
-    (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
-  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_algHom]
+  convert
+    (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
+        (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
+  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars R, ← AlgEquiv.coe_toAlgHom]
   congr 1
   ext1
   · apply IsLocalization.algHom_ext M; ext
@@ -285,7 +288,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     let e := 𝓟.equivRing.trans 𝓟.equivAwayAdjoinRoot
     algebraize [(e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toRingHom]
     have := IsLocalization.isLocalization_of_algEquiv (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g))
-      { toRingEquiv := e.symm.toRingEquiv, commutes' := by simp [RingHom.algebraMap_toAlgebra] }
+      (.ofCommutes e.symm.toRingEquiv (by simp [RingHom.algebraMap_toAlgebra]))
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := IsIntegral.exists_multiple_integral_of_isLocalization
       (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g)) _ hx
     replace hm := fun k : ℕ ↦ (isIntegral_algebraMap (x := AdjoinRoot.mk 𝓟.f 𝓟.g ^ k)).mul hm
@@ -308,10 +311,10 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     have := 𝓟.monic_f.finite_adjoinRoot
     let e : AdjoinRoot 𝓟.f →ₐ[R] AdjoinRoot 𝓟'.f :=
       AdjoinRoot.mapAlgHom (Algebra.ofId _ _) _ _ (dvd_refl _)
-    convert (Algebra.IsIntegral.isIntegral (R := R) (AdjoinRoot.mk 𝓟.f 𝓟.g)).map e
+    convert! (Algebra.IsIntegral.isIntegral (R := R) (AdjoinRoot.mk 𝓟.f 𝓟.g)).map e
     have : (AdjoinRoot.mk 𝓟'.f).comp (mapRingHom (algebraMap R B)) =
         e.toRingHom.comp (AdjoinRoot.mk _) := by ext <;> simp [e]
-    exact congr($this 𝓟.g)
+    congrm $this 𝓟.g
   have heg (g : R[X]) : e (1 ⊗ₜ aeval 𝓟.x g) =
       algebraMap _ _ (AdjoinRoot.mk 𝓟'.f (g.map (algebraMap _ _))) := by
     trans e (aeval (1 ⊗ₜ 𝓟.x) (g.map (algebraMap _ B)))
@@ -323,7 +326,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   -- And `gᵏ • a` is still `R`-integral for `k` large enough.
   obtain ⟨k, hk⟩ : ∃ k, IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k * a) := by
     have H : ∀ k, e (1 ⊗ₜ (aeval 𝓟.x 𝓟.g ^ k)) = algebraMap _ _ (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k) := by
-      intro k; convert congr($(heg 𝓟.g) ^ k) <;>
+      intro k; convert! congr($(heg 𝓟.g) ^ k) <;>
         simp [← map_pow, 𝓟', StandardEtalePresentation.baseChange]
     have := ((hx m).map (Algebra.TensorProduct.comm _ _ _).symm).map e
     simp only [Algebra.smul_def, Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
@@ -331,7 +334,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
       AlgEquiv.apply_symm_apply] at this
     rw [H, pow_add, map_mul, mul_assoc, IsLocalization.mk'_spec'_mk, ← map_mul] at this
     obtain ⟨k, hk⟩ := IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap hfg this
-    refine ⟨k + n, by convert hk using 1; ring_nf⟩
+    refine ⟨k + n, by convert! hk using 1; ring_nf⟩
   -- We now use the key lemma `exists_derivative_mul_eq_and_isIntegral_coeff` to get a `y : B[X]`
   -- with `R`-integral coefficients such that `f' * gᵏ * a = y` in `S ⊗[R] B`.
   obtain ⟨y, hy, hRy⟩ := exists_derivative_mul_eq_and_isIntegral_coeff
@@ -343,7 +346,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   rw [← Subalgebra.mem_toSubmodule, ← Submodule.smul_mem_iff_of_isUnit _
     (𝓟.hasMap.isUnit_derivative_f.mul <| (𝓟.hasMap.2.pow k).mul (𝓟.hasMap.2.pow m))]
   convert_to eval₂ Algebra.TensorProduct.includeRight.toRingHom (𝓟.x ⊗ₜ[R] 1) y ∈ _ using 1
-  · convert congr(Algebra.TensorProduct.comm _ _ _ <| e.symm (algebraMap _ _ $hy))
+  · convert! congr(Algebra.TensorProduct.comm _ _ _ <| e.symm (algebraMap _ _ $hy))
     · apply (Algebra.TensorProduct.comm R B S).symm.injective
       apply e.injective
       simp only [Algebra.smul_def, Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
@@ -351,7 +354,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
         AlgEquiv.apply_symm_apply, map_pow, heg]
       simp_rw [mul_assoc, ← map_pow, show 𝓟.g.map (algebraMap R B) = 𝓟'.g from rfl,
         IsLocalization.mk'_spec'_mk, ← derivative_map]; rfl
-    · simp only [← AlgEquiv.coe_algHom, ← AlgHom.coe_toRingHom, ← RingHom.comp_apply,
+    · simp only [← AlgEquiv.coe_toAlgHom, ← AlgHom.coe_toRingHom, ← RingHom.comp_apply,
         ← coe_eval₂RingHom]
       congr 1
       ext <;> simp [e, StandardEtalePair.equivAwayAdjoinRoot]; rfl
@@ -382,7 +385,7 @@ theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S]
       toIntegralClosure_mvPolynomial_bijective toIntegralClosure_bijective_of_isStandardEtale⟩
   choose f hfm hf using this
   refine TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway (R := R)
-    (s := Set.range f) (B := B) ?_ (Localization.Away ·.1) (Set.forall_subtype_range_iff.mpr hf)
+    (s := Set.range f) (B := B) ?_ (Localization.Away ·.val) (Set.forall_subtype_range_iff.mpr hf)
   by_contra H
   obtain ⟨m, hm, e⟩ := Ideal.exists_le_maximal _ H
   exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)) :)

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of an element under an action
 
@@ -21,7 +24,7 @@ This is crucial in Fourier-Motzkin constructions.
 
 assert_not_exists MonoidWithZero
 
-open Pointwise
+open scoped Pointwise
 
 variable {G H α β : Type*}
 

@@ -52,14 +52,14 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 instance {M α : Type*} [Monoid M] [MulAction M α] :
     SMulCommClass ↥(Submonoid.center M) M α where
   smul_comm c r v := by
-    have := Semigroup.mem_center_iff.1 c.2
+    have := Semigroup.mem_center_iff.1 c.property
     simp_rw [Submonoid.smul_def, smul_smul, this]
 
 instance {M α : Type*} [Monoid M] [MulAction M α] :
     SMulCommClass M (Submonoid.center M) α :=
   SMulCommClass.symm (Submonoid.center M) M α
 
-variable {M}
+variable {M N} [MulOneClass N]
 
 /-- The center of a multiplication with unit is commutative and associative.
 
@@ -69,6 +69,31 @@ field. -/
 abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
 
+@[to_additive]
+protected theorem center_prod {N : Type*} [MulOneClass N] :
+    center (M × N) = prod (center M) (center N) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (M i)] :
+    center (Π i, M i) = pi .univ fun i ↦ center (M i) :=
+  SetLike.coe_injective Set.center_pi
+
+@[to_additive]
+theorem map_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Surjective f) : map f (center M) ≤ center N :=
+  Set.image_center_subset hf
+
+@[to_additive]
+theorem comap_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Injective f) : comap f (center N) ≤ center M :=
+  Set.preimage_center_subset hf
+
+@[to_additive (attr := simp)]
+theorem map_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    map f (center M) = center N :=
+  SetLike.coe_injective (Set.image_center_eq f)
+
 end MulOneClass
 
 section Monoid
@@ -76,7 +101,7 @@ section Monoid
 variable {M} [Monoid M]
 
 /-- The center of a monoid is commutative. -/
-@[to_additive]
+@[to_additive /-- The center of an additive monoid is additively commutative. -/]
 instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
 
@@ -92,8 +117,6 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
 @[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ mem_center_iff
-
-
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_left : SMulCommClass (center M) M M where
@@ -134,36 +157,22 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
       fun u ↦ Submonoid.mem_center_iff.mpr <|
         fun r ↦ Units.ext <| by
         rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
-          Submonoid.coe_subtype, u.1.prop.comm r]
+          Submonoid.coe_subtype, u.val.prop.comm r]
 
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
-  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+  fun _a _b h => Units.ext <| Subtype.ext congr((Units.val ∘ Subtype.val) $h)
 
 section congr
 
 variable {M} {N : Type*}
 
-@[to_additive] theorem _root_.MulEquivClass.apply_mem_center {F} [EquivLike F M N] [Mul M] [Mul N]
-    [MulEquivClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
-  let e := MulEquivClass.toMulEquiv e
-  change e x ∈ Set.center N
-  constructor <;>
-  (intros; apply e.symm.injective; simp only
-    [map_mul, e.symm_apply_apply, (hx.comm _).eq, (isMulCentral_iff _).mp hx, ← hx.right_comm])
-
-@[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
-    [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :
-    e x ∈ Set.center N ↔ x ∈ Set.center M :=
-  ⟨(by simpa using MulEquivClass.apply_mem_center (MulEquivClass.toMulEquiv e).symm ·),
-    MulEquivClass.apply_mem_center e⟩
-
 /-- The center of isomorphic magmas are isomorphic. -/
 @[to_additive (attr := simps) /-- The center of isomorphic additive magmas are isomorphic. -/]
 def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
-  toFun r := ⟨e r, MulEquivClass.apply_mem_center e r.2⟩
-  invFun s := ⟨e.symm s, MulEquivClass.apply_mem_center e.symm s.2⟩
+  toFun r := ⟨e r, MulEquivClass.apply_mem_center e r.property⟩
+  invFun s := ⟨e.symm s, MulEquivClass.apply_mem_center e.symm s.property⟩
   left_inv _ := Subtype.ext (e.left_inv _)
   right_inv _ := Subtype.ext (e.right_inv _)
   map_mul' _ _ := Subtype.ext (map_mul ..)
@@ -185,9 +194,9 @@ def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : cente
 @[to_additive (attr := simps)
 /-- The center of an additive magma is isomorphic to the center of its opposite. -/]
 def Subsemigroup.centerToMulOpposite [Mul M] : center M ≃* center Mᵐᵒᵖ where
-  toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.2⟩
-  invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.2⟩
-  map_mul' r _ := Subtype.ext (congr_arg MulOpposite.op <| r.2.1 _)
+  toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.property⟩
+  invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.property⟩
+  map_mul' r _ := Subtype.ext congr(MulOpposite.op $(r.property.comm _))
 
 /-- The center of a monoid is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)

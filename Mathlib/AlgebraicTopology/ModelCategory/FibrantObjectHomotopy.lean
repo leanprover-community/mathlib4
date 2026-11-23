@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
@@ -22,7 +22,6 @@ This file was obtained by dualizing the definitions in
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-
 -/
 
 @[expose] public section
@@ -224,6 +223,7 @@ noncomputable def HoCat.ιCompResolutionNatTrans : toHoCat ⟶ ι ⋙ HoCat.reso
     ext : 1
     exact (HoCat.resolutionMap_fac f.hom).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (X : FibrantObject C) :
     WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
@@ -263,7 +263,7 @@ noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
     L ⟶ HoCat.resolution ⋙ HoCat.toLocalization L where
   app X := L.map (iResolutionObj X)
   naturality _ _ f := by
-    simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f).symm
+    simpa only [Functor.map_comp] using! L.congr_map (HoCat.resolutionMap_fac f).symm
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by
@@ -315,6 +315,7 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   have : F.IsEquivalence := E.isEquivalence_functor
   exact LocalizerMorphism.IsLocalizedEquivalence.mk' (localizerMorphism C) Lfib L F
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : FibrantObject C) :
     IsFibrant ((localizerMorphism C).functor.obj X) := by
   dsimp; infer_instance

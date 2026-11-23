@@ -9,11 +9,14 @@ public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# Adjunctions between categories of sheaves
 
 In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
 categories of sheaves. We also show that `G` preserves sheafification.
-
 -/
 
 @[expose] public section
@@ -21,7 +24,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology Limits Opposite Functor
+open GrothendieckTopology Limits Opposite CategoryTheory.Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -49,7 +52,6 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
   Adjunction.restrictFullyFaithful ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D))
     (fullyFaithfulSheafToPresheaf J E) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_unit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).hom =
@@ -61,9 +63,6 @@ lemma adjunction_unit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj :
     Functor.comp_map, Functor.map_id, whiskerRight_id', Category.comp_id]
   rfl
 
-@[deprecated (since := "2026-03-05")]
-alias adjunction_unit_app_val := adjunction_unit_app_hom
-
 @[simp]
 lemma adjunction_counit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).hom =
@@ -72,16 +71,13 @@ lemma adjunction_counit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj
     (Adjunction.map_restrictFullyFaithful_counit_app _ _ (Functor.FullyFaithful.id _)
       (L := composeAndSheafify J G) (R := sheafCompose J F) _ _ Y)).trans (by cat_disch)
 
-@[deprecated (since := "2026-03-05")]
-alias adjunction_counit_app_val := adjunction_counit_app_hom
-
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
 
 instance [HasWeakSheafify J D] [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
   (adjunction J (Adjunction.ofIsLeftAdjoint G)).isLeftAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     J.PreservesSheafification G where
   le P Q f hf := by
@@ -90,8 +86,9 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     dsimp
     intro R hR
     rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
-    convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
-      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).property)).bijective
+    convert!
+      (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
+          (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).property)).bijective
     ext g X
     -- The rest of this proof was
     -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before https://github.com/leanprover-community/mathlib4/pull/16317.

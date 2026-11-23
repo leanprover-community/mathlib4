@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Shift.Adjunction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The pullback of a shift by a monoid morphism
@@ -42,7 +45,7 @@ variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def PullbackShift [HasShift C B] (_ : A →+ B) := C
 deriving Category
 
@@ -50,7 +53,6 @@ attribute [local instance] endofunctorMonoidalCategory
 
 variable [HasShift C B] (φ : A →+ B)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
 instance : HasShift (PullbackShift C φ) A where
@@ -83,7 +85,6 @@ lemma pullbackShiftFunctorZero_inv_app :
   congr 2
   apply eqToHom_map
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero_hom_app :
     (shiftFunctorZero _ A).hom.app X =
       (pullbackShiftIso C φ 0 0 (by simp)).hom.app X ≫ (shiftFunctorZero C B).hom.app X := by
@@ -91,7 +92,6 @@ lemma pullbackShiftFunctorZero_hom_app :
     pullbackShiftFunctorZero_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero'_inv_app :
     (shiftFunctorZero _ A).inv.app X = (shiftFunctorZero' C (φ 0) (by rw [map_zero])).inv.app X ≫
       (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
@@ -100,7 +100,6 @@ lemma pullbackShiftFunctorZero'_inv_app :
     Iso.trans_inv, NatTrans.comp_app, eqToIso_refl, Iso.refl_inv, NatTrans.id_app, assoc]
   erw [comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero'_hom_app :
     (shiftFunctorZero _ A).hom.app X = (pullbackShiftIso C φ 0 (φ 0) rfl).hom.app X ≫
       (shiftFunctorZero' C (φ 0) (by rw [map_zero])).hom.app X := by
@@ -116,7 +115,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
         (pullbackShiftIso C φ a₃ b₃ h₃).inv.app X := by
   subst h₁ h₂ h
   obtain rfl : b₃ = φ a₁ + φ a₂ := by rw [h₃, φ.map_add]
-  simp only [Functor.comp_obj, NatTrans.naturality_assoc]
+  simp only [NatTrans.naturality_assoc]
   erw [Functor.map_id, id_comp, id_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
@@ -126,7 +125,6 @@ lemma pullbackShiftFunctorAdd'_inv_app :
   congr 2
   apply eqToHom_map
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).hom.app X =
       (pullbackShiftIso C φ a₃ b₃ h₃).hom.app X ≫
@@ -210,14 +208,14 @@ namespace NatTrans
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
+open CategoryTheory.Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
   shift_comm _ := by
     ext
     dsimp [PullbackShift.natTrans]
     simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
+      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, whiskerRight_app, whiskerLeft_app,
       assoc]
     rw [← τ.naturality_assoc]
     simp [← NatTrans.shift_app_comm_assoc]
@@ -257,7 +255,7 @@ composition of `CommShift` structures by `B` on `F` and `G`), and that on
 `PullbackShift.functor F φ ⋙ PullbackShift.functor G φ` (i.e. the one coming from
 the composition of the pulled back `CommShift` structures on `F` and `G`).
 -/
-open Functor in
+open CategoryTheory.Functor in
 instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
   shift_comm _ := by
     ext
@@ -271,7 +269,6 @@ instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
 
 end NatTrans
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The adjunction `adj`, seen as an adjunction between `PullbackShift.functor F φ`
 and `PullbackShift.functor G φ`.

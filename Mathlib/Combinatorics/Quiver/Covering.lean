@@ -5,12 +5,16 @@ Authors: Antoine Labelle, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
-public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Tactic.Common
+
+import Mathlib.Combinatorics.Quiver.Cast
+import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.Attr.Core
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Covering
@@ -160,6 +164,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
@@ -255,7 +260,7 @@ namespace Prefunctor.IsCovering
 variable {φ}
 
 protected theorem pathStar_bijective (hφ : φ.IsCovering) (u : U) : Bijective (φ.pathStar u) :=
-  φ.pathStar_bijective hφ.1 u
+  φ.pathStar_bijective hφ.star_bijective u
 
 end Prefunctor.IsCovering
 

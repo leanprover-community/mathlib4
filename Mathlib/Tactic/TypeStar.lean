@@ -7,7 +7,10 @@ module
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Support for `Sort*` and `Type*`.

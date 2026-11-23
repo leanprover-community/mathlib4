@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Split
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 
 /-!
 # Filters used in box-based integrals
@@ -203,7 +203,7 @@ namespace IntegrationParams
 
 /-- Auxiliary equivalence with a product type used to lift an order. -/
 def equivProd : IntegrationParams ≃ Bool × Boolᵒᵈ × Boolᵒᵈ where
-  toFun l := ⟨l.1, OrderDual.toDual l.2, OrderDual.toDual l.3⟩
+  toFun l := ⟨l.bRiemann, OrderDual.toDual l.bHenstock, OrderDual.toDual l.bDistortion⟩
   invFun l := ⟨l.1, OrderDual.ofDual l.2.1, OrderDual.ofDual l.2.2⟩
 
 instance : PartialOrder IntegrationParams :=
@@ -330,12 +330,12 @@ variable (I) in
 theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) (hπ : l₁.MemBaseSet I c₁ r₁ π) :
     l₂.MemBaseSet I c₂ r₂ π :=
-  ⟨hπ.1.mono' hr, fun h₂ => hπ.2 (le_iff_imp.1 h.2.1 h₂),
-    fun hD => (hπ.3 (le_iff_imp.1 h.2.2 hD)).trans hc,
-    fun hD => (hπ.4 (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
+  ⟨hπ.isSubordinate.mono' hr, fun h₂ => hπ.isHenstock (le_iff_imp.1 h.2.1 h₂),
+    fun hD => (hπ.distortion_le (le_iff_imp.1 h.2.2 hD)).trans hc,
+    fun hD => (hπ.exists_compl (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
 
 variable (I) in
-@[mono]
+@[gcongr, mono]
 theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
@@ -349,7 +349,7 @@ theorem MemBaseSet.exists_common_compl
   · simpa [hU, _root_.and_comm] using
       @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_ge hc)
   by_cases hD : (l.bDistortion : Prop)
-  · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
+  · rcases h₁.exists_compl hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
   · exact ⟨π₁.toPrepartition.compl, π₁.toPrepartition.iUnion_compl,
       fun h => (hD h).elim, fun h => (hD h).elim⟩
@@ -358,19 +358,22 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
     (hle : ∀ x ∈ Box.Icc I, r₂ x ≤ r₁ x) {π₂ : Prepartition I} (hU : π₂.iUnion = ↑I \ π₁.iUnion)
     (hc : l.bDistortion → π₂.distortion ≤ c) :
     l.MemBaseSet I c r₁ (π₁.unionComplToSubordinate π₂ hU r₂) :=
-  ⟨hπ₁.1.disjUnion ((π₂.isSubordinate_toSubordinate r₂).mono hle) _,
-    fun h => (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
-    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
+  ⟨hπ₁.isSubordinate.disjUnion ((π₂.isSubordinate_toSubordinate r₂).mono hle) _,
+    fun h => (hπ₁.isHenstock h).disjUnion (π₂.isHenstock_toSubordinate _) _,
+    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le
+      (max_le (hπ₁.distortion_le h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
   classical
-  refine ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
-    fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => ?_⟩
-  rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩
+  refine ⟨fun J hJ => hπ.isSubordinate J (π.mem_filter.1 hJ).1,
+    fun hH J hJ => hπ.isHenstock hH J (π.mem_filter.1 hJ).1,
+    fun hD => (distortion_filter_le _ _).trans (hπ.distortion_le hD), fun hD => ?_⟩
+  rcases hπ.exists_compl hD with ⟨π₁, hπ₁U, hc⟩
   set π₂ := π.filter fun J => ¬p J
   have : Disjoint π₁.iUnion π₂.iUnion := by
     simpa [π₂, hπ₁U] using disjoint_sdiff_self_left.mono_right sdiff_le
@@ -386,29 +389,30 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
     · rintro ⟨hxI, hxp⟩
       by_cases hxπ : x ∈ π.iUnion
       exacts [Or.inr ⟨hxπ, hxp⟩, Or.inl ⟨hxI, hxπ⟩]
-  · have : (π.filter fun J => ¬p J).distortion ≤ c := (distortion_filter_le _ _).trans (hπ.3 hD)
+  · have : (π.filter fun J => ¬p J).distortion ≤ c :=
+      (distortion_filter_le _ _).trans (hπ.distortion_le hD)
     simpa [hc]
 
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
-  refine ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
-    fun hH => TaggedPrepartition.isHenstock_biUnionTagged.2 fun J hJ => (h J hJ).2 hH,
+  refine ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).isSubordinate,
+    fun hH => TaggedPrepartition.isHenstock_biUnionTagged.2 fun J hJ => (h J hJ).isHenstock hH,
     fun hD => ?_, fun hD => ?_⟩
   · rw [Prepartition.distortion_biUnionTagged, Finset.sup_le_iff]
-    exact fun J hJ => (h J hJ).3 hD
+    exact fun J hJ => (h J hJ).distortion_le hD
   · refine ⟨_, ?_, hc hD⟩
     rw [π.iUnion_compl, ← π.iUnion_biUnion_partition hp]
     rfl
 
-@[mono]
+@[gcongr, mono]
 theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
 
 nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
     (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
-  fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
+  fun hR x => congr(min $(h₁ hR x) $(h₂ hR x))
 
 @[gcongr, mono]
 theorem toFilterDistortion_mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) :
@@ -449,7 +453,7 @@ theorem hasBasis_toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Pr
     (l.toFilteriUnion I π₀).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
   have := fun c => l.hasBasis_toFilterDistortioniUnion I c π₀
-  simpa only [setOf_and, setOf_exists] using hasBasis_iSup this
+  simpa only [ofPred_and, ofPred_exists] using! hasBasis_iSup this
 
 theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
     (l.toFilteriUnion I ⊤).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
@@ -460,7 +464,7 @@ theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
 theorem hasBasis_toFilter (l : IntegrationParams) (I : Box ι) :
     (l.toFilter I).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π } := by
-  simpa only [setOf_exists] using hasBasis_iSup (l.hasBasis_toFilterDistortion I)
+  simpa only [ofPred_exists] using! hasBasis_iSup (l.hasBasis_toFilterDistortion I)
 
 theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J) :
     Tendsto (TaggedPrepartition.embedBox I J h) (l.toFilteriUnion I ⊤)
@@ -471,8 +475,9 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
   refine ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => ?_
   refine ⟨r, hr, fun π hπ => ?_⟩
-  rw [mem_setOf_eq, Prepartition.iUnion_top] at hπ
-  refine ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
+  rw [mem_ofPred_eq, Prepartition.iUnion_top] at hπ
+  refine ⟨⟨hπ.1.isSubordinate, hπ.1.isHenstock,
+    fun hD => le_trans (hπ.1.distortion_le hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
   · refine ⟨_, π₀.iUnion_compl.trans ?_, le_max_right _ _⟩
     congr 1
     exact (Prepartition.iUnion_single h).trans hπ.2.symm

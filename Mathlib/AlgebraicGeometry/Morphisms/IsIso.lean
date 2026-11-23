@@ -7,10 +7,11 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Being an isomorphism is local at the target
-
 -/
 
 universe u
@@ -39,14 +40,14 @@ lemma isomorphisms_eq_stalkwise :
   congr 1
   ext X Y f
   exact ⟨fun H ↦ inferInstanceAs (IsIso (TopCat.isoOfHomeo
-    (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
+    (H.1.toIsEmbedding.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
 example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
-  convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY
+  convert! HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
     (inferInstanceAs (IsIso (Spec.map (f.appTop)))),
     fun (_ : IsIso f) ↦ ⟨.of_isIso f, inferInstance⟩⟩

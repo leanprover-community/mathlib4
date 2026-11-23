@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
@@ -36,7 +35,6 @@ easily. Here we apply that construction to the case `β = Unit` and then drop `�
 
 * `ProbabilityTheory.setLIntegral_condCDF`: for all `a : α` and `x : ℝ`, all measurable set `s`,
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
-
 -/
 
 @[expose] public section
@@ -194,7 +192,7 @@ lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
   refine integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
   · exact measurable_preCDF.ennreal_toReal.aestronglyMeasurable
-  · simp_rw [← ofReal_norm_eq_enorm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
+  · simp_rw [← ofReal_norm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
     rw [← lintegral_one]
     refine (setLIntegral_le_lintegral _ _).trans (lintegral_mono_ae ?_)
     filter_upwards [preCDF_le_one ρ] with a ha using ENNReal.ofReal_toReal_le.trans (ha _)

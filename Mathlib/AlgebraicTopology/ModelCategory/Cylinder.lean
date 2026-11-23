@@ -33,7 +33,6 @@ in the lemma `Cylinder.exists_very_good`.
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/cylinder+object
-
 -/
 
 @[expose] public section
@@ -67,16 +66,15 @@ attribute [reassoc (attr := simp)] i₀_π i₁_π
 variable {A : C} (P : Precylinder A)
 
 /-- The precylinder object obtained by switching the two inclusions. -/
-@[simps]
+@[simps, implicit_reducible]
 def symm : Precylinder A where
   I := P.I
   i₀ := P.i₁
   i₁ := P.i₀
   π := P.π
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two precylinders. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def trans (P' : Precylinder A) [HasPushout P.i₁ P'.i₀] :
     Precylinder A where
   I := pushout P.i₁ P'.i₀
@@ -93,11 +91,9 @@ a cylinder object for `A`. `P` shall be a *good* cylinder object
 when this morphism is a cofibration. -/
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_i : coprod.inl ≫ P.i = P.i₀ := by simp [i]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 
@@ -105,6 +101,28 @@ end
 
 @[simp, reassoc]
 lemma symm_i [HasBinaryCoproducts C] : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by cat_disch
+
+/-- The precylinder in a full subcategory of `C` induced by a precylinder
+in the category `C`. -/
+@[simps, implicit_reducible]
+def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : Precylinder X.obj)
+    (hQ : P Q.I) :
+    Precylinder X where
+  I := ⟨Q.I, hQ⟩
+  i₀ := P.homMk Q.i₀
+  i₁ := P.homMk Q.i₁
+  π := P.homMk Q.π
+
+/-- The image of a precylinder by a functor. -/
+@[simps, implicit_reducible]
+def map {X : C} (P : Precylinder X) {D : Type*} [Category* D] (F : C ⥤ D) :
+    Precylinder (F.obj X) where
+  I := F.obj P.I
+  i₀ := F.map P.i₀
+  i₁ := F.map P.i₁
+  π := F.map P.π
+  i₀_π := by simp [← F.map_comp]
+  i₁_π := by simp [← F.map_comp]
 
 end Precylinder
 
@@ -122,7 +140,7 @@ section
 variable {A : C} [CategoryWithWeakEquivalences C] (P : Cylinder A)
 
 /-- The cylinder object obtained by switching the two inclusions. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def symm : Cylinder A where
   __ := P.toPrecylinder.symm
   weakEquivalence_π := by dsimp; infer_instance
@@ -208,17 +226,15 @@ section
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
     (codiag A))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious
 map `A ⨿ A ⟶ A` as a cofibration followed by a trivial fibration. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofFactorizationData : Cylinder A where
   I := h.Z
   i₀ := coprod.inl ≫ h.i
   i₁ := coprod.inr ≫ h.i
   π := h.p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 
@@ -240,9 +256,8 @@ lemma exists_very_good :
 
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two good cylinders. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
     Cylinder A where
   __ := P.toPrecylinder.trans P'.toPrecylinder
@@ -255,7 +270,6 @@ noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
     dsimp
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsCofibrant A] (P P' : Cylinder A) [P.IsGood] [P'.IsGood] :
     (P.trans P').IsGood where
   cofibration_i := by

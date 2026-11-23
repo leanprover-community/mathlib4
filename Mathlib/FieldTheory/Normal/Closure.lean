@@ -5,10 +5,11 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.FieldTheory.Normal.Basic
-public import Mathlib.Order.Closure
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal closures
 
@@ -109,7 +110,7 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
   refine fun x _ ↦ ((⨆ f : K →ₐ[F] L, f.fieldRange).val).injective.mem_set_image |>.mp ?_
   rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
     ← IntermediateField.coe_map, IntermediateField.map_iSup]
-  refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
+  refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.property
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
   rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
 
@@ -174,7 +175,7 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
 @[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
-  haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
+  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
@@ -239,7 +240,8 @@ variable [Normal F L]
 
 lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
   refine (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
-  · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)
+  · exact le_iSup_of_le (f.liftNormal L)
+      (fun b ⟨a, h⟩ ↦ ⟨a, a.property, h ▸ f.liftNormal_commutes L a⟩)
   · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
 lemma normalClosure_def'' : normalClosure F K L = ⨆ f : Gal(L/F), K.map f := by
@@ -261,8 +263,6 @@ noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L
   monotone' K K' := normalClosure_mono K K'
   le_closure' := le_normalClosure
   idempotent' K := normalClosure_of_normal (normalClosure F K L)
-
-@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
 
 variable {K : IntermediateField F L} {F L}
 

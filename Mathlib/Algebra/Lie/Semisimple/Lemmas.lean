@@ -25,7 +25,6 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
   `(toEnd R L M).range ≤ LieAlgebra.derivedSeries R (Module.End R M) 1`, prove
   `f ∈ LieAlgebra.derivedSeries k (Module.End k V) 1 ↔ LinearMap.trace k _ f = 0`, and restate
   `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful` using `LieModule.IsTracefree`.
-
 -/
 
 public section
@@ -39,7 +38,6 @@ variable (k L M : Type*) [Field k] [CharZero k]
   [AddCommGroup M] [Module k M] [LieRingModule L M] [LieModule k L M] [Module.Finite k M]
   [IsIrreducible k L M] [IsFaithful k L M] [IsTriangularizable k L M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCentralRadical_and_of_isIrreducible_of_isFaithful :
     HasCentralRadical k L ∧ (∀ x, x ∈ center k L ↔ toEnd k L M x ∈ k ∙ LinearMap.id) := by
   have _i := nontrivial_of_isIrreducible k L M

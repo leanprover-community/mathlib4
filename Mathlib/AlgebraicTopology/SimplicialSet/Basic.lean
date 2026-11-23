@@ -6,9 +6,9 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.Tactic.FinCases
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Simplicial sets
@@ -19,7 +19,6 @@ i.e. a `Type`-valued presheaf on the simplex category.
 (One might be tempted to call these "simplicial types" when working in type-theoretic foundations,
 but this would be unnecessarily confusing given the existing notion of a simplicial type in
 homotopy type theory.)
-
 -/
 
 @[expose] public section
@@ -28,7 +27,7 @@ universe v u
 
 open CategoryTheory Limits Functor ConcreteCategory
 
-open Simplicial
+open scoped Simplicial
 
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
@@ -53,7 +52,7 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]
 def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
-  app n := TypeCat.ofHom (fun _ ↦ Y.map (n.unop.const _ 0).op y)
+  app n := ↾fun _ ↦ Y.map (n.unop.const _ 0).op y
   naturality _ _ _ := by
     ext
     dsimp
@@ -192,6 +191,13 @@ augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
 
+/-- Given `X : SSet`, this is the augmented simplicial set given by
+the natural transformation from `X` to the constant functor with value `PUnit`. -/
+abbrev toAugmented (X : SSet.{u}) : Augmented.{u} where
+  left := X
+  right := PUnit
+  hom.app _ := ↾fun _ ↦ .unit
+
 section applications
 variable {S : SSet}
 
@@ -200,7 +206,7 @@ lemma δ_comp_δ_apply {n} {i j : Fin (n + 2)} (H : i ≤ j) (x : S _⦋n + 2⦌
 
 lemma δ_comp_δ'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j)
     (x : S _⦋n + 2⦌) : S.δ i (S.δ j x) =
-      S.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) (S.δ i.castSucc x) :=
+      S.δ (j.pred H.ne_zero) (S.δ i.castSucc x) :=
   congr_hom (S.δ_comp_δ' H) x
 
 lemma δ_comp_δ''_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j)
@@ -239,7 +245,7 @@ lemma δ_comp_σ_of_gt_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.ca
 lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i)
     (x : S _⦋n + 1⦌) : S.δ i (S.σ j x) =
       S.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le)))
-        (S.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) x) :=
+        (S.δ (i.pred H.ne_zero) x) :=
   congr_hom (S.δ_comp_σ_of_gt' H) x
 
 lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _⦋n⦌) :

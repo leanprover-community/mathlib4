@@ -7,12 +7,14 @@ Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
 module
 
 public import Mathlib.NumberTheory.FLT.Basic
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
+
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
+import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
+
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
@@ -47,7 +49,6 @@ The strategy is the following:
   elementary on paper, would be quite annoying to formalize: indeed it involves a lot of explicit
   computations in `ℤ[ζ₃] / (λ)`: this ring is isomorphic to `ℤ / 9ℤ`, but of course, even if we
   construct such an isomorphism, tactics like `decide` would not work.
-
 -/
 
 section case1
@@ -88,7 +89,7 @@ lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
     convert Hgcd using 2
     rw [Finset.pair_comm, Finset.insert_comm]
-  by_contra! h3b
+  by_contra h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
@@ -211,7 +212,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
-  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_isUnit S'.hc
 
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/
@@ -448,8 +449,8 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
   convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
   symm
-  calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
-  _ = 2 * η.1 ^ 2 + 3 * η + 1 := by ring
+  calc _ = (-(η).val - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
+  _ = 2 * (η).val ^ 2 + 3 * η + 1 := by ring
   _ = λ := by rw [eta_sq, coe_eta]; ring
 
 end IsCyclotomicExtension
@@ -565,7 +566,7 @@ lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
 
 lemma exists_cube_associated :
     (∃ X, Associated (X ^ 3) S.x) ∧ (∃ Y, Associated (Y ^ 3) S.y) ∧
-      ∃ Z, Associated (Z ^ 3) S.z := by classical
+      ∃ Z, Associated (Z ^ 3) S.z := by
   have h₁ := S.isCoprime_x_z.mul_left S.isCoprime_y_z
   have h₂ : Associated (S.w ^ 3) (S.x * S.y * S.z) :=
     ⟨S.u, by rw [x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm]⟩
@@ -628,8 +629,8 @@ lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
 noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
-example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
-  exact mul_ne_zero ha hb
+example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
+  mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in
@@ -732,7 +733,7 @@ lemma Solution'_descent_multiplicity_lt :
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
 theorem exists_Solution_multiplicity_lt :
-    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by classical
+    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by
   obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_descent S)
   exact ⟨S', hS' ▸ Solution'_descent_multiplicity_lt S⟩
 
@@ -748,7 +749,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
-  classical
   let K := CyclotomicField 3 ℚ
   let hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have : NumberField K := IsCyclotomicExtension.numberField {3} ℚ _

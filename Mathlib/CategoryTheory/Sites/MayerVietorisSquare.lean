@@ -9,11 +9,10 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.Square
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.Adjunction
-public import Mathlib.CategoryTheory.Sites.Sheafification
+
+import Mathlib.CategoryTheory.Sites.Adjunction
 
 /-!
 # Mayer-Vietoris squares
@@ -49,7 +48,6 @@ that it is indeed satisfied by sheaves.
 
 ## References
 * https://stacks.math.columbia.edu/tag/08GL
-
 -/
 
 @[expose] public section
@@ -59,9 +57,9 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C]
-  {J : GrothendieckTopology C}
+variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
@@ -75,10 +73,7 @@ lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
   all_goals
     ext x
-    dsimp
-    rw [yonedaEquiv_naturality]
-    erw [Adjunction.homEquiv_naturality_left]
-    rfl
+    simp [Adjunction.homEquiv, yonedaEquiv_naturality]
 
 namespace GrothendieckTopology
 
@@ -128,7 +123,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
   mk' sq (fun F ↦ by
     apply Square.IsPullback.mk
     refine PullbackCone.IsLimit.mk _
-      (fun s ↦ F.2.amalgamateOfArrows _ h₂
+      (fun s ↦ F.property.amalgamateOfArrows _ h₂
         (fun j ↦ WalkingPair.casesOn j s.fst s.snd)
         (fun W ↦ by
           rintro (_ | _) (_ | _) a b fac
@@ -140,13 +135,13 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
             simpa using s.condition.symm =≫ F.obj.map φ.op
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₃₄] using fac
             rfl)) (fun _ ↦ ?_) (fun _ ↦ ?_) (fun s m hm₁ hm₂ ↦ ?_)
-    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
-    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
-    · apply F.2.hom_ext_ofArrows _ h₂
+    · exact F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
+    · exact F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
+    · apply F.property.hom_ext_ofArrows _ h₂
       rintro (_ | _)
-      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
+      · rw [F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
         exact hm₁
-      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
+      · rw [F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
         exact hm₂)
 
 variable (S : J.MayerVietorisSquare)
@@ -248,6 +243,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by

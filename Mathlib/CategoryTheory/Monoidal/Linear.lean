@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear monoidal categories
 
@@ -64,7 +67,5 @@ theorem MonoidalLinear.ofFaithful {D : Type*} [Category* D] [Preadditive D] [Lin
       apply F.map_injective
       rw [Functor.Monoidal.map_whiskerRight]
       simp }
-
-@[deprecated (since := "2025-10-17")] alias monoidalLinearOfFaithful := MonoidalLinear.ofFaithful
 
 end CategoryTheory

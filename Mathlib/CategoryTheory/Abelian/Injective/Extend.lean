@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective resolutions as cochain complexes indexed by the integers
 
@@ -15,7 +18,6 @@ Given an injective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.cocomplex : CochainComplex C ℕ`, and the quasi-isomorphism
 `R.ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainComplex`.
-
 -/
 
 @[expose] public section
@@ -55,10 +57,6 @@ lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : k₁ = n₁) 
     R.cochainComplex.d n₁ n₂ = (cochainComplexXIso _ _ _ h₁).hom ≫
       R.cocomplex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _ h₂).inv :=
   HomologicalComplex.extend_d_eq _ _ h₁ h₂
-
-instance : R.cochainComplex.IsStrictlyGE 0 := by
-  dsimp [cochainComplex]
-  infer_instance
 
 instance (n : ℤ) : Injective (R.cochainComplex.X n) := by
   by_cases hn : 0 ≤ n
@@ -112,13 +110,11 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
     cochainComplexXIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=
   HomologicalComplex.from_single_hom_ext (by
     simp [hom'_f _ 0 0 rfl, ι'_f_zero, CochainComplex.singleFunctor,
-      CochainComplex.singleFunctors,
       HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
       HomologicalComplex.singleObjXIsoOfEq])
 

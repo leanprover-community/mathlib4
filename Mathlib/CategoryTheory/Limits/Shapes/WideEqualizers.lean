@@ -5,7 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
@@ -52,7 +51,7 @@ namespace CategoryTheory.Limits
 
 open CategoryTheory
 
-universe w v u u₂
+universe w w' v u u₂
 
 variable {J : Type w}
 
@@ -149,6 +148,28 @@ theorem parallelFamily_obj_one : (parallelFamily f).obj one = Y :=
 theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j :=
   rfl
 
+/-- A bijection between types gives an equivalence between `WalkingParallelFamily` categories. -/
+@[simps]
+def WalkingParallelFamily.equivalenceOfEquiv {J' : Type w'} (e : J ≃ J') :
+    WalkingParallelFamily J ≌ WalkingParallelFamily J' where
+  functor :=
+    parallelFamily (X := .zero) (Y := .one) (fun j ↦ .line (e j))
+  inverse :=
+    parallelFamily (X := .zero) (Y := .one) (fun j ↦ .line (e.symm j))
+  unitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | zero => Iso.refl _
+        | one => Iso.refl _)
+      (fun f ↦ by induction f <;> cat_disch)
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | zero => Iso.refl _
+        | one => Iso.refl _)
+      (fun f ↦ by induction f <;> cat_disch)
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every functor indexing a wide (co)equalizer is naturally isomorphic (actually, equal) to a
     `parallelFamily` -/
 @[simps!]
@@ -247,10 +268,16 @@ theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂
     (Cotrident.ofπ π w).π = π :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
   rw [t.app_one, t.app_one]
@@ -313,10 +340,9 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
 def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
     (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
     IsLimit t :=
-  Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w zero)
+  Trident.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w zero)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a slightly more convenient method to verify that a cotrident is a colimit cocone. It
     only asks for a proof of facts that carry any mathematical content -/
 def Cotrident.IsColimit.mk [Nonempty J] (t : Cotrident f) (desc : ∀ s : Cotrident f, t.pt ⟶ s.pt)
@@ -338,8 +364,8 @@ def Cotrident.IsColimit.mk' [Nonempty J] (t : Cotrident f)
     (create :
       ∀ s : Cotrident f, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) :
     IsColimit t :=
-  Cotrident.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w one)
+  Cotrident.IsColimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w one)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -351,7 +377,7 @@ Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
 def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
-  invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
+  invFun h := (Trident.IsLimit.lift' ht _ h.prop).val
   left_inv _ := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
   right_inv _ := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
 
@@ -362,7 +388,6 @@ theorem Trident.IsLimit.homIso_natural [Nonempty J] {t : Trident f} (ht : IsLimi
       q ≫ (Trident.IsLimit.homIso ht _ k : Z ⟶ X) :=
   Category.assoc _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone for the family `f : J → (X ⟶ Y)`, for any `Z`, morphisms from the cocone
 point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 `∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h`.  Further, this bijection is natural in `Z`: see
@@ -372,7 +397,7 @@ point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t) (Z : C) :
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
-  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).1
+  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).val
   left_inv _ := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
   right_inv _ := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
 
@@ -436,6 +461,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
     `fun j ↦ F.map (line j)`. -/
@@ -478,7 +504,6 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
   hom := Trident.mkHom i.hom w
   inv := Trident.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Helper function for constructing morphisms between coequalizer cotridents.
 -/
 @[simps]
@@ -490,7 +515,6 @@ def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
     · simpa using f (Classical.arbitrary J) ≫= w
     · exact w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism between cotridents,
 it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
@@ -537,6 +561,7 @@ theorem wideEqualizer.trident_π_app_zero :
 theorem wideEqualizer.condition (j₁ j₂ : J) : wideEqualizer.ι f ≫ f j₁ = wideEqualizer.ι f ≫ f j₂ :=
   Trident.condition j₁ j₂ <| limit.cone <| parallelFamily f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The wideEqualizer built from `wideEqualizer.ι f` is limiting. -/
 def wideEqualizerIsWideEqualizer [Nonempty J] :
     IsLimit (Trident.ofι (wideEqualizer.ι f) (wideEqualizer.condition f)) :=
@@ -623,6 +648,8 @@ theorem wideCoequalizer.condition (j₁ j₂ : J) :
     f j₁ ≫ wideCoequalizer.π f = f j₂ ≫ wideCoequalizer.π f :=
   Cotrident.condition j₁ j₂ <| colimit.cocone <| parallelFamily f
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The cotrident built from `wideCoequalizer.π f` is colimiting. -/
 def wideCoequalizerIsWideCoequalizer [Nonempty J] :
     IsColimit (Cotrident.ofπ (wideCoequalizer.π f) (wideCoequalizer.condition f)) :=

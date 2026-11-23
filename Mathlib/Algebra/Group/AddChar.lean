@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Units.Equiv
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -92,9 +94,10 @@ section Basic
 variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ : AddChar A M}
 
 /-- Define coercion to a function. -/
+@[macro_inline]
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
-  coe_injective' φ ψ h := by cases φ; cases ψ; congr
+  coe_injective φ ψ h := by cases φ; cases ψ; congr
 
 initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 
@@ -185,17 +188,24 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
 
+instance : IsOneApply (AddChar A M) where
+
 /-- The trivial additive character (sending everything to `1`). -/
 instance instZero : Zero (AddChar A M) := ⟨1⟩
 
-@[simp, norm_cast] lemma coe_one : ⇑(1 : AddChar A M) = 1 := rfl
+@[deprecated FunLike.coe_one +typeChanged (since := "2026-10-26")]
+lemma coe_one : ⇑(1 : AddChar A M) = 1 := rfl
+
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : AddChar A M) = 1 := rfl
-@[simp] lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
-@[simp] lemma zero_apply (a : A) : (0 : AddChar A M) a = 1 := rfl
+
+@[deprecated one_apply +typeChanged (since := "2026-10-26")]
+protected lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
+
+@[simp] protected lemma zero_apply (a : A) : (0 : AddChar A M) a = 1 := rfl
 
 lemma one_eq_zero : (1 : AddChar A M) = (0 : AddChar A M) := rfl
 
-@[simp, norm_cast] lemma coe_eq_one : ⇑ψ = 1 ↔ ψ = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
+@[norm_cast] lemma coe_eq_one : ⇑ψ = 1 ↔ ψ = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 @[simp] lemma toMonoidHomEquiv_zero : toMonoidHomEquiv (0 : AddChar A M) = 1 := rfl
 @[simp] lemma toMonoidHomEquiv_symm_one :
@@ -268,12 +278,21 @@ instance instCommMonoid : CommMonoid (AddChar A M) :=
 instance instAddCommMonoid : AddCommMonoid (AddChar A M) :=
   inferInstanceAs (AddCommMonoid (Additive (AddChar A M)))
 
-@[simp, norm_cast] lemma coe_mul (ψ χ : AddChar A M) : ⇑(ψ * χ) = ψ * χ := rfl
+instance : IsMulApply (AddChar A M) where
+
+instance : IsPowApply ℕ (AddChar A M) where
+
+@[deprecated FunLike.coe_mul +typeChanged (since := "2026-10-26")]
+lemma coe_mul (ψ χ : AddChar A M) : ⇑(ψ * χ) = ψ * χ := rfl
+
 @[simp, norm_cast] lemma coe_add (ψ χ : AddChar A M) : ⇑(ψ + χ) = ψ * χ := rfl
-@[simp, norm_cast] lemma coe_pow (ψ : AddChar A M) (n : ℕ) : ⇑(ψ ^ n) = ψ ^ n := rfl
+
+@[deprecated FunLike.coe_pow +typeChanged (since := "2026-10-26")]
+lemma coe_pow (ψ : AddChar A M) (n : ℕ) : ⇑(ψ ^ n) = ψ ^ n := rfl
+
 @[simp, norm_cast] lemma coe_nsmul (n : ℕ) (ψ : AddChar A M) : ⇑(n • ψ) = ψ ^ n := rfl
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_prod +typeChanged (since := "2026-10-26")]
 lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
@@ -281,15 +300,21 @@ lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = �
 lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
-@[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
-@[simp] lemma add_apply (ψ φ : AddChar A M) (a : A) : (ψ + φ) a = ψ a * φ a := rfl
-@[simp] lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
-@[simp] lemma nsmul_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (n • ψ) a = (ψ a) ^ n := rfl
+@[deprecated mul_apply +typeChanged (since := "2026-10-26")]
+protected lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
 
-lemma prod_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
+@[simp] protected lemma add_apply (ψ φ : AddChar A M) (a : A) : (ψ + φ) a = ψ a * φ a := rfl
+
+@[deprecated pow_apply +typeChanged (since := "2026-10-26")]
+protected lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
+
+@[simp] protected lemma nsmul_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (n • ψ) a = (ψ a) ^ n := rfl
+
+@[deprecated prod_apply +typeChanged (since := "2026-10-26")]
+protected lemma prod_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
     (∏ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_prod, Finset.prod_apply]
 
-lemma sum_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
+protected lemma sum_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
     (∑ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_sum, Finset.prod_apply]
 
 lemma mul_eq_add (ψ χ : AddChar A M) : ψ * χ = ψ + χ := rfl
@@ -338,7 +363,6 @@ lemma sum_eq_ite (ψ : AddChar A R) [Decidable (ψ = 0)] :
 variable [CharZero R]
 
 lemma sum_eq_zero_iff_ne_zero : ∑ x, ψ x = 0 ↔ ψ ≠ 0 := by
-  classical
   rw [sum_eq_ite, Ne.ite_eq_right_iff]; exact Nat.cast_ne_zero.2 Fintype.card_ne_zero
 
 lemma sum_ne_zero_iff_eq_zero : ∑ x, ψ x ≠ 0 ↔ ψ = 0 := sum_eq_zero_iff_ne_zero.not_left
@@ -442,7 +466,7 @@ def mulShift (ψ : AddChar R M) (r : R) : AddChar R M :=
 @[simp] lemma mulShift_apply {ψ : AddChar R M} {r : R} {x : R} : mulShift ψ r x = ψ (r * x) :=
   rfl
 
-/-- `ψ⁻¹ = mulShift ψ (-1))`. -/
+/-- `ψ⁻¹ = mulShift ψ (-1)`. -/
 theorem inv_mulShift (ψ : AddChar R M) : ψ⁻¹ = mulShift ψ (-1) := by
   ext
   rw [inv_apply, mulShift_apply, neg_mul, one_mul]
@@ -481,7 +505,7 @@ lemma mulShift_unit_eq_one_iff (ψ : AddChar R M) {u : R} (hu : IsUnit u) :
   refine ⟨fun h ↦ ?_, ?_⟩
   · ext1 y
     rw [show y = u * (hu.unit⁻¹ * y) by rw [← mul_assoc, IsUnit.mul_val_inv, one_mul]]
-    simpa only [mulShift_apply] using DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
+    simpa only [mulShift_apply] using! DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
   · solve_by_elim
 
 end Ring

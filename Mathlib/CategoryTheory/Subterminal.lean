@@ -5,9 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Subobject.MonoOver
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subterminal objects
@@ -25,7 +26,6 @@ We also construct the subcategory of subterminal objects.
 * Define exponential ideals, and show this subcategory is an exponential ideal.
 * Use the above to show that in a locally Cartesian closed category, every subobject lattice
   is Cartesian closed (equivalently, a Heyting algebra).
-
 -/
 
 @[expose] public section
@@ -84,7 +84,6 @@ theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal 
 theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
   subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
 The converse of `isSubterminal_of_isIso_diag`.
 -/
@@ -94,7 +93,6 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
         rw [IsSubterminal.def] at hA
         cat_disch⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
 -/
@@ -137,7 +135,7 @@ instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful
   ObjectProperty.faithful_ι _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) where
-  allEq _ _ := ObjectProperty.hom_ext _ (Y.2 _ _)
+  allEq _ _ := ObjectProperty.hom_ext _ (Y.property _ _)
 
 /--
 The category of subterminal objects is equivalent to the category of monomorphisms to the terminal
@@ -146,14 +144,14 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 @[simps]
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
-    { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
+    { obj := fun X => ⟨Over.mk (terminal.from X.obj), X.property.mono_terminal_from⟩
       map := fun f => MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩) }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => ObjectProperty.homMk f.hom.1 }
+      map := fun f => ObjectProperty.homMk f.hom.left }
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
   counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
   functor_unitIso_comp := by subsingleton
