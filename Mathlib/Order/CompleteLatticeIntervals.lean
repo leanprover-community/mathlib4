@@ -44,8 +44,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
     then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
     else default
 
-attribute [local instance] subsetSupSet
-
+attribute [local instance] subsetSupSet in
 open scoped Classical in
 @[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sSup_def [Inhabited s] :
@@ -55,14 +54,20 @@ theorem subset_sSup_def [Inhabited s] :
       else default :=
   rfl
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [h, h', h'']
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
   simp [sSup]
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
     sSup t = default := by
   simp [sSup, ht]
@@ -84,8 +89,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
     then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩
     else default
 
-attribute [local instance] subsetInfSet
-
+attribute [local instance] subsetInfSet in
 open scoped Classical in
 @[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sInf_def [Inhabited s] :
@@ -95,14 +99,20 @@ theorem subset_sInf_def [Inhabited s] :
       default :=
   rfl
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [h, h', h'']
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
   simp [sInf]
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
     sInf t = default := by
   simp [sInf, ht]

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Span.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional results about finite spanning sets in linear algebra
 -/

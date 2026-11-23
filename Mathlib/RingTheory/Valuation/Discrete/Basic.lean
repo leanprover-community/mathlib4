@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Discrete Valuations

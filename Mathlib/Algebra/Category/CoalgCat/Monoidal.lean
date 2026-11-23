@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on `R`-coalgebras
 

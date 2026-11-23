@@ -509,11 +509,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
-    #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
-    The new canonicalizer using `isDefEq` less,
-    and so does not unify as many of the conditions that `grind` wants to case split on.
-    Alternatively `simp; grind` also works here. -/
-    grind (splits := 12)
+    grind
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form
 `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets.
@@ -624,7 +620,7 @@ instance [T2Space α] : T2Space (Compacts α) where
   t2 K₁ K₂ h := by
     wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
     · grind [Disjoint.symm, le_antisymm]
-    rw [IsConcreteLE.not_le_iff_exists] at h'
+    rw [not_le_iff_exists_mem_notMem] at h'
     obtain ⟨x, hx₁, hx₂⟩ := h'
     obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
     exact ⟨_, _, isOpen_inter_nonempty_of_isOpen hV, isOpen_subsets_of_isOpen hU, ⟨x, hx₁, hV'⟩,

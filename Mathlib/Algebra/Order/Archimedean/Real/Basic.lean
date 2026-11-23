@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Order.Int.LeastGreatest
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.

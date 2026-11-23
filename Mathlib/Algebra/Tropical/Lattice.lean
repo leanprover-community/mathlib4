@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.Order.Bounds.OrderIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order on tropical algebraic structure
 

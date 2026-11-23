@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas on extended non-negative reals
 

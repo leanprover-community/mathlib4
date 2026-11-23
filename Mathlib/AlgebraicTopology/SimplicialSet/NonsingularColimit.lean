@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular simplicial sets, as colimits of standard simplices
 

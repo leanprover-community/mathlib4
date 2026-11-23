@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Adjoin.Field
 
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting fields
 

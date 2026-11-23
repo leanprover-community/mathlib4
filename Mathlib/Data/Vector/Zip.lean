@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `zipWith` operation on vectors.
 -/

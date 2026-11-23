@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Precylinder and pre-path objects in the category of homological complexes
 

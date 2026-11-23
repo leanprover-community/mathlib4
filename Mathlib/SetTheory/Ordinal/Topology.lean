@@ -11,6 +11,9 @@ public import Mathlib.Topology.Order.SuccPred
 
 import Mathlib.Topology.Order.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology of ordinals
 

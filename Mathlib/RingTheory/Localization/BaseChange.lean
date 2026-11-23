@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localized Module
 
@@ -335,10 +338,10 @@ theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
 
 /-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
 noncomputable def tensorRightAlgEquiv :
-    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) where
-  __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
-    (tensorLeftAlgEquiv M S).toRingEquiv
-  commutes' := tensorLeftAlgEquiv_apply_one_tmul M S
+    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+  .ofCommutes ((Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
+      (tensorLeftAlgEquiv M S).toRingEquiv)
+    (tensorLeftAlgEquiv_apply_one_tmul M S)
 
 @[simp]
 theorem tensorRightAlgEquiv_apply_tmul_one (x : Localization M) :
