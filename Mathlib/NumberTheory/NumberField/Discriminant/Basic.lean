@@ -45,7 +45,7 @@ open scoped Real nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
-open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
+open MeasureTheory MeasureTheory.Measure NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
@@ -88,8 +88,8 @@ theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
 end rootDiscr
 
 open scoped Classical in
-theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
-    volume (fundamentalDomain (latticeBasis K)) =
+theorem _root_.NumberField.mixedEmbedding.volume_halfOpenParallelepiped_latticeBasis :
+    volume (halfOpenParallelepiped ℝ (latticeBasis K)) =
       (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ := by
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
@@ -99,11 +99,12 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     (RingHom.equivRatAlgHom K ℂ)
   suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
-    calc volume (fundamentalDomain (latticeBasis K))
+    calc volume (halfOpenParallelepiped ℝ (latticeBasis K))
       _ = ‖((mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)).det‖₊ := by
-        rw [← fundamentalDomain_reindex _ e.symm, ← norm_toNNReal, measure_fundamentalDomain
-          ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
-        rfl
+        rw [← halfOpenParallelepiped_comp_equiv (latticeBasis K) e,
+          addHaar_halfOpenParallelepiped_eq volume (mixedEmbedding.stdBasis K),
+          volume_halfOpenParallelepiped_stdBasis, mul_one, Basis.det_apply, Basis.coe_reindex,
+          Equiv.symm_symm, ← Real.eNorm_eq_ofReal_abs, eNorm_eq_nnNorm]
       _ = ‖(matrixToStdBasis K).det * N.det‖₊ := by
         rw [← nnNorm_real, ← ofRealHom_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
           det_mul, det_transpose, det_reindex_self]
@@ -122,24 +123,29 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
+@[deprecated (since := "2026-11-23")]
+alias _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :=
+  _root_.NumberField.mixedEmbedding.volume_halfOpenParallelepiped_latticeBasis
+
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     (mixedEmbedding.integerLattice K).covolume =
       (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
-  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
-    measureReal_def,
-    volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
-    ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnNorm,
-    Int.norm_eq_abs]
+  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _
+      (isAddFundamentalDomain_integerLattice_halfOpenParallelepiped K),
+    measureReal_def, volume_halfOpenParallelepiped_latticeBasis, ENNReal.toReal_mul,
+    ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt,
+    coe_nnNorm, Int.norm_eq_abs]
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     (mixedEmbedding.idealLattice K I).covolume =
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
         (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
-  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
-    measureReal_def,
-    volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
+  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _
+      (isAddFundamentalDomain_idealLattice_halfOpenParallelepiped K I),
+    measureReal_def, volume_halfOpenParallelepiped_fractionalIdealLatticeBasis,
+    volume_halfOpenParallelepiped_latticeBasis,
     ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnNorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
@@ -169,8 +175,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
           (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K /
             (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor,
-        volume_fundamentalDomain_fractionalIdealLatticeBasis,
-        volume_fundamentalDomain_latticeBasis, toReal_mul, toReal_pow, toReal_inv, coe_toReal,
+        volume_halfOpenParallelepiped_fractionalIdealLatticeBasis,
+        volume_halfOpenParallelepiped_latticeBasis, toReal_mul, toReal_pow, toReal_inv, coe_toReal,
         toReal_ofNat, mixedEmbedding.finrank, mul_assoc]
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val))]
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
@@ -373,9 +379,9 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by
     simp_rw [boundOfDiscBdd, add_tsub_cancel_right, lt_add_iff_pos_right, zero_lt_one]
   refine lt_of_le_of_lt ?_ (coe_lt_coe.mpr this)
-  rw [minkowskiBound, volume_fundamentalDomain_fractionalIdealLatticeBasis, boundOfDiscBdd,
+  rw [minkowskiBound, volume_halfOpenParallelepiped_fractionalIdealLatticeBasis, boundOfDiscBdd,
     add_tsub_cancel_right, Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one,
-    ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
+    ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_halfOpenParallelepiped_latticeBasis,
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
   · exact pow_le_one₀ (by positivity) (by simp)
