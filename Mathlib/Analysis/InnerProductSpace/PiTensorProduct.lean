@@ -235,10 +235,11 @@ lemma reindexIsometry_apply (x : ⨂[𝕜] i : ι, E i) : reindexIsometry 𝕜 E
   rfl
 
 @[simp]
-lemma reindexIsometry_refl : reindexIsometry 𝕜 E (.refl ι) = .refl 𝕜 (⨂[𝕜] i, E i) := by
-  ext
-  rw [reindexIsometry_apply, reindex_refl]
-  rfl
+lemma toLinearEquiv_reindexIsometry : (reindexIsometry 𝕜 E e).toLinearEquiv = reindex 𝕜 E e := rfl
+
+@[simp]
+lemma reindexIsometry_refl : reindexIsometry 𝕜 E (.refl ι) = .refl 𝕜 (⨂[𝕜] i, E i) :=
+  LinearIsometryEquiv.toLinearEquiv_inj.mp <| by ext; simp
 
 end Reindex
 
