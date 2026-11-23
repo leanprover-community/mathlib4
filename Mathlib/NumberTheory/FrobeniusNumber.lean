@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RingTheory.Ideal.NatInt
 
-import Mathlib.Tactic.LinearCombination
-
 /-!
 # Frobenius Number
 
@@ -100,7 +98,9 @@ theorem mem_closure_pair_iff_notMem_mul_sub_sub_sub (cop : Coprime m n) (hm : 1 
       refine ⟨(u * k) % n, v * k + (u * k) / n * m, Int.emod_nonneg _ hn0.ne',
         Int.emod_lt_of_pos _ hn0, ?_⟩
       have := Int.emod_add_mul_ediv (u * k) n
-      linear_combination (m : ℤ) * this + (k : ℤ) * huv
+      calc _ = (m : ℤ) * ((u * k) % n + n * ((u * k) / n)) + k * (v * n) := by ring
+        _ = k * (u * m + v * n) := by rw [this]; ring
+        _ = k := by rw [huv, mul_one]
     have hb : b < 0 := by
       by_contra hb
       obtain ⟨a, rfl⟩ := Int.eq_ofNat_of_zero_le ha0
@@ -113,7 +113,8 @@ theorem mem_closure_pair_iff_notMem_mul_sub_sub_sub (cop : Coprime m n) (hm : 1 
     zify [hk]
     simp only [smul_eq_mul, Nat.cast_mul, hN']
     rw [← ha', ← hb']
-    linear_combination (-1 : ℤ) * hab
+    rw [← hab]
+    ring
 
 namespace Nat
 
