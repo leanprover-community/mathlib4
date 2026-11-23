@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Balanced categories
 
