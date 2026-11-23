@@ -562,8 +562,7 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
     exact (Module.End.isUnit_iff _).mp <| hf.map_units s
   surj x := by
     obtain ⟨p, h⟩ := hf.surj (e.symm x)
-    exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, ← e.congr_arg h,
-      Submonoid.smul_def, Submonoid.smul_def, map_smul, LinearEquiv.apply_symm_apply]⟩
+    exact ⟨p, by simp [← e.congr_arg h, Submonoid.smul_def, LinearEquiv.apply_symm_apply]⟩
   exists_of_eq h := by
     simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
