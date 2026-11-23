@@ -609,5 +609,3 @@ attribute [local pp_with_univ] TopCat
 
 end subobject
 end Sierpinski
-
-

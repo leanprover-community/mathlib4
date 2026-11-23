@@ -403,4 +403,3 @@ example :=
       o₁   o₂  ╌╌→  TF=o₁  o₂=FT   :   o₁   o₂  ╌╌→  TF   FT
         ╲ ╱              ╲ ╱             ╲ ╱           ╲ ╱
      └   c   ┘     └      c     ┘     └   c   ┘     └   F   ┘)
-
