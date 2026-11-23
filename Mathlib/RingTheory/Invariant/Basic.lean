@@ -77,12 +77,10 @@ instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] :
     SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.val)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
     Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
   isInvariant x hx := by
@@ -543,6 +541,17 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
       MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
     rw [AlgEquiv.ext_iff] at hg' ⊢
     assumption
+
+variable [MulSemiringAction G R] [SMulDistribClass G R S]
+  [H.Normal] [MulSemiringAction (G ⧸ H) R] [IsScalarTower G (G ⧸ H) R]
+
+theorem stabilizer_quotient : stabilizer (G ⧸ H) p = (stabilizer G q).map (QuotientGroup.mk' H) :=
+  .symm <| map_stabilizer_of_surjective (QuotientGroup.mk' H) H p q (QuotientGroup.mk'_surjective H)
+    (QuotientGroup.ker_mk' H).ge (by simp [algebraMap.coe_smul'])
+
+theorem inertia_quotient : p.inertia (G ⧸ H) = (q.inertia G).map (QuotientGroup.mk' H) :=
+  .symm <| map_inertia_of_surjective (QuotientGroup.mk' H) H p q (QuotientGroup.mk'_surjective H)
+    (QuotientGroup.ker_mk' H).ge (by simp [algebraMap.coe_smul'])
 
 end Ideal
 
