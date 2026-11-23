@@ -5,10 +5,9 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.PEmpty
-public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.PEmpty
 
 /-!
 # Initial and terminal objects in a category.
@@ -61,7 +60,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun f => t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
     { lift := fun s => (u s.pt).default
-      uniq := fun s _ _ => (u s.pt).2 _ }
+      uniq := fun s _ _ => (u s.pt).uniq _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse, Function.LeftInverse]
@@ -137,16 +136,12 @@ theorem IsTerminal.isSplitMono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) :
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
   have := t.isSplitMono_from f; infer_instance
 
-set_option linter.translate.warnInvalid false in
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
 @[to_dual (attr := simps)
 /-- If `I` and `I'` are initial, they are isomorphic. -/]
 def IsTerminal.uniqueUpToIso {T T' : C} (hT : IsTerminal T) (hT' : IsTerminal T') : T ≅ T' where
   hom := hT'.from _
   inv := hT.from _
-
-attribute [to_dual existing uniqueUpToIso_inv] IsTerminal.uniqueUpToIso_hom
-attribute [to_dual existing uniqueUpToIso_hom] IsTerminal.uniqueUpToIso_inv
 
 variable (C)
 

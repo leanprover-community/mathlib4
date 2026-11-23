@@ -130,10 +130,8 @@ lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
 lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
-    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
-  obtain ⟨h, h_h, k, hk, T⟩ := eq.mp (out_eq' (mk H K g))
-  refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
-  rw [← mul_assoc, ← T]
+    ∃ h ∈ H, ∃ k ∈ K, (mk H K g : Quotient ↑H ↑K).out = h * g * k :=
+  eq.mp (out_eq' (mk H K g)).symm
 
 lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
@@ -169,13 +167,7 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
   ext x
   simp only [Set.mem_iUnion, quotToDoubleCoset, mem_doubleCoset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
-  use mk H K x
-  obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
-  refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
-  simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
-
-@[deprecated (since := "2026-04-03")]
-alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
+  exact ⟨mk H K x, eq.mp (out_eq' (mk H K x))⟩
 
 lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
@@ -184,7 +176,7 @@ lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
-    refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, ?_⟩
+    refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.property, ?_⟩
     simp only [← mul_assoc, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨y, hy⟩, ?_⟩
@@ -196,7 +188,7 @@ lemma doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doubleCoset]
   constructor
   · rintro ⟨y, h_h⟩
-    refine ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, ?_⟩
+    refine ⟨y, y.property, a⁻¹ * y⁻¹ * x, h_h, ?_⟩
     simp only [← mul_assoc, one_mul, mul_inv_cancel, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨x, hx⟩, ?_⟩
@@ -288,6 +280,6 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
   obtain ⟨a, ha⟩ : ∃ a : H, x = a * q := by
     obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := Quotient.eq.mp hx
     exact ⟨⟨a⁻¹, by simp⟩, eq_inv_mul_of_mul_eq ha⟩
-  exact ⟨a.1, a.2, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
+  exact ⟨a.val, a.property, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
 
 end DoubleCoset

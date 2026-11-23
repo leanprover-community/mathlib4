@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.Localization.Finiteness
+
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
-
 # The meta properties of finite ring homomorphisms.
 
 ## Main results
@@ -21,7 +21,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite `R' = M⁻¹R`-algebra.
 * `finite_ofLocalizationSpan` : `S` is a finite `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra.
-
 -/
 
 public section
@@ -100,7 +99,7 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.
   constructor
-  replace H := fun r => (H r).1
+  replace H := fun r => (H r).fg_top
   choose s₁ s₂ using H
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
   use s.attach.biUnion sf

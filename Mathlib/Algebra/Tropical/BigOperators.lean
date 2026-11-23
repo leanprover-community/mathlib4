@@ -5,13 +5,13 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.MinMax
-public import Mathlib.Algebra.Tropical.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 
 /-!
-
 # Tropicalization of finitary operations
 
 This file provides the "big-op" or notation-based finitary operations on tropicalized types.
@@ -30,7 +30,6 @@ No concrete (semi)ring is used here, only ones with inferable order/lattice stru
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
 directly transfer to minima over multisets or finsets.
-
 -/
 
 public section
@@ -98,8 +97,6 @@ theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R
   convert! Multiset.trop_inf (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
-
-attribute [to_dual existing] inf'_eq_csInf_image
 
 @[to_dual]
 theorem trop_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f : S → WithTop R) :

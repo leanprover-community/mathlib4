@@ -5,12 +5,13 @@ Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Dual
-public import Mathlib.Analysis.Normed.Operator.Completeness
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
-public import Mathlib.Topology.MetricSpace.PiNat
-public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space
@@ -101,7 +102,6 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 ## Tags
 
 weak-star, weak dual
-
 -/
 
 @[expose] public section
@@ -173,7 +173,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
       (instTopologicalSpaceWeakDual .. : TopologicalSpace (WeakDual 𝕜 E)) := by
-  convert! (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 
 end Dual
@@ -341,7 +341,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 E
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
-    (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
+    (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtypeVal)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
 variable [ProperSpace 𝕜]
@@ -355,7 +355,7 @@ theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
     metrizable_of_isCompact 𝕜 E s <| isCompact_of_bounded_of_closed hb hc
   have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 E)) :=
-    continuous_iff_seqContinuous.mp continuous_subtype_val
+    continuous_iff_seqContinuous.mp continuous_subtypeVal
   simpa using IsSeqCompact.range seq_cont_phi
 
 /-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in

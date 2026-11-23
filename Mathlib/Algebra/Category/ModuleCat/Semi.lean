@@ -52,7 +52,7 @@ impose here that the `ℕ`-multiplication field from the module structure is def
 from the `isAddCommMonoid` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure SemimoduleCat where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `SemimoduleCat R` -/
   carrier : Type v
   [isAddCommMonoid : AddCommMonoid carrier]
@@ -68,12 +68,15 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
   ⟨X⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemimoduleCat.of R X` as `↧X`. -/
+@[app_delab SemimoduleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 lemma coe_of (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X :=
   rfl
@@ -197,16 +200,16 @@ lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
-    { obj := fun M => .of M
+    { obj := fun M => ↧M
       map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : SemimoduleCat R) :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = ↧X :=
   rfl
 
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommMonoid X] [Module R X] :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = ↧X :=
   rfl
 
 @[simp]
@@ -403,7 +406,7 @@ theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
-    Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquivₛ f.hom⟩ :=
+    Iso.conj i f = .of ⟨LinearEquiv.conj i.toLinearEquivₛ f.asHom.hom⟩ :=
   rfl
 
 end
@@ -459,10 +462,12 @@ end Bilinear
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_semiModuleCat {R} [Semiring R]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.comp_id_semiModuleCat {R} [Semiring R]
     {G : SemimoduleCat.{u} R} {H : Type u} [AddCommMonoid H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
-@[simp] theorem LinearMap.id_semiModuleCat_comp {R} [Semiring R]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.id_semiModuleCat_comp {R} [Semiring R]
     {G : Type u} [AddCommMonoid G] [Module R G] {H : SemimoduleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp

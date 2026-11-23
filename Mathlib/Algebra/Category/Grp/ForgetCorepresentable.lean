@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Basic
-public import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.Algebra.Category.Grp.Preadditive
 
 /-!
@@ -15,7 +13,6 @@ public import Mathlib.Algebra.Category.Grp.Preadditive
 It is shown that the forget functor `AddCommGrpCat.{u} ⥤ Type u` is corepresentable
 by `ULift ℤ`. Similar results are obtained for the variants `CommGrpCat`, `AddGrpCat`
 and `GrpCat`.
-
 -/
 
 @[expose] public section

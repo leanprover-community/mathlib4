@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.Squarefree
 
 /-!
@@ -71,7 +70,6 @@ theorem isFundamentalDiscr_iff_squarefree :
     exact (IsCoprime.pow hp.isCoprime_two).dvd_mul_left_iff
   by_cases h : 4 ∣ D
   · obtain ⟨d, rfl⟩ := h
-    simp +contextual only [Int.mul_ediv_cancel_left d four_ne_zero]
     grind [isFundamentalDiscr_def]
   · grind [isFundamentalDiscr_def]
 
@@ -89,6 +87,17 @@ theorem isFundamentalDiscr_iff_forall_prime :
   rw [hD, Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp.natCast, one_mul, Int.emod_emod] at h₁
   rwa [not_and_or, not_not, not_not]
 
+/-- If a fundamental discriminant is `m ^ 2` times an integer congruent to `0` or `1` modulo `4`,
+then `m = 1`. -/
+theorem IsFundamentalDiscr.eq_one_of_eq_sq_mul (h : IsFundamentalDiscr D) {m : ℕ} {e : ℤ}
+    (he : D = m ^ 2 * e) (he' : e % 4 = 0 ∨ e % 4 = 1) : m = 1 := by
+  obtain ⟨k, hk⟩ := m.minFac_dvd
+  by_contra! hm
+  refine (isFundamentalDiscr_iff_forall_prime.mp h).2 _ (Nat.minFac_prime hm) ⟨k ^ 2 * e, ?_, ?_⟩
+  · rw [← mul_assoc, ← mul_pow, ← Nat.cast_mul, ← hk, he]
+  · rw [Int.mul_emod, Int.sq_emod_four]
+    grind
+
 theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
     IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by
   simp [isFundamentalDiscr_iff_squarefree]
@@ -96,18 +105,5 @@ theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
 theorem isFundamentalDiscr_four_mul {m : ℤ} :
     IsFundamentalDiscr (4 * m) ↔ Squarefree m ∧ (m % 4 = 2 ∨ m % 4 = 3) := by
   simp [isFundamentalDiscr_iff_squarefree]
-
-/-- The only fundamental discriminant that is a square is `1`. -/
-theorem IsFundamentalDiscr.eq_one_of_isSquare (h : IsFundamentalDiscr D) (h' : IsSquare D) :
-    D = 1 := by
-  have h_main {r : ℤ} (hr : Squarefree (r * r)) : r * r = 1 := by
-    grind [isUnit_iff.mp <| Squarefree.isUnit_of_pow le_rfl (pow_two r ▸ hr)]
-  obtain ⟨r, rfl⟩ := h'
-  obtain h | h := isFundamentalDiscr_iff_squarefree.mp h
-  · exact h_main h.2
-  · obtain ⟨s, rfl⟩ : Even r := by
-      grind [prime_two.dvd_mul.mp <| dvd_trans (by norm_num : _) <| dvd_iff_emod_eq_zero.mpr h.1]
-    rw [show (s + s) * (s + s) / 4 = s * s by grind] at h
-    grind
 
 end Int

@@ -9,6 +9,9 @@ public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 public import Mathlib.Geometry.RingedSpace.Stalks
 public import Mathlib.Topology.Sheaves.Functors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafed spaces
 
@@ -48,9 +51,10 @@ namespace SheafedSpace
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
-  coe X := X.1
+  coe X := X.toPresheafedSpace
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
+@[implicit_reducible]
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
@@ -69,7 +73,7 @@ def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 
 instance : Inhabited (SheafedSpace (Discrete Unit)) :=
-  ⟨unit (TopCat.of PEmpty)⟩
+  ⟨unit ↧PEmpty⟩
 
 instance : Category (SheafedSpace C) :=
   inferInstanceAs <| Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace)
@@ -211,7 +215,7 @@ noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOf
   ⟨fun {K} =>
     createsColimitOfFullyFaithfulOfIso
       ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).IsSheaf⟩
       (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩
 
 noncomputable instance [HasLimits C] :
@@ -264,7 +268,7 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
   rw [← cancel_epi (f.hom.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
     ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f.hom, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f.hom]
-  replace e := congr_arg InducedCategory.Hom.hom e
+  replace e := congr($(e).hom)
   congr 1
 
 attribute [local ext] DFunLike.ext in

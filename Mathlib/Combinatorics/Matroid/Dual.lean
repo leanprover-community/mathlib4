@@ -61,7 +61,7 @@ section dual
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_sdiff_distrib, sdiff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
-      (by { rintro rfl; apply hI; convert! hB''; simp [hB''.subset_ground] })
+      (by { rintro rfl; apply hI; convert hB''; simp [hB''.subset_ground] })
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_sdiff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
@@ -184,7 +184,7 @@ theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.I
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
     and_iff_left (inter_subset_left.trans sdiff_subset)]
   refine fun B' hB' ↦ by_contra (fun hem ↦ ?_)
-  rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, sdiff_inter_sdiff,
+  rw [not_nonempty_iff_eq_empty, ← union_singleton, sdiff_inter_sdiff,
     union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, sdiff_eq,
     inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← sdiff_eq,
     sdiff_eq_empty] at hem
