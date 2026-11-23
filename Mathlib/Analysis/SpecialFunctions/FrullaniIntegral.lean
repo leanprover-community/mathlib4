@@ -5,8 +5,9 @@ Authors: Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 # Frullani's integral
@@ -22,7 +23,9 @@ integrability of the integrand.
 
 public section
 
-open Real Set Filter MeasureTheory intervalIntegral Topology Metric
+open Real Set Filter MeasureTheory intervalIntegral Metric
+
+open scoped Topology
 
 namespace Frullani
 

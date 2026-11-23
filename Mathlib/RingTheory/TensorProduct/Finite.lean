@@ -7,16 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Bilinear
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+
+import Mathlib.RingTheory.Finiteness.Bilinear
 
 /-!
 # Finiteness of the tensor product of (sub)modules
 
 In this file we show that the supremum of two subalgebras that are finitely generated as modules,
 is again finitely generated.
-
 -/
 
 public section
@@ -34,7 +34,6 @@ submodule of `N`, under the tensor product of the inclusion `J → N` and the id
 theorem exists_fg_le_eq_rTensor_subtype (x : N ⊗ M) :
     ∃ (J : Submodule R N) (_ : J.FG) (y : J ⊗ M), x = rTensor M J.subtype y := by
   induction x with
-  | zero => exact ⟨⊥, fg_bot, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i, fg_span_singleton i, ⟨i, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
   | add x₁ x₂ ihx₁ ihx₂ =>
     obtain ⟨J₁, fg₁, y₁, rfl⟩ := ihx₁
@@ -75,7 +74,7 @@ end Submodule
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M N : Type*)
 
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
@@ -84,7 +83,6 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
     rintro x -
     induction x with
-    | zero => exact zero_mem _
     | tmul x y =>
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
         Submodule.map_top, LinearMap.coe_range, ← mul_one x, ← smul_eq_mul,
@@ -109,7 +107,8 @@ lemma Module.exists_isPrincipal_quotient_of_finite :
   let s := { m : ℕ | Submodule.span R (f '' Fin.val ⁻¹' Set.Iio m) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
     refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
-    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
+    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by
+      ext y; simpa using y.isLt.trans_le e
     simp [s, this, hf] at hx
   have hs₁ : s.Nonempty := ⟨0, by simp [s]⟩
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
@@ -131,7 +130,7 @@ lemma Module.exists_surjective_quotient_of_finite :
   let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
-  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  obtain rfl : x = 0 := by simpa using congr($(LinearMap.ker_eq_top.mp e) 1)
   have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 
@@ -175,7 +174,7 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert!
+  convert
     RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
         RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|

@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# The `#whats_new` command
+
 Defines a command wrapper that prints the changes the command makes to the
 environment.
 

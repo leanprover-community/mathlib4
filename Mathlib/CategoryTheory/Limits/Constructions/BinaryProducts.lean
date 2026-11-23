@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructing binary product from pullbacks and terminal object.
@@ -28,7 +28,6 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If a span is the pullback span over the terminal object, then it is a binary product. -/
 def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : Cone F) {X : C}
     (hX : IsTerminal X) (f : F.obj ⟨WalkingPair.left⟩ ⟶ X) (g : F.obj ⟨WalkingPair.right⟩ ⟶ X)
@@ -99,7 +98,7 @@ lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesLimitsOfShape WalkingCospan F] : PreservesLimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).2
+    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).isLimit
       (by
         apply
           isBinaryProductOfIsTerminalIsPullback _ _ (isLimitOfHasTerminalOfPreservesLimit F)
@@ -131,8 +130,6 @@ lemma prodIsoPullback_inv_snd [HasTerminal C] [HasPullbacks C] (X Y : C)
     [HasBinaryProduct X Y] : (prodIsoPullback X Y).inv ≫ prod.snd = pullback.snd _ _ :=
   limit.isoLimitCone_inv_π (limitConeOfTerminalAndPullbacks _) ⟨.right⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a cospan is the pushout cospan under the initial object, then it is a binary coproduct. -/
 def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : Cocone F) {X : C}
     (hX : IsInitial X) (f : X ⟶ F.obj ⟨WalkingPair.left⟩) (g : X ⟶ F.obj ⟨WalkingPair.right⟩)
@@ -204,7 +201,7 @@ lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesColimitsOfShape WalkingSpan F] : PreservesColimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).2 (by
+    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).isColimit (by
       apply
         isBinaryCoproductOfIsInitialIsPushout _ _
           (isColimitOfHasInitialOfPreservesColimit F)

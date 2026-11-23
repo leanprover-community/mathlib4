@@ -22,19 +22,15 @@ section Finset
 
 variable [Encodable α]
 
-set_option backward.privateInPublic true in
 private def enle : α → α → Prop :=
   encode ⁻¹'o (· ≤ ·)
 deriving DecidableRel
 
-set_option backward.privateInPublic true in
 private local instance enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Explicit encoding function for `Multiset α` -/
-def encodeMultiset (s : Multiset α) : ℕ :=
+@[no_expose] def encodeMultiset (s : Multiset α) : ℕ :=
   encode (s.sort enle)
 
 /-- Explicit decoding function for `Multiset α` -/

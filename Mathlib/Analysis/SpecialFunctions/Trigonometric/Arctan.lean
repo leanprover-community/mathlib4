@@ -6,7 +6,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+
 import Mathlib.Topology.Order.AtTopBotIxx
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The `arctan` function.
@@ -110,7 +114,7 @@ theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
 /-- `Real.tan` as an `OrderIso` between `(-(π / 2), π / 2)` and `ℝ`. -/
 def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
   (strictMonoOn_tan.orderIso _ _).trans <|
-    (OrderIso.setCongr _ _ image_tan_Ioo).trans OrderIso.Set.univ
+    (Set.orderIsoOfEq _ _ image_tan_Ioo).trans OrderIso.Set.univ
 
 /-- Inverse of the `tan` function, returns values in the range `-π / 2 < arctan x` and
 `arctan x < π / 2` -/
@@ -364,7 +368,7 @@ theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
 
 @[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
-  continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
+  continuous_subtypeVal.comp tanOrderIso.toHomeomorph.continuous_invFun
 
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt

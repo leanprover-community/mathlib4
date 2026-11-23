@@ -6,13 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.Ideal.IdempotentFG
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
-
 # Standard etale maps
 
 ## Main definitions
@@ -28,7 +27,6 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 - `Algebra.IsStandardEtale`: The class of standard etale algebras.
-
 -/
 
 @[expose] public section
@@ -142,7 +140,7 @@ lemma inv_aeval_X_g :
 @[simps]
 def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   toFun f := ⟨f P.X, hasMap_X.map f⟩
-  invFun x := P.lift x.1 x.2
+  invFun x := P.lift x.val x.property
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
@@ -186,7 +184,7 @@ instance : Algebra.FormallyEtale R P.Ring := by
   intro x hx
   obtain ⟨ε, ⟨hεI, hε⟩, H⟩ := P.existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot I hI _ hx
   exact ⟨⟨x + ε, hε⟩, by simpa, fun y hy ↦
-    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.2⟩))⟩
+    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.property⟩))⟩
 
 instance : Algebra.Etale R P.Ring where
   finitePresentation := .quotient (Submodule.fg_span (by simp))
@@ -234,7 +232,7 @@ def equivMvPolynomialQuotient :
     P.Ring ≃ₐ[R] MvPolynomial (Fin 2) R ⧸ Ideal.span
       {Bivariate.equivMvPolynomial R (C P.f), Bivariate.equivMvPolynomial R (.X * C P.g - 1)} :=
   Ideal.quotientEquivAlg _ _ (Bivariate.equivMvPolynomial R)
-    (by simp only [Ideal.map_span, Set.image_insert_eq, Set.image_singleton]; rfl)
+    (by simp [Ideal.map_span])
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -347,7 +345,7 @@ lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.
     P.P.hom_ext (by simpa)
   ext x
   obtain ⟨x, rfl⟩ := P.equivRing.symm.surjective x
-  exact congr($this x)
+  congrm $this x
 
 open scoped TensorProduct
 
@@ -417,7 +415,7 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
       aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]
     rw [Submonoid.map_powers]
-    exact congr(Submonoid.powers ($this p))
+    congrm Submonoid.powers ($this p)
   have : IsLocalization.Away (aeval P.x p) Sₛ :=
     IsLocalization.Away.of_associated (r := s) ⟨(P.hasMap.2.pow n).unit, hp⟩
   let e₁ : P'.Ring ≃ₐ[R]
@@ -425,10 +423,10 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     P'.equivAwayAdjoinRoot.trans ((IsLocalization.algEquiv (.powers (AdjoinRoot.mk P.f (p * P.g)))
       (Localization.Away (AdjoinRoot.mk P.f (p * P.g))) _).restrictScalars R)
   let e₂ : Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)) ≃ₐ[R] Sₛ :=
-    { __ := IsLocalization.ringEquivOfRingEquiv _ _ _ H,
-      commutes' r := by
+    .ofCommutes (IsLocalization.ringEquivOfRingEquiv _ _ _ H)
+      fun r ↦ by
         simp [IsScalarTower.algebraMap_apply R S' (Localization.Away _),
-          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ] }
+          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ]
   exact .of_equiv (e₁.trans e₂)
 
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then

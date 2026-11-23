@@ -6,11 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Support of a function in an order
@@ -202,9 +203,9 @@ lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f : ι 
 
 end CompleteLattice
 
-section CanonicallyOrderedMul
+section IsBotOneClass
 
-variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
+variable [One M] [Preorder M] [IsBotOneClass M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -220,7 +221,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
     mulIndicator s f ≤ g :=
   mulIndicator_le' hfg fun _ _ ↦ one_le
 
-end CanonicallyOrderedMul
+end IsBotOneClass
 
 section LatticeOrderedCommGroup
 variable [CommGroup M] [Lattice M]

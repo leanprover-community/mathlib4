@@ -6,7 +6,6 @@ Authors: Eric Wieser, Jujian Zhang
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -211,7 +210,7 @@ theorem AddSubmonoidClass.IsHomogeneous.ext
   refine SetLike.ext fun m ↦ ?_
   rw [AddSubmonoidClass.IsHomogeneous.mem_iff ℳ p hp,
     AddSubmonoidClass.IsHomogeneous.mem_iff ℳ q hq]
-  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
+  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).property
 
 end AddCommMonoid
 

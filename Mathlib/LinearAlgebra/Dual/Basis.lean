@@ -41,7 +41,7 @@ noncomputable section
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
-variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
+variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -95,7 +95,7 @@ theorem toDual_eq_equivFun [Finite ι] (m : M) (i : ι) : b.toDual m (b i) = b.e
   rw [b.equivFun_apply, toDual_eq_repr]
 
 theorem toDual_injective : Injective b.toDual := fun x y h ↦ b.ext_elem_iff.mpr fun i ↦ by
-  simp_rw [← toDual_eq_repr]; exact DFunLike.congr_fun h _
+  simp_rw [← toDual_eq_repr]; congrm $h _
 
 theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
   b.toDual_injective (by rwa [map_zero])

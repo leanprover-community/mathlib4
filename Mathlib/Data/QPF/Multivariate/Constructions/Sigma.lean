@@ -5,8 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Dependent product and sum of QPFs are QPFs

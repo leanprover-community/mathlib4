@@ -5,15 +5,15 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Flat ring homomorphisms
 
 In this file we define flat ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section
@@ -76,7 +76,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h
   algebraize_only [f]
   refine Module.flat_of_isLocalized_span _ _ s hsp _
-    (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
+    (fun r ↦ Algebra.linearMap S <| Localization.Away r.val) ?_
   dsimp only [RingHom.Flat] at h
   convert! h; ext
   apply Algebra.smul_def
@@ -142,9 +142,9 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma lTensor {f : B →ₐ[R] D} (hf : f.Flat) :
     (Algebra.TensorProduct.lTensor (S := S) A f).Flat := by
   algebraize [f.toRingHom, (Algebra.TensorProduct.lTensor (S := A) A f).toRingHom]
-  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D :=
-    { __ := (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm,
-      commutes' x := congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x) }
+  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D := .ofCommutes
+      (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm.toRingEquiv
+    fun x ↦ congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x)
   exact .of_linearEquiv e.toLinearEquiv
 
 variable {A} in
@@ -166,7 +166,7 @@ lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg
     refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
     change RingHom.Flat (RingHom.comp (Algebra.TensorProduct.lTensor D
       (AlgHom.restrictScalars R f)).toRingHom _)
-    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective) (lTensor D hf)
+    exact RingHom.Flat.comp (.of_bijective (TensorProduct.comm R A D).bijective) (lTensor D hf)
 
 end
 
@@ -243,7 +243,6 @@ end CommRingCat
 
 open CategoryTheory Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
 -- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
 -- isomorphisms.

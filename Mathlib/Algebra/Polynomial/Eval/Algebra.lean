@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials in an algebra
 
@@ -18,15 +21,13 @@ TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 
 public section
 
-noncomputable section
-
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a : R} {n : ℕ}
 
 section CommSemiring
 
@@ -38,8 +39,8 @@ variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
 
 @[simp]
 theorem eval₂_mul' :
-    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
-  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
+    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x :=
+  eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
 
 @[simp]
 theorem eval₂_pow' (n : ℕ) :

@@ -6,10 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
-public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
-
 # Construction of projections for the Dold-Kan correspondence
 
 In this file, we construct endomorphisms `P q : K[X] ⟶ K[X]` for all
@@ -26,7 +24,6 @@ By passing to the limit, these endomorphisms `P q` shall be used in `PInfty.lean
 in order to define `PInfty : K[X] ⟶ K[X]`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
@@ -35,7 +32,7 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Opposite CategoryTheory.Idempotents
 
-open Simplicial DoldKan
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -72,7 +69,7 @@ theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
   abel
 
 theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _⦋n⦌) :=
-  HomologicalComplex.congr_hom (P_add_Q q) n
+  congr($(P_add_Q q).f n)
 
 @[simp]
 theorem Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
@@ -168,7 +165,7 @@ set_option backward.isDefEq.respectTransparency false in -- This is needed in Al
 @[reassoc (attr := simp)]
 theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
-  HomologicalComplex.congr_hom ((natTransP q).naturality f) n
+  congr($((natTransP q).naturality f).f n)
 
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :

@@ -35,7 +35,6 @@ local property of this form.
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
 * `IsOpen.liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
   holds is open
-
 -/
 
 public section
@@ -104,7 +103,7 @@ def LiftSourceTargetPropertyAt (f : M → N) (x : M)
 
 namespace LocalPresentationAt
 
-variable {f g : M → N} {x : M}
+variable {f : M → N} {x : M}
   {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
 
 lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x P) :

@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preservation of biproducts
@@ -19,7 +18,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   images and show that the biproduct is preserved if one of them is an isomorphism,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
-
 -/
 
 @[expose] public section
@@ -71,7 +69,7 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
   (BinaryBicones.functoriality _ _ F).obj b
 
@@ -85,7 +83,7 @@ namespace Limits
 
 section Bicone
 
-variable {J : Type w₁} {K : Type w₂}
+variable {J : Type w₁}
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/
@@ -396,7 +394,6 @@ section BinaryBicone
 
 variable (X Y : C) [HasBinaryBiproduct X Y] [PreservesBinaryBiproduct X Y F] {W : C}
 
-set_option backward.defeqAttrib.useBackward true in
 theorem biprod.map_lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     F.map (biprod.lift f g) ≫ (F.mapBiprod X Y).hom = biprod.lift (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]
@@ -405,7 +402,6 @@ theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     biprod.lift (F.map f) (F.map g) ≫ (F.mapBiprod X Y).inv = F.map (biprod.lift f g) := by
   rw [← biprod.map_lift_mapBiprod, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem biprod.mapBiprod_inv_map_desc (f : X ⟶ W) (g : Y ⟶ W) :
     (F.mapBiprod X Y).inv ≫ F.map (biprod.desc f g) = biprod.desc (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]

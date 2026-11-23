@@ -6,7 +6,11 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 module
 
 public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.Topology.UniformSpace.Pi
+
+import Mathlib.Topology.UniformSpace.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Indexed product of extended metric spaces
@@ -73,8 +77,6 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
     simp [ofPred_forall, εpos]
 
 end Pi
-
-variable {γ : Type w} [EMetricSpace γ]
 
 section Pi
 

@@ -9,7 +9,6 @@ public import Mathlib.Data.Set.NAry
 public import Mathlib.Order.Bounds.Basic
 
 /-!
-
 # Images of upper/lower bounds under monotone functions
 
 In this file we prove various results about the behaviour of bounds under monotone/antitone maps.
@@ -158,18 +157,13 @@ section StrictMono
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
+@[to_dual]
 lemma StrictMono.mem_upperBounds_image (hf : StrictMono f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s := by simp [upperBounds, hf.le_iff_le]
 
-lemma StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s := by simp [lowerBounds, hf.le_iff_le]
-
+@[to_dual]
 lemma StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a := by
   simp [IsLeast, hf.injective.eq_iff, hf.mem_lowerBounds_image]
-
-lemma StrictMono.map_isGreatest (hf : StrictMono f) :
-    IsGreatest (f '' s) (f a) ↔ IsGreatest s a := by
-  simp [IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictMono
 
@@ -177,19 +171,14 @@ section StrictAnti
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
+@[to_dual]
 lemma StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s := by
   simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
-lemma StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_ge]
-
+@[to_dual]
 lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ IsGreatest s a := by
   simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_lowerBounds_image]
-
-lemma StrictAnti.map_isGreatest (hf : StrictAnti f) : IsGreatest (f '' s) (f a) ↔ IsLeast s a := by
-  simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictAnti
 

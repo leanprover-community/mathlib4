@@ -3,15 +3,18 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Archive.Examples.IfNormalization.Statement
-import Mathlib.Data.List.AList
-import Mathlib.Tactic.Recall
+module
+
+public import Archive.Examples.IfNormalization.Statement
+public import Mathlib.Data.List.AList
 
 /-!
 # A solution to the if normalization challenge in Lean.
 
 See `Statement.lean` for background.
 -/
+
+@[expose] public section
 
 local macro "◾" : tactic => `(tactic| aesop)
 local macro "◾" : term => `(term| by aesop)
@@ -46,8 +49,6 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
-set_option linter.flexible false in
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal Booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
@@ -60,9 +61,9 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     match h : l.lookup v with
     | none => ⟨var v, ◾⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, ◾⟩
-  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, ◾⟩
-  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, ◾⟩
+  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.val, ◾⟩
+  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.val, ◾⟩
+  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.val, ◾⟩
   | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
@@ -73,11 +74,11 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- eval = eval
           simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
-          · simp_all
+          · simp_all only [cond_eq_ite, Bool.false_eq_true, ↓reduceIte, imp_and_neg_imp_iff]
             congr
             ext w
             by_cases w = v <;> ◾
-          · simp [h, ht₁]
+          · simp only [ht₁, h, Option.elim_none, cond_eq_ite, ↓reduceIte, imp_and_neg_imp_iff]
             congr
             ext w
             by_cases w = v <;> ◾
@@ -90,7 +91,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases w = v <;> ◾⟩
     | some b =>
-      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.val, ◾⟩
   termination_by e => e.normSize
 
 /-
@@ -103,6 +104,6 @@ recall IfNormalization :=
   { Z : IfExpr → IfExpr // ∀ e, (Z e).normalized ∧ (Z e).eval = e.eval }
 
 example : IfNormalization :=
-  ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+  ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).property.2.1, by simp [(IfExpr.normalize ∅ e).property.1]⟩⟩
 
 end IfExpr
