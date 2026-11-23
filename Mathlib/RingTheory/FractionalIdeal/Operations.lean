@@ -235,6 +235,11 @@ theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
   rw [canonicalEquiv, mapEquiv_apply, mem_map]
   exact ⟨fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩, fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩⟩
 
+theorem canonicalEquiv_eq_map (I : FractionalIdeal S P) :
+    canonicalEquiv S P P' I = map (IsLocalization.algEquiv S P P').toAlgHom I := by
+  ext
+  simp
+
 @[simp]
 theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P' P :=
   RingEquiv.ext fun I =>
