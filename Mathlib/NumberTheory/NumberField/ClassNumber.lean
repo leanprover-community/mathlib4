@@ -61,7 +61,9 @@ of norm at most `minkowskiNormBound K`, see `NumberField.exists_ideal_in_class_o
 This should not be confused with `NumberField.mixedEmbedding.minkowskiBound`, the bound that appears
 in Minkowski's convex body theorem. -/
 noncomputable def minkowskiNormBound : ℝ :=
-  (4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)
+  letI r₂ := nrComplexPlaces K
+  letI n := finrank ℚ K
+  (4 / π) ^ r₂ * (n ! / n ^ n * √|discr K|)
 
 @[inherit_doc] local notation "M " K:70 => minkowskiNormBound K
 
