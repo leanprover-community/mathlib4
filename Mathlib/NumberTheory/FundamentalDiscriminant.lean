@@ -98,6 +98,13 @@ theorem IsFundamentalDiscr.eq_one_of_eq_sq_mul (h : IsFundamentalDiscr D) {m : �
   · rw [Int.mul_emod, Int.sq_emod_four]
     grind
 
+/-- The only fundamental discriminant that is a square is `1`. -/
+theorem IsFundamentalDiscr.eq_one_of_isSquare (h : IsFundamentalDiscr D) (h' : IsSquare D) :
+    D = 1 := by
+  obtain ⟨r, rfl⟩ := h'
+  have := h.eq_one_of_eq_sq_mul (m := r.natAbs) (by rw [mul_one, Int.natAbs_sq, sq]) (by norm_num)
+  rw [← Int.natAbs_mul_self' r, this, Nat.cast_one, mul_one]
+
 theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
     IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by
   simp [isFundamentalDiscr_iff_squarefree]

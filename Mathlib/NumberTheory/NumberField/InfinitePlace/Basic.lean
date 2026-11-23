@@ -105,6 +105,10 @@ noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.property.ch
 theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w :=
   Subtype.ext w.property.choose_spec
 
+variable (K) in
+theorem mk_surjective : Function.Surjective (mk : (K →+* ℂ) → InfinitePlace K) :=
+  fun w ↦ ⟨w.embedding, w.mk_embedding⟩
+
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
   refine DFunLike.ext _ _ (fun x => ?_)
