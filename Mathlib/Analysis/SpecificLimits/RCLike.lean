@@ -9,6 +9,9 @@ public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Data.EReal.Inv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A collection of specific limit computations for `RCLike`
 -/

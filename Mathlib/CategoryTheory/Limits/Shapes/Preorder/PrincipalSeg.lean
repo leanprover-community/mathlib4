@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.Order.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cocones associated to principal segments
 
