@@ -6,6 +6,7 @@ Authors: Robin Carlier
 module
 
 public meta import Lean.Elab.Tactic.Conv
+public meta import Mathlib.Tactic.Simps
 
 import Mathlib.Init
 
@@ -67,5 +68,25 @@ elab (name := catNFPercent) "cat_nf%" t:term : term => do
       return rhs
   let fresh ← mkFreshExprMVar default
   go { elaborator := .anonymous } |>.run' { goals := [fresh.mvarId!] }
+
+open Lean.Parser.Attr
+
+/-- `cat_nfs` is a shorthand for `simps (attr := cat_nf)`. -/
+syntax (name := catNfS) "cat_nfs" "!"? "?"? simpsArgsRest : attr
+
+@[inherit_doc catNfS]
+macro_rules
+  | `(attr| cat_nfs $[$r]*) => do
+    `(attr| simps $(#[← `(simpsConfigItem| (attr := cat_nf))] ++ r)*)
+  | `(attr| cat_nfs ? $[$r]*) => do
+    `(attr| simps ? $(#[← `(simpsConfigItem| (attr := cat_nf))] ++ r)*)
+  | `(attr| cat_nfs ! $[$r]*) => do
+    `(attr| simps ! $(#[← `(simpsConfigItem| (attr := cat_nf))] ++ r)*)
+  | `(attr| cat_nfs ! ? $[$r]*) => do
+    `(attr| simps ! ? $(#[← `(simpsConfigItem| (attr := cat_nf))] ++ r)*)
+
+@[inherit_doc catNfS] macro "cat_nfs!" r:simpsArgsRest : attr => `(attr| cat_nfs ! $r)
+@[inherit_doc catNfS] macro "cat_nfs?" r:simpsArgsRest : attr => `(attr| cat_nfs ? $r)
+@[inherit_doc catNfS] macro "cat_nfs!?" r:simpsArgsRest : attr => `(attr| cat_nfs ! ? $r)
 
 end

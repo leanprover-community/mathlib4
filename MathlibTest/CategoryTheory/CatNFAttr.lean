@@ -57,4 +57,48 @@ example : ((F ⋙ G).map (𝟙 _ ≫ f5 ≫ 𝟙 _ ≫ 𝟙 _ ≫
       G.map (F.map f5) ≫ h7 ≫ (((Functor.const C).map (𝟭 _ |>.map h8)).app c1) := by
   simp only [cat_nf]
 
+-- Testing cat_nfs as an alias for simps (attr := cat_nf)
+@[expose, cat_nfs, implicit_reducible]
+def const : C ⥤ C ⥤ C where
+  obj X :=
+    { obj := fun _ => X
+      map := fun _ => 𝟙 X }
+  map {X Y} f := { app := fun _ => f }
+
+-- Adding extra `simps` config options
+@[expose, cat_nfs (attr := grind =) -isSimp, implicit_reducible]
+def const' : C ⥤ C ⥤ C where
+  obj X :=
+    { obj := fun _ => X
+      map := fun _ => 𝟙 X }
+  map {X Y} f := { app := fun _ => f }
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example (c : C) : (const'.obj c).obj c = c := by simp
+
+#guard_msgs in
+example (c : C) : (const'.obj c).obj c = c := by simp only [cat_nf]
+
+#guard_msgs in
+example (c : C) : (const'.obj c).obj c = c := by grind
+
+-- parsing the `!?` variant of cat_nfs
+
+/--
+trace: [simps] Adding `const''_obj_obj` :
+      ∀ {C : Type u₁} [inst : Category.{v₁, u₁} C] (X x : C), (const''.obj X).obj x = X
+[simps] Adding `const''_obj_map` :
+      ∀ {C : Type u₁} [inst : Category.{v₁, u₁} C] (X : C) {X_1 Y : C} (x : X_1 ⟶ Y), (const''.obj X).map x = 𝟙 X
+[simps] Adding `const''_map_app` :
+      ∀ {C : Type u₁} [inst : Category.{v₁, u₁} C] {X Y : C} (f : X ⟶ Y) (x : C), (const''.map f).app x = f
+-/
+#guard_msgs in
+@[expose, cat_nfs!?, implicit_reducible]
+def const'' : C ⥤ C ⥤ C where
+  obj X :=
+    { obj := fun _ => X
+      map := fun _ => 𝟙 X }
+  map {X Y} f := { app := fun _ => f }
+
 end MathlibTest.CategoryTheory
