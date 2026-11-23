@@ -331,6 +331,21 @@ instance (r' : ℤ) (hr' : r ≤ r') : IsIso (E.edgeEpiSteps pq r r' hr') :=
 
 end
 
+@[reassoc]
+lemma congr_edgeEpiSteps_comp_edgeMonoSteps
+    (r r' s t : ℤ) [E.HasEdgeMonoAtFrom pq r'] [E.HasEdgeEpiAtFrom pq r]
+    (h₁ : r ≤ s := by lia) (h₂ : r' ≤ s := by lia)
+    (h₃ : r ≤ t := by lia) (h₄ : r' ≤ t := by lia) :
+    E.edgeEpiSteps pq r s h₁ ≫ E.edgeMonoSteps pq r' s h₂ =
+    E.edgeEpiSteps pq r t h₃ ≫ E.edgeMonoSteps pq r' t h₄ := by
+  wlog hst : s ≤ t generalizing s t
+  · exact (this _ _ _ _ _ _ (by lia)).symm
+  · by_cases hr' : r ≤ r'
+    · simp [← E.edgeEpiSteps_comp_assoc pq r r' s, ← E.edgeEpiSteps_comp_assoc pq r r' t]
+    · have := E.hasEdgeMonoAtFrom_of_le pq r' r
+      rw [← E.edgeMonoSteps_comp pq r' r s, ← E.edgeMonoSteps_comp pq r' r t,
+        E.edgeEpiSteps_edgeMonoSteps_assoc pq r s, E.edgeEpiSteps_edgeMonoSteps_assoc pq r t]
+
 end SpectralSequence
 
 end CategoryTheory

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeSteps
+public import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # ...
@@ -13,21 +14,6 @@ public import Mathlib.Algebra.Homology.SpectralSequence.EdgeSteps
 -/
 
 public section
-
--- what is the best way to do this?
-lemma Int.exists_min (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
-    (hm₀ : ∀ (x : ℤ), x ∈ S → m₀ ≤ x) :
-    ∃ (m : ℤ) (_ : m ∈ S), S ⊆ Set.Ici m := by
-  let T : Set ℕ := .ofPred fun i ↦ m₀ + i ∈ S
-  obtain ⟨x, hx⟩ := hS
-  obtain ⟨t₀, rfl⟩ := Int.le.dest (hm₀ x hx)
-  have hT : T.Nonempty := ⟨t₀, hx⟩
-  let μ := (Nat.lt_wfRel.wf).min T hT
-  refine ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy ↦ ?_⟩
-  have hy' : 0 ≤ y - m₀ := by have := hm₀ y hy; lia
-  obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
-  obtain rfl : y = m₀ + t := by lia
-  simpa using WellFoundedLT.min_le (s := T) hy
 
 namespace CategoryTheory
 
@@ -46,43 +32,41 @@ class HasPageInfinityAt (E : SpectralSequence C c r₀) (pq : ι) : Prop where
 
 variable (E : SpectralSequence C c r₀) (pq : ι)
 
-namespace HasPageInfinityAt
+variable [E.HasPageInfinityAt pq]
 
-/-- Given a spectral sequence `E` and `pq`, this is the subset of `ℤ` consisting
-of the numbers of the pages `r` such that both `E.HasEdgeMonoAtFrom pq`
-and `E.HasEdgeEpiAtFrom pq` hold. -/
-@[implicit_reducible]
-def set : Set ℤ :=
-  .ofPred (E.HasEdgeMonoAtFrom pq) ∩ .ofPred (E.HasEdgeEpiAtFrom pq)
-
-lemma nonempty_set [E.HasPageInfinityAt pq] : (set E pq).Nonempty := by
+open HasPageInfinityAt in
+lemma exists_hasEdgeMonoAtFrom_and_hasEdgeEpiAtFrom :
+    ∃ (n : ℤ), E.HasEdgeMonoAtFrom pq n ∧ E.HasEdgeEpiAtFrom pq n := by
   obtain ⟨r₁, _⟩ := exists_hasEdgeMonoAtFrom E pq
   obtain ⟨r₂, _⟩ := exists_hasEdgeEpiAtFrom E pq
   exact ⟨max r₁ r₂, E.hasEdgeMonoAtFrom_of_le pq r₁ _,
     E.hasEdgeEpiAtFrom_of_le pq r₂ _⟩
 
-lemma le_of_mem_set (r : ℤ) (hr : r ∈ set E pq) : r₀ ≤ r :=
-  have : E.HasEdgeMonoAtFrom pq r := hr.1
-  E.le₀_of_hasEdgeMonoAt pq r
-
-end HasPageInfinityAt
-
-variable [E.HasPageInfinityAt pq]
-
+open Classical in
 /-- Given a spectral sequence `E` and `pq` such that `E.HasPageInfinityAt pq`
 holds, this is the smallest number `r` of the page such that both
 `E.HasEdgeMonoAtFrom pq` and `E.HasEdgeEpiAtFrom pq` hold. -/
 noncomputable def rMin : ℤ :=
-  (Int.exists_min _ (HasPageInfinityAt.nonempty_set E pq) r₀
-    (HasPageInfinityAt.le_of_mem_set E pq)).choose
+  (Int.leastOfBdd r₀ (fun r ⟨_, _⟩ ↦ E.le₀_of_hasEdgeMonoAt pq r)
+    (E.exists_hasEdgeMonoAtFrom_and_hasEdgeEpiAtFrom pq)).val
 
+open Classical in
 instance : E.HasEdgeMonoAtFrom pq (E.rMin pq) :=
-  (Int.exists_min _ (HasPageInfinityAt.nonempty_set E pq) r₀
-    (HasPageInfinityAt.le_of_mem_set E pq)).choose_spec.1.1
+  (Int.leastOfBdd r₀ (fun r ⟨_, _⟩ ↦ E.le₀_of_hasEdgeMonoAt pq r)
+    (E.exists_hasEdgeMonoAtFrom_and_hasEdgeEpiAtFrom pq)).property.left.left
 
+open Classical in
 instance : E.HasEdgeEpiAtFrom pq (E.rMin pq) :=
-  (Int.exists_min _ (HasPageInfinityAt.nonempty_set E pq) r₀
-    (HasPageInfinityAt.le_of_mem_set E pq)).choose_spec.1.2
+  (Int.leastOfBdd r₀ (fun r ⟨_, _⟩ ↦ E.le₀_of_hasEdgeMonoAt pq r)
+    (E.exists_hasEdgeMonoAtFrom_and_hasEdgeEpiAtFrom pq)).property.left.right
+
+open Classical in
+lemma rMin_le_iff (r : ℤ) :
+    E.rMin pq ≤ r ↔ E.HasEdgeMonoAtFrom pq r ∧ E.HasEdgeEpiAtFrom pq r :=
+  ⟨fun h ↦ ⟨E.hasEdgeMonoAtFrom_of_le pq (E.rMin pq) r,
+    E.hasEdgeEpiAtFrom_of_le pq (E.rMin pq) r⟩,
+  fun h ↦ (Int.leastOfBdd r₀ (fun r ⟨_, _⟩ ↦ E.le₀_of_hasEdgeMonoAt pq r)
+    (E.exists_hasEdgeMonoAtFrom_and_hasEdgeEpiAtFrom pq)).property.right _ h⟩
 
 lemma le₀_rMin : r₀ ≤ E.rMin pq :=
   E.le₀_of_hasEdgeMonoAt pq _
@@ -96,10 +80,13 @@ noncomputable def pageInfinity (pq : ι) : C :=
   if _ : E.HasPageInfinityAt pq then
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq else 0
 
-noncomputable def pageInfinityIso' (pq : ι) [E.HasPageInfinityAt pq] :
+/-- Auxiliary definition for `edgeMono` and `edgeEpi`. -/
+private noncomputable def pageInfinityIso' (pq : ι) [E.HasPageInfinityAt pq] :
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq ≅ E.pageInfinity pq :=
   eqToIso (Eq.symm (dite_eq_left (by assumption)))
 
+/-- When both `E.HasEdgeMonoAtFrom pq r` and `E.HasPageInfinityAt pq` hold,
+this is the edge monomorphism `E.pageInfinity pq ⟶ (E.page r).X pq`. -/
 noncomputable def edgeMono (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeMonoAt pq r
     E.pageInfinity pq ⟶ (E.page r).X pq :=
@@ -112,6 +99,8 @@ instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
   dsimp [edgeMono]
   infer_instance
 
+/-- When both `E.HasEdgeEpiAtFrom pq r` and `E.HasPageInfinityAt pq` hold,
+this is the edge epimorphism `(E.page r).X pq ⟶ E.pageInfinity pq`. -/
 noncomputable def edgeEpi (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeEpiAt pq r
     (E.page r).X pq ⟶ E.pageInfinity pq :=
@@ -123,6 +112,38 @@ instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
     Epi (E.edgeEpi pq r) := by
   dsimp [edgeEpi]
   infer_instance
+
+@[reassoc (attr := simp)]
+lemma edgeMono_edgeMonoSteps (r r' : ℤ) [E.HasEdgeMonoAtFrom pq r] (hr' : r ≤ r') :
+    haveI := E.hasEdgeMonoAtFrom_of_le pq r r'
+    E.edgeMono pq r' ≫ E.edgeMonoSteps pq r r' hr' = E.edgeMono pq r := by
+  simp [edgeMono, E.congr_edgeEpiSteps_comp_edgeMonoSteps pq
+    (E.rMin pq) r (max (E.rMin pq) r) (max (E.rMin pq) r')]
+
+@[reassoc (attr := simp)]
+lemma edgeMonoSteps_edgeEpi (r r' : ℤ) [E.HasEdgeEpiAtFrom pq r] (hr' : r ≤ r') :
+    haveI := E.hasEdgeEpiAtFrom_of_le pq r r'
+    E.edgeEpiSteps pq r r' hr' ≫ E.edgeEpi pq r' = E.edgeEpi pq r := by
+  simp [edgeEpi, E.congr_edgeEpiSteps_comp_edgeMonoSteps pq r (E.rMin pq)
+    (max (E.rMin pq) r') (max (E.rMin pq) r)]
+
+@[reassoc (attr := simp)]
+lemma edgeEpi_edgeMono
+    (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+    E.edgeEpi pq r ≫ E.edgeMono pq r = 𝟙 _ := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma edgeMono_edgeEpi
+    (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+    E.edgeMono pq r ≫ E.edgeEpi pq r = 𝟙 _ := by
+  sorry
+
+instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+    IsIso (E.edgeMono pq r) := ⟨E.edgeEpi pq r, by simp⟩
+
+instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+    IsIso (E.edgeEpi pq r) := ⟨E.edgeMono pq r, by simp⟩
 
 end SpectralSequence
 
