@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
@@ -123,16 +123,15 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
       QuotientGroup.coe_mk', ← Equiv.image_symm_eq_preimage]
     rfl
-  have h₂ : DiscreteTopology
-      (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
-    rw [← SetLike.isDiscrete_iff_discreteTopology]
+  have h₂ : IsLattice ℝ (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
+    rw [IsLattice.iff_discreteTopology_int, ← SetLike.isDiscrete_iff_discreteTopology]
     refine (inferInstance : DiscreteTopology (unitLattice K)).isDiscrete.mono ?_
     rw [SetLike.coe_subset_coe, Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
   rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
     unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,
-    Real.finrank_eq_int_finrank_of_discrete h₂, Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
+    Set.finrank_eq_of_isLattice (R := ℤ), Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
     map_span, ← Set.range_comp', eq_comm]
   simp
 
@@ -141,8 +140,7 @@ open scoped Classical in
 The regulator of a family of units of `K`.
 -/
 def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
-  if hu : IsMaxRank u then
-    ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu)))
+  if hu : IsMaxRank u then (span ℤ (Set.range (basisOfIsMaxRank hu))).covolume
   else 0
 
 theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank u) :
@@ -151,14 +149,14 @@ theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank
 
 open scoped Classical in
 theorem regOfFamily_of_isMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
-    regOfFamily u = ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu))) := by
+    regOfFamily u = (span ℤ (Set.range (basisOfIsMaxRank hu))).covolume := by
   rw [regOfFamily, dite_eq_left hu]
 
 theorem regOfFamily_pos {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     0 < regOfFamily u := by
   classical
   rw [regOfFamily_of_isMaxRank hu]
-  exact ZLattice.covolume_pos _ volume
+  exact covolume_pos _ volume
 
 theorem regOfFamily_ne_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     regOfFamily u ≠ 0 := (regOfFamily_pos hu).ne'
@@ -172,7 +170,7 @@ theorem regOfFamily_eq_det' (u : Fin (rank K) → (𝓞 K)ˣ) :
     regOfFamily u =
       |(of fun i ↦ logEmbedding K (Additive.ofMul (u ((equivFinRank K).symm i)))).det| := by
   by_cases hu : IsMaxRank u
-  · rw [regOfFamily_of_isMaxRank hu, ZLattice.covolume_eq_det _
+  · rw [regOfFamily_of_isMaxRank hu, covolume_eq_det _
       (((basisOfIsMaxRank hu).restrictScalars ℤ).reindex (equivFinRank K)), Basis.coe_reindex]
     congr 3 with i
     simp [basisOfIsMaxRank_apply hu]
@@ -264,25 +262,25 @@ section regulator
 
 open scoped Classical in
 /-- The regulator of a number field `K`. -/
-def regulator : ℝ := ZLattice.covolume (unitLattice K)
+def regulator : ℝ := (unitLattice K).covolume
 
 theorem isMaxRank_fundSystem :
     IsMaxRank (fundSystem K) := by
   classical
-  convert! ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
-  rw [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
+  convert! ((basisUnitLattice K).extendOfIsFullLattice ℝ).linearIndependent
+  rw [logEmbedding_fundSystem, Basis.extendOfIsFullLattice_apply]
 
 open scoped Classical in
 theorem basisOfIsMaxRank_fundSystem :
-    basisOfIsMaxRank (isMaxRank_fundSystem K) = (basisUnitLattice K).ofZLatticeBasis ℝ := by
+    basisOfIsMaxRank (isMaxRank_fundSystem K) = (basisUnitLattice K).extendOfIsFullLattice ℝ := by
   ext
-  rw [Basis.ofZLatticeBasis_apply, basisOfIsMaxRank_apply, logEmbedding_fundSystem]
+  rw [Basis.extendOfIsFullLattice_apply, basisOfIsMaxRank_apply, logEmbedding_fundSystem]
 
 theorem regulator_eq_regOfFamily_fundSystem :
     regulator K = regOfFamily (fundSystem K) := by
   classical
   rw [regOfFamily_of_isMaxRank (isMaxRank_fundSystem K), regulator,
-    ← (basisUnitLattice K).ofZLatticeBasis_span ℝ, basisOfIsMaxRank_fundSystem]
+    ← (basisUnitLattice K).span_extendOfIsFullLattice ℝ, basisOfIsMaxRank_fundSystem]
 
 theorem regulator_pos : 0 < regulator K :=
   regulator_eq_regOfFamily_fundSystem K ▸ regOfFamily_pos (isMaxRank_fundSystem K)
@@ -322,8 +320,6 @@ end regulator
 
 section index
 
-open ZLattice
-
 variable {K}
 
 /--
@@ -344,7 +340,7 @@ theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : Is
         ← SupHomClass.map_sup, ← SupHomClass.map_sup]
       exact AddSubgroup.map_mono <| (OrderIso.le_iff_le Subgroup.toAddSubgroup).mpr h
     rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv,
-      covolume_div_covolume_eq_relIndex _ _ this, span_basisOfIsMaxRank hu,
+      covolume_div_covolume_eq_relIndex volume _ _ this, span_basisOfIsMaxRank hu,
       span_basisOfIsMaxRank hv, AddSubgroup.relIndex_map_map, logEmbedding_ker,
       ← OrderIso.map_sup, ← OrderIso.map_sup, ← Subgroup.relIndex_toAddSubgroup]
   · rw [regOfFamily_eq_zero hu, zero_div, eq_comm, Nat.cast_eq_zero]
