@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Smooth.Locus
+
+import Mathlib.RingTheory.RingHom.FinitePresentation
 
 /-!
 # Smooth ring homomorphisms

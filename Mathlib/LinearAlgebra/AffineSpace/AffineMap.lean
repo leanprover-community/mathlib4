@@ -6,7 +6,6 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.Group.Action.FunLike
-public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
@@ -16,6 +15,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.Group.FunLike
 
 /-!
 # Affine maps

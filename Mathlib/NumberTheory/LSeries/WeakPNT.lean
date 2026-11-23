@@ -8,7 +8,8 @@ module
 
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
-public import Mathlib.NumberTheory.LSeries.WienerIkehara
+
+import Mathlib.NumberTheory.LSeries.WienerIkehara
 
 /-!
 # The weak prime number theorem

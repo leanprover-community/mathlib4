@@ -5,14 +5,15 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Opposite
 public import Mathlib.Data.SetLike.Fintype
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Jacobson.Semiprimary
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Artinian rings and modules
@@ -603,8 +604,8 @@ a finite product of fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
     (R ⧸ nilradical R) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   (Ideal.quotientEquivAlgOfEq R (nilradical_eq_iInf R)).trans
-    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne
-      commutes' _ := rfl}
+    (.ofCommutes (Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne)
+      fun _ ↦ rfl)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -615,8 +616,8 @@ a finite product of local rings, namely the quotients by the powers of the maxim
 noncomputable def quotNilradicalPowEquivPi (n : ℕ) :
     (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
   (Ideal.quotientEquivAlgOfEq R (nilradical_pow_eq_iInf R n)).trans
-    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne
-      commutes' _ := rfl}
+    (.ofCommutes (Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne)
+      fun _ ↦ rfl)
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
