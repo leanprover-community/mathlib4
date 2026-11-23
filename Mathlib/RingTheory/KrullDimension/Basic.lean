@@ -70,8 +70,8 @@ theorem ringKrullDim_quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
 /-- If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`. -/
 theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
     ringKrullDim R = ringKrullDim S :=
-  le_antisymm (ringKrullDim_le_of_surjective e.symm e.symm.surjective)
-    (ringKrullDim_le_of_surjective e e.surjective)
+  le_antisymm (ringKrullDim_le_of_surjective e.symm.toRingHom e.symm.surjective)
+    (ringKrullDim_le_of_surjective e.toRingHom e.surjective)
 
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 

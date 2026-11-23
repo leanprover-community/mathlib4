@@ -349,8 +349,8 @@ theorem comp_aeval (ha : HasEval a)
     ε.comp (aeval ha) = aeval (ha.map hε) := by
   apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
-  rw [← RingHom.coe_coe,
-    comp_eval₂ (continuous_algebraMap R S) ha (show Continuous (ε : S →+* T) from hε), coe_aeval]
+  rw [← ε.coe_toRingHom, comp_eval₂ (continuous_algebraMap R S) ha (show Continuous ε from hε),
+    coe_aeval]
   congr!
   simp only [AlgHom.comp_algebraMap_of_tower]
 

@@ -31,7 +31,7 @@ open Polynomial
 def RingHom.adjoinAlgebraMap :
     A[b] →+* A[(algebraMap B C) b] :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp
-    (Subalgebra.val A[b])) _
+    (Subalgebra.val A[b])).toRingHom _
     (fun x ↦ by induction x using adjoin_singleton_induction with
       | f p => aesop (add norm [adjoin_singleton_eq_range_aeval, aeval_algebraMap_apply]))
 

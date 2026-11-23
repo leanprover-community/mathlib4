@@ -174,7 +174,7 @@ lemma map_multichoose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [Binomi
     f (Ring.multichoose a n) = Ring.multichoose (f a) n := by
   apply nsmul_right_injective n.factorial_ne_zero
   simp only [← map_nsmul, Ring.factorial_nsmul_multichoose_eq_ascPochhammer,
-    ← Polynomial.eval₂_smulOneHom_eq_smeval, Polynomial.hom_eval₂, ← RingHom.coe_coe f]
+    ← Polynomial.eval₂_smulOneHom_eq_smeval, Polynomial.hom_eval₂, ← RingHom.coe_ofClass f]
   congr
   exact Subsingleton.elim _ _
 

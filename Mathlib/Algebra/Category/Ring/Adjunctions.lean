@@ -36,7 +36,7 @@ polynomials with variables `x : X`.
 -/
 def free : Type u ⥤ CommRingCat.{u} where
   obj α := of (MvPolynomial α ℤ)
-  map {X Y} f := ofHom (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+  map {X Y} f := ofHom (rename f : _ →ₐ[ℤ] _).toRingHom
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=

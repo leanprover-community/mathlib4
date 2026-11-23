@@ -249,14 +249,14 @@ lemma counitAlgHom_comp_includeRight [CommSemiring A] [Semiring B] [Algebra R A]
   ext; simp [Algebra.algebraMap_eq_smul_one]
 
 lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Algebra R A] :
-    (RingHomClass.toRingHom (Bialgebra.comulAlgHom A (A ⊗[R] B))).comp
-      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
+    (Bialgebra.comulAlgHom A (A ⊗[R] B)).toRingHom.comp
+      Algebra.TensorProduct.includeRight.toRingHom =
       (Algebra.TensorProduct.mapRingHom (algebraMap R A)
-        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
-        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (Algebra.TensorProduct.includeRight (A := A)).toRingHom
+        (Algebra.TensorProduct.includeRight (A := A)).toRingHom
         (by simp [← IsScalarTower.algebraMap_eq])
         (by simp [← IsScalarTower.algebraMap_eq])).comp
-        (RingHomClass.toRingHom (Bialgebra.comulAlgHom R B)) := by
+        (Bialgebra.comulAlgHom R B).toRingHom := by
   ext x; simp [← (ℛ R x).eq, TensorProduct.tmul_sum]
 
 section CommSemiring

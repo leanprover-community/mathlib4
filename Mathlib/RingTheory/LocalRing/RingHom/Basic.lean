@@ -27,8 +27,13 @@ theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
 
 -- see note [lower instance priority]
 @[instance 100]
-theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
-    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
+theorem isLocalHom_ringHomOfClass {F : Type*} [FunLike F R S]
+    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (RingHom.ofClass f) :=
+  ⟨IsLocalHom.map_nonunit (f := f)⟩
+
+-- see note [lower instance priority]
+@[instance 100]
+theorem isLocalHom_toRingHom (f : R ≃+* S) [IsLocalHom f] : IsLocalHom f.toRingHom :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 @[instance]
@@ -148,7 +153,7 @@ lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [
 @[simp]
 lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
     (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
-  map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
+  map_maximalIdeal_of_surjective e.toRingHom e.surjective
 
 end IsLocalRing
 
@@ -157,7 +162,7 @@ namespace RingEquiv
 protected theorem isLocalRing {A B : Type*} [Semiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
-  IsLocalRing.of_surjective (e : A →+* B) e.surjective
+  IsLocalRing.of_surjective e.toRingHom e.surjective
 
 end RingEquiv
 

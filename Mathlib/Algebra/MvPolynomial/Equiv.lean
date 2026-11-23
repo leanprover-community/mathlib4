@@ -125,7 +125,7 @@ def mapEquiv [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
 @[simp]
 lemma mapEquiv_apply [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂)
     (x : MvPolynomial σ S₁) :
-    mapEquiv σ e x = map e x := rfl
+    mapEquiv σ e x = map e.toRingHom x := rfl
 
 @[simp]
 theorem mapEquiv_refl : mapEquiv σ (RingEquiv.refl R) = RingEquiv.refl _ :=
@@ -150,7 +150,7 @@ def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPol
 
 @[simp]
 lemma mapAlgEquiv_apply (e : A₁ ≃ₐ[R] A₂) (x : MvPolynomial σ A₁) :
-    mapAlgEquiv σ e x = map e x :=
+    mapAlgEquiv σ e x = map e.toRingHom x :=
   rfl
 
 @[simp]
@@ -607,23 +607,21 @@ def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomi
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 
 theorem finSuccEquiv_eq :
-    (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
+    (finSuccEquiv R n).toRingHom =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
         Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i := by
   ext i : 2
-  · simp only [finSuccEquiv, optionEquivLeft_apply, aeval_C, AlgEquiv.coe_trans, RingHom.coe_coe,
-      coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
-    rfl
+  · simp [finSuccEquiv]
   · refine Fin.cases ?_ ?_ i <;> simp [optionEquivLeft_apply, finSuccEquiv]
 
 theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
         (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
-  rw [← finSuccEquiv_eq, RingHom.coe_coe]
+  rw [← finSuccEquiv_eq, RingEquiv.coe_toRingHom, AlgEquiv.coe_toRingEquiv]
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
-    (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
+    (MvPolynomial.finSuccEquiv R n).symm.toRingHom.comp
         (Polynomial.C.comp MvPolynomial.C) =
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
   refine RingHom.ext fun x => ?_
@@ -811,7 +809,7 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
       Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
   suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
         (_root_.finSuccEquiv n).symm)).toRingHom =
-      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
+      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ).toRingHom by
     congrm $this φ
   apply ringHom_ext
   · simp [Polynomial.algebraMap_apply, algebraMap_eq, finSuccEquiv_apply, optionEquivLeft_apply]
@@ -862,7 +860,7 @@ lemma Polynomial.toMvPolynomial_inj {i : σ} {p q : R[X]} :
 
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
-    (eval f).comp (toMvPolynomial (R := R) i) = Polynomial.evalRingHom (f i) := by
+    (eval f).comp (toMvPolynomial (R := R) i).toRingHom = Polynomial.evalRingHom (f i) := by
   ext <;> simp
 
 @[simp]

@@ -398,9 +398,9 @@ lemma Ideal.lift_spanRank_map_le (f : R →+* T) (I : Ideal R) :
 
 lemma Ideal.lift_spanRank_map_eq_of_ringEquiv (f : R ≃+* T) (I : Ideal R) :
     Cardinal.lift.{u} (I.map f).spanRank = Cardinal.lift.{v} I.spanRank := by
-  apply (I.lift_spanRank_map_le (f : R →+* T)).antisymm
+  apply (I.lift_spanRank_map_le f.toRingHom).antisymm
   nth_rw 1 [← Ideal.map_of_equiv f (I := I)]
-  exact Ideal.lift_spanRank_map_le (f.symm : T →+* R) _
+  exact Ideal.lift_spanRank_map_le f.symm.toRingHom _
 
 lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank ≤ I.spanRank := by
   simpa using I.lift_spanRank_map_le f

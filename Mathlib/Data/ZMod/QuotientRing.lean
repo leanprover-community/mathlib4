@@ -46,22 +46,22 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 
 @[simp]
 theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
-    (Int.quotientSpanNatEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+    (Int.quotientSpanNatEquivZMod n).toRingHom.comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
       Int.castRingHom (ZMod n) := rfl
 
 @[simp]
 theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
-    ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
+    (Int.quotientSpanNatEquivZMod n).symm.toRingHom.comp (Int.castRingHom (ZMod n)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
 @[simp]
 theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
-    (Int.quotientSpanEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+    (Int.quotientSpanEquivZMod n).toRingHom.comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
       Int.castRingHom (ZMod n.natAbs) := rfl
 
 @[simp]
 theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
-    ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
+    (Int.quotientSpanEquivZMod n).symm.toRingHom.comp (Int.castRingHom (ZMod n.natAbs)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
 instance {n : ℤ} [NeZero n] : Finite (ℤ ⧸ Ideal.span {n}) :=

@@ -76,8 +76,8 @@ the statement of this theorem becomes a syntactic equality." (since := "2026-09-
 theorem aeval_eq_bind₁ (f : σ → MvPolynomial τ R) : aeval f = bind₁ f :=
   rfl
 
-@[deprecated coe_aeval_eq_eval₂Hom +typeChanged (since := "2026-09-02")]
-theorem eval₂Hom_C_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
+@[deprecated ringHomOfClass_aeval_eq_eval₂Hom +typeChanged (since := "2026-09-02")]
+theorem eval₂Hom_C_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = (bind₁ f).toRingHom :=
   rfl
 
 @[deprecated "`bind₂` is deprecated. After replacing `bind₂` with its suggested replacement,
@@ -276,10 +276,10 @@ theorem eval₂Hom_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynom
 
 @[deprecated map_eval₂Hom +typeChanged (since := "2026-09-02")]
 theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
-    aeval f (bind₂ g φ) = eval₂Hom ((↑(aeval f : _ →ₐ[S] _) : _ →+* _).comp g) f φ :=
+    aeval f (bind₂ g φ) = eval₂Hom ((aeval f : _ →ₐ[S] _).toRingHom.comp g) f φ :=
   eval₂Hom_bind₂ _ _ _ _
 
-@[deprecated coe_aeval_eq_eval₂Hom +typeChanged (since := "2026-09-02")]
+@[deprecated ringHomOfClass_aeval_eq_eval₂Hom +typeChanged (since := "2026-09-02")]
 alias eval₂Hom_C_left := eval₂Hom_C_eq_bind₁
 
 @[deprecated aeval_monomial +typeChanged (since := "2026-09-02")]

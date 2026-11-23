@@ -177,6 +177,6 @@ lemma evalRingHom_mapMatrix_comp_polyToMatrix :
   ext <;> simp [RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
-    (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =
+    (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]).toRingHom =
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
