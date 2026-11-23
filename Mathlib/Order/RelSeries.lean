@@ -192,8 +192,30 @@ instance membership : Membership α (RelSeries r) :=
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
+@[simp] theorem mem_mk {n f step} : x ∈ RelSeries.mk (r := r) n f step ↔ x ∈ Set.range f := by
+  simp [mem_def]
+
+-- It is for confluence of `x ∈ Set.range s` (which can be simplified to `∃ y, s y = x`) with
+-- `simp` rule `range_toFun_eq_coe_toFinset : Set.range s = (s.toFinset : Set α)`.
+@[simp] theorem exists_apply_eq_iff : (∃ y, s y = x) ↔ x ∈ s := by simp [mem_def]
+
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
+
+noncomputable def toFinset (s : RelSeries r) : Finset α :=
+  letI := Classical.decEq α; Finset.univ.image s
+
+theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.univ.image s := by
+  unfold toFinset
+  congr!
+
+@[simp] theorem mem_toFinset_iff_mem : x ∈ s.toFinset ↔ x ∈ s := by classical simp [toFinset_def]
+
+@[simp] theorem ofPred_mem_eq_coe_toFinset : {l | l ∈ s} = (s.toFinset : Set α) := by ext; simp
+
+@[simp] theorem range_toFun_eq_coe_toFinset : Set.range s = (s.toFinset : Set α) := by ext; simp
+
+@[simp] theorem apply_mem {i} : s i ∈ s := Set.mem_range_self _
 
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
@@ -207,7 +229,7 @@ theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
 theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def],
+  refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp,
     fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
   convert! s.step ⟨0, by lia⟩
