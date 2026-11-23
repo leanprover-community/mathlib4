@@ -71,7 +71,7 @@ theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map
   subset_span ⟨x, h, rfl⟩
 
 theorem apply_coe_mem_map (f : F) (I : Ideal R) (x : I) : f x ∈ I.map f :=
-  mem_map_of_mem f x.2
+  mem_map_of_mem f x.property
 
 theorem map_le_iff_le_comap [RingHomClass F R S] : map f I ≤ K ↔ I ≤ comap f K :=
   span_le.trans Set.image_subset_iff
@@ -513,7 +513,7 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
     {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
   constructor
   · intro h
-    simp_rw [show map e I = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : R ≃+* S)] at h
+    simp_rw [show map e I = _ from map_comap_of_equiv (.ofClass e)] at h
     exact ⟨(EquivLike.toEquiv e).symm y, h, (EquivLike.toEquiv e).apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
@@ -613,12 +613,12 @@ theorem coheight_comap_of_surjective (hf : Function.Surjective f) (I : Ideal S) 
 def relIsoOfSurjective (hf : Function.Surjective f) :
     Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
   toFun J := ⟨comap f J, comap_mono bot_le⟩
-  invFun I := map f I.1
+  invFun I := map f I.val
   left_inv J := map_comap_of_surjective f hf J
   right_inv I :=
     Subtype.ext <|
-      show comap f (map f I.1) = I.1 from
-        (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
+      show comap f (map f I.val) = I.val from
+        (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.property) le_sup_left
   map_rel_iff' {I1 I2} :=
     ⟨fun H => map_comap_of_surjective f hf I1 ▸ map_comap_of_surjective f hf I2 ▸ map_mono H,
       comap_mono⟩
@@ -981,7 +981,7 @@ theorem annihilator_sup (N P : Submodule R M) :
   rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
-  simp_rw [← le_bot_iff, smul_le, IsConcreteLE.le_iff, mem_annihilator]; rfl
+  simp_rw [← le_bot_iff, smul_le, le_iff_mem_imp_mem, mem_annihilator]; rfl
 
 @[simp]
 theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
@@ -1023,7 +1023,7 @@ theorem mem_annihilator_span_singleton (g : M) (r : R) :
 
 open LinearMap in
 theorem annihilator_span (s : Set M) :
-    (Submodule.span R s).annihilator = ⨅ g : s, ker (toSpanSingleton R M g.1) := by
+    (Submodule.span R s).annihilator = ⨅ g : s, ker (toSpanSingleton R M g.val) := by
   ext; simp [mem_annihilator_span]
 
 open LinearMap in
@@ -1064,9 +1064,9 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
-  have h : I.map f = I.map ((RingEquivClass.toRingEquiv f : R ≃+* S) : R →+* S) := rfl
-  rw [h, map_comap_of_equiv (RingEquivClass.toRingEquiv f : R ≃+* S)]
-  exact Ideal.IsPrime.comap (RingEquivClass.toRingEquiv f : R ≃+* S).symm
+  have h : I.map f = I.map (RingEquiv.ofClass f : R →+* S) := rfl
+  rw [h, map_comap_of_equiv (.ofClass f)]
+  exact Ideal.IsPrime.comap (RingEquiv.ofClass f).symm
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
@@ -1215,7 +1215,7 @@ See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
 -/
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) where
-  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
+  toFun g := f.liftOfRightInverseAux f_inv hf g.val g.property
   invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
@@ -1233,8 +1233,8 @@ noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
 
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
-    (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
+    (f.liftOfRightInverse f_inv hf g) (f x) = g.val x :=
+  f.liftOfRightInverseAux_comp_apply f_inv hf g.val g.property x
 
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :

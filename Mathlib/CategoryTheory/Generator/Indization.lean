@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Preadditive.Indization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separating set in the category of ind-objects
 

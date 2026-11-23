@@ -5,8 +5,9 @@ Authors: Nicola Falciola
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # `ZMod (p ^ r)` is a local ring

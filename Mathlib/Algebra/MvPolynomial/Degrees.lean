@@ -641,7 +641,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
   simp only [mem_degreesLE, nonpos_iff_eq_zero] at hx
   have := (totalDegree_eq_zero_iff_eq_C (p := x)).mp
     (Nat.eq_zero_of_le_zero (x.totalDegree_le_degrees_card.trans (by simp [hx])))
-  exact ⟨x.coeff 0, by simp [Algebra.smul_def, ← this]⟩
+  exact ⟨x.coeff 0, by simp [← this]⟩
 
 variable (s) in
 lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n

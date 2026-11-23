@@ -134,7 +134,7 @@ instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
 
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
-  ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
+  ⟨A.val.transpose, A.val.det_transpose ▸ A.property⟩
 
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => SpecialLinearGroup.transpose
@@ -171,7 +171,7 @@ theorem coe_one : (1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
 
 @[simp]
 theorem det_coe : det ↑ₘA = 1 :=
-  A.2
+  A.property
 
 @[simp]
 theorem mk_coe : .mk A A.det_coe = A := rfl
@@ -324,7 +324,7 @@ def prodEquiv :
     SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
   __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
   invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.fst, A.snd⟩, by
-    rw [det_prodRingEquiv_symm, A.fst.2, A.snd.2, Prod.mk_one_one]⟩
+    rw [det_prodRingEquiv_symm, A.fst.property, A.snd.property, Prod.mk_one_one]⟩
 
 end Prod
 
@@ -484,23 +484,23 @@ section SpecialCases
 open scoped MatrixGroups
 
 theorem SL2_inv_expl_det (A : SL(2, R)) :
-    det !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] = 1 := by
-  simpa [-det_coe, det_fin_two, mul_comm] using A.2
+    det !![A.val 1 1, -A.val 0 1; -A.val 1 0, A.val 0 0] = 1 := by
+  simpa [-det_coe, det_fin_two, mul_comm] using A.property
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ = .mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
+    A⁻¹ = .mk !![A.val 1 1, -A.val 0 1; -A.val 1 0, A.val 0 0] (SL2_inv_expl_det A) := by
   ext
   simp [adjugate_fin_two]
 
 protected theorem eta_fin_two (g : SL(2, R)) :
     g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← Matrix.eta_fin_two]) :=
-  Subtype.ext (Matrix.eta_fin_two g.1)
+  Subtype.ext (Matrix.eta_fin_two g.val)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1),
     P (.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
   rw [SpecialLinearGroup.eta_fin_two g]
-  exact h _ _ _ _ ((det_fin_two _).symm.trans g.2)
+  exact h _ _ _ _ ((det_fin_two _).symm.trans g.property)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
@@ -515,14 +515,14 @@ lemma isCoprime_row (A : SL(2, R)) (i : Fin 2) : IsCoprime (A i 0) (A i 1) := by
   refine match i with
   | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
   | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
-  · simp_rw [det_coe A ▸ det_fin_two A.1]
+  · simp_rw [det_coe A ▸ det_fin_two A.val]
     ring
 
 lemma isCoprime_col (A : SL(2, R)) (j : Fin 2) : IsCoprime (A 0 j) (A 1 j) := by
   refine match j with
   | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
   | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
-  · simp_rw [det_coe A ▸ det_fin_two A.1]
+  · simp_rw [det_coe A ▸ det_fin_two A.val]
     ring
 
 end SpecialCases
@@ -564,7 +564,7 @@ lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2) :
 /-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
+    IsCoprime ((v ᵥ* A.val) 0) ((v ᵥ* A.val) 1) := by
   obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
   have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
   simpa only [this] using! isCoprime_row (g * A) 0
@@ -572,7 +572,7 @@ lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 /-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
+    IsCoprime ((A.val *ᵥ v) 0) ((A.val *ᵥ v) 1) := by
   simpa only [← vecMul_transpose] using! hab.vecMulSL A.transpose
 
 end IsCoprime
@@ -584,18 +584,18 @@ section Action
 variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
-  smul m v := m.1 • v
+  smul m v := m.val • v
   smul_zero _ := smul_zero (M := Matrix ι ι F) _
   smul_add _ := smul_add (M := Matrix ι ι F) _
   one_smul _ := one_smul (M := Matrix ι ι F) _
   mul_smul _ _ _ := SemigroupAction.mul_smul (α := Matrix ι ι F) _ _ _
 
 instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
-  smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
+  smul_comm m k v := show m.val • k • v = k • m.val • v from smul_comm _ _ _
 
 protected lemma SpecialLinearGroup.smul_def
     (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
-    m • v = m.1 • v := rfl
+    m • v = m.val • v := rfl
 
 end Action
 
@@ -626,7 +626,7 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
 
 @[deprecated transvection_smul_single_fst +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
-    (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
+    (transvection hij b).val *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
   rw [transvection_coe]
   simp [-mulVec_single, add_mulVec, single_mulVec_eq, hij]
 
@@ -638,7 +638,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
 
 @[deprecated transvection_smul_single_snd +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
-    (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
+    (transvection hij b).val *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
   rw [transvection_coe]
   simp [-mulVec_single, add_mulVec, single_mulVec_eq]
 
@@ -719,10 +719,10 @@ noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
 lemma diag2_def {a : F} (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha := rfl
 
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
-    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
+    (diag2 a ha).val = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
 
 lemma diag2_coe' {a : F} (ha : a ≠ 0) :
-    (diag2 a ha).1 = !![a, 0; 0, a⁻¹] := by
+    (diag2 a ha).val = !![a, 0; 0, a⁻¹] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [diag2n_coe]
 
@@ -793,7 +793,7 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
   rw [Finset.map_noncommProd]
   simp only [coeMonoidHom_apply, coe_mk, ne_eq, apply_dite]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
-      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
+      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).val))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod,
@@ -807,8 +807,8 @@ theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGr
     ∃ (L L' : List (TransvectionStruct ι F)) (D : ι → F) (hD : det (diagonal D) = 1),
       M = (L.map TransvectionStruct.toSpecialLinearGroup).prod *
         .mk (diagonal D) hD * (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
-  obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.1
-  refine ⟨L, L', D, by simpa [hM] using M.2, Subtype.ext <| ?_⟩
+  obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.val
+  refine ⟨L, L', D, by simpa [hM] using M.property, Subtype.ext <| ?_⟩
   simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod]
   simp [Function.comp_def, hM]
 

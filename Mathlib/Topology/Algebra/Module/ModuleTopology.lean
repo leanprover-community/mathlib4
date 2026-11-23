@@ -5,10 +5,11 @@ Authors: Kevin Buzzard, Will Sawin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv.Pi
+
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!
 # A "module topology" for modules over a topological ring

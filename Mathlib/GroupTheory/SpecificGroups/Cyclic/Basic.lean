@@ -5,12 +5,12 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Contrapose
 
 set_option doc.verso true

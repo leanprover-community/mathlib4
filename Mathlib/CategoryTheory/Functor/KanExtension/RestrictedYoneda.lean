@@ -6,8 +6,9 @@ Authors: Joël Riou, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.RestrictedYoneda
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 /-!
 # Pointwise left Kan extension along the Yoneda embedding
