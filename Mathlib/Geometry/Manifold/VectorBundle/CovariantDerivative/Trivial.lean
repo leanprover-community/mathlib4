@@ -31,7 +31,7 @@ public lemma isManifold_one {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     [TopologicalSpace M] [ChartedSpace H M] [IsManifold I (n + 1) M] : IsManifold I 1 M :=
   IsManifold.of_le (by simp : 1 ≤ n + 1)
 
-lemma _root_.mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+lemma mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -43,7 +43,7 @@ lemma _root_.mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 
   rw [mfderivWithin_of_mem_nhds hx]
   rfl
 
-lemma _root_.IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+lemma IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -52,7 +52,7 @@ lemma _root_.IsOpen.mvfderivWithin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     : d[s] g x = d% g x :=
   mvfderivWithin_of_mem_nhds g <| hs.mem_nhds hx
 
-lemma _root_.Bundle.Trivial.contMDiffWithinAt_section_iff
+lemma Bundle.Trivial.contMDiffWithinAt_section_iff
     {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
@@ -63,7 +63,7 @@ lemma _root_.Bundle.Trivial.contMDiffWithinAt_section_iff
   rw [Bundle.contMDiffWithinAt_section_iff]
   rfl
 
-lemma _root_.Bundle.Trivial.contMDiffOn_section_iff
+lemma Bundle.Trivial.contMDiffOn_section_iff
     {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
@@ -75,7 +75,7 @@ lemma _root_.Bundle.Trivial.contMDiffOn_section_iff
   refine forall₂_congr fun x hx ↦ ?_
   apply Bundle.Trivial.contMDiffWithinAt_section_iff
 
-lemma _root_.Bundle.Trivial.contMDiffAt_section_iff
+lemma Bundle.Trivial.contMDiffAt_section_iff
     {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
@@ -86,7 +86,7 @@ lemma _root_.Bundle.Trivial.contMDiffAt_section_iff
   rw [Bundle.contMDiffAt_section_iff]
   rfl
 
-lemma _root_.ContMDiffWithinAt.mvfderiv
+lemma ContMDiffWithinAt.mvfderiv
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
@@ -121,7 +121,7 @@ lemma _root_.ContMDiffWithinAt.mvfderiv
   · rw [ha.mvfderivWithin hx₀]
 
 
-lemma _root_.ContMDiffAt.mvfderiv'
+lemma ContMDiffAt.mvfderiv'
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] [FiniteDimensional 𝕜 EB]
