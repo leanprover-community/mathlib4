@@ -84,7 +84,7 @@ theorem coneLinearlyOrderedRingEquiv_symm_apply (o : LinearOrder R) (h : IsOrder
 
 end Ring
 
-/-! ### Deprecated -/
+/-! ## Deprecated -/
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 @[deprecated AddSubmonoid.IsPointed +typeChanged (since := "2026-10-28")]
