@@ -92,7 +92,7 @@ def filename_to_htmldoc(file):
     # Remove the file name extension (which should be `.lean`, and then join the module names with dots.
     return Path(file).with_suffix('.html')
 
-def build_docs(docbuild_path, dep_rev, files):
+def build_docs(docbuild_path, dep_rev, lean_version, files):
     """Build docs in `docbuild_path/.lake/build/doc` for the files from commit `dep_rev`.
     Returns the process, which can be awaited on (for running the build in parallel).
 
@@ -253,15 +253,24 @@ else:
         ./scripts/doc-gen-diff.py ...
     """, file=sys.stderr)
     exit(1)
-with open('lean-toolchain', 'r') as toolchain_file:
-    lean_toolchain = toolchain_file.read().strip()
-lean_version = lean_toolchain.split(':')[1]
+
+lean_toolchain_process1 = subprocess.run(["git", "show", f"{commit1}:lean-toolchain"], capture_output=True)
+lean_toolchain1 = lean_toolchain_process1.stdout.decode('utf-8').strip()
+lean_toolchain_process2 = subprocess.run(["git", "show", f"{commit1}:lean-toolchain"], capture_output=True)
+lean_toolchain2 = lean_toolchain_process2.stdout.decode('utf-8').strip()
+if lean_toolchain1 != lean_toolchain2:
+    print("""Warning: lean versions differ between the two commits: {lean_toolchain1}, {lean_toolchain2}.
+
+    This is untested behaviour and might lead to unexpected errors.
+    """, file=sys.stderr)
+lean_version1 = lean_toolchain1.split(':')[1]
+lean_version2 = lean_toolchain2.split(':')[1]
 
 docbuild1 = Path(tempfile.mkdtemp())
 docbuild2 = Path(tempfile.mkdtemp())
 
 # Run the processes in parallel and wait until both are done.
-processes = [build_docs(docbuild1, commit1, files), build_docs(docbuild2, commit2, files)]
+processes = [build_docs(docbuild1, commit1, lean_version1, files), build_docs(docbuild2, commit2, lean_version2, files)]
 for process in processes:
     process.wait()
 
