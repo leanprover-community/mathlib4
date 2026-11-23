@@ -66,16 +66,6 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 
-@[simp]
-theorem MulSemiringAction.toRingHom_one [MulSemiringAction M R] :
-    MulSemiringAction.toRingHom M R 1 = RingHom.id R :=
-  RingHom.ext fun x ↦ one_smul M x
-
-theorem MulSemiringAction.toRingHom_mul [MulSemiringAction M R] (g h : M) :
-    MulSemiringAction.toRingHom M R (g * h) =
-      (MulSemiringAction.toRingHom M R g).comp (MulSemiringAction.toRingHom M R h) :=
-  RingHom.ext fun x ↦ mul_smul g h x
-
 /-- The tautological action by `R →+* R` on `R`.
 
 This generalizes `Function.End.applyMulAction`. -/

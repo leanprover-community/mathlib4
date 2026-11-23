@@ -21,7 +21,7 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 * `FractionalIdeal.extendedHom'`: The ring homomorphism version of `FractionalIdeal.extended`.
 * `FractionalIdeal.extendedHom`: For `A ⊆ B` an extension of domains, the ring homomorphism that
   sends a fractional ideal of `A` to a fractional ideal of `B`.
-* `FractionalIdeal.pointwiseMulDistribMulAction`: an action of a group `G` on `R` by ring
+* `FractionalIdeal.pointwiseMulSemiringAction`: an action of a group `G` on `R` by ring
   automorphisms induces an action on the fractional ideals of a fraction ring of `R`. It is an
   instance in the `Pointwise` locale.
 
@@ -78,10 +78,23 @@ local notation "map_f" => (IsLocalization.map (S := K) L f hf)
 lemma mem_extended_iff (x : L) : x ∈ I.extended L hf ↔ x ∈ span B (map_f '' I) := by
   constructor <;> { intro hx; simpa }
 
+/-- Extension of fractional ideals only depends on the ring homomorphism, which allows rewriting
+it without having to transport the proof that it maps `M` into `N`. -/
+theorem extended_congr {f' : A →+* B} (hf' : M ≤ Submonoid.comap f' N) (h : f = f') :
+    I.extended L hf = I.extended L hf' := by
+  subst h
+  rfl
+
 @[simp]
 lemma coeToSubmodule_extended_eq_span : I.extended L hf = span B (map_f '' I) := by
   ext; simp [mem_coeToSubmodule, mem_extended_iff]
 @[deprecated (since := "2026-11-09")] alias coe_extended_eq_span := coeToSubmodule_extended_eq_span
+
+theorem extended_mono {I J : FractionalIdeal M K} (h : I ≤ J) :
+    I.extended L hf ≤ J.extended L hf := by
+  rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_extended_eq_span,
+    coeToSubmodule_extended_eq_span]
+  exact span_mono (Set.image_mono h)
 
 @[simp]
 theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
@@ -246,9 +259,8 @@ variable {A : Type*} [CommRing A] {M : Submonoid A} (K : Type*) [CommRing K] [Al
   [IsLocalization M K]
 
 @[simp]
-theorem extended_id (I : FractionalIdeal M K) :
-    I.extended K (f := RingHom.id A)
-      (fun _ h ↦ Submonoid.mem_comap.mpr h : M ≤ M.comap (RingHom.id A)) = I := by
+theorem extended_id (I : FractionalIdeal M K) (hf : M ≤ M.comap (RingHom.id A)) :
+    I.extended K (f := RingHom.id A) hf = I := by
   simp only [← coeToSubmodule_inj, coeToSubmodule_extended_eq_span, IsLocalization.map_id,
     Set.image_id']
   exact Submodule.span_eq _
@@ -359,28 +371,29 @@ open scoped nonZeroDivisors
 variable {R : Type*} [CommRing R] {G : Type*} [Group G] [MulSemiringAction G R]
   {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
+-- TODO: find a better home for this lemma.
 theorem _root_.nonZeroDivisors_le_comap_toRingHom (g : G) :
     R⁰ ≤ R⁰.comap (MulSemiringAction.toRingHom G R g) :=
-  fun _ hs ↦ smul_mem_nonZeroDivisors g hs
+  fun _ ↦ smul_mem_nonZeroDivisors g
 
 /-- The action of a group `G` on a commutative ring `R` by ring automorphisms induces an action
 on the fractional ideals of a fraction ring `K` of `R`, by extension of fractional ideals.
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulDistribMulAction : MulDistribMulAction G (FractionalIdeal R⁰ K) where
+protected def pointwiseMulSemiringAction : MulSemiringAction G (FractionalIdeal R⁰ K) where
   smul g I := I.extended K (f := MulSemiringAction.toRingHom G R g)
     (nonZeroDivisors_le_comap_toRingHom g)
   smul_one _ := extended_one _ _
-  one_smul I := show I.extended K _ = I by
-    simp_rw [MulSemiringAction.toRingHom_one]
-    exact extended_id K I
+  one_smul I := (extended_congr K _ I _ (RingHom.ext <| one_smul G)).trans
+    (extended_id K I fun _ h ↦ h)
   smul_mul _ _ _ := extended_mul _ _ _ _
-  mul_smul g h I := show I.extended K _ = (I.extended K _).extended K _ by
-    simp_rw [MulSemiringAction.toRingHom_mul]
-    exact (extended_extended _ _ I _).symm
+  mul_smul g h I := (extended_congr K _ I _ (RingHom.ext <| mul_smul g h)).trans
+    (extended_extended _ _ I _).symm
+  smul_zero _ := extended_zero _ _
+  smul_add _ _ _ := extended_add _ _ _ _
 
-scoped[Pointwise] attribute [instance] FractionalIdeal.pointwiseMulDistribMulAction
+scoped[Pointwise] attribute [instance] FractionalIdeal.pointwiseMulSemiringAction
 
 open scoped Pointwise
 
@@ -395,20 +408,35 @@ theorem canonicalEquiv_smul (K' : Type*) [CommRing K'] [Algebra R K'] [IsFractio
   rw [canonicalEquiv_eq_extended, canonicalEquiv_eq_extended, pointwise_smul_def,
     pointwise_smul_def, extended_extended, extended_extended]
 
-@[simp]
+@[simp, norm_cast]
 theorem coeIdeal_smul (g : G) (I : Ideal R) :
     (↑(g • I) : FractionalIdeal R⁰ K) = g • (I : FractionalIdeal R⁰ K) := by
   rw [pointwise_smul_def, extended_coeIdeal_eq_map, Ideal.pointwise_smul_def]
 
+instance : CovariantClass G (FractionalIdeal R⁰ K) HSMul.hSMul LE.le :=
+  ⟨fun _ _ _ ↦ extended_mono _ _⟩
+
 variable [MulSemiringAction G K] [SMulDistribClass G R K]
 
-@[simp]
-theorem spanSingleton_smul (g : G) (x : K) :
-    g • spanSingleton R⁰ x = spanSingleton R⁰ (g • x) := by
-  rw [pointwise_smul_def, extended_spanSingleton]
-  congr 1
-  exact RingHom.congr_fun (g := MulSemiringAction.toRingHom G K g)
+theorem _root_.IsFractionRing.map_toRingHom_apply (g : G) (x : K) :
+    IsLocalization.map K (MulSemiringAction.toRingHom G R g)
+      (nonZeroDivisors_le_comap_toRingHom g) x = g • x :=
+  RingHom.congr_fun (g := MulSemiringAction.toRingHom G K g)
     (IsLocalization.ringHom_ext R⁰ <| RingHom.ext fun a ↦ by simp [algebraMap.smul']) x
+
+theorem smul_mem_pointwise_smul (g : G) (x : K) (I : FractionalIdeal R⁰ K) :
+    x ∈ I → g • x ∈ g • I :=
+  fun hx ↦ subset_span ⟨x, hx, IsFractionRing.map_toRingHom_apply g x⟩
+
+theorem mem_pointwise_smul_iff_inv_smul_mem {g : G} {I : FractionalIdeal R⁰ K} {x : K} :
+    x ∈ g • I ↔ g⁻¹ • x ∈ I :=
+  ⟨fun h ↦ by simpa using smul_mem_pointwise_smul g⁻¹ _ _ h,
+    fun h ↦ by simpa using smul_mem_pointwise_smul g _ _ h⟩
+
+@[simp]
+theorem smul_spanSingleton (g : G) (x : K) :
+    g • spanSingleton R⁰ x = spanSingleton R⁰ (g • x) := by
+  rw [pointwise_smul_def, extended_spanSingleton, IsFractionRing.map_toRingHom_apply]
 
 end Pointwise
 
