@@ -31,8 +31,6 @@ functions on a non-compact topological space. A proper map between a pair of suc
 (contravariantly) induces a morphism between their algebras of compactly-supported functions which
 will be a `NonUnitalAlgHom`.
 
-TODO: add `NonUnitalAlgEquiv` when needed.
-
 ## Main definitions
 
   * `NonUnitalAlgHom`
@@ -130,8 +128,8 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
   ⟨toNonUnitalAlgSemiHom⟩
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
-@[coe]
 `NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
+@[coe]
 def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
@@ -448,6 +446,10 @@ instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
 
 @[simp]
 theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_toNonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 
 end AlgHom

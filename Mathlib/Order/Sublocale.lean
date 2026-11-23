@@ -88,7 +88,7 @@ instance carrier.instSemilatticeInf : SemilatticeInf S := Subtype.semilatticeInf
 
 instance carrier.instOrderTop : OrderTop S := Subtype.orderTop top_mem
 
-instance carrier.instHImp : HImp S where himp a b := ⟨a ⇨ b, S.himp_mem b.2⟩
+instance carrier.instHImp : HImp S where himp a b := ⟨a ⇨ b, S.himp_mem b.property⟩
 
 instance carrier.instInfSet : InfSet S where
   sInf x := ⟨sInf (Subtype.val '' x), S.sInf_mem' _

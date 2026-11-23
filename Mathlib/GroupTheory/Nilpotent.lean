@@ -6,10 +6,11 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
-public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Nilpotent.LowerCentralSeries
-public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Sylow
+
+import Mathlib.GroupTheory.IndexNormal
+import Mathlib.GroupTheory.QuotientGroup.Simple
 
 /-!
 # Nilpotent groups
@@ -1095,7 +1096,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
   let ps := (Nat.card G).primeFactors
   have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
     intro p P
-    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.property
     exact P.isPGroup.isNilpotent
   exact nilpotent_of_mulEquiv e
 

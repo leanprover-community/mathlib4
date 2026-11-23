@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
 
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
@@ -251,7 +251,7 @@ def restrict₂ (hIJ : I ⊆ J) :
 
 @[simp]
 lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
-    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.val, hIJ i.property⟩ := rfl
 
 end restrict₂
 

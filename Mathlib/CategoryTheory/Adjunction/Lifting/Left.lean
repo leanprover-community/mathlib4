@@ -82,16 +82,16 @@ def counitCoequalizes (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
   Cofork.IsColimit.mk' _ fun s => by
     have := fun Y ↦ h Y |>.epi
-    refine ⟨((h X).desc' s.π ?_).1, ?_, ?_⟩
+    refine ⟨((h X).desc' s.π ?_).val, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (h X).W)]
       rw [← adj₁.counit_naturality_assoc (h X).left]
       dsimp
       rw [← dsimp% s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc (h X).right]
-    · apply ((h X).desc' s.π _).2
+    · apply ((h X).desc' s.π _).property
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
-      apply hm.trans ((h _).desc' s.π _).2.symm
+      apply hm.trans ((h _).desc' s.π _).property.symm
 
 /-- Deprecated alias for `counitCoequalizes`. -/
 @[deprecated counitCoequalizes (since := "2026-10-05")]
