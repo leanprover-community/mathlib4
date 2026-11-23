@@ -209,6 +209,19 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
+/-- The filter `codiscreteWithin S` is nontrivial if `S` is preperfect and nonempty. -/
+theorem Preperfect.codiscreteWithin_neBot {U : Set α} (h₁U : Preperfect U) (h₂U : U.Nonempty) :
+    (codiscreteWithin U).NeBot := by
+  obtain ⟨x, hx⟩ := h₂U
+  exact (h₁U x hx).codiscreteWithin_neBot hx
+
+/--
+The filter `codiscreteWithin S` is nontrivial if `S` is preconnected and has at least two points.
+-/
+theorem IsPreconnected.codiscreteWithin_neBot [T1Space α] {U : Set α} (h₁U : IsPreconnected U)
+    (h₂U : U.Nontrivial) : (codiscreteWithin U).NeBot :=
+  (h₁U.preperfect_of_nontrivial h₂U).codiscreteWithin_neBot h₂U.nonempty
+
 instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
   constructor
   apply isPreconnected_univ.preperfect_of_nontrivial
