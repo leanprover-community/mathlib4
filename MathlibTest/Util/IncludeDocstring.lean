@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Util.IncludeDocstring
+import all Init.Prelude -- for the doc-string of `Nat`
 
 /-! # Verso code to include one docstring in another
 
