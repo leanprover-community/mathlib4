@@ -5,8 +5,9 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Topology.Algebra.UniformField
+
+import Mathlib.Algebra.Algebra.IsSimpleRing
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

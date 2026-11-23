@@ -29,7 +29,8 @@ and "forget that a bounded continuous function is a bounded" commute. -/
 theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} :
     ((A.restrictScalars ℝ).comap
-    (AlgHom.compLeftContinuousBounded ℝ ofRealAm lipschitzWith_ofReal)).map (toContinuousMapₐ ℝ) =
+    (AlgHom.compLeftContinuousBounded ℝ ofRealAm lipschitzWith_one_ofReal)).map
+    (toContinuousMapₐ ℝ) =
     ((A.map (toContinuousMapStarₐ 𝕜)).restrictScalars ℝ).comap
     (ofRealAm.compLeftContinuous ℝ continuous_ofReal) := by
   ext g
@@ -37,7 +38,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     StarSubalgebra.mem_toSubalgebra, StarSubalgebra.mem_map]
   constructor
   · intro ⟨x, hxA, hxg⟩
-    use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal x, hxA
+    use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_one_ofReal x, hxA
     ext a
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuousBounded_apply_apply,
       ofRealAm_coe, AlgHom.compLeftContinuous_apply_apply, algebraMap.coe_inj]
@@ -46,7 +47,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     have hg_apply (a : E) := congr($hxg a)
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuous_apply_apply,
       ofRealAm_coe] at hg_apply
-    have h_comp_eq : (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal
+    have h_comp_eq : (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_one_ofReal
         (x.comp reCLM (@reCLM 𝕜 _).lipschitzWith) = x := by
       ext a
       simp [hg_apply]

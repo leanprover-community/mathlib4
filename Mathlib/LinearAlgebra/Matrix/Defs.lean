@@ -6,8 +6,9 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Basic.Nontrivial.Basic
 
 /-!
 # Matrices
