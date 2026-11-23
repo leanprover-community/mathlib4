@@ -248,10 +248,10 @@ variable {K : Type*} [Field K] [CharZero K] [IsGalois ℚ K]
 
 /-- A Galois extension of `ℚ` is either totally real or totally complex. -/
 theorem isTotallyReal_or_isTotallyComplex : IsTotallyReal K ∨ IsTotallyComplex K := by
-  by_cases h : ∃ w : InfinitePlace K, w.IsReal
-  · obtain ⟨w, hw⟩ := h
-    exact .inl ⟨fun _ ↦ (isReal_iff_of_comap_eq (k := ℚ) (Subsingleton.elim _ _)).mp hw⟩
-  · exact .inr ⟨fun w ↦ not_isReal_iff_isComplex.mp fun hw ↦ h ⟨w, hw⟩⟩
+  obtain ⟨w⟩ : Nonempty (InfinitePlace K) := inferInstance
+  obtain hw | hw := w.isReal_or_isComplex
+  · exact .inl ⟨fun _ ↦ (isReal_iff_of_comap_eq (k := ℚ) (Subsingleton.elim _ _)).mp hw⟩
+  · exact .inr ⟨fun _ ↦ (isComplex_iff_of_comap_eq (k := ℚ) (Subsingleton.elim _ _)).mp hw⟩
 
 end IsGalois
 
