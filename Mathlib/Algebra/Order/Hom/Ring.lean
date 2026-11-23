@@ -106,7 +106,7 @@ variable [EquivLike F α β]
 into an actual `OrderRingIso`. -/
 def OrderRingIso.ofClass [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-  { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
+  { RingEquiv.ofClass f with map_le_map_iff' := map_le_map_iff f }
 
 @[deprecated (since := "2026-11-22")] alias OrderRingIsoClass.toOrderRingIso := OrderRingIso.ofClass
 
@@ -412,10 +412,11 @@ theorem trans_toRingEquiv (f : α ≃+*o β) (g : β ≃+*o γ) :
 
 /-- `simp`-normal form of `trans_toRingEquiv`. -/
 @[simp]
-theorem trans_toRingEquiv_aux (f : α ≃+*o β) (g : β ≃+*o γ) :
-    RingEquivClass.toRingEquiv (OrderRingIso.trans f g)
-      = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
+theorem ringEquivOfClass_trans (f : α ≃+*o β) (g : β ≃+*o γ) :
+    .ofClass (OrderRingIso.trans f g) = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias trans_toRingEquiv_aux := ringEquivOfClass_trans
 
 @[simp]
 theorem trans_apply (f : α ≃+*o β) (g : β ≃+*o γ) (a : α) : f.trans g a = g (f a) :=
