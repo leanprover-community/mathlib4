@@ -248,11 +248,11 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 
-lemma toSet_kstar_nonempty (l : Language α) :
+lemma toSet_kstar_eq_ne_nil (l : Language α) :
     l∗.toSet = {x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ []} := by
   ext x; apply mem_kstar_iff_exists_nonempty
 
-@[deprecated (since := "2026-11-18")] alias kstar_def_nonempty := toSet_kstar_nonempty
+@[deprecated (since := "2026-11-18")] alias kstar_def_nonempty := toSet_kstar_eq_ne_nil
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
@@ -392,6 +392,7 @@ lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
 lemma reverse_eq_image (l : Language α) : l.reverse = ofSet (List.reverse '' l.toSet) := by
   ext1; exact ((reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
+@[simp]
 lemma toSet_reverse (l : Language α) : l.reverse.toSet = List.reverse ⁻¹' l.toSet :=
   rfl
 
@@ -428,11 +429,11 @@ lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse 
 
 @[simp]
 lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse := by
-  ext; simp [toSet_reverse]
+  ext; simp
 
 @[simp]
 lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse := by
-  ext; simp [toSet_reverse]
+  ext; simp
 
 variable (α) in
 /-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
