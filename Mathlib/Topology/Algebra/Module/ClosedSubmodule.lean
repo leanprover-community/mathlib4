@@ -357,7 +357,8 @@ lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
     (s.map f.toLinearMap).closure = s.closure.mapEquiv f := by
   ext x
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, Submodule.coe_closure, Submodule.map_coe,
-    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply, Set.mem_image]
+    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply,
+    Set.mem_image]
   rw [← ContinuousLinearEquiv.image_closure]
   simp
 

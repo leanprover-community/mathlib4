@@ -210,7 +210,7 @@ theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
 @[simp, norm_cast]
 theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
 
-@[deprecated (since := "2026-11-23")] alias coe_coe := coe_toLinearMap
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 
