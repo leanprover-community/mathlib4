@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.Multiset.Replicate
 public import Mathlib.Data.Set.List
 
@@ -22,7 +21,6 @@ public import Mathlib.Data.Set.List
 
 Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lean`:
 should we switch the import direction?
-
 -/
 
 @[expose] public section
@@ -283,7 +281,7 @@ theorem coe_foldl (f : β → α → β) [RightCommutative f] (b : β) (l : List
 
 theorem coe_foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
     foldr f b l = l.foldl (fun x y => f y x) b :=
-  (congr_arg (foldr f b) (coe_reverse l)).symm.trans foldr_reverse
+  congr(foldr f b $(coe_reverse l)).symm.trans foldr_reverse
 
 theorem foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
     foldr f b s = foldl (fun x y => f y x) b s :=
@@ -329,7 +327,7 @@ theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (s) :
   Quot.inductionOn s fun _ H => congr_arg _ <| List.map_pmap H
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
-    ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
+    ∀ H, pmap f s H = s.attach.map fun x => f x.val (H _ x.property) :=
   Quot.inductionOn s fun _ H => congr_arg _ <| List.pmap_eq_map_attach H
 
 @[simp]
@@ -343,11 +341,11 @@ theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
 set_option backward.isDefEq.respectTransparency false in
 theorem attach_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).attach =
-      ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=
+      ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.val, mem_cons_of_mem p.property⟩ :=
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
-      congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
+      congr(List.cons _ $(by
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl))
 
 section
 
@@ -473,13 +471,13 @@ theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset
     (hs : s.Nodup) (ht : t.Nodup) (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) : s.map f = t.map g := by
-  have : t = s.attach.map fun x => i x.1 x.2 := by
+  have : t = s.attach.map fun x => i x.val x.property := by
     rw [ht.ext]
     · aesop
-    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.2 _ y.2 hxy
+    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.property _ y.property hxy
   calc
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
-    _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
+    _ = s.attach.map fun x => f x.val := by rw [pmap_eq_map_attach]
     _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
 
 end Nodup

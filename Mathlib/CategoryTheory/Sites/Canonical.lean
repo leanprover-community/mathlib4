@@ -5,7 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
@@ -48,10 +47,6 @@ variable {C : Type u} [Category.{v} C]
 variable {P : Cᵒᵖ ⥤ Type w} {X : C} (J : GrothendieckTopology C)
 
 namespace Sheaf
-
-@[deprecated (since := "2026-02-06")] alias isSheafFor_bind := Presieve.isSheafFor_bind
-
-@[deprecated (since := "2026-02-06")] alias isSheafFor_trans := Presieve.isSheafFor_trans
 
 /-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf. -/
 @[stacks 00Z9 "This is a special case of the Stacks entry, but following a different

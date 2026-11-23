@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Filter
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Order.Lex
 
 /-!
@@ -96,7 +96,7 @@ def univ : Finset α :=
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
-theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 := by simp
+theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).val := by simp
 
 theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
@@ -201,10 +201,9 @@ open Finset
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance decidablePiFintype {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
-    (by simp [funext_iff])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a) (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -213,6 +212,10 @@ instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α]
 instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
+
+instance {β : α → Type*} [∀ a, LE (β a)] [∀ a, DecidableLE (β a)] [Fintype α] :
+    DecidableLE (∀ a, β a) :=
+  fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
 
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
@@ -223,7 +226,7 @@ instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [Decid
 section BundledHoms
 
 instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
-  decidable_of_iff (a.1 = b.1) Equiv.coe_fn_injective.eq_iff
+  decidable_of_iff (a.toFun = b.toFun) Equiv.coe_fn_injective.eq_iff
 
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
@@ -255,6 +258,13 @@ instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → �
     Decidable (Function.LeftInverse f g) :=
   inferInstanceAs <| Decidable (∀ x, f (g x) = x)
 
+instance [Fintype α] [Preorder α] [DecidableLE α] : DecidableRel (WCovBy : α → α → Prop) :=
+  have := decidableLTOfDecidableLE (α := α)
+  inferInstanceAs <| DecidableRel fun a b ↦ a ≤ b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
+
+instance [Fintype α] [LT α] [DecidableLT α] : DecidableRel (CovBy : α → α → Prop) :=
+  inferInstanceAs <| DecidableRel fun a b ↦ a < b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
+
 instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 
@@ -265,7 +275,7 @@ associated to the predicate is a fintype. -/
 @[instance_reducible]
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Fintype { x // p x } :=
-  ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
+  ⟨⟨s.val.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
 /-- Construct a fintype from a finset with the same elements. -/

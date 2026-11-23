@@ -5,11 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.SmoothNumbers
+
+import Mathlib.Data.Nat.Factorization.PrimePow
 
 /-!
 # Euler Products
@@ -391,7 +391,7 @@ variable {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [Comp
 variable {f : ℕ → α}
 
 @[to_additive tsum_primes_pow_eq]
-theorem tprod_primes_pow_eq (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.1) :
+theorem tprod_primes_pow_eq (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.val) :
     ∏' (p : Nat.Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
   _ = ∏' p : Nat.Primes × ℕ, f (prodNatEquiv p) := by
     simpa using (hf.comp_injective prodNatEquiv.injective).tprod_prod.symm
@@ -410,7 +410,7 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers
     ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) * ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
   rw [tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers hfm hf]
   have hfs' (p : Nat.Primes) : Multipliable fun k ↦ f (p ^ (k + 1)) :=
-    hfm.comp_injective <| (strictMono_nat_of_lt_succ
+    hfm.comp_injective (strictMono_nat_of_lt_succ
       (pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one <| · + 1)).injective
   simp only [(hfs' _).tprod_eq_zero_mul, zero_add, pow_one]
   apply (Multipliable.subtype hfm _).tprod_mul

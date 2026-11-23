@@ -5,25 +5,27 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
-public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.Presheaf
+
+import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
+import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 
 /-!
 # Finite simplicial sets are presentable
 
 In this file, we show that finite simplicial sets are finitely presentable,
 which will allow the use of the small object argument in `SSet`.
-
 -/
 
 public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -50,7 +52,6 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
 instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
   obtain ⟨Y, _, _, p, _⟩ := exists_epi_from_isCardinalPresentable X
   obtain ⟨Z, _, _, q, _⟩ := exists_epi_from_isCardinalPresentable (pullback p p)
-  have := Cardinal.fact_isRegular_aleph0.{u}
   have := IsRegularEpiCategory.regularEpiOfEpi p
   apply +allowSynthFailures isCardinalPresentable_of_isColimit' _
       (isCoequalizerEpiComp ((EffectiveEpi.getStruct p).isColimitCoforkOfIsPullback

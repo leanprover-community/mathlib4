@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Symmetric difference of finite sets
@@ -16,7 +15,6 @@ This file concerns the symmetric difference operator `s Δ t` on finite sets.
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -42,7 +40,7 @@ open scoped symmDiff
 variable [DecidableEq α] {s t : Finset α} {a : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
-  simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
+  simp_rw [symmDiff, mem_union, mem_sdiff]
 
 protected theorem symmDiff_def (s t : Finset α) : s ∆ t = s \ t ∪ t \ s := rfl
 
@@ -51,8 +49,8 @@ theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=
   Set.ext fun x => by simp [mem_symmDiff, Set.mem_symmDiff]
 
 @[simp] lemma symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t := symmDiff_eq_bot
-@[simp] lemma symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
+@[simp] lemma symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t := by
+  simp [← ne_empty_iff_nonempty]
 
 theorem image_symmDiff [DecidableEq β] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s ∆ t).image f = s.image f ∆ t.image f :=

@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric and hyperbolic trigonometric functions
 
 This file contains the definitions of the sine, cosine, tangent,
 hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
-
 -/
 
 @[expose] public section
@@ -25,38 +27,44 @@ namespace Complex
 noncomputable section
 
 /-- The complex sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E1]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 
 /-- The complex cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E2]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E4]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 
 /-- The complex cotangent function, defined as `cos z / sin z` -/
+@[pp_nodot, dlmf 4.14.E7]
 def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E1]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E2]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E4]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
+
+/-- The complex hyperbolic cotangent function, defined as `cosh z / sinh z` -/
+@[pp_nodot, dlmf 4.28.E7 "defined as the reciprocal of tanh"]
+def coth (z : ℂ) : ℂ :=
+  cosh z / sinh z
 
 end
 
@@ -84,6 +92,7 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
+@[pp_nodot]
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
@@ -103,6 +112,12 @@ the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
+
+/-- The real hyperbolic cotangent function, defined as the real part of
+the complex hyperbolic cotangent -/
+@[pp_nodot]
+nonrec def coth (x : ℝ) : ℝ :=
+  (coth x).re
 
 end
 
@@ -214,6 +229,32 @@ theorem tanh_ofReal_im (x : ℝ) : (tanh x).im = 0 := by rw [← ofReal_tanh_ofR
 theorem tanh_ofReal_re (x : ℝ) : (tanh x).re = Real.tanh x :=
   rfl
 
+theorem coth_eq_cosh_div_sinh : coth x = cosh x / sinh x :=
+  rfl
+
+@[simp]
+theorem coth_zero : coth 0 = 0 := by simp [coth]
+
+@[simp]
+theorem coth_neg : coth (-x) = -coth x := by simp [coth, div_neg]
+
+theorem coth_conj : coth (conj x) = conj (coth x) := by
+  rw [coth, sinh_conj, cosh_conj, ← map_div₀, coth]
+
+@[simp]
+theorem ofReal_coth_ofReal_re (x : ℝ) : ((coth x).re : ℂ) = coth x :=
+  conj_eq_iff_re.1 <| by rw [← coth_conj, conj_ofReal]
+
+@[simp, norm_cast]
+theorem ofReal_coth (x : ℝ) : (Real.coth x : ℂ) = coth x :=
+  ofReal_coth_ofReal_re _
+
+@[simp]
+theorem coth_ofReal_im (x : ℝ) : (coth x).im = 0 := by rw [← ofReal_coth_ofReal_re, ofReal_im]
+
+theorem coth_ofReal_re (x : ℝ) : (coth x).re = Real.coth x :=
+  rfl
+
 @[simp]
 theorem cosh_add_sinh : cosh x + sinh x = exp x := by
   rw [← mul_right_inj' (two_ne_zero' ℂ), mul_add, two_cosh, two_sinh, add_add_sub_cancel, two_mul]
@@ -236,7 +277,7 @@ theorem cosh_sub_sinh : cosh x - sinh x = exp (-x) := by
 @[simp]
 theorem sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_sub_sinh]
 
-@[simp]
+@[simp, dlmf 4.35.E11]
 theorem cosh_sq_sub_sinh_sq : cosh x ^ 2 - sinh x ^ 2 = 1 := by
   rw [sq_sub_sq, cosh_add_sinh, cosh_sub_sinh, ← exp_add, add_neg_cancel, exp_zero]
 
@@ -248,8 +289,10 @@ theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by
   rw [← cosh_sq_sub_sinh_sq x]
   ring
 
+@[dlmf 4.35.E27]
 theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by rw [two_mul, cosh_add, sq, sq]
 
+@[dlmf 4.35.E26]
 theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
   rw [two_mul, sinh_add]
   ring
@@ -330,13 +373,13 @@ theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * s
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
-  convert! sin_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
-  convert! cos_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
@@ -537,7 +580,7 @@ theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
-  rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
+  rw [← exp_mul_I, ← exp_mul_I, ← exp_natCast_mul, mul_assoc]
 
 open Finset
 
@@ -883,8 +926,7 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
             |x| ^ 4 * (5 / 96) + x ^ 2 / 2 ≤ 1 * (5 / 96) + 1 / 2 := by
                   gcongr
                   · exact pow_le_one₀ (abs_nonneg _) hx
-                  · rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one₀ hx (abs_nonneg _) hx
+                  · exact (sq_le_one_iff_abs_le_one x).mpr hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 
@@ -911,7 +953,7 @@ theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
 
 theorem cos_two_neg : cos 2 < 0 :=
-  calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
+  calc cos 2 = cos (2 * 1) := congr(cos $((mul_one _).symm))
     _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr
@@ -954,21 +996,33 @@ theorem norm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ = 1 := by
   rw [mul_comm, norm_exp_ofReal_mul_I]
 
 @[simp]
-theorem nnnorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
-  rw [← nnnorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+theorem nnNorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
+  rw [← nnNorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_exp_ofReal_mul_I := nnNorm_exp_ofReal_mul_I
 
 @[simp]
-theorem nnnorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
-  rw [← nnnorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+theorem nnNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
+  rw [← nnNorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_exp_I_mul_ofReal := nnNorm_exp_I_mul_ofReal
 
 @[simp]
-theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
+theorem eNorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
   simp [← ENNReal.toReal_eq_one_iff]
 
+@[deprecated (since := "2026-11-06")] alias enorm_exp_ofReal_mul_I := eNorm_exp_ofReal_mul_I
+
 @[simp]
-theorem enorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
+theorem eNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
   simp [← ENNReal.toReal_eq_one_iff]
 
+@[deprecated (since := "2026-11-06")] alias enorm_exp_I_mul_ofReal := eNorm_exp_I_mul_ofReal
+
+/--
+Length of the chord from `exp (I * x)` to `1`. For the chord between two arbitrary points, see
+`Complex.norm_sub_sq_eq_norm_sub_norm_sq_add`.
+-/
 theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
   rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
   nth_rw 2 [← one_mul (_ - _), ← exp_zero]
@@ -985,5 +1039,15 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
+  rw [norm_exp, mul_I_re]
+
+theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
+  rw [← norm_exp]
+  exact mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+
+theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
+  (le_abs_self _).trans (abs_one_sub_rexp_re_le x)
 
 end Complex

@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
@@ -71,11 +70,9 @@ lemma binomial_zero : Bin(0, p) = dirac 0 := by simp [binomial]
 lemma map_cast_binomial_zero : Bin(R, 0, p) = dirac 0 := by
   simp [binomial, map_dirac' .of_discrete]
 
-instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
-  isProbabilityMeasure_map <| by fun_prop
-
-instance isProbabilityMeasure_map_cast_binomial : IsProbabilityMeasure Bin(R, n, p) :=
-  isProbabilityMeasure_map .of_discrete
+instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) := by
+  rw [binomial]
+  infer_instance
 
 lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : ∀ᵐ ω ∂P, X ω ≤ n := by
   rw [hX.ae_iff (p := (· ≤ n)) <| by fun_prop, binomial,
@@ -137,7 +134,7 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) • dirac k := by
   refine ext_of_singleton fun k ↦ ?_
-  rw [binomial_singleton, finsetSum_apply, Finset.sum_eq_single k]
+  rw [binomial_singleton, sum_apply, Finset.sum_eq_single k]
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
@@ -147,7 +144,7 @@ lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p :
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
         dirac (k : R) := by
   rw [binomial_eq_sum_dirac, Measure.map_finset_sum .of_discrete]
-  exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul, map_dirac]
+  exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul _ (by fun_prop), map_dirac]
 
 section Integral
 

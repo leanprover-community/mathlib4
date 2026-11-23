@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!
@@ -241,8 +240,6 @@ open Measure
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
 measurable cylinders. See `infinitePi_map_piCongrLeft` for a general version. -/
@@ -283,8 +280,8 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     fun x i ↦ if hi : i ∈ u then x ⟨i, hi⟩ else Classical.ofNonempty
   -- `aux` is the obvious equivalence between `sₙ` and `tₙ`
   let aux n : t n ≃ s n :=
-    { toFun := fun i ↦ ⟨i.1.1, mem_preimage.1 i.2⟩
-      invFun := fun i ↦ ⟨⟨i.1, Set.mem_iUnion.2 ⟨n, i.2⟩⟩, mem_preimage.2 i.2⟩
+    { toFun := fun i ↦ ⟨i.val.val, mem_preimage.1 i.property⟩
+      invFun := fun i ↦ ⟨⟨i.val, Set.mem_iUnion.2 ⟨n, i.property⟩⟩, mem_preimage.2 i.property⟩
       left_inv := fun i ↦ by simp
       right_inv := fun i ↦ by simp }
   -- Finally `gₙ` is the equivalence between the product indexed by `tₙ` and the one indexed by `sₙ`
@@ -295,7 +292,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     ext x i
     simp only [Function.comp_apply, Finset.restrict,
       Equiv.piCongrLeft_apply, Equiv.coe_fn_symm_mk, f, aux, g, t]
-    rw [dite_eq_left (Set.mem_iUnion.2 ⟨n, i.2⟩)]
+    rw [dite_eq_left (Set.mem_iUnion.2 ⟨n, i.property⟩)]
   -- `Bₙ` is the same as `Aₙ` but in the product indexed by `u`
   let B n := f ⁻¹' (A n)
   -- `Tₙ` is the same as `Sₙ` but in the product indexed by `u`
@@ -382,7 +379,7 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
-/-- To prove that a measure is equal to the product measure it is enough to check that it
+/-- To prove that a measure is equal to the product measure it is enough to check that
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
@@ -393,12 +390,12 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   classical
   rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
   · congr with i
-    rw [dite_eq_left i.2]
-  any_goals fun_prop
+    rw [dite_eq_left i.property]
   · rintro i
     split_ifs with hi
     · exact ht ⟨i, hi⟩
     · exact .univ
+  · fun_prop
   · exact .univ_pi ht
 
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
@@ -410,7 +407,7 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   rw [this, cylinder, ← map_apply, infinitePi_map_restrict, pi_pi]
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
-  · exact .univ_pi fun i ↦ mt i.1 i.2
+  · exact .univ_pi fun i ↦ mt i.val i.property
 
 theorem infinitePi_map_restrict' {I : Set ι} :
     (infinitePi μ).map I.domRestrict = infinitePi fun i : I ↦ μ i := by
@@ -446,7 +443,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simpa using Set.pi_mono' (by simp) (Set.image_mono h)
     · exact ⟨{Nonempty.some s_ne}, by simp⟩
   · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
-    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp [prob_le_one]))
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
 
 lemma infinitePi_pi_univ [Countable ι] {t : (i : ι) → Set (X i)}
     (mt : ∀ i : ι, MeasurableSet (t i)) :
@@ -484,8 +481,6 @@ lemma infinitePi_map_eval (i : ι) :
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
-  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-    isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
   rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =

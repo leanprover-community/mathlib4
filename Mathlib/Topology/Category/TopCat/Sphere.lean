@@ -13,7 +13,6 @@ public import Mathlib.Topology.Category.TopCat.EpiMono
 
 This file defines the `n`-sphere `𝕊 n`, the `n`-disk `𝔻 n`, its boundary `∂𝔻 n` and its interior
 `𝔹 n` as objects in `TopCat`.
-
 -/
 
 @[expose] public section
@@ -26,11 +25,11 @@ open CategoryTheory
 /-- The `n`-disk is the set of points in ℝⁿ whose norm is at most `1`,
 endowed with the subspace topology. -/
 noncomputable def disk (n : ℕ) : TopCat.{u} :=
-  TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ (Fin n)) 1
+  ↧(ULift <| Metric.closedBall (0 : EuclideanSpace ℝ (Fin n)) 1)
 
 /-- The boundary of the `n`-disk. -/
 noncomputable def diskBoundary (n : ℕ) : TopCat.{u} :=
-  TopCat.of <| ULift <| Metric.sphere (0 : EuclideanSpace ℝ (Fin n)) 1
+  ↧(ULift <| Metric.sphere (0 : EuclideanSpace ℝ (Fin n)) 1)
 
 /-- The `n`-sphere is the set of points in ℝⁿ⁺¹ whose norm equals `1`,
 endowed with the subspace topology. -/
@@ -40,7 +39,7 @@ noncomputable def sphere (n : ℕ) : TopCat.{u} :=
 /-- The `n`-ball is the set of points in ℝⁿ whose norm is strictly less than `1`,
 endowed with the subspace topology. -/
 noncomputable def ball (n : ℕ) : TopCat.{u} :=
-  TopCat.of <| ULift <| Metric.ball (0 : EuclideanSpace ℝ (Fin n)) 1
+  ↧(ULift <| Metric.ball (0 : EuclideanSpace ℝ (Fin n)) 1)
 
 /-- `𝔻 n` denotes the `n`-disk. -/
 scoped prefix:arg "𝔻 " => disk

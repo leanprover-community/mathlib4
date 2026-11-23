@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Composition of localization functors
@@ -19,7 +21,6 @@ then the composition `L₁ ⋙ L₂ : C₁ ⥤ C₃` is a localization functor f
 if and only if `L₂ : C₂ ⥤ C₃` is a localization functor for `W₂`.
 The two implications are the lemmas `Functor.IsLocalization.comp` and
 `Functor.IsLocalization.of_comp`.
-
 -/
 
 @[expose] public section

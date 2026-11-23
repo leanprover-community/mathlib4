@@ -44,7 +44,6 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
   property `IsRatCondKernelCDF`, then `stieltjesOfMeasurableRat f` is a function
   `α × β → StieltjesFunction ℝ` with the property `IsCondKernelCDF`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
-
 -/
 
 @[expose] public section
@@ -313,9 +312,10 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memLp_one_iff_integrable]
-  refine ⟨(Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
+  rw [memLp_iff]
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
-  refine (eLpNorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
+  refine (eLpNorm_le_of_ae_bound (C := 1)
+    ((Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable) ?_).trans (by simp)
   filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
     with t hbdd_below h_nonneg h_le_one
   rw [Real.norm_eq_abs, abs_of_nonneg]

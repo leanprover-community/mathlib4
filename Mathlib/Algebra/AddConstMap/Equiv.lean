@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.AddConstMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
 
@@ -44,6 +47,7 @@ variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
 lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+@[macro_inline]
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
     EquivLike (G ≃+c[a, b] H) G H where
   coe f := f.toEquiv
@@ -163,7 +167,7 @@ def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
   toFun := toAddConstMapHom.toHomUnits
   invFun u :=
     { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
-      map_add_const' := u.1.2 }
+      map_add_const' := u.val.map_add_const' }
   map_mul' _ _ := rfl
 
 end AddConstEquiv

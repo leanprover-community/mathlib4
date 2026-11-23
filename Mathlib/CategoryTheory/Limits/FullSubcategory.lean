@@ -5,8 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits in full subcategories
@@ -14,7 +16,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 If a property of objects `P` is closed under taking limits,
 then limits in `FullSubcategory P` can be constructed from limits in `C`.
 More precisely, the inclusion creates such limits.
-
 -/
 
 @[expose] public section
