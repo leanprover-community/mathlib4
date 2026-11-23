@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`
 

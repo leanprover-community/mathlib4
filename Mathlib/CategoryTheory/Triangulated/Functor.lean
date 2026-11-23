@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangulated functors
 
