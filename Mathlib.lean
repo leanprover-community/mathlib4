@@ -4056,6 +4056,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.DedekindCut
@@ -6848,6 +6849,7 @@ public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.Primitive
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.CohenStructureTheorem
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
@@ -6949,6 +6951,7 @@ public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.RingTheory.Flat.Domain
 public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Flat.EquationalCriterion
+public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
@@ -7333,8 +7336,10 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RegularLocalRing.Polynomial
+public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
@@ -8156,7 +8161,8 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Compact
-public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.Ring.Ideal.Basic
+public import Mathlib.Topology.Algebra.Ring.Ideal.Noetherian
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
