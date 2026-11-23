@@ -12,8 +12,8 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.Complement
 import Mathlib.Algebra.HierarchyDesign
+import Mathlib.GroupTheory.Complement
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
