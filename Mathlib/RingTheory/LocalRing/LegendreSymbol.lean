@@ -85,13 +85,21 @@ theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := MonoidWithZeroHom.sq_o
 omit [DecidableEq (ResidueField R)] in
 /-- The residue of an element is `0` in `ResidueField R` if and only if its reduction in
 `ZMod p` is `0`. -/
-lemma residue_eq_zero_iff_of_prime {p : ℕ} [Fact (Nat.Prime p)]
-    (hp : Fintype.card (ResidueField R) = p) {z : ℤ} :
+lemma residue_eq_zero_iff_zmod {p : ℕ} [Fact (Nat.Prime p)]
+    (hp : p ∣ Fintype.card (ResidueField R)) {z : ℤ} :
     residue R z = 0 ↔ (z : ZMod p) = 0 := by
-  subst hp
-  have : CharP (ResidueField R) (Fintype.card (ResidueField R)) := charP_of_card_eq_prime rfl
-  rw [show residue R z = ZMod.ringEquiv _ rfl (z : ZMod (Fintype.card (ResidueField R))) by simp,
-    RingEquiv.map_eq_zero_iff _]
+  have hchar : CharP (ResidueField R) p := by
+    rw [← prime_dvd_char_iff_dvd_card] at hp
+    refine ringChar.of_eq ?_
+    have : (ringChar (ResidueField R)).Prime := by apply (CharP.prime_ringChar)
+    have hp2 : Prime p := by
+      rw [← @Nat.prime_iff]
+      rw [Nat.prime_iff_card_units]
+      exact ZMod.card_units p
+    rw [Nat.Prime.dvd_iff_eq this (Prime.ne_one hp2)] at hp
+    exact hp
+  rw [show residue R z = (z : ResidueField R) by rfl, CharP.intCast_eq_zero_iff,
+    ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 -- TODO: move (wrong file)
 omit [DecidableEq (ResidueField R)] in
@@ -114,14 +122,18 @@ Legendre symbol on ℤ. -/
 lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
     (hp : Fintype.card (ResidueField R) = p) (z : ℤ) :
     legendreSym (z : R) = _root_.legendreSym p z := by
+  have hp1 : p = Fintype.card (ResidueField R) := by exact Eq.symm hp
+  have hp2 : (p ∣ Fintype.card (ResidueField R)) := by
+    apply (dvd_of_eq) at hp1
+    exact hp1
   simp only [legendreSym, _root_.legendreSym, quadraticChar_apply, quadraticCharFun]
   split_ifs with h0 hsq
-  · simp [MulChar.compLocalHom_apply, (residue_eq_zero_iff_of_prime hp).mpr h0]
+  · simp [MulChar.compLocalHom_apply, (residue_eq_zero_iff_zmod hp2).mpr h0]
   all_goals
     simp only [MulChar.compLocalHom_apply, quadraticChar_apply, quadraticCharFun,
       isSquare_residue_iff hp]
-  · rw [ite_eq_right (by rwa [residue_eq_zero_iff_of_prime hp]), ite_eq_left hsq]
-  · rw [ite_eq_right (by rwa [residue_eq_zero_iff_of_prime hp]), ite_eq_right hsq]
+  · rw [ite_eq_right (by rwa [residue_eq_zero_iff_zmod hp2]), ite_eq_left hsq]
+  · rw [ite_eq_right (by rwa [residue_eq_zero_iff_zmod hp2]), ite_eq_right hsq]
 
 /-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
@@ -135,22 +147,17 @@ theorem eq_neg_one_iff (ha : IsUnit a) :
 
 /-- If `ringChar R` is odd, then `legendreSym a` can be computed in terms of
 `(residue R a) ^ (Fintype.card (ResidueField R) / 2)`. -/
-theorem eq_pow (hR : ringChar (ResidueField R) ≠ 2) : legendreSym a =
-(residue R a) ^ (Fintype.card (ResidueField R) / 2) := by
-    simp only [legendreSym, MulChar.compLocalHom_apply]
-    by_cases h0 : (residue R) a = 0
-    · rw [h0, zero_pow]
-      · simp only [quadraticChar_apply, quadraticCharFun_zero, Int.cast_zero]
-      · simp only [ne_eq, Nat.div_eq_zero_iff, OfNat.ofNat_ne_zero, Order.lt_two_iff, false_or,
-        not_le]
-        exact Fintype.one_lt_card
-    · have : (residue R) a ^ (Fintype.card (ResidueField R) / 2) = 1 ∨ (residue R) a ^
-      (Fintype.card (ResidueField R) / 2) = -1 := by refine FiniteField.pow_dichotomy hR h0
-      rw [quadraticChar_eq_pow_of_char_ne_two hR h0]
-      simp only [Int.reduceNeg, Int.cast_ite, Int.cast_one, Int.cast_neg]
-      split_ifs with h1
-      · rw [h1]
-      · tauto
+theorem eq_pow (hR : ringChar (ResidueField R) ≠ 2) :
+    legendreSym a = residue R a ^ (Fintype.card (ResidueField R) / 2) := by
+  rw [legendreSym, MulChar.compLocalHom_apply]
+  by_cases h0 : (residue R) a = 0
+  · rw [h0, zero_pow (by simp [Fintype.one_lt_card])]
+    simp
+  · simp only [quadraticChar_eq_pow_of_char_ne_two hR h0, Int.reduceNeg, Int.cast_ite,
+      Int.cast_one, Int.cast_neg]
+    split_ifs with h
+    · rw [h]
+    · grind [FiniteField.pow_dichotomy hR h0]
 
 end legendreSym
 
