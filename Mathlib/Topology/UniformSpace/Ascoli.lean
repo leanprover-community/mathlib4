@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.Equicontinuity
-public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem
@@ -72,7 +71,9 @@ equicontinuity, uniform convergence, ascoli
 
 public section
 
-open Set Filter Topology Function UniformConvergence
+open Set Filter Topology Function
+
+open scoped UniformConvergence
 
 variable {ι X α : Type*} [TopologicalSpace X] [UniformSpace α] {F : ι → X → α}
 
@@ -89,9 +90,9 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     (UniformFun.uniformSpace X α).comap F =
     (Pi.uniformSpace _).comap F := by
   -- The `≤` inequality is trivial
-  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  refine le_antisymm (UniformSpace.comap_monotone UniformFun.uniformContinuous_toFun) ?_
   -- A bit of rewriting to get a nice intermediate statement.
-  simp_rw [UniformSpace.comap, UniformSpace.le_def, uniformity_comap, Pi.uniformity,
+  simp_rw [UniformSpace.le_def, uniformity_comap, Pi.uniformity,
     Filter.comap_iInf, comap_comap, Function.comp_def]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
@@ -438,9 +439,9 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   -- the range of `(⋃₀ 𝔖).domRestrict ∘ F` is still closed in the product topology.
   -- But it's contained in the product of the `Q x`s, which is compact by Tykhonov, hence
   -- it is compact as well.
-  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
+  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.property)
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
-    (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
+    (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.property i)
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

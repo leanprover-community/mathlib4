@@ -5,13 +5,16 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Complex.Convex
-public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+
+import Mathlib.Analysis.Convex.Contractible
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on the upper half plane
@@ -181,6 +184,19 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
     (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
+theorem periodic_comp_ofComplex {f : ℍ → ℂ} {h : ℝ} (hf : ∀ τ : ℍ, f (h +ᵥ τ) = f τ) :
+    Periodic (f ∘ ofComplex) h := by
+  intro w
+  by_cases hw : 0 < w.im
+  · have hwh : 0 < (w + h).im := by simp [hw]
+    simp only [comp_apply, ofComplex_apply_of_im_pos hwh, ofComplex_apply_of_im_pos hw]
+    convert hf ⟨w, hw⟩ using 2
+    ext
+    simp [add_comm]
+  · have : (w + h).im ≤ 0 := by simpa using not_lt.mp hw
+    simp [comp_apply, ofComplex_apply_of_im_nonpos this,
+      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
@@ -192,7 +208,7 @@ lemma continuousOn_ofComplex_I_mul :
   simp only [ofComplex_apply_eq_ite, continuousOn_iff_continuous_domRestrict,
     continuous_induced_rng]
   have : Continuous (fun t : ℝ ↦ Complex.I * t) := by fun_prop
-  exact (this.comp continuous_subtype_val).congr (by simp +contextual)
+  exact (this.comp continuous_subtypeVal).congr (by simp +contextual)
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext

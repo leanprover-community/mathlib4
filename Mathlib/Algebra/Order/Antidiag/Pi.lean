@@ -9,7 +9,8 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Algebra.Group.Pi.Torsion
+
+import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets
@@ -71,7 +72,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
       ⟨∅, by simp [Ne.symm h]⟩
   | d + 1 =>
     { val := (antidiagonal n).disjiUnion
-        (fun ab => (aux d ab.2).1.map {
+        (fun ab => (aux d ab.2).val.map {
             toFun := Fin.cons (ab.1)
             inj' := Fin.cons_right_injective _ }) <| by
         intro i _ j _ hij
@@ -110,7 +111,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   · rw [Injective]
     rintro f g hfg
     ext i
-    simpa using congr_fun hfg (e.symm i)
+    simpa using congr($hfg (e.symm i))
   · ext f
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
@@ -142,9 +143,9 @@ lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then
   split_ifs with hn <;> simp [*]
 
 lemma finset_congr_piAntidiag_eq_antidiag (n : μ) :
-    Equiv.Finset.congr (Equiv.boolArrowEquivProd _) (piAntidiag univ n) = antidiagonal n := by
+    (Equiv.boolArrowEquivProd _).finsetCongr (piAntidiag univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
-  simp_rw [Equiv.Finset.congr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
+  simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
     ← Equiv.eq_symm_apply]
   simp [add_comm]
 
@@ -164,7 +165,7 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
   simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
     mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
-  exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
+  exact hfg <| by simpa [sum_add_distrib, hi] using congr(∑ j ∈ s, $hgf.symm j)
 
 lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     piAntidiag (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦
@@ -241,7 +242,7 @@ lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) 
 end Nat
 
 lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
-    (s.sym n).map ⟨fun m a ↦ m.1.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
+    (s.sym n).map ⟨fun m a ↦ m.val.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
       piAntidiag s n := by
   ext f
   simp only [Sym.val_eq_coe, mem_map, mem_sym_iff, Embedding.coeFn_mk, funext_iff, Sym.exists,

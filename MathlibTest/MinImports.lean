@@ -1,5 +1,9 @@
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.FunProp.Attr
+module
+
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.NormNum.Basic
+
+@[expose] public section
 
 open Lean.Elab.Command Mathlib.Command.MinImports in
 run_cmd liftTermElabM do
@@ -189,7 +193,7 @@ section Linter.UpstreamableDecl
 set_option linter.upstreamableDecl true
 
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -201,7 +205,7 @@ def dont_propose_to_move_this_def : ℕ := 0
 
 set_option linter.upstreamableDecl.defs true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -218,7 +222,7 @@ private theorem private_theorem : (0 : ℕ) = 0 := rfl
 -- But we can enable the option.
 set_option linter.upstreamableDecl.private true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -233,7 +237,7 @@ private def private_def : ℕ := 0
 set_option linter.upstreamableDecl.defs true in
 set_option linter.upstreamableDecl.private true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -253,8 +257,7 @@ inductive DontProposeToMoveThisInductive where
 set_option linter.upstreamableDecl.defs true
 
 /--
-
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -263,7 +266,7 @@ structure ProposeToMoveThisStructure where
   foo : ℕ
 
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation (1:0).
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/

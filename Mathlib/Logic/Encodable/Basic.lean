@@ -5,13 +5,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
-public import Mathlib.Order.Directed
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -98,7 +96,7 @@ def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
 @[instance_reducible]
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
-  ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
+  ofLeftInjection f (some ∘ finv) fun b => congr(some $(linv b))
 
 /-- Encodability is preserved by equivalence. -/
 @[instance_reducible]
@@ -110,9 +108,9 @@ theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
   rfl
 
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
-    @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
-  show Option.bind _ _ = Option.map _ _
-  by rw [Option.map_eq_bind]
+    @decode _ (ofEquiv _ e) n = (decode n).map e.symm := by
+  change Option.bind _ _ = Option.map _ _
+  rw [Option.map_eq_bind]
 
 instance _root_.Nat.encodable : Encodable ℕ :=
   ⟨id, some, fun _ => rfl⟩
@@ -194,8 +192,6 @@ theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
 theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
 
-@[deprecated (since := "2026-03-11")] alias decode₂_is_partial_inv := decode₂_isPartialInv
-
 theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=
   encode_injective <| (mem_decode₂.1 h₁).trans (mem_decode₂.1 h₂).symm
@@ -216,7 +212,8 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
+      (show isSome (decode₂ α n.val) by
+        obtain ⟨x, hx⟩ := n.property; rw [← hx, encodek₂]; exact rfl)
   left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
@@ -479,12 +476,10 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
-set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
-set_option backward.privateInPublic true in
 private local instance decidable_good : DecidablePred (good p)
   | some a => inferInstanceAs <| Decidable (p a)
   | none => inferInstanceAs <| Decidable False
@@ -493,10 +488,8 @@ open Encodable
 
 variable {p}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
-def chooseX (h : ∃ x, p x) : { a : α // p a } :=
+private def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
@@ -504,11 +497,11 @@ def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   | some a, h => ⟨a, h⟩
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
-def choose (h : ∃ x, p x) : α :=
-  (chooseX h).1
+@[no_expose] def choose (h : ∃ x, p x) : α :=
+  (chooseX h).val
 
 theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
-  (chooseX h).2
+  (chooseX h).property
 
 end FindA
 
@@ -574,7 +567,7 @@ section
 variable (hf : Directed (· ≤ ·) f)
 
 theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
-  monotone_nat_of_le_succ <| hf.sequence_mono_nat
+  monotone_nat_of_le_succ hf.sequence_mono_nat
 
 theorem le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
   hf.rel_sequence a
@@ -586,7 +579,7 @@ section
 variable (hf : Directed (· ≥ ·) f)
 
 theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
-  antitone_nat_of_succ_le <| hf.sequence_mono_nat
+  antitone_nat_of_succ_le hf.sequence_mono_nat
 
 theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
   hf.rel_sequence a

@@ -7,15 +7,14 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.Interval.Set.Disjoint
+public import Mathlib.Basic.Real.Basic
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section
@@ -144,8 +143,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
 theorem lt_sInf_add_pos (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) : ∃ a ∈ s, a < sInf s + ε :=
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 
+-- TODO: shouldn't this be named `sSup_add_neg_lt`?
 theorem add_neg_lt_sSup (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) : ∃ a ∈ s, sSup s + ε < a :=
-  exists_lt_of_lt_csSup h <| add_lt_iff_neg_left.2 hε
+  exists_lt_of_lt_csSup h <| add_lt_of_neg_right _ hε
 
 theorem sInf_le_iff (h : BddBelow s) (h' : s.Nonempty) :
     sInf s ≤ a ↔ ∀ ε, 0 < ε → ∃ x ∈ s, x < a + ε := by
@@ -346,7 +346,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     refine le_ciInf fun r => ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
-    exact_mod_cast hyr
+    exact mod_cast hyr
   · refine le_ciInf fun q => ?_
     have hq := q.prop
     rw [mem_Ioi] at hq
@@ -372,11 +372,11 @@ theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   ext
   simpa using exists_rat_lt _
 
-theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ :=
+  iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
 
-theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ :=
+  iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 
 /-- Exponentiation is eventually larger than linear growth. -/
 lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by

@@ -91,7 +91,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 end CFilter
 
 -- TODO write doc strings
-/-- A realizer for filter `f` is a cfilter which generates `f`. -/
+/-- A realizer for filter `f` is a `CFilter` which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
   F : CFilter (Set α) σ
@@ -278,7 +278,8 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         ⟨fun ⟨s, f, h⟩ ↦
           ⟨F s, ⟨s, Subset.refl _⟩, fun i H ↦ (G i).mem_sets.2 ⟨f i H, fun _ h' ↦ h i H h'⟩⟩,
           fun ⟨_, ⟨s, h⟩, f⟩ ↦
-          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦ (G i).mem_sets.1 (f i (h i.2))
+          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦
+            (G i).mem_sets.1 (f i (h i.property))
           ⟨s, fun i h ↦ f' ⟨i, h⟩, fun _ H _ m ↦ h' ⟨_, H⟩ m⟩⟩⟩
 
 /-- Construct a realizer for indexed supremum -/

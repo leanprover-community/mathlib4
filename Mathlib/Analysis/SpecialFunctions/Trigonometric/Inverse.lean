@@ -6,7 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Topology.Order.ProjIcc
+
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -22,7 +23,9 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open Filter Set Filter Real
+
+open scoped Topology
 
 namespace Real
 variable {x y : ℝ}
@@ -90,7 +93,7 @@ theorem arcsin_inj {x y : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) (hy₁ : -1 
 
 @[continuity, fun_prop]
 theorem continuous_arcsin : Continuous arcsin :=
-  continuous_subtype_val.comp sinOrderIso.symm.continuous.Icc_extend'
+  continuous_subtypeVal.comp sinOrderIso.symm.continuous.Icc_extend'
 
 @[fun_prop]
 theorem continuousAt_arcsin {x : ℝ} : ContinuousAt arcsin x :=
@@ -363,7 +366,14 @@ theorem sin_arccos (x : ℝ) : sin (arccos x) = √(1 - x ^ 2) := by
 theorem arccos_le_pi_div_two {x} : arccos x ≤ π / 2 ↔ 0 ≤ x := by simp [arccos]
 
 @[simp]
+theorem pi_div_two_le_arccos {x : ℝ} : π / 2 ≤ arccos x ↔ x ≤ 0 := by simp [arccos]
+
+@[simp]
 theorem arccos_lt_pi_div_two {x : ℝ} : arccos x < π / 2 ↔ 0 < x := by simp [arccos]
+
+@[simp]
+theorem pi_div_two_lt_arccos {x : ℝ} : π / 2 < arccos x ↔ x < 0 :=
+  lt_iff_lt_of_le_iff_le arccos_le_pi_div_two
 
 @[simp]
 theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by

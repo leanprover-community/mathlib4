@@ -103,18 +103,12 @@ section Equiv
 variable [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `RingEquivClass F α β`
-into an actual `OrderRingIso`.
-This is declared as the default coercion from `F` to `α ≃+*o β`. -/
-@[coe]
-def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
+into an actual `OrderRingIso`. -/
+def OrderRingIso.ofClass [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
   { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
-/-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
-  `OrderRingIsoClass.toOrderRingIso`. -/
-instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderIsoClass F α β]
-    [RingEquivClass F α β] : CoeTC F (α ≃+*o β) :=
-  ⟨OrderRingIsoClass.toOrderRingIso⟩
+@[deprecated (since := "2026-11-22")] alias OrderRingIsoClass.toOrderRingIso := OrderRingIso.ofClass
 
 end Equiv
 
@@ -137,6 +131,7 @@ def toOrderAddMonoidHom (f : α →+*o β) : α →+o β :=
 def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
   { f with }
 
+@[macro_inline]
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -172,8 +167,10 @@ theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWith
   rfl
 
 @[simp]
-theorem coe_coe_ringHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
+theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_coe_ringHom := coe_toRingHom
 
 @[simp]
 theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
@@ -184,8 +181,10 @@ theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o 
   rfl
 
 @[norm_cast]
-theorem coe_ringHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
+theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := toRingHom_apply
 
 @[norm_cast]
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
@@ -227,8 +226,10 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
   rfl
 
 @[simp]
-theorem coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+theorem toRingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_id := toRingHom_id
 
 @[simp]
 theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
@@ -299,6 +300,7 @@ variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 
+@[macro_inline]
 instance : EquivLike (α ≃+*o β) α β where
   coe f := f.toFun
   inv f := f.invFun
@@ -318,6 +320,10 @@ instance : RingEquivClass (α ≃+*o β) α β where
 
 instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
 
+@[simp]
+theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β] [RingEquivClass F α β]
+    (f : F) : ⇑(ofClass f) = f := rfl
+
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
 
@@ -332,10 +338,6 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 @[simp]
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
-
-@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
-theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
-  RingEquiv.ext fun _ => rfl
 
 @[simp]
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
@@ -364,8 +366,10 @@ theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
   rfl
 
 @[simp]
-theorem coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
+theorem toRingEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv_refl := toRingEquiv_refl
 
 @[simp]
 theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=

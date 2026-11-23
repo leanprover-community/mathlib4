@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-! # Measurability of the line derivative
 

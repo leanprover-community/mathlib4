@@ -221,3 +221,19 @@
   default_branch: main
   name: Seymour's Decomposition for Regular Matroids
   zulip-contact: Martin Dvořák
+- github: https://github.com/mcdoll/DynamicalSystems
+  default_branch: main
+  name: Nonlinear Dynamical Systems and Control Theory
+  zulip-contact: Moritz Doll
+  workflows:
+    build: make.yml
+    release-tag: create-release.yml
+    update: upgrade.yml
+- github: https://github.com/mcdoll/DispersiveEquations
+  default_branch: master
+  name: Nonlinear Dispersive Equations
+  zulip-contact: Moritz Doll
+  workflows:
+    build: make.yml
+    release-tag: create-release.yml
+    update: upgrade.yml
