@@ -6169,6 +6169,9 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.KroneckerWeber
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.KroneckerWeberAlgebraPrereqs
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.KroneckerWeberPrereqs
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Stickelberger
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.StickelbergerPrereqs
