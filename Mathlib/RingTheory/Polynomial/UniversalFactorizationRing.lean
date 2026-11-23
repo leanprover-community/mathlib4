@@ -32,8 +32,6 @@ We construct the universal ring of the following functors on `R-Alg`:
 
 open scoped Polynomial TensorProduct
 
-open RingHomClass (toRingHom)
-
 variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 variable (n m k : ℕ) (hn : n = m + k)
 
@@ -140,9 +138,9 @@ def universalFactorizationMap (hn : n = m + k) :
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
 lemma universalFactorizationMap_freeMonic :
-    (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
+    (freeMonic R n).map (.ofClass <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
-        (freeMonic R k).map (toRingHom Algebra.TensorProduct.includeRight) := by
+        (freeMonic R k).map (.ofClass Algebra.TensorProduct.includeRight) := by
   change (mapEquivMonic _ _ _ (universalFactorizationMap R n m k hn)).val = _
   simp [universalFactorizationMap]
   rfl
