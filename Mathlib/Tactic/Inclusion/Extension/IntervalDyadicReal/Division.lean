@@ -43,7 +43,8 @@ variable (a b : Dyadic) (prec : ℤ)
 def Dyadic.fdiv : Dyadic :=
   match a, b with
   | ofOdd m p _, ofOdd n q _ =>
-    .ofIntWithPrec ((m <<< (prec + q - p).toNat).fdiv (n <<< (-(prec + q - p)).toNat)) prec
+    letI e : ℤ := prec + q - p
+    .ofIntWithPrec ((m <<< e.toNat).fdiv (n <<< (-e).toNat)) prec
   | _, _ => 0
 
 /-- Divide two dyadic numbers, rounding the quotient upward to the `2⁻prec` grid. -/
