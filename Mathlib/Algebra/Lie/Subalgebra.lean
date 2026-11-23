@@ -564,7 +564,7 @@ def inclusion : K →ₗ⁅R⁆ K' :=
 theorem coe_inclusion (x : K) : (inclusion h x : L) = x :=
   rfl
 
-theorem inclusion_apply (x : K) : inclusion h x = ⟨x.1, h x.2⟩ :=
+theorem inclusion_apply (x : K) : inclusion h x = ⟨x.val, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by

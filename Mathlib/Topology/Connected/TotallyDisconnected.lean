@@ -5,9 +5,10 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Function.Const
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.InductiveDimension.Classes
+
+import Mathlib.Logic.Function.Const
 
 /-!
 # Totally disconnected and totally separated topological spaces

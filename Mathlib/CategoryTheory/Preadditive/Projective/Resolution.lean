@@ -150,7 +150,6 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :

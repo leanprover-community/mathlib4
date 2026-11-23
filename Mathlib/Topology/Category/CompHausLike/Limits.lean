@@ -211,7 +211,7 @@ The projection from the pullback to the first component.
 def pullback.fst : pullback f g ⟶ X :=
   ConcreteCategory.ofHom
   { toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
-    continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val }
+    continuous_toFun := Continuous.comp continuous_fst continuous_subtypeVal }
 
 /--
 The projection from the pullback to the second component.
@@ -219,7 +219,7 @@ The projection from the pullback to the second component.
 def pullback.snd : pullback f g ⟶ Y :=
   ConcreteCategory.ofHom
   { toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
-    continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val }
+    continuous_toFun := Continuous.comp continuous_snd continuous_subtypeVal }
 
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by

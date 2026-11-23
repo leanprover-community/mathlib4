@@ -56,13 +56,13 @@ instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
 @[simp]
 lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl
 
-lemma tsupport_subset (f : ContDiffSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
+lemma tsupport_subset (f : ContDiffSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.property.1
 
 lemma support_subset (f : ContDiffSupportedOn 𝕜 E F n s) :
     support f ⊆ s := subset_tsupport _ |>.trans (tsupport_subset f)
 
 lemma contDiff (f : ContDiffSupportedOn 𝕜 E F n s) :
-    ContDiff 𝕜 n f := f.2.2
+    ContDiff 𝕜 n f := f.property.2
 
 theorem continuous (f : ContDiffSupportedOn 𝕜 E F n s) : Continuous f :=
   (ContDiffSupportedOn.contDiff _).continuous

@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 
 /-!
 # `κ`-presentable objects form a dense subcategory

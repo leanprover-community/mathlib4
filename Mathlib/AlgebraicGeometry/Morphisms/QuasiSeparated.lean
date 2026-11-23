@@ -54,7 +54,7 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
   constructor
-  · intro H U V; exact H U V U.1.is_open' U.2.isCompact V.1.is_open' V.2.isCompact
+  · intro H U V; exact H U V U.val.is_open' U.property.isCompact V.val.is_open' V.property.isCompact
   · intro H
     suffices
       ∀ (U : X.Opens) (_ : IsCompact U.carrier) (V : X.Opens) (_ : IsCompact V.carrier),
@@ -64,14 +64,14 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     refine compact_open_induction_on V hV ?_ ?_
     · simp
     · intro S _ V hV
-      change IsCompact (U.carrier ∩ (S.carrier ∪ V.1))
+      change IsCompact (U.carrier ∩ (S.carrier ∪ V.val))
       rw [Set.inter_union_distrib_left]
       apply hV.union
       clear hV
       refine compact_open_induction_on U hU ?_ ?_
       · simp
       · intro S _ W hW
-        change IsCompact ((S.carrier ∪ W.1) ∩ V.1)
+        change IsCompact ((S.carrier ∪ W.val) ∩ V.val)
         rw [Set.union_inter_distrib_right]
         apply hW.union
         apply H
@@ -83,7 +83,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
   rw [quasiSeparatedSpace_iff_forall_affineOpens]
   constructor
   · intro H U V
-    let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
+    let g : pullback U.val.ι V.val.ι ⟶ X := pullback.fst _ _ ≫ U.val.ι
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left, Scheme.Opens.range_ι, Scheme.Opens.range_ι]
       at e
@@ -284,18 +284,18 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : To
 theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme)
     (S : X.affineOpens) (U₁ U₂ : X.Opens) {n₁ n₂ : ℕ} {y₁ : Γ(X, U₁)}
     {y₂ : Γ(X, U₂)} {f : Γ(X, U₁ ⊔ U₂)}
-    {x : Γ(X, X.basicOpen f)} (h₁ : S.1 ≤ U₁) (h₂ : S.1 ≤ U₂)
+    {x : Γ(X, X.basicOpen f)} (h₁ : S.val ≤ U₁) (h₂ : S.val ≤ U₂)
     (e₁ : y₁ |_ X.basicOpen (f |_ U₁) =
       ((f |_ U₁ |_ X.basicOpen _) ^ n₁) * x |_ X.basicOpen _)
     (e₂ : y₂ |_ X.basicOpen (f |_ U₂) =
       ((f |_ U₂ |_ X.basicOpen _) ^ n₂) * x |_ X.basicOpen _) :
     ∃ n : ℕ, ∀ m, n ≤ m →
-      ((f |_ U₁) ^ (m + n₂) * y₁) |_ S.1 = ((f |_ U₂) ^ (m + n₁) * y₂) |_ S.1 := by
+      ((f |_ U₁) ^ (m + n₂) * y₁) |_ S.val = ((f |_ U₂) ^ (m + n₁) * y₂) |_ S.val := by
   obtain ⟨⟨_, n, rfl⟩, e⟩ :=
     (@IsLocalization.eq_iff_exists _ _ _ _ _ _
-      (S.2.isLocalization_basicOpen (f |_ S.1))
-        (((f |_ U₁) ^ n₂ * y₁) |_ S.1)
-        (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by
+      (S.property.isLocalization_basicOpen (f |_ S.val))
+        (((f |_ U₁) ^ n₂ * y₁) |_ S.val)
+        (((f |_ U₂) ^ n₁ * y₂) |_ S.val)).mp <| by
     apply exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux (e₁ := e₁) (e₂ := e₂)
     · change X.basicOpen _ ≤ _
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
@@ -334,31 +334,31 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- · rw [X.basicOpen_res]; exact inf_le_right
     -- We know that such `y₂, n₂` exists on `U` since `U` is affine.
     obtain ⟨n₂, y₂, hy₂⟩ :=
-      exists_eq_pow_mul_of_isAffineOpen X _ U.2 (X.presheaf.map (homOfLE le_sup_right).op f)
+      exists_eq_pow_mul_of_isAffineOpen X _ U.property (X.presheaf.map (homOfLE le_sup_right).op f)
         (X.presheaf.map (homOfLE _).op x)
     dsimp only [TopCat.Presheaf.restrictOpenCommRingCat_apply] at hy₂
     -- swap; · rw [X.basicOpen_res]; exact inf_le_right
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
       isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp
-        ⟨hSU _ _ Set.subset_union_left S.is_open' hS Set.subset_union_right U.1.is_open'
-            U.2.isCompact,
-          (S ⊓ U.1).is_open'⟩
+        ⟨hSU _ _ Set.subset_union_left S.is_open' hS Set.subset_union_right U.val.is_open'
+            U.property.isCompact,
+          (S ⊓ U.val).is_open'⟩
     have := hs'.to_subtype
     cases nonempty_fintype s
-    replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
-    have hs₁ (i : s) : i.1.1 ≤ S := by
-      refine le_trans ?_ (inf_le_left (b := U.1))
+    replace hs : S ⊓ U.val = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
+    have hs₁ (i : s) : i.val.val ≤ S := by
+      refine le_trans ?_ (inf_le_left (b := U.val))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
-    have hs₂ (i : s) : i.1.1 ≤ U.1 := by
+    have hs₂ (i : s) : i.val.val ≤ U.val := by
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
     have := fun i ↦ exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
-      X i.1 S U (hs₁ i) (hs₂ i) hy₁ hy₂
+      X i.val S U (hs₁ i) (hs₂ i) hy₁ hy₂
     choose n hn using this
     -- We can thus choose a big enough `n` such that `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- on `S ∩ U`.
@@ -367,7 +367,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (X.presheaf.map (homOfLE le_sup_left).op f ^ (Finset.univ.sup n + n₂) * y₁) =
         X.presheaf.map (homOfLE inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
-      fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
+      fapply X.sheaf.eq_of_locally_eq' fun i : s => i.val.val
       · refine fun i => homOfLE ?_; rw [hs]
         exact le_iSup (fun (i : s) => (i : X.Opens)) i
       · exact le_of_eq hs
@@ -380,7 +380,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     use Finset.univ.sup n + n₁ + n₂
     -- By the sheaf condition, since `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`, it can be glued into
     -- the desired section on `S ∪ U`.
-    use (X.sheaf.objSupIsoProdEqLocus S U.1).inv ⟨⟨_ * _, _ * _⟩, this⟩
+    use (X.sheaf.objSupIsoProdEqLocus S U.val).inv ⟨⟨_ * _, _ * _⟩, this⟩
     refine (X.sheaf.objSupIsoProdEqLocus_inv_eq_iff _ _ _ (X.basicOpen_res _
       (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨?_, ?_⟩
     · -- This unfolds `X.sheaf`
