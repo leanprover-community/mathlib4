@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `sigmaConst.obj` preserves colimits
 
@@ -125,7 +128,7 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
     rw [← cancel_epi (PreservesCoproduct.iso F (fun (_ : T₁) ↦ X)).inv,
       ← cancel_mono (PreservesCoproduct.iso F (fun (_ : T₂) ↦ X)).inv,
       Iso.inv_hom_id_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      PreservesCoproduct.inv_hom, PreservesCoproduct.inv_hom, sigmaComparison_map_desc]
+      PreservesCoproduct.iso_inv, PreservesCoproduct.iso_inv, sigmaComparison_map_desc]
     cat_disch)
 
 @[reassoc (attr := simp)]

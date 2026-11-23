@@ -64,7 +64,7 @@ submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain := IsConcreteLE.exists_of_lt (lt_top_iff_ne_top.2 hdom)
+  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain := exists_mem_notMem_of_lt (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
       ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
         ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x := by
@@ -166,14 +166,14 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
       smul_mem' := fun ⟨_, hc⟩ _ _ => by rcases eq_or_lt_of_le' hc <;> simp_all
       add_mem' := fun hx hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
-  have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
-    simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
+  have hf'_nonneg : ∀ x : f'.domain, x.val ∈ s → 0 ≤ f' x := fun x (hx : N x.val.1 ≤ x.val.2) ↦ by
+    simpa [f'] using le_trans (hf ⟨x.val.1, x.property.1⟩) hx
   have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s := by
     rintro ⟨x, y⟩
     exact ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, by simp [s]⟩
   obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
-    (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
+    (g_eq ⟨(x, y), ⟨x.property, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
   refine ⟨-g.comp (inl ℝ E ℝ), fun x ↦ ?_, fun x ↦ ?_⟩
   · simp [g_eq x 0]
   · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]

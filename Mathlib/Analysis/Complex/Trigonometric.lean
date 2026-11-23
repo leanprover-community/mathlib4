@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric and hyperbolic trigonometric functions
 
@@ -58,6 +61,11 @@ def cosh (z : ℂ) : ℂ :=
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
+/-- The complex hyperbolic cotangent function, defined as `cosh z / sinh z` -/
+@[pp_nodot, dlmf 4.28.E7 "defined as the reciprocal of tanh"]
+def coth (z : ℂ) : ℂ :=
+  cosh z / sinh z
+
 end
 
 end Complex
@@ -104,6 +112,12 @@ the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
+
+/-- The real hyperbolic cotangent function, defined as the real part of
+the complex hyperbolic cotangent -/
+@[pp_nodot]
+nonrec def coth (x : ℝ) : ℝ :=
+  (coth x).re
 
 end
 
@@ -213,6 +227,32 @@ theorem ofReal_tanh (x : ℝ) : (Real.tanh x : ℂ) = tanh x :=
 theorem tanh_ofReal_im (x : ℝ) : (tanh x).im = 0 := by rw [← ofReal_tanh_ofReal_re, ofReal_im]
 
 theorem tanh_ofReal_re (x : ℝ) : (tanh x).re = Real.tanh x :=
+  rfl
+
+theorem coth_eq_cosh_div_sinh : coth x = cosh x / sinh x :=
+  rfl
+
+@[simp]
+theorem coth_zero : coth 0 = 0 := by simp [coth]
+
+@[simp]
+theorem coth_neg : coth (-x) = -coth x := by simp [coth, div_neg]
+
+theorem coth_conj : coth (conj x) = conj (coth x) := by
+  rw [coth, sinh_conj, cosh_conj, ← map_div₀, coth]
+
+@[simp]
+theorem ofReal_coth_ofReal_re (x : ℝ) : ((coth x).re : ℂ) = coth x :=
+  conj_eq_iff_re.1 <| by rw [← coth_conj, conj_ofReal]
+
+@[simp, norm_cast]
+theorem ofReal_coth (x : ℝ) : (Real.coth x : ℂ) = coth x :=
+  ofReal_coth_ofReal_re _
+
+@[simp]
+theorem coth_ofReal_im (x : ℝ) : (coth x).im = 0 := by rw [← ofReal_coth_ofReal_re, ofReal_im]
+
+theorem coth_ofReal_re (x : ℝ) : (coth x).re = Real.coth x :=
   rfl
 
 @[simp]
@@ -540,7 +580,7 @@ theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
-  rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
+  rw [← exp_mul_I, ← exp_mul_I, ← exp_natCast_mul, mul_assoc]
 
 open Finset
 
@@ -979,6 +1019,10 @@ theorem eNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
 
 @[deprecated (since := "2026-11-06")] alias enorm_exp_I_mul_ofReal := eNorm_exp_I_mul_ofReal
 
+/--
+Length of the chord from `exp (I * x)` to `1`. For the chord between two arbitrary points, see
+`Complex.norm_sub_sq_eq_norm_sub_norm_sq_add`.
+-/
 theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
   rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
   nth_rw 2 [← one_mul (_ - _), ← exp_zero]

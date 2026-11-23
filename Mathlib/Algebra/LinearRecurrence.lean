@@ -96,10 +96,10 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
     (heq : ∀ n : Fin E.order, u n = init n) : ∀ n, u n = E.mkSol init n := by
   intro n
   rw [mkSol]
+  dsimp only
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  · dsimp only
-    rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
+  · rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
     congr with k
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
     simp
@@ -134,7 +134,7 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
     ext
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
-  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
+  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.property; intro k; rfl
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 theorem mkSol_injective : E.mkSol.Injective :=

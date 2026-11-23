@@ -72,7 +72,9 @@ theorem equiv_punit_iff_unique :
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
-      simp
+      #adaptation_note /-- Since nightly-2026-10-21, `Discrete.functor_map_id` applies in more
+      situations, which makes Lean simplify away `z` from the right hand side. -/
+      simp [-Discrete.functor_map_id]
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]

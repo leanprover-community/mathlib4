@@ -68,7 +68,7 @@ variable (α) (n : ℕ)
 /-- Over `Fin (n + 1)`, the multisets of size `k + 1` containing `0` are equivalent to those of size
 `k`, as demonstrated by respectively erasing or appending `0`. -/
 protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } ≃ Sym (Fin n.succ) k where
-  toFun s := s.1.erase 0 s.2
+  toFun s := s.val.erase 0 s.property
   invFun s := ⟨cons 0 s, mem_cons_self 0 s⟩
   left_inv s := by simp
   right_inv s := by simp
@@ -78,15 +78,15 @@ are equivalent to those of size `k` over `Fin n+1`,
 as demonstrated by respectively decrementing or incrementing every element of the multiset.
 -/
 protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃ Sym (Fin n.succ) k where
-  toFun s := map (Fin.predAbove 0) s.1
+  toFun s := map (Fin.predAbove 0) s.val
   invFun s :=
     ⟨map (Fin.succAbove 0) s,
       (mt mem_map.1) (not_exists.2 fun t => not_and.2 fun _ => Fin.succAbove_ne _ t)⟩
   left_inv s := by
     ext1
     simp only [map_map]
-    refine (Sym.map_congr fun v hv ↦ ?_).trans (map_id' _)
-    exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
+    refine (Sym.map_congr rfl fun v hv ↦ ?_).trans (map_id' _)
+    exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.property)
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
 

@@ -177,8 +177,8 @@ advanced proof search engine, and adding any such instance has the potential to 
 slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
 -/
 
-theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
-theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+theorem Fact.elim {p : Prop} (h : Fact p) : p := h.out
+theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.out, fun h ↦ ⟨h⟩⟩
 
 instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
   decidable_of_iff _ fact_iff.symm

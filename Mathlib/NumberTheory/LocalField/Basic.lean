@@ -57,7 +57,7 @@ section TopologicalSpace
 
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 
-attribute [local simp] zero_lt_iff
+attribute [local simp] pos_iff_ne_zero
 
 instance : IsTopologicalDivisionRing K := by
   let := IsTopologicalAddGroup.rightUniformSpace K

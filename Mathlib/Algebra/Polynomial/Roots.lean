@@ -730,9 +730,9 @@ theorem smul_mem_rootSet_iff [CommRing S] [Algebra S R] {G : Type*}
 instance [CommRing S] [Algebra S R] (G : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
-  smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
-  one_smul x := Subtype.ext (one_smul G x.1)
-  mul_smul g h x := Subtype.ext (mul_smul g h x.1)
+  smul g x := ⟨g • x.val, smul_mem_rootSet g x.property⟩
+  one_smul x := Subtype.ext (one_smul G x.val)
+  mul_smul g h x := Subtype.ext (mul_smul g h x.val)
 
 @[simp]
 theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*}
