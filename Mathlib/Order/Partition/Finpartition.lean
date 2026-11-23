@@ -10,8 +10,8 @@ public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Partition.Basic
 public import Mathlib.Order.Setoid.Basic
-public import Mathlib.Order.SupIndep
 
 /-!
 # Finite partitions
@@ -296,6 +296,7 @@ instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
       simpa [h, P.ne_bot hx] using P.le hx
     · exact fun b hb ↦ ⟨a, mem_singleton_self _, P.le hb⟩
 
+@[simp]
 theorem mem_parts_top {b : α} [Decidable (a = ⊥)] :
     b ∈ (⊤ : Finpartition a).parts ↔ b = a ∧ b ≠ ⊥ := by
   simp only [Top.top]
@@ -647,6 +648,57 @@ lemma mem_parts_or_eq_sdiff_of_mem_extendOfLE (hab : a ≤ b) {p : α}
     simpa [parts_extendOfLE_of_eq _ (LE.le.eq_of_not_lt hab h)] using hp
 
 end GeneralizedBooleanAlgebra
+
+section CompleteLattice
+
+variable [CompleteLattice α] {a : α}
+
+/-- Converts a `Finpartition` into a `Partition`. -/
+def toPartition (P : Finpartition a) : Partition a where
+  parts := P.parts
+  sSupIndep' := P.supIndep.sSupIndep
+  bot_notMem' := P.bot_notMem
+  sSup_eq' := by rw [← Finset.sup_id_eq_sSup, P.sup_parts]
+
+@[simp]
+theorem coe_toPartition (P : Finpartition a) : (P.toPartition : Set α) = P.parts :=
+  rfl
+
+@[simp]
+theorem mem_toPartition (P : Finpartition a) {y : α} : y ∈ P.toPartition ↔ y ∈ P.parts :=
+  .rfl
+
+@[simp]
+theorem toPartition_le_toPartition {P Q : Finpartition a} : P.toPartition ≤ Q.toPartition ↔ P ≤ Q :=
+  .rfl
+
+theorem toPartition_injective : Function.Injective (toPartition (a := a)) :=
+  .of_eq_imp_le fun h ↦ toPartition_le_toPartition.mpr h.le
+
+@[gcongr]
+theorem strictMono_toPartition : StrictMono (toPartition (a := a)) :=
+  Monotone.strictMono_of_injective (fun _ _ ↦ toPartition_le_toPartition.mpr) toPartition_injective
+
+instance : CanLift (Partition a) (Finpartition a) toPartition (fun P ↦ (P : Set α).Finite) where
+  prf := by
+    rintro ⟨s, hs₁, hs₂, rfl⟩ h
+    lift s to Finset α using h
+    exact ⟨⟨s, hs₁.supIndep, s.sup_id_eq_sSup, hs₂⟩, rfl⟩
+
+@[simp]
+theorem toPartition_top [Decidable (a = ⊥)] : (⊤ : Finpartition a).toPartition = ⊤ := by
+  ext
+  rw [mem_toPartition, mem_parts_top, Partition.mem_top_iff]
+
+end CompleteLattice
+
+@[simp]
+theorem toPartition_inf [Order.Frame α] [DecidableEq α] {x : α} (P Q : Finpartition x) :
+    (P ⊓ Q).toPartition = P.toPartition ⊓ Q.toPartition := by
+  ext b
+  simp_rw [Partition.mem_inf_iff, mem_toPartition, parts_inf, Finset.mem_erase, Finset.mem_image,
+    Finset.mem_product, Prod.exists]
+  grind only
 
 end Finpartition
 
