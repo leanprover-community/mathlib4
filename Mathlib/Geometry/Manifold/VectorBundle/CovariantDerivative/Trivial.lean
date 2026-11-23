@@ -24,6 +24,13 @@ open scoped Manifold ContDiff
 
 section prelim
 
+public lemma isManifold_one {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    (n : ℕ∞ω) (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] [IsManifold I (n + 1) M] : IsManifold I 1 M :=
+  IsManifold.of_le (by simp : 1 ≤ n + 1)
+
 lemma _root_.mvfderivWithin_of_mem_nhds {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
@@ -183,15 +190,17 @@ end trivial_bundle
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 /-- The trivial connection on the trivial bundle over a C^(k+1) manifold is C^k. -/
-lemma trivial_contMDiff (k : WithTop ℕ∞) [IsManifold I 1 M] [IsManifold I (k + 1) M]
+lemma trivial_contMDiff (k : WithTop ℕ∞) [IsManifold I (k + 1) M]
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
-    : ContMDiffCovariantDerivative (trivial I M F) k where
-  contMDiff := by
+    : have := isManifold_one I k M
+      ContMDiffCovariantDerivative (trivial I M F) k :=
+  have := isManifold_one I k M
+  ⟨by
     constructor
     intro σ hσ
     rw [Bundle.Trivial.contMDiffOn_section_iff] at hσ
     intro x hx
-    exact (hσ x hx).mvfderiv isOpen_univ (mem_univ x)
+    exact (hσ x hx).mvfderiv isOpen_univ (mem_univ x)⟩
 
 /-- The trivial connection on the trivial bundle over a C^∞ manifold is C^∞. -/
 lemma trivial_smooth [IsManifold I ∞ M]
@@ -302,12 +311,15 @@ lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDi
     rw [Bundle.Trivial.contMDiffAt_section_iff] at this
     exact this.mvfderiv'
 
-lemma contMDiffOn_one_form' [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
+lemma contMDiffOn_one_form' [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : ContMDiffCovariantDerivativeOn' F n cov s) (hs : IsOpen s) :
+    (hcov' : have := isManifold_one I n M; ContMDiffCovariantDerivativeOn' F n cov s)
+    (hs : IsOpen s) :
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
+    have := isManifold_one I n M
     CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
+  have := isManifold_one I n M
   have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
     TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
   apply ContMDiffOn.clm_bundle_of_apply' (n+1)
