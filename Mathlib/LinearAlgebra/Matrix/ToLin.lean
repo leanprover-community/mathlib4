@@ -928,11 +928,11 @@ variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁
 
 lemma LinearMap.toMatrix_prodMap' (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
+      .fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
   ext (i | i) (j | j) <;> simp [toMatrix_apply]
 
 lemma LinearMap.toMatrix_prod (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
-    toMatrix (Basis.prod v₁ v₂) (Basis.prod v₁' v₂') φ = Matrix.fromBlocks
+    toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ = .fromBlocks
       (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
       (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
       (toMatrix v₁ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
