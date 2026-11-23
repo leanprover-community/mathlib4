@@ -62,7 +62,7 @@ maximal element of `s` which is not below `a`. -/
 @[to_dual /-- Minimal elements of `insert a s`: either `a` itself, when nothing in `s` is
 below it, or a minimal element of `s` which is not above `a`. -/]
 lemma maximal_mem_insert_iff :
-    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, ¬ a < x) ∨ (Maximal (· ∈ s) i ∧ ¬ i < a) := by
+    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, ¬ a < x) ∨ (¬ i < a ∧ Maximal (· ∈ s) i) := by
   grind [Maximal, lt_iff_le_not_ge]
 
 @[to_dual]
@@ -71,7 +71,7 @@ lemma maximal_mem_insert_self_iff : Maximal (· ∈ insert a s) a ↔ ∀ x ∈ 
 
 @[to_dual]
 lemma maximal_mem_insert_iff_of_mem (hi : i ∈ s) :
-    Maximal (· ∈ insert a s) i ↔ Maximal (· ∈ s) i ∧ ¬ i < a := by
+    Maximal (· ∈ insert a s) i ↔ ¬ i < a ∧ Maximal (· ∈ s) i := by
   grind [maximal_mem_insert_iff]
 
 end Preorder
@@ -81,7 +81,7 @@ variable [LinearOrder α] [DecidableEq α] {s : Finset α} {a i : α}
 
 @[to_dual]
 lemma maximal_mem_insert_iff_le :
-    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, x ≤ a) ∨ (Maximal (· ∈ s) i ∧ a ≤ i) := by
+    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, x ≤ a) ∨ (a ≤ i ∧ Maximal (· ∈ s) i) := by
   grind [maximal_mem_insert_iff]
 
 @[to_dual]
@@ -90,7 +90,7 @@ lemma maximal_mem_insert_self_iff_le : Maximal (· ∈ insert a s) a ↔ ∀ x �
 
 @[to_dual]
 lemma maximal_mem_insert_iff_of_mem_le (hi : i ∈ s) :
-    Maximal (· ∈ insert a s) i ↔ Maximal (· ∈ s) i ∧ a ≤ i := by
+    Maximal (· ∈ insert a s) i ↔ a ≤ i ∧ Maximal (· ∈ s) i := by
   grind [maximal_mem_insert_iff_of_mem hi]
 
 end LinearOrder
