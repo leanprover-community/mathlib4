@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
-
 # Properties of morphisms from properties of ring homs.
 
 We provide the basic framework for talking about properties of morphisms that come from properties
@@ -54,7 +53,6 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
-
 -/
 
 @[expose] public section
@@ -69,7 +67,6 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pullback_fst_appTop
     (hP : IsStableUnderBaseChange P) (hP' : RespectsIso P)
@@ -83,9 +80,8 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
   have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
         (AffineScheme.ofHom g))
-  simp only [AffineScheme.Γ, Functor.rightOp_obj, Functor.comp_obj, Functor.op_obj, unop_comp,
-    AffineScheme.forgetToScheme_obj, Scheme.Γ_obj, Functor.rightOp_map, Functor.comp_map,
-    Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
+  simp only [AffineScheme.Γ, unop_comp, Functor.rightOp_map, Functor.comp_map, Functor.op_map,
+    Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, CommRingCat.hom_comp, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
   exact hP.pushout_inl hP' _ _ H
@@ -114,10 +110,11 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     (sourceAffineLocally P).toProperty.RespectsIso := by
   apply AffineTargetMorphismProperty.respectsIso_mk
   · introv H U
-    have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.1 (e.hom.preimage_image_eq _).ge) :=
+    have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.val (e.hom.preimage_image_eq _).ge) :=
       inferInstanceAs (IsIso (e.hom.app _ ≫
         X.presheaf.map (eqToHom (e.hom.preimage_image_eq _).symm).op))
-    rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
+    rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.val le_top
+        (e.hom.preimage_image_eq _).ge,
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
@@ -133,18 +130,18 @@ open Scheme in
 theorem sourceAffineLocally_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
     (U : Y.Opens) (hU : IsAffineOpen U) :
     @sourceAffineLocally P _ _ (f ∣_ U) hU ↔
-      ∀ (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U), P (f.appLE U V e).hom := by
+      ∀ (V : X.affineOpens) (e : V.val ≤ f ⁻¹ᵁ U), P (f.appLE U V e).hom := by
   dsimp only [sourceAffineLocally]
   simp only [morphismRestrict_appLE]
   rw [(affineOpensRestrict (f ⁻¹ᵁ U)).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun V h ↦ ?_
   have := (affineOpensRestrict (f ⁻¹ᵁ U)).apply_symm_apply ⟨V, h⟩
-  exact f.appLE_congr _ (Opens.ι_image_top _) congr($(this).1.1) (fun f => P f.hom)
+  exact f.appLE_congr _ (Opens.ι_image_top _) congr($(this).val.val) (fun f => P f.hom)
 
 theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} P f ↔
-      ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLE U V e).hom :=
-  forall_congr' fun U ↦ sourceAffineLocally_morphismRestrict P f U U.2
+      ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.val ≤ f ⁻¹ᵁ U.val), P (f.appLE U V e).hom :=
+  forall_congr' fun U ↦ sourceAffineLocally_morphismRestrict P f U U.property
 
 theorem affineLocally_iff_forall_isAffineOpen {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} P f ↔
@@ -166,7 +163,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
       rw [Scheme.basicOpen_res]
       simpa using hU
     rw [← f.appLE_congr (by simp [Scheme.Hom.appLE]) rfl this (fun f => P f.hom),
-      IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2 _ r]
+      IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.property _ r]
     simp only [CommRingCat.hom_ofHom]
     apply +allowSynthFailures h₂
     exact H U
@@ -174,9 +171,9 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     apply h₃ _ _ hs
     intro r
     simp_rw [sourceAffineLocally_morphismRestrict] at hs'
-    have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.1), U.2.basicOpen (f.appLE ⊤ U le_top r.1)⟩
-      (by simp [Scheme.Hom.appLE])
-    rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2, CommRingCat.hom_ofHom,
+    have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.val),
+      U.property.basicOpen (f.appLE ⊤ U le_top r.val)⟩ (by simp [Scheme.Hom.appLE])
+    rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.property, CommRingCat.hom_ofHom,
       ← h₁.isLocalization_away_iff] at this
 
 variable {P}
@@ -197,19 +194,19 @@ over some basic open of `U₁` (resp. `V₁`). -/
 lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
-    (hx₁ : x ∈ V₁.1) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f x ∈ U₁.1) :
+    (hx₁ : x ∈ V₁.val) (hx₂ : x ∈ V₂.val) (e₂ : V₂.val ≤ f ⁻¹ᵁ U₂.val)
+    (h₂ : P (f.appLE U₂ V₂ e₂).hom) (hfx₁ : f x ∈ U₁.val) :
     ∃ (r : Γ(Y, U₁)) (s : Γ(X, V₁)) (_ : x ∈ X.basicOpen s)
       (e : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r),
         P (f.appLE (Y.basicOpen r) (X.basicOpen s) e).hom := by
-  obtain ⟨r, r', hBrr', hBfx⟩ := exists_basicOpen_le_affine_inter U₁.2 U₂.2 (f x)
+  obtain ⟨r, r', hBrr', hBfx⟩ := exists_basicOpen_le_affine_inter U₁.property U₂.property (f x)
     ⟨hfx₁, e₂ hx₂⟩
-  have ha : IsAffineOpen (X.basicOpen (f.appLE U₂ V₂ e₂ r')) := V₂.2.basicOpen _
+  have ha : IsAffineOpen (X.basicOpen (f.appLE U₂ V₂ e₂ r')) := V₂.property.basicOpen _
   have hxa : x ∈ X.basicOpen (f.appLE U₂ V₂ e₂ r') := by
     simpa [Scheme.Hom.appLE, ← Scheme.preimage_basicOpen] using And.intro hx₂ (hBrr' ▸ hBfx)
-  obtain ⟨s, s', hBss', hBx⟩ := exists_basicOpen_le_affine_inter V₁.2 ha x ⟨hx₁, hxa⟩
-  have := V₂.2.isLocalization_basicOpen (f.appLE U₂ V₂ e₂ r')
-  have := U₂.2.isLocalization_basicOpen r'
+  obtain ⟨s, s', hBss', hBx⟩ := exists_basicOpen_le_affine_inter V₁.property ha x ⟨hx₁, hxa⟩
+  have := V₂.property.isLocalization_basicOpen (f.appLE U₂ V₂ e₂ r')
+  have := U₂.property.isLocalization_basicOpen r'
   have := ha.isLocalization_basicOpen s'
   have ers : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r := by
     rw [hBss', hBrr']
@@ -224,7 +221,7 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
   refine ⟨r, s, hBx, ers, ?_⟩
   rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
   apply hPa _ s' _
-  rw [U₂.2.appLE_eq_away_map f V₂.2]
+  rw [U₂.property.appLE_eq_away_map f V₂.property]
   exact hPl _ _ _ _ h₂
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
@@ -233,16 +230,17 @@ open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over s
 lemma exists_affineOpens_le_appLE_of_appLE
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)
-    (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f x ∈ U₁.1) :
-    ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.1 ≤ U₁) (_ : V'.1 ≤ V₁) (_ : x ∈ V'.1)
-      (e : V'.1 ≤ f ⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
-  obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
-  obtain ⟨s, hBs, hBx⟩ := V₂.2.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
+    (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.val) (e₂ : V₂.val ≤ f ⁻¹ᵁ U₂.val) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
+    (hfx₁ : f x ∈ U₁.carrier) :
+    ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.val ≤ U₁) (_ : V'.val ≤ V₁) (_ : x ∈ V'.val)
+      (e : V'.val ≤ f ⁻¹ᵁ U'.val), P (f.appLE U' V' e).hom := by
+  obtain ⟨r, hBr, hBfx⟩ := U₂.property.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
+  obtain ⟨s, hBs, hBx⟩ := V₂.property.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
   obtain ⟨r', s', hBx', e', hf'⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine hPa hPl x
-    ⟨Y.basicOpen r, U₂.2.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.2.basicOpen _⟩ V₂ hBx hx₂ e₂ h₂ hBfx
-  exact ⟨⟨Y.basicOpen r', (U₂.2.basicOpen _).basicOpen _⟩,
-    ⟨X.basicOpen s', (V₂.2.basicOpen _).basicOpen _⟩, le_trans (Y.basicOpen_le _) hBr,
+    ⟨Y.basicOpen r, U₂.property.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.property.basicOpen _⟩ V₂
+    hBx hx₂ e₂ h₂ hBfx
+  exact ⟨⟨Y.basicOpen r', (U₂.property.basicOpen _).basicOpen _⟩,
+    ⟨X.basicOpen s', (V₂.property.basicOpen _).basicOpen _⟩, le_trans (Y.basicOpen_le _) hBr,
     le_trans (X.basicOpen_le _) hBs, hBx', e', hf'⟩
 
 end affineLocally
@@ -302,14 +300,14 @@ theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
   intro U V e
-  have : IsIso (f.appLE (f ''ᵁ V) V.1 (f.preimage_image_eq _).ge) :=
+  have : IsIso (f.appLE (f ''ᵁ V) V.val (f.preimage_image_eq _).ge) :=
     inferInstanceAs (IsIso (f.app _ ≫
       X.presheaf.map (eqToHom (f.preimage_image_eq _).symm).op))
-  rw [← Scheme.Hom.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.1
+  rw [← Scheme.Hom.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.val
     (Set.image_subset_iff.mpr e) (f.preimage_image_eq _).ge,
     CommRingCat.hom_comp,
     (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso]
-  exact H _ ⟨_, V.2.image_of_isOpenImmersion _⟩ _
+  exact H _ ⟨_, V.property.image_of_isOpenImmersion _⟩ _
 
 variable {P f}
 
@@ -328,19 +326,19 @@ theorem of_source_openCover [IsAffine Y]
   | basicOpen U r H =>
     simp_rw [Scheme.affineBasicOpen_coe,
       ← f.appLE_map (U := ⊤) le_top (homOfLE (X.basicOpen_le r)).op]
-    have := U.2.isLocalization_basicOpen r
+    have := U.property.isLocalization_basicOpen r
     exact (isLocal_ringHomProperty P).StableUnderCompositionWithLocalizationAwayTarget _ r _ H
   | openCover U s hs H =>
     apply (isLocal_ringHomProperty P).ofLocalizationSpanTarget.ofIsLocalization
       (isLocal_ringHomProperty P).respectsIso _ _ hs
     rintro r
-    refine ⟨_, _, _, IsAffineOpen.isLocalization_basicOpen U.2 r, ?_⟩
+    refine ⟨_, _, _, IsAffineOpen.isLocalization_basicOpen U.property r, ?_⟩
     rw [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, Scheme.Hom.appLE_map]
     exact H r
   | hU i =>
     specialize H i
     rw [← (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso _
-      ((IsOpenImmersion.isoOfRangeEq (𝒰.f i) (S i).1.ι
+      ((IsOpenImmersion.isoOfRangeEq (𝒰.f i) (S i).val.ι
       Subtype.range_coe.symm).inv.app _), ← CommRingCat.hom_comp, ← Scheme.Hom.comp_appTop,
       IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.Hom.comp_appTop,
       Scheme.Opens.ι_appTop, Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
@@ -365,15 +363,15 @@ theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
 set_option backward.isDefEq.respectTransparency false in
 theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤)
-    (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top).hom) :
+    (H : ∀ i, Q (f.appLE ⊤ (U i).val le_top).hom) :
     P f := by
-  have (i : _) : IsAffine ((X.openCoverOfIsOpenCover _ hU).X i) := (U i).2
+  have (i : _) : IsAffine ((X.openCoverOfIsOpenCover _ hU).X i) := (U i).property
   refine of_source_openCover (X.openCoverOfIsOpenCover _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp (H i)
 
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤) :
-    P f ↔ ∀ i, Q (f.appLE ⊤ (U i).1 le_top).hom :=
+    P f ↔ ∀ i, Q (f.appLE ⊤ (U i).val le_top).hom :=
   ⟨fun H _ ↦ appLE P f H ⟨_, isAffineOpen_top _⟩ _ le_top, of_iSup_eq_top U hU⟩
 
 set_option backward.defeqAttrib.useBackward true in
@@ -391,7 +389,7 @@ lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentit
   id_mem X := by
     rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
-    have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
+    have : IsAffine (𝟙 X ⁻¹ᵁ U.val) := U.property
     rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.Hom.id_appTop]
     apply hP
 
@@ -421,7 +419,7 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
       (f := fun i : s ↦ (i : R)).mpr (by simpa))
     intro i
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
-      (CommRingCat.ofHom f) i.1)).mpr (H i)
+      (CommRingCat.ofHom f) i.val)).mpr (H i)
   · intro R S T _ _ _ _ r _ f hf
     have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization (S := T) r
     change P (Spec.map (CommRingCat.ofHom f ≫ CommRingCat.ofHom (algebraMap _ _)))
@@ -488,7 +486,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
       intro U
       rw [morphismRestrict_comp]
       exact this _ _ (IsZariskiLocalAtTarget.restrict hf _)
-        (IsZariskiLocalAtTarget.restrict hg _) U.2
+        (IsZariskiLocalAtTarget.restrict hg _) U.property
     wlog hY : IsAffine Y generalizing X Y
     · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullback₁ f)]
       intro i
@@ -511,19 +509,19 @@ theorem of_comp
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _
       (g.iSup_preimage_eq_top (iSup_affineOpens_eq_top Z))]
     intro U
-    have H := IsZariskiLocalAtTarget.restrict h U.1
+    have H := IsZariskiLocalAtTarget.restrict h U.val
     rw [morphismRestrict_comp] at H
     exact this H inferInstance
   wlog hY : IsAffine Y generalizing X Y
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
     intro U
-    have H := comp_of_isOpenImmersion P (f ⁻¹ᵁ U.1).ι (f ≫ g) h
+    have H := comp_of_isOpenImmersion P (f ⁻¹ᵁ U.val).ι (f ≫ g) h
     rw [← morphismRestrict_ι_assoc] at H
     exact this H inferInstance
   wlog hY : IsAffine X generalizing X
   · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
     intro U
-    have H := comp_of_isOpenImmersion P U.1.ι (f ≫ g) h
+    have H := comp_of_isOpenImmersion P U.val.ι (f ≫ g) h
     rw [← Category.assoc] at H
     exact this H inferInstance
   rw [iff_of_isAffine (P := P)] at h ⊢
@@ -570,29 +568,29 @@ private lemma respects_isOpenImmersion_aux
     · intro s
       let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
       have hf' : P f' := IsZariskiLocalAtTarget.restrict hf _
-      let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
+      let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.val.ι
         (by simpa only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Scheme.Opens.range_ι,
-          Opens.map_coe, Set.image_preimage_eq_iff, heq, Opens.coe_sSup] using! le_sSup s.2)
-      have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
+          Opens.map_coe, Set.image_preimage_eq_iff, heq, Opens.coe_sSup] using! le_sSup s.property)
+      have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.val.ι := by
         simp only [V, IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
       rw [heq, ← Category.assoc]
       refine this _ ?_ ?_
       · rwa [P.cancel_right_of_respectsIso]
-      · obtain ⟨a, ha⟩ := hUs s.2
+      · obtain ⟨a, ha⟩ := hUs s.property
         use a, ha.symm
     · apply f.iSup_preimage_eq_top
       apply U.ι.image_injective
       simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inf, Scheme.Opens.opensRange_ι]
       conv_rhs => rw [Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι, heq]
       ext : 1
-      have (i : Us) : U ⊓ i.1 = i.1 := by simp [heq, le_sSup i.property]
+      have (i : Us) : U ⊓ i.val = i.val := by simp [heq, le_sSup i.property]
       simp [this]
   obtain ⟨a, rfl⟩ := hYa
   wlog hX : IsAffine X generalizing X Y
   · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro V
     rw [← Category.assoc]
-    exact this _ _ (IsZariskiLocalAtSource.comp hf _) V.2
+    exact this _ _ (IsZariskiLocalAtSource.comp hf _) V.property
   rw [HasRingHomProperty.iff_of_isAffine (P := P)] at hf ⊢
   exact hQ _ a _ hf
 
@@ -605,7 +603,7 @@ lemma respects_isOpenImmersion (hQ : RingHom.StableUnderCompositionWithLocalizat
     · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
-      exact this _ inferInstance _ (IsZariskiLocalAtTarget.restrict hf _) U.2
+      exact this _ inferInstance _ (IsZariskiLocalAtTarget.restrict hf _) U.property
     let e : Y ≅ i.opensRange.toScheme := IsOpenImmersion.isoOfRangeEq i i.opensRange.ι (by simp)
     rw [show f ≫ i = f ≫ e.hom ≫ i.opensRange.ι by simp [e], ← Category.assoc]
     exact respects_isOpenImmersion_aux hQ _ (by rwa [P.cancel_right_of_respectsIso])
@@ -618,8 +616,8 @@ points of the source. -/
 lemma iff_exists_appLE_locally
     (hQ : RingHom.StableUnderCompositionWithLocalizationAwaySource Q)
     (hQi : RespectsIso Q) [HasRingHomProperty P (Locally Q)] :
-    P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
-      Q (f.appLE U V e).hom := by
+    P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val)
+      (e : V.val ≤ f ⁻¹ᵁ U.val), Q (f.appLE U V e).hom := by
   have := respects_isOpenImmersion (P := P)
     (RingHom.locally_stableUnderCompositionWithLocalizationAwaySource hQ)
   refine ⟨fun hf x ↦ ?_,
@@ -649,7 +647,7 @@ lemma iff_exists_appLE_locally
 /-- `P` can be checked locally around points of the source. -/
 lemma iff_exists_appLE
     (hQ : StableUnderCompositionWithLocalizationAwaySource Q) : P f ↔
-    ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+    ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val) (e : V.val ≤ f ⁻¹ᵁ U.val),
       Q (f.appLE U V e).hom := by
   have inst : HasRingHomProperty P Q := inferInstance
   have : HasRingHomProperty P (Locally Q) := by
@@ -667,8 +665,9 @@ omit [HasRingHomProperty P Q] in
 lemma locally_of_iff (hQl : LocalizationAwayPreserves Q)
     (hQa : StableUnderCompositionWithLocalizationAway Q)
     (h : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔
-      ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
-      Q (f.appLE U V e).hom) : HasRingHomProperty P (Locally Q) where
+      ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.val)
+        (e : V.val ≤ f ⁻¹ᵁ U.val), Q (f.appLE U V e).hom) :
+    HasRingHomProperty P (Locally Q) where
   isLocal_ringHomProperty := locally_propertyIsLocal hQl hQa
   eq_affineLocally' := by
     have : HasRingHomProperty (affineLocally (Locally Q)) (Locally Q) :=
@@ -684,12 +683,12 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
   wlog hY : IsAffine Y generalizing X Y f
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
-    refine this (fun x ↦ ?_) U.2
+    refine this (fun x ↦ ?_) U.property
     exact (hQi.arrow_mk_iso_iff (AlgebraicGeometry.morphismRestrictStalkMap f U x)).mpr (H x.val)
   wlog hX : IsAffine X generalizing X f
   · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
-    refine this ?_ U.2
+    refine this ?_ U.property
     intro x
     rw [Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
     exact H x.val

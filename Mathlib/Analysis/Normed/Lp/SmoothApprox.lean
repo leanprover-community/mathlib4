@@ -12,8 +12,10 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.Geometry.Manifold.SmoothApprox
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Density of smooth compactly supported functions in `Lp`
 
 In this file, we prove that `Lp` functions can be approximated by smooth compactly supported

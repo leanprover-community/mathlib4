@@ -172,7 +172,7 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.val p.property = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
     (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
@@ -202,7 +202,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     push Not
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList
-      <| List.mem_toFinset.mp q.2)]
+      <| List.mem_toFinset.mp q.property)]
     rintro rfl
     rw [(mem_filter.mp hq).2] at hfg
     exact hfg rfl
@@ -218,7 +218,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiag ht _
-  trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
+  trans (∏ p ∈ n.primeFactors.attach, if p.val ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     grind
@@ -236,8 +236,8 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
-    ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
-    Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_eq_length_dedup_primeFactorsList, ← List.card_toFinset,
+    toFinset_factors, Finset.card_fin]
 
 theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]

@@ -10,7 +10,6 @@ public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Centers of rings
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolutely convex open sets
 
@@ -28,7 +31,6 @@ convex open neighborhoods of zero.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
 * `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
-
 -/
 
 @[expose] public section
@@ -57,19 +59,19 @@ namespace AbsConvexOpenSets
 variable {𝕜 E}
 
 theorem coe_zero_mem (s : AbsConvexOpenSets 𝕜 E) : (0 : E) ∈ (s : Set E) :=
-  s.2.1
+  s.property.1
 
 theorem coe_isOpen (s : AbsConvexOpenSets 𝕜 E) : IsOpen (s : Set E) :=
-  s.2.2.1
+  s.property.2.1
 
 theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :=
   s.coe_isOpen.mem_nhds s.coe_zero_mem
 
 theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
-  s.2.2.2.1
+  s.property.2.2.1
 
 theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex 𝕜 (s : Set E) :=
-  s.2.2.2.2
+  s.property.2.2.2
 
 end AbsConvexOpenSets
 

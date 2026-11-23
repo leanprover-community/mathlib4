@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Products.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Joins of categories
 
@@ -31,7 +34,6 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 ## References
 
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
-
 -/
 
 @[expose] public section
@@ -446,7 +448,6 @@ section mapPairComp
 
 variable (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gₗ : E ⥤ J) (Gᵣ : E' ⥤ K)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_left (c : C) :
@@ -454,7 +455,6 @@ lemma mapPairComp_hom_app_left (c : C) :
   dsimp [mapPairComp]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_right (d : D) :

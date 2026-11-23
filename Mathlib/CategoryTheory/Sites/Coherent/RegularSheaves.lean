@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!
-
 # Sheaves for the regular topology
 
 This file characterises sheaves for the regular topology.

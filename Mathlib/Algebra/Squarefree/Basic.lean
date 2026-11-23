@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Squarefree elements of monoids
@@ -29,7 +30,6 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Tags
 squarefree, multiplicity
-
 -/
 
 @[expose] public section
@@ -311,7 +311,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
       · rw [← normalize_normalized_factor _ hmem]
         rw [emultiplicity_eq_count_normalizedFactors ha x0] at h
         assumption_mod_cast
-      · have := ha.1
+      · have := ha.not_isUnit
         contradiction
     · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]
@@ -321,7 +321,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
     apply le_trans (emultiplicity_le_emultiplicity_of_dvd_left hdvd)
     rw [emultiplicity_eq_count_normalizedFactors hib x0]
-    exact_mod_cast h (normalize b)
+    exact mod_cast h (normalize b)
 
 end UniqueFactorizationMonoid
 

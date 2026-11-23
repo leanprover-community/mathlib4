@@ -20,7 +20,6 @@ We prove some `HasSumUniformlyOn` versions of theorems from
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
 is the sum of the derivatives, under suitable conditions we also prove an `iteratedDerivWithin`
 version.
-
 -/
 
 public section

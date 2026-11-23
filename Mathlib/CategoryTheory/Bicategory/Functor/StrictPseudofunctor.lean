@@ -19,7 +19,6 @@ underlying categories, see `StrictPseudofunctor.toFunctor`.
 ## TODO
 
 Rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
-
 -/
 
 @[expose] public section

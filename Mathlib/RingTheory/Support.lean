@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
-
 # Support of a module
 
 ## Main results
@@ -68,7 +67,7 @@ lemma Module.mem_support_iff' :
 lemma Module.mem_support_iff_exists_annihilator :
     p ∈ Module.support R M ↔ ∃ m : M, (R ∙ m).annihilator ≤ p.asIdeal := by
   rw [Module.mem_support_iff']
-  simp_rw [not_imp_not, IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton]
+  simp_rw [not_imp_not, le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton]
 
 lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
     q ∈ Module.support R M := by
@@ -81,7 +80,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
   · contrapose
     rw [notMem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
-    simp_rw [IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
+    simp_rw [le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
     push Not
     simp_rw [and_comm]
@@ -123,8 +122,7 @@ lemma Module.support_eq_empty_iff :
 
 lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by
-  rw [Set.nonempty_iff_ne_empty, ne_eq,
-    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
+  simp [← Set.ne_empty_iff_nonempty, Module.support_eq_empty_iff, not_subsingleton_iff_nontrivial]
 
 lemma Module.nonempty_support_of_nontrivial [Nontrivial M] : (Module.support R M).Nonempty :=
   Module.nonempty_support_iff.mpr ‹_›
@@ -201,7 +199,7 @@ lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
-  simp only [IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton] at H ⊢
+  simp only [le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton] at H ⊢
   contrapose! H
   choose x hx hx' using Subtype.forall'.mp H
   refine ⟨s.attach.prod x, ?_, ?_⟩

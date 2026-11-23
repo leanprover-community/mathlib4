@@ -227,7 +227,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
         htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
-      rw [Walk.nil_takeUntil]
       grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
@@ -239,8 +238,8 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     intro v w hvw
     apply hsupG ▸ sup_le_sup hM1sub hM2sub
     have := p.toSubgraph.spanningCoe_le hvw
-    simp only [cycles, symmDiff_def] at this
-    aesop
+    simp only [cycles, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj] at this ⊢
+    tauto
   -- Helper condition to show that `p` ends with an edge in `M2`
   have aux {x' : V} (hx' : x' ∈ ({x, b} : Set V)) (c' : V) (hc : c' ≠ a)
       (hadj : p.toSubgraph.Adj c' x') : M2.Adj c' x' := by
@@ -297,13 +296,13 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
       at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj a c := by
-      simpa [universalVerts, IsUniversal] using a.1.2.2
+      simpa [universalVerts, IsUniversal] using a.val.property.2
     have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
+      rw [edge_le_iff (v := x.val.val) (w := b.val.val)]
       simp [hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rwa [edge_le_iff (v := a.1.1) (w := c), not_or])
+      rwa [edge_le_iff (v := a.val.val) (w := c), not_or])
     have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.symm
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
       hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2

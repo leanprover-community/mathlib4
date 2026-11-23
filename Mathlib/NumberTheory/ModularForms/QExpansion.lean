@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
-public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
 
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
@@ -47,13 +47,12 @@ and bounded at infinity.
 
 ## See also
 
-* Lemmas relating q-expansion coefficents to Fourier series, such as
+* Lemmas relating q-expansion coefficients to Fourier series, such as
   `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
   the present file does not import Fourier theory.
-
 -/
 
-assert_not_exists fourierCoeffOn -- guard against import creep
+assert_not_exists AddCircle.fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 
@@ -144,11 +143,6 @@ end SlashInvariantFormClass
 open SlashInvariantFormClass
 
 namespace ModularFormClass
-
-@[deprecated ModularFormClass.bdd_at_infty +typeChanged (since := "2026-04-19")]
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
-    BoundedAtFilter I∞ (f ∘ ofComplex) :=
-  (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
 
 protected theorem differentiableAt_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
@@ -347,7 +341,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
     grind
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show ↑I = Complex.I by rfl, show u + t * Complex.I = τ by rfl,
-    show ⟨↑τ, τ.2⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
+    show ⟨↑τ, τ.coe_im_pos⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast
   ring
@@ -561,6 +555,15 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
     simpa [ite_apply] using! iteratedDeriv_const
   simp +contextual [qExpansion_coeff, h1, h2]
 
+theorem analyticOrderAt_eq_qExpansion_order {f : ℍ → ℂ} (hh : 0 < h)
+    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    analyticOrderAt (cuspFunction h f) 0 = (qExpansion h f).order := by
+  -- Both orders are characterized by the vanishing of all coefficients below `n`.
+  refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+  rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero
+    (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd), PowerSeries.nat_le_order_iff]
+  simp [qExpansion_coeff, Nat.factorial_ne_zero]
+
 end UpperHalfPlane
 
 namespace ModularForm
@@ -693,7 +696,8 @@ lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
 
 open scoped DirectSum in
 /-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
-over `ℂ`. -/
+over `ℂ`. This requires `Γ.HasDetOne` so that `ModularForm Γ k` carries a
+`ℂ`-module structure. Compare `ModularForm.const` with `ModularForm.constℝ`. -/
 def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
   DirectSum.toAlgebra ℂ _

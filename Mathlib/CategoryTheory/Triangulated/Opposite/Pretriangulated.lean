@@ -33,7 +33,6 @@ triangulated if `C` is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -85,8 +84,6 @@ lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
   exact Pretriangulated.isomorphic_distinguished _ hT₁ _
     ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Up to rotation, the contractible triangle `X ⟶ X ⟶ 0 ⟶ X⟦1⟧` for `X : Cᵒᵖ` corresponds
 to the contractible triangle for `X.unop` in `C`. -/
 @[simps!]
@@ -97,7 +94,7 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
     (IsZero.iso (isZero_zero _) (by
       dsimp
       rw [IsZero.iff_id_eq_zero]
-      change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
+      change (𝟙 ((0 : C)⟦-1⟧)).op = 0
       rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
     (by simp) (by simp) (by simp)
 
@@ -107,7 +104,6 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
   exact ⟨_, inv_rot_of_distTriang _ (Pretriangulated.contractible_distinguished X.unop),
     ⟨contractibleTriangleIso X⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
 with the rotation of triangles. -/
 noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :
@@ -123,19 +119,17 @@ lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
   exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
   refine ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
-    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
+    (shiftFunctor Cᵒᵖ 1).map h.op, ?_⟩
   simp only [mem_distinguishedTriangles_iff]
   refine Pretriangulated.isomorphic_distinguished _ H _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
     (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
@@ -150,7 +144,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
   dsimp at hc₂
   simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
   refine ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj ?_⟩
-  apply (shiftFunctor C (1 : ℤ)).map_injective
+  apply (shiftFunctor C 1).map_injective
   rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
     Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
     ← opShiftFunctorEquivalence_unitIso_inv_naturality]

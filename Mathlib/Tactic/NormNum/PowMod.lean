@@ -21,7 +21,6 @@ The approach taken here is identical to (and copied from) the development in
 
 * Adapt the `norm_num` extensions for `Nat.mod` and `Int.emod` to efficiently evaluate expressions
   of the form `a ^ b % m` using `evalNatPowMod`.
-
 -/
 
 public meta section

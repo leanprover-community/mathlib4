@@ -30,7 +30,6 @@ TODO:
   the site is a small category: this should be generalized. As a result,
   this big Zariski site can considered as a test case of the Grothendieck topology API
   for future applications to étale cohomology.
-
 -/
 
 @[expose] public section

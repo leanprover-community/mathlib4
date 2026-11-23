@@ -24,7 +24,6 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
-
 -/
 
 public section
@@ -46,7 +45,7 @@ theorem isPrimitiveRoot_neg_I : IsPrimitiveRoot (-I) 4 := by
 theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi : IsCoprime i n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
-  simp only [← exp_nat_mul, exp_eq_one_iff]
+  simp only [← exp_natCast_mul, exp_eq_one_iff]
   constructor
   · use i
     simp (discharger := norm_cast) [field]
@@ -104,7 +103,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   obtain ⟨i, hi, rfl⟩ :=
     (isPrimitiveRoot_exp n hn).eq_pow_of_pow_eq_one h.pow_eq_one
   refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
-  rw [← exp_nat_mul]
+  rw [← exp_natCast_mul]
   congr 1
   ring
 
@@ -119,11 +118,11 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x :=
       (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
     refine ⟨i, hi, ?_⟩
-    rw [← H, ← exp_nat_mul]
+    rw [← H, ← exp_natCast_mul]
     congr 1
     ring
   · rintro ⟨i, _, H⟩
-    rw [← H, ← exp_nat_mul, exp_eq_one_iff]
+    rw [← H, ← exp_natCast_mul, exp_eq_one_iff]
     use i
     simp [field]
 
@@ -141,9 +140,12 @@ theorem IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot �
     ‖ζ‖ = 1 :=
   Complex.norm_eq_one_of_pow_eq_one h.pow_eq_one hn
 
-theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+theorem IsPrimitiveRoot.nnNorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖₊ = 1 :=
   Subtype.ext <| h.norm'_eq_one hn
+
+@[deprecated (since := "2026-10-31")]
+alias IsPrimitiveRoot.nnnorm_eq_one := IsPrimitiveRoot.nnNorm_eq_one
 
 theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=
