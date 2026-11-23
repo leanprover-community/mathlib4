@@ -11,13 +11,14 @@ public meta import Mathlib.Tactic.RealRootCount.SturmCertificate
 /-!
 # Computing a Sturm sequence and its certificate
 
-`SturmCertificate.fromCoeffList p` computes the `SturmCertificate` for the polynomial with
-coefficient list `p : List ℚ`:
+This file provides the definitions required to compute a `SturmCertificate`, which describes the
+Sturm sequence of a polynomial with rational coefficients and its derivative, up to positive
+factors.
 
 ## Main definitions
 
-- `SturmCertificate.fromCoeffList`: the Sturm sequence for a coefficient list, with its
-  certificate.
+- `SturmCertificate.fromCoeffList`: computes the factor that clears the denominators of a
+  coefficient list, and the `SturmCertificate` for the resulting polynomial.
 -/
 
 namespace Mathlib.Tactic.RealRootCount
@@ -82,13 +83,14 @@ def sturmSteps (p : List ℤ) : List SturmStep := Id.run do
     q := s.r
   return steps.toList
 
-/-- Compute the `SturmCertificate` for the polynomial with the coefficient list `p`. -/
-public def SturmCertificate.fromCoeffList (p : List ℚ) : SturmCertificate :=
+/-- Compute `k > 0` such that the elements of `k * p` are integers, and the `SturmCertificate` for
+the polynomial with the coefficient list `k * p`. -/
+public def SturmCertificate.fromCoeffList (p : List ℚ) : ℕ × SturmCertificate :=
   let k := lcmDen p
   -- by definition of `k`, `k * p` is a list of integers
   let s := p.map fun x : ℚ => (k * x).num
   let steps := sturmSteps s
-  { k, s, steps }
+  (k, { s, steps })
 
 end
 

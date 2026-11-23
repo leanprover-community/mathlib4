@@ -89,12 +89,10 @@ def check (s : SturmStep) (p q : List ℤ) : Bool :=
 
 end SturmStep
 
-/-- A certificate that a list of polynomials is the Sturm sequence of some polynomial `f` and its
-derivative up to positive scaling factors. -/
+/-- A certificate that a list of polynomials is the Sturm sequence of the polynomial with
+coefficient list `s` and its derivative up to positive scaling factors. -/
 structure SturmCertificate where
-  /-- A positive integer such that `k * f` has integer coefficients. -/
-  k : ℕ
-  /-- The coefficient list of `k * f`. -/
+  /-- The coefficient list of the polynomial. -/
   s : List ℤ
   /-- The steps that give the entries of the Sturm sequence after `s` and its derivative. -/
   steps : List SturmStep
@@ -119,7 +117,7 @@ def checkSteps : List ℤ → List ℤ → List SturmStep → Bool
 
 /-- Check that the `SturmCertificate` represents a valid Sturm sequence. -/
 def checkSturm (d : SturmCertificate) : Bool :=
-  0 < d.k && coeffLead d.s != 0 && checkSteps d.s (coeffDerivative d.s) d.steps
+  coeffLead d.s != 0 && checkSteps d.s (coeffDerivative d.s) d.steps
 
 /-- Compute the number of real roots of the polynomial in the `SturmCertificate`.
 The function returns `none` if the certificate is invalid. -/
