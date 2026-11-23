@@ -32,6 +32,15 @@ class HasPageInfinityAt (E : SpectralSequence C c r₀) (pq : ι) : Prop where
 
 variable (E : SpectralSequence C c r₀) (pq : ι)
 
+lemma HasPageInfinityAt.mk' (r : ℤ)
+    (_ : E.HasEdgeMonoAtFrom pq r := by infer_instance)
+    (_ : E.HasEdgeEpiAtFrom pq r := by infer_instance) :
+    E.HasPageInfinityAt pq where
+  exists_hasEdgeEpiAtFrom := ⟨r, inferInstance⟩
+  exists_hasEdgeMonoAtFrom := ⟨r, inferInstance⟩
+
+section
+
 variable [E.HasPageInfinityAt pq]
 
 open HasPageInfinityAt in
@@ -81,7 +90,7 @@ noncomputable def pageInfinity (pq : ι) : C :=
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq else 0
 
 /-- Auxiliary definition for `edgeMono` and `edgeEpi`. -/
-private noncomputable def pageInfinityIso' (pq : ι) [E.HasPageInfinityAt pq] :
+private noncomputable def pageInfinityIso' :
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq ≅ E.pageInfinity pq :=
   eqToIso (Eq.symm (dite_eq_left (by assumption)))
 
@@ -127,23 +136,43 @@ lemma edgeMonoSteps_edgeEpi (r r' : ℤ) [E.HasEdgeEpiAtFrom pq r] (hr' : r ≤ 
   simp [edgeEpi, E.congr_edgeEpiSteps_comp_edgeMonoSteps pq r (E.rMin pq)
     (max (E.rMin pq) r') (max (E.rMin pq) r)]
 
+end
+
+section
+
+variable (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r]
+
 @[reassoc (attr := simp)]
-lemma edgeEpi_edgeMono
-    (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+lemma edgeEpi_edgeMono :
+    haveI := HasPageInfinityAt.mk' E pq r
     E.edgeEpi pq r ≫ E.edgeMono pq r = 𝟙 _ := by
-  sorry
+  simp [edgeEpi, edgeMono]
 
 @[reassoc (attr := simp)]
-lemma edgeMono_edgeEpi
-    (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+lemma edgeMono_edgeEpi :
+    haveI := HasPageInfinityAt.mk' E pq r
     E.edgeMono pq r ≫ E.edgeEpi pq r = 𝟙 _ := by
-  sorry
+  simp [edgeEpi, edgeMono]
+
+/-- The isomorphism `E_r^pq ≅ E_∞^pq` when `HasEdgeMonoAtFrom pq r` and
+`HasEdgeEpiAtFrom pq r` hold. -/
+@[expose, simps]
+noncomputable def pageInfinityIso :
+    (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).X pq ≅ E.pageInfinity pq where
+  hom := haveI := HasPageInfinityAt.mk' E pq r; E.edgeEpi pq r
+  inv := haveI := HasPageInfinityAt.mk' E pq r; E.edgeMono pq r
 
 instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
-    IsIso (E.edgeMono pq r) := ⟨E.edgeEpi pq r, by simp⟩
+    haveI := HasPageInfinityAt.mk' E pq r
+    IsIso (E.edgeMono pq r) :=
+  (E.pageInfinityIso pq r).isIso_inv
 
 instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
-    IsIso (E.edgeEpi pq r) := ⟨E.edgeMono pq r, by simp⟩
+    haveI := HasPageInfinityAt.mk' E pq r
+    IsIso (E.edgeEpi pq r) :=
+  (E.pageInfinityIso pq r).isIso_hom
+
+end
 
 end SpectralSequence
 
