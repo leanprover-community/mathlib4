@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Logic.Equiv.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets of an ordered type
 

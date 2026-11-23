@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy fiber of a morphism of homological complexes
 

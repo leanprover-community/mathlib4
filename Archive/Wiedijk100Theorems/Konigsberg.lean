@@ -20,7 +20,6 @@ between them has no Eulerian trail.
 
 namespace Konigsberg
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The vertices for the Königsberg graph; four vertices for the bodies of land and seven
 vertices for the bridges. -/
 inductive Verts : Type

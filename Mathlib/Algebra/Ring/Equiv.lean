@@ -101,19 +101,17 @@ instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
-end RingEquivClass
-
-namespace RingEquiv
-
-/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
-`RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
-@[coe]
-def ofClass [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β]
-    [RingEquivClass F α β] (f : F) :
+/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual `RingEquiv`. -/
+def _root_.RingEquiv.ofClass [Mul α] [Add α] [Mul β] [Add β]
+    [EquivLike F α β] [RingEquivClass F α β] (f : F) :
     α ≃+* β :=
   { (f : α ≃* β), (f : α ≃+ β) with }
 
-@[deprecated (since := "2026-11-21")] alias RingEquivClass.toRingEquiv := ofClass
+@[deprecated (since := "2026-11-22")] alias toRingEquiv := RingEquiv.ofClass
+
+end RingEquivClass
+
+namespace RingEquiv
 
 section Basic
 
@@ -136,6 +134,10 @@ instance : EquivLike (R ≃+* S) R S where
 instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
+
+@[simp]
+protected theorem coe_ofClass {F : Type*} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 /-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faces of pointed cones
 

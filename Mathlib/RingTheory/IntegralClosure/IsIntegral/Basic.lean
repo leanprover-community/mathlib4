@@ -14,6 +14,9 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of integral elements.
 

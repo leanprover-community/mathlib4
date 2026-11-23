@@ -73,9 +73,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
-/-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
-`AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual `AlgHom`. -/
 def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     A →ₐ[R] B where
   __ := (f : A →+* B)

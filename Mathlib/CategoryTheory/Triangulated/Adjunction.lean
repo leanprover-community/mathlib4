@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 import Mathlib.CategoryTheory.Adjunction.Additive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The adjoint functor is triangulated
 

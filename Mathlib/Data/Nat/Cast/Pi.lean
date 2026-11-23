@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers to function types
 

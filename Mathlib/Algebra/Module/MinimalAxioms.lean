@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal Axioms for a Module
 

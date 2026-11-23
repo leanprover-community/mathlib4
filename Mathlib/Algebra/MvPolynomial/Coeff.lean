@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Data.Nat.Choose.Multinomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formulas for coefficients of multivariate polynomials
 

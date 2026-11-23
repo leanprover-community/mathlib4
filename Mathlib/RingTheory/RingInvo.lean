@@ -52,7 +52,7 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
 @[coe]
 def RingInvo.ofClass {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
     RingInvo R :=
-  { (RingEquiv.ofClass f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
+  { RingEquiv.ofClass f with involution' := RingInvoClass.involution f }
 
 @[deprecated (since := "2026-11-21")] alias RingInvoClass.toRingInvo := RingInvo.ofClass
 
