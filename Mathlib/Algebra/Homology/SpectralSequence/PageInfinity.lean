@@ -162,12 +162,12 @@ noncomputable def pageInfinityIso :
   hom := haveI := HasPageInfinityAt.mk' E pq r; E.edgeEpi pq r
   inv := haveI := HasPageInfinityAt.mk' E pq r; E.edgeMono pq r
 
-instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+instance :
     haveI := HasPageInfinityAt.mk' E pq r
     IsIso (E.edgeMono pq r) :=
   (E.pageInfinityIso pq r).isIso_inv
 
-instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
+instance :
     haveI := HasPageInfinityAt.mk' E pq r
     IsIso (E.edgeEpi pq r) :=
   (E.pageInfinityIso pq r).isIso_hom
