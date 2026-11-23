@@ -303,8 +303,7 @@ lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     simp [hx']
   apply ContMDiffAt.congr_of_eventuallyEq _ this
   apply ContMDiffWithinAt.sub_section
-  · -- FIXME: awful delaborator bug!
-    have := hcov'.contMDiffWithinAt (x := x) (σ := σ) hx
+  · have := hcov'.contMDiffWithinAt (x := x) (σ := σ) hx
     rw [hs.nhdsWithin_eq hx] at this
     have := this (hσ.mono fun y hy ↦ hy.contMDiffWithinAt)
     apply this.contMDiffAt <| hs.mem_nhds hx
@@ -340,8 +339,7 @@ lemma contMDiffOn_one_form' [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     simp [hx']
   apply ContMDiffWithinAt.congr_of_eventuallyEq _ this (this.self_of_nhdsWithin hx)
   apply ContMDiffWithinAt.sub_section
-  · -- FIXME: awful delaborator bug!
-    exact hcov'.contMDiffWithinAt hx hσ'
+  · exact hcov'.contMDiffWithinAt hx hσ'
   · have := hσ.self_of_nhds
     rw [Bundle.Trivial.contMDiffWithinAt_section_iff] at this
     exact this.mvfderiv hs hx

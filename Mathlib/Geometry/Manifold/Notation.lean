@@ -1079,14 +1079,21 @@ namespace Manifold
 
 open Bundle PrettyPrinter Delaborator SubExpr
 
+-- FIXME: move this somewhere else
+meta def _root_.Lean.PrettyPrinter.Delaborator.SubExpr.withFn
+    {α : Type} {m : Type → Type} [Monad m] [MonadReaderOf SubExpr m]
+    [MonadWithReaderOf SubExpr m] (x : m α) : m α := do
+  let e ← getExpr
+  let f := match e with | .app f _ => f | e => e
+  let newPos := (← getPos).pushAppFn
+  withTheReader SubExpr (fun cfg => { cfg with expr := f, pos := newPos }) x
+
 /-- Delaborator for `fun _ => TotalSpace.mk' ..` using the `T%` elaborator. -/
 @[scoped delab lam] meta def delabLamTPercent : Delab := do
   whenPPOption getPPNotation do
   let .lam n _ b _ ← getExpr | failure
   guard <| b.isAppOf ``Bundle.TotalSpace.mk'
-  let σe := b.getAppArgs[4]!.getAppFn
-  guard σe.isFVar
-  let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+  let σs ← withBindingBody n <| withNaryArg 4 <| withFn delab
   -- TODO: this always adds parentheses; find a more parsimonious way!
   `((T% $σs)) >>= annotateGoToSyntaxDef
 
