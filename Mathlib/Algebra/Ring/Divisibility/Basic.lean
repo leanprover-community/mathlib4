@@ -6,8 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 module
 
 public import Mathlib.Algebra.Divisibility.Hom
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Ring.Defs
+
+import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Lemmas about divisibility in rings

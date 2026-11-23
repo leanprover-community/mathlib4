@@ -5,8 +5,9 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.RingTheory.AdicCompletion.Algebra
+
+import Mathlib.LinearAlgebra.SModEq.Pointwise
 
 /-!
 # Functoriality of adic completions
