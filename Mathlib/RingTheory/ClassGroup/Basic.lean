@@ -463,10 +463,11 @@ theorem ClassGroup.exists_pow_isPrincipal [IsDedekindDomain R] (hR : IsMulTorsio
   · exact ⟨1, one_ne_zero, 0, by simp⟩
   have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hI
   obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 (hR (ClassGroup.mk0 ⟨I, hI'⟩))
-  obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
-    rwa [← ClassGroup.mk0_eq_one_iff (pow_mem hI' n), ← SubmonoidClass.mk_pow, map_pow]
-  exact ⟨n, hn.ne', α, hα⟩
+  refine ⟨n, hn.ne', ?_⟩
+  rwa [← ClassGroup.mk0_eq_one_iff (pow_mem hI' n), ← SubmonoidClass.mk_pow, map_pow]
 
+/-- If the class group is finite, then every ideal raised to the power of the class number is
+principal. -/
 theorem ClassGroup.isPrincipal_pow_card [IsDedekindDomain R] [Finite (ClassGroup R)]
     (I : Ideal R) : (I ^ Nat.card (ClassGroup R)).IsPrincipal := by
   by_cases hI : I = ⊥
