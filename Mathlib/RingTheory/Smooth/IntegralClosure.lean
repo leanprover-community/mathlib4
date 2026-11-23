@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Unramified.LocalStructure
+public import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 # Smooth base change commutes with integral closure

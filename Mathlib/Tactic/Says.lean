@@ -10,6 +10,8 @@ public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Qq.MatchImpl
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
+public import Lean.Meta.TryThis
+public import Mathlib.Util.ParseCommand
 
 /-!
 # The `says` tactic combinator.

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
-import Mathlib.Basic.ENNReal.Action
 
 /-!
 # Induced Outer Measure

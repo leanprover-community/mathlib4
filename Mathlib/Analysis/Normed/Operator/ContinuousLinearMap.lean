@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.LinearAlgebra.DFinsupp
 
 import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 

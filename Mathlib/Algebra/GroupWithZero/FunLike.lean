@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Group.PowIterate
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 
-import Mathlib.Algebra.Group.FunLike
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Tactic.Attr.Core
 
 /-! # Group with zero instances for `FunLike` types
 In this file we define various instances related to `GroupWithZero` for `FunLike` types.

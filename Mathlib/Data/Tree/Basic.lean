@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Binary tree

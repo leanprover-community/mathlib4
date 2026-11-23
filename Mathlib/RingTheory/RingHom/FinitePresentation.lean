@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # The meta properties of finitely-presented ring homomorphisms.

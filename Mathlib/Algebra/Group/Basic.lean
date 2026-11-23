@@ -5,13 +5,13 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.SplitIfs
+public import Aesop
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups

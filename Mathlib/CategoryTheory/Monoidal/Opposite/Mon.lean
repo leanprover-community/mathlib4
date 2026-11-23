@@ -6,6 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Mon
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

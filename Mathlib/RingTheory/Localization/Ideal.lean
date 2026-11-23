@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
-import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Ideals in localizations of commutative rings

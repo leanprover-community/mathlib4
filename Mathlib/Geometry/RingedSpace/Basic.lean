@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Geometry.RingedSpace.SheafedSpace
 
-import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Order.Group.Nat
 

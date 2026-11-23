@@ -8,8 +8,6 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-! # The bundle of alternating maps between `C^n` vector bundles over the same base space is `C^n`
 

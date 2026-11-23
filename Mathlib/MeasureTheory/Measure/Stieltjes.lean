@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
-import Mathlib.Topology.Order.LeftRightLim
 
 /-!
 # Stieltjes measures on the real line

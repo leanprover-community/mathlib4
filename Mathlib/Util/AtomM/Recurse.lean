@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth
 module
 
 public import Mathlib.Util.AtomM
+public import Batteries.Tactic.Lint
 
 /-!
 # Running `AtomM` metaprograms recursively

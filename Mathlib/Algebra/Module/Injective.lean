@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Tactic.NormNum
 
 import Mathlib.Algebra.Module.Shrink
-import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Injective modules

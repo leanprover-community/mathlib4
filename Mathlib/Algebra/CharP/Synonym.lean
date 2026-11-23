@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Order.Ring.Synonym
 
-import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Characteristic of the order type synonyms

@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!

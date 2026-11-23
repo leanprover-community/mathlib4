@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!

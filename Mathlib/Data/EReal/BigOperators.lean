@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.EReal.Inv
 
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

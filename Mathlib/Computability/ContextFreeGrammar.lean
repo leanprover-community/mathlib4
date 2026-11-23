@@ -6,6 +6,8 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Context-Free Grammars

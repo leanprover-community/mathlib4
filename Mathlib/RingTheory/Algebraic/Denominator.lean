@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Algebraic.Integral
 
-import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Denominators of elements of an algebra

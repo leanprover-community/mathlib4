@@ -13,7 +13,6 @@ public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Extended metric spaces

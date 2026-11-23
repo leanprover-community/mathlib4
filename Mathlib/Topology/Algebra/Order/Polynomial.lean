@@ -6,7 +6,6 @@ Authors: Anatole Dedecker, Devon Tuma, Artie Khovanov
 module
 
 public import Mathlib.Algebra.Polynomial.Inductions
-public import Mathlib.Tactic.Field
 public import Mathlib.Topology.Algebra.Order.Field
 
 import Mathlib.Order.Filter.IsBounded

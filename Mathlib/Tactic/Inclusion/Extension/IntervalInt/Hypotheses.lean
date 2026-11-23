@@ -5,8 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 
 /-!
 # Hypothesis operations for integer intervals

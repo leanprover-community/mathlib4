@@ -12,7 +12,6 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Index of a Subgroup

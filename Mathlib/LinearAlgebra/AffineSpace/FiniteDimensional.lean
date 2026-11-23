@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Finiteness.Prod
 

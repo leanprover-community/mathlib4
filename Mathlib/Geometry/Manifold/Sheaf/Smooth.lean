@@ -11,7 +11,6 @@ public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
 public import Mathlib.Topology.Sheaves.Functors
 
-import Mathlib.Algebra.Category.Ring.Colimits
 
 /-! # The sheaf of smooth functions on a manifold
 

@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.UniformSpace.HeineCantor
 
 import Mathlib.Tactic.Abel
-import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 
 /-!

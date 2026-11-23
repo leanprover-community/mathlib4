@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Tactic.Attr.Core
 
-import Mathlib.Basic.Nontrivial.Basic
 
 /-!
 # Matrices

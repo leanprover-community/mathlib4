@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 

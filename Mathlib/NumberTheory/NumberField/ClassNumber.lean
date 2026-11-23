@@ -10,7 +10,6 @@ public import Mathlib.NumberTheory.ClassNumber.Finite
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 
-import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Class numbers of number fields

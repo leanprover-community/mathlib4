@@ -13,6 +13,7 @@ public import Mathlib.Tactic.TFAE
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.SelfInv
 import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Group.SelfInv
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

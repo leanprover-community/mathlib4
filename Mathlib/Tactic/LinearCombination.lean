@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.Compare
+public import Mathlib.Tactic.Ineq
 
 /-!
 # `linear_combination` Tactic

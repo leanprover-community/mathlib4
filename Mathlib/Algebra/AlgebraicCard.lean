@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Algebraic.Basic
 
 import Mathlib.Algebra.Polynomial.Cardinal
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

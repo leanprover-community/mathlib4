@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 # Affine space

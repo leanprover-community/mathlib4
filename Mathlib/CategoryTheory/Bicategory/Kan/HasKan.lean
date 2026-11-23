@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories

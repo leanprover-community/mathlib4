@@ -9,6 +9,7 @@ public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.SetNotation
 
 import Mathlib.Order.Bounds.Defs
+public meta import Aesop
 
 /-!
 # Definitions about filters

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Topology.LocallyConstant.Basic
 
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Tactic.Bound.Init
 
 /-!
 # Algebraic structure on locally constant functions

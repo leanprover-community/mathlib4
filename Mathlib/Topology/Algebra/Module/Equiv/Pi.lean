@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
 /-!
 # Continuous linear equivalences on (dependent) product types

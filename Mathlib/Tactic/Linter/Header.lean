@@ -6,10 +6,10 @@ Authors: Michael Rothgang, Damiano Testa, Thomas R. Murrills
 module
 
 public meta import ImportGraph.Imports.Pretty
-public meta import Lean.Linter.Basic
 public meta import Std.Sync.Mutex
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Std.Sync.Mutex
+public import Lean.Elab.Command
 
 /-!
 # The "header" linter

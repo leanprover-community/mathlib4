@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Yoneda
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 
-import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The Yoneda embedding for preadditive categories

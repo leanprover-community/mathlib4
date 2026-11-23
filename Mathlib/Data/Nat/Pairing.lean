@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Lattice.Image
 
 import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Tactic.Linter.Style
 
 /-!
 # Naturals pairing function

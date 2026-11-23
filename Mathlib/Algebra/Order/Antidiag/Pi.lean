@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
 
-import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets

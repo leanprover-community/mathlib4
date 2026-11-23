@@ -7,8 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 
-import Mathlib.Data.Fintype.Defs
-import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Row echelon forms

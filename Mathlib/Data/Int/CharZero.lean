@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Data.Int.Cast.Field
 public import Mathlib.Data.Int.Cast.Lemmas
 
-import Mathlib.Data.Int.Cast.Pi
 
 /-!
 # Injectivity of `Int.Cast` into characteristic zero rings and fields.

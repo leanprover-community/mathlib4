@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
-import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 
 /-!
 # Hecke L-Functions

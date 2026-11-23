@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
 
-import Mathlib.Data.List.Zip
 
 /-!
 # Operations on walks

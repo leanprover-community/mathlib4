@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.DualNumber
-public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Mul
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

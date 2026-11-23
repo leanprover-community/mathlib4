@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
-import Mathlib.Algebra.Group.FunLike
 
 /-! # Positive linear maps
 

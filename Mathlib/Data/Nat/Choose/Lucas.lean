@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Data.ZMod.Basic
 
-import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Lucas's theorem

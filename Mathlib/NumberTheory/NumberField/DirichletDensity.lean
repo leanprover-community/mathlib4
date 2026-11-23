@@ -9,7 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
-import Mathlib.Algebra.CharZero.Infinite
 
 /-!
 # Dirichlet density of a set of prime ideals

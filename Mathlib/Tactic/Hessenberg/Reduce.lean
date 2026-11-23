@@ -5,7 +5,7 @@ Authors: Paul Cadman
 -/
 module
 
-public meta import Mathlib.Data.Rat.Init
+public import Mathlib.Data.Rat.Init
 
 /-!
 # Reduction of a matrix over ℚ to Hessenberg form

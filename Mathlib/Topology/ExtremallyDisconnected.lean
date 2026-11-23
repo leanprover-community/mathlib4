@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Extremally disconnected spaces

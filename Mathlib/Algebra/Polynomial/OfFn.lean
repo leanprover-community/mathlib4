@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.List.ToFinsupp
 
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.LinearAlgebra.Pi
 
 /-!
 # `Polynomial.ofFn` and `Polynomial.toFn`

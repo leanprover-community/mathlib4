@@ -5,12 +5,12 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

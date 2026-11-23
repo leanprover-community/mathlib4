@@ -8,8 +8,6 @@ module
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
-import Mathlib.Topology.Connected.Clopen
-import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces

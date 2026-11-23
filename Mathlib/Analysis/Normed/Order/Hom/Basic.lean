@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Basic
 
-import Mathlib.Algebra.Order.Hom.GroupNorm
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

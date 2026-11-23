@@ -8,7 +8,6 @@ module
 public import Lean.Meta.LazyDiscrTree
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
-import Lean.Meta.DiscrTree
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s

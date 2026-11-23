@@ -15,7 +15,6 @@ import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Geometry.Manifold.PartitionOfUnity
-import Mathlib.MeasureTheory.Group.Circle
 import Mathlib.NumberTheory.LSeries.SumCoeff
 
 /-!

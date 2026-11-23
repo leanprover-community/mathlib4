@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Ring.NegOnePow
 
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Module.Pi
 
 /-! # The cochain complex of homomorphisms between cochain complexes
 

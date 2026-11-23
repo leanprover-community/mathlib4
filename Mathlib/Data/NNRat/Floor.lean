@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Floor
 
-import Mathlib.Algebra.Order.Ring.NNRat
 
 /-!
 # Floor Function for Non-negative Rational Numbers

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.Skyscraper
 
 import Mathlib.Algebra.Category.Grp.AB

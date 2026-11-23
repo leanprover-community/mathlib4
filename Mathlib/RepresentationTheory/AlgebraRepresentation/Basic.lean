@@ -7,7 +7,6 @@ module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
-import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations

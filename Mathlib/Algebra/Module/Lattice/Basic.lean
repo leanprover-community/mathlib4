@@ -5,9 +5,12 @@ Authors: Anouk Brose, Judith Ludwig, Christian Merten, Justus Springer
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Localization
 
 import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Lattices

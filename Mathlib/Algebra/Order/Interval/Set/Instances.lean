@@ -10,7 +10,6 @@ public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Interval.Set.Basic
 
-import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Algebraic instances for unit intervals

@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 import Mathlib.Algebra.Module.LocalizedModule.Int
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Finiteness properties under localization

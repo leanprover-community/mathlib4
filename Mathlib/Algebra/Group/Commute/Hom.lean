@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 
-import Mathlib.Algebra.Group.Commute.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

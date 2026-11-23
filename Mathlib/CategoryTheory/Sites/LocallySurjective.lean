@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
 
-import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 
 /-!
 # Locally surjective morphisms

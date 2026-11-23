@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields

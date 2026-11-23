@@ -11,6 +11,7 @@ public meta import Lean.Meta.Tactic.Assumption
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Relation.Rfl
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `congr!` tactic

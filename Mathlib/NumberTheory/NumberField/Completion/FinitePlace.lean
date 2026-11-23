@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 
 /-!
 # Finite places of number fields

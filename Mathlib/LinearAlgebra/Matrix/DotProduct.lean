@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pi
 
 /-!
 # Dot product of two vectors

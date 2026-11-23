@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Analysis.Normed.Group.Submodule
 
 /-!
 # Normed spaces

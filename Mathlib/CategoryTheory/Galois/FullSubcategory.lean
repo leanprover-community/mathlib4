@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 
 import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 /-!
 # Full subcategories of Galois categories

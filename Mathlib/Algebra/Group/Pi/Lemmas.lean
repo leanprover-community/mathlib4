@@ -6,11 +6,9 @@ Authors: Simon Hudon, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Data.Set.Piecewise
 
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.SelfInv
+public import Mathlib.Algebra.Group.SelfInv
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

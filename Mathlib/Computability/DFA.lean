@@ -11,6 +11,7 @@ public import Mathlib.Tactic.NormNum
 import Mathlib.Basic.Countable.Small
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Deterministic Finite Automata

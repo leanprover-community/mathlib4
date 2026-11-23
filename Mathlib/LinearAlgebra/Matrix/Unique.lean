@@ -5,7 +5,8 @@ Authors: Yunzhou Xie
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # One by one matrices

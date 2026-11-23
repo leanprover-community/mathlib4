@@ -16,6 +16,7 @@ import Mathlib.Analysis.Complex.Order
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.EReal.Inv
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Init
 
 /-!
 # Riemann mapping theorem

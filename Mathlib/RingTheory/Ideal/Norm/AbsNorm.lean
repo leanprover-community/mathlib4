@@ -14,7 +14,6 @@ import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.RingTheory.Ideal.Basis
-import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
 
-import Mathlib.Algebra.Category.Ring.Colimits
 
 /-!
 # Module structure on stalks

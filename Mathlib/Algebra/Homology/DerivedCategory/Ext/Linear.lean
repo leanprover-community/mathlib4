@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Ext-modules in linear categories

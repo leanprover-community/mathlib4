@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about sets

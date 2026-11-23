@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Order.Filter.Tendsto
 
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Germ of a function at a filter

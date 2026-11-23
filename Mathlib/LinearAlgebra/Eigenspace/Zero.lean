@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
-import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0

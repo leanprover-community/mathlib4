@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
-import Mathlib.Topology.Algebra.UniformField
-import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
-import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 # Valued fields and their completions

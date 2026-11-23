@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Nonnegative real numbers

@@ -9,6 +9,7 @@ public meta import Lean.Meta.CongrTheorems
 public meta import Lean.Meta.Tactic.Refl
 public meta import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Basic.IsEmpty.Defs
+public import Lean.Meta.CongrTheorems
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`

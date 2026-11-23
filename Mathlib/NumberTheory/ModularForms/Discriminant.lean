@@ -10,8 +10,6 @@ public import Mathlib.NumberTheory.ModularForms.Derivative
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 import Mathlib.Analysis.Normed.Ring.InfiniteProd
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.DedekindEta
 
 /-!
 # The modular discriminant Δ

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.Torsion.Free
 
-import Mathlib.Algebra.Group.PowIterate
 
 /-!
 # Endomorphisms of a module

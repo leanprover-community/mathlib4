@@ -9,7 +9,6 @@ module
 public import Mathlib.Probability.Kernel.Composition.Prod
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 
 /-!
 # Class `IsDeterministic` of deterministic kernels

@@ -9,7 +9,6 @@ public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Sets.Opens
 
-import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Polish spaces

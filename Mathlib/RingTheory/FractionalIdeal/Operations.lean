@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
-import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.Field
 

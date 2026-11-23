@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -15,9 +15,6 @@ public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
 
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Algebra.Order.Group.Action
 
 /-!
 # Order of an element

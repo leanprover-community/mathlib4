@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

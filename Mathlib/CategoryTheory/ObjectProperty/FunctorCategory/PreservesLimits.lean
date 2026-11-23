@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
-import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 # Preservation of limits, as a property of objects in the functor category

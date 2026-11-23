@@ -6,6 +6,9 @@ Authors: Yaël Dillies
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Binary map of options

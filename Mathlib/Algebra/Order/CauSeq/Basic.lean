@@ -12,8 +12,6 @@ public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Order.Setoid.Basic
 
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Cauchy sequences

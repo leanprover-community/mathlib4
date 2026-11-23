@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.Data.Fintype.Option
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
