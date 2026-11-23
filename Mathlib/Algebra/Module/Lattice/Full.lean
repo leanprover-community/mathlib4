@@ -194,6 +194,21 @@ theorem of_rank_le [IsLattice K M] (hr : Module.rank K V ≤ Module.rank R M) :
   have : Module.Finite K V := rank_lt_aleph0_iff.mp (hr.trans_lt hM)
   of_finrank_le K M (Cardinal.toNat_le_toNat hr hM)
 
+section IsPrincipalIdealRing
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
+
+/-- A basis of a full lattice in `ι → K`, indexed by `ι`. -/
+noncomputable def basisOfPi {ι : Type*} [Fintype ι] (M : Submodule R (ι → K))
+    [IsFullLattice K M] : Basis ι R M :=
+  have := IsLattice.finite K M
+  have := IsLattice.free K M
+  (Free.chooseBasis R M).reindex <| Fintype.equivOfCardEq <| by
+    rw [← finrank_eq_card_chooseBasisIndex, IsFullLattice.finrank_eq K M,
+      Module.finrank_fintype_fun_eq_card]
+
+end IsPrincipalIdealRing
+
 section IsFractionRing
 
 variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]

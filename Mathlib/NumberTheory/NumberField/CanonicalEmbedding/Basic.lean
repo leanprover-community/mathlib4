@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.Lattice.Discrete
-public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Parallelepiped
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -692,11 +691,6 @@ instance : (mixedEmbedding.integerLattice K).IsFullLattice ℝ := by
   infer_instance
 
 open scoped Classical in
-instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
-  simp_rw [← span_latticeBasis]
-  infer_instance
-
-open scoped Classical in
 theorem isAddFundamentalDomain_integerLattice_halfOpenParallelepiped :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
       (halfOpenParallelepiped ℝ (latticeBasis K)) := by
@@ -810,11 +804,6 @@ instance : (mixedEmbedding.idealLattice K I).IsFullLattice ℝ := by
   infer_instance
 
 open scoped Classical in
-instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
-  simp_rw [← span_idealLatticeBasis]
-  infer_instance
-
-open scoped Classical in
 theorem isAddFundamentalDomain_idealLattice_halfOpenParallelepiped :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
       (halfOpenParallelepiped ℝ (fractionalIdealLatticeBasis K I)) := by
@@ -892,10 +881,6 @@ protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
 instance : (euclidean.integerLattice K).IsFullLattice ℝ := by
   rw [euclidean.integerLattice]
   infer_instance
-
-open scoped Classical in
-instance : IsZLattice ℝ (euclidean.integerLattice K) :=
-  ⟨Submodule.IsFullLattice.span_eq_top⟩
 
 end euclidean
 

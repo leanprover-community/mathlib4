@@ -363,10 +363,6 @@ instance instIsFullLattice_unitLattice : (unitLattice K).IsFullLattice ℝ where
   toIsLattice := Submodule.IsLattice.of_finite_inter_closedBall _ (unitLattice_inter_ball_finite K)
   span_eq_top := unitLattice_span_eq_top K
 
-open scoped Classical in
-instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
-  span_top := unitLattice_span_eq_top K
-
 set_option backward.isDefEq.respectTransparency false in
 protected theorem finrank_eq_rank :
     finrank ℝ (logSpace K) = Units.rank K := by

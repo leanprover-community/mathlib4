@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Lattice.Summable
-public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
@@ -115,10 +114,6 @@ lemma lattice_eq_span_range_basis :
   simp
 
 instance : L.lattice.IsFullLattice ℝ := L.lattice_eq_span_range_basis ▸ inferInstance
-
-instance : IsZLattice ℝ L.lattice := by
-  simp_rw [L.lattice_eq_span_range_basis]
-  infer_instance
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discreteTopology _ _ _ _ _ L.lattice.toAddSubgroup
@@ -1068,9 +1063,9 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
 private lemma relation_eq_zero : L.relation = 0 := by
   ext x
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
-  exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
-    this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
-    (ite_eq_left (by simp))
+  exact (this.apply_eq_apply_of_bounded (AddSubgroup.IsCocompact.isCompact_range_of_periodic
+    (H := L.lattice.toAddSubgroup) this.continuous fun w hw z ↦ by
+      lift w to L.lattice using hw; simp).isBounded x 0).trans (ite_eq_left (by simp))
 
 /-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
 lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :

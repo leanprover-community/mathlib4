@@ -41,11 +41,6 @@ In the fraction field setting with `V = ι → K` for finite `ι`, scaling a lat
 again gives a lattice, which yields a homothety relation. For `R` a DVR and `ι = Fin 2`, the
 quotient by it is the vertex set of the Bruhat-Tits tree of `GL 2 K`.
 
-For `R = ℤ` and `K` a normed field, `IsZLattice K L` instead asks that `L` be discrete and span
-`K`, making it the topological analogue of `Submodule.IsFullLattice`; it is used for instance for
-complex tori. The two notions agree in common cases, e.g. when `K = ℝ` and `V` is
-finite-dimensional, but API relating them is still missing.
-
 ## References
 
 * [S. Viguié, *Index-modules and applications*][viguie2011]
@@ -62,10 +57,7 @@ namespace Submodule
 /-- An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
 `R`-linearly independent subset of `M` is `A`-linearly independent. If `A is a field, this is
 equivalent to the `R`-rank of `M` being equal to the `A`-rank of its `A`-span, see
-`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`.
-
-Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
-`Submodule.IsFullLattice` with discreteness in place of the two conditions here. -/
+`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`. -/
 @[mk_iff]
 class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where
