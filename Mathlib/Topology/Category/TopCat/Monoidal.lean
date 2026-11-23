@@ -5,16 +5,15 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # The cartesian monoidal structure on `TopCat`
 
 We define the cartesian monoidal category structure on `TopCat`.
 We also introduce the unit interval as an object `TopCat.I` of `TopCat`.
-
 -/
 
 @[expose] public section
@@ -117,7 +116,7 @@ protected theorem lift_apply {X Y Z : TopCat.{u}} {f : X ⟶ Y} {g : X ⟶ Z} {x
 
 /-- The unit interval, as an object of `TopCat`. -/
 @[implicit_reducible]
-def I : TopCat.{u} := TopCat.of (ULift unitInterval)
+def I : TopCat.{u} := ↧(ULift unitInterval)
 
 instance : LocallyCompactSpace I :=
   inferInstanceAs (LocallyCompactSpace (ULift unitInterval))

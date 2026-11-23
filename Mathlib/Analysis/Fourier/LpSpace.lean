@@ -6,10 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
-
 # The Fourier transform on $L^p$
 
 In this file we define the Fourier transform on $L^2$ as a linear isometry equivalence.
@@ -25,7 +23,6 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
   transform on $L^2$.
 * `MeasureTheory.Lp.fourier_toTemperedDistribution_eq`: The Fourier transform on $L^2$ agrees with
   the Fourier transform on `𝓢'(E, F)`.
-
 -/
 
 @[expose] public section

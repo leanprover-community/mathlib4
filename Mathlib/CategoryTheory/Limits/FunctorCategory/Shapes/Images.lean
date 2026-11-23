@@ -5,12 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Subfunctor.Image
-public import Mathlib.Tactic.CategoryTheory.CategoryStar
 
 /-!
-
 # The category of type-valued functors has images
 -/
 

@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
@@ -22,7 +21,6 @@ bundle `TM` of some manifold `M`.
 * `CovariantDerivative.torsion_eq_zero_iff`: the torsion tensor of a bundled covariant derivative
   `∇` vanishes if and only if `∇_X Y - ∇_Y X = [X, Y]` for all differentiable vector fields
   `X` and `Y`.
-
 -/
 
 public noncomputable section

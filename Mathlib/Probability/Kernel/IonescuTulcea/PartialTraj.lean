@@ -243,7 +243,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
-/-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
+/-- The pushforward of `partialTraj κ a (a + 1)` along the point at time `a + 1` is `κ a`. -/
 lemma map_partialTraj_succ_self (a : ℕ) :
     (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
   have hp : (fun x : Π n : Iic (a + 1), X n ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ IicProdIoc a (a + 1) =
@@ -422,7 +422,7 @@ theorem dependsOn_lmarginalPartialTraj [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
     exact hf fun i hi ↦ hxy i (Iic_subset_Iic.2 hba hi)
   rw [lmarginalPartialTraj_eq_lintegral_map mf, lmarginalPartialTraj_eq_lintegral_map mf]
   congrm ∫⁻ z : _, ?_ ∂(partialTraj κ a b).map _ (fun i ↦ ?_)
-  · exact hxy i.1 i.2
+  · exact hxy i.val i.property
   · refine hf.updateFinset _ ?_
     rwa [← coe_sdiff, Iic_sdiff_Ioc_self_of_le hab]
 

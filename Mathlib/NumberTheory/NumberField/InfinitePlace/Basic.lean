@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
-public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
@@ -77,32 +76,34 @@ lemma isInfinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 namespace InfinitePlace
 
+@[macro_inline]
 instance : FunLike (InfinitePlace K) K ℝ where
-  coe w x := w.1 x
-  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
+  coe w x := w.val x
+  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr($h x))
 
-lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
+lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.val x := rfl
 
 @[ext]
 lemma ext (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
   Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
-  map_mul w _ _ := w.1.map_mul _ _
-  map_one w := w.1.map_one
-  map_zero w := w.1.map_zero
+  map_mul w _ _ := w.val.map_mul _ _
+  map_one w := w.val.map_one
+  map_zero w := w.val.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  apply_nonneg w _ := w.1.nonneg _
+  apply_nonneg w _ := w.val.nonneg _
 
 @[simp]
 theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = ‖φ x‖ := rfl
 
 /-- For an infinite place `w`, return an embedding `φ` such that `w = infinite_place φ` . -/
-noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.2.choose
+noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.property.choose
 
 @[simp]
-theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext w.2.choose_spec
+theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w :=
+  Subtype.ext w.property.choose_spec
 
 variable (K) in
 theorem mk_surjective : Function.Surjective (mk : (K →+* ℂ) → InfinitePlace K) :=
@@ -120,7 +121,7 @@ theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
 
 variable (K) in
 theorem embedding_injective : (embedding (K := K)).Injective :=
-  fun _ _ h ↦ by simpa using congr_arg mk h
+  fun _ _ h ↦ by simpa using congr(mk $h)
 
 @[simp]
 theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embedding ↔ v₁ = v₂ :=
@@ -142,7 +143,7 @@ theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀
 theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
   ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 
-theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
+theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.val
 
 @[simp]
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
@@ -285,17 +286,17 @@ theorem IsComplex.mult_eq_two {w : InfinitePlace K} (hw : IsComplex w) : mult w 
 
 @[simp]
 theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
-    mult w.1 = 1 :=
-  w.2.mult_eq_one
+    mult w.val = 1 :=
+  w.property.mult_eq_one
 
 @[simp]
 theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
-    mult w.1 = 2 :=
-  w.2.mult_eq_two
+    mult w.val = 2 :=
+  w.property.mult_eq_two
 
 theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   rw [mult]
-  split_ifs <;> norm_num
+  split_ifs <;> simp
 
 @[simp]
 theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
@@ -310,13 +311,13 @@ theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
 open scoped Classical in
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ = w} = mult w := by
   conv_lhs =>
-    congr; congr; ext
-    rw [← mk_embedding w, mk_eq_iff, ComplexEmbedding.conjugate, star_involutive.eq_iff]
+    enter [1, 1, _]
+    · rw [← mk_embedding w, mk_eq_iff, ComplexEmbedding.conjugate, star_involutive.eq_iff]
   simp_rw [Finset.filter_or, Finset.filter_eq' _ (embedding w),
     Finset.filter_eq' _ (ComplexEmbedding.conjugate (embedding w)),
     Finset.mem_univ, ite_true, mult]
   split_ifs with hw
-  · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_idempotent,
+  · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_self,
       Finset.card_singleton]
   · refine Finset.card_pair ?_
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
@@ -332,7 +333,7 @@ alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 open scoped Classical in
 @[to_additive]
 theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
-    ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
+    ∏ w, f w = (∏ w : {w // IsReal w}, f w.val) * (∏ w : {w // IsComplex w}, f w.val) := by
   rw [← Equiv.prod_comp (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))]
   simp [Fintype.prod_subtype_mul_prod_subtype]
 
@@ -374,7 +375,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
+  convert congr(‖$(Algebra.norm_eq_prod_embeddings ℚ ℂ x)‖).symm
   · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
@@ -388,9 +389,9 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
   suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
-    refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
+    refine Finset.prod_lt_prod_of_nonempty₀ (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
     · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
-    · refine pow_lt_one₀ (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
+    · refine pow_lt_one₀ (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> simp)
       by_cases hz : z = w
       · rwa [hz]
       · exact h hz
@@ -413,12 +414,12 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     cases h₃ with
     | inl hw =>
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
-      exact congr_arg RingHom.toRatAlgHom main
+      congrm $(main).toRatAlgHom
     | inr hw =>
-      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_ge ?_)
+      congrm $(main.resolve_right fun h' ↦ hw.not_ge ?_).toRatAlgHom
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
-        have := RingHom.congr_fun h' x
+        have := congr($h' x)
         simp only [ComplexEmbedding.conjugate_coe_eq, AlgHom.toRingHom_eq_coe,
           RingHom.coe_coe] at this
         rw [this]
@@ -451,9 +452,10 @@ theorem card_real_embeddings :
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
     Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   classical
-  convert!
+  convert
     Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-      (disjoint_isReal_isComplex K) using 1
+      (Pi.disjoint_iff.mpr fun w ↦ Prop.disjoint_iff.mpr fun ⟨h1, h2⟩ ↦
+        not_isReal_iff_isComplex.mpr h2 h1) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -466,7 +468,7 @@ theorem card_complex_embeddings :
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
-  convert! card_filter_mk_eq w
+  convert card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
     refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
     · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
@@ -544,9 +546,7 @@ end IsPrimitiveRoot
 end NumberField.InfinitePlace
 
 /-!
-
 ## The infinite place of the rationals.
-
 -/
 
 namespace Rat
@@ -603,15 +603,15 @@ theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
 
 /-- Two infinite places `v` and `w` are equal if and only if their underlying absolute values
 are equivalent. -/
-theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
+theorem eq_iff_isEquiv : w = v ↔ w.val.IsEquiv v.val := by
   refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
-  obtain ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
+  obtain ⟨t, _, h⟩ := w.val.isEquiv_iff_exists_rpow_eq.1 h
   exact ext _ _ fun k ↦ by simpa [eq_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
 
 variable (v)
 
 /-- Infinite places are represented by non-trivial absolute values. -/
-theorem isNontrivial : v.1.IsNontrivial := by
+theorem isNontrivial : v.val.IsNontrivial := by
   obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
   exact ⟨n, v.pos_iff.1 <| zero_lt_one.trans (by simpa), by simp [← coe_apply]; grind⟩
 
@@ -624,7 +624,7 @@ The number field `K` is dense when embedded diagonally in the product
 topology coming from the infinite place `v`.
 -/
 theorem denseRange_algebraMap_pi [NumberField K] :
-    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
+    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.val) :=
   AbsoluteValue.denseRange_algebraMap_pi (fun v ↦ v.isNontrivial)
     fun _ _ h ↦ (eq_iff_isEquiv (K := K)).not.mp h
 

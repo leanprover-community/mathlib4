@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps on intervals
 
@@ -67,7 +70,7 @@ variable {f : C(Icc a b, E)} {g : C(Icc b c, E)}
 theorem concat_comp_IccInclusionLeft (hb : f ⊤ = g ⊥) :
     (concat f g).comp IccInclusionLeft = f := by
   ext x
-  simp [concat, IccExtendCM, hb, IccInclusionLeft, projIccCM, inclusion, x.2.2]
+  simp [concat, IccExtendCM, hb, IccInclusionLeft, projIccCM, inclusion, x.property.2]
 
 theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
     (concat f g).comp IccInclusionRight = g := by
@@ -79,13 +82,13 @@ theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
 
 @[simp]
 theorem concat_left (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : t ≤ b) :
-    concat f g t = f ⟨t, t.2.1, ht⟩ := by
+    concat f g t = f ⟨t, t.property.1, ht⟩ := by
   nth_rewrite 2 [← concat_comp_IccInclusionLeft hb]
   rfl
 
 @[simp]
 theorem concat_right (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : b ≤ t) :
-    concat f g t = g ⟨t, ht, t.2.2⟩ := by
+    concat f g t = g ⟨t, ht, t.property.2⟩ := by
   nth_rewrite 2 [← concat_comp_IccInclusionRight hb]
   rfl
 
@@ -99,9 +102,9 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
   let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
-    hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Iic |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=
-    hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Ici |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hfU : MapsTo f K₁ U := by
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
@@ -116,11 +119,11 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
-    simp [projIccCM, projIcc, hxb, x.2.1]
+    simp [projIccCM, projIcc, hxb, x.property.1]
   · replace hxb : b ≤ x := hxb.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
-    simp [projIccCM, projIcc, hxb, x.2.2]
+    simp [projIccCM, projIcc, hxb, x.property.2]
 
 /-- The concatenation of compatible pairs of continuous maps on adjacent intervals, defined as a
 `ContinuousMap` on a subtype of the product. -/
@@ -139,13 +142,13 @@ noncomputable def concatCM :
 @[simp]
 theorem concatCM_left {x : Icc a c} (hx : x ≤ b)
     {fg : {fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}} :
-    concatCM fg x = fg.1.1 ⟨x.1, x.2.1, hx⟩ := by
-  exact concat_left fg.2 hx
+    concatCM fg x = fg.val.1 ⟨x.val, x.property.1, hx⟩ :=
+  concat_left fg.property hx
 
 @[simp]
 theorem concatCM_right {x : Icc a c} (hx : b ≤ x)
     {fg : {fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}} :
-    concatCM fg x = fg.1.2 ⟨x.1, hx, x.2.2⟩ :=
-  concat_right fg.2 hx
+    concatCM fg x = fg.val.2 ⟨x.val, hx, x.property.2⟩ :=
+  concat_right fg.property hx
 
 end ContinuousMap

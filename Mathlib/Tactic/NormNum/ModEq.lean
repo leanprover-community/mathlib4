@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Tactic.NormNum.DivMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extensions for `Nat.ModEq` and `Int.ModEq`
 

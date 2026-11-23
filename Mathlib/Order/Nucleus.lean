@@ -53,6 +53,7 @@ namespace Nucleus
 section SemilatticeInf
 variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
+@[macro_inline]
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
@@ -242,7 +243,8 @@ set_option backward.privateInPublic true in
 /-- See `Nucleus.giRestrict` for the public-facing version. -/
 private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subtype.val where
   choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
-  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <| mem_range.1 y.2
+  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <|
+    mem_range.1 y.property
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.AsymptoticCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic cones in normed spaces
 
@@ -39,7 +42,7 @@ theorem AffineSpace.asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) :
 theorem asymptoticCone_subset_singleton_of_bounded {s : Set P} (hs : IsBounded s) :
     asymptoticCone ℝ s ⊆ {0} := by
   intro v h
-  by_contra! hv
+  by_contra hv
   exact h (asymptoticNhds_le_cobounded hv hs)
 
 variable [FiniteDimensional ℝ V]

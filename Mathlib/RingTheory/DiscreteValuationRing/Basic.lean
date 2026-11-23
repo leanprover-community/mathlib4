@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Length
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
@@ -122,7 +120,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     constructor
     · exact ⟨Rlocal, inferInstance⟩
     · rintro Q ⟨hQ1, hQ2⟩
-      obtain ⟨q, rfl⟩ := (IsPrincipalIdealRing.principal Q).1
+      obtain ⟨q, rfl⟩ := (IsPrincipalIdealRing.principal Q).principal
       have hq : q ≠ 0 := by
         rintro rfl
         apply hQ1
@@ -135,7 +133,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     have : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
     refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
-    have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
+    have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.ne_top'
     order
 
 theorem associated_of_irreducible {a b : R} (ha : Irreducible a) (hb : Irreducible b) :
@@ -311,7 +309,7 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     refine ⟨e a, ⟨?_, by simp only [ne_eq, EmbeddingLike.map_eq_zero_iff, ZeroMemClass.coe_eq_zero,
       ha, not_false_eq_true]⟩⟩
     rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
-    exact a.2
+    exact a.property
 
 section
 
@@ -364,8 +362,7 @@ See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
-    rw [Ne, ← eq_bot_iff_generator_eq_zero]
-    assumption
+    rwa [Ne, ← eq_bot_iff_generator_eq_zero]
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
   use n
   have : span _ = _ := Ideal.span_singleton_generator s
