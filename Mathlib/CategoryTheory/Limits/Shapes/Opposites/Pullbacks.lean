@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
 

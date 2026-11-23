@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 import Mathlib.CategoryTheory.CatCommSq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertical composition of Guitart exact squares
 
