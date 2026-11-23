@@ -11,6 +11,9 @@ import Mathlib.Data.Finsupp.Encodable
 import Mathlib.Data.Set.Countable
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable modules
 -/

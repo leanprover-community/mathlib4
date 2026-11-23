@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectral object with values in the homotopy category
 

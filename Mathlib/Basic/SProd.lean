@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.FBinop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set Product Notation
 

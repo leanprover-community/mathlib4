@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits in categories of sheaves of modules
 

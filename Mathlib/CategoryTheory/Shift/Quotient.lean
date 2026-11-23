@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Shift.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shift on a quotient category
 

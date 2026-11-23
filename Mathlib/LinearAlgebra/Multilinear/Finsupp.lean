@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between finitely-supported functions and multilinear maps
 

@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Basic.UnivLE
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of free modules
 
