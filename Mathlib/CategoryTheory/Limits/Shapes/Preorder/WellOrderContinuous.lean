@@ -15,6 +15,9 @@ public import Mathlib.Order.SuccPred.Nat
 import Mathlib.Order.SuccPred.Fin
 import Mathlib.Order.SuccPred.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of functors from well-ordered types
 
@@ -85,7 +88,7 @@ instance IsWellOrderContinuous.restriction_setIci
     {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
     ((Subtype.mono_coe (· ∈ Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
+    let f : Set.Iio m → Set.Iio m.val := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
     have hf : Monotone f := fun _ _ h ↦ h
     have : hf.functor.Final := by
       rw [Monotone.final_functor_iff]
@@ -101,6 +104,6 @@ instance IsWellOrderContinuous.restriction_setIci
         exact h'.trans hk
       · exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
     exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).invFun
-      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩
+      (F.isColimitOfIsWellOrderContinuous m.val (Set.Ici.isSuccLimit_coe m hm))⟩
 
 end CategoryTheory.Functor

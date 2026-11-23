@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
-public import Mathlib.Data.Fin.Tuple.Sort
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
+import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 
 /-! # Spectral theory of self-adjoint operators
@@ -196,7 +196,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr(hT.diagonalization $(this (hT.diagonalization v)) μ)
   intro w
-  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
+  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).property
   simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1
@@ -424,7 +424,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
-  rw [← nnNorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnNorm hT'.isSelfAdjoint,
+  rw [← eNorm_eq_zero, ← T.spectralRadius_eq_eNorm hT'.isSelfAdjoint,
     spectralRadius_eq_of_unital, ← not_iff_not, ENNReal.iSup_eq_zero]
   push Not
   apply exists_congr

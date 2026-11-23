@@ -670,7 +670,7 @@ nonrec def nil : Ordset α :=
 
 /-- O(1). Get the size of the set. -/
 def size (s : Ordset α) : ℕ :=
-  s.1.size
+  s.val.size
 
 /-- O(1). Construct a singleton set containing value `a`. -/
 protected def singleton (a : α) : Ordset α :=
@@ -689,7 +689,7 @@ instance instSingleton : Singleton α (Ordset α) :=
 def Empty (s : Ordset α) : Prop :=
   s = ∅
 
-theorem empty_iff {s : Ordset α} : s = ∅ ↔ s.1.empty :=
+theorem empty_iff {s : Ordset α} : s = ∅ ↔ s.val.empty :=
   ⟨fun h => by cases h; exact rfl,
     fun h => by cases s with | mk s_val _ => cases s_val <;> [rfl; cases h]⟩
 
@@ -700,7 +700,7 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
   If an equivalent element is already in the set, this replaces it. -/
 protected def insert [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
-  ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
+  ⟨Ordnode.insert x s.val, insert.valid _ s.property⟩
 
 instance instInsert [@Std.Total α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
   ⟨Ordset.insert⟩
@@ -709,7 +709,7 @@ instance instInsert [@Std.Total α (· ≤ ·)] [DecidableLE α] : Insert α (Or
   If an equivalent element is already in the set, the set is returned as is. -/
 nonrec def insert' [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
-  ⟨insert' x s.1, insert'.valid _ s.2⟩
+  ⟨insert' x s.val, insert'.valid _ s.property⟩
 
 section
 

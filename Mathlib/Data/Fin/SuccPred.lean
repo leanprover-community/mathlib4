@@ -106,7 +106,7 @@ lemma castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) := castAdd_inje
 
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
-  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
+  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.isLt, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
   fun _ => rfl
@@ -246,7 +246,7 @@ theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) 
 
 theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
     if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
-      else castAdd (m + 1) ⟨i.1 + 1, Nat.lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
+      else castAdd (m + 1) ⟨i.val + 1, Nat.lt_of_le_of_ne i.isLt (Fin.val_ne_iff.mpr h)⟩ := by
   split_ifs with h
   exacts [Fin.ext congr($(h).val), rfl]
 

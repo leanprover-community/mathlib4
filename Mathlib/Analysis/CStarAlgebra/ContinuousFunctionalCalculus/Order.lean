@@ -62,7 +62,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
@@ -80,7 +80,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
   rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization
@@ -218,7 +218,7 @@ lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a :
 lemma nnNorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
   rw [← NNReal.coe_le_coe]
-  exact norm_le_iff_le_algebraMap a r.2
+  exact norm_le_iff_le_algebraMap a r.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_le_iff_of_nonneg := nnNorm_le_iff_of_nonneg
 
@@ -257,7 +257,7 @@ lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
 
 lemma mem_Icc_algebraMap_iff_nnNorm_le {x : A} {r : ℝ≥0} :
     x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
-  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+  mem_Icc_algebraMap_iff_norm_le (hr := r.property)
 
 @[deprecated (since := "2026-10-31")]
 alias mem_Icc_algebraMap_iff_nnnorm_le := mem_Icc_algebraMap_iff_nnNorm_le

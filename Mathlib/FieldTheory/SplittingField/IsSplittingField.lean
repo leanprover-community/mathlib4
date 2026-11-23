@@ -168,7 +168,7 @@ theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
   refine ⟨?_, IntermediateField.splits_of_splits h⟩
   intro hF
   rw [← hF.image_rootSet F.val, Set.forall_mem_image]
-  exact fun x _ ↦ x.2
+  exact fun x _ ↦ x.property
 
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits ((minpoly K x).map (algebraMap K F))) : x ∈ F := by

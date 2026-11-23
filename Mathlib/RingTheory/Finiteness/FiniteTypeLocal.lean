@@ -47,7 +47,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S']
     (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨n, hn⟩ :=
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
-      (by rw [hx₁]; exact Set.image_mono hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
+      (by rw [hx₁]; exact Set.image_mono hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.property))
   obtain ⟨x', hx', hx''⟩ := hn n (le_of_eq rfl)
   rw [Algebra.smul_def, ← map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
@@ -125,7 +125,7 @@ lemma Algebra.FiniteType.of_span_eq_top_target (s : Set S) (hs : Ideal.span (s :
       exact Or.inl (Or.inl ⟨_, ⟨r, rfl⟩, _, ⟨s.mem_attach r, rfl⟩, hx⟩)
     · rw [Submonoid.powers_eq_closure, Submonoid.closure_le, Set.singleton_subset_iff]
       apply Algebra.subset_adjoin
-      exact Or.inl (Or.inr r.2)
+      exact Or.inl (Or.inr r.property)
     · rw [ht]; trivial
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in

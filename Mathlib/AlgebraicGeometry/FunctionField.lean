@@ -63,7 +63,7 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   exact map_injective_of_isIntegral X iU e
 
 instance [IsIntegral X] {U : X.Opens} (x : U) : FaithfulSMul Γ(X, U) (X.presheaf.stalk x) :=
-  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.2)
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.property)
 
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
@@ -94,7 +94,7 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
-  change _ = (X.presheaf.germ U x x.2 ≫ _).hom
+  change _ = (X.presheaf.germ U x x.property ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
 
 @[simp]

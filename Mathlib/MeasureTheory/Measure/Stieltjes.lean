@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-public import Mathlib.Topology.Order.LeftRightLim
+
+import Mathlib.Topology.Order.LeftRightLim
 
 /-!
 # Stieltjes measures on the real line
@@ -202,8 +203,8 @@ instance : AddCommMonoid (StieltjesFunction R) where
 instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
     toFun := fun x ↦ c * f x
-    mono' := f.mono.const_mul c.2
-    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1 }
+    mono' := f.mono.const_mul c.property
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.val }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _
