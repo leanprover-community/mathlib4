@@ -202,6 +202,7 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
 
+/-- Every relation series gives a finite set -/
 noncomputable def toFinset (s : RelSeries r) : Finset α :=
   letI := Classical.decEq α; Finset.univ.image s
 
