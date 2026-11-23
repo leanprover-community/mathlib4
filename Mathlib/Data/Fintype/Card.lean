@@ -368,7 +368,7 @@ theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = #s :=
 /-- We can inflate a set `s` to any bigger size. -/
 lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : #s ≤ n)
     (hnα : n ≤ Fintype.card α) :
-    ∃ t, s ⊆ t ∧ #t = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
+    ∃ t, s ⊆ t ∧ #t = n := by simpa using exists_superset_subset_card_eq s.subset_univ hsn hnα
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=

@@ -1039,7 +1039,7 @@ lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
 
 /-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` containing `t ⊆ s` is
 `(s.ncard - t.ncard).choose (n - t.ncard)`. See also `Finset.card_filter_powersetCard_subset`. -/
-lemma ncard_subsuperset_ncard (hs : s.Finite) (ht : t ⊆ s) {n : ℕ} (hn : t.ncard ≤ n) :
+lemma ncard_ofPred_subset_superset_ncard (hs : s.Finite) (ht : t ⊆ s) {n : ℕ} (hn : t.ncard ≤ n) :
     {u ⊆ s | t ⊆ u ∧ u.ncard = n}.ncard = (s.ncard - t.ncard).choose (n - t.ncard) := by
   lift t to Finset α using hs.subset ht
   lift s to Finset α using hs
@@ -1282,20 +1282,24 @@ end Lattice
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
-lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n) (hnt : n ≤ t.ncard) :
+lemma exists_superset_subset_ncard_eq
+    {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n) (hnt : n ≤ t.ncard) :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ u.ncard = n := by
   obtain ht | ht := t.infinite_or_finite
   · rw [ht.ncard, Nat.le_zero, ← ht.ncard] at hnt
     exact ⟨t, hst, Subset.rfl, hnt.symm⟩
   lift s to Finset α using ht.subset hst
   lift t to Finset α using ht
-  obtain ⟨u, hsu, hut, hu⟩ := Finset.exists_subsuperset_card_eq (mod_cast hst) (by simpa using hsn)
-    (mod_cast hnt)
+  obtain ⟨u, hsu, hut, hu⟩ :=
+    Finset.exists_superset_subset_card_eq (mod_cast hst) (by simpa using hsn) (mod_cast hnt)
   exact ⟨u, mod_cast hsu, mod_cast hut, mod_cast hu⟩
+
+@[deprecated (since := "2026-11-23")]
+alias exists_subsuperset_card_eq := exists_superset_subset_ncard_eq
 
 /-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
-  simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
+  simpa using exists_superset_subset_ncard_eq s.empty_subset (by simp) hns
 
 /-- Every `k ≤ s.ncard` is the `ncard` of a finite subset of `s`. For
 infinite `s`, `s.ncard = 0` makes `k = 0` so it remains true. -/
