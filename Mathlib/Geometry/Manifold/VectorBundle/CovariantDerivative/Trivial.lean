@@ -134,6 +134,20 @@ lemma ContMDiffAt.mvfderiv'
         (fun x : B ↦ TotalSpace.mk' (EB →L[𝕜] F) x (d% s x)) x₀ :=
   ContMDiffWithinAt.mvfderiv isOpen_univ (mem_univ x₀) hs
 
+lemma ContMDiffAt.eventually_mdifferentiableAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] [IsManifold I 1 M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+    {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [IsManifold I' 1 M']
+    {f : M → M'} {x : M} {n : ℕ∞ω}
+    (hf : ContMDiffAt I I' n f x) (hn : n ≠ 0) : ∀ᶠ x' in 𝓝 x, MDiffAt f x' := by
+  replace hf : ContMDiffAt I I' 1 f x :=
+    hf.of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn)
+  rw [contMDiffAt_iff_contMDiffAt_nhds (by simp)] at hf
+  exact hf.mono fun x hx ↦ hx.mdifferentiableAt (by simp)
+
 end prelim
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -276,21 +290,6 @@ lemma eventually_eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →
     ∀ᶠ x' in 𝓝 x, cov σ x' = d% σ x' + hcov.one_form x' (σ x') := by
   filter_upwards [hσ, hsx] with x' hσx' hx'
   exact (exists_one_form hcov).choose_spec σ x' hx' hσx'
-
-
-lemma _root_.ContMDiffAt.eventually_mdifferentiableAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] [IsManifold I 1 M]
-    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-    {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [IsManifold I' 1 M']
-    {f : M → M'} {x : M} {n : ℕ∞ω}
-    (hf : ContMDiffAt I I' n f x) (hn : n ≠ 0) : ∀ᶠ x' in 𝓝 x, MDiffAt f x' := by
-  replace hf : ContMDiffAt I I' 1 f x :=
-    hf.of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn)
-  rw [contMDiffAt_iff_contMDiffAt_nhds (by simp)] at hf
-  exact hf.mono fun x hx ↦ hx.mdifferentiableAt (by simp)
 
 lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
