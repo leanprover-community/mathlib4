@@ -6,8 +6,9 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Inserter.Basic
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

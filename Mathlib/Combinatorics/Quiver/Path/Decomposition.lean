@@ -5,8 +5,9 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
+
+import Mathlib.Algebra.Order.Group.Nat
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

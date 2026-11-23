@@ -6,7 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

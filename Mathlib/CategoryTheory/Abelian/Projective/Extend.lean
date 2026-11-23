@@ -70,7 +70,6 @@ noncomputable def π' : R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).
     (ComplexShape.embeddingDownNat.extendFunctor C).map R.π ≫
       (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma π'_f_zero :
@@ -85,7 +84,6 @@ end
 
 variable [Abelian C] {X : C} (R : ProjectiveResolution X)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso R.π' := by dsimp [π']; infer_instance
 
@@ -103,7 +101,6 @@ a (heterogeneous) morphism of projective resolutions. -/
 noncomputable def hom' : R.cochainComplex ⟶ R'.cochainComplex :=
   HomologicalComplex.extendMap φ.hom _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma hom'_f (n : ℤ) (m : ℕ) (h : -m = n) :
@@ -113,7 +110,6 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : -m = n) :
     ComplexShape.embeddingDownNat (i := m) (i' := n) (by dsimp; lia),
     cochainComplexXIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma hom'_comp_π' :
     φ.hom' ≫ R'.π' = R.π' ≫ (CochainComplex.singleFunctor C 0).map f :=

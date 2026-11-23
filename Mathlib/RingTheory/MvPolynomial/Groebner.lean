@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+
+import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 
