@@ -129,7 +129,7 @@ class ContMDiffCovariantDerivativeOn' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
 
 variable {F}
 
-lemma ContMDiffCovariantDerivativeOn'.contMDiffAt_of_isOpen (k : ℕ∞ω)
+lemma ContMDiffCovariantDerivativeOn'.contMDiffAt_of_isOpen {k : ℕ∞ω}
     [IsManifold I 1 M] [VectorBundle 𝕜 F V]
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
     {u : Set M} {x : M} (ht : IsOpen u) (hx : x ∈ u)
@@ -173,7 +173,7 @@ lemma ContMDiffCovariantDerivativeOn'.mdifferentiableAt_of_eventually {k : ℕ�
     {σ : Π x : M, V x} (hσ : ∀ᶠ (y : M) in 𝓝 x, CMDiffAt (k + 1) (T% σ) y)
     {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x) (hk : k ≠ 0) :
     MDiffAt (T% (fun x ↦ cov σ x (X x))) x :=
-  ((hcov.contMDiffAt_of_isOpen k ht hx hσ).mdifferentiableAt hk).clm_bundle_apply  hX
+  ((hcov.contMDiffAt_of_isOpen ht hx hσ).mdifferentiableAt hk).clm_bundle_apply  hX
 
 namespace IsCovariantDerivativeOn
 

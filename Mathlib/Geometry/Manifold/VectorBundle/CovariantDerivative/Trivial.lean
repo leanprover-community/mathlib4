@@ -269,13 +269,28 @@ lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     cov σ x = d% σ x + hcov.one_form x (σ x) :=
   hcov.exists_one_form.choose_spec σ x hx hσ
 
-lemma _root_.CovariantDerivative.exists_one_form
-    (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
-    ∃ (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F),
-    ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
-    cov σ x = d% σ x + A x (σ x) := by
-  simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
+lemma eventually_eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    {σ : M → F} {x : M} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x')
+    (hsx : s ∈ 𝓝 x) :
+    ∀ᶠ x' in 𝓝 x, cov σ x' = d% σ x' + hcov.one_form x' (σ x') := by
+  filter_upwards [hσ, hsx] with x' hσx' hx'
+  exact (exists_one_form hcov).choose_spec σ x' hx' hσx'
 
+
+lemma _root_.ContMDiffAt.eventually_mdifferentiableAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] [IsManifold I 1 M]
+    {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+    {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [IsManifold I' 1 M']
+    {f : M → M'} {x : M} {n : ℕ∞ω}
+    (hf : ContMDiffAt I I' n f x) (hn : n ≠ 0) : ∀ᶠ x' in 𝓝 x, MDiffAt f x' := by
+  replace hf : ContMDiffAt I I' 1 f x :=
+    hf.of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn)
+  rw [contMDiffAt_iff_contMDiffAt_nhds (by simp)] at hf
+  exact hf.mono fun x hx ↦ hx.mdifferentiableAt (by simp)
 
 lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
@@ -291,25 +306,17 @@ lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     TangentBundle.contMDiffVectorBundle
   apply ContMDiffAt.clm_bundle_of_apply' (n+1)
   intro σ hσ
-  apply ContMDiffAt.contMDiffWithinAt
   let V := TotalSpace (E →L[𝕜] F) fun x : M ↦ TangentSpace I x →L[𝕜] F
-  have : ∀ᶠ x' in 𝓝 x, cov σ x' = d% σ x' + (hcov.one_form x') (σ x') := by
-    filter_upwards [hσ, hs.mem_nhds hx] with x' hσx' hx'
-    exact hcov.eq_one_form (hσx'.mdifferentiableAt <| by simp)
+  have hσ' : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x' :=
+    ContMDiffAt.eventually_mdifferentiableAt hσ.self_of_nhds (by simp)
   have : ∀ᶠ x' in 𝓝 x,
       (TotalSpace.mk' (E →L[𝕜] F) x' (hcov.one_form x' (σ x')) : V) =
       TotalSpace.mk' (E →L[𝕜] F) x' (cov σ x' - d% σ x') := by
-    filter_upwards [this] with x' hx'
-    simp [hx']
+    filter_upwards [hcov.eventually_eq_one_form (s := s) hσ' (hs.mem_nhds hx)] with x hx
+    simp [hx]
   apply ContMDiffAt.congr_of_eventuallyEq _ this
-  apply ContMDiffWithinAt.sub_section
-  · have := hcov'.contMDiffWithinAt (x := x) (σ := σ) hx
-    rw [hs.nhdsWithin_eq hx] at this
-    have := this (hσ.mono fun y hy ↦ hy.contMDiffWithinAt)
-    apply this.contMDiffAt <| hs.mem_nhds hx
-  · have := hσ.self_of_nhds
-    rw [Bundle.Trivial.contMDiffAt_section_iff] at this
-    exact this.mvfderiv'
+  exact (hcov'.contMDiffAt_of_isOpen hs hx hσ).sub_section <|
+    Bundle.Trivial.contMDiffAt_section_iff.mp hσ.self_of_nhds |>.mvfderiv'
 
 end classification
 
@@ -323,17 +330,20 @@ noncomputable def one_form (cov : CovariantDerivative I F (Trivial M F)) :
     Π x : M, F →L[𝕜] TangentSpace% x →L[𝕜] F :=
   cov.isCovariantDerivativeOnUniv.exists_one_form.choose
 
+lemma eq_one_form (cov : CovariantDerivative I F (Trivial M F))
+    {σ : M → F} {x : M} (hσ : MDiffAt (T% σ) x) :
+    cov σ x = d% σ x + cov.one_form x (σ x) :=
+  cov.isCovariantDerivativeOnUniv.exists_one_form.choose_spec σ x (mem_univ x) hσ
+
 lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     (cov : CovariantDerivative I F (Trivial M F))
     (hcov : haveI := isManifold_one I n M; cov.ContMDiffCovariantDerivative' n) :
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
     haveI := isManifold_one I n M
-    CMDiff n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (cov.one_form m)) := by
+    CMDiff n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (cov.one_form m)) :=
   have := isManifold_one I n M
-  intro x
-  apply cov.isCovariantDerivativeOnUniv.contMDiffOn_one_form n _ (isOpen_univ) (mem_univ x)
-  constructor
-  intro s x _
-  exact hcov.contMDiff.contMDiffWithinAt (mem_univ x)
+  fun x ↦ cov.isCovariantDerivativeOnUniv.contMDiffOn_one_form n hcov.contMDiff
+    (isOpen_univ) (mem_univ x)
+
 
 end CovariantDerivative
