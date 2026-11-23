@@ -141,6 +141,10 @@ instance : RingHomClass (α →+*o β) α β where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
 
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl
 
@@ -315,8 +319,9 @@ instance : RingEquivClass (α ≃+*o β) α β where
 instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
 
 @[simp]
-theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β] [RingEquivClass F α β]
-    (f : F) : ⇑(ofClass f) = f := rfl
+protected theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β]
+    [RingEquivClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
