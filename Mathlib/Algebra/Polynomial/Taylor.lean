@@ -154,8 +154,10 @@ def taylorAlgHom (r : R) : R[X] →ₐ[R] R[X] :=
 theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   (taylorAlgHom r).map_pow ..
 
-@[simp, norm_cast] lemma coe_taylorAlgHom : taylorAlgHom r = taylor r :=
+@[simp] lemma toLinearMap_taylorAlgHom : (taylorAlgHom r).toLinearMap = taylor r :=
   rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_taylorAlgHom := toLinearMap_taylorAlgHom
 
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]

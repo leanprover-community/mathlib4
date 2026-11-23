@@ -793,7 +793,7 @@ instance (priority := 100) [FunLike F A 𝕜] [NonUnitalAlgHomClass F 𝕜 A �
 /-- A non-unital algebra homomorphism into the base field (i.e., a multiplicative linear
 functional), as an element of the strong dual (since it is automatically continuous). -/
 def toStrongDual (φ : A →ₙₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
-  { (φ : A →ₗ[𝕜] 𝕜) with }
+  { φ with }
 
 @[simp]
 theorem coe_toStrongDual (φ : A →ₙₐ[𝕜] 𝕜) : ⇑φ.toStrongDual = φ :=

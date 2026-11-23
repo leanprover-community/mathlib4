@@ -117,7 +117,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
       obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
-    exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
+    exact (LinearMap.mkContinuousOfExistsBound (.ofClass f) hbound).continuous
 
 /-- Lift a positive linear map between C⋆-algebras to a positive continuous linear map. -/
 @[expose]

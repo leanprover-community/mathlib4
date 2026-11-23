@@ -253,8 +253,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
   agrees with the star homomorphism `cfcₙ · a : C(s, ℝ)₀ →⋆ₙₐ[ℝ] A` since
   `cfcₙ id a = a = b - c = cfcₙ id b + cfcₙ id (-c)`. -/
   let ψ : C(s, ℝ)₀ →⋆ₙₐ[ℝ] A :=
-    { (cfcₙHomSuperset hb' hbs : C(s, ℝ)₀ →ₗ[ℝ] A) + (cfcₙHomSuperset hc' hcs : C(s, ℝ)₀ →ₗ[ℝ] A)
-        with
+    { (cfcₙHomSuperset hb' hbs).toLinearMap + (cfcₙHomSuperset hc' hcs).toLinearMap with
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
       map_mul' := fun f g ↦ by

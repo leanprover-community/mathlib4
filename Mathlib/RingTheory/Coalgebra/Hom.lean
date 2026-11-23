@@ -39,6 +39,8 @@ structure CoalgHom (R A B : Type*) [CommSemiring R]
   counit_comp : counit ∘ₗ toLinearMap = counit
   map_comp_comul : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
 
+attribute [simp] CoalgHom.counit_comp CoalgHom.map_comp_comul
+
 @[inherit_doc CoalgHom]
 infixr:25 " →ₗc " => CoalgHom _
 
@@ -51,9 +53,9 @@ class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
     extends SemilinearMapClass F (RingHom.id R) A B where
-  counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
-  map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
-    (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
+  counit_comp : ∀ f : F, counit ∘ₗ (.ofClass f) = counit
+  map_comp_comul : ∀ f : F, TensorProduct.map (.ofClass f)
+    (.ofClass f) ∘ₗ comul = comul ∘ₗ (.ofClass f)
 
 attribute [simp] CoalgHomClass.counit_comp CoalgHomClass.map_comp_comul
 
@@ -68,7 +70,7 @@ variable {R A B F : Type*} [CommSemiring R]
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
 def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
-  { (f : A →ₗ[R] B) with
+  { LinearMap.ofClass f with
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
@@ -83,7 +85,7 @@ theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
-    TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
+    TensorProduct.map (.ofClass f) (.ofClass f) (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
   congr($(map_comp_comul f) _)
 
 end CoalgHomClass
@@ -121,6 +123,11 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
+theorem map_comp_comul_apply (f : A →ₗc[R] B) (x : A) :
+    TensorProduct.map f.toLinearMap f.toLinearMap (comul x) = comul (f x) :=
+  congr($(map_comp_comul f) _)
+
+@[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
     ⇑(ofClass f) = f :=
   rfl
@@ -135,21 +142,22 @@ theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] 
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
+@[simp]
+theorem toLinearMap_linearMap_mk {f : A →ₗ[R] B} (h h₁) :
+     (⟨f, h, h₁⟩ : A →ₗc[R] B).toLinearMap = f :=
   rfl
 
-@[simp]
-theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
+@[deprecated (since := "2026-11-19")] alias coe_linearMap_mk := toLinearMap_linearMap_mk
+
+theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = (.ofClass f) :=
   rfl
 
 @[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
-@[simp, norm_cast]
-theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
-  rfl
+@[simp]
+theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑f.toLinearMap = f := rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
+@[deprecated (since := "2026-11-20")] alias coe_linearMapOfClass := LinearMap.coe_ofClass
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
@@ -164,9 +172,10 @@ theorem coe_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ �
 @[deprecated (since := "2026-09-09")] alias coe_fn_injective := coe_injective
 @[deprecated (since := "2026-09-09")] alias coe_fn_inj := coe_inj
 
-theorem linearMapOfClass_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
+theorem linearMapOfClass_injective :
+    Function.Injective (fun (f : A →ₗc[R] B) ↦ LinearMap.ofClass f) :=
   fun φ₁ φ₂ H => coe_injective <|
-    show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
+    show (φ₁.toLinearMap : A → B) = (φ₂.toLinearMap : A → B) from congr_arg _ H
 
 @[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
 
@@ -197,10 +206,9 @@ theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩
 /-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
-  { toLinearMap := (f : A →ₗ[R] B).copy f' h
+  { toLinearMap := f.toLinearMap.copy f' h
     counit_comp := by ext; simp_all
-    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
-      CoalgHomClass.map_comp_comul] }
+    map_comp_comul := by simp [f.toLinearMap.copy_eq f' h] }
 
 @[simp]
 theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
@@ -224,11 +232,11 @@ theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toLinearMap : (CoalgHom.id R A : A →ₗ[R] A) = LinearMap.id := rfl
+theorem id_toLinearMap : (CoalgHom.id R A).toLinearMap = LinearMap.id := rfl
 
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
-  { (φ₁ : B →ₗ[R] C) ∘ₗ (φ₂ : A →ₗ[R] B) with
+  { φ₁.toLinearMap ∘ₗ φ₂.toLinearMap with
     counit_comp := by ext; simp
     map_comp_comul := by ext; simp [map_comp] }
 
@@ -237,7 +245,7 @@ theorem coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.c
 
 @[simp]
 theorem comp_toLinearMap (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) :
-    φ₁.comp φ₂ = (φ₁ : B →ₗ[R] C) ∘ₗ (φ₂ : A →ₗ[R] B) := rfl
+    (φ₁.comp φ₂).toLinearMap = φ₁.toLinearMap ∘ₗ φ₂.toLinearMap := rfl
 
 variable (φ : A →ₗc[R] B)
 
@@ -299,7 +307,7 @@ theorem counitCoalgHom_apply (x : A) :
 
 @[simp]
 theorem counitCoalgHom_toLinearMap :
-    counitCoalgHom R A = counit (R := R) (A := A) := rfl
+    (counitCoalgHom R A).toLinearMap = counit (R := R) (A := A) := rfl
 
 variable {R}
 

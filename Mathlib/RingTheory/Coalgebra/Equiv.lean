@@ -138,7 +138,6 @@ theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
 
 @[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
 
-@[simp]
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
   rfl
 
@@ -148,9 +147,11 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
+@[simp]
+theorem coe_toCoalgHom : ⇑e.toCoalgHom = e :=
+  rfl
 
-theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
+theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = e.toCoalgHom.toLinearMap :=
   rfl
 
 section
@@ -178,8 +179,8 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass,
-        LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
+      simp only [TensorProduct.congr, LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc,
+        CoalgHom.map_comp_comul]
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
@@ -219,7 +220,7 @@ theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
 
 @[simp]
 theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
-    ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+    (e.symm : B →ₗc[R] A).toLinearMap = (e : A ≃ₗ[R] B).symm := rfl
 
 @[simp]
 theorem symm_apply_apply (e : A ≃ₗc[R] B) (x) :
@@ -295,7 +296,7 @@ variable {f : A →ₗc[R] B} (hf : Function.Bijective f)
 noncomputable def ofBijective : A ≃ₗc[R] B where
   toFun := f
   __ := f
-  __ := LinearEquiv.ofBijective (f : A →ₗ[R] B) hf
+  __ := LinearEquiv.ofBijective f.toLinearMap hf
 
 @[simp] lemma coe_ofBijective : (ofBijective hf : A → B) = f := rfl
 

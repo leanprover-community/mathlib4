@@ -119,7 +119,7 @@ theorem forget₂_obj (X : CoalgCat R) :
 
 @[simp]
 theorem forget₂_map (X Y : CoalgCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgCat R) (ModuleCat R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
+    (forget₂ (CoalgCat R) (ModuleCat R)).map f = ModuleCat.ofHom f.toCoalgHom.toLinearMap :=
   rfl
 
 end CoalgCat

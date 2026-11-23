@@ -123,8 +123,11 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] 
 theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 := 𝒜) (ℬ := ℬ)) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₗ[R] B) :=
+theorem linearMapOfClass_injective :
+    Function.Injective (fun (f : 𝒜 →ₐᵍ[R] ℬ) ↦ LinearMap.ofClass f) :=
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-11-19")] alias coe_linearMap_injective := linearMapOfClass_injective
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
   AlgHom.toRingHom_injective.comp coe_toAlgHom_injective
@@ -276,8 +279,11 @@ variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
 @[deprecated (since := "2026-05-05")]
 alias restrictScalars_coe_algHom := restrictScalars_toAlgHom
 
-@[simp] lemma restrictScalars_coe_linearMap :
-    (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+@[simp] lemma restrictScalars_toLinearMap :
+    f.toLinearMap.restrictScalars R₀ = (f.restrictScalars R₀).toLinearMap := rfl
+
+@[deprecated (since := "2026-11-19")] alias restrictScalars_coe_linearMap :=
+  restrictScalars_toLinearMap
 
 lemma restrictScalars_injective :
     Function.Injective (restrictScalars R₀ : (𝒜 →ₐᵍ[R] ℬ) → _) :=

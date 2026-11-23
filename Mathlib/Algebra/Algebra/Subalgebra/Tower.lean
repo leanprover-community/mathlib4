@@ -138,7 +138,7 @@ theorem disjoint_one_iff (I : Ideal A) :
 
 @[simp]
 lemma range_isScalarTower_toAlgHom :
-    LinearMap.range (IsScalarTower.toAlgHom R S A : S →ₗ[R] A) = Subalgebra.toSubmodule S := by
+    LinearMap.range (IsScalarTower.toAlgHom R S A).toLinearMap = Subalgebra.toSubmodule S := by
   ext
   simp [algebraMap_eq]
 

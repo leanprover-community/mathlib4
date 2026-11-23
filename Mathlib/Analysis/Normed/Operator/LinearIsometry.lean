@@ -224,7 +224,7 @@ theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
   isComplete_image_iff f
 
 instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [CompleteSpace p] :
-    CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
+    CompleteSpace (p.map f.toLinearMap) :=
   ((isComplete_map_iff f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 
 @[simp]
@@ -397,7 +397,7 @@ from any submodule `p` of the domain onto the image of that submodule.
 This is a version of `LinearMap.submoduleMap` extended to linear isometries. -/
 @[simps!]
 def submoduleMap (p : Submodule R M) (e : M →ₗᵢ[R] M₁) :
-    p →ₗᵢ[R] p.map (e : M →ₗ[R] M₁) :=
+    p →ₗᵢ[R] p.map e.toLinearMap :=
   { e.toLinearMap.submoduleMap p with norm_map' x := e.norm_map' x }
 
 end submoduleMap
