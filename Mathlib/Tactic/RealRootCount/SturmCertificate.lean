@@ -42,21 +42,29 @@ namespace Mathlib.Tactic.RealRootCount
 
 variable {R : Type*}
 
-/-- The derivative of the polynomial that `p` represents. -/
+/-- The derivative of the polynomial that `p` represents.
+
+`ofCoeffList (coeffDerivative p) = derivative (ofCoeffList p)` -/
 def coeffDerivative [Semiring R] (p : List R) : List R :=
   (p.tail.zipIdx 1).map fun x => x.2 * x.1
 
 /-- The last entry of `p`, or `0` for `[]`. When it is nonzero, it is the leading coefficient of
-the polynomial that `p` represents. -/
+the polynomial that `p` represents.
+
+`coeffLead p ≠ 0 → (ofCoeffList p).leadingCoeff = coeffLead p` -/
 def coeffLead [Zero R] (p : List R) : R := p.getLastD 0
 
-/-- The coefficient list of `c * p + q`. -/
+/-- The coefficient list of `c * p + q`.
+
+`ofCoeffList (coeffAddSmul c p q) = c • ofCoeffList p + ofCoeffList q` -/
 def coeffAddSmul [Semiring R] (c : R) : List R → List R → List R
   | [], q => q
   | x :: p, [] => c * x :: coeffAddSmul c p []
   | x :: p, y :: q => (c * x + y) :: coeffAddSmul c p q
 
-/-- The coefficient list of `p * q`. -/
+/-- The coefficient list of `p * q`.
+
+`ofCoeffList (coeffMul p q) = ofCoeffList p * ofCoeffList q` -/
 def coeffMul [Semiring R] (p q : List R) : List R :=
   p.foldr (fun c acc => coeffAddSmul c q (0 :: acc)) []
 
@@ -122,7 +130,9 @@ def realRootCount? (d : SturmCertificate) : Option ℕ :=
     atBot - atTop
 
 /-- Compute the integer `d ^ (p.length - 1) * f (n / d)`, where `f` is the polynomial
-that `p` represents and d > 0. -/
+that `p` represents and d > 0.
+
+`evalScaled n d p = d ^ (p.length - 1) * aeval (n / d : ℚ) (ofCoeffList p)` -/
 def evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) : ℤ :=
   match p with
   | [] => 0
