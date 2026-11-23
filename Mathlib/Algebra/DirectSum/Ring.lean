@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.Ring.Associator
+
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -362,7 +363,6 @@ Implementation detail: Note that these instances on `A 0` have very general disc
 tree keys (e.g. `DirectSum.instRingOfNat` has discrimination tree key `Ring _` and often
 sends typeclass inference on a wild goose chase with any goal of the form `Ring (F X)`),
 so we scope these instances to the `DirectSum` namespace.
-
 -/
 
 
@@ -575,7 +575,7 @@ def liftRingHom :
         f GradedMonoid.GOne.one = 1 ∧
           ∀ {i j} (ai : A i) (aj : A j), f (GradedMonoid.GMul.mul ai aj) = f ai * f aj } ≃
       ((⨁ i, A i) →+* R) where
-  toFun f := toSemiring (fun _ => f.1) f.2.1 f.2.2
+  toFun f := toSemiring (fun _ => f.val) f.property.1 f.property.2
   invFun F :=
     ⟨by intro i; exact (F : (⨁ i, A i) →+ R).comp (of _ i),
       by
@@ -588,7 +588,7 @@ def liftRingHom :
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
     ext xi xv
-    exact toAddMonoid_of (fun _ => f.1) xi xv
+    exact toAddMonoid_of (fun _ => f.val) xi xv
   right_inv F := by
     apply RingHom.toAddMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))

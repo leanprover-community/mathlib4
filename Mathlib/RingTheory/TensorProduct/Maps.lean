@@ -25,7 +25,6 @@ This file provides results about maps between tensor products of `R`-algebras.
 ## References
 
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
 -/
 
 @[expose] public section
@@ -130,16 +129,15 @@ and evidence of multiplicativity on pure tensors.
 def algEquivOfLinearEquivTripleTensorProduct (f : A ⊗[R] B ⊗[R] C ≃ₗ[R] D)
     (h_mul :
       ∀ (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C),
-        f ((a₁ * a₂) ⊗ₜ (b₁ * b₂) ⊗ₜ (c₁ * c₂)) = f (a₁ ⊗ₜ b₁ ⊗ₜ c₁) * f (a₂ ⊗ₜ b₂ ⊗ₜ c₂))
-    (h_one : f (((1 : A) ⊗ₜ[R] (1 : B)) ⊗ₜ[R] (1 : C)) = 1) :
+        f ((a₁ * a₂) ⊗ₜ (b₁ * b₂) ⊗ₜ (c₁ * c₂)) = f (a₁ ⊗ₜ b₁ ⊗ₜ c₁) * f (a₂ ⊗ₜ b₂ ⊗ₜ c₂)) :
     A ⊗[R] B ⊗[R] C ≃ₐ[R] D :=
-  AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
+  AlgEquiv.ofLinearEquiv f <| f.map_mul_iff.2 <| by
     ext
     simpa using h_mul _ _ _ _ _ _
 
 @[simp]
-theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
-    (algEquivOfLinearEquivTripleTensorProduct f h_mul h_one : A ⊗[R] B ⊗[R] C ≃ₐ[R] D) x = f x :=
+theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul x) :
+    (algEquivOfLinearEquivTripleTensorProduct f h_mul : A ⊗[R] B ⊗[R] C ≃ₐ[R] D) x = f x :=
   rfl
 
 section lift
@@ -408,18 +406,30 @@ section
 
 omit [Algebra S A] [IsScalarTower R S A]
 
+#adaptation_note
+/-- After https://github.com/leanprover-community/mathlib4/pull/45954 (generalization of `AlgEquiv`
+to nonunital),
+`attribute [-instance] leftHasSMul` is necessary because the `rightAlgebra` instance
+is not compatible with `leftHasSMul`.  -/
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
 is viewed as an `S`-algebra via the right component. -/
-def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S where
-  __ := Algebra.TensorProduct.comm R S A
-  commutes' _ := rfl
+def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S :=
+  AlgEquiv.ofCommutes (R := S) (A₁ := S ⊗[R] A) (A₂ := A ⊗[R] S)
+    (Algebra.TensorProduct.comm R S A).toRingEquiv fun _ ↦ rfl
 
 variable {S A} in
 @[simp]
 lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
 
 variable {S A} in
+#adaptation_note
+/-- After https://github.com/leanprover-community/mathlib4/pull/45954 (generalization of `AlgEquiv`
+to nonunital),
+`attribute [-instance] leftHasSMul` is necessary because the `rightAlgebra` instance
+is not compatible with `leftHasSMul`.  -/
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma commRight_symm_tmul (s : S) (a : A) :
@@ -443,7 +453,6 @@ variable (T C D) in
 protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐ[T] A ⊗[S] (C ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv
     (AlgebraTensorModule.assoc R S T A C D)
-    (by simp [Algebra.TensorProduct.one_def])
     ((LinearMap.map_mul_iff _).mpr <| by ext; simp)
 
 variable (T C D) in
@@ -469,8 +478,7 @@ variable (T A B : Type*) [CommSemiring T] [CommSemiring A] [CommSemiring B]
 /-- The natural isomorphism `A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B`. -/
 def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
   AlgEquiv.symm <| AlgEquiv.ofLinearEquiv
-    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
-    (by simp [Algebra.TensorProduct.one_def]) <|
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm <|
       LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp)
 
 @[simp]
@@ -672,7 +680,7 @@ variable (R R' S T A B C D) in
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
 def tensorTensorTensorComm : A ⊗[R'] B ⊗[S] (C ⊗[R] D) ≃ₐ[T] A ⊗[S] C ⊗[R'] (B ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D)
-    rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
+    (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
@@ -741,9 +749,9 @@ end
 
 section
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
-variable [Algebra R A] [Algebra R B] [Algebra R S]
-variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
+variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S] [CommSemiring T]
+variable [Algebra R A] [Algebra R B] [Algebra R S] [Algebra R T]
+variable (f : A →ₐ[R] S) (g : B →ₐ[R] S) (h : S →ₐ[R] T)
 variable (R)
 
 /-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
@@ -828,6 +836,14 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
     ← AlgHom.range_comp,
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
+
+@[simp]
+theorem comp_productMap : h.comp (productMap f g) = productMap (h.comp f) (h.comp g) :=
+  Algebra.TensorProduct.ext' (by simp)
+
+theorem toLinearMap_productMap_id :
+    (productMap (AlgHom.id R S) f).toLinearMap = f.toLinearMap.liftBaseChange S := by
+  rfl
 
 end
 

@@ -26,10 +26,20 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
+lemma map_smul_of_commutes {R : Type u} {A : Type v} {B : Type w}
+    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    (f : A → B) (map_mul : ∀ a b : A, f (a * b) = f a * f b)
+    (commutes : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
+    ∀ r : R, ∀ a : A, f (r • a) = r • f a := by
+  intros
+  rw [Algebra.smul_def, Algebra.smul_def, map_mul, commutes]
+
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+    [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  map_smul' : ∀ r : R, ∀ a : A, toFun (r • a) = r • toFun a :=
+    map_smul_of_commutes toFun map_mul' commutes'
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
@@ -139,15 +149,16 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
 @[simp]
-theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
+theorem coe_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+    ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
@@ -211,7 +222,8 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
   DFunLike.ext _ _ H
 
 @[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+    (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
   rfl
 
 @[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
@@ -563,6 +575,10 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+
+variable (M) in
+@[simp]
+theorem toAlgHom_one : toAlgHom R A (1 : M) = AlgHom.id R A := by ext; simp
 
 end MulSemiringAction
 

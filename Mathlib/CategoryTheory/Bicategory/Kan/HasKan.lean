@@ -6,7 +6,8 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories
@@ -28,7 +29,6 @@ These notations are inspired by
 
 * `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
-
 -/
 
 @[expose] public section

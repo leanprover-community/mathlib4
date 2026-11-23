@@ -124,7 +124,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   rintro i _
   rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
-  exact ne_of_gt (pow_pos hp.1.pos _)
+  exact ne_of_gt (pow_pos hp.out.pos _)
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
@@ -160,8 +160,8 @@ variable [hp : NeZero p]
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
-    refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    exact mod_cast pow_ne_zero i hp.1
+    refine vars_monomial_single i (pow_ne_zero _ hp.out) ?_
+    exact mod_cast pow_ne_zero i hp.out
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
@@ -178,7 +178,6 @@ end PPrime
 end
 
 /-!
-
 ## Witt polynomials as a basis of the polynomial algebra
 
 If `p` is invertible in `R`, then the Witt polynomials form a basis
@@ -208,7 +207,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [mem_range] at H
   simp only [map_mul, map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
-  exact pow_ne_zero _ hp.1.ne_zero
+  exact pow_ne_zero _ hp.out.ne_zero
 
 @[simp]
 theorem xInTermsOfW_zero [Invertible (p : R)] : xInTermsOfW p R 0 = X 0 := by
@@ -237,7 +236,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rw [vars_C_mul] at H
     swap
     · apply pow_ne_zero
-      exact mod_cast hp.1.ne_zero
+      exact mod_cast hp.out.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
@@ -257,19 +256,24 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
     one_pow, C_1, mul_one]
 
 @[simp]
-theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
-    bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
+theorem aeval_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
+    aeval (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum]
   simp only [map_pow, map_mul, algHom_C, algebraMap_eq]
-  rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
+  rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, aeval_X, mul_comm, ← C_pow,
     xInTermsOfW_aux]
-  simp only [C_pow, bind₁_X_right, sub_add_cancel]
+  simp
+
+@[deprecated aeval_xInTermsOfW_wittPolynomial +typeChanged (since := "2026-09-02")]
+theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
+    bind₁ (xInTermsOfW p R) (W_ R k) = X k :=
+  aeval_xInTermsOfW_wittPolynomial p R k
 
 @[simp]
-theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
-    bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
+theorem aeval_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
+    aeval (W_ R) (xInTermsOfW p R n) = X n := by
   induction n using Nat.strongRecOn with | ind n H => ?_
-  rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
+  rw [xInTermsOfW_eq, map_mul, map_sub, aeval_X, algHom_C, map_sum,
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
@@ -278,4 +282,9 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h
-  rw [map_mul, map_pow (bind₁ _), algHom_C, H i h, algebraMap_eq]
+  rw [map_mul, map_pow (aeval _), algHom_C, H i h, algebraMap_eq]
+
+@[deprecated aeval_wittPolynomial_xInTermsOfW +typeChanged (since := "2026-09-02")]
+theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
+    bind₁ (W_ R) (xInTermsOfW p R n) = X n :=
+  aeval_wittPolynomial_xInTermsOfW p R n

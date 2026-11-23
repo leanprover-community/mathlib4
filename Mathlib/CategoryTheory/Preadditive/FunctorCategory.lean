@@ -5,15 +5,15 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Preadditive structure on functor categories
 
 If `C` and `D` are categories and `D` is preadditive,
 then `C ⥤ D` is also preadditive.
-
 -/
 
 @[expose] public section

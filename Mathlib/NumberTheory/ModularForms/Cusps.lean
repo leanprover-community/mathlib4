@@ -111,7 +111,6 @@ lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c 
   rw [← ℋ.conjAct_pointwise_smul_eq_self (ℋ.le_normalizer hh), 𝒢.relIndex_pointwise_smul]
   exact 𝒢.relIndex_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor
@@ -122,11 +121,11 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
     · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
-      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr($ha 0 1)), ?_⟩
-      simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
+      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.coe_T] using congr($ha 0 1)), ?_⟩
+      simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.coe_T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
-      simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
+      simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.coe_T]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
@@ -147,6 +146,20 @@ lemma Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) 
     {c : OnePoint ℝ} : IsCusp c 𝒢 ↔ IsCusp c 𝒮ℒ :=
   is_commensurable.isCusp_iff
 
+instance {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
+  ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    using ⟨_, OnePoint.map_infty _⟩⟩
+
+/-- An arithmetic subgroup does not fix the cusp `∞`. -/
+lemma Subgroup.IsArithmetic.exists_smul_infty_ne_infty (𝒢 : Subgroup (GL (Fin 2) ℝ))
+    [𝒢.IsArithmetic] : ∃ γ ∈ 𝒢, γ • (∞ : OnePoint ℝ) ≠ ∞ := by
+  have h0 : IsCusp ((0 : ℝ) : OnePoint ℝ) 𝒢 := by
+    rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    exact ⟨((0 : ℚ) : OnePoint ℚ), by simp⟩
+  obtain ⟨g, hg, hgp, hg0⟩ := h0
+  refine ⟨g, hg, fun hinf ↦ coe_ne_infty (0 : ℝ) ?_⟩
+  rw [hgp.smul_eq_self_iff.mp hg0, ← hgp.smul_eq_self_iff.mp hinf]
+
 end IsCusp
 
 section CuspOrbits
@@ -163,9 +176,74 @@ noncomputable def cuspsSubMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
   carrier := {c | IsCusp c 𝒢}
   smul_mem' g _ hc := IsCusp.smul_of_mem hc g.property
 
+@[simp] lemma mem_cuspsSubMulAction {𝒢} {c : OnePoint ℝ} :
+    c ∈ cuspsSubMulAction 𝒢 ↔ IsCusp c 𝒢 :=
+  Iff.rfl
+
 /-- The type of cusp orbits of `𝒢`, i.e. orbits for the action of `𝒢` on its own cusps. -/
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
+
+namespace CuspOrbits
+
+variable {G H K : Subgroup (GL (Fin 2) ℝ)}
+
+/-- The map on cusp orbits induced by an inclusion of groups. -/
+noncomputable def map (hGH : G ≤ H) : CuspOrbits G → CuspOrbits H :=
+  Quotient.map (fun c ↦ ⟨c.val, c.property.mono hGH⟩)
+    (fun _ _ ⟨g, hg⟩ ↦ ⟨⟨g.val, hGH g.property⟩, Subtype.ext (congr(Subtype.val $hg))⟩)
+
+@[simp] lemma map_mk (hGH : G ≤ H) (c : cuspsSubMulAction G) :
+    map hGH ⟦c⟧ = ⟦⟨c.val, c.property.mono hGH⟩⟧ := rfl
+
+@[simp] lemma map_map (hGH : G ≤ H) (hHK : H ≤ K) (c : CuspOrbits G) :
+    map hHK (map hGH c) = map (hGH.trans hHK) c :=
+  Quotient.inductionOn c fun _ ↦ rfl
+
+/-- Every cusp orbit lifts along an inclusion of finite relative index. -/
+lemma map_surjective (hGH : G ≤ H) [G.IsFiniteRelIndex H] :
+    Function.Surjective (map hGH) :=
+  Quotient.ind fun c ↦ ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, rfl⟩
+
+open scoped Pointwise
+
+/-- Conjugation transports cusp orbits along the action on the projective line. -/
+noncomputable def conj (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
+    CuspOrbits G → CuspOrbits (ConjAct.toConjAct g • G) :=
+  Quotient.map (fun c ↦ ⟨g • c.val, c.property.smul g⟩) (by
+    rintro c d ⟨a, ha⟩
+    refine ⟨⟨ConjAct.toConjAct g • a.val, G.smul_mem_pointwise_smul _ _ a.property⟩, ?_⟩
+    have ha' : (a : GL (Fin 2) ℝ) • d.val = c.val := congr(Subtype.val $ha)
+    apply Subtype.ext
+    simp [ConjAct.toConjAct_smul, mul_smul, ha'])
+
+@[simp] lemma conj_mk (g : GL (Fin 2) ℝ) (c : cuspsSubMulAction G) :
+    conj G g ⟦c⟧ = ⟦⟨g • c.val, c.property.smul g⟩⟧ :=
+  rfl
+
+lemma conj_bijective (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
+    Function.Bijective (conj G g) := by
+  refine Function.bijective_iff_has_inverse.mpr ⟨map (by simp) ∘ conj _ g⁻¹, ?_, ?_⟩ <;>
+    exact Quotient.ind fun _ ↦ congrArg _ <| Subtype.ext <| by simp
+
+-- this cannot be `@[simp]` because it will never match on the LHS
+lemma map_conj (hGH : G ≤ H) (g : GL (Fin 2) ℝ) (c : CuspOrbits G) :
+    map (by simpa) (conj G g c) = conj H g (map hGH c) := by
+  induction c using Quotient.inductionOn
+  rfl
+
+/-- The natural map from cusp orbits for `G` to those for `G.adjoinNegOne` is a bijection. -/
+lemma map_adjoinNegOne_bijective (G : Subgroup (GL (Fin 2) ℝ)) :
+    Function.Bijective (map G.le_adjoinNegOne) := by
+  refine ⟨Quotient.forall.mpr fun c ↦ Quotient.forall.mpr fun d h ↦ ?_,
+    map_surjective G.le_adjoinNegOne⟩
+  obtain ⟨a, ha⟩ := Quotient.eq.mp h
+  have ha' : (a : GL (Fin 2) ℝ) • d.val = c.val := congr(Subtype.val $ha)
+  rcases a.property with hmem | hmem
+  · exact Quotient.eq.mpr ⟨⟨a.val, hmem⟩, Subtype.ext ha'⟩
+  · exact Quotient.eq.mpr ⟨⟨-a.val, hmem⟩, Subtype.ext <| by simpa using ha'⟩
+
+end CuspOrbits
 
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
@@ -200,6 +278,18 @@ lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAri
 /-- An arithmetic subgroup has finitely many cusp orbits. -/
 instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOrbits 𝒢) :=
   .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
+
+/-- The cusp `∞`. (The `Fact` hypothesis is automatically supplied for arithmetic groups.) -/
+noncomputable abbrev cuspOrbitInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)} [Fact (IsCusp ∞ 𝒢)] :
+    CuspOrbits 𝒢 :=
+  ⟦⟨∞, mem_cuspsSubMulAction.mpr Fact.out⟩⟧
+
+noncomputable instance : Unique (CuspOrbits 𝒮ℒ) where
+  default := cuspOrbitInfty
+  uniq c := by
+    induction c using Quotient.inductionOn with | h c =>
+    obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp (mem_cuspsSubMulAction.mp c.property)
+    exact Quotient.eq.mpr ⟨⟨_, ⟨g, rfl⟩⟩, Subtype.ext hg.symm⟩
 
 end CuspOrbits
 
@@ -250,7 +340,7 @@ lemma relIndex_strictPeriods :
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
   · simp [h]
   · replace h := 𝒢.strictPeriods_le_periods.lt_of_ne h
-    obtain ⟨u, hu_mem, hu_notMem⟩ := (IsConcreteLE.lt_iff_le_and_exists.mp h).2
+    obtain ⟨u, hu_mem, hu_notMem⟩ := (lt_iff_le_and_exists_mem_notMem.mp h).2
     rw [AddSubgroup.relIndex_eq_two_iff_exists_notMem_and]
     refine .inr ⟨u, hu_mem, hu_notMem, fun b hb ↦ ?_⟩
     simp only [Subgroup.periods, mem_strictPeriods_iff, mem_adjoinNegOne_iff,
@@ -258,6 +348,24 @@ lemma relIndex_strictPeriods :
     rcases hb with h | h
     · exact Or.inr h
     · simpa only [neg_mul_neg] using Or.inl (mul_mem h <| hu_mem.resolve_left hu_notMem)
+
+/-- The regularity factor at infinity: the index of the strict periods in the periods. It is `1`
+if `𝒢` is regular at `∞` and `2` otherwise. -/
+noncomputable def regularityFactorInfty : ℕ :=
+  𝒢.strictPeriods.relIndex 𝒢.periods
+
+lemma relIndex_strictPeriods_eq_regularityFactorInfty :
+    𝒢.strictPeriods.relIndex 𝒢.periods = 𝒢.regularityFactorInfty :=
+  rfl
+
+@[simp] lemma regularityFactorInfty_eq_one_of_isRegularAtInfty (h : 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 1 := by
+  simp [regularityFactorInfty, h.eq]
+
+@[simp] lemma regularityFactorInfty_eq_two_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 2 :=
+  𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
+    h (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
 
 lemma commensurable_strictPeriods_periods :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
@@ -297,13 +405,11 @@ end Ring
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
-  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
-    map_apply_coe]
+  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix]
   refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr($hg 0 1)⟩, ?_⟩
   rintro ⟨m, rfl⟩
   refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
-  ext i j
-  fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow]
+  simp [-map_zpow, ModularGroup.coe_T_zpow, ← Matrix.ext_iff, Fin.forall_fin_two]
 
 @[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
   simpa [MonoidHom.range_eq_map] using strictPeriods_eq_zmultiples_one_of_T_mem (mem_top _)
@@ -332,25 +438,34 @@ lemma widthInfty_nonneg : 0 ≤ 𝒢.widthInfty := 𝒢.adjoinNegOne.strictWidth
 
 variable {𝒢} in
 lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
-    𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
+    𝒢.strictPeriods = .zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dite_eq_left,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq.mp
       <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr inferInstance]
 
-lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
-    strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
-  have hsp := strictPeriods_eq_zmultiples_one_of_T_mem hΓ
-  have : DiscreteTopology (Γ : Subgroup (GL (Fin 2) ℝ)).strictPeriods := by
-    -- In fact the image of `Γ` in `GL (Fin 2) ℝ` is itself discrete, but this is quicker:
-    rw [hsp]
-    infer_instance
-  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
-    AddSubgroup.zmultiples_eq_zmultiples_iff (not_isOfFinAddOrder_of_isAddTorsionFree one_ne_zero)]
-    at hsp
+variable {𝒢} in
+lemma strictWidthInfty_eq_of_strictPeriods_eq_zmultiples {x : ℝ}
+    (hper : 𝒢.strictPeriods = .zmultiples x) (hnonneg : 0 ≤ x) :
+    𝒢.strictWidthInfty = x := by
+  have : DiscreteTopology 𝒢.strictPeriods := hper ▸ NormedSpace.discreteTopology_zmultiples x
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty] at hper
+  rcases hnonneg.eq_or_lt with rfl | hx'
+  · simpa using hper
+  rw [Eq.comm, AddSubgroup.zmultiples_eq_zmultiples_iff
+    (not_isOfFinAddOrder_of_isAddTorsionFree hx'.ne')] at hper
   grind [strictWidthInfty_nonneg]
 
-lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
+lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
+    strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 :=
+  strictWidthInfty_eq_of_strictPeriods_eq_zmultiples
+    (strictPeriods_eq_zmultiples_one_of_T_mem hΓ) zero_le_one
+
+@[simp] lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
   simpa [MonoidHom.range_eq_map] using strictWidthInfty_eq_one_of_T_mem (mem_top _)
+
+@[simp] lemma widthInfty_SL2Z : widthInfty 𝒮ℒ = 1 := by
+  rw [widthInfty, adjoinNegOne_eq_self_iff.mpr, strictWidthInfty_SL2Z]
+  exact ⟨-1, by ext; simp⟩
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
@@ -373,6 +488,22 @@ lemma two_mul_widthInfty_mem_strictPeriods : 2 * 𝒢.widthInfty ∈ 𝒢.strict
     simpa [-upperRightHom_apply, ← AddChar.map_nsmul_eq_pow] using Subgroup.pow_mem _ h 2
 
 variable {𝒢} in
+/-- If `∞` is a cusp of `𝒢`, then `𝒢` has a nonzero strict period. See
+`Subgroup.isCusp_of_mem_strictPeriods` for the converse. -/
+lemma exists_ne_zero_mem_strictPeriods_of_isCusp [𝒢.HasDetPlusMinusOne] (h𝒢 : IsCusp ∞ 𝒢) :
+    ∃ x ≠ 0, x ∈ 𝒢.strictPeriods := by
+  obtain ⟨g, hgg, hgp, hgi⟩ := h𝒢
+  -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
+  rw [smul_infty_eq_self_iff] at hgi
+  rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
+  rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
+  · -- If `g = [1, x; 0, 1]`, we're done
+    exact ⟨x, hx, mem_strictPeriods_iff.mpr hgg⟩
+  · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
+    exact ⟨2 • x, by grind, mem_strictPeriods_iff.mpr <| by
+      simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
+
+variable {𝒢} in
 lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by
   constructor
@@ -381,25 +512,15 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
       simpa using h.ne'
     · simp [smul_infty_eq_self_iff]
   · -- Hard implication: if `∞` is a cusp, show the strict width is positive.
-    rintro ⟨g, hgg, hgp, hgi⟩
+    intro h
     apply 𝒢.strictWidthInfty_nonneg.lt_of_ne'
     rw [← AddSubgroup.zmultiples_ne_bot]
     simp only [AddSubgroup.ne_bot_iff_exists_ne_zero, Subtype.exists, Ne, AddSubgroup.mk_eq_zero,
-      exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidthInfty, mem_strictPeriods_iff]
-    -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
-    rw [smul_infty_eq_self_iff] at hgi
-    rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
-    rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
-    · -- If `g = [1, x; 0, 1]`, we're done
-      exact ⟨x, hx, hgg⟩
-    · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
-      exact ⟨2 • x, by grind,
-        by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
+      exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidthInfty]
+    exact exists_ne_zero_mem_strictPeriods_of_isCusp h
 
-lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
-  rw [strictWidthInfty_pos_iff]
-  simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
-    using ⟨_, OnePoint.map_infty _⟩
+lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty :=
+  strictWidthInfty_pos_iff.mpr Fact.out
 
 variable {𝒢} in
 lemma isCusp_of_mem_strictPeriods {h : ℝ} (hh : 0 < h) (h𝒢 : h ∈ 𝒢.strictPeriods) :
@@ -420,8 +541,73 @@ lemma isRegularAtInfty_iff [DiscreteTopology 𝒢.periods] :
   apply 𝒢.strictPeriods_le_periods.antisymm
   rwa [periods_eq_zmultiples_widthInfty, AddSubgroup.zmultiples_le]
 
+/-- The strict width is the width multiplied by the regularity factor. -/
+lemma strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty :
+    𝒢.strictWidthInfty = 𝒢.regularityFactorInfty * 𝒢.widthInfty := by
+  rw [← relIndex_strictPeriods_eq_regularityFactorInfty]
+  by_cases hd : DiscreteTopology 𝒢.strictPeriods
+  · have : DiscreteTopology 𝒢.periods :=
+      𝒢.commensurable_strictPeriods_periods.discreteTopology_iff.mp hd
+    have h := periods_eq_zmultiples_widthInfty (𝒢 := 𝒢) ▸
+      𝒢.strictPeriods_le_periods 𝒢.strictWidthInfty_mem_strictPeriods
+    rw [strictPeriods_eq_zmultiples_strictWidthInfty, periods_eq_zmultiples_widthInfty]
+    simpa [abs_of_nonneg, strictWidthInfty_nonneg, widthInfty_nonneg] using
+      (AddSubgroup.abs_nsmul_relIndex_zmultiples h).symm
+  · have hp : ¬ DiscreteTopology 𝒢.adjoinNegOne.strictPeriods :=
+      mt 𝒢.commensurable_strictPeriods_periods.discreteTopology_iff.mpr hd
+    simp [widthInfty, strictWidthInfty, hd, hp]
+
+lemma strictWidthInfty_of_isRegularAtInfty (h𝒢 : 𝒢.IsRegularAtInfty) :
+    𝒢.strictWidthInfty = 𝒢.widthInfty := by
+  simp [strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty, h𝒢]
+
+lemma strictWidthInfty_of_not_isRegularAtInfty (h𝒢 : ¬ 𝒢.IsRegularAtInfty) :
+    𝒢.strictWidthInfty = 2 * 𝒢.widthInfty := by
+  simp [strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty, h𝒢]
+
 lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
   apply strictWidthInfty_pos
+
+open scoped Pointwise
+
+/-- Translation parameters under an upper triangular change of cusp coordinate. -/
+lemma mem_strictPeriods_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)} {g : GL (Fin 2) ℝ}
+    (hg : g 1 0 = 0) {x : ℝ} :
+    x ∈ (ConjAct.toConjAct g⁻¹ • G).strictPeriods ↔ (g 0 0 / g 1 1) * x ∈ G.strictPeriods := by
+  rw [mem_strictPeriods_iff, mem_pointwise_smul_iff_inv_smul_mem, mem_strictPeriods_iff]
+  simp only [ConjAct.smul_def, ConjAct.ofConjAct_inv, ConjAct.ofConjAct_toConjAct, inv_inv]
+  rw [upperRightHom_conj_of_upperTriangular hg]
+
+/-- Strict cusp widths scale inversely under an upper triangular change of coordinate. -/
+lemma strictWidthInfty_conj_of_upperTriangular (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G.strictPeriods] {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    (ConjAct.toConjAct g⁻¹ • G).strictWidthInfty = G.strictWidthInfty / |g 0 0 / g 1 1| := by
+  refine strictWidthInfty_eq_of_strictPeriods_eq_zmultiples ?_
+    (div_nonneg G.strictWidthInfty_nonneg (abs_nonneg _))
+  ext
+  rw [← abs_of_nonneg G.strictWidthInfty_nonneg, ← abs_div, zmultiples_abs,
+        mem_strictPeriods_conj_of_upperTriangular hg, strictPeriods_eq_zmultiples_strictWidthInfty]
+  grind [AddSubgroup.mem_zmultiples_iff, g.a_ne_zero_of_c_eq_zero hg, g.d_ne_zero_of_c_eq_zero hg]
+
+/-- Cusp widths scale inversely under an upper triangular change of coordinate. -/
+lemma widthInfty_conj_of_upperTriangular (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G.periods] {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    (ConjAct.toConjAct g⁻¹ • G).widthInfty = G.widthInfty / |g 0 0 / g 1 1| := by
+  have : DiscreteTopology G.adjoinNegOne.strictPeriods := ‹_›
+  simpa [widthInfty, adjoinNegOne_conj] using strictWidthInfty_conj_of_upperTriangular _ hg
+
+/-- In a discrete determinant-one group with a cusp at infinity, every element fixing
+infinity is a signed translation. -/
+lemma eq_upperRightHom_or_neg_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
+    [G.HasDetOne] (hw : 0 < G.widthInfty) {g : GL (Fin 2) ℝ} (hgG : g ∈ G) (hg : g 1 0 = 0) :
+    g = upperRightHom (g 0 1) ∨ g = -upperRightHom (-g 0 1) := by
+  have hdet : g 0 0 * g 1 1 = 1 := by
+    simpa [Matrix.det_fin_two, hg] using congr($(HasDetOne.det_eq hgG).val)
+  have hwidth := widthInfty_conj_of_upperTriangular G hg
+  rw [conjAct_pointwise_smul_eq_self (G.le_normalizer (G.inv_mem hgG))] at hwidth
+  have heq : g 0 0 = g 1 1 := by grind
+  rcases (show g 1 1 = 1 ∨ g 1 1 = -1 by grind) with h | h <;> [left; right] <;>
+    simp [Units.ext_iff, ← Matrix.ext_iff, hg, heq, h]
 
 end Real
 
@@ -431,25 +617,21 @@ open Subgroup
 
 namespace CongruenceSubgroup
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma0 (N : ℕ) :
     strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
-  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma1 (N : ℕ) :
     strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
-  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) :
     strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
-  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) :
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
-  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
 @[simp] lemma strictPeriods_Gamma (N : ℕ) :
     strictPeriods (Gamma N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples ↑N := by
@@ -467,13 +649,9 @@ set_option backward.isDefEq.respectTransparency.types false in
     ext i j
     fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
 
-@[simp] lemma strictWidthInfty_Gamma (N : ℕ) [NeZero N] :
-    strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N := by
-  have hsp := strictPeriods_Gamma N
-  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
-    AddSubgroup.zmultiples_eq_zmultiples_iff
-      (not_isOfFinAddOrder_of_isAddTorsionFree (NeZero.ne _))] at hsp
-  grind [strictWidthInfty_nonneg, Nat.cast_nonneg]
+@[simp] lemma strictWidthInfty_Gamma (N : ℕ) :
+    strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N :=
+  strictWidthInfty_eq_of_strictPeriods_eq_zmultiples (strictPeriods_Gamma N) N.cast_nonneg
 
 end CongruenceSubgroup
 

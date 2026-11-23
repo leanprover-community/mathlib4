@@ -23,7 +23,6 @@ more properties or data for the morphisms `F.obj j ⟶ F.obj (Order.succ j)`
 which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
-
 -/
 
 @[expose] public section
@@ -119,7 +118,7 @@ noncomputable def iic (j : J) :
   F := (Set.initialSegIic j).monotone.functor ⋙ c.F
   isoBot := Iso.refl _
   incl :=
-    { app i := c.F.map (homOfLE i.2)
+    { app i := c.F.map (homOfLE i.property)
       naturality i i' φ := by
         dsimp
         rw [← Functor.map_comp, Category.comp_id]
@@ -136,7 +135,7 @@ noncomputable def ici (j : J) :
   isoBot := Iso.refl _
   incl := Functor.whiskerLeft _ c.incl
   isColimit := (Functor.Final.isColimitWhiskerEquiv
-    (Subtype.mono_coe (· ∈ Set.Ici j)).functor _).2 c.isColimit
+    (Subtype.mono_coe (· ∈ Set.Ici j)).functor _).invFun c.isColimit
 
 end TransfiniteCompositionOfShape
 

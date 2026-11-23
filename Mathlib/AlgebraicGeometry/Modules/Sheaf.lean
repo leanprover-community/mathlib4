@@ -18,7 +18,6 @@ public import Mathlib.Topology.Sheaves.Module
 
 In this file, we define the abelian category of sheaves of modules
 `X.Modules` over a scheme `X`, and study its basic functoriality.
-
 -/
 
 @[expose] public section
@@ -86,7 +85,7 @@ variable {M N K : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
 section Presheaf
 
 /-- The underlying abelian presheaf of an `𝒪ₓ`-module. -/
-noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.1.presheaf
+noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.val.presheaf
 
 /-- Notation for sections of a presheaf of module. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" M ", " U ")" => (Scheme.Modules.presheaf M).obj (.op U)
@@ -238,7 +237,6 @@ def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Pushforwards along equal morphisms are isomorphic. -/
 def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫

@@ -5,9 +5,10 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Defs
+
+import Mathlib.Data.Fintype.Defs
+import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Row echelon forms
@@ -25,7 +26,6 @@ This file defines the row echelon form of matrices and the leading entries of th
 ## Tags
 
 matrix, echelon form
-
 -/
 
 @[expose] public section

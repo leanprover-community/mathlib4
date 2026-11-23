@@ -80,13 +80,12 @@ The implementation strategy is identical to the one for immersions. See the impl
 
 ## References
 
-* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*]
-  [schmeding2023]
+* [Alexander Schmeding, *An introduction to infinite-dimensional differential
+  geometry*][schmeding2023]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
 **Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
 The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
-
 -/
 
 public noncomputable section
@@ -281,8 +280,8 @@ lemma target_subset_preimage_target (h : IsSubmersionAtOfComplement F I J n f x)
 /-- If `f` is a submersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is a submersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsSubmersionAtOfComplement F I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
-    IsSubmersionAtOfComplement F I J n g x := by
-  exact LiftSourceTargetPropertyAt.congr_of_eventuallyEq
+    IsSubmersionAtOfComplement F I J n g x :=
+  LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_submmersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
@@ -333,8 +332,8 @@ lemma congr_F (e : F ≃L[𝕜] F') :
 
 /- The set of points where `IsSubmersionAtOfComplement` holds is open. -/
 lemma _root_.isOpen_isSubmersionAtOfComplement :
-    IsOpen {x | IsSubmersionAtOfComplement F I J n f x} := by
-  exact IsOpen.liftSourceTargetPropertyAt
+    IsOpen {x | IsSubmersionAtOfComplement F I J n f x} :=
+  IsOpen.liftSourceTargetPropertyAt
 
 /-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
 then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
