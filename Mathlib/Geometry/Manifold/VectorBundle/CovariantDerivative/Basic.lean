@@ -520,6 +520,24 @@ lemma contMDiffCovariantDerivativeOn_univ_iff [IsManifold I 1 M] [VectorBundle �
     ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative cov k :=
   ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
 
+/--
+A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
+`C^{k+1}` section, the result `∇_X σ` is a `C^k` section.
+This is a class so typeclass inference can deduce this automatically.
+We will prove in a later file that any `C^(k+1)` covariant derivative is `C^k`.
+
+This is the version using `ContMDiffCovariantDerivativeOn'`. It should replace the old one.
+-/
+class ContMDiffCovariantDerivative' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    (cov : CovariantDerivative I F V) (k : ℕ∞ω) where
+  contMDiff : ContMDiffCovariantDerivativeOn' F k cov.toFun Set.univ
+
+@[simp]
+lemma contMDiffCovariantDerivativeOn'_univ_iff [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : CovariantDerivative I F V} {k : ℕ∞ω} :
+    ContMDiffCovariantDerivativeOn' F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative' cov k :=
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
+
 section operations
 
 /-! ### Operations

@@ -190,7 +190,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 /-- The trivial connection on the trivial bundle over a C^(k+1) manifold is C^k. -/
 lemma trivial_contMDiff (k : WithTop ℕ∞) [IsManifold I (k + 1) M]
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
-    : have := isManifold_one I k M
+    : haveI := isManifold_one I k M
       ContMDiffCovariantDerivative (trivial I M F) k :=
   have := isManifold_one I k M
   ⟨by
@@ -280,10 +280,10 @@ lemma _root_.CovariantDerivative.exists_one_form
 lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : have := isManifold_one I n M; ContMDiffCovariantDerivativeOn' F n cov s)
+    (hcov' : haveI := isManifold_one I n M; ContMDiffCovariantDerivativeOn' F n cov s)
     (hs : IsOpen s) {x : M} (hx : x ∈ s) :
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
-    have := isManifold_one I n M
+    haveI := isManifold_one I n M
     CMDiffAt n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) x := by
   have := isManifold_one I n M
   have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
@@ -311,19 +311,29 @@ lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     rw [Bundle.Trivial.contMDiffAt_section_iff] at this
     exact this.mvfderiv'
 
-lemma contMDiffOn_one_form' [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
-    {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
-    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : have := isManifold_one I n M; ContMDiffCovariantDerivativeOn' F n cov s)
-    (hs : IsOpen s) :
-    letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
-    have := isManifold_one I n M
-    CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
-  intro _ x hx
-  exact contMDiffOn_one_form n hcov hcov' hs hx |>.contMDiffWithinAt
-
--- TODO: add global variant!
-
 end classification
 
 end IsCovariantDerivativeOn
+
+namespace CovariantDerivative
+
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
+
+noncomputable def one_form (cov : CovariantDerivative I F (Trivial M F)) :
+    Π x : M, F →L[𝕜] TangentSpace% x →L[𝕜] F :=
+  cov.isCovariantDerivativeOnUniv.exists_one_form.choose
+
+lemma contMDiffOn_one_form [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
+    (cov : CovariantDerivative I F (Trivial M F))
+    (hcov : haveI := isManifold_one I n M; cov.ContMDiffCovariantDerivative' n) :
+    letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
+    haveI := isManifold_one I n M
+    CMDiff n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (cov.one_form m)) := by
+  have := isManifold_one I n M
+  intro x
+  apply cov.isCovariantDerivativeOnUniv.contMDiffOn_one_form n _ (isOpen_univ) (mem_univ x)
+  constructor
+  intro s x _
+  exact hcov.contMDiff.contMDiffWithinAt (mem_univ x)
+
+end CovariantDerivative
