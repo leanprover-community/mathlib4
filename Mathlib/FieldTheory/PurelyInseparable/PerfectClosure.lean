@@ -345,7 +345,7 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   classical
-  rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
+  rw [linearIndependent_iff_linearIndepOn_finset] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
   have : FiniteDimensional F E' := finiteDimensional_adjoin
