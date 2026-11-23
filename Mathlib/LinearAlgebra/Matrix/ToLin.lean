@@ -920,8 +920,7 @@ variable [DecidableEq m] {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [Ad
 
 lemma LinearMap.toMatrix_prod (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
-    .fromBlocks
-      (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+    .fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
       (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
       (toMatrix v₁ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
       (toMatrix v₂ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂)) := by
