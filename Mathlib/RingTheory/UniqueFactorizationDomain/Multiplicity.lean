@@ -87,11 +87,12 @@ power of some irreducible `b : α` out of `f`.
 This is a variant of `WfDvdMonoid.max_power_factor_of_finsupp` where the function obtained by
 dividing by `b ^ n` is explicit. -/
 theorem WfDvdMonoid.max_power_factor_of_finsupp' {b : α} (hbI : Irreducible b) {f : ι →₀ α}
-    (h0 : f ≠ 0) : ∃ (n : ℕ) (f' : ι →₀ α), (∀ i, f i = b ^ n * f' i) ∧ ∃ j, ¬b ∣ f' j := by
+    (h0 : f ≠ 0) : ∃ (n : ℕ) (f' : ι →₀ α), f'.support = f.support ∧
+      (∀ i, f i = b ^ n * f' i) ∧ ∃ j, ¬b ∣ f' j := by
   obtain ⟨n, h1, j, hj⟩ := max_power_factor_of_finsupp hbI h0
   choose! f' hf using h1
   let F : ι →₀ α := ⟨f.support, f', by aesop⟩
-  refine ⟨n, F, ?_, j, ?_⟩ <;> aesop (add norm [Finsupp.ext_iff, pow_succ, dvd_def, mul_assoc])
+  refine ⟨n, F, rfl, ?_, j, ?_⟩ <;> aesop (add norm [Finsupp.ext_iff, pow_succ, dvd_def, mul_assoc])
 
 end
 
