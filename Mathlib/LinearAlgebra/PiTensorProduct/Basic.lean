@@ -521,14 +521,12 @@ lemma range_map_mono {R' : Type*} [CommSemiring R'] {σ₁₂' : R' →+* R₂}
     (h : ∀ i, (f i).range ≤ (g i).range) :
     LinearMap.range (map f) ≤ LinearMap.range (map g) := by
   rintro x ⟨y, rfl⟩
-  refine y.induction_on ?_ ?_
-  · intro r u
-    have hfug := fun i ↦ h i <| LinearMap.mem_range_self (f i) (u i)
-    let v : (i : ι) → s' i := fun i ↦ Classical.choose (hfug i)
-    have hv : ∀ i, g i (v i) = f i (u i) := fun i ↦ Classical.choose_spec (hfug i)
+  induction y using PiTensorProduct.induction_on with
+  | smul_tprod r u =>
+    choose v hv using fun i ↦ h i ⟨u i, rfl⟩
     obtain ⟨r', hr⟩ := σ₁₂'.surjective (σ₁₂ r)
     exact ⟨r' • tprod R' v, by simp [hv, hr]⟩
-  · exact fun z w hz hw ↦ map_add (map f) z w ▸ add_mem hz hw
+  | add z w hz hw => exact map_add (map f) z w ▸ add_mem hz hw
 
 lemma range_mapIncl_mono {p q : Π i, Submodule R (s i)} (h : ∀ i, p i ≤ q i) :
     LinearMap.range (mapIncl p) ≤ LinearMap.range (mapIncl q) :=
