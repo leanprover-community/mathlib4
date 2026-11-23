@@ -31,8 +31,8 @@ def lcmDen (p : List ℚ) : ℕ := p.foldl (fun d x => d.lcm x.den) 1
 /-- The greatest common divisor of the numerators of elements of `p`. -/
 def gcdNum (p : List ℚ) : ℕ := p.foldl (fun g x => g.gcd x.num.natAbs) 0
 
-/-- Compute `k > 0` such that the elements of `k • p` are coprime integers or `1` if `p` represents
-the coefficients of the `0` polynomial. -/
+/-- Compute `k > 0` such that the elements of `k • p` are coprime integers, or `1` if `p` contains
+no nonzero elements. -/
 def primitiveFactor (p : List ℚ) : ℚ :=
   let g := gcdNum p
   if g = 0 then 1 else lcmDen p / g
