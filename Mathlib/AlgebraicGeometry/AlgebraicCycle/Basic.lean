@@ -7,8 +7,11 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebraic Cycles

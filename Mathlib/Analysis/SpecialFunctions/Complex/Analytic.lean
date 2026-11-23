@@ -6,7 +6,11 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
+
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Various complex special functions are analytic
@@ -152,7 +156,7 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
-  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) (t := .Ioi 0) m
 
 theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
     iteratedDeriv (n + 1) log x = (-1 : ℂ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) := by

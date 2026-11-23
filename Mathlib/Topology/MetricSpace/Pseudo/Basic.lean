@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Topology.Metrizable.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
-
 -/
 
 public section
@@ -82,13 +85,6 @@ theorem controlled_of_isUniformInducing [PseudoMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
-
-@[deprecated controlled_of_isUniformInducing +typeChanged (since := "2026-04-01")]
-theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
-    (h : IsUniformEmbedding f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  controlled_of_isUniformInducing h.toIsUniformInducing
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=

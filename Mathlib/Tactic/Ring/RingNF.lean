@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
+public meta import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `ring_nf` tactic
@@ -17,7 +17,6 @@ A tactic which uses `ring` to rewrite expressions. This can be used non-terminal
 ring expressions in the goal such as `⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to
 prove some equations that `ring` cannot because they involve ring reasoning inside a subterm,
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
-
 -/
 
 public meta section

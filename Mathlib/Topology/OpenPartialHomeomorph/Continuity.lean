@@ -6,6 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial homeomorphisms and continuity
 

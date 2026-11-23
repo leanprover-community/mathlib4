@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
 import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!

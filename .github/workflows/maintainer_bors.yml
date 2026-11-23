@@ -52,8 +52,8 @@ jobs:
           # `mOrD` records which command this is ("ready-to-merge" or "delegated").
           # It no longer drives any label: bors now manages the `ready-to-merge` and
           # `delegated` lifecycle labels itself (see the `[labels]` table in bors.toml).
-          # It is kept only to select the Zulip emoji and to gate the
-          # awaiting-author/maintainer-merge cleanup in `maintainer_bors_wf_run.yml`.
+          # Here it only decides whether to emit the bridge artifact;
+          # `maintainer_bors_wf_run.yml` re-parses the comment it fetches from the API.
           m_or_d="$(printf '%s' "${COMMENT}" |
             sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
 
@@ -63,32 +63,13 @@ jobs:
           printf $'%s' "${PR_NUMBER}" | hexdump -cC
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
-          if [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
-             [ "${AUTHOR}" == 'mathlib-triage[bot]' ]
-          then
-            printf $'bot=true\n'
-            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
-          else
-            printf $'bot=false\n'
-            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
-          fi
 
-      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        name: Prepare bridge outputs
-        run: |
-          jq -n \
-            --arg bot "${{ steps.merge_or_delegate.outputs.bot }}" \
-            --arg mOrD "${{ steps.merge_or_delegate.outputs.mOrD }}" \
-            '{
-              bot: $bot,
-              mOrD: $mOrD,
-            }' > bridge-outputs.json
-
+      # The artifact carries no outputs: `maintainer_bors_wf_run.yml` fetches the comment or
+      # review from the API (using the IDs in `include_event: minimal`) and re-parses it.
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
         name: Emit bridge artifact
-        uses: leanprover-community/privilege-escalation-bridge/emit@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@120e98bbb1e9438be8973be645ef67e9cddc39ba # v2.1.0
         with:
           artifact: workflow-data
-          outputs_file: bridge-outputs.json
           include_event: minimal
           retention_days: 5

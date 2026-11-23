@@ -5,8 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
+
+import Mathlib.Analysis.Convex.Combination
 
 /-!
 # Convex independence

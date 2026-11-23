@@ -5,8 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Congruence modulo natural and integer numbers for big operators
@@ -72,7 +76,7 @@ theorem multisetSum_zero {s : Multiset ℕ} (h : ∀ x ∈ s, x ≡ 0 [MOD n]) :
 @[gcongr]
 protected theorem prod {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [MOD n]) :
     (∏ x ∈ s, f x) ≡ ∏ x ∈ s, g x [MOD n] :=
-  .multisetProd_map (s := s.1) h
+  .multisetProd_map (s := s.val) h
 
 theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [MOD n]) : ∏ x ∈ s, f x ≡ 1 [MOD n] := by
   simpa using ModEq.prod h
@@ -80,7 +84,7 @@ theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [MOD n]) : ∏ x �
 @[gcongr]
 protected theorem sum {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [MOD n]) :
     (∑ x ∈ s, f x) ≡ ∑ x ∈ s, g x [MOD n] :=
-  .multisetSum_map (s := s.1) h
+  .multisetSum_map (s := s.val) h
 
 theorem sum_zero {s : Finset α} (h : ∀ x ∈ s, f x ≡ 0 [MOD n]) : ∑ x ∈ s, f x ≡ 0 [MOD n] := by
   simpa using ModEq.sum h
@@ -165,7 +169,7 @@ theorem multisetSum_zero {s : Multiset ℤ} (h : ∀ x ∈ s, x ≡ 0 [ZMOD n]) 
 @[gcongr]
 protected theorem prod {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n]) :
     (∏ x ∈ s, f x) ≡ ∏ x ∈ s, g x [ZMOD n] :=
-  .multisetProd_map (s := s.1) h
+  .multisetProd_map (s := s.val) h
 
 theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) : ∏ x ∈ s, f x ≡ 1 [ZMOD n] := by
   simpa using ModEq.prod h
@@ -173,11 +177,11 @@ theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) : ∏ x �
 @[gcongr]
 protected theorem sum {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n]) :
     (∑ x ∈ s, f x) ≡ ∑ x ∈ s, g x [ZMOD n] :=
-  .multisetSum_map (s := s.1) h
+  .multisetSum_map (s := s.val) h
 
 protected theorem sum_zero {s : Finset α} (h : ∀ x ∈ s, f x ≡ 0 [ZMOD n]) :
     (∑ x ∈ s, f x) ≡ 0 [ZMOD n] :=
-  .multisetSum_map_zero (s := s.1) h
+  .multisetSum_map_zero (s := s.val) h
 
 end ModEq
 

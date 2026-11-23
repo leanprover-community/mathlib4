@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -25,7 +24,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section
@@ -66,7 +64,7 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
-  X.presheaf.germ U x.1 x.2 ≫ X.residue _
+  X.presheaf.germ U x.val x.property ≫ X.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
@@ -75,7 +73,7 @@ def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
 @[simp]
 lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
-  rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
+  rw [X.toRingedSpace.mem_basicOpen f x.val x.property, ← not_iff_not, not_not]
   exact (IsLocalRing.residue_ne_zero_iff_isUnit _)
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :

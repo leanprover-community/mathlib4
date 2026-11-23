@@ -25,7 +25,6 @@ following [barnes1967].
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section
@@ -221,11 +220,11 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       · dsimp only [z] at hz₀
         simp only [hz₀, map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
-    refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
+    refine ⟨⟨z, hUle z.property⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using! hz₀
     · change ⁅z, _⁆ = (0 : E)
       ext
-      exact lie_self z.1
+      exact lie_self z.val
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
   -- We will do this once again by showing that `coeff χ i` vanishes
   -- on a sufficiently large subset `s` of `K`.
@@ -305,10 +304,10 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   suffices engel K (v : L) ≤ engel K x by
     -- Indeed, in that case the minimality assumption on `E` implies
     -- that `E` is contained in the Engel subalgebra of `v`.
-    replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
+    replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.property, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using! this z.2
+    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using! this z.property
   -- Now we are in good shape.
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
@@ -327,15 +326,15 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [z', pow_zero, Module.End.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', Module.End.mul_apply, ih]; rfl
+    | zero => simp [z']
+    | succ n ih => rw [pow_succ', pow_succ', mul_apply_eq_comp, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀ | ⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
+  · simpa [hn₀] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
@@ -349,7 +348,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; lia
-  · rw [← hn, hk, pow_succ', Module.End.mul_apply]
+  · rw [← hn, hk, pow_succ', mul_apply_eq_comp]
 
 variable (K L)
 

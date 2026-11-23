@@ -6,8 +6,9 @@ Authors: Matteo Cipollina, Stefan Kebekus
 
 module
 
-import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+
+import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 
 /-!
 # Cartan's Formula
@@ -86,7 +87,7 @@ theorem circleIntegrable_log_meromorphicTrailingCoeffAt :
     aesop
   · apply CircleIntegrable.congr_codiscreteWithin
      (eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero (not_not.1 h) hzero)
-    simpa [norm_sub_rev] using circleIntegrable_log_norm_sub_const 1
+    fun_prop
   · apply (circleIntegrable_congr _).2 (circleIntegrable_const 0 0 1)
     exact fun _ ↦ log_trailingCoeff_eq_zero_on_unitSphere hpos
 

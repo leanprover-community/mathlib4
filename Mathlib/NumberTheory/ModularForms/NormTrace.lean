@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction, translation, norm and trace
 
@@ -122,7 +125,7 @@ section restrictₗ -- do we want this for CuspForm etc? probably not so useful?
 
 variable (k) (R : Type*) [Semiring R] [SMul R ℂ]
   [Module R (ModularForm 𝒢 k)] [Module R (ModularForm ℋ k)]
-  [IsSMulApply R (ModularForm 𝒢 k) ℍ ℂ] [IsSMulApply R (ModularForm ℋ k) ℍ ℂ]
+  [IsSMulApply R (ModularForm 𝒢 k)] [IsSMulApply R (ModularForm ℋ k)]
 
 /-- Restriction bundled as a linear map. The typeclass assumptions will be satisfied for `R = ℝ`
 and any levels, or `R = ℂ` if `HasDetOne` is available. -/
@@ -285,7 +288,7 @@ omit [Subgroup.IsFiniteRelIndex 𝒢 ℋ] in
 lemma quotientFunc_restrict (hGH : 𝒢 ≤ ℋ) (q : ℋ ⧸ 𝒢.subgroupOf ℋ) :
     quotientFunc (f.restrict hGH) q = f := by
   induction q using QuotientGroup.induction_on' with
-  | H g => simp [slash_action_eqn _ _ (inv_mem g.2)]
+  | H g => simp [slash_action_eqn _ _ (inv_mem g.property)]
 
 /-- Composite of trace and restriction maps. -/
 lemma trace_restrict (hGH : 𝒢 ≤ ℋ) :

@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of the `Finite` typeclass
@@ -137,7 +137,7 @@ class Infinite (α : Sort*) : Prop where
 
 @[simp, push]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
-  ⟨Infinite.mk, fun h => h.1⟩
+  ⟨Infinite.mk, fun h => h.not_finite⟩
 
 @[simp, push]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=

@@ -5,8 +5,12 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
-import Mathlib.FieldTheory.PrimeField
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+
+import Mathlib.FieldTheory.PrimeField
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Totally real and totally complex number fields
@@ -39,7 +43,6 @@ section TotallyRealField
 /-
 
 ## Totally real number fields
-
 -/
 
 /-- A field `K` is totally real if all of its infinite places are real. In other words,

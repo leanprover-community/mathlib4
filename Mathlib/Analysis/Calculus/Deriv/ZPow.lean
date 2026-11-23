@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Shift
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`

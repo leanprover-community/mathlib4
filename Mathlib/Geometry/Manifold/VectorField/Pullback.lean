@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.VectorField
-import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 
 /-!
 # Vector fields in manifolds

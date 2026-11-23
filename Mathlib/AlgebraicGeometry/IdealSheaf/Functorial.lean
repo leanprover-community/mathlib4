@@ -18,7 +18,6 @@ We define the pullback and pushforward of ideal sheaves in this file.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
   The Galois connection between pullback and pushforward.
-
 -/
 
 @[expose] public section
@@ -191,12 +190,12 @@ lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.aff
 
 lemma ideal_map_of_isAffineHom
     (I : X.IdealSheafData) (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
-    (I.map f).ideal U = (I.ideal ⟨_, U.2.preimage f⟩).comap (f.app U).hom :=
-  ideal_map I f U (U.2.preimage f)
+    (I.map f).ideal U = (I.ideal ⟨_, U.property.preimage f⟩).comap (f.app U).hom :=
+  ideal_map I f U (U.property.preimage f)
 
 lemma ideal_comap_of_isOpenImmersion
     (I : Y.IdealSheafData) (f : X ⟶ Y) [IsOpenImmersion f] (U : X.affineOpens) :
-    (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩).comap
+    (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.property.image_of_isOpenImmersion f⟩).comap
       (f.appIso U).inv.hom := by
   refine (ker_ideal_of_isPullback_of_isOpenImmersion _ _ _ _
     (IsPullback.of_hasPullback f I.subschemeι) U).trans ?_

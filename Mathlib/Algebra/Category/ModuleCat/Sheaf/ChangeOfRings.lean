@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Change of sheaf of rings
@@ -14,7 +17,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 In this file, we define the restriction of scalars functor
 `restrictScalars α : SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R`
 attached to a morphism of sheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section

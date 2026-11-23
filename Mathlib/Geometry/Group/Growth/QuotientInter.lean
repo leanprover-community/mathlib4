@@ -5,9 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Growth in the quotient and intersection with a subgroup

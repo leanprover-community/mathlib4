@@ -6,14 +6,17 @@ Authors: Chris Birkbeck, David Loeffler
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Order.Filter.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits of intervals along filters
 
 This file contains some lemmas about how filters `Ixx` behave as the endpoints tend to `±∞`.
-
 -/
 
 public section

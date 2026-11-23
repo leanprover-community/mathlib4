@@ -5,8 +5,12 @@ Authors: Miyahara Kō
 -/
 module
 
+public meta import Aesop
+
 import Mathlib.Init
-public import Aesop
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measurability Rule Set

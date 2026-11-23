@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
+
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-public import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
@@ -201,9 +202,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
-      ext n
-      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
+    map_smul' _ _ := by ext; simp }
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 

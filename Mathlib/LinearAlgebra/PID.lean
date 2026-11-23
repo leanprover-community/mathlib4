@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Trace
+
 import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
@@ -19,7 +20,6 @@ algebra import hierarchy have to depend on the theory of PIDs.
 
 ## Main results:
 * `LinearMap.trace_restrict_eq_of_forall_mem`
-
 -/
 
 public section

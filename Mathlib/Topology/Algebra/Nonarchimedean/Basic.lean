@@ -22,7 +22,6 @@ group is nonarchimedean.
 - `NonarchimedeanAddGroup`: nonarchimedean additive group.
 - `NonarchimedeanGroup`: nonarchimedean multiplicative group.
 - `NonarchimedeanRing`: nonarchimedean ring.
-
 -/
 
 public section

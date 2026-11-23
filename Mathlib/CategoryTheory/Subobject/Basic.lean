@@ -5,11 +5,12 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
+
+import Mathlib.CategoryTheory.Category.GaloisConnection
 import Mathlib.Tactic.ApplyFun
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects
@@ -67,7 +68,6 @@ When a morphism `f` has an image, the image represents the same pseudoelement.
 In a category with images `Pseudoelements X` could be constructed as a quotient of `MonoOver X`.
 In fact, in an abelian category (I'm not sure in what generality beyond that),
 `Pseudoelements X` agrees with `Subobject X`, but we haven't developed this in mathlib yet.
-
 -/
 
 @[expose] public section
@@ -416,7 +416,7 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 
 -- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
-(One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
+(One could use `underlying.mapIso (eqToIso h)` here, but this is more readable.) -/
 @[simps]
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le
@@ -469,13 +469,13 @@ lemma subobjectMk_le_mk_of_hom :
   Subobject.mk_le_mk_of_comm f.hom.left (by simp)
 
 lemma isIso_hom_left_iff_subobjectMk_eq :
-    IsIso f.hom.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+    IsIso f.hom.left ↔ Subobject.mk P.obj.hom = Subobject.mk Q.obj.hom :=
   ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.hom.left) (by simp),
-    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
-      by simp [← cancel_mono Q.1.hom]⟩⟩
+    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.obj.hom],
+      by simp [← cancel_mono Q.obj.hom]⟩⟩
 
 lemma isIso_iff_subobjectMk_eq :
-    IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
+    IsIso f ↔ Subobject.mk P.obj.hom = Subobject.mk Q.obj.hom := by
   rw [isIso_iff_isIso_hom_left, isIso_hom_left_iff_subobjectMk_eq]
 
 end MonoOver

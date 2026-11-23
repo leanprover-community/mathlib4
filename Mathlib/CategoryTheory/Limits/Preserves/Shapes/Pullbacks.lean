@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preserving pullbacks
 
@@ -22,7 +25,6 @@ The dual is also given.
 ## TODO
 
 * Generalise to wide pullbacks
-
 -/
 
 @[expose] public section
@@ -50,7 +52,6 @@ abbrev map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cone) of a pullback cone is limit iff
 the map (as a pullback cone) is limit. -/
 def isLimitMapConeEquiv :
@@ -82,14 +83,14 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
-  (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
+  (PullbackCone.isLimitMapConeEquiv _ G).toFun (isLimitOfPreserves G l)
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
-    ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
+    ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).invFun l)
 
 variable (f g) [PreservesLimit (cospan f g) G]
 
@@ -174,7 +175,6 @@ variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C 
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cocone) of a pushout cocone is colimit iff
 the map (as a pushout cocone) is limit. -/
 def isColimitMapCoconeEquiv :

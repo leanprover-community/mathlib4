@@ -5,15 +5,19 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.LocalAtTarget
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Covering maps involving the complex plane
@@ -33,8 +37,9 @@ theorem isAddQuotientCoveringMap_exp :
       (AddSubgroup.zmultiples (2 * Real.pi * I)) := by
   refine Topology.IsQuotientMap.isAddQuotientCoveringMap_of_addSubgroup ?_
     _ ⟨NormedSpace.discreteTopology_zmultiples _⟩ fun {z _} ↦ ?_
-  · refine IsOpenMap.isQuotientMap ?_ (by fun_prop) fun z ↦ ⟨_, Subtype.ext (exp_log z.2)⟩
-    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr isOpenMap_exp
+  · refine IsOpenMap.isQuotientMap ?_ (by fun_prop) fun z ↦ ⟨_, Subtype.ext (exp_log z.property)⟩
+    exact (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr
+      isOpenMap_exp
   · simp_rw [Subtype.ext_iff, eq_comm (a := exp z), exp_eq_exp_iff_exists_int,
       AddSubgroup.mem_zmultiples_iff, eq_add_neg_iff_add_eq, eq_comm, add_comm, zsmul_eq_mul]
 
@@ -71,7 +76,8 @@ theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
-    IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, pow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
+    IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦
+      (⟨x ^ n, pow_ne_zero n x.property⟩ : {x : 𝕜 // x ≠ 0}) := by
   convert!
     (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
       (.setCongr (s := {x | x ≠ 0}) _) using 1
@@ -79,7 +85,8 @@ theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
-    IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, zpow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
+    IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦
+      (⟨x ^ n, zpow_ne_zero n x.property⟩ : {x : 𝕜 // x ≠ 0}) := by
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
   · convert! isCoveringMap_npow n _ <;> aesop
   · convert! (isCoveringMap_npow n _).comp_homeomorph (.inv₀ 𝕜)
@@ -92,8 +99,9 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl
     ext; simp [this]
-  · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
-    ext; simpa using! (this _).not
+  · refine (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr (t := {x : 𝕜 | x ≠ 0}) ?_)
+    ext
+    simp [this]
 
 attribute [-instance] Units.mulAction'
 

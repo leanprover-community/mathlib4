@@ -5,9 +5,13 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.WithOne.Defs
+
+import Mathlib.Algebra.Group.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # More operations on `WithOne` and `WithZero`
