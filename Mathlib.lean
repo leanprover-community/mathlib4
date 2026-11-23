@@ -8156,7 +8156,8 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Compact
-public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.Ring.Ideal.Basic
+public import Mathlib.Topology.Algebra.Ring.Ideal.Noetherian
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
