@@ -22,6 +22,8 @@ forward along `f`. For an injective extension `A → B` (equivalently `Module.Is
 - `ClassGroup.mulEquiv g`: the isomorphism between class groups induced by a ring isomorphism.
 - `ClassGroup.extendedHom A B`: the induced map between the class groups.
 - `ClassGroup.extendedIdeal A B`: the extension of a nonzero integral ideal.
+- `ClassGroup.pointwiseMulDistribMulAction`: the action on `ClassGroup R` of a group acting on `R`
+  by ring automorphisms. It is an instance in the `Pointwise` locale.
 
 ## Main results
 
@@ -30,6 +32,8 @@ forward along `f`. For an injective extension `A → B` (equivalently `Module.Is
 - `ClassGroup.extendedHom_mk`: compatibility with representatives as fractional ideals.
 - `ClassGroup.extendedHom_mk0`: compatibility with representatives as nonzero integral ideals.
 - `ClassGroup.extendedHom_comp`: compatibility of extension in a tower `A → B → C`.
+- `ClassGroup.smul_mk`, `ClassGroup.smul_mk0`: compatibility of the pointwise action with
+  representatives.
 - `ClassGroup.extendedHom_eq_one_of_forall_isPrincipal`: if the extension of every ideal is
   principal, then `ClassGroup.extendedHom A B` is trivial.
 -/
@@ -203,6 +207,67 @@ theorem extendedHom_eq_one_of_forall_isPrincipal
   exact (ClassGroup.mk0_eq_one_iff (extendedIdeal A B I).property).mpr (by simpa using h I)
 
 end DedekindDomain
+
+section Pointwise
+
+open scoped Pointwise
+
+variable {G R : Type*} [Group G] [CommRing R] [MulSemiringAction G R]
+
+section IsDomain
+
+variable [IsDomain R]
+
+/-- The action of a group `G` on a domain `R` by ring automorphisms induces an action on the
+class group of `R`, by extension of fractional ideals.
+
+This is available as an instance in the `Pointwise` locale. -/
+@[expose, instance_reducible]
+protected noncomputable def pointwiseMulDistribMulAction :
+    MulDistribMulAction G (ClassGroup R) where
+  -- The `show` makes `map_mk0` and `map_quotientMk` apply to `g • x`.
+  smul g := map (MulSemiringAction.toRingHom G R g)
+    (show Function.Injective (MulSemiringAction.toRingHom G R g) from MulAction.injective g)
+  one_smul x := by
+    refine (DFunLike.congr_fun ?_ x).trans (map_id x)
+    congr 1
+    exact RingHom.ext (one_smul G)
+  mul_smul g h x := by
+    refine (DFunLike.congr_fun ?_ x).trans (map_map _ _ _ _ x).symm
+    congr 1
+    exact RingHom.ext (mul_smul g h)
+  smul_one _ := map_one _
+  smul_mul _ := map_mul _
+
+scoped[Pointwise] attribute [instance] ClassGroup.pointwiseMulDistribMulAction
+
+theorem pointwise_smul_def (g : G) (x : ClassGroup R) :
+    g • x = map (MulSemiringAction.toRingHom G R g)
+      (show Function.Injective (MulSemiringAction.toRingHom G R g) from MulAction.injective g) x :=
+  rfl
+
+theorem pointwise_smul_eq_mulEquiv (g : G) (x : ClassGroup R) :
+    g • x = mulEquiv (MulSemiringAction.toRingEquiv G R g) x :=
+  rfl
+
+@[simp]
+theorem smul_mk {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] (g : G)
+    (I : (FractionalIdeal R⁰ K)ˣ) :
+    g • mk K I = mk K (g • I) := by
+  rw [← mk_canonicalEquiv K (FractionRing R), ← mk_canonicalEquiv K (FractionRing R) (g • I),
+    pointwise_smul_def, ← Quot_mk_eq_mk, ← Quot_mk_eq_mk]
+  refine (map_quotientMk _ _ _).trans (congr_arg _ ?_)
+  ext : 1
+  exact (FractionalIdeal.canonicalEquiv_smul _ g (I : FractionalIdeal R⁰ K)).symm
+
+end IsDomain
+
+@[simp]
+theorem smul_mk0 [IsDedekindDomain R] (g : G) (I : (Ideal R)⁰) : g • mk0 I = mk0 (g • I) := by
+  rw [pointwise_smul_def, map_mk0]
+  rfl
+
+end Pointwise
 
 end ClassGroup
 

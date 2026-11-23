@@ -27,6 +27,8 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 * `FractionalIdeal.pointwiseMulSemiringAction`: an action of a group `G` on `R` by ring
   automorphisms induces an action on the fractional ideals of a fraction ring of `R`. It is an
   instance in the `Pointwise` locale.
+* `FractionalIdeal.unitsPointwiseMulDistribMulAction`: the induced action on the units of the
+  fractional ideals, also an instance in the `Pointwise` locale.
 
 ## Main results
 
@@ -406,6 +408,16 @@ theorem canonicalEquiv_smul (K' : Type*) [CommRing K'] [Algebra R K'] [IsFractio
 theorem coeIdeal_smul (g : G) (I : Ideal R) :
     ((g • I : Ideal R) : FractionalIdeal R⁰ K) = g • (I : FractionalIdeal R⁰ K) := by
   rw [pointwise_smul_def, extended_coeIdeal_eq_map, Ideal.pointwise_smul_def]
+
+/-- The action of `G` on the units of the fractional ideals of `K` induced by
+`FractionalIdeal.pointwiseMulSemiringAction`.
+
+This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
+protected def unitsPointwiseMulDistribMulAction : MulDistribMulAction G (FractionalIdeal R⁰ K)ˣ :=
+  Units.mulDistribMulActionRight
+
+scoped[Pointwise] attribute [instance] FractionalIdeal.unitsPointwiseMulDistribMulAction
 
 instance : CovariantClass G (FractionalIdeal R⁰ K) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ ↦ extended_mono _ _⟩
