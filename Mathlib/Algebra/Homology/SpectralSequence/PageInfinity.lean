@@ -16,19 +16,18 @@ public section
 
 -- what is the best way to do this?
 lemma Int.exists_min (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
-    (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
-    ∃ (m : ℤ) (_ : m ∈ S), ∀ (x : ℤ) (_ : x ∈ S), m ≤ x := by
-  let T : Set ℕ := .ofPred fun i => m₀ + i ∈ S
+    (hm₀ : ∀ (x : ℤ), x ∈ S → m₀ ≤ x) :
+    ∃ (m : ℤ) (_ : m ∈ S), S ⊆ Set.Ici m := by
+  let T : Set ℕ := .ofPred fun i ↦ m₀ + i ∈ S
   obtain ⟨x, hx⟩ := hS
   obtain ⟨t₀, rfl⟩ := Int.le.dest (hm₀ x hx)
   have hT : T.Nonempty := ⟨t₀, hx⟩
   let μ := (Nat.lt_wfRel.wf).min T hT
-  refine ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy => ?_⟩
+  refine ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy ↦ ?_⟩
   have hy' : 0 ≤ y - m₀ := by have := hm₀ y hy; lia
   obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
   obtain rfl : y = m₀ + t := by lia
-  simp only [ge_iff_le, add_le_add_iff_left, Nat.cast_le]
-  exact WellFoundedLT.min_le (s := T) hy
+  simpa using WellFoundedLT.min_le (s := T) hy
 
 namespace CategoryTheory
 
@@ -96,6 +95,34 @@ Otherwise, we set it to be the zero object. -/
 noncomputable def pageInfinity (pq : ι) : C :=
   if _ : E.HasPageInfinityAt pq then
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq else 0
+
+noncomputable def pageInfinityIso' (pq : ι) [E.HasPageInfinityAt pq] :
+    (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq ≅ E.pageInfinity pq :=
+  eqToIso (Eq.symm (dite_eq_left (by assumption)))
+
+noncomputable def edgeMono (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    E.pageInfinity pq ⟶ (E.page r).X pq :=
+  (E.pageInfinityIso' pq).inv ≫
+    (E.edgeIsoSteps pq (E.rMin pq) (max (E.rMin pq) r)).hom ≫
+      E.edgeMonoSteps pq r (max (E.rMin pq) r)
+
+instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
+    Mono (E.edgeMono pq r) := by
+  dsimp [edgeMono]
+  infer_instance
+
+noncomputable def edgeEpi (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeEpiAt pq r
+    (E.page r).X pq ⟶ E.pageInfinity pq :=
+  E.edgeEpiSteps pq r _ ≫
+    (E.edgeIsoSteps pq (E.rMin pq) (max (E.rMin pq) r)).inv ≫
+      (E.pageInfinityIso' pq).hom
+
+instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
+    Epi (E.edgeEpi pq r) := by
+  dsimp [edgeEpi]
+  infer_instance
 
 end SpectralSequence
 

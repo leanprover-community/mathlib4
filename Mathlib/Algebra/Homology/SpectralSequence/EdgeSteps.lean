@@ -49,6 +49,12 @@ instance (k : ℕ) : E.HasEdgeMonoAtFrom pq (r + k) :=
 instance : E.HasEdgeMonoAtFrom pq (r + 1) :=
   E.hasEdgeMonoAtFrom_of_le pq r _
 
+instance (r' : ℤ) : E.HasEdgeMonoAtFrom pq (max r r') :=
+  E.hasEdgeMonoAtFrom_of_le pq r _
+
+instance (r' : ℤ) : E.HasEdgeMonoAtFrom pq (max r' r) :=
+  E.hasEdgeMonoAtFrom_of_le pq r _
+
 /-- Auxiliary definition for `edgeMonoSteps`. -/
 private noncomputable def edgeMonoSteps' (k : ℕ) :
     haveI := E.le₀_of_hasEdgeMonoAt pq r
@@ -171,6 +177,12 @@ instance (k : ℕ) : E.HasEdgeEpiAtFrom pq (r + k) :=
   E.hasEdgeEpiAtFrom_of_le pq r _
 
 instance : E.HasEdgeEpiAtFrom pq (r + 1) :=
+  E.hasEdgeEpiAtFrom_of_le pq r _
+
+instance (r' : ℤ) : E.HasEdgeEpiAtFrom pq (max r r') :=
+  E.hasEdgeEpiAtFrom_of_le pq r _
+
+instance (r' : ℤ) : E.HasEdgeEpiAtFrom pq (max r' r) :=
   E.hasEdgeEpiAtFrom_of_le pq r _
 
 /-- Auxiliary definition for `edgeEpiSteps`. -/
