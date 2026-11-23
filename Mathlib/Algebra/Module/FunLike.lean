@@ -41,14 +41,14 @@ theorem coeLinearMap_apply (f : F) : coeLinearMap R F f = f := rfl
 @[norm_cast]
 theorem coe_coeLinearMap : (coeLinearMap R F : F → α → β) = DFunLike.coe := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toAddMonoidHom_coeLinearMap [IsZeroApply F] :
-    (coeLinearMap R F).toAddMonoidHom = coeAddMonoidHom F α β :=
+    (coeLinearMap R F : F →+ α → β) = coeAddMonoidHom F α β :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toAddHom_coeLinearMap [IsZeroApply F] :
-    (coeLinearMap R F).toAddHom = coeAddHom F α β :=
+    (coeLinearMap R F : F →ₙ+ α → β) = coeAddHom F α β :=
   rfl
 
 variable (R F) in
@@ -59,13 +59,13 @@ def evalLinearMap (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeLinea
 @[simp]
 theorem evalLinearMap_apply (x : α) (f : F) : evalLinearMap R F x f = f x := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
-    (evalLinearMap R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
+    (evalLinearMap R F x : F →+ β) = evalAddMonoidHom F x := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toAddHom_evalLinearMap [IsZeroApply F] (x : α) :
-    (evalLinearMap R F x).toAddHom = evalAddHom F x :=
+    (evalLinearMap R F x : F →ₙ+ β) = evalAddHom F x :=
   rfl
 
 end LinearMap
