@@ -161,9 +161,8 @@ lemma trivial :
     rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
     rw [mvfderiv_add hσ hσ']
   leibniz hσ hg hx := by
-    rw [mdifferentiableAt_section] at hσ
+    rw [mdifferentiableAt_section_trivial_iff] at hσ
     ext1 X₀
-    simp at hσ
     simp [mvfderiv_smul hg hσ]
 
 lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F) :
@@ -256,9 +255,8 @@ lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜]
     ∀ σ : M → F, ∀ x ∈ s, MDiffAt (T% σ) x → cov σ x = d% σ x + A x (σ x) := by
   use hcov.difference (trivial I M F |>.mono <| subset_univ s)
   intro σ x hx hσ
-  rw [hcov.difference_apply _ (by trivial) hσ]
-  simp only [mvfderiv]
-  module
+  rw [hcov.difference_apply _ hx hσ]
+  abel
 
 noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
