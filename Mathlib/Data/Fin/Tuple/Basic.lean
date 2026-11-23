@@ -287,10 +287,7 @@ theorem cons_cons_comp_swap_zero_one {α : Sort*} (x y : α) (q : Fin n → α) 
   | succ i =>
     induction i using Fin.induction with
     | zero => simp
-    | succ i =>
-      simp only [Function.comp_apply, cons_succ]
-      rw [Equiv.swap_apply_of_ne_of_ne (by simp) (succ_succ_ne_one i)]
-      simp
+    | succ i => grind [cons_succ, Equiv.swap_apply_of_ne_of_ne, succ_succ_ne_one]
 
 section Preorder
 
