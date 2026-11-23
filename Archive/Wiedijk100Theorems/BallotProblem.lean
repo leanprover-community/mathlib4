@@ -283,12 +283,13 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
       (countedSequence (p + 1) q).image (List.cons (-1)) := by
   rw [counted_succ_succ, union_inter_distrib_right,
       (_ : List.cons 1 '' countedSequence p (q + 1) ∩ {l : List ℤ | l.headI = 1}ᶜ = ∅),
-      empty_union] <;>
-    · ext
-      simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
-        iff_false, not_and, forall_exists_index, and_imp]
-      rintro y _ rfl
-      norm_num
+      empty_union]
+  all_goals
+    ext
+    simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
+      iff_false, not_and, forall_exists_index, and_imp]
+    rintro y _ rfl
+    norm_num
 
 theorem ballot_neg (p q : ℕ) (qp : q < p) :
     uniformOn (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}ᶜ) staysPositive =
