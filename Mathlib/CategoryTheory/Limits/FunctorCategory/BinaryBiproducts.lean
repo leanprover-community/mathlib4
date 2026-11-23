@@ -5,8 +5,11 @@ Authors: Leopold Mayer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Biproducts in functor categories

@@ -5,10 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.TensorProduct.Finite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebras which are commutative ring epimorphisms
@@ -147,7 +148,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using! congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr(f $(tmul_comm R 1 a))
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
 
@@ -21,6 +21,11 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
+
+## TODO
+
+Link `IsLocallyConstant` to `Function.IsConst(On)`.
+
 -/
 
 @[expose] public section
@@ -40,18 +45,21 @@ open List in
 protected theorem tfae (f : X → Y) :
     TFAE [IsLocallyConstant f,
       ∀ x, ∀ᶠ x' in 𝓝 x, f x' = f x,
+      ∀ x, EventuallyConst f (𝓝 x),
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4 := fun h y => h {y}
-  tfae_have 4 → 3 := fun h x => h (f x)
-  tfae_have 3 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
-  tfae_have 2 → 5
-  | h, x => by
+  tfae_have 1 → 5 := fun h y => h {y}
+  tfae_have 5 → 4 := fun h x => h (f x)
+  tfae_have 4 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 2 → 3 := fun h x ↦ ⟨{f x}, h x, Set.subsingleton_singleton⟩
+  tfae_have 3 → 2 := fun h x ↦ by
+    have ⟨s, hmem, hsub⟩ := h x
+    rwa [hsub.eq_singleton_of_mem <| Set.mem_preimage.mp <| mem_of_mem_nhds hmem] at hmem
+  tfae_have 2 → 6 := fun h x ↦ by
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
-  tfae_have 5 → 1
-  | h, s => by
+  tfae_have 6 → 1 := fun h s ↦ by
     refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
@@ -72,10 +80,16 @@ theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClop
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
-  (IsLocallyConstant.tfae f).out 1 5
+  (IsLocallyConstant.tfae f).out 1 6
 
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
   (IsLocallyConstant.tfae f).out 1 2
+
+theorem iff_forall_eventuallyConst {f : X → Y} :
+    IsLocallyConstant f ↔ ∀ x, EventuallyConst f (𝓝 x) :=
+  IsLocallyConstant.tfae f |>.out 1 3
+
+alias ⟨eventuallyConst, _⟩ := iff_forall_eventuallyConst
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -86,10 +100,10 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
-  (IsLocallyConstant.tfae f).out 1 3
+  (IsLocallyConstant.tfae f).out 1 4
 
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
-  (IsLocallyConstant.tfae f).out 1 4
+  (IsLocallyConstant.tfae f).out 1 5
 
 protected theorem continuous [TopologicalSpace Y] {f : X → Y} (hf : IsLocallyConstant f) :
     Continuous f :=
@@ -145,7 +159,7 @@ theorem eq_const [PreconnectedSpace X] {f : X → Y} (hf : IsLocallyConstant f) 
 theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : IsLocallyConstant f) :
     ∃ y, f = Function.const X y := by
   rcases isEmpty_or_nonempty X with h | h
-  · exact ⟨Classical.arbitrary Y, funext <| h.elim⟩
+  · exact ⟨Classical.arbitrary Y, funext h.elim⟩
   · exact ⟨f (Classical.arbitrary X), hf.eq_const _⟩
 
 theorem iff_is_const [PreconnectedSpace X] {f : X → Y} : IsLocallyConstant f ↔ ∀ x y, f x = f y :=
@@ -230,10 +244,10 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
   rfl
 
 protected theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
   DFunLike.ext'
@@ -290,13 +304,13 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
     refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
-    · convert! hU.2 using 1
+    · convert hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,
         Nat.succ_succ_ne_one]
       tauto
     · rw [← isClosed_compl_iff]
-      convert! hU.1
+      convert hU.1
       ext
       simp
 
@@ -409,12 +423,12 @@ theorem comap_const (f : C(X, Y)) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
   ext; simp [h]
 
-lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
+lemma comap_injective (f : C(X, Y)) (hfs : f.toFun.Surjective) :
     (comap (Z := Z) f).Injective := by
   intro a b h
   ext y
   obtain ⟨x, hx⟩ := hfs y
-  simpa [← hx] using LocallyConstant.congr_fun h x
+  simpa [← hx] using congr($h x)
 
 end Comap
 
@@ -448,7 +462,8 @@ noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
     rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
-    exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
+    exact ((f.isLocallyConstant s).inter hU.isOpen).union
+      ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)
 
@@ -505,8 +520,8 @@ a two-element set
 -/
 def equivClopens [∀ (s : Set X) x, Decidable (x ∈ s)] :
     LocallyConstant X (Fin 2) ≃ TopologicalSpace.Clopens X where
-  toFun f := ⟨f ⁻¹' {0}, f.2.isClopen_fiber _⟩
-  invFun s := ofIsClopen s.2
+  toFun f := ⟨f ⁻¹' {0}, f.isLocallyConstant.isClopen_fiber _⟩
+  invFun s := ofIsClopen s.isClopen'
   left_inv _ := locallyConstant_eq_of_fiber_zero_eq _ _ (by simp)
   right_inv _ := by simp
 
@@ -572,10 +587,10 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
-  piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
+  piecewise (h₁.preimage continuous_subtypeVal) (h₂.preimage continuous_subtypeVal)
     (by simpa [eq_univ_iff_forall] using! h₀)
-    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
-    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
+    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩)
+    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
       simpa using hf x ⟨hx₁, hx₂⟩
 
@@ -587,7 +602,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_left (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 
@@ -599,7 +614,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_right (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 

@@ -109,12 +109,12 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem ofPred_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
-  ext fun _ => .symm <| mem_iUnion
+  ext fun _ => .symm mem_iUnion
 
 @[deprecated (since := "2026-07-09")] alias setOf_exists := ofPred_exists
 
 theorem ofPred_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
-  ext fun _ => .symm <| mem_iInter
+  ext fun _ => .symm mem_iInter
 
 @[deprecated (since := "2026-07-09")] alias setOf_forall := ofPred_forall
 
@@ -525,7 +525,7 @@ theorem iInter_eq_univ : ⋂ i, s i = univ ↔ ∀ i, s i = univ :=
 
 @[simp]
 theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp

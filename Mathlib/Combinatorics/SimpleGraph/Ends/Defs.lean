@@ -5,9 +5,13 @@ Authors: Anand Rao, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Basic.Finite.Set
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+
+import Mathlib.Basic.Finite.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ends
@@ -54,7 +58,7 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective _ _ := ComponentCompl.supp_inj.mp
 
-instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K)
 
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :

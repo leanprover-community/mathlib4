@@ -5,12 +5,13 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 public import Mathlib.CategoryTheory.Limits.Final
+
+import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories
@@ -18,7 +19,6 @@ public import Mathlib.CategoryTheory.Limits.Final
 ## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
-
 -/
 
 public section
@@ -34,7 +34,6 @@ section Small
 variable {A : Type u₁} [SmallCategory A] {B : Type u₁} [SmallCategory B]
 variable {T : Type u₁} [SmallCategory T]
 
-set_option backward.defeqAttrib.useBackward true in
 private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R : B ⥤ T)
     [IsFiltered B] [Final R] [∀ b, IsFiltered (CostructuredArrow L (R.obj b))] : IsFiltered A := by
   refine isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F => ⟨?_⟩
@@ -69,7 +68,7 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
     (CostructuredArrow.pre sA.inverse (L ⋙ sT.functor) _).asEquivalence.trans
       (CostructuredArrow.post L sT.functor _).asEquivalence.symm
   have : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
-    fun b => IsFiltered.of_equivalence (sC b.1).symm
+    fun b => IsFiltered.of_equivalence (sC <| ULift.down b).symm
   have := isFiltered_of_isFiltered_costructuredArrow_small
     (sA.inverse ⋙ L ⋙ sT.functor) (sB.inverse ⋙ R ⋙ sT.functor)
   exact IsFiltered.of_equivalence sA.symm

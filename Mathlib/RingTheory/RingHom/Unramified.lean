@@ -6,12 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Unramified.Locus
-public import Mathlib.RingTheory.LocalProperties.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # The meta properties of unramified ring homomorphisms.
-
 -/
 
 @[expose] public section
@@ -101,7 +101,7 @@ lemma ofLocalizationSpanTarget :
     simpa using (PrimeSpectrum.iSup_basicOpen_eq_top_iff'.mpr hs).ge
       (TopologicalSpace.Opens.mem_top x)
   refine Algebra.basicOpen_subset_unramifiedLocus_iff.mpr ?_ hrx
-  convert! H ⟨r, hr⟩
+  convert H ⟨r, hr⟩
   dsimp
   rw [← algebraMap_toAlgebra f, ← IsScalarTower.algebraMap_eq,
     formallyUnramified_algebraMap]

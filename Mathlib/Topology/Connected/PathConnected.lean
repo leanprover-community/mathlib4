@@ -78,6 +78,11 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 
+instance : IsEquiv X Joined where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
 theorem Joined.map {x y : X} {f : X → Y} (h : Joined x y) (hf : Continuous f) :
     Joined (f x) (f y) :=
   ⟨h.somePath.map hf⟩
@@ -208,7 +213,7 @@ theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
 
 theorem joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
     JoinedIn F x y ↔ Joined (⟨x, x_in⟩ : F) (⟨y, y_in⟩ : F) :=
-  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
+  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtypeVal, by simp⟩⟩
 
 @[simp]
 theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
@@ -226,11 +231,17 @@ theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   simp_all only [joinedIn_iff_joined]
   exact h.symm
 
+instance : Std.Symm (JoinedIn F) where
+  symm _ _ := .symm
+
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   obtain ⟨hx, hy⟩ := hxy.mem
   obtain ⟨hx, hy⟩ := hyz.mem
   simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
+
+instance : IsTrans X (JoinedIn F) where
+  trans _ _ _ := .trans
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
@@ -409,12 +420,12 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
     rwa [← h] at y_in
 
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
-    ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
+    ∀ x ∈ F, ∀ y ∈ F, JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 
 theorem isPathConnected_iff :
-    IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
+    IsPathConnected F ↔ F.Nonempty ∧ ∀ x ∈ F, ∀ y ∈ F, JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, h _ b_in⟩⟩
@@ -500,9 +511,10 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
-      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+      ⟨(γ.truncateOfLE t.property.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm,
+        fun t' ↦ ?_⟩⟩
     dsimp [Path.truncateOfLE, Path.truncate]
-    exact γ.extend_extends' ⟨min (max t'.1 0) t.1, by simp [t.2.1, t.2.2]⟩ ▸ hγ _⟩
+    exact γ.extend_extends' ⟨min (max t'.val 0) t.val, by simp [t.property.1, t.property.2]⟩ ▸ hγ _⟩
 
 theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
   rw [← pathComponentIn_univ]
@@ -574,7 +586,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   let := pathSetoid X
   constructor
   · intro h
-    refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩
+    refine ⟨(nonempty_quotient_iff _).mpr h.nonempty, ⟨?_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy

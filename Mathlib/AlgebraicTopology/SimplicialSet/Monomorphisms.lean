@@ -6,15 +6,18 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 public import Mathlib.CategoryTheory.Types.Monomorphisms
+
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monomorphisms of simplicial sets
 
 In this file, we show that the class of monomorphisms in `SSet` is stable
 under coproducts, pushouts, filtered colimits and transfinite compositions.
-
 -/
 
 public section

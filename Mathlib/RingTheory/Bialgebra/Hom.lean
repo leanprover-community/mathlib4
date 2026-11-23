@@ -5,8 +5,8 @@ Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Homomorphisms of `R`-bialgebras
@@ -23,7 +23,6 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 ## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section
@@ -205,18 +204,18 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   CoalgHom.linearMapOfClass_injective.comp coe_coalgHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 protected theorem congr_arg (φ : A →ₐc[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  DFunLike.congr_arg φ h
+  congr(φ $h)
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
 @[ext high]
-theorem ext_of_ring {f g : R →ₐc[R] A} (h : f 1 = g 1) : f = g :=
-  coe_linearMap_injective (by ext; assumption)
+theorem ext_of_ring {f g : R →ₐc[R] A} : f = g :=
+  coe_linearMap_injective (by ext; exact (map_one f).trans (map_one g).symm)
 
 @[simp]
 theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :

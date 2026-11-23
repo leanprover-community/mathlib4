@@ -16,8 +16,8 @@ implies `P x`. Well-founded relations can be used for induction and recursion, i
 construction of fixed points in the space of dependent functions `Π x : α, β x`.
 
 The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
-and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
-and an induction principle `WellFounded.induction_bot`.
+and provide a few new definitions: `WellFounded.min`, `Function.argmin`, and an induction principle
+`WellFounded.induction_bot`.
 -/
 
 @[expose] public section
@@ -34,8 +34,8 @@ theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
     ¬Acc r x ↔ ∃ f : ℕ → α, f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) where
   mp hx := let f : ℕ → {a : α // ¬Acc r a} :=
-      Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.2).choose_spec.1⟩
-    ⟨(f · |>.1), rfl, fun n ↦ (exists_not_acc_lt_of_not_acc (f n).2).choose_spec.2⟩
+      Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.property).choose_spec.1⟩
+    ⟨(f · |>.val), rfl, fun n ↦ (exists_not_acc_lt_of_not_acc (f n).property).choose_spec.2⟩
   mpr h acc := acc.rec
     (fun _x _ ih ⟨f, hf⟩ ↦ ih (f 1) (hf.1 ▸ hf.2 0) ⟨(f <| · + 1), rfl, fun _ ↦ hf.2 _⟩) h
 
@@ -81,13 +81,22 @@ theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α �
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
 
+theorem of_map {f : α → β} (h : WellFounded (Relation.Map r f f)) : WellFounded r :=
+  .mono inferInstance <| Relation.le_onFun_map f
+
+theorem _root_.Function.Injective.wellFounded_map_iff {f : α → β} (hf : f.Injective) :
+    WellFounded (Relation.Map r f f) ↔ WellFounded r := by
+  refine ⟨of_map, fun h ↦ ⟨fun c ↦ ⟨c, ?_⟩⟩⟩
+  rintro _ ⟨a, b, hab, rfl, rfl⟩
+  exact hf.acc_map_iff.mpr (h.apply a)
+
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
 theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     s.Nonempty → ∃ a ∈ s, ∀ x ∈ s, ¬r x a
   | ⟨a, ha⟩ => show ∃ b ∈ s, ∀ x ∈ s, ¬r x b from
     Acc.recOn (H.apply a) (fun x _ IH =>
-        not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
+        not_imp_not.1 fun hne hx => hne ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
 theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
@@ -190,10 +199,12 @@ theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f
 open Set
 
 /-- The supremum of a bounded, well-founded order -/
+@[deprecated "write down the definition explicitly" (since := "2026-09-14")]
 protected noncomputable def sup {r : α → α → Prop} (wf : WellFounded r) (s : Set α)
     (h : Bounded r s) : α :=
   wf.min { x | ∀ a ∈ s, r a x } h
 
+@[deprecated "WellFounded.sup is deprecated" (since := "2026-09-14")]
 protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
@@ -271,6 +282,11 @@ theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) 
 @[to_dual apply_le]
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
   hf.id_le x
+
+@[to_dual]
+theorem StrictMono.isCofinal_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β]
+    (hf : StrictMono f) : IsCofinal (.range f) :=
+  fun x ↦ ⟨f x, Set.mem_range_self x, hf.le_apply⟩
 
 @[to_dual]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]

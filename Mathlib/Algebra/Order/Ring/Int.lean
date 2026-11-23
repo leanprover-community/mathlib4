@@ -10,8 +10,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Data.Int.GCD
-public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Order.BooleanAlgebra.Set
+
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # The integers form a linear ordered ring

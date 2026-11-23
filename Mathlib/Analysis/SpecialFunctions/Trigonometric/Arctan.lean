@@ -6,7 +6,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+
 import Mathlib.Topology.Order.AtTopBotIxx
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The `arctan` function.
@@ -364,7 +368,7 @@ theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
 
 @[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
-  continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
+  continuous_subtypeVal.comp tanOrderIso.toHomeomorph.continuous_invFun
 
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt

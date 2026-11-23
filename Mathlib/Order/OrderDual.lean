@@ -97,13 +97,6 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
-set_option linter.style.setOption false in
-set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
-/-- The opposite linear order to a given linear order -/
-@[instance_reducible, deprecated "This declaration shouldn't have existed" (since := "2026-04-08")]
-def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
-
 instance [h : Inhabited α] : Inhabited αᵒᵈ := ⟨h.default⟩
 
 theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=

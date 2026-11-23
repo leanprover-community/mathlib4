@@ -5,10 +5,11 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.RingTheory.Nilpotent.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properties of the adjoint action
