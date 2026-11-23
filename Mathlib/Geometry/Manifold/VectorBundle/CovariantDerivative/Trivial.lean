@@ -319,30 +319,8 @@ lemma contMDiffOn_one_form' [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
     letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
     have := isManifold_one I n M
     CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
-  have := isManifold_one I n M
-  have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
-    -- Note: this lemma is not an instance (always the same issue with regularity assumptions)
-    TangentBundle.contMDiffVectorBundle
-  apply ContMDiffOn.clm_bundle_of_apply' (n+1)
-  intro σ x hx hσ
-  have hσ' : ∀ᶠ b in 𝓝[s] x, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) (n + 1) (T% σ) s b :=
-    eventually_nhdsWithin_of_eventually_nhds hσ
-  have : ∀ᶠ x' in 𝓝[s] x, cov σ x' = d% σ x' + (hcov.one_form x') (σ x') := by
-    filter_upwards [hσ', eventually_mem_nhdsWithin] with x' hx' Hx'
-    have := hx'.mdifferentiableWithinAt (by simp) |>.mdifferentiableAt (hs.mem_nhds Hx')
-    exact hcov.eq_one_form this
-  let V := TotalSpace (E →L[𝕜] F) fun x : M ↦ TangentSpace I x →L[𝕜] F
-  have : ∀ᶠ x' in 𝓝[s] x,
-      (TotalSpace.mk' (E →L[𝕜] F) x' (hcov.one_form x' (σ x')) : V) =
-      TotalSpace.mk' (E →L[𝕜] F) x' (cov σ x' - d% σ x') := by
-    filter_upwards [this] with x' hx'
-    simp [hx']
-  apply ContMDiffWithinAt.congr_of_eventuallyEq _ this (this.self_of_nhdsWithin hx)
-  apply ContMDiffWithinAt.sub_section
-  · exact hcov'.contMDiffWithinAt hx hσ'
-  · have := hσ.self_of_nhds
-    rw [Bundle.Trivial.contMDiffWithinAt_section_iff] at this
-    exact this.mvfderiv hs hx
+  intro _ x hx
+  exact contMDiffOn_one_form n hcov hcov' hs hx |>.contMDiffWithinAt
 
 -- TODO: add global variant!
 
