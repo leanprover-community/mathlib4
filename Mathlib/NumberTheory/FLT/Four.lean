@@ -151,105 +151,45 @@ namespace Fermat42
 -- If we have a solution to a ^ 4 + b ^ 4 = c ^ 2, we can construct a smaller one. This
 -- implies there can't be a smallest solution.
 theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 < c) : False := by
-  -- Use the fact that a ^ 2, b ^ 2, c form a pythagorean triple to obtain m and n such that
-  -- a ^ 2 = m ^ 2 - n ^ 2, b ^ 2 = 2 * m * n and c = m ^ 2 + n ^ 2
-  -- first the formula:
+  -- Step 1: Parametrize the primitive Pythagorean triple (a², b², c).
   have ht : PythagoreanTriple (a ^ 2) (b ^ 2) c := by
-    delta PythagoreanTriple
-    linear_combination h.1.2.2
-  -- coprime requirement:
-  have h2 : Int.gcd (a ^ 2) (b ^ 2) = 1 :=
-    Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow
-  -- in order to reduce the possibilities we get from the classification of pythagorean triples
-  -- it helps if we know the parity of a ^ 2 (and the sign of c):
-  have ha22 : a ^ 2 % 2 = 1 := by
-    rw [sq, Int.mul_emod, ha2]
-    decide
-  obtain ⟨m, n, ht1, ht2, ht3, ht4, ht5, ht6⟩ := ht.coprime_classification' h2 ha22 hc
-  -- Now a, n, m form a pythagorean triple and so we can obtain r and s such that
-  -- a = r ^ 2 - s ^ 2, n = 2 * r * s and m = r ^ 2 + s ^ 2
-  -- formula:
+    rw [PythagoreanTriple, ← pow_add, ← pow_add, ← sq]; exact h.1.2.2
+  obtain ⟨m, n, ht1, ht2, ht3, ht4, _, ht6⟩ := ht.coprime_classification'
+    (Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal h).pow)
+    (by rw [sq, Int.mul_emod, ha2]; rfl) hc
+  -- Step 2: Parametrize the second primitive Pythagorean triple (a, n, m).
   have htt : PythagoreanTriple a n m := by
-    delta PythagoreanTriple
-    linear_combination ht1
-  -- a and n are coprime, because a ^ 2 = m ^ 2 - n ^ 2 and m and n are coprime.
-  have h3 : Int.gcd a n = 1 := by
-    apply Int.isCoprime_iff_gcd_eq_one.mp
-    apply @IsCoprime.of_mul_left_left _ _ _ a
-    rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
-    exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
-  -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
-  have hb20 : b ^ 2 ≠ 0 := pow_ne_zero _ h.1.2.1
-  have h4 : 0 < m := by
-    apply lt_of_le_of_ne ht6
-    rintro rfl
-    lia
-  obtain ⟨r, s, _, htt2, htt3, htt4, htt5, htt6⟩ := htt.coprime_classification' h3 ha2 h4
-  -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
-  -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
-  -- m and r * s are coprime because m = r ^ 2 + s ^ 2 and r and s are coprime.
-  have hcp : Int.gcd m (r * s) = 1 := by
-    rw [htt3]
-    exact Int.isCoprime_iff_gcd_eq_one.mp
-      (Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4))
-  -- b is even because b ^ 2 = 2 * m * n.
-  have hb2 : 2 ∣ b := by
-    apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
-    rw [ht2, mul_assoc]
-    exact dvd_mul_right 2 (m * n)
-  obtain ⟨b', hb2'⟩ := hb2
-  have hs : b' ^ 2 = m * (r * s) := by
-    apply (mul_right_inj' (by simp : (4 : ℤ) ≠ 0)).mp
-    linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
-  have hrsz : r * s ≠ 0 := by grind
-  have h2b0 : b' ≠ 0 := by grind
-  obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
-  -- use m is positive to exclude m = - i ^ 2
-  have hi' : ¬m = -i ^ 2 := by
-    by_contra h1
-    have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
-    rw [← h1] at hit
-    apply absurd h4 (not_lt.mpr hit)
-  replace hi : m = i ^ 2 := Or.resolve_right hi hi'
-  rw [mul_comm] at hs
-  rw [Int.gcd_comm] at hcp
-  -- obtain d such that r * s = d ^ 2
-  obtain ⟨d, hd⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
-  -- (b / 2) ^ 2 and m are positive so r * s is positive
-  have hd' : ¬r * s = -d ^ 2 := by
-    by_contra h1
-    rw [h1] at hs
-    have h2 : b' ^ 2 ≤ 0 := by
-      rw [hs, (by ring : -d ^ 2 * m = -(d ^ 2 * m))]
-      exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
-    have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
-    exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
-  replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
-  -- r = +/- j ^ 2
-  obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hj0 : j ≠ 0 := by grind
-  rw [mul_comm] at hd
-  rw [Int.gcd_comm] at htt4
-  -- s = +/- k ^ 2
-  obtain ⟨k, hk⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hk0 : k ≠ 0 := by grind
-  have hj2 : r ^ 2 = j ^ 4 := by grind
-  have hk2 : s ^ 2 = k ^ 4 := by grind
-  -- from m = r ^ 2 + s ^ 2 we now get a new solution to a ^ 4 + b ^ 4 = c ^ 2:
-  have hh : i ^ 2 = j ^ 4 + k ^ 4 := by grind
-  have hn : n ≠ 0 := by grind
-  -- and it has a smaller c: from c = m ^ 2 + n ^ 2 we see that m is smaller than c, and i ^ 2 = m.
-  have hic : Int.natAbs i < Int.natAbs c := by
-    apply Int.ofNat_lt.mp
-    rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply lt_of_le_of_lt (Int.natAbs_le_self_sq i)
-    rw [← hi, ht3]
-    apply lt_of_le_of_lt (Int.le_self_sq m)
-    exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
-  have hic' : Int.natAbs c ≤ Int.natAbs i := by
-    apply h.2 j k i
-    exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
+    rw [PythagoreanTriple, ← sq, ← sq, ← sq, ht1, sub_add_cancel]
+  have hmn : IsCoprime (a * a + n * n) n :=
+    let h := Int.isCoprime_iff_gcd_eq_one.mpr ht4; htt.eq ▸ h.mul_left h
+  have hmn0 : 2 * m * n ≠ 0 := ht2 ▸ pow_ne_zero 2 h.1.2.1
+  have h4 : 0 < m := ht6.lt_of_ne' (right_ne_zero_of_mul (left_ne_zero_of_mul hmn0))
+  obtain ⟨r, s, _, htt2, htt3, htt4, _, _⟩ := htt.coprime_classification'
+    (Int.isCoprime_iff_gcd_eq_one.mp hmn.of_add_mul_left_left.of_mul_left_left) ha2 h4
+  -- Step 3: Extract square factors from m * r * s = (b / 2)² via pairwise coprimality.
+  have hrs : IsCoprime r s := Int.isCoprime_iff_gcd_eq_one.mpr htt4
+  have hcp : IsCoprime m (r * s) := htt3 ▸ Int.isCoprime_of_sq_sum' hrs
+  obtain ⟨b', hb'⟩ : 2 ∣ b := Int.Prime.dvd_pow' Nat.prime_two ⟨m * n, ht2.trans (mul_assoc ..)⟩
+  have hs : m * (r * s) = b' ^ 2 := mul_left_cancel₀ (pow_ne_zero 2 two_ne_zero) <| by
+    rw [← mul_pow, ← hb', ht2, htt2, sq, mul_mul_mul_comm, ← mul_assoc 2 r]
+  obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one (Int.isCoprime_iff_gcd_eq_one.mp hcp) hs
+  have hi := hi.resolve_right fun h1 => (h1 ▸ h4).not_ge (neg_nonpos.mpr (sq_nonneg i))
+  have sq_pow4 {x y : ℤ} (hg : IsCoprime x y) (he : x * y = b' ^ 2) (hx : x ≠ 0) :
+      ∃ w, w ≠ 0 ∧ x ^ 2 = w ^ 4 := by
+    obtain ⟨w, rfl | rfl⟩ := Int.sq_of_gcd_eq_one (Int.isCoprime_iff_gcd_eq_one.mp hg) he
+    · exact ⟨w, ne_zero_pow two_ne_zero hx, (pow_mul ..).symm⟩
+    · exact ⟨w, ne_zero_pow two_ne_zero (neg_ne_zero.mp hx), (neg_sq _).trans (pow_mul ..).symm⟩
+  have h2rs : 2 * r * s ≠ 0 := htt2 ▸ right_ne_zero_of_mul hmn0
+  obtain ⟨j, hj0, hj⟩ := sq_pow4 (hcp.of_mul_right_left.symm.mul_right hrs)
+    (mul_left_comm r m s ▸ hs) (right_ne_zero_of_mul (left_ne_zero_of_mul h2rs))
+  obtain ⟨k, hk0, hk⟩ := sq_pow4 (hcp.of_mul_right_right.symm.mul_right hrs.symm)
+    (by rw [mul_comm s, mul_assoc, hs]) (right_ne_zero_of_mul h2rs)
+  -- Step 4: Construct a smaller solution (j, k, i), contradicting minimality.
+  exact (h.2 j k i ⟨hj0, hk0, by rw [← hj, ← hk, ← htt3, hi]⟩).not_gt <| Int.ofNat_lt.mp <|
+    calc (i.natAbs : ℤ) ≤ i ^ 2 := Int.natAbs_le_self_sq i
+      _ ≤ m ^ 2 := hi ▸ Int.le_self_sq m
+      _ < m ^ 2 + n ^ 2 := lt_add_of_pos_right _ (sq_pos_of_ne_zero (right_ne_zero_of_mul hmn0))
+      _ = c.natAbs := by rw [← ht3, Int.natAbs_of_nonneg hc.le]
 
 end Fermat42
 
