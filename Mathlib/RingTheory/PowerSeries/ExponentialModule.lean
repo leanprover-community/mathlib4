@@ -106,7 +106,7 @@ protected theorem npow {f : R⟦X⟧} (hf : IsExponential f) (n : ℕ) :
   | zero => simp [IsExponential.one]
   | succ n hn => simp [pow_succ, hn.mul hf]
 
-/-- If `f` is exponential, then `f(r • T)` is exponential, for any `r : R`. -/
+/-- If `f` is exponential, then `f(a • T)` is exponential, for any `a : A`. -/
 protected theorem rescale (a : A) {f : R⟦X⟧} (hf : IsExponential f) :
     IsExponential (rescale (algebraMap A R a) f) := by
   rw [isExponential_iff] at hf ⊢
@@ -133,7 +133,7 @@ open Additive
 
 section Instances
 
-/-- Action of `R` on the additive group `Additive R⟦X⟧` given by rescaling. -/
+/-- Action of `A` on the additive group `Additive R⟦X⟧` given by rescaling. -/
 noncomputable instance : SMul A (Additive R⟦X⟧) :=
   ⟨fun a f ↦ ofMul (rescale (algebraMap A R a) (toMul f))⟩
 
@@ -325,18 +325,17 @@ lemma choose_mul_coeff_add_eq (f : ExponentialModule R) (p q : ℕ) :
     (p + q).choose p * (coeff (p + q) (f : R⟦X⟧)) = coeff p f * coeff q f :=
   (subst_add_eq_mul_iff (R := R) f).mp (subst_add_coe_eq_mul f) p q
 
-variable [CommRing A] [Algebra A R] {S : Type*} [CommRing S] [Algebra A S] (φ : R →ₐ[A] S)
-
+variable [CommRing A] [Algebra A R] {S : Type*} [CommRing S] [Algebra A S]
 /-- Given `A`-algebras `R` and `S`, this is the linear map between their respective exponential
 modules induced by an `A`-algebra map on the coefficients. -/
-noncomputable def linearMap :
+noncomputable def linearMap (φ : R →ₐ[A] S) :
     ExponentialModule R →ₗ[A] ExponentialModule S where
   toFun f := ⟨ofMul (PowerSeries.map φ (f : R⟦X⟧)),
     (mem_exponentialModule_iff _).mpr ((isExponential_coe f).map (φ  : R →+* S))⟩
   map_add' f g  := coe_injective (by simp)
   map_smul' a f := coe_injective (by simp [rescale_algebraMap_map])
 
-theorem coeff_linearMap (n : ℕ) (f : ExponentialModule R) :
+theorem coeff_linearMap (φ : R →ₐ[A] S) (n : ℕ) (f : ExponentialModule R) :
     coeff n (linearMap φ f) = φ (coeff n f) := by rfl
 
 end ExponentialModule
