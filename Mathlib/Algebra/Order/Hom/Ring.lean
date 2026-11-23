@@ -103,18 +103,12 @@ section Equiv
 variable [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `RingEquivClass F α β`
-into an actual `OrderRingIso`.
-This is declared as the default coercion from `F` to `α ≃+*o β`. -/
-@[coe]
-def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
+into an actual `OrderRingIso`. -/
+def OrderRingIso.ofClass [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
   { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
-/-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
-  `OrderRingIsoClass.toOrderRingIso`. -/
-instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderIsoClass F α β]
-    [RingEquivClass F α β] : CoeTC F (α ≃+*o β) :=
-  ⟨OrderRingIsoClass.toOrderRingIso⟩
+@[deprecated (since := "2026-11-22")] alias OrderRingIsoClass.toOrderRingIso := OrderRingIso.ofClass
 
 end Equiv
 
@@ -325,6 +319,10 @@ instance : RingEquivClass (α ≃+*o β) α β where
   map_add f := f.map_add'
 
 instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
+
+@[simp]
+theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β] [RingEquivClass F α β]
+    (f : F) : ⇑(ofClass f) = f := rfl
 
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
