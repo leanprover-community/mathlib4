@@ -31,7 +31,7 @@ def lcmDen (p : List ℚ) : ℕ := p.foldl (fun d x => d.lcm x.den) 1
 /-- The greatest common divisor of the numerators of elements of `p`. -/
 def gcdNum (p : List ℚ) : ℕ := p.foldl (fun g x => g.gcd x.num.natAbs) 0
 
-/-- Compute `k > 0` such that the elements of `k * p` are coprime integers or `1` if `p` represents
+/-- Compute `k > 0` such that the elements of `k • p` are coprime integers or `1` if `p` represents
 the coefficients of the `0` polynomial. -/
 def primitiveFactor (p : List ℚ) : ℚ :=
   let g := gcdNum p
@@ -62,11 +62,11 @@ def sturmStep (p q : List ℤ) : SturmStep :=
   let (quot, rem) := divMod (p.map fun x => -(x : ℚ)) (q.map (↑))
   let k := primitiveFactor rem
   let a : ℤ := lcmDen (k⁻¹ :: quot)
-  -- by definition of `a`, `a * quot` is a list of integers.
+  -- by definition of `a`, `a • quot` is a list of integers.
   let b := quot.map fun x : ℚ => (a * x).num
   -- by definition of `a`, `a * k⁻¹` is an integer.
   let c := (a * k⁻¹).num
-  -- by definition of `k`, `k * x` is a list of integers.
+  -- by definition of `k`, `k • rem` is a list of integers.
   let r := rem.map fun x => (k * x).num
   { a, b, c, r }
 
@@ -83,11 +83,11 @@ def sturmSteps (p : List ℤ) : List SturmStep := Id.run do
     q := s.r
   return steps.toList
 
-/-- Compute `k > 0` such that the elements of `k * p` are integers, and the `SturmCertificate` for
-the polynomial with the coefficient list `k * p`. -/
+/-- Compute `k > 0` such that the elements of `k • p` are integers, and the `SturmCertificate` for
+the polynomial with the coefficient list `k • p`. -/
 public def SturmCertificate.fromCoeffList (p : List ℚ) : ℕ × SturmCertificate :=
   let k := lcmDen p
-  -- by definition of `k`, `k * p` is a list of integers
+  -- by definition of `k`, `k • p` is a list of integers
   let s := p.map fun x : ℚ => (k * x).num
   let steps := sturmSteps s
   (k, { s, steps })

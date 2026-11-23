@@ -54,7 +54,7 @@ the polynomial that `p` represents.
 `coeffLead p ≠ 0 → (ofCoeffList p).leadingCoeff = coeffLead p` -/
 def coeffLead [Zero R] (p : List R) : R := p.getLastD 0
 
-/-- The coefficient list of `c * p + q`.
+/-- The coefficient list of `c • p + q`.
 
 `ofCoeffList (coeffAddSmul c p q) = c • ofCoeffList p + ofCoeffList q` -/
 def coeffAddSmul [Semiring R] (c : R) : List R → List R → List R
@@ -70,8 +70,8 @@ def coeffMul [Semiring R] (p q : List R) : List R :=
 
 /-- A step of the Sturm sequence.
 
-`r` is a polynomial which satisfies the equation `a * p + b * q + c * r = 0` and `r` is of lower
-degree than `q`. It follows from these two conditions that `r = (a / c) * (- p % q)` and so if `p`
+`r` is a polynomial which satisfies the equation `a • p + b * q + c • r = 0` and `r` is of lower
+degree than `q`. It follows from these two conditions that `r = (a / c) • (- p % q)` and so if `p`
 and `q` are positive multiples of consecutive entries of a Sturm sequence then `r` is a positive
 multiple of the next entry. -/
 structure SturmStep where
@@ -87,7 +87,7 @@ structure SturmStep where
 namespace SturmStep
 
 /-- Check that the `SturmStep` is valid for the two previous Sturm sequence entries `p` and `q`:
-`a` and `c` are positive, `r` is of lower degree than `q` and `a * p + b * q + c * r = 0`. The
+`a` and `c` are positive, `r` is of lower degree than `q` and `a • p + b * q + c • r = 0`. The
 equation is checked by computing the coefficient list of its left-hand side. -/
 def check (s : SturmStep) (p q : List ℤ) : Bool :=
   0 < s.a &&
