@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.Squarefree
 
 /-!
@@ -99,6 +98,13 @@ theorem IsFundamentalDiscr.eq_one_of_eq_sq_mul (h : IsFundamentalDiscr D) {m : �
   · rw [Int.mul_emod, Int.sq_emod_four]
     grind
 
+/-- The only fundamental discriminant that is a square is `1`. -/
+theorem IsFundamentalDiscr.eq_one_of_isSquare (h : IsFundamentalDiscr D) (h' : IsSquare D) :
+    D = 1 := by
+  obtain ⟨r, rfl⟩ := h'
+  have := h.eq_one_of_eq_sq_mul (m := r.natAbs) (by rw [mul_one, Int.natAbs_sq, sq]) (by norm_num)
+  rw [← Int.natAbs_mul_self' r, this, Nat.cast_one, mul_one]
+
 theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
     IsFundamentalDiscr (4 * m + 1) ↔ Squarefree (4 * m + 1) := by
   simp [isFundamentalDiscr_iff_squarefree]
@@ -106,18 +112,5 @@ theorem isFundamentalDiscr_four_mul_add_one {m : ℤ} :
 theorem isFundamentalDiscr_four_mul {m : ℤ} :
     IsFundamentalDiscr (4 * m) ↔ Squarefree m ∧ (m % 4 = 2 ∨ m % 4 = 3) := by
   simp [isFundamentalDiscr_iff_squarefree]
-
-/-- The only fundamental discriminant that is a square is `1`. -/
-theorem IsFundamentalDiscr.eq_one_of_isSquare (h : IsFundamentalDiscr D) (h' : IsSquare D) :
-    D = 1 := by
-  have h_main {r : ℤ} (hr : Squarefree (r * r)) : r * r = 1 := by
-    grind [isUnit_iff.mp <| Squarefree.isUnit_of_pow le_rfl (pow_two r ▸ hr)]
-  obtain ⟨r, rfl⟩ := h'
-  obtain h | h := isFundamentalDiscr_iff_squarefree.mp h
-  · exact h_main h.2
-  · obtain ⟨s, rfl⟩ : Even r := by
-      grind [prime_two.dvd_mul.mp <| dvd_trans (by norm_num : _) <| dvd_iff_emod_eq_zero.mpr h.1]
-    rw [show (s + s) * (s + s) / 4 = s * s by grind] at h
-    grind
 
 end Int

@@ -9,7 +9,10 @@ public import Mathlib.Algebra.QuadraticAlgebra.Int
 public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-public import Mathlib.RingTheory.QuadraticAlgebra
+
+import Mathlib.Algebra.Algebra.Hom.Rat
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.RingTheory.QuadraticAlgebra
 
 /-!
 # Quadratic fields
@@ -21,6 +24,8 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
 
 * `NumberField.QuadraticField.isFundamentalDiscr_discr`: the discriminant of a quadratic field
   is a fundamental discriminant;
+* `NumberField.QuadraticField.nonempty_algEquiv_quadraticAlgebra_int`: the ring of integers of a
+  quadratic field is the quadratic algebra over `ℤ` of discriminant `discr K`;
 * `NumberField.QuadraticField.nonempty_algEquiv_quadraticAlgebra_discr`: every quadratic field
   is `ℚ(√(discr K))`;
 * `NumberField.QuadraticField.nonempty_algEquiv_iff_discr_eq`: the discriminant is a complete
@@ -41,7 +46,7 @@ different from `1`, `not_isSquare_intCast` below proves `¬ IsSquare (d : ℚ)`.
 
 public section
 
-open NumberField Int
+open NumberField
 
 open scoped QuadraticAlgebra
 
@@ -50,21 +55,12 @@ instance NumberField.of_isQuadraticExtension (K : Type*) [Field K] [CharZero K]
 
 namespace NumberField.QuadraticField
 
-variable (K : Type*) [Field K] [CharZero K] [h : Algebra.IsQuadraticExtension ℚ K]
+variable (K : Type*) [Field K] [CharZero K] [Algebra.IsQuadraticExtension ℚ K]
 
 instance : Algebra.IsQuadraticExtension ℤ (𝓞 K) where
-  finrank_eq_two' := by rw [RingOfIntegers.rank, h.finrank_eq_two]
+  finrank_eq_two' := by rw [RingOfIntegers.rank, Algebra.IsQuadraticExtension.finrank_eq_two]
 
 variable {K}
-
-/-- A ring isomorphism between the ring of integers of `K` and `QuadraticAlgebra ℤ a b` extends
-to their fraction fields. -/
-noncomputable def algEquivOfRingEquiv {a b : ℤ}
-    (f : 𝓞 K ≃+* QuadraticAlgebra ℤ a b) :
-    K ≃ₐ[ℚ] QuadraticAlgebra ℚ a b :=
-  (IsFractionRing.ringEquivOfRingEquiv f).equivRatAlgEquiv _ _
-
-section discr
 
 /-- If the ring of integers of `K` is `QuadraticAlgebra ℤ a b`, the discriminant of `K` is the
 discriminant of that quadratic algebra. -/
@@ -74,7 +70,6 @@ theorem discr_eq_quadraticAlgebra_discr {a b : ℤ}
   rw [← discr_eq_discr K ((QuadraticAlgebra.basis a b).map f.toIntAlgEquiv.symm),
     Module.Basis.coe_map, RingEquiv.symm_toIntAlgEquiv, AlgEquiv.coe_toLinearEquiv,
     ← Algebra.discr_eq_discr_of_algEquiv, ← Algebra.discr_quadraticAlgebra]
-  rfl
 
 variable (K)
 
@@ -86,48 +81,34 @@ theorem isFundamentalDiscr_discr : Int.IsFundamentalDiscr (discr K) := by
   exact QuadraticAlgebra.Int.isIntegrallyClosed_iff.mp <| IsIntegrallyClosed.of_equiv f.toRingEquiv
 
 /-- The ring of integers of a quadratic field `K` is the quadratic algebra of discriminant
-`discr K`, see `Int.IsFundamentalDiscr.discr_ediv_four_emod_four`. -/
-theorem nonempty_algEquiv_ringOfIntegers :
+`discr K`, see `QuadraticAlgebra.algEquivEdivEmod`. -/
+theorem nonempty_algEquiv_quadraticAlgebra_int :
     Nonempty (𝓞 K ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  refine ⟨f.trans (Nonempty.some ?_)⟩
-  rw [QuadraticAlgebra.nonempty_algEquiv_int_iff,
-    (isFundamentalDiscr_discr K).discr_ediv_four_emod_four,
-    discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  exact ⟨f.trans (QuadraticAlgebra.algEquivEdivEmod a b)⟩
 
 /-- Every quadratic field is `ℚ(√(discr K))`. -/
 theorem nonempty_algEquiv_quadraticAlgebra_discr :
     Nonempty (K ≃ₐ[ℚ] QuadraticAlgebra ℚ (discr K : ℚ) 0) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  exact ⟨(algEquivOfRingEquiv f.toRingEquiv).trans <|
-    (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) (b : ℚ)).trans <|
-      QuadraticAlgebra.equivOfEq (by rw [QuadraticAlgebra.Int.discr_intCast,
-        discr_eq_quadraticAlgebra_discr f.toRingEquiv]) rfl⟩
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv, ← QuadraticAlgebra.discr_intCast]
+  exact ⟨(IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv).toRatAlgEquiv.trans
+    (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) b)⟩
 
-/-- The discriminant of a quadratic field is not `1`. A more general version is the
-Hermite-Minkowski theorem, see `NumberField.abs_discr_gt_two`. -/
-theorem discr_ne_one : discr K ≠ 1 := by
-  by_contra! h
-  obtain ⟨a, b, ⟨f⟩⟩ :=
-    Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
-    (discr_eq_quadraticAlgebra_discr f.toRingEquiv ▸ h ▸ IsSquare.one)
-
-/-- `√(discr K)` lies in `K`. -/
+/-- The square root of `discr K` lies in `K`. -/
 theorem exists_sq_eq_discr : ∃ x : K, x ^ 2 = discr K := by
-  let e := (nonempty_algEquiv_quadraticAlgebra_discr K).some
+  obtain ⟨e⟩ := nonempty_algEquiv_quadraticAlgebra_discr K
   exact ⟨e.symm ω, by simp [← map_pow, QuadraticAlgebra.omega_pow_two_eq_add]⟩
 
 /-- The discriminant of a quadratic field is not a square. -/
-theorem not_isSquare_discr : ¬ IsSquare (discr K) :=
-  (Int.IsFundamentalDiscr.eq_one_of_isSquare (isFundamentalDiscr_discr K)).mt <| discr_ne_one K
-
-/-- **Stickelberger's theorem**, for quadratic fields: the discriminant is congruent to
-`0` or `1` modulo `4`. -/
-theorem discr_emod_four : discr K % 4 = 0 ∨ discr K % 4 = 1 :=
-  (isFundamentalDiscr_discr K).1
+theorem not_isSquare_discr : ¬ IsSquare (discr K) := by
+  obtain ⟨a, b, ⟨f⟩⟩ :=
+    Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
 
 variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
 
@@ -135,10 +116,10 @@ variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
 theorem nonempty_algEquiv_iff_discr_eq :
     Nonempty (K ≃ₐ[ℚ] F) ↔ discr K = discr F := by
   refine ⟨fun ⟨e⟩ ↦ discr_eq_discr_of_algEquiv K e, fun h ↦ ?_⟩
-  obtain ⟨e₁⟩ := nonempty_algEquiv_ringOfIntegers K
-  obtain ⟨e₂⟩ := nonempty_algEquiv_ringOfIntegers F
-  exact ⟨(IsFractionRing.ringEquivOfRingEquiv
-    ((h ▸ e₁).trans e₂.symm).toRingEquiv).equivRatAlgEquiv _ _⟩
+  obtain ⟨e₁⟩ := h ▸ nonempty_algEquiv_quadraticAlgebra_int K
+  obtain ⟨e₂⟩ := nonempty_algEquiv_quadraticAlgebra_int F
+  exact ⟨(IsFractionRing.ringEquivOfRingEquiv (L := F)
+    (e₁.trans e₂.symm).toRingEquiv).toRatAlgEquiv⟩
 
 /-- A squarefree integer `d` other than `1` is not a square in `ℚ`, the hypothesis that makes
 `ℚ(√d)` automatically a number field; see the implementation notes for details. -/
@@ -156,11 +137,11 @@ theorem discr_quadraticAlgebra_eq {a b : ℤ}
     (h1 : QuadraticAlgebra.discr a b ≠ 1) :
     -- This is needed to get a number field
     haveI : Fact (¬ IsSquare (QuadraticAlgebra.discr (a : ℚ) (b : ℚ))) :=
-      ⟨by rw [QuadraticAlgebra.Int.discr_intCast, Rat.isSquare_intCast_iff]
+      ⟨by rw [QuadraticAlgebra.discr_intCast, Rat.isSquare_intCast_iff]
           exact h.eq_one_of_isSquare.mt h1⟩
     discr (QuadraticAlgebra ℚ a b) = QuadraticAlgebra.discr a b := by
   have : Fact (¬ IsSquare (QuadraticAlgebra.discr (a : ℚ) (b : ℚ))) :=
-    ⟨by rw [QuadraticAlgebra.Int.discr_intCast, Rat.isSquare_intCast_iff]
+    ⟨by rw [QuadraticAlgebra.discr_intCast, Rat.isSquare_intCast_iff]
         exact h.eq_one_of_isSquare.mt h1⟩
   exact discr_eq_quadraticAlgebra_discr
     (QuadraticAlgebra.Int.algEquivIntegralClosure h).toRingEquiv.symm
@@ -170,13 +151,14 @@ See the implementation notes in the module docstring for the `Fact` assumption. 
 theorem discr_quadraticAlgebra {D : ℤ} [Fact (¬ IsSquare (D : ℚ))]
     (hD : Int.IsFundamentalDiscr D) (hD1 : D ≠ 1) :
     discr (QuadraticAlgebra ℚ (D : ℚ) 0) = D := by
-  have hd : QuadraticAlgebra.discr (D / 4) (D % 4) = D := hD.discr_ediv_four_emod_four
+  have hd : QuadraticAlgebra.discr (D / 4) (D % 4) = D :=
+    QuadraticAlgebra.discr_ediv_emod hD.emod_four_eq_zero_or_one
   have : Fact (¬ IsSquare (QuadraticAlgebra.discr ((D / 4 : ℤ) : ℚ) ((D % 4 : ℤ) : ℚ))) :=
-    ⟨by rw [QuadraticAlgebra.Int.discr_intCast, hd]; exact Fact.out⟩
+    ⟨by rw [QuadraticAlgebra.discr_intCast, hd]; exact Fact.out⟩
   let e : QuadraticAlgebra ℚ (D : ℚ) 0 ≃ₐ[ℚ] QuadraticAlgebra ℚ (D / 4 : ℤ) (D % 4 : ℤ) := by
     refine (QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two.mpr
       ⟨(isUnit_of_invertible 2).unit, ?_⟩).some
-    grind [IsUnit.unit_spec, QuadraticAlgebra.Int.discr_intCast, QuadraticAlgebra.discr_def]
+    grind [IsUnit.unit_spec, QuadraticAlgebra.discr_intCast, QuadraticAlgebra.discr_def]
   rw [discr_eq_discr_of_algEquiv _ e, discr_quadraticAlgebra_eq (by rwa [hd]) (by rwa [hd]), hd]
 
 /-- The discriminant of `ℚ(√d)` is `4 * d` when `d` is squarefree and `d ≡ 2, 3 [ZMOD 4]`.
@@ -195,8 +177,6 @@ theorem discr_half {d : ℤ} [Fact (¬ IsSquare (d : ℚ))]
     (hd : Squarefree d) (hd1 : d ≠ 1) (h : d % 4 = 1) :
     discr (QuadraticAlgebra ℚ (d : ℚ) 0) = d :=
   discr_quadraticAlgebra (Int.isFundamentalDiscr_iff_squarefree.mpr (Or.inl ⟨h, hd⟩)) hd1
-
-end discr
 
 section embeddings
 
@@ -223,8 +203,6 @@ theorem isReal_embeddingEquiv_symm_iff (d : ℚ) [Fact (¬ IsSquare d)] (z : {z 
     QuadraticAlgebra.algHom_ext_iff, Complex.conj_eq_iff_im, ← Complex.sq_nonneg_iff, z.prop,
     ← Complex.ofReal_ratCast]
 
-variable (K)
-
 /-- A quadratic field is totally real iff its discriminant is positive. -/
 theorem isTotallyReal_iff_discr_pos : IsTotallyReal K ↔ 0 < discr K := by
   rw [Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K).symm]
@@ -236,14 +214,15 @@ theorem isTotallyReal_iff_discr_pos : IsTotallyReal K ↔ 0 < discr K := by
   obtain ⟨z, hz⟩ := IsAlgClosed.exists_pow_nat_eq (discr K : ℂ) two_pos
   simp +contextual only [InfinitePlace.isReal_mk_iff, (embeddingEquiv _).forall_congr_left,
     isReal_embeddingEquiv_symm_iff, Int.cast_nonneg_iff, Subtype.forall, Rat.cast_intCast]
-  exact Set.Nonempty.forall_const ⟨z, hz⟩
+  exact ⟨fun h ↦ h z hz, fun h _ _ ↦ h⟩
 
 /-- A quadratic field is totally complex iff its discriminant is negative. -/
 theorem isTotallyComplex_iff_discr_neg : IsTotallyComplex K ↔ discr K < 0 := by
   convert_to ¬ IsTotallyReal K ↔ _
   · rw [← nrRealPlaces_eq_zero_iff, ← nrComplexPlaces_eq_zero_iff]
-    grind [h.finrank_eq_two ▸ InfinitePlace.card_add_two_mul_card_eq_rank K]
-  rw [isTotallyReal_iff_discr_pos, not_lt_eq, Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K)]
+    grind [Algebra.IsQuadraticExtension.finrank_eq_two ℚ K ▸
+      InfinitePlace.card_add_two_mul_card_eq_rank K]
+  rw [isTotallyReal_iff_discr_pos, not_lt, Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K)]
 
 /-- The discriminant of a totally real quadratic field is positive. -/
 theorem discr_pos [IsTotallyReal K] : 0 < discr K :=

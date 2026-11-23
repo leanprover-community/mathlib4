@@ -95,7 +95,7 @@ theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : �
 
 theorem Squarefree.isUnit_of_pow [Monoid R] {x : R} {n : ℕ} (hn : 2 ≤ n)
     (h : Squarefree (x ^ n)) : IsUnit x := by
-  by_contra!
+  by_contra
   grind [h.eq_zero_or_one_of_pow_of_not_isUnit this]
 
 theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
