@@ -290,117 +290,128 @@ section Monad
 
 variable {β : Type u}
 
-@[to_additive]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 instance : Monad FreeCommGroup.{u} where
   pure α := of α
   bind x f := lift f x
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, deprecated "Use unprimed version." (since := "2026-11-17"))]
 protected theorem induction_on'
     {motive : FreeCommGroup α → Prop} (z : FreeCommGroup α) (one : motive 1)
     (pure : ∀ x, motive <| pure x) (inv : ∀ x, motive (Pure.pure x) → motive ((Pure.pure x)⁻¹))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
   FreeCommGroup.induction_on z one pure inv mul
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeCommGroup α) = pure (f x) :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 protected theorem map_one (f : α → β) : f <$> (1 : FreeCommGroup α) = 1 :=
   (lift (of ∘ f)).map_one
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 protected theorem map_mul (f : α → β) (x y : FreeCommGroup α) :
     f <$> (x * y) = f <$> x * f <$> y :=
   (lift _).map_mul _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 protected theorem map_inv (f : α → β) (x : FreeCommGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
   map_inv (lift <| of ∘ f) _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 protected theorem map_div (f : α → β) (x y : FreeCommGroup α) :
     f <$> (x / y) = f <$> x / f <$> y :=
   map_div (lift <| of ∘ f) _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem pure_bind (f : α → FreeCommGroup β) (x) : pure x >>= f = f x :=
   lift_apply_of _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem one_bind (f : α → FreeCommGroup β) : 1 >>= f = 1 :=
   (lift f).map_one
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem mul_bind (f : α → FreeCommGroup β) (x y : FreeCommGroup α) :
     x * y >>= f = (x >>= f) * (y >>= f) :=
   (lift _).map_mul _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem inv_bind (f : α → FreeCommGroup β) (x : FreeCommGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
   map_inv (lift f) _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem div_bind (f : α → FreeCommGroup β) (x y : FreeCommGroup α) :
     x / y >>= f = (x >>= f) / (y >>= f) :=
   map_div (lift f) _ _
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem pure_seq (f : α → β) (x : FreeCommGroup α) : pure f <*> x = f <$> x :=
   pure_bind _ _
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem one_seq (x : FreeCommGroup α) : (1 : FreeCommGroup (α → β)) <*> x = 1 :=
   one_bind _
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem mul_seq (f g : FreeCommGroup (α → β)) (x : FreeCommGroup α) :
     f * g <*> x = (f <*> x) * (g <*> x) :=
   mul_bind _ _ _
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem inv_seq (f : FreeCommGroup (α → β)) (x : FreeCommGroup α) : f⁻¹ <*> x = (f <*> x)⁻¹ :=
   inv_bind _ _
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem div_seq (f g : FreeCommGroup (α → β)) (x : FreeCommGroup α) :
     f / g <*> x = (f <*> x) / (g <*> x) :=
   div_bind _ _ _
 
+set_option linter.deprecated false in
 /-- If `f : FreeCommGroup (α → β)`, then `f <*>` is a multiplicative morphism
 `FreeCommGroup α →* FreeCommGroup β`. -/
-@[to_additive
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))
 /-- If `f : FreeAddCommGroup (α → β)`, then `f <*>` is an additive morphism
 `FreeAddCommGroup α →+ FreeAddCommGroup β`. -/]
 def seqGroupHom (f : FreeCommGroup (α → β)) : FreeCommGroup α →* FreeCommGroup β := by
   refine .mk' (f <*> ·) fun x y ↦ ?_
   change lift (· <$> (x * y)) _ = lift (· <$> x) _ * lift (· <$> y) _
-  simp [← Pi.mul_def]
+  simp [← Pi.mul_def, FreeCommGroup.map_mul]
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))]
 theorem seq_one (f : FreeCommGroup (α → β)) : f <*> 1 = 1 :=
   (seqGroupHom f).map_one
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))]
 theorem seq_mul (f : FreeCommGroup (α → β)) (x y : FreeCommGroup α) :
     f <*> x * y = (f <*> x) * (f <*> y) :=
   (seqGroupHom f).map_mul x y
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))]
 theorem seq_inv (f : FreeCommGroup (α → β)) (x : FreeCommGroup α) : f <*> x⁻¹ = (f <*> x)⁻¹ :=
   (seqGroupHom f).map_inv x
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `lift map` instead." (since := "2026-11-17"))]
 theorem seq_div (f : FreeCommGroup (α → β)) (x y : FreeCommGroup α) :
     f <*> x / y = (f <*> x) / (f <*> y) :=
   (seqGroupHom f).map_div x y
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 instance : LawfulMonad FreeCommGroup.{u} := LawfulMonad.mk'
   (id_map := fun x ↦ FreeCommGroup.induction_on' x (FreeCommGroup.map_one id) (map_pure id)
     (fun x ih ↦ by rw [FreeCommGroup.map_inv, ih])
@@ -410,7 +421,8 @@ instance : LawfulMonad FreeCommGroup.{u} := LawfulMonad.mk'
     (fun x ↦ by iterate 2 rw [pure_bind]) (fun x ih ↦ by simp_rw [inv_bind]; rw [ih])
     fun x y ihx ihy ↦ by simp_rw [mul_bind]; rw [ihx, ihy])
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 instance : CommApplicative FreeCommGroup.{u} where
   commutative_prod x y := by
     induction x using FreeCommGroup.induction_on' with
@@ -577,8 +589,7 @@ theorem of_one : (FreeAddCommGroup.of 1 : FreeAddCommGroup α) = 1 :=
 
 end One
 
-attribute [local instance] nonUnitalNonAssocRing one
-
+attribute [local instance] nonUnitalNonAssocRing one in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAddCommGroup α) where
   mul_assoc x y z := by
@@ -602,6 +613,7 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
+attribute [local instance] nonUnitalNonAssocRing one in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance ring : Ring (FreeAddCommGroup α) where
   mul_one x := by
@@ -681,8 +693,7 @@ theorem liftMonoid_symm_coe (f : FreeAddCommGroup α →+* R) :
 
 end Monoid
 
-attribute [local instance] ring
-
+attribute [local instance] ring in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance [CommMonoid α] : CommRing (FreeAddCommGroup α) where
   mul_comm x y := by
@@ -745,6 +756,8 @@ FreeAddCommGroup.lift
   FreeAbelianGroup.lift_neg := FreeAddCommGroup.lift_neg
 @[deprecated (since := "2026-11-11")] alias
   FreeAbelianGroup.lift_neg_apply := FreeAddCommGroup.lift_neg_apply
+set_option linter.deprecated.deprecatedTarget false in
+section
 @[deprecated (since := "2026-11-11")] protected alias FreeAbelianGroup.induction_on' :=
   FreeAddCommGroup.induction_on'
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.map_pure :=
@@ -789,6 +802,7 @@ FreeAddCommGroup.lift
   FreeAddCommGroup.seq_neg
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.seq_sub :=
   FreeAddCommGroup.seq_sub
+end
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.map :=
   FreeAddCommGroup.map
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.lift_comp :=

@@ -101,6 +101,11 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg (span {hζ.toInteger - 1}) ℤ
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg,
     absNorm_span_zeta_sub_one]
 
+#adaptation_note
+/-- After https://github.com/leanprover-community/mathlib4/pull/45954 (generalization of
+`AlgEquiv` to non-unital),
+`attribute [-instance] ZSMul.toSMul` is necessary, otherwise we get instance diamonds. -/
+attribute [-instance] ZSMul.toSMul in
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
@@ -289,7 +294,6 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
@@ -303,7 +307,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    simp [ζ]
   · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :

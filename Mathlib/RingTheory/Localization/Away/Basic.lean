@@ -146,8 +146,8 @@ variable {g : R →+* P}
 `z : S` to `g y * (g x)⁻ⁿ`, where `y : R, n : ℕ` are such that `z = F y * (F x)⁻ⁿ`. -/
 noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
   IsLocalization.lift fun y : Submonoid.powers x =>
-    show IsUnit (g y.1) by
-      obtain ⟨n, hn⟩ := y.2
+    show IsUnit (g y.val) by
+      obtain ⟨n, hn⟩ := y.property
       rw [← hn, g.map_pow]
       exact IsUnit.map (powMonoidHom n : P →* P) hg
 
@@ -249,11 +249,12 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
-noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
-  ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
+noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ where
+  __ := map Aₚ Bₚ f.toRingHom a
+  commutes' r := by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    simp⟩
+    simp
 
 @[simp]
 lemma mapₐ_apply (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] (x : Aₚ) :
@@ -556,38 +557,39 @@ noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
   IsLocalization.Away.mapₐ _ _ f a
 
 theorem algebraMap_injective_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤) :
-    Function.Injective (algebraMap R <| Π a : s, Away a.1) := fun x y eq ↦ by
+    Function.Injective (algebraMap R <| Π a : s, Away a.val) := fun x y eq ↦ by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (Ideal.eq_top_iff_one _).mp this
   by_contra ne
   have ⟨r, hrs, disj⟩ := Ideal.exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
-  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.1) _).mp congr($eq r)
+  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.val) _).mp congr($eq r)
   exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
 
 /-- The sheaf condition for the structure sheaf on `Spec R`
 for a covering of the whole prime spectrum by basic opens. -/
 theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤)
-    (f : Π a : s, Away a.1) (h : ∀ a b : s,
-      Away.awayToAwayRight (P := Away (a * b : R)) a.1 b (f a) = Away.awayToAwayLeft b.1 a (f b)) :
+    (f : Π a : s, Away a.val) (h : ∀ a b : s,
+      Away.awayToAwayRight (P := Away (a * b : R)) a.val b (f a) =
+        Away.awayToAwayLeft b.val a (f b)) :
     ∃! r : R, ∀ a : s, algebraMap R _ r = f a := by
   have mem := (Ideal.eq_top_iff_one _).mp span_eq; clear span_eq
   wlog finset_eq : ∃ t : Finset R, t = s generalizing s
   · have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span mem
-    have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.2⟩)
-      (fun a b ↦ h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) mem ⟨_, rfl⟩
-    refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.2⟩⟩
-    replace hts := Set.insert_subset a.2 hts
+    have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.property⟩)
+      (fun a b ↦ h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩) mem ⟨_, rfl⟩
+    refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.property⟩⟩
+    replace hts := Set.insert_subset a.property hts
     classical
-    have ⟨r', eq, _⟩ := this ({a.1} ∪ t) (fun a ↦ f ⟨a, hts a.2⟩) (fun a b ↦
-      h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem)
-      ⟨{a.1} ∪ t, by simp⟩
-    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, Set.mem_union_right _ b.2⟩).symm).trans
+    have ⟨r', eq, _⟩ := this ({a.val} ∪ t) (fun a ↦ f ⟨a, hts a.property⟩) (fun a b ↦
+      h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩)
+      (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem) ⟨{a.val} ∪ t, by simp⟩
+    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, Set.mem_union_right _ b.property⟩).symm).trans
       (eq ⟨a, Set.mem_union_left _ rfl⟩)
   have span_eq := (Ideal.eq_top_iff_one _).mpr mem
   refine existsUnique_of_exists_of_unique ?_ fun x y hx hy ↦
     algebraMap_injective_of_span_eq_top s span_eq (funext fun a ↦ (hx a).trans (hy a).symm)
   obtain ⟨s, rfl⟩ := finset_eq
-  choose n r eq using fun a ↦ Away.surj a.1 (f a)
+  choose n r eq using fun a ↦ Away.surj a.val (f a)
   let N := s.attach.sup n
   let r a := a ^ (N - n a) * r a
   have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
@@ -595,25 +597,25 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
       Nat.sub_add_cancel (Finset.le_sup <| s.mem_attach a)]
   have eq2 a b : ∃ N', (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) :=
     Away.exists_of_eq (S := Away (a * b : R)) _ <| by
-      simp_rw [map_mul, ← Away.awayToAwayRight_eq (S := Away a.1) a.1 b (r a),
-        ← Away.awayToAwayLeft_eq (S := Away b.1) b.1 a (r b), ← eq, map_mul,
+      simp_rw [map_mul, ← Away.awayToAwayRight_eq (S := Away a.val) a.val b (r a),
+        ← Away.awayToAwayLeft_eq (S := Away b.val) b.val a (r b), ← eq, map_mul,
         Away.awayToAwayRight_eq, Away.awayToAwayLeft_eq, h, mul_assoc, ← map_mul, mul_comm]
   choose N' hN' using eq2
   let N' := (s ×ˢ s).attach.sup fun a ↦ N'
-    ⟨_, (Finset.mem_product.mp a.2).1⟩ ⟨_, (Finset.mem_product.mp a.2).2⟩
+    ⟨_, (Finset.mem_product.mp a.property).1⟩ ⟨_, (Finset.mem_product.mp a.property).2⟩
   have eq2 a b : (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) := by
     dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup (Finset.mem_attach _ ⟨⟨a, b⟩,
-      Finset.mk_mem_product a.2 b.2⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
+      Finset.mk_mem_product a.property b.property⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
   let N := N' + N
   let r a := a ^ N' * r a
   have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
     rw [map_mul, ← eq, mul_left_comm, ← map_mul, ← pow_add]
   have eq2 a b : r a * b ^ N = r b * a ^ N := by
     rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
-      mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
+      mul_comm a.val, mul_pow, mul_mul_mul_comm, ← pow_add]
   have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
     (Ideal.eq_top_iff_one _).mp (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
-  refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
+  refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.val).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
 
@@ -725,7 +727,7 @@ variable [Algebra R B] [IsLocalization.Away x B] [IsDomain R] [WfDvdMonoid R]
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
-  obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
+  obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.val x).mp y.property
   have ha₀ : a₀ ≠ 0 := by
     have := isDomain_of_le_nonZeroDivisors B
       (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)

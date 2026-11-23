@@ -152,7 +152,7 @@ theorem comap_lt_comap_of_root_mem_sdiff [I.IsPrime] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
     (hp : p.eval₂ f r ∈ I) : I.comap f < J.comap f :=
   let ⟨i, hJ, hI⟩ := exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff hIJ hr p_ne_zero hp
-  IsConcreteLE.lt_iff_le_and_exists.mpr ⟨comap_mono hIJ, p.coeff i, hJ, hI⟩
+  lt_iff_le_and_exists_mem_notMem.mpr ⟨comap_mono hIJ, p.coeff i, hJ, hI⟩
 
 theorem mem_of_one_mem (h : (1 : S) ∈ I) (x) : x ∈ I :=
   (I.eq_top_iff_one.mpr h).symm ▸ mem_top
@@ -174,10 +174,10 @@ theorem comap_ne_bot_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0) (hr 
 
 theorem isMaximal_of_isIntegral_of_isMaximal_under [Algebra R S] [Algebra.IsIntegral R S]
     (I : Ideal S) [I.IsPrime] (hI : IsMaximal (I.under R)) : IsMaximal I :=
-  ⟨⟨mt comap_eq_top_iff.mpr hI.1.1, fun _ I_lt_J =>
-      let ⟨I_le_J, x, hxJ, hxI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp I_lt_J
+  ⟨⟨mt comap_eq_top_iff.mpr hI.out.1, fun _ I_lt_J =>
+      let ⟨I_le_J, x, hxJ, hxI⟩ := lt_iff_le_and_exists_mem_notMem.mp I_lt_J
       comap_eq_top_iff.1 <|
-        hI.1.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
+        hI.out.2 _ (under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
           (Algebra.IsIntegral.isIntegral x))⟩⟩
 
 theorem isMaximal_of_isIntegral_of_isMaximal_comap (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S)
@@ -237,7 +237,7 @@ variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
 
 theorem IsIntegral.under_lt_under {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.under R < J.under R :=
-  let ⟨I_le_J, x, hxJ, hxI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp I_lt_J
+  let ⟨I_le_J, x, hxJ, hxI⟩ := lt_iff_le_and_exists_mem_notMem.mp I_lt_J
   under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (Algebra.IsIntegral.isIntegral x)
 
 @[deprecated (since := "2026-09-03")] alias IsIntegral.comap_lt_comap := IsIntegral.under_lt_under
@@ -453,8 +453,8 @@ section IsIntegral
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
   [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
-instance primesOver.isMaximal : Q.1.IsMaximal :=
-  Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
+instance primesOver.isMaximal : Q.val.IsMaximal :=
+  Ideal.IsMaximal.of_liesOver_isMaximal Q.val p
 
 theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
   primesOver.isMaximal ⟨P, hP⟩

@@ -383,8 +383,8 @@
 76:
   title  : Fourier Series
   decls  :
-    - fourierCoeff
-    - hasSum_fourier_series_L2
+    - AddCircle.fourierCoeff
+    - AddCircle.hasSum_fourier_series_L2
   authors: Heather Macbeth
 77:
   title  : Sum of kth powers

@@ -160,6 +160,8 @@ Pattern m.gcd n
   Nat.gcd_rec
 · if n = 0 then n else (n % n).gcd n
   Nat.gcd_def
+· (n.extendedGcd n).gcd
+  Nat.extendedGcd_gcd
 · (n + n).gcd n
   Nat.gcd_add_self_left
 · n.gcd (n + n)

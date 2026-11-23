@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`
 
@@ -107,7 +110,7 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
-  refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
+  refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).invFun
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
     (Cone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Cofan.inj]
@@ -216,7 +219,7 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
-  refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
+  refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).invFun
     (IsColimit.whiskerEquivalence hf.op (Discrete.opposite α).symm))
     (Cocone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Fan.proj]

@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Tactic.Algebraize
+
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Finiteness conditions in commutative algebra

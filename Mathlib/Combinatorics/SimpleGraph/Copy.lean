@@ -196,8 +196,8 @@ instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_inje
 
 instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   .ofEquiv {f : G →g H // Injective f} {
-    toFun f := ⟨f.1, f.2⟩
-    invFun f := ⟨f.1, f.2⟩
+    toFun f := ⟨f.val, f.property⟩
+    invFun f := ⟨f.toHom, f.injective'⟩
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
@@ -686,7 +686,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
   classical
   obtain rfl | hH := eq_or_ne H ⊥
   · simp [← card_edgeSet]
-  let f (G' : H.UnlabeledCopy G) := (aux hH G'.2).some
+  let f (G' : H.UnlabeledCopy G) := (aux hH G'.property).some
   calc
     _ = #G.edgeFinset - card (H.UnlabeledCopy G) := by rw [copyCount]
     _ ≤ #G.edgeFinset - #(univ.image f) := Nat.sub_le_sub_left card_image_le _

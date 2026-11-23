@@ -714,7 +714,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
       else 0)
     (fun K K_sub_Ω f ↦ by
       split_ifs with h
-      · simp [h.integrableOn_compact_subset K_sub_Ω K.2]
+      · simp [h.integrableOn_compact_subset K_sub_Ω K.isCompact']
       · simp)
 
 open scoped Classical in

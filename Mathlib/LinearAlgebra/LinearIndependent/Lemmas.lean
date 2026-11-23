@@ -177,7 +177,8 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
   nontriviality R
   let e : s ⊕ t ≃ ↥(inl R M M' '' s ∪ inr R M M' '' t) :=
-    .ofBijective (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.2, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.2, rfl⟩⟩)
+    .ofBijective
+      (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.property, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.property, rfl⟩⟩)
       ⟨by rintro (_ | _) (_ | _) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
         by rintro ⟨_, ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩⟩ <;> aesop⟩
   refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr' hs ht)
@@ -196,7 +197,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     ∃ s : Set ι, (LinearIndepOn R v s) ∧ ∀ t : Set ι, s ⊆ t → (LinearIndepOn R v t) → s = t := by
   let indep : Set ι → Prop := fun s => LinearIndepOn R v s
   let X := { I : Set ι // indep I }
-  let r : X → X → Prop := fun I J => I.1 ⊆ J.1
+  let r : X → X → Prop := fun I J => I.val ⊆ J.val
   have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_ : I ∈ c), I) := by
     intro c hc
     dsimp [indep]
@@ -209,7 +210,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
         simpa using! And.intro hfsupp hgsupp
-    exact linearIndepOn_iffₛ.mp I.2 f (subset_union_left.trans hI)
+    exact linearIndepOn_iffₛ.mp I.property f (subset_union_left.trans hI)
       g (subset_union_right.trans hI) hsum
   obtain ⟨⟨I, hli : indep I⟩, hmax : ∀ a, r ⟨I, hli⟩ a → r a ⟨I, hli⟩⟩ :=
     exists_maximal_of_chains_bounded (r := r)
@@ -229,7 +230,8 @@ lemma Submodule.codisjoint_span_image_of_codisjoint (hv : Submodule.span R (Set.
 lemma LinearIndependent.isCompl_span_image (h₁ : LinearIndependent R v)
     (h₂ : Submodule.span R (Set.range v) = ⊤) {s t : Set ι} (hst : IsCompl s t) :
     IsCompl (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) :=
-  ⟨h₁.disjoint_span_image hst.1, Submodule.codisjoint_span_image_of_codisjoint h₂ hst.2⟩
+  ⟨h₁.disjoint_span_image hst.disjoint,
+    Submodule.codisjoint_span_image_of_codisjoint h₂ hst.codisjoint⟩
 
 end Semiring
 
