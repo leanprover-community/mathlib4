@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Module.Lattice.Covolume
+public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
