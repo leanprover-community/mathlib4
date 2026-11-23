@@ -173,6 +173,4 @@ theorem discr_half {d : ℤ} [Fact (¬ IsSquare (d : ℚ))]
     discr (QuadraticAlgebra ℚ (d : ℚ) 0) = d :=
   discr_quadraticAlgebra (Int.isFundamentalDiscr_iff_squarefree.mpr (Or.inl ⟨h, hd⟩)) hd1
 
-end discr
-
 end NumberField.QuadraticField
