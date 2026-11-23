@@ -97,12 +97,8 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
       transvection i j c := by
   cases nonempty_fintype n
   ext a b
-  by_cases ha : i = a
-  · by_cases hb : j = b
-    · simp [ha, transvection, hb, Matrix.one_apply]
-    · rw [transvection, ha]
-      simp [hb]
-  · simp [transvection, ha, Ne.symm ha]
+  by_cases ha : i = a <;> by_cases hb : j = b <;>
+  simp [ha, transvection, hb, Matrix.one_apply, Ne.symm]
 
 variable [Fintype n]
 
