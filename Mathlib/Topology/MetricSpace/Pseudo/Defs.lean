@@ -262,9 +262,8 @@ meta def evalDist : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
-    catchNone do
-      assertInstancesCommute
-      pure (.nonnegative q(dist_nonneg))
+    assertInstancesCommute
+    pure (.nonnegative q(dist_nonneg))
   | _, _, _ => throwError "not dist"
 
 end Mathlib.Meta.Positivity

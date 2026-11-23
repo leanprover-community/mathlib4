@@ -595,9 +595,8 @@ meta def evalDiam : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.nonnegative q(Metric.diam_nonneg))
+    assertInstancesCommute
+    pure (.nonnegative q(Metric.diam_nonneg))
   | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
