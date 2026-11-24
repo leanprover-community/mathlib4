@@ -513,7 +513,7 @@ theorem Submodule.rank_le_rank_span_of_linearIndepOn [Nontrivial R] [Nontrivial 
   rw [Module.rank_def]
   apply ciSup_le'
   intro ⟨s, hs⟩
-  dsimp
+  dsimp only
   apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨x.val, subset_span x.val.property⟩)
   apply LinearIndependent.of_comp (span R' (N : Set M)).subtype
   have hli := hs.linearIndependent.map_injOn N.subtype N.injective_subtype.injOn
