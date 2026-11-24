@@ -168,9 +168,6 @@ for the ring of meromorphic functions, with the pointwise inverse.
 -/
 noncomputable instance instField [h₁U : Fact (IsPreconnected U)] [h₂U : Fact U.Nontrivial] :
     Field (functionRing 𝕜 𝕜' U) where
-  __ := (inferInstance : CommRing (functionRing 𝕜 𝕜' U))
-  inv := Inv.inv
-  div := Div.div
   div_eq_mul_inv _ _ := rfl
   exists_pair_ne := exists_pair_ne _
   mul_inv_cancel _ ha := FunctionRing.mul_inv_cancel h₁U.out ha

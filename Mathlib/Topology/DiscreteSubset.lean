@@ -507,7 +507,7 @@ The filter `codiscreteWithin S` is nontrivial if some point of `S` is an accumul
 theorem AccPt.codiscreteWithin_neBot {S : Set X} {x : X} (hx : x ∈ S) (h : AccPt x (𝓟 S)) :
     (codiscreteWithin S).NeBot := by
   have := accPt_principal_iff_nhdsWithin.1 h
-  exact neBot_of_le (le_iSup₂ (f := fun x _ ↦ 𝓝[S \ {x}] x) x hx)
+  exact neBot_of_le (nhdsWithin_le_codiscreteWithin hx)
 
 section T1Space
 
