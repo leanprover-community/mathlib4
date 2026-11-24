@@ -570,10 +570,11 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictn
   let r ← do
     if let some r := (← get).cache[key]? then
       let r := r.toStrictness zα pα? e
-      trace[Tactic.positivity.cache] "cached: {e} => {r.toString}"
+      trace[Tactic.positivity.cache] "hit: {e} => {r.toString}"
       pure r
     else
       let r ← coreUncached zα pα? e
+      trace[Tactic.positivity.cache] "new: {e} => {r.toString}"
       modify fun s => { s with cache := s.cache.insert key r.toCached }
       pure r
   throwNone (pure r)
