@@ -140,7 +140,7 @@ theorem map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R M = ι
   lift_comp_ι _
 
 @[simp]
-theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R M m) = ι R N (f m) :=
+theorem map_ι (f : M →ₗ[R] N) (m : M) : map f (ι R M m) = ι R N (f m) :=
   lift_ι_apply _ _
 
 @[simp]
