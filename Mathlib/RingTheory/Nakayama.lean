@@ -39,6 +39,7 @@ Note that a version of Statement (1) in
 `Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul`
 
 ## References
+
 * [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV)
 
 ## Tags

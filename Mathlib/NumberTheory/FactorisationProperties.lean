@@ -41,6 +41,7 @@ relations with prime and perfect numbers.
   numbers greater than zero.
 
 ## References
+
 * [R. W. Prielipp, *PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS*][Prielipp1970]
 
 ## Tags

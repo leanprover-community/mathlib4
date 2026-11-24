@@ -37,6 +37,7 @@ abbreviation of `t : StructuredArrow g (precomp _ f)`) to be an abbreviation for
 in the namespace `StructuredArrow.IsUniversal`.
 
 ## References
+
 https://ncatlab.org/nlab/show/Kan+extension
 -/
 

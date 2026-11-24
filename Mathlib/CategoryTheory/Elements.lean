@@ -25,6 +25,7 @@ so this is mostly just a more convenient API. We prove the equivalence in
 `CategoryTheory.Functor.Elements.structuredArrowEquivalence`.
 
 ## References
+
 * [Emily Riehl, *Category Theory in Context*, Section 2.4][riehl2017]
 * <https://en.wikipedia.org/wiki/Category_of_elements>
 * <https://ncatlab.org/nlab/show/category+of+elements>

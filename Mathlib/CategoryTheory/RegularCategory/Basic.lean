@@ -31,6 +31,7 @@ semantics for regular logic.
 * Show that regular logic has an interpretation in regular categories
 
 ## References
+
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/

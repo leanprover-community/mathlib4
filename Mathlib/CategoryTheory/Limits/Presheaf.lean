@@ -50,6 +50,7 @@ show that it makes `F.op.lan` a left Kan extension of `F ⋙ uliftYoneda`.
 colimit, representable, presheaf, free cocompletion
 
 ## References
+
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/

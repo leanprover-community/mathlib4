@@ -33,6 +33,7 @@ but are independent of that choice. We also omit assumptions like
 adding them back in lemmas when they are needed.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]

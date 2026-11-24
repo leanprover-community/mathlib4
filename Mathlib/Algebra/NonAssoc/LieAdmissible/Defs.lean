@@ -36,6 +36,7 @@ Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommCla
 documentation of `Algebra`.
 
 ## References
+
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/

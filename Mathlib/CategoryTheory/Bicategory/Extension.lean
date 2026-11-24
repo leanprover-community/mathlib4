@@ -24,6 +24,7 @@ about these categories. We introduce some intuitive aliases. For example, `LeftE
 is an alias for `Comma.right`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/lifts+and+extensions
 * https://ncatlab.org/nlab/show/Kan+extension
 -/

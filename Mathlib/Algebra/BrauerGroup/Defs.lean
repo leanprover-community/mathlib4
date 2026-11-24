@@ -26,6 +26,7 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
 ## References
+
 * [Algebraic Number Theory, *J.W.S Cassels*][cassels1967algebraic]
 
 ## Tags

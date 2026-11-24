@@ -57,6 +57,7 @@ possible.
 * If needed, it should be possible to show that the equivalence is natural in `A`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 1.4.12
 
 ## Tags
