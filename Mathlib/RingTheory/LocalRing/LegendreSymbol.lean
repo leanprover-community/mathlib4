@@ -88,16 +88,14 @@ lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
   grind [MulChar.compLocalHom_apply, quadraticChar_apply, quadraticCharFun,
       isSquare_residue_iff]
 
-/-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
-theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
-  open scoped Classical in rw [legendreSym, MulChar.compLocalHom_apply,
-    quadraticChar_one_iff_isSquare]
-  simpa using ha
-
 /-- `legendreSym a = -1` iff `a` is a nonsquare in `ResidueField R`. -/
 theorem eq_neg_one_iff :
     legendreSym a = -1 ↔ ¬ IsSquare (residue R a) := by
   classical exact quadraticChar_neg_one_iff_not_isSquare
+
+/-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
+theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
+  rw [← not_iff_not, ← eq_neg_one_iff_not_one ha, eq_neg_one_iff]
 
 /-- If `ringChar R` is odd, then `legendreSym a` can be computed in terms of
 `(residue R a) ^ (Fintype.card (ResidueField R) / 2)`. -/
