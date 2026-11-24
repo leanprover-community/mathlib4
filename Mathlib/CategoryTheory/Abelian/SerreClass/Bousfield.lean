@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.Bousfield
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bousfield localizations with respect to Serre classes
 

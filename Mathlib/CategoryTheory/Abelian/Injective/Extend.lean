@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective resolutions as cochain complexes indexed by the integers
 
@@ -67,7 +70,6 @@ noncomputable def ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainCo
   (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).inv ≫
     (ComplexShape.embeddingUpNat.extendFunctor C).map R.ι
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι'_f_zero :
@@ -82,7 +84,6 @@ end
 
 variable [Abelian C] {X : C} (R : InjectiveResolution X)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso R.ι' := by dsimp [ι']; infer_instance
 
@@ -109,7 +110,6 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
     cochainComplexXIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=

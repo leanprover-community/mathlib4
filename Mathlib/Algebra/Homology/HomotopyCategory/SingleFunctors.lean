@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single functors from the homotopy category
 

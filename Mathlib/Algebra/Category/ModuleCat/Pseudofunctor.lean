@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pseudofunctors which send a commutative ring to its category of modules
 

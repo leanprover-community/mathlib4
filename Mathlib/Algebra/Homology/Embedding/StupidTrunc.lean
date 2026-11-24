@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The stupid truncation of homological complexes
 

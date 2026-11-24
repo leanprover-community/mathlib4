@@ -12,6 +12,9 @@ public import Mathlib.Topology.Algebra.Polynomial
 
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental theorem of algebra
 

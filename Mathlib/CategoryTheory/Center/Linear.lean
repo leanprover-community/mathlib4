@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Center of a linear category
 

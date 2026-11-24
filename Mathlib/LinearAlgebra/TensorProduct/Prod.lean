@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of products
 

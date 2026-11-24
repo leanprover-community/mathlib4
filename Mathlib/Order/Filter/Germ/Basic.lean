@@ -13,6 +13,9 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Germ of a function at a filter
 

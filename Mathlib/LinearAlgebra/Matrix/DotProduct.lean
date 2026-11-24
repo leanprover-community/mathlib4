@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 import Mathlib.Algebra.Order.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dot product of two vectors
 
