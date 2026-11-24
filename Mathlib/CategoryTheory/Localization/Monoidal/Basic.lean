@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Quadrifunctor
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of monoidal categories
 

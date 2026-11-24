@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Tannery
 
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite products in normed rings
 

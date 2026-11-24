@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Tactic.Zify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorial with big operators
 

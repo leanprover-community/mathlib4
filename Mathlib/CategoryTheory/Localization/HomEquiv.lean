@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bijections between morphisms in two localized categories
 

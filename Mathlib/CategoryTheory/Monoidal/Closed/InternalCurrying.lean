@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The currying-uncurrying isomorphism between internal homs of a closed monoidal category
 

@@ -5,8 +5,9 @@ Authors: Joël Riou, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Products.Basic
+
+import Mathlib.CategoryTheory.Opposites
 
 /-!
 # 2-squares of functors

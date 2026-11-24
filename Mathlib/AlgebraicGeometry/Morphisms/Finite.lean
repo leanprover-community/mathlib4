@@ -5,11 +5,14 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Epi
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.RingTheory.RingHom.Finite
 
+import Mathlib.Algebra.Category.Ring.Epi
 import Mathlib.RingTheory.Finiteness.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite morphisms of schemes

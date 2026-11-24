@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+import Mathlib.CategoryTheory.Preadditive.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Linear categories

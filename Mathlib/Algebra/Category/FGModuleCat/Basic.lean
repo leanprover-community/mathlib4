@@ -9,8 +9,12 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.LinearAlgebra.Coevaluation
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.TensorProduct.Finite
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of finitely generated modules over a ring

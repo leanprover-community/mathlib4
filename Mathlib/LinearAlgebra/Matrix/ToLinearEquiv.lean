@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.Localization.Integer
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences
