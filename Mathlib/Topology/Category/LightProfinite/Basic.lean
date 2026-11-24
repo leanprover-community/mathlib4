@@ -11,6 +11,9 @@ public import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.ClopenBox
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light profinite spaces
 
@@ -104,7 +107,7 @@ def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (↾(f.hom.hom.1))
+  preimage f := InducedCategory.homMk (↾(f.hom.hom.toFun))
   map_preimage _ := rfl
   preimage_map _ := rfl
 

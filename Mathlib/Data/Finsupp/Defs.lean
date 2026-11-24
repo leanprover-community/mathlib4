@@ -31,7 +31,7 @@ Some other constructions are naturally equivalent to `α →₀ M` with some `α
 in a different way in the library:
 
 * `Multiset α ≃+ α →₀ ℕ`;
-* `FreeAbelianGroup α ≃+ α →₀ ℤ`.
+* `FreeAddCommGroup α ≃+ α →₀ ℤ`.
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
@@ -418,7 +418,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
   toFun b :=
     haveI := Classical.decEq β
-    match v.support.1.find? (fun a => f a = b) (by intro x; grind) with
+    match v.support.val.find? (fun a => f a = b) (by intro x; grind) with
     | some a => v a
     | none => 0
   mem_support_toFun a₂ := by grind

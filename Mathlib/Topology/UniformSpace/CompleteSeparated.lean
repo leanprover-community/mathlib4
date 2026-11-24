@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of complete separated uniform spaces.
 

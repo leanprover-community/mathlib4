@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 
 import Mathlib.Tactic.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclically reduced words in free groups
 

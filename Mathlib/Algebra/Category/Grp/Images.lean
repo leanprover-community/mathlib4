@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative additive groups has images.
 
@@ -57,13 +60,13 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- the universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
-  { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
+  { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.property).val : image f → F'.I)
     map_zero' := by
       have := F'.m_mono
       apply injective_of_mono F'.m
       change (F'.e ≫ F'.m) _ = _
       rw [F'.fac, map_zero]
-      exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
+      exact (Classical.indefiniteDescription (fun y => f y = 0) _).property
     map_add' := by
       intro x y
       have := F'.m_mono
@@ -71,15 +74,15 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
       rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
       rw [F'.fac]
-      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
-      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
-      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).property]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).property]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).property]
       rfl }
 
 theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
-  rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  rw [F'.fac, (Classical.indefiniteDescription _ x.property).property]
   rfl
 
 end

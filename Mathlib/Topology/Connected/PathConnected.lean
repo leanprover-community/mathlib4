@@ -213,7 +213,7 @@ theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
 
 theorem joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
     JoinedIn F x y ↔ Joined (⟨x, x_in⟩ : F) (⟨y, y_in⟩ : F) :=
-  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
+  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtypeVal, by simp⟩⟩
 
 @[simp]
 theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
@@ -511,9 +511,10 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
-      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+      ⟨(γ.truncateOfLE t.property.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm,
+        fun t' ↦ ?_⟩⟩
     dsimp [Path.truncateOfLE, Path.truncate]
-    exact γ.extend_extends' ⟨min (max t'.1 0) t.1, by simp [t.2.1, t.2.2]⟩ ▸ hγ _⟩
+    exact γ.extend_extends' ⟨min (max t'.val 0) t.val, by simp [t.property.1, t.property.2]⟩ ▸ hγ _⟩
 
 theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
   rw [← pathComponentIn_univ]
@@ -585,7 +586,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   let := pathSetoid X
   constructor
   · intro h
-    refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩
+    refine ⟨(nonempty_quotient_iff _).mpr h.nonempty, ⟨?_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy

@@ -6,7 +6,8 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # Colimits in ModuleCat

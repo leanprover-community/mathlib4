@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.GroupTheory.Congruence.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence relations and homomorphisms
 
@@ -108,7 +111,7 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`. -/]
 def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.2)
+    d.val.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.property)
       Quotient.mk_surjective
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
@@ -117,7 +120,8 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     Subtype.ext_iff.2 <|
       ext fun x y =>
         ⟨fun ⟨a, b, H, hx, hy⟩ =>
-          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+          d.val.trans (d.val.symm <| d.property <| c.eq.1 hx) <|
+            d.val.trans H <| d.property <| c.eq.1 hy,
           fun h => ⟨_, _, h, rfl, rfl⟩⟩
   right_inv d :=
     Con.ext fun x y ↦ by
@@ -128,7 +132,8 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     constructor
     · intro h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
-      exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
+      exact t.val.trans (t.val.symm <| t.property <| c.eq.1 hx)
+        (t.val.trans ht (t.property <| c.eq.1 hy))
     · exact Relation.map_mono
 
 end Mul

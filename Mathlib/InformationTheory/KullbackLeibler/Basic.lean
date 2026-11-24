@@ -7,6 +7,9 @@ module
 
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kullback-Leibler divergence
 

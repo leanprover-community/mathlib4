@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`
 

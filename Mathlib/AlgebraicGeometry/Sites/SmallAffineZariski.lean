@@ -50,7 +50,7 @@ def Scheme.AffineZariskiSite (X : Scheme.{u}) : Type u := { U : X.Opens // IsAff
 namespace Scheme.AffineZariskiSite
 
 /-- The inclusion from `X.AffineZariskiSite` to `X.Opens`. -/
-abbrev toOpens (U : X.AffineZariskiSite) : X.Opens := U.1
+abbrev toOpens (U : X.AffineZariskiSite) : X.Opens := U.val
 
 instance : Preorder X.AffineZariskiSite where
   le U V := ∃ f : Γ(X, V.toOpens), X.basicOpen f = U.toOpens
@@ -71,7 +71,7 @@ instance : PartialOrder X.AffineZariskiSite where
 
 /-- The basic open set of a section, as an element of `AffineZariskiSite`. -/
 @[simps] def basicOpen (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : X.AffineZariskiSite :=
-  ⟨X.basicOpen f, U.2.basicOpen f⟩
+  ⟨X.basicOpen f, U.property.basicOpen f⟩
 
 lemma basicOpen_le (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : U.basicOpen f ≤ U :=
   ⟨f, rfl⟩
@@ -88,7 +88,7 @@ variable (X) in
 @[simps! hom_app inv_app]
 def restrictIsoSpec : toOpensFunctor X ⋙ X.restrictFunctor ⋙ Over.forget _ ≅
     toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec :=
-  NatIso.ofComponents (fun U ↦ U.2.isoSpec)
+  NatIso.ofComponents (fun U ↦ U.property.isoSpec)
     fun _ ↦ (Scheme.Opens.toSpecΓ_SpecMap_presheaf_map ..).symm
 
 section GrothendieckTopology
@@ -96,7 +96,7 @@ section GrothendieckTopology
 instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
   functorPushforward_imageSieve_mem := by
     intro U V h x hx
-    obtain ⟨f, hfU, hxf⟩ := V.2.exists_basicOpen_le ⟨x, hx⟩ (h.le hx)
+    obtain ⟨f, hfU, hxf⟩ := V.property.exists_basicOpen_le ⟨x, hx⟩ (h.le hx)
     exact ⟨X.basicOpen f, homOfLE hfU, ⟨V.basicOpen f,
       ⟨_, (X.basicOpen_res f h.op).trans (inf_eq_right.mpr hfU)⟩, 𝟙 _,
       ⟨⟨f, rfl⟩, rfl⟩, rfl⟩, hxf⟩
@@ -104,7 +104,8 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
     intro U x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
@@ -150,7 +151,7 @@ lemma presieveOfSections_surjective {U : X.AffineZariskiSite} :
   fun _ ↦ ⟨_, presieveOfSections_sectionsOfPresieve _⟩
 
 lemma presieveOfSections_eq_ofArrows (U : X.AffineZariskiSite) (s : Set Γ(X, U.toOpens)) :
-    presieveOfSections U s = .ofArrows _ (fun i : s ↦ homOfLE (U.basicOpen_le i.1)) := by
+    presieveOfSections U s = .ofArrows _ (fun i : s ↦ homOfLE (U.basicOpen_le i.val)) := by
   refine funext₂ fun ⟨V, hV⟩ ⟨f, hf⟩ ↦ eq_iff_iff.mpr ⟨?_, ?_⟩
   · rintro ⟨f, hfs, rfl⟩
     exact .mk (ι := s) ⟨f, hfs⟩
@@ -164,7 +165,7 @@ lemma generate_presieveOfSections
   constructor
   · rintro ⟨⟨W, hW⟩, ⟨f₁, hf₁⟩, -, ⟨f₂, hf₂s, rfl⟩, rfl⟩
     subst hf₁
-    obtain ⟨f₃, hf₃⟩ := U.2.basicOpen_basicOpen_is_basicOpen f₂ f₁
+    obtain ⟨f₃, hf₃⟩ := U.property.basicOpen_basicOpen_is_basicOpen f₂ f₁
     refine ⟨f₂, hf₂s, f₃, ?_⟩
     rw [X.basicOpen_mul, hf₃, inf_eq_right]
     exact X.basicOpen_le _
@@ -175,7 +176,7 @@ lemma generate_presieveOfSections
 lemma generate_presieveOfSections_mem_grothendieckTopology
     {U : X.AffineZariskiSite} {s : Set Γ(X, U.toOpens)} :
     Sieve.generate (presieveOfSections U s) ∈ grothendieckTopology X U ↔ Ideal.span s = ⊤ := by
-  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, IsConcreteLE.le_iff]
+  rw [← U.property.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, le_iff_mem_imp_mem]
   refine forall₂_congr fun x hx ↦ ?_
   simp only [exists_and_left, TopologicalSpace.Opens.iSup_mk,
     TopologicalSpace.Opens.carrier_eq_coe, Set.iUnion_coe_set, TopologicalSpace.Opens.mem_mk,
@@ -189,7 +190,7 @@ lemma generate_presieveOfSections_mem_grothendieckTopology
 
 lemma mem_grothendieckTopology_iff_sectionsOfPresieve
     {U : X.AffineZariskiSite} {S : Sieve U} :
-    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.1) = ⊤ := by
+    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.arrows) = ⊤ := by
   rw [← generate_presieveOfSections_mem_grothendieckTopology, presieveOfSections_sectionsOfPresieve,
     Sieve.generate_sieve]
 
@@ -209,8 +210,8 @@ Note the related `Scheme.directedAffineCover`, which has the same (defeq) cover 
 category instance on the indices. -/
 @[simps] abbrev directedCover : X.OpenCover where
   I₀ := X.AffineZariskiSite
-  X U := U.1
-  f U := U.1.ι
+  X U := U.val
+  f U := U.val.ι
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
@@ -222,15 +223,16 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
   trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
   directed {U V} x := by
-    let a := (pullback.fst _ _ ≫ U.1.ι) x
-    have haU : a ∈ U.1 := (pullback.fst U.1.ι V.1.ι x).2
-    have haV : a ∈ V.1 := by unfold a; rw [pullback.condition]; exact (pullback.snd U.1.ι V.1.ι x).2
-    obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 _ ⟨haU, haV⟩
+    let a := (pullback.fst _ _ ≫ U.val.ι) x
+    have haU : a ∈ U.val := (pullback.fst U.val.ι V.val.ι x).property
+    have haV : a ∈ V.val := by
+      unfold a; rw [pullback.condition]; exact (pullback.snd U.val.ι V.val.ι x).property
+    obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.property V.property _ ⟨haU, haV⟩
     refine ⟨U.basicOpen f, homOfLE (U.basicOpen_le f), eqToHom (Subtype.ext (by exact e)) ≫
       homOfLE (V.basicOpen_le g), ⟨a, hxf⟩, ?_⟩
-    apply (pullback.fst _ _ ≫ U.1.ι).isOpenEmbedding.injective
+    apply (pullback.fst _ _ ≫ U.val.ι).isOpenEmbedding.injective
     dsimp
-    change (pullback.lift _ _ _ ≫ pullback.fst _ _ ≫ U.1.ι) _ = _
+    change (pullback.lift _ _ _ ≫ pullback.fst _ _ ≫ U.val.ι) _ = _
     simp only [pullback.lift_fst_assoc, homOfLE_ι, Opens.ι_apply]
     rfl
 
@@ -259,17 +261,17 @@ variable (X) in
 @[simps] noncomputable def cocone :
     Limits.Cocone (toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec) where
   pt := X
-  ι.app U := U.2.fromSpec
-  ι.naturality {U V} f := by dsimp; rw [V.2.map_fromSpec U.2]; simp
+  ι.app U := U.property.fromSpec
+  ι.naturality {U V} f := by dsimp; rw [V.property.map_fromSpec U.property]; simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F} :
-    α.Coequifibered ↔ ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.1)),
+    α.Coequifibered ↔ ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.val)),
       letI := (F.map (homOfLE (U.basicOpen_le f)).op).hom.toAlgebra
       IsLocalization.Away (α.app (.op U) f) (F.obj (.op (U.basicOpen f))) := by
-  trans ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.1)),
+  trans ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.val)),
     IsPushout (X.presheaf.map (homOfLE (X.basicOpen_le f)).op)
       (α.app _) (α.app (.op (U.basicOpen f))) (F.map (homOfLE (U.basicOpen_le f)).op)
   · refine ⟨fun H U f ↦ H (homOfLE (U.basicOpen_le f)).op, fun H ⟨V⟩ ⟨U⟩ ⟨f, hf⟩ ↦ ?_⟩
@@ -282,7 +284,7 @@ lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ
     (F.map (U.basicOpen_le f).hom.op).hom, (F.map (U.basicOpen_le f).hom.op).hom.comp αU.hom]
   have : IsScalarTower Γ(X, U.toOpens) Γ(X, X.basicOpen f) (F.obj (.op (U.basicOpen f))) :=
     .of_algebraMap_eq' congr($(α.naturality (U.basicOpen_le f).hom.op).hom).symm
-  have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.2.isLocalization_basicOpen _
+  have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.property.isLocalization_basicOpen _
   refine (CommRingCat.isPushout_iff_isPushout ..).trans ?_
   rw [Algebra.IsPushout.comm]
   refine (Algebra.isLocalization_iff_isPushout (.powers f) Γ(X, X.basicOpen f)).symm.trans ?_
@@ -300,7 +302,7 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
 
 lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) {U : X.AffineZariskiSite} (r : Γ(X, U.1)) :
+    (H : α.Coequifibered) {U : X.AffineZariskiSite} (r : Γ(X, U.val)) :
     ((relativeGluingData H).functor.map (homOfLE (U.basicOpen_le r))).opensRange =
       PrimeSpectrum.basicOpen (α.app (.op U) r) := by
   have := coequifibered_iff_forall_isLocalizationAway.mp H U r
@@ -322,18 +324,18 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
   haveI : IsIso ((colimit.isColimit F).desc (cocone X:)) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _)
       (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X))).mpr fun U ↦ ?_
-    change IsIso (pullback.snd (colimit.desc F (cocone X)) U.1.ι)
-    let e := IsOpenImmersion.isoOfRangeEq (pullback.fst (colimit.desc F (cocone X)) U.1.ι)
-      (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
+    change IsIso (pullback.snd (colimit.desc F (cocone X)) U.val.ι)
+    let e := IsOpenImmersion.isoOfRangeEq (pullback.fst (colimit.desc F (cocone X)) U.val.ι)
+      (U.property.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).carrier)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
     convert (inferInstance : IsIso e.hom)
-    rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
+    rw [← cancel_mono U.val.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)
 

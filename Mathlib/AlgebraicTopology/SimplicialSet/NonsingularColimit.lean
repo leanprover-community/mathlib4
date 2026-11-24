@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular simplicial sets, as colimits of standard simplices
 
@@ -71,6 +74,6 @@ noncomputable def coconeN' : Cocone X.functorN' where
 for all nondegenerate simplices `x : X.N`. -/
 noncomputable def isColimitCoconeN' : IsColimit X.coconeN' :=
   (IsColimit.equivOfNatIsoOfIso
-    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).1 X.isColimitCoconeN
+    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).toFun X.isColimitCoconeN
 
 end SSet

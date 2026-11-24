@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafification
 
@@ -225,14 +228,14 @@ variable {J}
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]
 noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.obj where
-  hom := ⟨(isoSheafify J P.2).hom⟩
-  inv := ⟨(isoSheafify J P.2).inv⟩
+  hom := ⟨(isoSheafify J P.property).hom⟩
+  inv := ⟨(isoSheafify J P.property).inv⟩
   hom_inv_id := by
     ext1
-    apply (isoSheafify J P.2).hom_inv_id
+    apply (isoSheafify J P.property).hom_inv_id
   inv_hom_id := by
     ext1
-    apply (isoSheafify J P.2).inv_hom_id
+    apply (isoSheafify J P.property).inv_hom_id
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=

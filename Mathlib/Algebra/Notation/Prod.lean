@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Prod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic operators on (pairwise) product types
 

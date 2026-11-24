@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda functor for locally small categories
 

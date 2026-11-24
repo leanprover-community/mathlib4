@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The transfinite iteration of a successor structure
 
@@ -83,7 +86,7 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
         rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
         apply Arrow.mk_injective
         simpa using! Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
-    refine (IsColimit.precomposeInvEquiv e _).1 ?_
+    refine (IsColimit.precomposeInvEquiv e _).toFun ?_
     refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
     refine Cocone.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
     rintro ⟨k, hk⟩
