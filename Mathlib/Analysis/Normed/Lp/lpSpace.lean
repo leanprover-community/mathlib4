@@ -338,14 +338,14 @@ We choose to deal with this issue by making a copy of `∀ i, E i` rather than o
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below).
 
-This is a one-field structure rather than a type synonym, so that elements of `PreLp E` can only
-be applied to indices through the `DFunLike` coercion `⇑`, which is the simp normal form. Use
-`PreLp.ofFun` to turn a function `∀ i, E i` into an element of `PreLp E`. -/
+This is a one-field structure rather than a type synonym to avoid problems related to definitional
+equality. In particular, if `PreLp E` were only a type synonym, then given `x : PreLp E` and
+`i : ι`, applying `x i` would silently treat `x : ∀ i, E i` instead of coercing `x` to a function.
+Since this is unavoidable elaboration behavior, we instead prevent this entirely. -/
 structure PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] where
   /-- Converts a function `f : ∀ i, E i` into an element of `PreLp E`. -/
   ofFun ::
-  /-- Converts an element of `PreLp E` into a function `∀ i, E i`. Use the coercion `⇑` instead,
-  which is the simp normal form. -/
+  /-- Converts an element of `PreLp E` into a function `∀ i, E i`. Use the coercion `⇑` instead. -/
   toFun : ∀ i, E i
 
 namespace PreLp
