@@ -15,11 +15,13 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 Nontrivial nonarchimedean norms correspond to rank one valuations.
 
 ## Main Definitions
+
 * `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
+
 * The valuation of a normed field has rank at most one.
 
 ## Tags
@@ -93,7 +95,7 @@ def toValued : Valued K ℝ≥0 :=
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        refine ⟨(embedding ε.val : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 

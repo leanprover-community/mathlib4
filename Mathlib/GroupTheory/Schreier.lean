@@ -80,8 +80,8 @@ theorem closure_mul_image_mul_eq_top
     exact subset_closure ⟨r * s, Set.mul_mem_mul hr hs, rfl⟩
   · rintro - - s hs ⟨u, hu, r, hr, rfl⟩
     rw [show u * r * s⁻¹ = u * (f (r * s⁻¹) * s * r⁻¹)⁻¹ * f (r * s⁻¹) by group]
-    refine Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem ?_)) (f (r * s⁻¹)).2
-    refine subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).2 hs, ?_⟩
+    refine Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem ?_)) (f (r * s⁻¹)).property
+    refine subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).property hs, ?_⟩
     rw [mul_right_inj, inv_inj, ← Subtype.coe_mk r hr, ← Subtype.ext_iff, Subtype.coe_mk]
     apply (isComplement_iff_existsUnique_mul_inv_mem.mp hR (f (r * s⁻¹) * s)).unique
       (hR.mul_inv_toRightFun_mem (f (r * s⁻¹) * s))
@@ -209,7 +209,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   apply card_dvd_exponent_pow_rank'
   intro g
   -- `Z(G)` is abelian, so `g ∈ Z(G) ∩ G' ≤ G' ≤ ker (transfer : G → Z(G))`
-  have := Group.Abelianization.commutator_le_ker (MonoidHom.transferCenterPow G) g.1.2
+  have := Group.Abelianization.commutator_le_ker (MonoidHom.transferCenterPow G) g.val.property
   -- `transfer g` is defeq to `g ^ [G : Z(G)]`, so we are done
   simpa only [MonoidHom.mem_ker, Subtype.ext_iff] using! this
 

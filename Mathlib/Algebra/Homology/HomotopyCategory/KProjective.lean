@@ -18,6 +18,7 @@ and show that bounded above complexes of projective objects are K-projective.
 * Provide an API for computing `Ext`-groups using a projective resolution
 
 ## References
+
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1988]
 -/
 

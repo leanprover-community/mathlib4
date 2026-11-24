@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -63,6 +64,7 @@ assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead
 `fderiv`.
 
 ## Tags
+
 integral, derivative
 -/
 

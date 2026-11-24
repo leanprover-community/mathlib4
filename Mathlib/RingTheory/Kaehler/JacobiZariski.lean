@@ -117,7 +117,7 @@ lemma Cotangent.exact :
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
-    have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
+    have hz : z.val ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
       ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
@@ -157,7 +157,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
   apply (Q.comp P).cotangentSpaceBasis.repr.injective
   ext j
   simp only [compEquiv, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr,
+    Basis.baseChange_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr,
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
@@ -180,8 +180,9 @@ lemma CotangentSpace.fst_compEquiv :
   intro i
   apply Q.cotangentSpaceBasis.repr.injective
   ext j
-  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ofComp_val,
-    LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply, repr_CotangentSpaceMap]
+  simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    ofComp_val, LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply,
+    repr_CotangentSpaceMap]
   obtain (i | i) := i <;>
     simp only [Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
       LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply, one_smul,
@@ -380,7 +381,7 @@ lemma exact_δ_map :
   · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
 lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
-    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
+    (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.val) (z)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
@@ -390,7 +391,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
-    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
+    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.val := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]
@@ -403,8 +404,8 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
   · exact hy
   · rw [← CotangentSpace.compEquiv_symm_inr]
     apply (CotangentSpace.compEquiv Q P).injective
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_inr, Function.comp_apply,
-      LinearEquiv.apply_symm_apply, z]
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_inr,
+      Function.comp_apply, LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl
     change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace

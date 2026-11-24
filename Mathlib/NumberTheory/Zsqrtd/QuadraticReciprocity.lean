@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
 
@@ -32,7 +35,7 @@ open PrincipalIdealRing
 
 theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
-  hp.1.eq_two_or_odd.elim
+  hp.out.eq_two_or_odd.elim
     (fun hp2 => by
       have := hpi.irreducible.isUnit_or_isUnit (a := ⟨1, 1⟩) (b := ⟨1, -1⟩)
       simp [hp2, Zsqrtd.ext_iff, ← norm_eq_one_iff, norm_def] at this)

@@ -88,23 +88,27 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_zero_left x)
+        (HSpace.eHmul.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_one_left x)
+        (HSpace.eHmul.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
+      exact Prod.ext (HSpace.eHmul.prop' t x h.1) (HSpace.eHmul.prop' t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_zero_left x)
+        (HSpace.hmulE.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_one_left x)
+        (HSpace.hmulE.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
+      exact Prod.ext (HSpace.hmulE.prop' t x h.1) (HSpace.hmulE.prop' t y h.2)
 
 
 namespace IsTopologicalGroup
@@ -172,7 +176,7 @@ theorem qRight_zero_right (t : I) :
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
-    refine ⟨t.2.1, ?_⟩
+    refine ⟨t.property.1, ?_⟩
     tauto
   · rw [(Set.projIcc_eq_right _).2]
     · linarith

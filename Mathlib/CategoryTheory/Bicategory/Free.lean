@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free bicategories
 

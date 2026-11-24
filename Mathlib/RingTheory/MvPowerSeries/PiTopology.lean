@@ -49,7 +49,7 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
-## Implementation Notes
+## Implementation notes
 
 In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for
 topological nilpotency by proving that, if the base ring is equipped with a *linear* topology, then

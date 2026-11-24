@@ -18,6 +18,7 @@ import Mathlib.Order.Filter.Tendsto
 Properties of additive and multiplicative indicator functions involving `=ᶠ` and `≤ᶠ`.
 
 ## Tags
+
 indicator, characteristic, filter
 -/
 

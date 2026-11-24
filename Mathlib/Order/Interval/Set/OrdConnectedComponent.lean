@@ -94,7 +94,7 @@ instance : OrdConnected (ordConnectedComponent s x) :=
 /-- Projection from `s : Set α` to `α` sending each order connected component of `s` to a single
 point of this component. -/
 noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s =>
-  (nonempty_ordConnectedComponent.2 x.2).some
+  (nonempty_ordConnectedComponent.2 x.property).some
 
 theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
     ordConnectedProj s x ∈ ordConnectedComponent s x :=
@@ -115,7 +115,7 @@ theorem ordConnectedProj_eq {x y : s} :
   constructor <;> intro h
   · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ordConnectedProj, h,
       ordConnectedComponent_ordConnectedProj, self_mem_ordConnectedComponent]
-    exact y.2
+    exact y.property
   · simp only [ordConnectedProj, ordConnectedComponent_eq h]
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the

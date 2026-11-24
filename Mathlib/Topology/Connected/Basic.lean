@@ -710,10 +710,10 @@ theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=
   ⟨univ_nonempty, isPreconnected_univ⟩
 
 lemma preconnectedSpace_iff_univ : PreconnectedSpace α ↔ IsPreconnected (univ : Set α) :=
-  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+  ⟨fun h ↦ h.isPreconnected_univ, fun h ↦ ⟨h⟩⟩
 
 lemma connectedSpace_iff_univ : ConnectedSpace α ↔ IsConnected (univ : Set α) :=
-  ⟨fun h ↦ ⟨univ_nonempty, h.1.1⟩,
+  ⟨fun h ↦ ⟨univ_nonempty, h.toPreconnectedSpace.isPreconnected_univ⟩,
    fun h ↦ ConnectedSpace.mk (toPreconnectedSpace := ⟨h.2⟩) ⟨h.1.some⟩⟩
 
 theorem isPreconnected_range [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
@@ -803,10 +803,11 @@ theorem Subtype.connectedSpace {s : Set α} (h : IsConnected s) : ConnectedSpace
 
 theorem isPreconnected_iff_preconnectedSpace {s : Set α} : IsPreconnected s ↔ PreconnectedSpace s :=
   ⟨Subtype.preconnectedSpace, fun h => by
-    simpa using isPreconnected_univ.image ((↑) : s → α) continuous_subtype_val.continuousOn⟩
+    simpa using isPreconnected_univ.image ((↑) : s → α) continuous_subtypeVal.continuousOn⟩
 
 theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ ConnectedSpace s :=
   ⟨Subtype.connectedSpace, fun h =>
-    ⟨nonempty_subtype.mp h.2, isPreconnected_iff_preconnectedSpace.mpr h.1⟩⟩
+    ⟨nonempty_subtype.mp h.toNonempty,
+      isPreconnected_iff_preconnectedSpace.mpr h.toPreconnectedSpace⟩⟩
 
 end Preconnected

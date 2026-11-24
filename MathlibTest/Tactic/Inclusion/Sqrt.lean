@@ -76,7 +76,6 @@ example {x : ℝ} (hx : x ∈ Set.Icc 0 1) : √x * (1 - x) ∈ Set.Icc 0 0.4 :=
 /-- error: The inclusion check failed:
 The proposition is provably false -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (h : False) : √2 < 1.414 := by
   dyadic_interval? [prec := 7]
   exact h.elim

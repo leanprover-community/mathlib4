@@ -31,7 +31,7 @@ of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular 
 def cocardinal (hreg : c.IsRegular) : Filter α := by
   apply ofCardinalUnion {s | Cardinal.mk s < c} (natCast_lt_aleph0.trans_le hreg.aleph0_le)
   · refine fun s hS hSc ↦ lt_of_le_of_lt (mk_sUnion_le _) <| mul_lt_of_lt hreg.aleph0_le hS ?_
-    apply iSup_lt_of_lt_cof_ord _ fun i ↦ hSc i.1 i.2
+    apply iSup_lt_of_lt_cof_ord _ fun i ↦ hSc i.val i.property
     rwa [hreg.cof_ord]
   · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (mk_le_mk_of_subset ht) hSc
 

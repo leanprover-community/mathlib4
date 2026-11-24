@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Restricted
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Univariate restricted power series
 

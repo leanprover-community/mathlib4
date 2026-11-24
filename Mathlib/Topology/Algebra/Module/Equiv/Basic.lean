@@ -13,10 +13,12 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 # Continuous linear equivalences
 
 ## Notation
+
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 
 ## Main Definitions
+
 * `toHomeomorph` is the homeomorphism induced by a continuous (semi)linear equivalence.
 * `symm` is the inverse of a continuous linear equivalence as a continuous linear equivalence.
 * `equivOfInverse` creates a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
@@ -27,6 +29,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofIsHomeomorph`: a linear equivalence that is a homeomorphism is a continuous linear equivalence.
 
 ## Main Results
+
 * `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
   homeomorphism if and only if it is continuous in both directions.
 -/
@@ -348,11 +351,11 @@ theorem trans_apply (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂�
 
 @[simp]
 theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm c) = c :=
-  e.1.right_inv c
+  e.toLinearEquiv.right_inv c
 
 @[simp]
 theorem symm_apply_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : e.symm (e b) = b :=
-  e.1.left_inv b
+  e.toLinearEquiv.left_inv b
 
 @[simp] theorem symm_trans_self (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.trans e = .refl R₂ M₂ :=
   ext <| funext fun _ ↦ apply_symm_apply _ _

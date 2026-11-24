@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.LinearAlgebra.BilinearMap
+
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -22,7 +23,7 @@ that it is preadditive and show that being an isomorphism, monomorphism and epim
 equivalent to being a linear equivalence, an injective linear map and a surjective linear map,
 respectively.
 
-## Implementation details
+## Implementation notes
 
 To construct an object in the category of `R`-modules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
@@ -632,11 +633,13 @@ end Bilinear
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_moduleCat
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.comp_id_moduleCat
     {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
-@[simp] theorem LinearMap.id_moduleCat_comp
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
 

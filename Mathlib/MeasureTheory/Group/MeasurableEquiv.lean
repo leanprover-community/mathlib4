@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
 

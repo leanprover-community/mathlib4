@@ -117,23 +117,23 @@ end Arbitrary
 
 /-- We give an explicit construction for a principal ordinal larger or equal than `o`. -/
 private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
-    IsPrincipal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
+    IsPrincipal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.val.1 y.val.2)) o) := by
   intro a b ha hb
   rw [lt_nfp_iff] at *
   obtain ⟨m, ha⟩ := ha
   obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[m] o)
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[n] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.val.1 y.val.2))^[m] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.val.1 y.val.2))^[n] o)
   · use n + 1
     rw [Function.iterate_succ']
     apply (lt_succ _).trans_le
-    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.val.1 y.val.2))
       ⟨_, Set.mk_mem_prod (ha.trans_le h) hb⟩
   · use m + 1
     rw [Function.iterate_succ']
     apply (lt_succ _).trans_le
-    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.val.1 y.val.2))
       ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
 /-- Principal ordinals under any operation are unbounded. -/

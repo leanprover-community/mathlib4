@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 In this file we define subspaces of a projective space, and show that the subspaces of a projective
 space form a complete lattice under inclusion.
 
-## Implementation Details
+## Implementation notes
 
 A subspace of a projective space ℙ K V is defined to be a structure consisting of a subset of
 ℙ K V such that if two nonzero vectors in V determine points in ℙ K V which are in the subset, and
@@ -155,7 +155,7 @@ theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
-  rw [eq_top_iff, IsConcreteLE.le_iff]
+  rw [eq_top_iff, le_iff_mem_imp_mem]
   intro x _hx
   exact subset_span _ (Set.mem_univ x)
 

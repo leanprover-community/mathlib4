@@ -13,7 +13,8 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 In this file we show that localizations are flat, and flatness is a local property.
 
-## Main result
+## Main results
+
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
 * `Module.flat_iff_of_isLocalization` : Let `Rₚ` a localization of a commutative ring `R`
   and `M` be a module over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
@@ -39,7 +40,7 @@ theorem IsLocalization.flat : Module.Flat R S := by
   have h := ((range N.subtype).isLocalizedModule S p (TensorProduct.mk R S P 1)).isBaseChange _ S
   let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
   have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
-    ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
+    ext; change _ = (h.equiv _).val; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using! e.injective
 
 instance Localization.flat [Module.Flat R S] (p : Submonoid S) : Module.Flat R (Localization p) :=
@@ -84,7 +85,7 @@ variable (s : Set S) (spn : Ideal.span s = ⊤)
   [∀ r : s, Module S (Mₛ r)]
   [∀ r : s, IsScalarTower R S (Mₛ r)]
   (g : ∀ r : s, M →ₗ[S] Mₛ r)
-  [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
+  [∀ r : s, IsLocalizedModule.Away r.val (g r)]
 include spn
 
 include g in
@@ -98,7 +99,7 @@ theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
   simpa [IsLocalizedModule.map_lTensor] using H r N
 
 theorem flat_of_localized_span
-    (h : ∀ r : s, Flat S (LocalizedModule.Away r.1 M)) :
+    (h : ∀ r : s, Flat S (LocalizedModule.Away r.val M)) :
     Flat S M :=
   flat_of_isLocalized_span _ _ _ spn _ (fun _ ↦ mkLinearMap _ _) h
 

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 import Mathlib.RingTheory.Flat.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat ring homomorphisms
 
@@ -76,7 +79,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h
   algebraize_only [f]
   refine Module.flat_of_isLocalized_span _ _ s hsp _
-    (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
+    (fun r ↦ Algebra.linearMap S <| Localization.Away r.val) ?_
   dsimp only [RingHom.Flat] at h
   convert! h; ext
   apply Algebra.smul_def
@@ -142,9 +145,9 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma lTensor {f : B →ₐ[R] D} (hf : f.Flat) :
     (Algebra.TensorProduct.lTensor (S := S) A f).Flat := by
   algebraize [f.toRingHom, (Algebra.TensorProduct.lTensor (S := A) A f).toRingHom]
-  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D :=
-    { __ := (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm,
-      commutes' x := congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x) }
+  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D := .ofCommutes
+      (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm.toRingEquiv
+    fun x ↦ congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x)
   exact .of_linearEquiv e.toLinearEquiv
 
 variable {A} in

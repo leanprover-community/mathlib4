@@ -18,6 +18,7 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
+
 transcendence
 -/
 
@@ -74,7 +75,8 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 end AlgebraicIndependent
 
 theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
-  bot_unique <| ciSup_le' fun s ↦ have := s.2.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
+  bot_unique <| ciSup_le' fun s ↦
+    have := s.property.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
 
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
@@ -159,7 +161,7 @@ theorem algebraicIndependent_of_finite' (s : Set A)
       ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
     AlgebraicIndependent R ((↑) : s → A) :=
   algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
-    (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
+    (by rintro _ ⟨x, _, rfl⟩; exact x.property) (hfin.image _) h.image _ i.property
     (mt Subtype.val_injective.mem_set_image.mp hi)
 
 namespace AlgebraicIndependent
@@ -205,7 +207,7 @@ theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebra
   set Rx := adjoin R (range x)
   let _ : Algebra Rx S :=
     (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
-  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).val by simp
   refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
   simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
 
