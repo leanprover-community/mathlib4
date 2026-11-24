@@ -79,37 +79,29 @@ class HasCofilteredLimitsOfSize : Prop where
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 
 /-- Class for having all filtered colimits of a given size. -/
-@[univ_out_params, pp_with_univ]
+@[univ_out_params, pp_with_univ, to_dual]
 class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C
 
 /-- Class for having cofiltered limits. -/
+@[to_dual /-- Class for having filtered colimits. -/]
 abbrev HasCofilteredLimits := HasCofilteredLimitsOfSize.{v, v} C
-
-/-- Class for having filtered colimits. -/
-abbrev HasFilteredColimits := HasFilteredColimitsOfSize.{v, v} C
 
 end
 
+@[to_dual]
 instance (priority := 100) hasFilteredColimitsOfSize_of_hasColimitsOfSize
     [HasColimitsOfSize.{w', w} C] : HasFilteredColimitsOfSize.{w', w} C where
   HasColimitsOfShape _ _ _ := inferInstance
 
-instance (priority := 100) hasCofilteredLimitsOfSize_of_hasLimitsOfSize
-    [HasLimitsOfSize.{w', w} C] : HasCofilteredLimitsOfSize.{w', w} C where
-  HasLimitsOfShape _ _ _ := inferInstance
-
+@[to_dual]
 instance (priority := 100) hasLimitsOfShape_of_has_cofiltered_limits
     [HasCofilteredLimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsCofiltered I] :
     HasLimitsOfShape I C :=
   HasCofilteredLimitsOfSize.HasLimitsOfShape _
 
-instance (priority := 100) hasColimitsOfShape_of_has_filtered_colimits
-    [HasFilteredColimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsFiltered I] :
-    HasColimitsOfShape I C :=
-  HasFilteredColimitsOfSize.HasColimitsOfShape _
-
+@[to_dual]
 lemma hasCofilteredLimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}]
     [HasCofilteredLimitsOfSize.{w₂', w₂} C] :
     HasCofilteredLimitsOfSize.{w', w} C where
@@ -119,22 +111,10 @@ lemma hasCofilteredLimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}
     hasLimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
       Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
 
+@[to_dual]
 lemma hasCofilteredLimitsOfSize_shrink [HasCofilteredLimitsOfSize.{max w' w₂', max w w₂} C] :
     HasCofilteredLimitsOfSize.{w', w} C :=
   hasCofilteredLimitsOfSize_of_univLE.{w', w, max w' w₂', max w w₂}
-
-lemma hasFilteredColimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}]
-    [HasFilteredColimitsOfSize.{w₂', w₂} C] :
-    HasFilteredColimitsOfSize.{w', w} C where
-  HasColimitsOfShape J :=
-    haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J))
-    hasColimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
-
-lemma hasFilteredColimitsOfSize_shrink [HasFilteredColimitsOfSize.{max w' w₂', max w w₂} C] :
-    HasFilteredColimitsOfSize.{w', w} C :=
-  hasFilteredColimitsOfSize_of_univLE.{w', w, max w' w₂', max w w₂}
 
 end Limits
 

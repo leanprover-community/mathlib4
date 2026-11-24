@@ -265,6 +265,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ofι", ["Ofπ"]),
   ("functorπ", ["Functorι"]),
   ("functorι", ["Functorπ"]),
+  ("filtered", ["Cofiltered"]),
+  ("cofiltered", ["Filtered"]),
 ]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]

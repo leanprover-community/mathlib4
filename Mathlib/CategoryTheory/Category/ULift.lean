@@ -50,20 +50,19 @@ attribute [local instance] uliftCategory
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The functorial version of `ULift.up`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ULift.upFunctor : C ⥤ ULift.{u₂} C where
   obj := ULift.up
   map f := f
 
 /-- The functorial version of `ULift.down`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ULift C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ULift.equivalence : C ≌ ULift.{u₂} C where
   functor := ULift.upFunctor
   inverse := ULift.downFunctor
@@ -113,20 +112,20 @@ instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the equivalence between `C` and `ULiftHom C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
 
 /-- One half of the equivalence between `C` and `ULiftHom C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
   map f := f.down
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `C` and `ULiftHom C`. -/
+@[implicit_reducible]
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
