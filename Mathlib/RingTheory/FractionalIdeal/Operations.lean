@@ -996,7 +996,7 @@ noncomputable def ringEquivOfRingEquiv :
       apply le_antisymm <;>
         simp only [map_le_iff_le_comap, Submodule.mul_le, mem_coeToSubmodule, mem_comap,
           semilinearEquivOfRingEquiv_apply, map_mul, mem_map_equiv,
-          semilinearEquivOfRingEquiv_symm_apply, LinearEquiv.coe_coe]
+          semilinearEquivOfRingEquiv_symm_apply, LinearEquiv.coe_toLinearMap]
       · exact fun m hm n hn ↦ Submodule.mul_mem_mul (mem_map_of_mem hm) (mem_map_of_mem hn)
       · exact fun m hm n hn ↦ Submodule.mul_mem_mul hm hn
     left_inv I := by

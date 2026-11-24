@@ -395,8 +395,8 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr($h i)
-        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-          coe_symm_linearEquiv, PiLp.toLp_single,
+        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_toLinearMap,
+          LinearEquiv.trans_apply, coe_symm_linearEquiv, PiLp.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 

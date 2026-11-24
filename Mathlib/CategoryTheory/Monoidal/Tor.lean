@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tor, the left-derived functor of tensor product
 

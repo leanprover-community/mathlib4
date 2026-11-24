@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois group of cyclotomic extensions
 

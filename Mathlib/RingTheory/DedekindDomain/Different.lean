@@ -154,7 +154,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   ext x
   simp only [traceDual, Submodule.mem_comap]
   apply (FractionRing.algEquiv B L).forall_congr
-  simp only [restrictScalars_mem, LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv,
+  simp only [restrictScalars_mem, LinearEquiv.coe_toLinearMap, AlgEquiv.coe_symm_toLinearEquiv,
     traceForm_apply, mem_one, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, mem_comap,
     AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)

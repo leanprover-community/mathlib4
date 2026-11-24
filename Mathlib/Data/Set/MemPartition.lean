@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions based on membership of a sequence of sets
 

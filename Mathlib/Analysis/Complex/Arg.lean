@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rays in the complex numbers
 

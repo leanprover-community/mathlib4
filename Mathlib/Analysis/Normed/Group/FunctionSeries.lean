@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of series of functions
 

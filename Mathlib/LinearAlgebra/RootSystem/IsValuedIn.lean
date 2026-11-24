@@ -245,7 +245,7 @@ lemma rootSpan_mem_invtSubmodule_reflection (i : ι) :
   induction hx using Submodule.span_induction with
   | mem y hy =>
     obtain ⟨j, rfl⟩ := hy
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply_root]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply_root]
     apply Submodule.sub_mem
     · exact Submodule.subset_span <| mem_range_self j
     · exact Submodule.smul_mem _ _ <| Submodule.subset_span <| mem_range_self i
@@ -287,8 +287,8 @@ lemma iInf_ker_coroot'_eq :
 
 @[simp] lemma rootSpan_map_toPerfPair :
     (P.rootSpan R).map (P.toPerfPair : M →ₗ[R] Dual R N) = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, LinearEquiv.coe_coe,
-    toPerfPair_comp_root]
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ,
+    LinearEquiv.coe_toLinearMap, toPerfPair_comp_root]
 
 @[simp] lemma corootSpan_map_flip_toPerfPair :
     (P.corootSpan R).map (P.toLinearMap.flip.toPerfPair : N →ₗ[R] Dual R M) =

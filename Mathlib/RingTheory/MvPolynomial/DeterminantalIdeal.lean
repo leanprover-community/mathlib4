@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.MvPolynomial.Eval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinantal ideals of a generic matrix
 

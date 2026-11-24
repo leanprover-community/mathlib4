@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology sequence
 
