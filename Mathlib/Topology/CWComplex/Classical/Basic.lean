@@ -29,6 +29,7 @@ together.
 * `skeleton C n`: the `n`-skeleton of the (relative) CW complex `C`.
 
 ## Main statements
+
 * `iUnion_openCell_eq_skeleton`: the skeletons can also be seen as a union of open cells.
 * `cellFrontier_subset_finite_openCell`: the edge of a cell is contained in a finite union of
   open cells of a lower dimension.

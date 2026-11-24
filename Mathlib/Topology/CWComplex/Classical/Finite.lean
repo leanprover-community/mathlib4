@@ -22,6 +22,7 @@ finite CW complexes.
 * `RelCWComplex.Finite`: a CW complex is finite if it is finite dimensional and of finite type.
 
 ## Main statements
+
 * `RelCWComplex.mkFiniteType`: if we want to construct a CW complex of finite type, we can relax the
   condition `mapsTo`.
 * `RelCWComplex.mkFinite`: if we want to construct a finite CW complex, we can relax the condition

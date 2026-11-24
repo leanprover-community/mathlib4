@@ -25,6 +25,7 @@ compactly supported) and all basic properties are proved in an abstract setting 
   distribution vanishes on the complement of the set.
 
 ## Main statements
+
 * `dsupport_delta`: The support of the delta distribution is a single point. Available for tempered
   and classical distributions.
 -/

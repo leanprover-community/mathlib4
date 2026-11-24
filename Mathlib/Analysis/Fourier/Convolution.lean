@@ -17,6 +17,7 @@ In this file we calculate the Fourier transform of a convolution.
   transform.
 
 ## Main statements
+
 * `Real.fourier_bilin_convolution_eq`: The Fourier transform of a convolution is the bilinear map
   applied to the Fourier transform of the functions.
 * `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.

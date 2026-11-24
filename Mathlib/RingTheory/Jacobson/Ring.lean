@@ -32,6 +32,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.
 
 ## Main statements
+
 * `isJacobsonRing_iff_prime_eq` is the equivalence between conditions 1 and 3 above.
 * `isJacobsonRing_iff_sInf_maximal` is the equivalence between conditions 1 and 2 above.
 * `isJacobsonRing_of_surjective` says that if `R` is a Jacobson ring and

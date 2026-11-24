@@ -17,6 +17,7 @@ distributions. The multiplier function is throughout assumed to have temperate g
 * `TemperedDistribution.fourierMultiplierCLM`: Fourier multiplier on tempered distribution
 
 ## Main statements
+
 * `SchwartzMap.lineDeriv_eq_fourierMultiplierCLM`: the directional derivative is equal to the
   Fourier multiplier with `inner ℝ . m`.
 * `SchwartzMap.laplacian_eq_fourierMultiplierCLM`: the Laplacian is equal to the Fourier multiplier
