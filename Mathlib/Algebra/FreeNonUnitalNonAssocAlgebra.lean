@@ -24,7 +24,7 @@ Note that elsewhere we have a construction of the free unital, associative algeb
   * `FreeNonUnitalNonAssocAlgebra.lift`
   * `FreeNonUnitalNonAssocAlgebra.of`
 
-## Implementation details
+## Implementation notes
 
 We construct the free algebra as the magma algebra, with coefficients in `R`, of the free magma on
 `X`. However we regard this as an implementation detail and thus deliberately omit the lemmas

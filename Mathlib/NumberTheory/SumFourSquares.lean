@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 The main result in this file is `sum_four_squares`,
 a proof that every natural number is the sum of four square numbers.
 
-## Implementation Notes
+## Implementation notes
 
 The proof used is close to Lagrange's original proof.
 -/

@@ -51,7 +51,7 @@ Throughout this file, we use :
 - `X`, `Y`, `Z` for topological spaces
 - `α`, `β`, `γ` for uniform spaces
 
-## Implementation details
+## Implementation notes
 
 We choose to express equicontinuity as a properties of indexed families of functions rather
 than sets of functions for the following reasons:

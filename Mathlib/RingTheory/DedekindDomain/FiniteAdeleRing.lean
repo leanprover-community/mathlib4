@@ -21,6 +21,7 @@ We define the ring of finite adèles of a Dedekind domain `R`.
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
+
 We are only interested on Dedekind domains of Krull dimension 1 (i.e., not fields). If `R` is a
 field, its finite adèle ring is just defined to be the trivial ring.
 

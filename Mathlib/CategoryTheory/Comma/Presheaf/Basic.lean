@@ -42,7 +42,7 @@ triangle should generally be sufficient.
 * `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`: the natural isomorphism
   `CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda`
 
-## Implementation details
+## Implementation notes
 
 The proof needs to introduce "correction terms" in various places in order to overcome DTT issues,
 and these need to be canceled against each other when appropriate. It is important to deal with

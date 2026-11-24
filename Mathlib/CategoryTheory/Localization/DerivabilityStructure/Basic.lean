@@ -30,7 +30,7 @@ L₁|         | L₂
        F
 ```
 
-## Implementation details
+## Implementation notes
 
 In the field `guitartExact'` of the structure `LocalizerMorphism.IsRightDerivabilityStructure`,
 The condition that the square is Guitart exact is stated for the localization functors

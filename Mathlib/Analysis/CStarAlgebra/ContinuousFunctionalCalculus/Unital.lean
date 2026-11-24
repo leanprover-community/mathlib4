@@ -114,7 +114,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc_comp : cfc (x ↦ g (f x)) a = cfc g (cfc f a)`
 + `cfc_polynomial`: the continuous functional calculus extends the polynomial functional calculus.
 
-## Implementation details
+## Implementation notes
 
 Instead of defining a class depending on a term `a : A`, we register it for an `outParam` predicate
 `p : A → Prop`, and then any element of `A` satisfying this predicate has the associated star
