@@ -6,7 +6,9 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Opposites
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The dualizing functor on `Cat`

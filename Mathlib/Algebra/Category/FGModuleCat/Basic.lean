@@ -9,8 +9,12 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.LinearAlgebra.Coevaluation
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.TensorProduct.Finite
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of finitely generated modules over a ring
@@ -29,7 +33,6 @@ and then as a right-rigid monoidal category.
 ## Future work
 
 * Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
-
 -/
 
 @[expose] public section
@@ -172,11 +175,12 @@ instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Additive where
 instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Linear R where
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
-    Iso.conj i f = FGModuleCat.ofHom (LinearEquiv.conj (isoToLinearEquiv i) f.hom.hom) :=
+    Iso.conj i f =
+      .of (FGModuleCat.ofHom (LinearEquiv.conj (isoToLinearEquiv i) f.asHom.hom.hom)) :=
   rfl
 
 theorem Iso.conj_hom_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
-    (Iso.conj i f).hom.hom = (LinearEquiv.conj (isoToLinearEquiv i) f.hom.hom) :=
+    (Iso.conj i f).asHom.hom.hom = (LinearEquiv.conj (isoToLinearEquiv i) f.asHom.hom.hom) :=
   rfl
 
 end CommRing
@@ -238,7 +242,6 @@ theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
       = f.toFun x :=
   contractLeft_apply f x
 
-set_option backward.privateInPublic true in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
@@ -246,7 +249,6 @@ private theorem coevaluation_evaluation :
   ext : 1
   apply contractLeft_assoc_coevaluation K V
 
-set_option backward.privateInPublic true in
 private theorem evaluation_coevaluation :
     FGModuleCatCoevaluation K V ▷ V ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
@@ -254,13 +256,11 @@ private theorem evaluation_coevaluation :
   ext : 1
   apply contractLeft_assoc_coevaluation' K V
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V
   evaluation' := FGModuleCatEvaluation K V
-  coevaluation_evaluation' := coevaluation_evaluation K V
-  evaluation_coevaluation' := evaluation_coevaluation K V
+  coevaluation_evaluation' := private coevaluation_evaluation K V
+  evaluation_coevaluation' := private evaluation_coevaluation K V
 
 instance rightDual : HasRightDual V :=
   ⟨FGModuleCatDual K V⟩
@@ -275,14 +275,14 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
-    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f := by
+  simp
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
-    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f := by
+  simp

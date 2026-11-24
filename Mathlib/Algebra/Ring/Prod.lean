@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Algebra.GroupWithZero.Prod
 public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Data.Int.Cast.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Semiring, ring etc. structures on `R × S`
@@ -271,6 +273,9 @@ theorem coe_prodComm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
 @[simp]
 theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodComm = .refl _ := rfl
 
 @[simp]
 theorem fst_comp_coe_prodComm :

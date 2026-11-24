@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence and algebra maps
 

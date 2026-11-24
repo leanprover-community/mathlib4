@@ -18,6 +18,7 @@ This file contains additional results about `Valuation.IsTrivialOn` which is def
 In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` which is trivial on `A`.
 
 ## Main results
+
 * `valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X`: Let `p` be a polynomial
   over `A` evaluated at an element `w` of `B` for which `1 < v w`.
   We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
@@ -79,7 +80,7 @@ theorem Valuation.transcendental_of_ne_one (y : K) (h0 : y ≠ 0) (hy : v y ≠ 
     rw [← val_lt_one_iff _ h0]
     exact lt_of_le_of_ne hlt hy
   simp_all only [ne_eq, Transcendental]
-  by_contra!
+  by_contra
   replace ⟨p, hpnt, hp⟩ : IsAlgebraic A y := .algebraMap this
   suffices v y ^ p.natDegree = 0 by simp_all
   rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ hlt] <;> simp_all

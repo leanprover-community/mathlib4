@@ -8,8 +8,8 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Basic.SetLike.Basic
+public import Mathlib.Tactic.GrindAttrs
 
 /-!
 # Subsemigroups: definition
@@ -45,6 +45,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers.
 
 ## Tags
+
 subsemigroup, subsemigroups
 -/
 
@@ -74,7 +75,7 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] mul_mem add_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where
@@ -98,7 +99,7 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M) M
+@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M)
 
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
@@ -264,7 +265,7 @@ variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 /-- A submagma of a magma inherits a multiplication. -/
 @[to_additive /-- An additive submagma of an additive magma inherits an addition. -/]
 instance (priority := 900) mul : Mul S' :=
-  ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a.val * b.val, mul_mem a.property b.property⟩⟩
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp low, norm_cast)]
@@ -278,7 +279,7 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
   rfl
 
 @[to_additive]
-theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
+theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.property y.property⟩ :=
   rfl
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
@@ -352,15 +353,15 @@ lemma setLike_mul_comm {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s)
 
 /-- Commutativity of multiplication passes to smaller subobjects. -/
 @[to_additive /-- Commutativity of addition passes to smaller subobjects. -/ ]
-lemma isMulCommutative_anti [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
+lemma isMulCommutative_anti [LE S] [IsMemLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
     IsMulCommutative s :=
   .of_setLike_mul_comm fun _ ha _ hb ↦
     setLike_mul_comm (mem_of_le_of_mem h ha) (mem_of_le_of_mem h hb)
 
-instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative t] :
+instance [SemilatticeInf S] [IsMemLE S M] {s t : S} [IsMulCommutative t] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_right
 
-instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
+instance [SemilatticeInf S] [IsMemLE S M] {s t : S} [IsMulCommutative s] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_left
 
 end IsMulCommutative

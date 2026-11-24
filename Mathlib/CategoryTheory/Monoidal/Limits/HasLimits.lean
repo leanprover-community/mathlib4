@@ -17,6 +17,7 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
 ## TODO
+
 An attribute should be developed to automatically generate lemmas of this form.
 -/
 
@@ -49,13 +50,11 @@ lemma HasColimit.isoOfNatIso_ι_hom_whiskerRight (w : F ≅ G) (j : J) {Q : C} :
       w.hom.app j ▷ Q ≫ colimit.ι G j ▷ Q := by
   simp [← MonoidalCategory.comp_whiskerRight]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma colimit.whiskerLeft_ι_desc (c : Cocone F) (j : J) {Q : C} :
     Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma colimit.ι_desc_whiskerRight (c : Cocone F) (j : J) {Q : C} :
     colimit.ι F j ▷ Q ≫ colimit.desc F c ▷ Q = c.ι.app j ▷ Q := by

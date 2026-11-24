@@ -5,16 +5,15 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Algebra.GCDMonoid.Basic
 
 /-!
 # Lemmas about divisibility in rings
 
-## Main results:
+## Main results
+
 * `dvd_smul_of_dvd`: stating that `x ∣ y → x ∣ m • y` for any scalar `m`.
 * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).

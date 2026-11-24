@@ -31,6 +31,7 @@ semantics for regular logic.
 * Show that regular logic has an interpretation in regular categories
 
 ## References
+
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/
@@ -80,7 +81,6 @@ section StrongEpiMonoFactorisation
 local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (coequalizer.desc f pullback.condition) := by
   -- It suffices to show that the two projections from the kernel pair are equal:
   apply (IsKernelPair.of_hasPullback _).mono_of_eq_fst_snd
@@ -129,7 +129,7 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
     infer_instance
   -- We precompose with the epimorphism `g₁ ≫ pullback.snd e k₁`, and finish
   rw [← cancel_epi (g₁ ≫ pullback.snd e k₁)]
-  convert! coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
+  convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
 /--

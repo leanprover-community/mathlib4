@@ -31,6 +31,7 @@ and uniform continuity.
   characterizations of equality via distance.
 
 ## Implementation notes
+
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
 for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
@@ -148,7 +149,7 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 end Metric
 
 /-- Build a new metric space from an old one where the bundled uniform structure is provably
-(but typically non-definitionaly) equal to some given uniform structure.
+(but typically non-definitionally) equal to some given uniform structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -162,7 +163,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
   ext; rfl
 
 /-- Build a new metric space from an old one where the bundled topological structure is provably
-(but typically non-definitionaly) equal to some given topological structure.
+(but typically non-definitionally) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -176,7 +177,7 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
   ext; rfl
 
 /-- Build a new metric space from an old one where the bundled bornology structure is provably
-(but typically non-definitionaly) equal to some given bornology structure.
+(but typically non-definitionally) equal to some given bornology structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/

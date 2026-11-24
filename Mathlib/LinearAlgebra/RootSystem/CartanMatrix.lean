@@ -5,32 +5,29 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Algebra.Module.Submodule.Union
-public import Mathlib.Data.Int.Star
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Matrix.BilinearForm
-public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Module.Submodule.Union
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Block
+import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!
 # Cartan matrices for root systems
 
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 * `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
 * `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
-
 -/
 
 @[expose] public section
@@ -189,9 +186,9 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
   simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
     LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
   simpa [← algebraMap_pairingIn P ℤ i j] using
-    congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
+    congr($(cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j)
 
-lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
+lemma exists_cartanMatrix_mul_diagonal_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
   have _i : Fintype ι := Fintype.ofFinite ι
   set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) with hd
@@ -205,12 +202,18 @@ lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem]
     rw [← LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix _ _ aux]
     simpa using P.posRootForm_rootFormIn_posDef ℤ
 
-lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
+@[deprecated (since := "2026-10-13")]
+alias exists_cartanMatrix_mul_diagaonal_posDef := exists_cartanMatrix_mul_diagonal_posDef
+
+lemma exists_cartanMatrix_diagonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * b.cartanMatrix).PosDef := by
-  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
+  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagonal_posDef
   refine ⟨d, hd, ?_⟩
   rw [← PosDef.transpose_iff] at hd'
   aesop
+
+@[deprecated (since := "2026-10-13")]
+alias exists_cartanMatrix_diagaonal_mul_posDef := exists_cartanMatrix_diagonal_mul_posDef
 
 open LinearMap Module.End in
 lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
@@ -219,7 +222,7 @@ lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
     have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
     rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
       ← hasEigenvalue_iff]
-  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
   have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
     rcases eq_or_ne i j with rfl | hij
     · simp
@@ -256,7 +259,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply]
     apply q.sub_mem hx
     by_cases hk : P.root k ∈ q
     · exact q.smul_mem _ hk
@@ -279,7 +282,7 @@ lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCryst
   suffices f' = g' by
     rw [← P.root.apply_eq_iff_eq, hf, hg]
     refine Finset.sum_congr rfl fun k hk ↦ ?_
-    replace this : f k = g k := congr_fun this ⟨k, hk⟩
+    replace this : f k = g k := congr($this ⟨k, hk⟩)
     rw [this]
   replace hf : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
     suffices ∀ k, P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k by
@@ -307,8 +310,8 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
     ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
       (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
-  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
-    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim LinearMap.proj
+    (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.val.1 - LinearMap.proj x.val.2)
   suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
@@ -344,14 +347,14 @@ lemma apply_mem_range_root_of_cartanMatrixEq
       exact b.toWeightBasis.ext fun j ↦ by simpa using this j
     intro j
     suffices P₂.pairing (e j) (e k) = P.pairing j k by simp [reflection_apply, hf, this]
-    simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr_arg (algebraMap ℤ R) (he j k)
+    simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr(algebraMap ℤ R $(he j k))
   obtain ⟨i, rfl⟩ := hm
   apply b.induction_reflect i
   · exact fun j ⟨k, hk⟩ ↦ ⟨P₂.reflectionPerm k k, by simpa⟩
   · exact fun j hj ↦ ⟨e ⟨j, hj⟩, (hf _).symm⟩
   · intro j k ⟨l, hl⟩ hk
     replace this : f (P.reflection k (P.root j)) = (P₂.reflection (e ⟨k, hk⟩)) (f (P.root j)) := by
-      simpa using LinearEquiv.congr_fun (this ⟨k, hk⟩) (P.root j)
+      simpa using congr($(this ⟨k, hk⟩) (P.root j))
     rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
     exact mem_range_self _
 
@@ -411,10 +414,12 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
 
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan where
-  diag i := b.cartanMatrix_apply_same i
-  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  diag := b.cartanMatrix_apply_same
+  offDiag_nonpos := b.cartanMatrix_le_zero_of_ne
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
-  exists_posDef := b.exists_cartanMatrix_diagaonal_mul_posDef
+  exists_posDef' := by
+    obtain ⟨d, hd, hd'⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
+    exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
 end IsCrystallographic
 

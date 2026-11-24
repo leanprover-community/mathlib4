@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
@@ -16,11 +15,13 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 Nontrivial nonarchimedean norms correspond to rank one valuations.
 
 ## Main Definitions
+
 * `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
+
 * The valuation of a normed field has rank at most one.
 
 ## Tags
@@ -44,12 +45,12 @@ variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 namespace NormedField
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
+/-- The valuation on a nonarchimedean normed field `K` defined as `nnNorm`. -/
 def valuation : Valuation K ℝ≥0 where
-  toFun           := nnnorm
-  map_zero'       := nnnorm_zero
-  map_one'        := nnnorm_one
-  map_mul'        := nnnorm_mul
+  toFun           := nnNorm
+  map_zero'       := nnNorm_zero
+  map_one'        := nnNorm_one
+  map_mul'        := nnNorm_mul
   map_add_le_max' := IsUltrametricDist.norm_add_le_max
 
 @[simp]
@@ -94,7 +95,7 @@ def toValued : Valued K ℝ≥0 :=
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        refine ⟨(embedding ε.val : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
@@ -114,26 +115,36 @@ end
 namespace Valuation
 
 variable {R : Type*} [Ring R] {L : Type*} [DivisionRing L]
-  {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [hv : RankOne v]
+  {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [hv : RankLeOne v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : R → ℝ := fun x : R ↦ hv.hom _ (v.restrict x)
+def norm : R → ℝ := fun x : R ↦ hv.hom' (v.restrict x)
 
-theorem norm_def {x : R} : v.norm x = hv.hom _ (v.restrict x) := rfl
+theorem norm_def {x : R} : v.norm x = hv.hom' (v.restrict x) := rfl
 
 theorem norm_nonneg (x : R) : 0 ≤ v.norm x := by simp [norm]
 
 theorem norm_add_le (x y : R) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
-  simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
-  exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)
+  simp [norm_def, hv.strictMono'.le_iff_le]
 
-theorem norm_eq_zero (v : Valuation L Γ₀) [RankOne v] {x : L} (hx : v.norm x = 0) : x = 0 := by
-  simpa [v.restrict_def, norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
+theorem norm_eq_zero (v : Valuation L Γ₀) [RankLeOne v] {x : L} (hx : v.norm x = 0) : x = 0 := by
+  simpa [norm_def] using hx
 
 theorem norm_pos_iff_valuation_pos {x : R} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
-  rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom v),
-    StrictMono.lt_iff_lt (RankOne.strictMono v)]
-  rw [v.restrict_pos_iff]
+  simpa [norm_def] using (RankLeOne.strictMono' (v := v)).lt_iff_lt (a := 0) (b := (v.restrict x))
+
+/-- Absolute value corresponding to a valuation of rank at most one. -/
+@[simps]
+def absoluteValue (v : Valuation L Γ₀) [hv : RankLeOne v] : AbsoluteValue L ℝ where
+  toFun    := v.norm
+  map_mul' := by simp [norm_def]
+  nonneg'  := by simp [norm_def]
+  eq_zero' := by simp [norm_def]
+  add_le' x y := by
+    calc
+      v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
+        simp [norm_def, hv.strictMono'.le_iff_le]
+      _ ≤ v.norm x + v.norm y := by simp [v.norm_def]
 
 end Valuation
 
@@ -280,11 +291,12 @@ def toNontriviallyNormedField : NontriviallyNormedField L := {
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
     rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
     · use x⁻¹
-      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (zero_lt_iff.mpr hx.1),
-          lt_of_le_of_ne h hx.2]
+      rw [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1.pos]
+      exact h.lt_of_ne hx.2
     · use x
-      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
-      simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
+      rw [map_inv₀, inv_le_one₀ hx.1.pos] at h
+      rw [toNormedField.one_lt_norm_iff]
+      exact h.lt_of_ne hx.2.symm
 }
 
 scoped[Valued] attribute [instance] Valued.toNontriviallyNormedField

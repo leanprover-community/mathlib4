@@ -5,12 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Action.Basic
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Type tags for right action on the domain of a function
@@ -34,7 +33,7 @@ We also define actions of `Mᵈᵐᵃ` on:
 - `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
 - `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
 
-## Implementation details
+## Implementation notes
 
 ### Motivation
 

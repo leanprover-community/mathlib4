@@ -5,8 +5,12 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.PartialSups
+
+import Mathlib.Algebra.Order.Group.OrderIso
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about `partialSups` of functions taking values in a `Group`

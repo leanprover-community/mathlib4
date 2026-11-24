@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Tactic.Continuity
 
 /-!
-
 # Valuative Relations
 
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.
@@ -56,6 +55,7 @@ The `ValuativeRel` class should eventually replace the existing `Valued` typecla
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 ## TODO
+
 Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
 `IsRankLeOne` could be separated out.
 -/
@@ -704,7 +704,7 @@ def ofValuation
   not_vle_one_zero := by simp
   vle_mul_comm := by simp [map_mul, mul_comm]
 
-lemma _root_.Valuation.Compatible.ofValuation
+instance _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
@@ -713,15 +713,22 @@ lemma _root_.Valuation.Compatible.ofValuation
   letI := ValuativeRel.ofValuation v
   ⟨fun _ _ ↦ Iff.rfl⟩
 
-lemma isEquiv {Γ₁ Γ₂ : Type*}
-    [LinearOrderedCommMonoidWithZero Γ₁]
-    [LinearOrderedCommMonoidWithZero Γ₂]
-    (v₁ : Valuation R Γ₁)
-    (v₂ : Valuation R Γ₂)
-    [v₁.Compatible] [v₂.Compatible] :
-    v₁.IsEquiv v₂ := by
+variable {Γ₁ Γ₂ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+  (v₁ : Valuation R Γ₁) (v₂ : Valuation R Γ₂) [v₁.Compatible]
+
+lemma isEquiv [v₂.Compatible] : v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.vle_iff_le]
+
+variable {v₁ v₂} in
+lemma _root_.Valuation.IsEquiv.compatible (h : v₁.IsEquiv v₂) : v₂.Compatible where
+  vle_iff_le x y := by
+    rw [Valuation.Compatible.vle_iff_le (v := v₁), h]
+
+lemma isEquiv_ofValuation {S Γ : Type*} [Ring S] [LinearOrderedCommGroupWithZero Γ]
+    (v : Valuation S Γ) : v.IsEquiv (ofValuation v).valuation := by
+  let := ofValuation v
+  exact isEquiv v (ofValuation v).valuation
 
 end Valuation
 
@@ -749,13 +756,26 @@ lemma vlt_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.vlt_iff_lt]
 lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
 lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
 
+theorem _root_.Valuation.compatible_iff_isEquiv (v : Valuation R Γ₀) :
+    v.Compatible ↔ v.IsEquiv (valuation R) :=
+  ⟨fun _ ↦ isEquiv _ _, fun h ↦ h.symm.compatible⟩
+
 @[simp]
-lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
+lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v x ≠ 0 := by
   simp [(isEquiv v (valuation R)).eq_zero, valuation_posSubmonoid_ne_zero]
 
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
-  zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
+  (v.apply_posSubmonoid_ne_zero x).pos
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
+
+/-- The restriction of a compatible valuation to its image group is compatible. -/
+instance restrict_compatible : v.restrict.Compatible where
+  vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
+
+lemma lt_div_iff_mul_vlt {z : R} (hz : 0 <ᵥ z) : v x < v y / v z ↔ x * z <ᵥ y := by
+  rw [lt_div_iff₀ (v.apply_posSubmonoid_pos ⟨z, hz⟩), ← map_mul, v.vlt_iff_lt]
 
 end Valuation
 
@@ -931,8 +951,8 @@ lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
     ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
   obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
   obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
-  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
-  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+  · exact ⟨γ, h0.pos, h1⟩
+  · exact ⟨γ⁻¹, by simpa [pos_iff_ne_zero], by simp [inv_lt_one_iff₀, h0, h1]⟩
 
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
@@ -1124,12 +1144,13 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   rw [← embedding_strictMono.lt_iff_lt]
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
+  any_goals
+    simp only [pos_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
     simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
-    rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
-      embedding_restrict₀ s.1]
+    rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.val,
+      embedding_restrict₀ s.val]
     simpa using h
   · simp [restrict₀_apply, embed]
   · simp [restrict₀_apply, embed]
@@ -1150,20 +1171,21 @@ ValueGroupWithZero R   | h.orderMonoidIso
 ```
 -/
 @[simp]
-theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
+theorem orderMonoidIso₀_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
-    h.orderMonoidIso
-    (embed w x) = embed v x := by
+    h.orderMonoidIso₀ (embed w x) = embed v x := by
   simp only [embed, coe_mk, ZeroHom.coe_mk]
   induction x using ValueGroupWithZero.ind with
-  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso_spec₀]
+  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso₀_spec₀]
+
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_embed := orderMonoidIso₀_embed
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/
 noncomputable
 def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o v.ValueGroup₀ where
   __ := embed v
-  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
+  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso₀ x)
   left_inv x := by simp
   right_inv := Function.rightInverse_of_injective_of_leftInverse
       (by rw [← Function.comp_def, EquivLike.injective_comp]
@@ -1195,14 +1217,10 @@ lemma embedding_orderMonoidIso_valuation_eq (γ : ValueGroupWithZero R) :
 lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=
   embed_strictMono v
 
-/-- The map `embedding ∘ orderMonoidIso (valuation R))` is identity. -/
+/-- The map `embedding ∘ orderMonoidIso (valuation R)` is identity. -/
 lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
     (orderMonoidIso (valuation R)) :=
   embedding_orderMonoidIso_valuation_eq
-
-/-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
-@[deprecated "use ValueGroupWithZero.orderMonoidIso instead" (since := "2026-03-17")]
-def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
 
 end ValueGroupWithZero
 
@@ -1234,7 +1252,7 @@ we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
 class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeRel A]
     [ValuativeRel B] [Algebra A B] where
-  vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
+  vle_iff_vle {a b : A} : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
 namespace ValuativeExtension
 
@@ -1247,8 +1265,15 @@ section Semiring
 variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
   [Algebra A B] [ValuativeExtension A B]
 
-lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
-  rw [← not_vle, vle_iff_vle, not_vle]
+attribute [simp] vle_iff_vle
+
+@[simp]
+lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b :=
+  vle_iff_vle.not
+
+@[simp]
+lemma veq_iff_veq {a b : A} : algebraMap A B a =ᵥ algebraMap A B b ↔ a =ᵥ b :=
+  vle_iff_vle.and vle_iff_vle
 
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.

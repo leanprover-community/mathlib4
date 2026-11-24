@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.Quotient.Pi
 
 * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
-
 -/
 
 @[expose] public section
@@ -63,14 +62,14 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   have : Submodule.map (b'.equivFun : M →ₗ[R] ι → R) N = N' := by
     ext x
     simp only [N', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
-      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
+      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_toLinearMap,
       Basis.equivFun_apply, mul_comm _ (a _), eq_comm (b := (x _))]
     constructor
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
       refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
-      · exact hdvd i
+      exact hdvd i
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical

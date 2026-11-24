@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.Interval.Finset.Nat
+
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Matroid Independence and Basis axioms
@@ -31,7 +32,7 @@ It just states that if `I` is a finite independent set and `J` is a larger finit
 independent set, then there exists `e ∈ J \ I` for which `insert e I` is independent.
 This is the axiom that appears in most of the definitions.
 
-## Implementation Details
+## Implementation notes
 
 To facilitate building a matroid from its independent sets, we define a structure `IndepMatroid`
 which has a ground set `E`, an independence predicate `Indep`, and some axioms as its fields.
@@ -195,7 +196,7 @@ This needs choice, since it can be used to prove that every vector space has a b
     obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximalFor f _ hJfin hne
     refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
     obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
-    · exact hxmax hyJ hle <| (hf _ hyJ).2
+    · exact hxmax hyJ hle (hf _ hyJ).2
     · exact hle (hf _ hyJ).2
   subset_ground := subset_ground
 

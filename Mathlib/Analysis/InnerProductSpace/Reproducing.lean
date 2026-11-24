@@ -16,29 +16,39 @@ This file defines vector-valued reproducing Kernel Hilbert spaces, which are Hil
 functions, as well as characterizing these spaces in terms of infinite-dimensional
 positive semidefinite matrices.
 
-## Main results
+## Main definitions
 
 - `RKHS`: the class of reproducing kernel Hilbert spaces
-- `RKHS.kernel`: the kernel of a RKHS as a matrix.
+- `RKHS.eval`: the evaluation operator of a RKHS.
 - `RKHS.kerFun`: the kernel functions of a RKHS.
-- `RKHS.kerFun_dense`: the kernel functions are dense in the Hilbert space.
-- `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
+- `RKHS.kernel`: the kernel of a RKHS as a matrix.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
-- `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
-    essentially Moore's theorem.
-- `RKHS.subRKHS`: the closed subspace of an RKHS is again an RKHS.
-- `RKHS.kerFun_subRKHS`: the kernel functions of the subRKHS are an orthogonal projection of the
-  kernel functions of the full RKHS.
-- `RKHS.kernel_subRKHS`: the kernel of the subRKHS is formed by composing the adjoint of the kernel
-  function of the full RKHS with a star projection acting on the kernel function of the full RKHS.
 - `RKHS.outerKernel`: the kernel generated from a function `f : X → V` with the rank-one operators
   `⟪f y, ·⟫ • f x` as its entries.
+
+## Main results
+
+- `RKHS.kerFun_dense`: the kernel functions are dense in the Hilbert space.
+- `RKHS.mem_topologicalClosure_span_kerFun`: the representer theorem -- a regularized minimizer
+    lies in the closed span of the kernel sections at the data points.
+- `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
+- `RKHS.continuous_tfae`: The joint continuity of the kernel, the continuity of the evaluation map
+  and continuity of the kernel functions are all equivalent.
+- `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS `OfKernel` is equal to the matrix,
+  this is essentially Moore's theorem.
+- `RKHS.RKHSSubmodule`: a complete submodule of an RKHS is again an RKHS.
+- `RKHS.kerFun_submodule`: the kernel functions of a submodule RKHS are an orthogonal projection of
+  the kernel functions of the full RKHS.
+- `RKHS.kernel_submodule`: the kernel of the submodule RKHS is formed by composing the adjoint of
+  the kernel function of the full RKHS with a star projection acting on the kernel function of the
+  full RKHS.
 
 ## TODO
 
 - Privatize `RKHS.H₀`
 
 ## References
+
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
@@ -69,11 +79,21 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
+/-
+It is essential for performance that synthesizing `FunLike` instances is fast.
+So, we need to be careful with the following generic `FunLike` instance.
+To ensure that it fails quickly, we ensure its first subgoal is `RKHS 𝕜 H X V` instead of
+something like `RCLike 𝕜` (which has many more available instances and will fail slowly).
+Lean's algorithm that determines this synth order mistakenly rejects this,
+so we have to set `synthInstance.checkSynthOrder` to false.
+-/
+set_option synthInstance.checkSynthOrder false in
 /--
 Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
 @[macro_inline]
-instance instFunLike : FunLike H X V where
+instance {𝕜 H X V : Type*} {_ : RCLike 𝕜} {_ : NormedAddCommGroup V} {_ : InnerProductSpace 𝕜 V}
+    {_ : NormedAddCommGroup H} {_ : InnerProductSpace 𝕜 H} [RKHS 𝕜 H X V] : FunLike H X V where
   coe f := coeCLM 𝕜 f
   coe_injective := coeCLM_injective
 
@@ -98,16 +118,28 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
+variable (H) in
+/-- Point evaluation `fun f ↦ f x`. -/
+def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
+
+lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by rfl
+
 @[simp]
-lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
-  simp_rw [← coeCLM_apply]
-  fun_prop
+lemma eval_apply (x : X) (f : H) : eval H x f = f x := by rfl
+
+@[fun_prop]
+lemma continuous_eval_const (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
+
+@[deprecated (since := "2026-08-19")]
+alias continuous_eval := continuous_eval_const
 
 variable (H) [CompleteSpace H] [CompleteSpace V]
 
-/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
-the point evaluation. -/
-def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
+/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of the point
+evaluation. -/
+def kerFun (x : X) : V →L[𝕜] H := (eval H x).adjoint
+
+lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := by rfl
 
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
@@ -149,12 +181,60 @@ lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ 
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
+lemma norm_kerFun_sub_kerFun_sq (x y : X) :
+    ‖kerFun H x - kerFun H y‖ ^ 2 =
+      ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  simp [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, ← kernel_apply, ← sub_add]
+
+lemma norm_kerFun_sub_kerFun (x y : X) :
+    ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+  rw [← norm_kerFun_sub_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
+
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
   simp [norm_kerFun_eq_sqrt_norm_kernel]
 
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
+
+section continuous
+
+variable [TopologicalSpace X]
+
+theorem continuous_kernel_tfae : List.TFAE [
+    Continuous (fun p : X × X => kernel H p.1 p.2),
+    Continuous (kerFun H),
+    Continuous (fun x : X => eval H x)] := by
+  tfae_have 1 → 2 := fun _ ↦ continuous_iff_continuousAt.mpr fun x ↦ by
+    rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
+    simpa [norm_kerFun_sub_kerFun] using ContinuousAt.tendsto (x := x)
+      (f := fun e ↦ √‖kernel H e e - kernel H x e - kernel H e x + kernel H x x‖) (by fun_prop)
+  tfae_have 2 → 3 := fun _ ↦ by
+    simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
+    fun_prop
+  tfae_have 3 → 1 := fun _ ↦ by
+    simp_rw [kernel_apply, kerFun_eq_adjoint_eval]
+    fun_prop
+  tfae_finish
+
+theorem continuous_kernel_iff_continuous_kerFun :
+    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) :=
+  (continuous_kernel_tfae H).out 1 2
+
+theorem continuous_eval_iff_continuous_kerFun :
+    Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
+  (continuous_kernel_tfae H).out 3 2
+
+theorem continuous_kernel_iff_continuous_eval :
+    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (fun x : X => eval H x) :=
+  (continuous_kernel_tfae H).out 1 3
+
+variable {H} in
+theorem continuous_of_continuous_kernel (h : Continuous (fun p : X × X => kernel H p.1 p.2))
+    (f : H) : Continuous f :=
+  Continuous.clm_apply ((continuous_kernel_iff_continuous_eval H).mp h) continuous_const
+
+end continuous
 
 variable {H} in
 /-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
@@ -193,6 +273,38 @@ theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) =
   simp only [← kerFun_inner, coe_zero, Pi.zero_apply, inner_zero_right]
   refine inner_right_of_mem_orthogonal (subset_closure ?_) fin
   simp [mem_span_of_mem]
+
+variable {H} in
+/-- An element of `H` orthogonal to the kernel sections `kerFun H (x i) v` at the data points
+`x i` vanishes at every data point. -/
+lemma apply_eq_zero_of_mem_orthogonal_span_kerFun {ι : Type*} {x : ι → X} {f : H}
+    (hf : f ∈ (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2))ᗮ) (i : ι) :
+    f (x i) = 0 :=
+  inner_self_eq_zero.mp <| by
+    rw [← kerFun_inner (x i) _ f]
+    exact inner_right_of_mem_orthogonal (subset_span (Set.mem_range_self (i, f (x i)))) hf
+
+variable {H} in
+/-- **Representer theorem** (generalized / Schölkopf–Herbrich–Smola, vector-valued form).
+For data points `x i`, an objective `L` that
+sees `f` only through its values `(f (x i))ᵢ`, and a regularizer `Ω` that is strictly increasing
+on `[0, ∞)`, every minimizer of `f ↦ L (f ∘ x) + Ω ‖f‖` over the reproducing kernel Hilbert
+space `H` lies in the closed span of the kernel sections `kerFun H (x i)`. -/
+theorem mem_topologicalClosure_span_kerFun {ι : Type*} (x : ι → X) (L : (ι → V) → ℝ)
+    (Ω : ℝ → ℝ) (hΩ : StrictMonoOn Ω (Set.Ici 0)) (f : H)
+    (hf : ∀ p : H, L (fun i ↦ f (x i)) + Ω ‖f‖ ≤ L (fun i ↦ p (x i)) + Ω ‖p‖) :
+    f ∈ (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2)).topologicalClosure := by
+  set K := (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2)).topologicalClosure
+  -- `f` and its star-projection onto `K` agree on the points `x i`.
+  have heval : (fun i ↦ f (x i)) = fun i ↦ K.starProjection f (x i) := by
+    rw [funext_iff]
+    simpa [sub_eq_zero] using apply_eq_zero_of_mem_orthogonal_span_kerFun <|
+      orthogonal_le (le_topologicalClosure _) (K.sub_starProjection_mem_orthogonal f)
+  -- by minimality `‖f‖ ≤ ‖K.starProjection f‖` and hence `f ∈ K`
+  rw [K.mem_iff_norm_starProjection f]
+  apply le_antisymm (K.norm_starProjection_apply_le f)
+  rw [← hΩ.le_iff_le (norm_nonneg _) (norm_nonneg _)]
+  simpa [← heval] using hf (K.starProjection f)
 
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
   ext
@@ -246,7 +358,7 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   tfae_have 1 → 2 := fun h ff ↦ by
     rw [Finsupp.sum_comm]
-    convert! h (ff.sum fun xv z ↦ .single xv.1 ((z / ‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
+    convert h (ff.sum fun xv z ↦ .single xv.1 ((z / ‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
     simp [Finsupp.sum_sum_index, inner_add_right, inner_add_left, ← smul_assoc, hv]
     simp [inner_smul_left, inner_smul_right, ← mul_assoc, mul_comm]
   tfae_have 2 → 3 := fun h vv ↦ by
@@ -353,7 +465,7 @@ instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
     | single_add i a =>
     simp only [UniformSpace.Completion.coe_add, inner_add_left, *, add_zero]
     rw [← UniformSpace.Completion.coe_toComplL (S := 𝕜)]
-    have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
+    have := (ext_iff_inner_left 𝕜).mp congr($h i.1) i.2
     have := by simpa [OfKernel.kerFun, adjoint_inner_right] using this
     rw [← mul_zero (conj a), ← this, ← inner_smul_left]
     refine (ext_iff_inner_right 𝕜).mp ?_ f
@@ -367,7 +479,7 @@ is the original positive semidefinite matrix.
 theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   ext x y v
   refine ext_inner_right 𝕜 fun w ↦ ?_
-  simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
+  simp [kernel, eval, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
 section Equiv
