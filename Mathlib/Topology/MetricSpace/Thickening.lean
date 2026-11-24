@@ -11,6 +11,7 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 # Thickenings in pseudo-metric spaces
 
 ## Main definitions
+
 * `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
 * `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
   space.

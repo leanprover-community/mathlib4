@@ -22,6 +22,7 @@ Similarly, every nonzero fractional ideal `I` of a Dedekind domain `R` can be fa
 prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
 
 ## Main definitions
+
 - `FractionalIdeal.count` : If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of
   `R` such that `I = a⁻¹J`, then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we
   set `val_v(I) = 0`.

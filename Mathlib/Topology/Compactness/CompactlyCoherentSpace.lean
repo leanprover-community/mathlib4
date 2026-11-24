@@ -17,6 +17,7 @@ These notions agree on Hausdorff spaces. They are both referred to as compactly 
 the literature while the compact coherentification is often called the k-ification.
 
 ## Main definitions
+
 * `CompactlyCoherentSpace`: A compactly coherent space is a topological space in which a set `A` is
   open iff for every compact set `B`, the intersection `A ∩ B` is open in `B`.
 * `CompactCoherentification`: For a topological space `X` one can define

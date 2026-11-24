@@ -18,6 +18,7 @@ This file defines the nine-point circle of a triangle, and its higher dimension 
 specific points as desired.
 
 ## Main definitions
+
 * `Affine.Simplex.ninePointCircle`: the 3(n+1)-point sphere of a simplex.
 * `Affine.Simplex.eulerPoint`: the $1/n$th of the way from the Monge point to a vertex.
 * `Affine.Simplex.faceOppositeCentroid_mem_ninePointCircle`: the 3(n+1)-point sphere passes through

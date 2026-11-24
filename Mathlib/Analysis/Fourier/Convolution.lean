@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 In this file we calculate the Fourier transform of a convolution.
 
 ## Main definitions
+
 * `SchwartzMap.convolution`: The convolution on Schwartz functions is defined via the Fourier
   transform.
 

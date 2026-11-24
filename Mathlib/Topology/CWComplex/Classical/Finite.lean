@@ -15,6 +15,7 @@ finite. We define constructors with relaxed conditions for CW complexes of finit
 finite CW complexes.
 
 ## Main definitions
+
 * `RelCWComplex.FiniteDimensional`: a CW complex is finite dimensional if it has only finitely many
   nonempty indexing types for the cells.
 * `RelCWComplex.FiniteType`: a CW complex is of finite type if it has only finitely many cells in

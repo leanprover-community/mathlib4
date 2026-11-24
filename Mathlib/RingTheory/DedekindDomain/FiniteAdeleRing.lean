@@ -17,6 +17,7 @@ import Mathlib.RingTheory.DedekindDomain.Factorization
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
+
 - `IsDedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 

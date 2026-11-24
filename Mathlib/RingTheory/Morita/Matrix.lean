@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Morita.Basic
 # Morita Equivalence between `R` and `Mₙ(R)`
 
 ## Main definitions
+
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to

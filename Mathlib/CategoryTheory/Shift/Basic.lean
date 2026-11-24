@@ -20,6 +20,7 @@ each `n : ℤ` the functor `C ⥤ C` that re-indexes the terms, so the degree `i
 would be the degree `i+n`-th term of `C`.
 
 ## Main definitions
+
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
   a self-equivalence of `C`.

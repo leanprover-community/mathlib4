@@ -12,6 +12,7 @@ public import Mathlib.Topology.Separation.CompletelyRegular
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
 
 ## Main definitions
+
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results

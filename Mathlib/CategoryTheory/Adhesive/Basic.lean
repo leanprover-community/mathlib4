@@ -14,6 +14,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 # Adhesive categories
 
 ## Main definitions
+
 - `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
   a van Kampen colimit.
 - `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along

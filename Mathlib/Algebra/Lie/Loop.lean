@@ -30,6 +30,7 @@ We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolyno
 flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
+
 * `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
 * `LieAlgebra.loopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
   finitely supported functions.

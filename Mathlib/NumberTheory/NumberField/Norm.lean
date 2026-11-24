@@ -16,6 +16,7 @@ Given a finite extension of number fields, we define the norm morphism as a func
 rings of integers.
 
 ## Main definitions
+
 * `NumberField.RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
 
 ## Main results

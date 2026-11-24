@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 We define the absolute Galois group of a field `K` and its topological abelianization.
 
 ## Main definitions
+
 - `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^al/K`, where `K^al` is an
   algebraic closure of `K`.
 - `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of

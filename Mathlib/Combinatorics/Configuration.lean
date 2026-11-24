@@ -16,6 +16,7 @@ import Mathlib.Combinatorics.Hall.Basic
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
+
 * `Configuration.Nondegenerate`: Excludes certain degenerate configurations,
   and imposes uniqueness of intersection points.
 * `Configuration.HasPoints`: A nondegenerate configuration in which

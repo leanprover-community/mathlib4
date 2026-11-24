@@ -27,6 +27,7 @@ Some particular examples of Jacobson rings are also proven.
   form a Jacobson ring.
 
 ## Main definitions
+
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.

@@ -19,6 +19,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 `univ`.
 
 ## Main definitions
+
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
 * `IsLocalDiffeomorphOn I J n f s`: `f` is a `C^n` local diffeomorphism on `s`
 * `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism

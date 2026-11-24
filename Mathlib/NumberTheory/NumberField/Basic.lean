@@ -17,6 +17,7 @@ import Mathlib.Algebra.Algebra.Rat
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
+
 - `NumberField` defines a number field as a field which has characteristic zero and is finite
   dimensional over ℚ.
 - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field

@@ -23,6 +23,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
 `AbsoluteValue`.
 
 ## Main definitions
+
 - `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.

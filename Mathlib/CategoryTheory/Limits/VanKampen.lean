@@ -16,6 +16,7 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 # Universal colimits and van Kampen colimits
 
 ## Main definitions
+
 - `CategoryTheory.IsUniversalColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is universal
   if it is stable under pullbacks.
 - `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van

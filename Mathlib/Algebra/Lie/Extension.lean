@@ -18,6 +18,7 @@ Because our sign convention for differentials is opposite that of Chevalley-Eile
 change of signs in the "action" part of the Lie bracket.
 
 ## Main definitions
+
 * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
 * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
 * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.

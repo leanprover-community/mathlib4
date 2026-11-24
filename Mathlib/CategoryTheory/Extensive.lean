@@ -18,6 +18,7 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 # Extensive categories
 
 ## Main definitions
+
 - `CategoryTheory.FinitaryExtensive`: A category is (finitary) extensive if it has finite
   coproducts, and binary coproducts are van Kampen.
 

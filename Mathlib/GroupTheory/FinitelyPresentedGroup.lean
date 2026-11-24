@@ -15,6 +15,7 @@ public import Mathlib.GroupTheory.Schreier
 This file defines finitely presented groups.
 
 ## Main definitions
+
 * `Subgroup.IsFinitelyNormallyGenerated N`: says that the subgroup `N` is the normal closure of a
   finite set.
 * `IsFinitelyPresented`: defines when a group is finitely presented.

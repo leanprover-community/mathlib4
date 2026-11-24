@@ -19,6 +19,7 @@ and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal a
 invariant submodule.
 
 ## Main definitions
+
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
 * `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.

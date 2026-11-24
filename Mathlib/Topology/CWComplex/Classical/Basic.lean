@@ -19,6 +19,7 @@ A CW complex is a topological space that is made by gluing closed disks of diffe
 together.
 
 ## Main definitions
+
 * `RelCWComplex C D`: the class of CW structures on a subspace `C` relative to a base set
   `D` of a topological space `X`.
 * `CWComplex C`: an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
