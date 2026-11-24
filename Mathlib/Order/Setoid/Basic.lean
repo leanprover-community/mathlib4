@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations
@@ -192,7 +193,7 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
     le_top := fun _ _ _ _ => trivial
     bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
-    bot_le := fun r x _ h => h ▸ r.2.1 x }
+    bot_le := fun r x _ h => h ▸ r.iseqv.refl x }
 
 @[simp, grind =]
 theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
@@ -241,13 +242,26 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
-/-- The quotient by the trivial relation is equivalent to the original space. -/
-def quotientBotEquiv :
-    Quotient (⊥ : Setoid α) ≃ α where
-  toFun := Quotient.lift id (fun _ _ ↦ id)
-  invFun := Quotient.mk''
+/-- The quotient by the trivial equivalence relation is equivalent to the original space. -/
+def quotientTrivialEquiv (s : Setoid α) (h : ∀ ⦃x y⦄, s x y → x = y) : Quotient s ≃ α where
+  toFun := Quotient.lift id h
+  invFun := Quotient.mk s
   left_inv := Quotient.ind fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+
+@[simp] lemma coe_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h) = Quotient.lift id h := rfl
+
+@[simp] lemma coe_symm_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h).symm = Quotient.mk s := rfl
+
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv : Quotient (⊥ : Setoid α) ≃ α := quotientTrivialEquiv _ <| by simp
+
+@[simp]
+lemma coe_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)) = Quotient.lift id (by simp) := rfl
+
+@[simp]
+lemma coe_symm_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)).symm = Quotient.mk ⊥ := rfl
 
 section EqvGen
 
@@ -336,7 +350,7 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
 `quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
-  toFun f := Quotient.lift (f : α → β) f.2
+  toFun f := Quotient.lift (f : α → β) f.property
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
@@ -567,11 +581,12 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
-      (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
-      (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+  toFun s := ⟨Quotient.lift₂ s.val.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+      (fun h ↦ s.val.trans' (s.val.trans' (s.val.symm' (s.property h₁)) h) (s.property h₂))
+      (fun h ↦ s.val.trans' (s.val.trans' (s.property h₁) h) (s.val.symm' (s.property h₂))),
+    ⟨Quotient.ind s.val.iseqv.refl,
+      fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.val.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=

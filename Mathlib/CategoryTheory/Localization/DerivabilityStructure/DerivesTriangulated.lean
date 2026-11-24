@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangulated derived functors using derivability structures
 

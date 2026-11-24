@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.HomotopyCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The extension functor on the homotopy categories
 
@@ -40,7 +43,6 @@ noncomputable def homAux (i' j' : Option ι) : extend.X K i' ⟶ extend.X L j' :
   | _, none => 0
   | some i, some j => φ i j
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma homAux_eq (i' j' : Option ι) (i j : ι) (hi : i' = some i) (hj : j' = some j) :
     homAux φ i' j' = (extend.XIso K hi).hom ≫ φ i j ≫ (extend.XIso L hj).inv := by
   subst hi hj

@@ -129,7 +129,7 @@ lemma of_isGaussianProcess (hX : IsGaussianProcess X P)
     choose J L hL using h
     classical
     let K : (I.biUnion J → E) →L[ℝ] I → F :=
-      { toFun x s := L s (fun t ↦ x ⟨t.1, mem_biUnion.2 ⟨s.1, s.2, t.2⟩⟩)
+      { toFun x s := L s (fun t ↦ x ⟨t.val, mem_biUnion.2 ⟨s.val, s.property, t.property⟩⟩)
         map_add' x y := by ext; simp [← Pi.add_def]
         map_smul' c x := by ext; simp [← Pi.smul_def] }
     have : (fun ω ↦ I.restrict (Y · ω)) = K ∘ (fun ω ↦ (I.biUnion J).restrict (X · ω)) := by

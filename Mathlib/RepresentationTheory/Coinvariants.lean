@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RepresentationTheory.Rep.Res
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coinvariants of a group representation
 
@@ -157,7 +160,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
     ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
   Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_ker_of_eq
-      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.1 s.2 g⟩ (ρ g x) _ <| by simp
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.val s.property g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
@@ -329,7 +332,7 @@ def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₃ := toCoinvariants A S
   f := ofHom ⟨Submodule.subtype _, fun g ↦ by ext; simp⟩
   g := toCoinvariantsMkQ A S
-  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
+  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.property
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex.{w} A S).ShortExact where
   exact := (forget₂ (Rep.{w} k G) (ModuleCat k)).reflects_exact_of_faithful _ <|
@@ -372,7 +375,7 @@ representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
     (coinvariantsFunctor k G).obj A ⟶ ↧B.V :=
   ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
-    simp [f.hom.2, isTrivial_def]
+    simp [f.hom.isIntertwining', isTrivial_def]
 
 variable (k G)
 
@@ -495,7 +498,6 @@ variable (A α)
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
-@[simps! symm_apply]
 noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   .ofLinearMap (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)
@@ -507,11 +509,16 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
         simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single _,
           finsuppToCoinvariantsTensorFree_single (A := A) i, TensorProduct.smul_tmul]
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 lemma coinvariantsTensorFreeLEquiv_apply (x : (A ⊗ free k G α).ρ.Coinvariants) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A)
       (A.coinvariantsTensorFreeToFinsupp α) x = coinvariantsTensorFreeToFinsupp A α x := by
-  rfl
+  simp
+
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+lemma coinvariantsTensorFreeLEquiv_symm_apply (a : α →₀ ↑A) :
+    (A.coinvariantsTensorFreeLEquiv α).symm a = (A.finsuppToCoinvariantsTensorFree α) a := by
+  simp
 
 end Finsupp
 

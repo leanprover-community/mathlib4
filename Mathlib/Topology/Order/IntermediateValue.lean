@@ -100,7 +100,7 @@ theorem IsPreconnected.intermediate_value₂ {s : Set X} (hs : IsPreconnected s)
     @intermediate_value_univ₂ s α _ _ _ _ (Subtype.preconnectedSpace hs) ⟨a, ha⟩ ⟨b, hb⟩ _ _
       (continuousOn_iff_continuous_domRestrict.1 hf)
       (continuousOn_iff_continuous_domRestrict.1 hg) ha' hb'
-  ⟨x, x.2, hx⟩
+  ⟨x, x.property, hx⟩
 
 theorem IsPreconnected.intermediate_value₂_eventually₁ {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f g : X → α} (hf : ContinuousOn f s)
@@ -568,7 +568,7 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
   · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
     exact fun hs ↦ h _ inter_subset_left hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
-    exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
+    exact h1z <| hts <| ht.out' hx hy ⟨h2z.1.le, h2z.2.le⟩
 
 /-!
 ### Intermediate Value Theorem on an interval
@@ -871,11 +871,9 @@ theorem Continuous.strictMono_of_inj {f : α → δ}
     (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le hf_i.injOn).imp
       (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
       (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
-  cases subsingleton_or_nontrivial α with
-  | inl h => exact Or.inl <| Subsingleton.strictMono f
-  | inr h =>
-    obtain ⟨a, b, hab⟩ := exists_pair_lt α
-    exact H hab
+  nontriviality α
+  obtain ⟨a, b, hab⟩ := exists_pair_lt α
+  exact H hab
 
 /-- Every continuous injective `f : (a, b) → δ` is strictly monotone
 or antitone (increasing or decreasing). -/

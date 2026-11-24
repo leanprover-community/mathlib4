@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Moments.Variance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Law of a random variable
 

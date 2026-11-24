@@ -6,8 +6,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 module
 
 public import Mathlib.Algebra.Divisibility.Hom
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Ring.Defs
+
+import Mathlib.Algebra.Group.Equiv.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about divisibility in rings
@@ -25,15 +29,6 @@ variable {α β : Type*}
 section Semigroup
 
 variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
-
-theorem map_dvd_iff (f : F) {a b} : f a ∣ f b ↔ a ∣ b :=
-  let f := MulEquivClass.toMulEquiv f
-  ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
-
-theorem map_dvd_iff_dvd_symm (f : F) {a : α} {b : β} :
-    f a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv f).symm b := by
-  obtain ⟨c, rfl⟩ : ∃ c, f c = b := EquivLike.surjective f b
-  simp [map_dvd_iff]
 
 theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : DecompositionMonoid α where
   primal a b c h := by

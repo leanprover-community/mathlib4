@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A `ℚ`-vector space has `TwoUniqueSums`.
 -/

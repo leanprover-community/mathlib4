@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Star.Rat
 
+import Mathlib.Algebra.HierarchyDesign
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
 
@@ -376,9 +381,11 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
+/--
+The self-adjoint elements of a star additive monoid, as an additive submonoid.
 
-When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API. -/
+When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API.
+-/
 def selfAdjoint.addSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
@@ -697,9 +704,11 @@ instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [Trivial
     {x : R} : IsStarNormal x :=
   ⟨by rw [star_trivial]⟩
 
-/-- All elements of a commutative star magma are normal.
+/--
+All elements of a commutative star magma are normal.
 
-See Note [lower instance priority] -/
+See {library_note}`lower instance priority`.
+-/
 instance (priority := 100) IsStarNormal.all [CommMagma R] [StarMul R] (x : R) :
     IsStarNormal x where
   star_comm_self := .all _ _

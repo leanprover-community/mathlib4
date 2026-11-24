@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Logarithmic derivative of an infinite product
 

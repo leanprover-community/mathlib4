@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expressions for monoidal categories
 

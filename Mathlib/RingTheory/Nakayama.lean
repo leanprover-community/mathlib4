@@ -5,8 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
+
+import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
 # Nakayama's lemma

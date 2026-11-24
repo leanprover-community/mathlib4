@@ -5,10 +5,11 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Degree.Units
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
+
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 /-!
 # Evaluation of polynomials and degrees

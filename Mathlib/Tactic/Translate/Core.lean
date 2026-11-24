@@ -770,7 +770,8 @@ def insertTranslationsChecked (t : TranslateData) (srcs tgts : Array Name) (cfg 
       Linter.logLintIf linter.translate.warnInvalid (← getRef) m!"\
         @[{t.attrName}] failed to add a translation from `{.ofConstName src}` \
         to any of `{tgts.map MessageData.ofConstName}`.\n\
-        Please silence this warning and add a translation manually. \
+        If this translation is not needed, feel free to silence this warning.\n\
+        Otherwise, please silence this warning and add a translation manually.\n\
         Errors:{errors}"
 
 /-- `translateLemmas` runs `runAttr` on all elements of `names` and adds translations between

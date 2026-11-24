@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
 import Mathlib.CategoryTheory.Abelian.Subobject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck categories
 

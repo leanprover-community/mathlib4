@@ -56,7 +56,8 @@ lemma IsSelfAdjoint.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary (a : A) (ha : IsS
 @[simps]
 noncomputable def selfAdjoint.unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : ‖a‖ ≤ 1) :
     unitary A :=
-  ⟨(a : A) + I • CFC.sqrt (1 - a ^ 2 : A), a.2.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary _ ha_norm⟩
+  ⟨(a : A) + I • CFC.sqrt (1 - a ^ 2 : A),
+    a.property.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary _ ha_norm⟩
 
 lemma selfAdjoint.star_coe_unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : ‖a‖ ≤ 1) :
     (star (unitarySelfAddISMul a ha_norm) : A) = a - I • CFC.sqrt (1 - a ^ 2 : A) := by
@@ -108,4 +109,4 @@ lemma CStarAlgebra.span_unitary : span ℂ (unitary A : Set A) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
   obtain ⟨u, c, rfl, h⟩ := CStarAlgebra.exists_sum_four_unitary x
-  exact sum_mem fun i _ ↦ smul_mem _ _ (subset_span (u i).2)
+  exact sum_mem fun i _ ↦ smul_mem _ _ (subset_span (u i).property)

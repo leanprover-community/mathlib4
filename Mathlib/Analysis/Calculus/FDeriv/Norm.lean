@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Abs
 
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of the norm in a real normed vector space
 

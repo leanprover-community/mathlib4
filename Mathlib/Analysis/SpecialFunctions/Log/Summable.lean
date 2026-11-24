@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summability of logarithms
 
