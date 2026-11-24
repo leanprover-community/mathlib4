@@ -275,7 +275,7 @@ theorem subtypeRestr_coe :
 
 @[simp, mfld_simps]
 theorem subtypeRestr_source : (e.subtypeRestr hs).source = (↑) ⁻¹' e.source := by
-  simp only [subtypeRestr_def, mfld_simps]
+  simp [subtypeRestr_def]
 
 theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
     e x ∈ (e.subtypeRestr hs).target := by

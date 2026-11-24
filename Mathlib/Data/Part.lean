@@ -530,6 +530,7 @@ theorem bind_some_right (x : Part α) : x.bind some = x := by
 theorem pure_eq_some (a : α) : pure a = some a :=
   rfl
 
+@[deprecated pure_eq_some (since := "2026-11-24")]
 theorem ret_eq_some (a : α) : (return a : Part α) = some a :=
   rfl
 

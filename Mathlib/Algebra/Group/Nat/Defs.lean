@@ -82,6 +82,6 @@ set_option linter.style.whitespace true
 /-! ### Miscellaneous lemmas -/
 
 -- See note [specialised high priority simp lemma]
-@[simp 1100] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+@[simp high] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 
 end Nat
