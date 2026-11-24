@@ -288,33 +288,51 @@ theorem ramificationIdxIn_eq_of_prime :
 
 end Prime
 
+section zeta
+
+open Polynomial
+
+variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
+
+/-- The minimal polynomial of the distinguished primitive `m`-th root of unity in `𝓞 K` is the
+`m`-th cyclotomic polynomial. -/
+theorem minpoly_toInteger_zeta_spec :
+    minpoly ℤ (zeta_spec m ℚ K).toInteger = cyclotomic m ℤ := by
+  rw [← RingOfIntegers.minpoly_coe, show ((zeta_spec m ℚ K).toInteger : K) = zeta m ℚ K from
+    (zeta_spec m ℚ K).coe_toInteger]
+  exact (cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos m)).symm
+
+end zeta
+
 section notDvd
 
 open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
+/-- A prime does not divide the exponent of the distinguished primitive `m`-th root of unity. -/
+theorem not_dvd_exponent_zeta_toInteger :
+    ¬ p ∣ exponent (zeta_spec m ℚ K).toInteger := by
+  rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
+  exact hp.out.not_dvd_one
+
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
   let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
+  have h₁ : ¬ p ∣ exponent ζ := not_dvd_exponent_zeta_toInteger (m := m) p K
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩,
     natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1)]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
-    rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
-      ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
+    rw [show minpoly ℤ ζ = cyclotomic m ℤ from minpoly_toInteger_zeta_spec K,
+      map_cyclotomic_int]
   · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx P ℤ = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
+  have h₁ : ¬ p ∣ exponent ζ := not_dvd_exponent_zeta_toInteger (m := m) p K
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
