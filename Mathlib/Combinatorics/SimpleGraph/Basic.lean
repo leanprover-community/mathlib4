@@ -964,8 +964,7 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 variable {G} in
 theorem Adj.commonNeighbors_ssubset_neighborSet_left (h : G.Adj u v) :
     G.commonNeighbors u v ⊂ G.neighborSet u :=
-  Set.ssubset_iff_exists.mpr
-    ⟨G.commonNeighbors_subset_neighborSet_left u v, v, h, G.notMem_commonNeighbors_right u v⟩
+  ⟨Set.inter_subset_left, (G.notMem_commonNeighbors_right u v <| · h)⟩
 
 variable {G} in
 theorem Adj.commonNeighbors_ssubset_neighborSet_right (h : G.Adj u v) :
