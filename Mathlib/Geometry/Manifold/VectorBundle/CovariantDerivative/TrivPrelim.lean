@@ -63,13 +63,26 @@ def deriv (v : TotalSpace F V) :
     TangentSpace% v →L[𝕜] TangentSpace% v.proj × F :=
   mfderiv% e v
 
+section
+variable (v : TotalSpace F V)
+
+#check mfderiv% e v
+
+-- Note the following requires `c
+example : (e v).1 = v.proj := by
+  refine coe_fst e ?_
+  exact (sorry : v ∈ e.source)
+
+#check (tangentSpaceCast I (e v).1 v.proj |>.prodCongr (NormedSpace.fromTangentSpace (e
+v).2)).toContinuousLinearMap.comp (mfderiv% e v)
+end
+
 variable (I) in
 noncomputable
 def derivInv (v : TotalSpace F V) :
     TangentSpace% v.proj × F →L[𝕜] TangentSpace% v :=
   mfderiv% e.invFun (e v)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivInv_deriv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]

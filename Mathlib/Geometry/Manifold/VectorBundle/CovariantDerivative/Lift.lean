@@ -89,7 +89,7 @@ noncomputable
 def CovariantDerivative.lift_vec (v : TotalSpace F V) :
     TangentSpace% v.proj →L[𝕜] TangentSpace% v :=
   letI t := trivializationAt F V v.proj
-  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
+  haveI hcov := cov.isCovariantDerivativeOn_pushCovDer t
   letI tlift := hcov.lift_vec v.proj (t v).2
   t.derivInv I v ∘L tlift
 

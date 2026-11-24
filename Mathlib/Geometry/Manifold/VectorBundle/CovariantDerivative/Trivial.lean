@@ -22,9 +22,9 @@ Don't be afraid to ask. TODO!
 open Bundle Filter Module NormedSpace Topology Set
 open scoped Manifold ContDiff
 
-section prelim
+public section prelim
 
-public lemma isManifold_one {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+lemma isManifold_one {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (M : Type*)
