@@ -5,9 +5,13 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Subobject.Lattice
+
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subobjects satisfying a property of objects

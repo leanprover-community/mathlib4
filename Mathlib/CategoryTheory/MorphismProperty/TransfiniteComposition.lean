@@ -11,6 +11,9 @@ public import Mathlib.Order.Interval.Set.SuccOrder
 
 import Mathlib.Order.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 

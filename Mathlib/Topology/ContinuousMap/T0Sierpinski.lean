@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Sets.Opens
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
 

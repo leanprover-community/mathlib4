@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 import Mathlib.RingTheory.Valuation.RankOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-adic numbers with a valuative relation
 

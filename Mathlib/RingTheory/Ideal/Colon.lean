@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The colon ideal
 

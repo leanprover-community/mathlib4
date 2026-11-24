@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Topology.Algebra.Order.Polynomial
+
+import Mathlib.Algebra.Polynomial.Roots
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

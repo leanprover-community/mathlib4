@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of the integral against a kernel
 

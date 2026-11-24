@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/

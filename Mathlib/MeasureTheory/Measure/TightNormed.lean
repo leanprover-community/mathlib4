@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.Order.Filter.ENNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tight sets of measures in normed spaces
 

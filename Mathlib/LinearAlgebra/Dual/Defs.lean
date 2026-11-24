@@ -287,7 +287,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
       ext m f
       congrm f $((e.apply_symm_apply m).symm)
     simp only [this,
-      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+      coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
 instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
@@ -368,7 +368,7 @@ theorem dualAnnihilator_gc :
   intro a b
   induction b using OrderDual.rec
   simp only [Function.comp_apply, OrderDual.toDual_le_toDual, OrderDual.ofDual_toDual,
-    IsConcreteLE.le_iff, mem_dualAnnihilator, mem_dualCoannihilator]
+    le_iff_mem_imp_mem, mem_dualAnnihilator, mem_dualCoannihilator]
   grind
 
 theorem le_dualAnnihilator_iff_le_dualCoannihilator {U : Submodule R (Module.Dual R M)}
@@ -381,7 +381,7 @@ theorem dualAnnihilator_bot : (⊥ : Submodule R M).dualAnnihilator = ⊤ :=
 
 @[simp]
 theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
-  simp [eq_bot_iff, IsConcreteLE.le_iff, LinearMap.ext_iff]
+  simp [eq_bot_iff, le_iff_mem_imp_mem, LinearMap.ext_iff]
 
 @[simp]
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=

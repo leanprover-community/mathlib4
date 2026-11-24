@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
 

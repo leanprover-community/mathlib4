@@ -6,10 +6,13 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
-public import Mathlib.Data.Rat.Squarefree
 
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Data.Rat.Squarefree
 import Mathlib.RingTheory.Localization.NumDen
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Quadratic algebras over `ℚ`

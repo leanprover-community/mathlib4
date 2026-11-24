@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing `Ext` using an injective resolution
 

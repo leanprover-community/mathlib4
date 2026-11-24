@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective dimension
 

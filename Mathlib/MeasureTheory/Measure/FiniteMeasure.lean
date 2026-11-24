@@ -754,11 +754,12 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
   · rw [← integral_re_add_im (integrable μ f)]
     simp_rw [← integral_re_add_im (integrable (μs _) f)]
     refine Tendsto.add ?_ ?_
-    · exact (RCLike.continuous_ofReal.tendsto _).comp (h (f.comp RCLike.re RCLike.lipschitzWith_re))
+    · exact (RCLike.continuous_ofReal.tendsto _).comp
+        (h (f.comp RCLike.re RCLike.lipschitzWith_one_re))
     · exact (Tendsto.comp (RCLike.continuous_ofReal.tendsto _)
-        (h (f.comp RCLike.im RCLike.lipschitzWith_im))).mul_const _
+        (h (f.comp RCLike.im RCLike.lipschitzWith_one_im))).mul_const _
   · specialize h ((RCLike.ofRealAm (K := 𝕜)).compLeftContinuousBounded ℝ
-      RCLike.lipschitzWith_ofReal f)
+      RCLike.lipschitzWith_one_ofReal f)
     simp only [AlgHom.compLeftContinuousBounded_apply_apply, RCLike.ofRealAm_coe,
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h

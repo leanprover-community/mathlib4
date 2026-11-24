@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Int.Units
-public import Mathlib.Data.List.Dedup
-public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Range
 public import Mathlib.Data.List.Rotate
+
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Flatten
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

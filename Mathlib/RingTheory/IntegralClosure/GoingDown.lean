@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Ideal.GoingDown
 
 import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Going down for integrally closed domains
 

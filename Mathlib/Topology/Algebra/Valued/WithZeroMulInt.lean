@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 import Mathlib.GroupTheory.ArchimedeanDensely
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological results for integer-valued rings
 

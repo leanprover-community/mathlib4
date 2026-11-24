@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Comma
 public import Mathlib.CategoryTheory.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopies in the arrow category
 

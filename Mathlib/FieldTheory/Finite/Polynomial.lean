@@ -11,6 +11,9 @@ public import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials over finite fields
 -/
@@ -127,7 +130,7 @@ variable [Field K] [Fintype K] [Finite σ]
 
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
-  refine top_unique (IsConcreteLE.le_iff.2 fun e _ => mem_map.2 ?_)
+  refine top_unique (le_iff_mem_imp_mem.2 fun e _ => mem_map.2 ?_)
   classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)

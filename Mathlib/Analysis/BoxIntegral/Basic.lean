@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Partition.Filter
 public import Mathlib.Analysis.BoxIntegral.Partition.Measure
-public import Mathlib.Analysis.Oscillation
 public import Mathlib.MeasureTheory.Measure.Real
+
+import Mathlib.Analysis.Oscillation
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane

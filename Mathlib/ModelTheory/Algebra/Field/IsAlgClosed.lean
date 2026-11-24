@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First-Order Theory of Algebraically Closed Fields
 

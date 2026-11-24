@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects that are bounded by a cardinal
 

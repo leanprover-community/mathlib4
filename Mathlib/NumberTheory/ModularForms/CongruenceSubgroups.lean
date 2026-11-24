@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 import Mathlib.LinearAlgebra.Matrix.Integer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence subgroups
 

@@ -11,6 +11,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polar coordinates
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Flat.Domain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group-like elements in a coalgebra
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 public import Mathlib.CategoryTheory.Functor.FunctorHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of simplicial objects is simplicial
 

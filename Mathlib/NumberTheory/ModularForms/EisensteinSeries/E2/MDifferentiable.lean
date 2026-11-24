@@ -8,6 +8,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MDifferentiability of the weight 2 Eisenstein series
 

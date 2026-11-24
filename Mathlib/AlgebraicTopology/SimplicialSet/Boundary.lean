@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The boundary of the standard simplex
 

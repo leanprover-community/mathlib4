@@ -6,10 +6,11 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
-public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Nilpotent.LowerCentralSeries
-public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Sylow
+
+import Mathlib.GroupTheory.IndexNormal
+import Mathlib.GroupTheory.QuotientGroup.Simple
 
 /-!
 # Nilpotent groups

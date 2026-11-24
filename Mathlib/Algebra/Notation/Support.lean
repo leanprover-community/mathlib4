@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a function
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.End
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functor categories are enriched
 

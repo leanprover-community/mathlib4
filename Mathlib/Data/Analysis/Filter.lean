@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Filter.Cofinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computational realization of filters (experimental)
 

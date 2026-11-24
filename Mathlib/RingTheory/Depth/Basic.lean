@@ -5,10 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ulift
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 public import Mathlib.RingTheory.Depth.Rees
+
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 
 /-!
 # The Definition of Depth

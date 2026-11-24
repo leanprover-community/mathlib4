@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel sigma algebras on spaces with orders
 

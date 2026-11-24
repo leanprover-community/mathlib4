@@ -81,20 +81,20 @@ theorem memℓp_zero_iff {f : ∀ i, E i} : Memℓp f 0 ↔ Set.Finite { i | f i
   dsimp [Memℓp]
   rw [ite_eq_left rfl]
 
-theorem memℓp_zero {f : ∀ i, E i} (hf : Set.Finite { i | f i ≠ 0 }) : Memℓp f 0 :=
-  memℓp_zero_iff.2 hf
+alias ⟨Memℓp.finite_dsupport, memℓp_zero⟩ := memℓp_zero_iff
 
 theorem memℓp_infty_iff {f : ∀ i, E i} : Memℓp f ∞ ↔ BddAbove (Set.range fun i => ‖f i‖) := by
   simp [Memℓp]
 
-theorem memℓp_infty {f : ∀ i, E i} (hf : BddAbove (Set.range fun i => ‖f i‖)) : Memℓp f ∞ :=
-  memℓp_infty_iff.2 hf
+alias ⟨Memℓp.bddAbove, memℓp_infty⟩ := memℓp_infty_iff
 
 theorem memℓp_gen_iff (hp : 0 < p.toReal) {f : ∀ i, E i} :
     Memℓp f p ↔ Summable fun i => ‖f i‖ ^ p.toReal := by
   rw [ENNReal.toReal_pos_iff] at hp
   dsimp [Memℓp]
   rw [ite_eq_right hp.1.ne', ite_eq_right hp.2.ne]
+
+alias ⟨Memℓp.summable, Memℓp.of_summable⟩ := memℓp_gen_iff
 
 theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toReal) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -158,6 +158,7 @@ theorem memℓp_norm_iff {f : (i : α) → E i} :
   · simp [memℓp_gen_iff hp]
 
 alias ⟨Memℓp.of_norm, Memℓp.norm⟩ := memℓp_norm_iff
+
 namespace Memℓp
 
 theorem mono {f : (i : α) → E i} {g : α → ℝ}
@@ -184,32 +185,15 @@ theorem mono' {F : α → Type*} [∀ i, NormedAddCommGroup (F i)] {f : (i : α)
     Memℓp f p :=
   hg.norm.mono hfg
 
-theorem finite_dsupport {f : ∀ i, E i} (hf : Memℓp f 0) : Set.Finite { i | f i ≠ 0 } :=
-  memℓp_zero_iff.1 hf
-
-theorem bddAbove {f : ∀ i, E i} (hf : Memℓp f ∞) : BddAbove (Set.range fun i => ‖f i‖) :=
-  memℓp_infty_iff.1 hf
-
-theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
-    Summable fun i => ‖f i‖ ^ p.toReal :=
-  (memℓp_gen_iff hp).1 hf
-
 lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     {x : α → E} (hx : Memℓp x 1) : Summable x :=
   .of_norm <| by simpa using hx.summable
 
-theorem neg {f : ∀ i, E i} (hf : Memℓp f p) : Memℓp (-f) p := by
-  rcases p.trichotomy with (rfl | rfl | hp)
-  · apply memℓp_zero
-    simp [hf.finite_dsupport]
-  · apply memℓp_infty
-    simpa using hf.bddAbove
-  · apply memℓp_gen
-    simpa using hf.summable hp
-
 @[simp]
-theorem neg_iff {f : ∀ i, E i} : Memℓp (-f) p ↔ Memℓp f p :=
-  ⟨fun h => neg_neg f ▸ h.neg, Memℓp.neg⟩
+theorem neg_iff {f : ∀ i, E i} : Memℓp (-f) p ↔ Memℓp f p := by
+  simp [← memℓp_norm_iff]
+
+alias ⟨of_neg, neg⟩ := neg_iff
 
 theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (hpq : q ≤ p) : Memℓp f p := by
   rcases ENNReal.trichotomy₂ hpq with
@@ -315,10 +299,37 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     gcongr
     apply nnNorm_smul_le
 
-theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
+theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x ↦ c * f x) p :=
   hf.const_smul c
 
 end IsBoundedSMul
+
+section RCLike
+
+open RCLike
+open scoped ComplexConjugate
+
+variable [RCLike 𝕜]
+
+theorem re {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ re (f x)) p :=
+  hf.mono' <| fun x ↦ norm_re_le_norm (f x)
+
+theorem im {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ im (f x)) p :=
+  hf.mono' <| fun x ↦ norm_im_le_norm (f x)
+
+@[simp]
+theorem conj_iff {f : α → 𝕜} : Memℓp (conj f) p ↔ Memℓp f p := by
+  simp [← memℓp_norm_iff]
+
+alias ⟨of_conj, _root_.Memℓp.conj⟩ := conj_iff
+
+@[simp]
+theorem ofReal_iff {f : α → ℝ} : Memℓp (fun x ↦ (f x : 𝕜)) p ↔ Memℓp f p := by
+  simp [← memℓp_norm_iff]
+
+alias ⟨_, ofReal⟩ := ofReal_iff
+
+end RCLike
 
 end Memℓp
 

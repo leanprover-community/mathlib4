@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.Sublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The lattice of invariant submodules
 

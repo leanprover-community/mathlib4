@@ -9,6 +9,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.UniformSpace.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extra lemmas about pseudo-metric spaces
 -/

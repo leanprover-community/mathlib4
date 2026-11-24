@@ -349,8 +349,10 @@ theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.n
 
 @[simp] protected theorem zero_div : 0 / a = 0 := zero_mul a⁻¹
 
-theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
+@[simp] theorem div_eq_top_iff : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
   simp [div_eq_mul_inv, ENNReal.mul_eq_top]
+
+@[deprecated (since := "2026-11-24")] alias div_eq_top := div_eq_top_iff
 
 /-- See `ENNReal.div_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
 protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b = 0) :

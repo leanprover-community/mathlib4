@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.Order
 public import Mathlib.Topology.Order.IsLUB
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotone functions on an order topology
 

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Sets.Compacts
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Spectral.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prespectral spaces
 

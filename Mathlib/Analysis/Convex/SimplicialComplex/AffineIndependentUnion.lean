@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial complexes from affinely independent points
 

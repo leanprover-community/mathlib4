@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.MulAction
 
 import Mathlib.Analysis.Normed.Group.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The null subgroup in a seminormed commutative group
 

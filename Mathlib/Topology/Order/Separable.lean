@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.T5
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hereditary separability of linear orders
 
