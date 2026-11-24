@@ -63,7 +63,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
     (f : A →ₐ[R] B) (hf : I = J.comap f.toRingHom) : I.ResidueField →ₐ[R] J.ResidueField where
-  __ := Ideal.ResidueField.map I J f hf
+  __ := Ideal.ResidueField.map I J f.toRingHom hf
   commutes' r := by
     simp [IsScalarTower.algebraMap_apply R A I.ResidueField,
       IsScalarTower.algebraMap_apply R B J.ResidueField]
@@ -225,8 +225,9 @@ set_option backward.isDefEq.respectTransparency false in
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable
-def Ideal.ResidueField.liftₐ (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B) (hf₁ : I ≤ RingHom.ker f)
-    (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) : I.ResidueField →ₐ[R] B where
+def Ideal.ResidueField.liftₐ (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B)
+    (hf₁ : I ≤ RingHom.ker f.toRingHom)
+    (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f.toRingHom) : I.ResidueField →ₐ[R] B where
   __ := Ideal.ResidueField.lift I f.toRingHom hf₁ hf₂
   commutes' r := by simp [IsScalarTower.algebraMap_apply R A I.ResidueField]
 
@@ -249,7 +250,7 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 @[ext high] -- higher than `AlgHom.ext`.
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
-  AlgHom.toRingHom_injective (ringHom_ext congr($H))
+  AlgHom.toRingHom_injective (ringHom_ext congr(AlgHom.toRingHom $H))
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :

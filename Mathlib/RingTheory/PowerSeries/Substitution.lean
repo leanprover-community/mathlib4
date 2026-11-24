@@ -408,9 +408,11 @@ lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
 noncomputable abbrev rescaleAlgHom (r : R) : R⟦X⟧ →ₐ[R] R⟦X⟧ :=
   MvPowerSeries.rescaleAlgHom (fun _ ↦ r)
 
-theorem coe_rescaleAlgHom (r : R) : rescaleAlgHom r = rescale r := by
+theorem toRingHom_rescaleAlgHom (r : R) : (rescaleAlgHom r).toRingHom = rescale r := by
   ext f
-  rw [rescale_eq, RingHom.coe_coe, MvPowerSeries.rescaleAlgHom_apply]
+  rw [rescale_eq, AlgHom.coe_toRingHom, MvPowerSeries.rescaleAlgHom_apply]
+
+@[deprecated (since := "2026-11-24")] alias coe_rescaleAlgHom := toRingHom_rescaleAlgHom
 
 /-- Substitution by `p` commutes with scalar homothety. -/
 lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ R)

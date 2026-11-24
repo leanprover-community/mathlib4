@@ -257,17 +257,16 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A�
 @[deprecated (since := "2026-05-05")] alias coe_algHom := coe_toAlgHom
 @[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
-@[simp, norm_cast]
-lemma toRingHom_toAlgHom : e.toAlgHom.toRingHom = e.toRingHom :=
-  rfl
-
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem toRingHom_toAlgHom' : e.toAlgHom.toRingHom = e.toRingEquiv.toRingHom :=
+@[simp, norm_cast]
+theorem toRingHom_toAlgHom : e.toAlgHom.toRingHom = e.toRingEquiv.toRingHom :=
   rfl
 
 @[deprecated (since := "2026-11-22")] alias toAlgHom_toRingHom := toRingHom_toAlgHom
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom'
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
+
+theorem toRingEquiv_eq_ofClass : e.toRingEquiv = .ofClass e := rfl
 
 end Algebra
 

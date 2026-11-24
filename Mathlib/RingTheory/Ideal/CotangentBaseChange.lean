@@ -45,10 +45,10 @@ def tensorCotangentHom :
     Cotangent.lift
       ((map (algebraMap S (T ⊗[R] S)) I).toCotangent.restrictScalars R ∘ₗ
         (Algebra.idealMap _ I).restrictScalars R) <| fun x y ↦ by
-    simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-      Function.comp_apply, Algebra.idealMap_mul]
-    simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
-      toCotangent_eq_zero, sq, MulMemClass.coe_mul]
+    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
+      Algebra.idealMap_mul]
+    simp only [RingHom.algebraMap_toAlgebra, LinearMap.coe_restrictScalars, toCotangent_eq_zero, sq,
+      MulMemClass.coe_mul]
     exact mul_mem_mul ((Algebra.idealMap (T ⊗[R] S) I) x).property
       ((Algebra.idealMap (T ⊗[R] S) I) y).property
 
@@ -75,8 +75,7 @@ lemma tensorCotangentHom_surjective :
   | tmul t x =>
     use t ⊗ₜ I.toCotangent x
     apply Ideal.cotangentToQuotientSquare_injective
-    simp [-AlgHom.toRingHom_eq_coe, tensorCotangentHom_tmul, Algebra.smul_def,
-      ← Ideal.Quotient.mk_algebraMap, ← map_mul]
+    simp [tensorCotangentHom_tmul, Algebra.smul_def, ← Ideal.Quotient.mk_algebraMap, ← map_mul]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

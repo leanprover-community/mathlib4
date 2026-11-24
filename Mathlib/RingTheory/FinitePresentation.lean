@@ -169,7 +169,7 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · rw [AlgEquiv.toRingHom_toAlgHom, AlgHom.ker_coe_equiv]
+  · rw [AlgEquiv.toRingHom_toAlgHom, AlgEquiv.ker_coe_equiv]
     exact Submodule.fg_bot
   · rw [MvPolynomial.toRingHom_mapAlgHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
