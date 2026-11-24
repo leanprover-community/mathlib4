@@ -17,7 +17,7 @@ In this file we prove extensionality lemmas for the ring-like structures defined
 extensionality lemmas take the form of asserting that two algebraic structures on a type are equal
 whenever the addition and multiplication defined by them are both the same.
 
-## Implementation details
+## Implementation notes
 
 We follow `Mathlib/Algebra/Group/Ext.lean` in using the term `(letI := i; HMul.hMul : R → R → R)` to
 refer to the multiplication specified by a typeclass instance `i` on a type `R` (and similarly for

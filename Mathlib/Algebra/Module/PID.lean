@@ -29,7 +29,7 @@ set_option doc.verso.suggestions false
   torsion hypotheses in the intermediate lemmas.
 * `p` is an irreducible element of `R` or a tuple of these.
 
-## Implementation details
+## Implementation notes
 
 We first prove (`Submodule.isInternal_prime_power_torsion_of_pid`) that a finitely generated
 torsion module is the internal direct sum of its `p i ^ e i`-torsion submodules for some
