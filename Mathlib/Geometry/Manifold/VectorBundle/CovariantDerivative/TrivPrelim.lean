@@ -16,11 +16,27 @@ TODO: PR all this to appropriate places.
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Topology
 
 open scoped Bundle Manifold ContDiff
+
+section
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+def equivTangentSpaceProd (p : M × M')
+    : TangentSpace% p ≃L[𝕜] TangentSpace% p.1 × TangentSpace% p.2 :=
+  ContinuousLinearEquiv.refl ..
+
+-- TODO: redefine `equivTangentBundleProd` using the above declaration.
+end
 
 namespace Bundle.Trivialization
 
@@ -53,50 +69,93 @@ lemma mdifferentiableAt_invFun
   apply ContMDiffAt.mdifferentiableAt ?_ zero_ne_one.symm
   exact e.contMDiffAt_symm (e.mk_mem_target.mpr hx)
 
--- Note: The definition below (ab)uses definitional
--- equality of `TangentSpace (I.prod 𝓘(𝕜, F)) (↑t v)`
--- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
--- which is $T_{π(v)} M × F$.
-variable (I) in
-noncomputable
-def deriv (v : TotalSpace F V) :
-    TangentSpace% v →L[𝕜] TangentSpace% v.proj × F :=
-  mfderiv% e v
+open NormedSpace
 
-section
-variable (v : TotalSpace F V)
+variable (I)
 
-#check mfderiv% e v
+def tangentSpaceEquiv (v : TotalSpace F V)
+    : TangentSpace (I.prod 𝓘(𝕜, F)) (e v) ≃L[𝕜] TangentSpace I v.proj × F :=
+  (equivTangentSpaceProd I 𝓘(𝕜, F) (e v)
+     |>.trans <|
+   (tangentSpaceCast I (e v).1 v.proj
+     |>.prodCongr <|
+    fromTangentSpace (e v).2)
+  )
 
--- Note the following requires `c
-example : (e v).1 = v.proj := by
-  refine coe_fst e ?_
-  exact (sorry : v ∈ e.source)
+/-- The derivative of the trivialization `e` at `v`, seen as a continuous linear
+map into $T_{π(v)}M × F$ rather than $T_{e(v)}(M × F)$, by post-composing by the suitable
+continuous linear equivalence.
+Note: this takes a junk value if `v` is not in the source of `e` since the
+`tangentSpaceCast` is meaningless in this case (see `Bundle.Trivialization.coe_fst`).
+-/
+def deriv (v : TotalSpace F V) : TangentSpace% v →L[𝕜] TangentSpace% v.proj × F :=
+  (e.tangentSpaceEquiv I v).toContinuousLinearMap ∘L (mfderiv% e v)
 
-#check (tangentSpaceCast I (e v).1 v.proj |>.prodCongr (NormedSpace.fromTangentSpace (e
-v).2)).toContinuousLinearMap.comp (mfderiv% e v)
-end
 
-variable (I) in
-noncomputable
+/-- Casting the tangent space at `e (e.symm v)` into the one at `v`.
+This has a junk value if `v` is not in `e.source`. -/
+def invFunCast (v : TotalSpace F V)
+    : TangentSpace% (e.toOpenPartialHomeomorph.symm (e v)) ≃L[𝕜] TangentSpace% v :=
+  tangentSpaceCast (I.prod 𝓘(𝕜, F)) (e.toOpenPartialHomeomorph.symm (e v)) v
+
+
+/-- The derivative of the inverse of the trivialization `e` at `v`, seen as a continuous linear
+map from $T_{π(v)}M × F$ rather than $T_{e(v)}(M × F)$, by composing by the suitable
+continuous linear equivalences.
+Note: this takes a junk value if `v` is not in the source of `e` since the
+`tangentSpaceCast` is meaningless in this case (see `Bundle.Trivialization.coe_fst`).
+-/
 def derivInv (v : TotalSpace F V) :
     TangentSpace% v.proj × F →L[𝕜] TangentSpace% v :=
-  mfderiv% e.invFun (e v)
+  (e.invFunCast I v).toContinuousLinearMap
+  ∘L
+  (mfderiv% e.toOpenPartialHomeomorph.symm (e v))
+  ∘L
+  (e.tangentSpaceEquiv I v).symm.toContinuousLinearMap
+
+variable {I}
+
+-- #check OpenPartialHomeomorph.coe_toPartialHomeomorph_symm
+-- #check PartialHomeomorph.coe_toPartialEquiv_symm
+-- #check PartialEquiv.invFun_as_coe
+--
+-- #check Bundle.Trivialization.symm
+-- #check Bundle.Trivialization.toFun'
+-- #check PartialEquiv.symm
+-- #check OpenPartialHomeomorph.symm
+-- #check PartialHomeomorph.symm
+--
+-- #simp e.invFun
+-- #simp e.toOpenPartialHomeomorph.symm
+-- #simp e.toOpenPartialHomeomorph.symm.toFun'
+-- variable {v : TotalSpace F V} in
+-- #check (e.derivInv I v) ∘L (e.deriv I v)
+--
+-- #check PartialEquiv
+-- #check e.toPartialEquiv.left_inv
 
 @[simp]
 lemma derivInv_deriv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     (e.derivInv I v) ∘L (e.deriv I v) = .id 𝕜 _ := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
+  ext w
+  simp only [derivInv, deriv, ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
+    ContinuousLinearEquiv.symm_apply_apply, ContinuousLinearMap.id_apply]
+  have hv' := (mem_source e).mpr hv
+  have hv'' : e v ∈ e.target := e.map_source hv' -- FIXME: inlining this give a different type to D₁
+  have D₁ := e.mdifferentiableAt_symm I hv''
   have D₂ : MDiffAt e v := e.mdifferentiableAt' (I := I) hv v.2
-  have D1' := D₁
-  simp only [PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_toPartialEquiv_symm] at D1'
-  rw [e.mk_proj_snd' hv] at D₁
-  have comp := mfderiv_comp v D₁ D₂
-  rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
-  simp [deriv, derivInv]
-  sorry
+  have comp := congr($(mfderiv_comp v D₁ D₂) w)
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply] at comp
+  rw [← comp]
+  have : e.toOpenPartialHomeomorph.symm ∘ e =ᶠ[𝓝 v] id := by -- TODO: extract lemma
+    have : ∀ᶠ v' in 𝓝 v, v' ∈ e.source := by
+      exact e.open_source.eventually_mem ((mem_source e).mpr hv)
+    apply this.mono fun v' hv' ↦ ?_
+    simp only [Function.comp_apply, hv', symm_apply_apply, id_eq]
+  simp [this.mfderiv_eq]
+  rfl
 
 @[simp]
 lemma derivInv_deriv_apply
@@ -245,15 +304,8 @@ lemma mfderiv_secToFun_apply
     {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet)
     (u : TangentSpace% x) :
     mfderiv% (e.secToFun σ) x u =
-      (e.deriv I (σ x) (mfderiv% T%σ x u)).2 := by
-  -- TODO: Fix the erw
-  --  instModuleTangentSpace 𝓘(𝕜, F) (e.secToFun (E := V) σ x)
-  -- and
-  --  NormedSpace.toModule
-  -- are not defeq, but they are at default transparency.
-  -- Does it mean the statement of this lemma is bad?
-  erw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
-  exact congr(Prod.snd $(e.mfderiv_comp_section hσ u hx)).symm
+      (e.deriv I (σ x) (mfderiv% T%σ x u)).2 :=
+  congr(Prod.snd $(e.mfderiv_comp_section hσ u hx)).symm
 
 lemma mfderiv_secToFun
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
