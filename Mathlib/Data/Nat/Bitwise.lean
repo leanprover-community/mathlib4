@@ -37,7 +37,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 There is another way to express bitwise properties of natural number: `digits 2`. The two ways
 should be connected.
 
-## Keywords
+## Tags
 
 bitwise, and, or, xor
 -/
