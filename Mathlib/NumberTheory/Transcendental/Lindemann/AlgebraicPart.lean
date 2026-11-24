@@ -55,7 +55,6 @@ theorem mem_fixedPoints_iff_forall_isConjRoot {x : R[K]} :
     AddMonoidAlgebra.coeff_comapSMul, isConjRoot_iff_exists_algEquiv, forall_exists_index]
   exact ⟨by rintro h _ b g rfl; simpa using (h g (g b)).symm, fun h g m ↦ h _ _ g⁻¹ rfl⟩
 
-/-- Auxiliary definition for `classSumBasis`. -/
 def classSumReprAux : FixedPoints.subalgebra R R[K] Gal(K/F) ≃ (ConjRootClass F K →₀ R) :=
   (AddMonoidAlgebra.coeffEquiv.subtypeEquiv
     (q := fun f : K →₀ R ↦ ∀ a b, IsConjRoot F a b → f a = f b)
