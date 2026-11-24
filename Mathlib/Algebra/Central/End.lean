@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.End R M` is a central algebra
 
@@ -49,7 +52,7 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
     eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
     ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
     ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
-    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
+    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_toLinearMap,
     LinearMap.smul_apply, one_apply_eq_self, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
 
 open LinearMap in

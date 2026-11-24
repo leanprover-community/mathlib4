@@ -140,6 +140,14 @@ theorem fromBlocks_conjTranspose [Star α] (A : Matrix n l α) (B : Matrix n m �
   simp only [conjTranspose, fromBlocks_transpose, fromBlocks_map]
 
 @[simp]
+theorem fromBlocks_submatrix_sumMap {r s : Type*} (A : Matrix n l α) (B : Matrix n m α)
+    (C : Matrix o l α) (D : Matrix o m α) (f₁ : p → n) (f₂ : q → o) (g₁ : r → l) (g₂ : s → m) :
+    (fromBlocks A B C D).submatrix (Sum.map f₁ f₂) (Sum.map g₁ g₂) =
+      fromBlocks
+        (A.submatrix f₁ g₁) (B.submatrix f₁ g₂) (C.submatrix f₂ g₁) (D.submatrix f₂ g₂) := by
+  ext (_ | _) (_ | _) <;> rfl
+
+@[simp]
 theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (f : p → l ⊕ m) :
     (fromBlocks A B C D).submatrix Sum.swap f = (fromBlocks C D A B).submatrix id f := by
@@ -856,8 +864,8 @@ lemma Matrix.comp_toSquareBlock {b : m → α}
 
 variable [Zero R] [DecidableEq m]
 
-lemma Matrix.comp_diagonal (d) :
-    comp m m n n R (diagonal d) =
+lemma Matrix.comp_diagonal (d : m → Matrix n p R) :
+    comp m m n p R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
   ext
   simp [diagonal, blockDiagonal, Matrix.ite_apply]

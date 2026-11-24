@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.Basic
 
 import Mathlib.Algebra.Homology.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boundary of an embedding of complex shapes
 
@@ -32,7 +35,6 @@ when constructing the truncation `K.truncGE e` when `e.IsTruncGE`.
 In the case of `embeddingUpIntGE p`, we show that `0 : ℕ` is the
 only element in this lower boundary. Similarly, we define
 `Embedding.BoundaryLE`.
-
 -/
 
 @[expose] public section
@@ -168,7 +170,6 @@ lemma BoundaryLE.false_of_isTruncGE {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE]
 
 end Embedding
 
-set_option backward.defeqAttrib.useBackward true in
 lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
   constructor
@@ -185,7 +186,6 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
       dsimp at hi
       lia
 
-set_option backward.defeqAttrib.useBackward true in
 lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
   constructor

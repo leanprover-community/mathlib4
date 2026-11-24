@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coevaluation map on finite-dimensional vector spaces
 

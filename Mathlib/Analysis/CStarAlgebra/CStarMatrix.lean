@@ -82,7 +82,7 @@ theorem map_id (M : CStarMatrix m n A) : M.map id = M := by
 @[simp]
 theorem map_id' (M : CStarMatrix m n A) : M.map (·) = M := map_id M
 
-theorem map_map {C : Type*} {M : Matrix m n A} {f : A → B} {g : B → C} :
+theorem map_map {C : Type*} {M : CStarMatrix m n A} {f : A → B} {g : B → C} :
     (M.map f).map g = M.map (g ∘ f) := by ext; rfl
 
 theorem map_injective {f : A → B} (hf : Function.Injective f) :
@@ -523,7 +523,7 @@ noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
     map_mul' := by
       intros
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.coe_comp,
-        LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv, Function.comp_apply,
+        LinearEquiv.coe_toLinearMap, MulOpposite.coe_opLinearEquiv, Function.comp_apply,
         ← MulOpposite.op_mul, MulOpposite.op_inj]
       ext
       simp [toCLM] }

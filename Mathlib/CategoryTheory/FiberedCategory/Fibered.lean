@@ -34,8 +34,8 @@ when wanting to apply this condition, it is recommended to instead use the lemma
 equalities.
 
 ## References
-* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
+* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 -/
 
 @[expose] public section

@@ -71,14 +71,16 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : A.IsPositive) {ι ι' : Type*}
   simp_rw [traceOfBasis_eq_tsum_enorm_sq hA]
   congr 2
   set S := CFC.sqrt A
-  calc ∑' i, ‖S (b i)‖ₑ ^ 2 = ∑' i, ∑' j, ‖⟪b' j, S (b i)⟫_ℂ‖ₑ ^ 2 := by
-        simp [b'.tsum_enorm_inner_sq]
+  calc
+    ∑' i, ‖S (b i)‖ₑ ^ 2 = ∑' i, ∑' j, ‖⟪b' j, S (b i)⟫_ℂ‖ₑ ^ 2 := by
+      simp [b'.tsum_eNorm_inner_sq]
     _ = ∑' j, ∑' i, ‖⟪b i, S (b' j)⟫_ℂ‖ₑ ^ 2 := by
-        rw [tsum_comm]
-        refine tsum_congr fun j ↦ tsum_congr fun i ↦ ?_
-        rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm,
-          ← inner_conj_symm, RCLike.eNorm_conj]
-    _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by simp [b.tsum_enorm_inner_sq]
+      rw [tsum_comm]
+      refine tsum_congr fun j ↦ tsum_congr fun i ↦ ?_
+      rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm,
+        ← inner_conj_symm, RCLike.eNorm_conj]
+    _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by
+      simp [b.tsum_eNorm_inner_sq]
 
 omit [CompleteSpace E] in
 theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : A.IsPositive) {ι : Type*}

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
 
@@ -22,7 +25,6 @@ public import Mathlib.Topology.MetricSpace.Thickening
 * `exists_borelSpace_of_countablyGenerated_of_separatesPoints`:
   if a measurable space is countably generated and separates points, it arises as the Borel sets
   of some second countable separable metrizable topology.
-
 -/
 
 public section

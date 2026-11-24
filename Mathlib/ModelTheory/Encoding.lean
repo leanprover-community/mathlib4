@@ -32,7 +32,6 @@ import Mathlib.Logic.Small.List
 - `Primcodable` instances for terms and formulas, based on the `encoding`s
 - Computability facts about term and formula operations, to set up a computability approach to
   incompleteness
-
 -/
 
 @[expose] public section
@@ -239,7 +238,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       intro i
       simp only [Option.join, map_append, map_map, getElem?_fin, id, Option.bind_eq_some_iff,
         getElem?_eq_some_iff, length_append, length_map, length_finRange, exists_eq_right]
-      refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
+      refine ⟨lt_of_lt_of_le i.isLt le_self_add, ?_⟩
       rw [getElem_append_left, getElem_map]
       · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
       · simp only [length_map, length_finRange, is_lt]

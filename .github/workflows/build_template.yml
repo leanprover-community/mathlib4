@@ -91,6 +91,22 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
+      # Validate lake-manifest.json before setup downloads dependencies.
+      # Check that dependencies use allowed repositories and references, with full commit hashes.
+      # Check pins against their branch or tag, and detect accidental dependency downgrades.
+      # Full rules:
+      # https://github.com/leanprover-community/mathlib-ci/blob/master/.github/actions/validate-lake-manifest/README.md
+      # Bors uses strict mode; other runs can test unmerged dependencies with warnings.
+      # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
+      # and deletes the variable after the revert merges.
+      - name: Validate lake-manifest.json
+        if: github.repository == 'leanprover-community/mathlib4'
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@b712eb80b9da9eebe2397203f842edfdecf72260
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
+
       # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
@@ -113,10 +129,7 @@ jobs:
       #       it's just that locally, the user will not get the artifacts this run has produced (also meaning the upload is 'waste').
       - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
-        # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
-        # machine-managed and don't merge master the same way, so "merge master
-        # and push" is the wrong remedy there; never fail their CI on it.
+        # contributors who run `lake exe cache get` locally.
         if: github.repository == 'leanprover-community/mathlib4'
         shell: bash
         run: |
@@ -136,47 +149,6 @@ jobs:
             echo "=============================================================================="
             echo ""
             exit 1
-          fi
-
-      - name: validate lake-manifest.json inputRevs
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
-        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
-        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
-        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && github.ref_name != 'nightly-testing'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
-        shell: bash
-        env:
-          IS_PR: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
-        run: |
-          cd pr-branch
-
-          # Check that all inputRevs in lake-manifest.json match the required pattern
-          echo "Validating lake-manifest.json inputRevs..."
-
-          # PR tests can pin unmerged dependencies. Bors requires stable references.
-          pattern='main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?'
-          if [ "$IS_PR" = true ]; then pattern="$pattern|[0-9a-f]{40}"; fi
-
-          # Extract all inputRevs from the manifest
-          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E "^($pattern)$" || true)
-
-          if [ -n "$invalid_revs" ]; then
-            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
-            echo "$invalid_revs"
-            echo ""
-            echo "All inputRevs must be one of:"
-            echo "  - 'main'"
-            echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
-            if [ "$IS_PR" = true ]; then echo "  - a full commit SHA (PR tests only)"; fi
-            exit 1
-          else
-            echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
       # Get this commit's oleans into the local cache — see the action for the steps.
@@ -306,7 +278,7 @@ jobs:
 
       # The three checks ask Lake whether each target is up to date and free
       # of warnings, so each target reports its own outcome to the staging
-      # gates, the test gate and the nightly-testing comment. They only read.
+      # gates, the test gate and the Batteries PR comment. They only read.
       - parallel:
           - name: check that Archive built
             id: archive
@@ -686,57 +658,6 @@ jobs:
           action: remove
           linters: gcc
 
-  # TODO: Remove this job after leanprover-community/batteries#2049 is deployed
-  # and no active Batteries adaptations remain in mathlib4-nightly-testing.
-  # Keep its App token on a fresh runner, separate from the branch build.
-  batteries_pr_comment:
-    name: Comment on batteries-pr-testing branch
-    needs: [build, test_lint]
-    # Report only after test_lint finishes; cancellation before it starts has no results.
-    if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') && (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout local actions
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 1
-          sparse-checkout: .github/actions
-          path: workflow-actions
-          persist-credentials: false # no later step needs git credentials
-
-      - name: Get mathlib-ci
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-      - name: Generate batteries-pr-testing app token
-        id: batteries-pr-testing-token
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-        with:
-          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
-          owner: leanprover-community
-          repositories: batteries
-          permission-pull-requests: write # labels and comments on the Batteries PR
-
-      - name: Post comments for batteries-pr-testing-NNNN branches
-        shell: bash
-        env:
-          TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
-          NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
-          ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
-          COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
-          LINT_OUTCOME: ${{ needs.test_lint.outputs.lint-outcome }}
-          TEST_OUTCOME: ${{ needs.test_lint.outputs.test-outcome }}
-          NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
-        run: |
-          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
-
   # Report from a fresh runner so the Batteries write token never reaches PR code.
   batteries_adaptation_comment:
     name: Report Mathlib CI to Batteries
@@ -851,7 +772,7 @@ jobs:
       # Build the write-side cache tool (and load the trust-dispatch action below)
       # from the branch under test, so a PR's `--container`-aware tool is what
       # writes the cache. This job only runs in trusted in-repo contexts (bors,
-      # dev branches, the nightly-testing repo) — fork PRs run master's
+      # dev branches) — fork PRs run master's
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
       - &checkout_tools_branch
@@ -1089,17 +1010,25 @@ jobs:
 
       # The dump is single-threaded and needs only the Mathlib oleans, so it runs in
       # the background from here; the job waits for it before the upload.
+      # Everything the `import-graph` artifact holds goes into one directory specified by
+      # `--out-dir`.
       - name: dump declarations and transitive-import counts
         id: dump
         background: true
         run: |
+          mkdir -p "$RUNNER_TEMP/import-graph"
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
-            --out decls.txt --imports-out imports.json Mathlib
+            --out-dir "$RUNNER_TEMP/import-graph" Mathlib
           ## Record the PR number so the post-build `decls-diff` workflow can find
           ## the comment to patch without the (laggy) commit-SHA search API. Empty
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
-          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+          printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
+          ## Executing this runs the export and writes `crossrefs.json` into the artifact
+          ## directory, which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          ## The post-build `crossref-diff` workflow diffs it against the build at the PR's
+          ## merge base.
+          CROSSREFS_OUT="$RUNNER_TEMP/import-graph/crossrefs.json" lake env lean scripts/export_crossrefs.lean
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1198,44 +1127,52 @@ jobs:
 
       - name: generate our import graph
         run: |
-          lake exe graph
+          mkdir -p "$RUNNER_TEMP/import-graph"
+          lake exe graph "$RUNNER_TEMP/import-graph/import_graph.dot"
 
       - name: wait for the declaration dump
         wait: dump
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
-            if [ -L "$f" ] || [ ! -f "$f" ]; then
-              echo "Refusing to upload: $f is not a regular file." >&2
-              ls -la -- "$f" >&2 || true
+          DIR="$RUNNER_TEMP/import-graph"
+          if [ -L "$DIR" ] || [ ! -d "$DIR" ]; then
+            echo "Refusing to upload: $DIR is not a directory." >&2
+            exit 1
+          fi
+          BAD="$(find "$DIR" -mindepth 1 ! -type f)"
+          if [ -n "$BAD" ]; then
+            echo "Refusing to upload: these are not regular files:" >&2
+            printf '%s\n' "$BAD" >&2
+            exit 1
+          fi
+          ## The outputs written above, so that a missing one fails this build rather than
+          ## `decls-diff.yml` or `crossrefs-diff.yml` for every PR based on this commit. New outputs need not be listed.
+          for f in api.jsonl imports.json import_graph.dot pr_number.txt crossrefs.json; do
+            if [ ! -f "$DIR/$f" ]; then
+              echo "Refusing to upload: $f is missing." >&2
               exit 1
             fi
           done
+          ls -la -- "$DIR"
 
       - name: upload the import graph
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: import-graph
-          path: |
-            import_graph.dot
-            decls.txt
-            imports.json
-            pr_number.txt
+          ## The directory's contents, at the artifact's top level as before.
+          path: ${{ runner.temp }}/import-graph/
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
-      - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+      - name: clean up the import graph files
+        run: rm -rf "$RUNNER_TEMP/import-graph"
 
       - name: check all scripts build successfully
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
           lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
@@ -1243,12 +1180,6 @@ jobs:
         # and that miscellaneous executables still work
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
-
-      - name: build AesopTest (nightly-testing only)
-        # Only run on the mathlib4-nightly-testing repository
-        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
-        run: |
-          lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
@@ -1284,14 +1215,26 @@ jobs:
     needs: [style_lint, build, test_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - id: PR
-        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
-        # TODO: this may not work properly if the same commit is pushed to multiple branches:
-        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Only return if PR is still open
-          filterOutClosed: true
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      - id: PR
+        name: Find the PR
+        # The event's PR on pull_request_target, otherwise the PR from the pushed branch, and only
+        # when its head is the commit this run built, so the job never acts for a head that has not
+        # passed CI.
+        uses: ./workflow-actions/.github/actions/find-open-pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - id: remove_labels
         name: Remove "awaiting-CI"

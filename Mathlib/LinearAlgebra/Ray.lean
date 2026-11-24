@@ -31,6 +31,7 @@ This file defines rays in modules.
 @[expose] public noncomputable section
 
 open Module
+open scoped Function
 
 section StrictOrderedCommSemiring
 
@@ -212,7 +213,28 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
   (hy.symm.add_left hz.symm).symm
 
+instance : Std.Refl (SameRay R (M := M)) where
+  refl := .refl
+
+instance : Std.Symm (SameRay R (M := M)) where
+  symm _ _ := .symm
+
+theorem sum_left {ι : Type*} {s : Finset ι} {v : ι → M}
+    {z : M} (h : ∀ i ∈ s, SameRay R (v i) z) : SameRay R (∑ i ∈ s, v i) z :=
+  Finset.sum_induction v (SameRay R · z) (fun _ _ ↦ .add_left) (.zero_left z) h
+
+theorem sum_right {ι : Type*} {s : Finset ι} {v : ι → M}
+    {x : M} (h : ∀ i ∈ s, SameRay R x (v i)) : SameRay R x (∑ i ∈ s, v i) :=
+  (sum_left fun _ hi ↦ (h _ hi).symm).symm
+
 end SameRay
+
+/-- If the summands pairwise lie on a common ray, then each of them lies on the same ray as
+their sum. This is the `Finset.sum` version of `SameRay.add_right`. -/
+theorem sameRay_sum_right_of_pairwise {ι : Type*} {s : Finset ι} {i : ι} {v : ι → M}
+    (hp : (s : Set ι).Pairwise (SameRay R on v)) (hi : i ∈ s) :
+    SameRay R (v i) (∑ j ∈ s, v j) :=
+  SameRay.sum_right fun _ hj ↦ hp.forall₂ hi hj
 
 variable (R M)
 
@@ -222,7 +244,7 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
   iseqv :=
     ⟨fun _ => SameRay.refl _, fun h => h.symm, by
       intro x y z hxy hyz
-      exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
+      exact hxy.trans hyz fun hy => (y.property hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
 def Module.Ray :=
@@ -454,7 +476,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
 theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (Units.posSubgroup R) v₂) :
     SameRay R v₁ v₂ := by
-  rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
+  rcases h with ⟨⟨r, hr : 0 < r.val⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr
 
 /-- Scaling by an inverse unit is the same as scaling by itself. -/
@@ -525,7 +547,7 @@ theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 
   simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
 
 @[simp]
-theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.1 < 0 := by
+theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.val < 0 := by
   rw [← neg_inj, neg_neg, ← Module.Ray.neg_units_smul, units_smul_eq_self_iff, Units.val_neg,
     neg_pos]
 

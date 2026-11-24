@@ -5,11 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Localization.Module
 
@@ -43,15 +43,15 @@ point of view are in the `ZLattice` namespace.
 
 ## Note
 
-There is also `Submodule.IsLattice` which has slightly different applications. There no
-topology is needed and the discrete condition is replaced by finitely generated.
+There is also `Submodule.IsFullLattice` which has slightly different applications. There no
+topology is needed and discreteness is replaced by finite generation together with a linear
+independence condition.
 
-## Implementation Notes
+## Implementation notes
 
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
 aspect appears to be the more useful one (especially in computations involving basis) and is also
 consistent with the `ZSpan` construction of `ℤ`-lattices.
-
 -/
 
 @[expose] public section
@@ -76,7 +76,7 @@ theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [spa
 theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
     Submodule.map (f.restrictScalars ℤ : E →ₗ[ℤ] F) (span ℤ (Set.range b)) =
       span ℤ (Set.range (b.map f)) := by
-  simp_rw [Submodule.map_span, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
+  simp_rw [Submodule.map_span, LinearEquiv.coe_toLinearMap, LinearEquiv.restrictScalars_apply,
     Basis.coe_map, Set.range_comp]
 
 open scoped Pointwise in
@@ -344,7 +344,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
-    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred_eq, LinearEquiv.coe_coe,
+    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred_eq, LinearEquiv.coe_toLinearMap,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
@@ -630,7 +630,7 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     congrm $this x i
   refine Basis.ext b fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
+    LinearEquiv.coe_toLinearMap, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L := by
@@ -722,8 +722,9 @@ theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K]
 instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
-    rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
-      ← ContinuousLinearEquiv.coe_toLinearEquiv, ← LinearEquiv.coe_coe, ← Submodule.map_span,
+    rw [ZLattice.coe_comap, LinearEquiv.coe_toLinearMap, e.coe_toLinearEquiv,
+      ← e.image_symm_eq_preimage, ← ContinuousLinearEquiv.coe_toLinearEquiv,
+      ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span,
       IsZLattice.span_top, Submodule.map_top, e.symm.range]
 
 @[simp]
@@ -799,7 +800,7 @@ lemma IsZLattice.isCompact_range_of_periodic
   rintro _ ⟨x, rfl⟩
   let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
     fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
-  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
+  refine ⟨x + (- x'), ?_, hf' _ _ (- x').property⟩
   simp [parallelepiped_basis_eq, x', Int.floor_le, Int.lt_floor_add_one, le_of_lt, add_comm (1 : ℝ)]
 
 end ZLattice

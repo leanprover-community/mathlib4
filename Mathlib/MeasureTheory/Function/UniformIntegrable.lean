@@ -40,6 +40,7 @@ formulate the martingale convergence theorem.
   and converges in measure.
 
 ## Tags
+
 uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 
@@ -280,7 +281,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ) :
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
   apply nullMeasurableSet_le aemeasurable_const
-  exact measurable_subtype_coe.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
+  exact measurable_subtypeVal.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
 
 /-- This lemma is slightly weaker than `MeasureTheory.MemLp.eLpNorm_indicator_norm_ge_pos_le` as the
 latter provides `0 < M`. -/
@@ -636,7 +637,7 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.val) p μ := by
   refine unifIntegrable_iff'.2 fun ε hε ↦ ?_
   obtain ⟨δ, hδ, hδ'⟩ := (unifIntegrable_iff.1 hUI) ε hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' ↦ ?_⟩
@@ -654,7 +655,7 @@ lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.val) p μ := by
   refine unifIntegrable_iff'.2 fun ε hε ↦ ?_
   obtain ⟨δ, hδ, hδ'⟩ := (unifIntegrable_iff.1 hUI) ε hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht hμt ↦ ?_⟩
@@ -854,8 +855,9 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
 lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter κ) [NeBot u]
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
-  refine ⟨hUI.1.unifIntegrable_of_tendstoInMeasure u (fun i ↦ hUI.aestronglyMeasurable i), ?_⟩
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.val) p μ := by
+  refine ⟨hUI.unifIntegrable.unifIntegrable_of_tendstoInMeasure u
+    (fun i ↦ hUI.aestronglyMeasurable i), ?_⟩
   refine hUI.iSup_eLpNorm_lt.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
   refine eLpNorm_le_of_tendstoInMeasure (Eventually.of_forall fun i ↦ ?_) hs (fun i ↦ ?_)
   · exact le_iSup (fun j ↦ eLpNorm (fn j) p μ) (s i)
@@ -883,7 +885,7 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
     [IsCountablyGenerated u] {fn : ι → α → β}
     (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.val) p μ := by
   refine ⟨hUI.unifIntegrable.unifIntegrable_of_ae_tendsto u hUI.aestronglyMeasurable, ?_⟩
   refine hUI.iSup_eLpNorm_lt.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
   refine Lp.eLpNorm_le_of_ae_tendsto (Eventually.of_forall fun i ↦ ?_) (fun n ↦ ?_) ?_ hs

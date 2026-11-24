@@ -23,8 +23,8 @@ and show that on suitable simplicial sets `X`, this natural
 transformation is an isomorphism.
 
 ## References
-* [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 
+* [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 -/
 
 @[expose] public section

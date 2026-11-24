@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.ENNReal
 public import Mathlib.Probability.UniformOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Essential supremum and infimum
 
