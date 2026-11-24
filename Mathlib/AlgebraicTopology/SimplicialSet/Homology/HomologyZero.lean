@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of simplicial sets in degree 0
 

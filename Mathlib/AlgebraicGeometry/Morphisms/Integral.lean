@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.RingTheory.RingHom.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral morphisms of schemes
 

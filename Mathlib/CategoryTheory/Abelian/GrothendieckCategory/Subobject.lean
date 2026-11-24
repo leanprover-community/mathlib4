@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects in Grothendieck abelian categories
 

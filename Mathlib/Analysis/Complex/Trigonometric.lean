@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric and hyperbolic trigonometric functions
 

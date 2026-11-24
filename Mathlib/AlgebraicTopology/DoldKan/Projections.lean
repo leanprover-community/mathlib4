@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of projections for the Dold-Kan correspondence
 

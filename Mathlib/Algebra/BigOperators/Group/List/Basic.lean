@@ -18,6 +18,9 @@ public import Mathlib.Order.Basic
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums and products from lists
 

@@ -11,6 +11,9 @@ public import Mathlib.Data.List.MinMax
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tropicalization of finitary operations
 

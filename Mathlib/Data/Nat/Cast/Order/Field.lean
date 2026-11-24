@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Field.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of naturals into ordered fields
 

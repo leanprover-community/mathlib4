@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure of a property of objects under colimits of certain shapes
 
