@@ -377,7 +377,7 @@ theorem det_prodMap [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Mo
   rw [← det_toMatrix (b.prod b'), ← det_toMatrix b, ← det_toMatrix b', toMatrix_prodMap,
     det_fromBlocks_zero₂₁, det_toMatrix]
 
-theorem det_eq_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
+theorem det_eq_det_restrict_mul_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     {f : Module.End R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     f.det = (f.restrict hp).det * (f.restrict hq).det := by
