@@ -25,9 +25,6 @@ composition of the reduction map to `ResidueField R` and the quadratic character
 
 * `IsLocalRing.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a unit `a` is 1 or -1.
 
-* `IsLocalRing.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `a` is not
-  a unit.
-
 * `IsLocalRing.legendreSym.eq_one_iff` shows that if `a` is a unit, then the Legendre symbol is 1
   if and only if `a` is a square in `ResidueField R`.
 
@@ -63,10 +60,6 @@ theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
     legendreSym a = -1 ↔ ¬legendreSym a = 1 := by
   lia [eq_one_or_neg_one ha]
 
-/-- The Legendre symbol of `a` is zero iff `a` is not a unit. -/
-theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a :=
-  ⟨fun _ h ↦ by lia [eq_one_or_neg_one h], fun h ↦ by rw [MulChar.map_nonunit legendreSym h]⟩
-
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
 @[simp]
 noncomputable abbrev hom : R →*₀ ℤ := legendreSym.toMonoidWithZeroHom
@@ -95,12 +88,8 @@ lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
     rw [show residue R z = (z : ResidueField R) by rfl, CharP.intCast_eq_zero_iff,
       ZMod.intCast_zmod_eq_zero_iff_dvd]
   simp only [legendreSym, _root_.legendreSym, quadraticChar_apply, quadraticCharFun]
-  split_ifs with h0 hsq
-  · simp [MulChar.compLocalHom_apply, (this).mpr h0]
-  all_goals simp only [MulChar.compLocalHom_apply, quadraticChar_apply, quadraticCharFun,
-    isSquare_residue_iff hp]
-  · rw [ite_eq_right (by rwa [this]), ite_eq_left hsq]
-  · rw [ite_eq_right (by rwa [this]), ite_eq_right hsq]
+  grind [MulChar.compLocalHom_apply, quadraticChar_apply, quadraticCharFun,
+      isSquare_residue_iff]
 
 /-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
