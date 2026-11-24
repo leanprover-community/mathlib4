@@ -37,12 +37,14 @@ def primitiveFactor (p : List ℚ) : ℚ :=
   let g := gcdNum p
   if g = 0 then 1 else lcmDen p / g
 
+/-- Remove the trailing zeros of `p`. -/
+def trim (p : List ℚ) : List ℚ := (p.reverse.dropWhile (· == 0)).reverse
+
 /-- Compute the division over `ℚ` of the polynomials that `p` and `q` represent.
 
 Returns `(quot, rem)` which satisfies `p = quot * q + rem` and `rem` has lower degree than `q`.
 Division by the zero polynomial is defined as: `divMod p [] = ([], p)`. -/
 def divMod (p q : List ℚ) : List ℚ × List ℚ := Id.run do
-  let trim (p : List ℚ) := (p.reverse.dropWhile (· == 0)).reverse
   let q := trim q
   if q.isEmpty then return ([], trim p)
   let mut rem := trim p
