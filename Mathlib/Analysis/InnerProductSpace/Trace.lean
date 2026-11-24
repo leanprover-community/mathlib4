@@ -31,7 +31,8 @@ This mirrors the construction of `LinearMap.trace`.
 
 ## TODO
  - generalize from `E →L[ℂ] E` to `E →L[𝕜] E` once CFC for the latter has been implemented.
-
+ - generalize `trace_rankOne` from linear maps on a finite dimensional space to continuous linear
+   maps on a infinite dimensional space. Available once the trace has been defined for `E →L[𝕜] E`.
 -/
 
 public section
