@@ -156,6 +156,8 @@ instance toContDiffMapSupportedInClass :
 
 variable {E F F'}
 
+def toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) : E →ᵇ F := .ofClass f
+
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
 protected theorem compact_supp (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
@@ -295,13 +297,13 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
-  toFun f := f
+  toFun := toBoundedContinuousFunction
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
+    toBoundedContinuousFunctionLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
@@ -705,7 +707,7 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
+    ‖f.toBoundedContinuousFunction‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
     ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply]
 
@@ -759,7 +761,7 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
 
 @[simp]
 lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+    toBoundedContinuousFunctionCLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
