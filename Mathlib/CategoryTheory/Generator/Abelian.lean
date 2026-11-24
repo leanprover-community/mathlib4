@@ -14,7 +14,8 @@ import Mathlib.CategoryTheory.Abelian.Subobject
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
 
-## Future work
+## TODO
+
 * Once we know that Grothendieck categories have enough injectives, we can use this to conclude
   that Grothendieck categories have an injective coseparator.
 

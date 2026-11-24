@@ -20,7 +20,7 @@ as well as braided functors.
 We make `BraidedCategory` another typeclass, but then have `SymmetricCategory` extend this.
 The rationale is that we are not carrying any additional data, just requiring a property.
 
-## Future work
+## TODO
 
 * Construct the Drinfeld center of a monoidal category as a braided monoidal category.
 * Say something about pseudo-natural transformations.
