@@ -155,7 +155,7 @@ lemma edgeMonoSteps_comp_edgeMonoStep
 
 variable {E E'} in
 @[reassoc]
-lemma edgeMonoSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
+lemma Hom.edgeMonoSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
     [E'.HasEdgeMonoAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeMonoAt pq r
     (f.hom r').f pq ≫ E'.edgeMonoSteps pq r r' h =
@@ -168,7 +168,7 @@ lemma edgeMonoSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
     simp
   | succ k hk' =>
     simp only [← edgeMonoStep_comp_edgeMonoSteps _ pq r (r + k) r',
-      edgeMonoStep_naturality_assoc f pq (r + k) r',
+      f.edgeMonoStep_naturality_assoc pq (r + k) r',
       Category.assoc, hk' (r + k) (by lia) rfl]
 
 end
@@ -303,7 +303,7 @@ lemma edgeEpiStep_comp_edgeEpiSteps
 
 variable {E E'} in
 @[reassoc]
-lemma edgeEpiSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
+lemma Hom.edgeEpiSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
     [E'.HasEdgeEpiAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeEpiAt pq r
     (f.hom r).f pq ≫ E'.edgeEpiSteps pq r r' h =
@@ -316,10 +316,30 @@ lemma edgeEpiSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
     simp
   | succ k hk' =>
     simp only [← edgeEpiStep_comp_edgeEpiSteps _ pq r (r + 1) r',
-      Category.assoc, edgeEpiStep_naturality_assoc f pq r (r + 1),
+      Category.assoc, f.edgeEpiStep_naturality_assoc pq r (r + 1),
       hk' (r + 1) (by lia) (by lia) (by lia)]
 
 end
+
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma Hom.edgeMonoSteps_hom_f_edgeEpiSteps
+    (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAtFrom pq r] [E'.HasEdgeEpiAtFrom pq r]
+    (hr' : r ≤ r' := by lia) :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    E.edgeMonoSteps pq r r' hr' ≫ (f.hom r).f pq ≫ E'.edgeEpiSteps pq r r' hr' =
+      (f.hom r').f pq := by
+  obtain ⟨k, hk⟩ := Int.le.dest hr'
+  induction k generalizing r' with
+  | zero =>
+    obtain rfl : r = r' := by lia
+    simp
+  | succ k hk' =>
+    have := hk' (r + k) (by lia) (by lia)
+    simp only [← E.edgeMonoStep_comp_edgeMonoSteps_assoc pq r (r + k) r',
+      ← E'.edgeEpiSteps_comp_edgeEpiStep pq r (r + k) r',
+      reassoc_of% hk' (r + k) (by lia) (by lia),
+      edgeMonoStep_hom_f_edgeEpiStep]
 
 section
 

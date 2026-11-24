@@ -186,7 +186,7 @@ noncomputable def Hom.mapPageInfinity
 
 variable {E E'} in
 @[reassoc (attr := simp)]
-lemma edgeMono_naturality (r : ℤ)
+lemma Hom.edgeMono_naturality (r : ℤ)
     [E.HasPageInfinityAt pq] [E.HasEdgeMonoAtFrom pq r]
     [E'.HasPageInfinityAt pq] [E'.HasEdgeMonoAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeMonoAt pq r
@@ -203,7 +203,7 @@ lemma edgeMono_naturality (r : ℤ)
 
 variable {E E'} in
 @[reassoc (attr := simp)]
-lemma edgeEpi_naturality (r : ℤ)
+lemma Hom.edgeEpi_naturality (r : ℤ)
     [E.HasPageInfinityAt pq] [E.HasEdgeEpiAtFrom pq r]
     [E'.HasPageInfinityAt pq] [E'.HasEdgeEpiAtFrom pq r] :
     haveI := E.le₀_of_hasEdgeEpiAt pq r
@@ -217,6 +217,27 @@ lemma edgeEpi_naturality (r : ℤ)
   · simp only [← edgeEpiSteps_edgeEpi _ pq r r', Category.assoc,
       edgeEpiSteps_naturality_assoc, this]
   · simp [← cancel_epi (E.edgeEpiSteps pq r' r), this, ← edgeEpiSteps_naturality_assoc f pq r' r]
+
+variable {E E'} in
+lemma Hom.edgeMono_hom_f_edgeEpi (r : ℤ)
+    [E.HasPageInfinityAt pq] [E.HasEdgeMonoAtFrom pq r]
+    [E'.HasPageInfinityAt pq] [E'.HasEdgeEpiAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    E.edgeMono pq r ≫ (f.hom r).f pq ≫ E'.edgeEpi pq r = f.mapPageInfinity pq := by
+  let r' := max r (max (E.rMin pq) (E'.rMin pq))
+  simp only [← cancel_mono (E'.edgeMono pq r'), Category.assoc,
+    ← E.edgeMono_edgeMonoSteps_assoc pq r r',
+    ← E'.edgeEpiSteps_edgeEpi_assoc pq r r']
+  simp
+
+variable {E E'} in
+lemma Hom.isIso_mapPageInfinity_of_isIso_hom (r : ℤ) (pq : ι) {hr : r₀ ≤ r}
+    (hf : IsIso (f.hom r hr)) [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq] :
+    IsIso (mapPageInfinity f pq) := by
+  let r' := max r (max (E.rMin pq) (E'.rMin pq))
+  have := f.isIso_hom_of_ge r r'
+  rw [← f.edgeMono_hom_f_edgeEpi pq r']
+  infer_instance
 
 end SpectralSequence
 

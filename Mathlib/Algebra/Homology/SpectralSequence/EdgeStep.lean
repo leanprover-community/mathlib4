@@ -73,7 +73,7 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeMonoAt pq r] :
 
 variable {E E'} in
 @[reassoc]
-lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+lemma Hom.edgeMonoStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
     [E'.HasEdgeMonoAt pq r]
     (hrr' : r + 1 = r' := by lia) :
     haveI := E.le₀_of_hasEdgeMonoAt pq r
@@ -154,7 +154,7 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeEpiAt pq r] :
 
 variable {E E'} in
 @[reassoc]
-lemma edgeEpiStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
+lemma Hom.edgeEpiStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
     [E'.HasEdgeEpiAt pq r]
     (hrr' : r + 1 = r' := by lia) :
     haveI := E.le₀_of_hasEdgeEpiAt pq r
@@ -234,6 +234,21 @@ instance (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
     IsIso (E.edgeEpiStep pq r r' hrr') :=
   ⟨E.edgeMonoStep pq r r', by simp⟩
 
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma Hom.edgeMonoStep_hom_f_edgeEpiStep
+    (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E'.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    E.edgeMonoStep pq r r' hrr' ≫ (f.hom r).f pq ≫ E'.edgeEpiStep pq r r' hrr' =
+      (f.hom r').f pq := by
+  have := E.le₀_of_hasEdgeMonoAt pq r
+  simp [edgeMonoStep, edgeEpiStep, ← cancel_mono (E'.iso r r' pq).inv,
+    ← cancel_mono ((E'.page r).isoHomologyι pq _ rfl (by simp)).hom,
+    ← cancel_epi (E.iso r r' pq).hom,
+    ← cancel_epi ((E.page r).isoHomologyπ _ pq rfl (by simp)).hom,
+    ← f.comm_assoc r r' pq]
+
 section
 
 variable (r r' : ℤ) (pq pq' pq'' : ι)
@@ -285,15 +300,15 @@ section
 
 variable {E E'}
 
-lemma isIso_hom_add_one (f : E ⟶ E') (r : ℤ) {hr : r₀ ≤ r}
+lemma Hom.isIso_hom_add_one (f : E ⟶ E') (r : ℤ) {hr : r₀ ≤ r}
     (hf : IsIso (f.hom r hr) := by infer_instance) :
     IsIso (f.hom (r + 1)) :=
   have (pq : ι) : IsIso ((f.hom (r + 1)).f pq) :=
     IsIso.of_isIso_fac_left (Hom.comm f r (r + 1) pq).symm
   HomologicalComplex.Hom.isIso_of_components _
 
-lemma isIso_hom_of_ge (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r') {hr : r₀ ≤ r}
-    (hf : IsIso (f.hom r hr) := by infer_instance) :
+lemma Hom.isIso_hom_of_ge (f : E ⟶ E') (r r' : ℤ) {hr : r₀ ≤ r}
+    (hf : IsIso (f.hom r hr) := by infer_instance) (hrr' : r ≤ r' := by lia) :
     IsIso (f.hom r') := by
   obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r' hrr'
@@ -305,7 +320,7 @@ lemma isIso_hom_of_ge (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r') {hr : r₀ �
   | succ k hk =>
     intro r' _ hrr'
     obtain rfl : r' = (r + k) + 1 := by omega
-    exact isIso_hom_add_one f (r + k) (hk (r + k) (by lia) (by rfl))
+    exact f.isIso_hom_add_one (r + k) (hk (r + k) (by lia) (by rfl))
 
 end
 
