@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
-public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 
 /-!
 # Hodge star on exterior powers
@@ -52,6 +51,18 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
 
+/-- The Hodge star sends an exterior basis vector to the complementary vector of the `B`-dual
+basis, up to the shuffle sign and the volume of `b.topVector`. -/
+public lemma hodgeStar_basis_exteriorPower [Nontrivial R] {ι : Type*} [LinearOrder ι] [Fintype ι]
+    (b c : Basis ι R M) (hc : ∀ i, B (c i) = b.dualBasis i) (I : Set.powersetCard ι k) :
+    haveI hkl' : k + l = Fintype.card ι := hkl.trans (finrank_eq_card_basis b)
+    hodgeStar B hB vol hkl (b.exteriorPower k I) = Set.powersetCard.sign I • vol b.topVector •
+      c.exteriorPower l ((Set.powersetCard.compl hkl').symm I) := by
+  apply (B.bijective_exteriorPower l hB).injective
+  rw [exteriorPower_hodgeStar_eq_wedgePairing, wedgePairing_eq_apply_topVector_smul vol hkl b]
+  simp [-coe_basis, Basis.groupSMul_apply, B.exteriorPower_apply_basis_exteriorPower l b c hc,
+    smul_comm (Set.powersetCard.sign I) (vol b.topVector)]
+
 /-- Up to multiplication by the discriminant, the Hodge star preserves the bilinear form. -/
 @[simp↓] public lemma discr_mul_exteriorPower_hodgeStar_hodgeStar (x y : ⋀[R]^k M) :
     letI star := hodgeStar B hB vol hkl
@@ -62,16 +73,13 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
       B.exteriorPower k from LinearMap.congr_fun₂ this x y
   let b := finBasis R M
   let c := b.dualBasis.map (LinearEquiv.ofBijective B hB).symm
-  have hdual n := B.exteriorPower_apply_basis_exteriorPower n b c (by simp [c])
-  have hvol : B.discr vol * (vol b.topVector * vol c.topVector) = 1 := by
-    rw [mul_comm (vol b.topVector), B.discr_mul_vol_mul_vol]
-    simp only [← Basis.topVector_eq_exteriorPower _ ⟨Finset.univ, Finset.card_fin _⟩, hdual,
-      Basis.dualBasis_apply_self, ↓reduceIte]
+  have hc i : B (c i) = b.dualBasis i := by simp [c]
   rw [wedgePairing_eq_apply_topVector_smul vol hkl c]
   refine LinearMap.ext_basis (c.exteriorPower k) (b.exteriorPower k) fun I J ↦ ?_
   simp +contextual [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply,
-    wedgePairing_eq_apply_topVector_smul vol hkl b, ← hdual l, hdual k, Basis.dualBasis_apply_self,
-    smul_smul, hvol]
+    hodgeStar_basis_exteriorPower B hB vol hkl b c hc,
+    B.exteriorPower_apply_basis_exteriorPower k b c hc, Basis.dualBasis_apply_self,
+    ← mul_smul_comm, smul_smul, B.discr_mul_vol_topVector_mul_vol_topVector vol b c hc]
 
 variable [LinearOrder R] [IsStrictOrderedRing R] [Module.Oriented R M (Fin (finrank R M))]
 

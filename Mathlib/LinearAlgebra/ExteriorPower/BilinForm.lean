@@ -5,7 +5,7 @@ Authors: Oliver Nash, Kirill Kondrashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 
 /-!
 # Bilinear forms on exterior powers
@@ -72,6 +72,16 @@ public lemma discr_def :
       rw [discr_def, LinearMap.map_smul₂, map_smul]
       ring
     _ = _ := by simp [← map_smul]
+
+/-- For bases in duality under `B`, the product of their volumes is inverse to the discriminant. -/
+public lemma discr_mul_vol_topVector_mul_vol_topVector [Nontrivial R]
+    {ι : Type*} [LinearOrder ι] [Fintype ι]
+    (b c : Basis ι R M) (hc : ∀ i, B (c i) = b.dualBasis i) :
+    B.discr vol * (vol b.topVector * vol c.topVector) = 1 := by
+  have hι : (Finset.univ : Finset ι).card = finrank R M := by simp [finrank_eq_card_basis b]
+  rw [mul_comm (vol _), B.discr_mul_vol_mul_vol, ← c.topVector_eq_exteriorPower ⟨_, hι⟩,
+    ← b.topVector_eq_exteriorPower ⟨_, hι⟩, B.exteriorPower_apply_basis_exteriorPower _ b c hc,
+    Basis.dualBasis_apply_self, ite_eq_left rfl]
 
 end Discriminant
 
