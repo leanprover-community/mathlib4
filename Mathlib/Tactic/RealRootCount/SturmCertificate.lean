@@ -103,11 +103,11 @@ def check (s : SturmStep) (p q : List ℤ) : Bool :=
 end SturmStep
 
 /-- A certificate that a list of polynomials is the Sturm sequence of the polynomial with
-coefficient list `s` and its derivative up to positive scaling factors. -/
+coefficient list `p` and its derivative up to positive scaling factors. -/
 structure SturmCertificate where
   /-- The coefficient list of the polynomial. -/
-  s : List ℤ
-  /-- The steps that give the entries of the Sturm sequence after `s` and its derivative. -/
+  p : List ℤ
+  /-- The steps that give the entries of the Sturm sequence after `p` and its derivative. -/
   steps : List SturmStep
 
 /-- Reconstruct the entries of a Sturm sequence from its first two entries `p` and `q` and the list
@@ -122,7 +122,7 @@ def sturmEntries? (p q : List ℤ) (steps : List SturmStep) : Option (List (List
 /-- The sequence of polynomials of the Sturm sequence that the certificate describes.
 The function returns `none` if the certificate is invalid. -/
 def SturmCertificate.entries? (d : SturmCertificate) : Option (List (List ℤ)) :=
-  if coeffLead d.s != 0 then sturmEntries? d.s (coeffDerivative d.s) d.steps else none
+  if coeffLead d.p != 0 then sturmEntries? d.p (coeffDerivative d.p) d.steps else none
 
 /-- Compute the number of distinct real roots of the polynomial in the `SturmCertificate`. The
 function returns `none` if the certificate is invalid. -/
@@ -151,8 +151,8 @@ Each endpoint is given by a separate numerator and denominator instead of a rati
 we want the kernel computation to use integer arithmetic only, and the result does not depend on the
 numerator and denominator being coprime. -/
 def realRootCountIoo? (d : SturmCertificate) (an : ℤ) (ad : ℕ) (bn : ℤ) (bd : ℕ) : Option ℕ :=
-  if 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.s != 0 &&
-      evalScaled bn bd d.s != 0 then
+  if 0 < ad && 0 < bd && an * bd < bn * ad && evalScaled an ad d.p != 0 &&
+      evalScaled bn bd d.p != 0 then
     d.entries?.map fun sturmSeq =>
       let atA := (sturmSeq.map (evalScaled an ad)).signVariations
       let atB := (sturmSeq.map (evalScaled bn bd)).signVariations

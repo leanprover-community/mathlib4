@@ -88,9 +88,9 @@ the polynomial with the coefficient list `k • p`. -/
 public def SturmCertificate.fromCoeffList (p : List ℚ) : ℕ × SturmCertificate :=
   let k := lcmDen p
   -- by definition of `k`, `k • p` is a list of integers
-  let s := p.map fun x : ℚ => (k * x).num
-  let steps := sturmSteps s
-  (k, { s, steps })
+  let p := p.map fun x : ℚ => (k * x).num
+  let steps := sturmSteps p
+  (k, { p, steps })
 
 end
 
