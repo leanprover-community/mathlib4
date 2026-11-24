@@ -643,6 +643,10 @@ protected theorem _root_.PrimrecPred.or {p q : α → Prop} :
     (hp : PrimrecPred p) → (hq : PrimrecPred q) → PrimrecPred fun a => p a ∨ q a
   | ⟨_, hp⟩, ⟨_, hq⟩ => Primrec.primrecPred <| Primrec.or.comp hp hq |>.of_eq <| by simp
 
+protected theorem _root_.PrimrecPred.imp {p q : α → Prop} (hp : PrimrecPred p)
+    (hq : PrimrecPred q) : PrimrecPred fun a => p a → q a :=
+  (hp.not.or hq).of_eq fun _ => imp_iff_not_or.symm
+
 protected theorem eq : PrimrecRel (@Eq α) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
@@ -724,6 +728,9 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
   (nat_sub.comp fst (nat_mul.comp snd nat_div)).to₂.of_eq fun m n => by
     apply Nat.sub_eq_of_eq_add
     simp [add_comm (m % n), Nat.div_add_mod]
+
+theorem nat_dvd : PrimrecRel ((· ∣ ·) : ℕ → ℕ → Prop) :=
+  (Primrec.eq.comp (nat_mod.comp snd fst) (const 0)).of_eq fun _ => Nat.dvd_iff_mod_eq_zero.symm
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
