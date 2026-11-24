@@ -87,6 +87,16 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
     f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=
   rfl
 
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_fst {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).1 = f.1 ≫ g.1 :=
+  rfl
+
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_snd {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).2 = f.2 ≫ g.2 :=
+  rfl
+
 /-! Two `eqToHom` lemmas about projections. -/
 
 @[simp]

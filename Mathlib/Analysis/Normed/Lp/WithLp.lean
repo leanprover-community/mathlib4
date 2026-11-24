@@ -67,12 +67,15 @@ variable (p : ℝ≥0∞) (K K' : Type*) {K'' : Type*} (V : Type*) {V' V'' : Typ
 namespace WithLp
 
 /-- `WithLp.ofLp` and `WithLp.toLp` as an equivalence. -/
-@[simps -fullyApplied apply symm_apply]
+@[simps apply]
 protected def equiv : WithLp p V ≃ V where
   toFun := ofLp
   invFun := toLp p
   left_inv _ := rfl
   right_inv _ := rfl
+
+@[simp]
+lemma equiv_symm_apply : ⇑(WithLp.equiv p V).symm = toLp p := rfl
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
