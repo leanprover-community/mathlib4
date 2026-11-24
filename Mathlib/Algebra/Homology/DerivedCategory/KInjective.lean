@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms to K-injective complexes in the derived category
 

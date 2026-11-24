@@ -22,6 +22,7 @@ public import Mathlib.Algebra.Ring.Int.Units
 * ℤ is a `StrongNormalizedGCDMonoid`
 
 ## Tags
+
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 

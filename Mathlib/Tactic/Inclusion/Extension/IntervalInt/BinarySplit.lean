@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary splitting of integer intervals
 

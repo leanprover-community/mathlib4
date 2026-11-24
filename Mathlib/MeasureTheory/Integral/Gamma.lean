@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals involving the Gamma function
 

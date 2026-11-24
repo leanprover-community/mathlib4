@@ -6,9 +6,10 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Properties of faithfully flat algebras
@@ -96,7 +97,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     apply TensorProduct.ext'
     intro x y
     simp
-  rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
+  rw [this, coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by

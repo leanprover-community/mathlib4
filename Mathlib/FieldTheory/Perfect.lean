@@ -14,7 +14,8 @@ public import Mathlib.FieldTheory.Separable
 In this file we define perfect fields, together with a generalisation to (commutative) rings in
 prime characteristic.
 
-## Main definitions / statements:
+## Main definitions / results
+
 * `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
   if its absolute Frobenius map `x ↦ xᵖ` is bijective.
 * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is

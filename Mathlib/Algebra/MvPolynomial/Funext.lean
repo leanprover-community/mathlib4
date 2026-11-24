@@ -11,6 +11,9 @@ import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function extensionality for multivariate polynomials
 

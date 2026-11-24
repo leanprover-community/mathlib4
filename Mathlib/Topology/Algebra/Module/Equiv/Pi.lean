@@ -5,14 +5,16 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
 /-!
 # Continuous linear equivalences on (dependent) product types
 
 ## Main Definitions
+
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
 * `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.

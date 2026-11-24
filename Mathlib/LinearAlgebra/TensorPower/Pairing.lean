@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pairing between the tensor power of the dual and the tensor power
 

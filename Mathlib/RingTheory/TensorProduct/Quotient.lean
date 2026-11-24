@@ -104,7 +104,7 @@ noncomputable def tensorQuotientEquiv (I : Ideal T) :
     obtain ⟨b₁, rfl⟩ := Ideal.Quotient.mk_surjective b₁
     obtain ⟨b₂, rfl⟩ := Ideal.Quotient.mk_surjective b₂
     rw [← map_mul]
-    simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply, g,
+    simp only [LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply, g,
       AlgebraTensorModule.tensorQuotientEquiv_apply_tmul, ← Ideal.Quotient.mk_eq_mk,
       ← Algebra.TensorProduct.tmul_mul_tmul]
     rfl

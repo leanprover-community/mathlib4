@@ -41,7 +41,7 @@ as is any field.
 ring over a field, `p ≺ q` for polynomials `p` and `q` if and only if the degree of `p` is less than
 the degree of `q`.
 
-## Implementation details
+## Implementation notes
 
 Instead of working with a valuation, `EuclideanDomain` is implemented with the existence of a well
 founded relation `r` on the integral domain `R`, which in the example of `ℤ` would correspond to

@@ -33,7 +33,7 @@ the definitions in Lenstra's notes (see below for a reference).
 Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
 This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
 
-## Implementation details
+## Implementation notes
 
 We mostly follow Def 3.1 in Lenstra's notes. In axiom (G3)
 we omit the factorisation of morphisms into epimorphisms and monomorphisms

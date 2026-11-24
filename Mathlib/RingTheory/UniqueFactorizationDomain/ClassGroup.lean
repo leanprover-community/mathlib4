@@ -15,6 +15,7 @@ The main application is to Unique Factorization Domains,
 which are known to be GCD Domains.
 
 ## Main result
+
 - `IsGCDMonoid.subsingleton_classGroup` : the class group of a GCD domain is trivial.
   This includes unique factorization domains.
 

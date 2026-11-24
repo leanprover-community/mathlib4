@@ -15,6 +15,7 @@ This file defines an inclusion operation for the `interval_dyadic_real` inclusio
 encloses `Real.exp` of an interval.
 
 ## Implementation notes
+
 The `exp` of the endpoints is constructed by evaluating the Taylor partial sum up to the required
 precision level. The exponent is rewritten as `exp x = exp (x / m) ^ m`, where `m` is an integer
 chosen so that `|x / m| < 1 / 2`. The exponent is divided further by `2 ^ k` (with `k` growing as
