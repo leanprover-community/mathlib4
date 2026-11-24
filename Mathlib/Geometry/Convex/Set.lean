@@ -186,7 +186,8 @@ variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpa
   {w : StdSimplex K X} {s t : Set X} {x y : X}
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
+/-- Convexity of a set can be checked via binary combinations if the scalars form a division
+semiring. -/
 lemma IsConvexSet.of_convexCombPair_mem
     (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :
     IsConvexSet K s := by
