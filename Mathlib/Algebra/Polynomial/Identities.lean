@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Identities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 

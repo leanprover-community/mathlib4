@@ -5,15 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Fintype.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`
 
 Given `i : Fin (n + 2)`, we show that `Fin.succAboveOrderEmb` induces
 an order isomorphism `Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2)))`.
-
 -/
 
 @[expose] public section

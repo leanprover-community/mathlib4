@@ -6,8 +6,10 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 module
 
-public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Group.Units.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Semiconjugate elements of a semigroup

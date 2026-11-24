@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Basic
-public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings
@@ -45,7 +44,6 @@ given in SGA III Exp. 21 Section 6.
 ## TODO
 * Special types of morphisms: Isogenies, weight/coweight space embeddings
 * Weyl group reimplementation?
-
 -/
 
 @[expose] public section
@@ -82,11 +80,11 @@ namespace Hom
     {P : RootPairing ι R M N} {Q : RootPairing ι₂ R M₂ N₂} (f : Hom P Q) {i j : ι} :
     Q.pairing (f.indexEquiv i) (f.indexEquiv j) = P.pairing i j := by
   have hi : f.weightMap (P.root i) = Q.root (f.indexEquiv i) := by
-    simpa using congr_fun f.root_weightMap i
+    simpa using congr($f.root_weightMap i)
   have hj : f.coweightMap (Q.coroot (f.indexEquiv j)) = P.coroot j := by
-    simpa using congr_fun f.coroot_coweightMap (f.indexEquiv j)
+    simpa using congr($f.coroot_coweightMap (f.indexEquiv j))
   simpa  [← root_coroot_eq_pairing, ← hi, ← hj] using
-    LinearMap.congr_fun₂ f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i)
+    congr($f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i))
 
 lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
@@ -213,13 +211,13 @@ def weightHom (P : RootPairing ι R M N) : End P →* (Module.End R M) where
 lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) := by
   intro f g hfg
   ext x
-  · exact LinearMap.congr_fun hfg x
+  · congrm $hfg x
   · refine LinearEquiv.injective P.flip.toPerfPair ?_
     simp_rw [← weight_coweight_transpose_apply]
-    exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.flip.toPerfPair x)
+    congrm $(hfg).dualMap (P.flip.toPerfPair x)
   · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
-    exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
+    congrm $hfg (P.root x)
 
 /-- The coweight space representation of endomorphisms -/
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
@@ -246,8 +244,8 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
     set y := f.indexEquiv x with hy
-    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) := by
-      exact congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
+    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) :=
+      congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
     rw [coroot_coweightMap_apply, coroot_coweightMap_apply, Embedding.apply_eq_iff_eq, hy] at this
     rw [Equiv.symm_apply_apply] at this
     rw [this, Equiv.apply_symm_apply]
@@ -439,7 +437,7 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     exact Eq.symm (this (f.coweightEquiv.symm n) (f.weightEquiv.symm m))
   root_weightMap := by
     ext i
-    simp only [LinearEquiv.coe_coe, comp_apply]
+    simp only [LinearEquiv.coe_toLinearMap, comp_apply]
     have := f.root_weightMap
     rw [funext_iff] at this
     specialize this (f.indexEquiv.symm i)
@@ -447,17 +445,17 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     simp [← this]
   coroot_coweightMap := by
     ext i
-    simp only [LinearEquiv.coe_coe, comp_apply, Equiv.symm_symm]
+    simp only [LinearEquiv.coe_toLinearMap, comp_apply, Equiv.symm_symm]
     have := f.coroot_coweightMap
     rw [funext_iff] at this
     specialize this (f.indexEquiv i)
     simp only [comp_apply, Equiv.symm_apply_apply] at this
     simp [← this]
   bijective_weightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective f.weightEquiv.symm
   bijective_coweightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective f.coweightEquiv.symm
 
 @[simp]
@@ -496,7 +494,7 @@ instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
 
 /-- For finite roots systems in characteristic zero, a linear equivalence preserving roots, also
 preserves coroots, and is thus an equivalence of root systems. -/
-def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
+def mk' [IsDomain R] [CharZero R] [Finite ι₂]
     (P : RootPairing ι R M N) [P.IsRootSystem] (Q : RootPairing ι₂ R M₂ N₂) [Q.IsRootSystem]
     (f : M ≃ₗ[R] M₂) (e : ι ≃ ι₂) (hf : ∀ i, f (P.root i) = Q.root (e i)) :
     P.Equiv Q where
@@ -509,7 +507,7 @@ def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
     let g : N ≃ₗ[R] N₂ := P.flip.toPerfPair.trans <| f.symm.dualMap.trans Q.flip.toPerfPair.symm
     suffices Q = P.map e f g by
       ext i
-      rw [LinearEquiv.coe_coe, comp_apply, ← LinearEquiv.eq_symm_apply]
+      rw [LinearEquiv.coe_toLinearMap, comp_apply, ← LinearEquiv.eq_symm_apply]
       conv_lhs => rw [this]
       rfl
     apply IsRootSystem.ext <;> ext
@@ -522,7 +520,7 @@ variable (e : P.Equiv Q) (i : ι) (x : M) (y : N) (i₂ : ι₂) (x₂ : M₂) (
 
 lemma toLinearMap_weightEquiv :
     Q.toLinearMap (e.weightEquiv x) y₂ = P.toLinearMap x (e.coweightEquiv y₂) := by
-  simpa using LinearMap.congr_fun (e.weight_coweight_transpose_apply P Q y₂) x
+  simpa using congr($(e.weight_coweight_transpose_apply P Q y₂) x)
 
 lemma coroot'_weightEquiv :
     Q.coroot' (e.indexEquiv i) (e.weightEquiv x) = P.coroot' i x := by
@@ -551,13 +549,13 @@ lemma coweightEquiv_coreflection :
 lemma weightEquiv_symm_conj_reflection :
     e.weightEquiv.symm.conj (Q.reflection (e.indexEquiv i)) = P.reflection i := by
   ext x
-  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.symm_symm, LinearEquiv.coe_coe,
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.symm_symm, LinearEquiv.coe_toLinearMap,
     ← e.weightEquiv_reflection, weightEquiv_apply, weightEquiv_symm_weightMap]
 
 lemma coweightEquiv_conj_coreflection :
     e.coweightEquiv.conj (Q.coreflection (e.indexEquiv i)) = P.coreflection i := by
   ext y
-  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.coe_coe, e.coweightEquiv_coreflection,
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.coe_toLinearMap, e.coweightEquiv_coreflection,
     Equiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 end Equiv
@@ -692,10 +690,10 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective (P.reflection i)
   bijective_coweightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective (P.coreflection i)
 
 @[simp]
@@ -732,7 +730,7 @@ instance : DistribMulAction P.Aut M where
 
 @[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
     P.root (g.indexEquiv i) = g • P.root i := by
-  simpa using! (congr_fun g.root_weightMap i).symm
+  simpa using! congr($g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where

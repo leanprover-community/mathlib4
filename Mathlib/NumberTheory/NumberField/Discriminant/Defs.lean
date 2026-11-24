@@ -62,7 +62,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 
 theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
     discr K = discr L :=
-  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofCommutes (e := f) fun _ ↦ by simp
 
 end NumberField
 
@@ -76,7 +76,7 @@ theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert! (discr_eq_discr ℚ b).symm
+    _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
     _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
       rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
     _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by
@@ -100,7 +100,7 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
   replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
     intro i j
-    convert! h' i ((b.indexEquiv b').symm j)
+    convert h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]

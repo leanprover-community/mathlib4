@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal closure of an extension of domains
 
@@ -111,7 +114,7 @@ local instance : IsFractionRing T E :=
 instance : IsIntegrallyClosed T :=
   integralClosure.isIntegrallyClosedOfFiniteExtension L
 
-variable [PerfectField (FractionRing R)]
+variable [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
 
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E

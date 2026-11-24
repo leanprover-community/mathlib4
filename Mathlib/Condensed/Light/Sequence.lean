@@ -9,8 +9,8 @@ public import Mathlib.Condensed.Light.InternallyProjective
 
 import Mathlib.Condensed.Light.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.Injective
-/-!
 
+/-!
 # The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
 -/
 
@@ -161,7 +161,7 @@ lemma y_apply (π : T → S × OnePoint X) (x : S' π) : y π x = (π (x.val ∞
 lemma y_continuous [TopologicalSpace S] [TopologicalSpace T]
     [TopologicalSpace X] (π : T → S × OnePoint X) (hπ : Continuous π := by fun_prop) :
     Continuous (y π) :=
-  continuous_fst.comp <| hπ.comp <| continuous_subtype_val.comp <|
+  continuous_fst.comp <| hπ.comp <| continuous_subtypeVal.comp <|
     (continuous_apply _).comp (by fun_prop)
 
 lemma y_surjective (π : T → S × OnePoint X) (hπ : π.Surjective) :
@@ -234,7 +234,7 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
           ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
           (by simp [pullback.condition]))).val := rfl
     -- simp? [this, ← Functor.map_comp] says:
-    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
+    simp only [this, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
       IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
       pullback.lift_fst, IsColimit.fac_assoc, assoc,
       pullback.lift_snd]

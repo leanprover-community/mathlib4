@@ -9,6 +9,9 @@ public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of `IsEmpty`
 
@@ -97,7 +100,7 @@ theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) 
 
 open Relator
 
-variable {α β : Type*} (R : α → β → Prop)
+variable (R : α → β → Prop)
 
 @[simp]
 theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by

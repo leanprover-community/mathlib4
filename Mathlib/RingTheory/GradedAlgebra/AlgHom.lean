@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `R`-linear homomorphisms of graded algebras
 
@@ -53,10 +56,11 @@ variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [AlgHomClass F R
 
 In future mathlib this will be deprioritised in favour of using structural projections. -/
 def ofClass (f : F) : 𝒜 →ₐᵍ[R] ℬ :=
-  { (AlgHomClass.toAlgHom f : A →ₐ[R] B), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
+  { (AlgHom.ofClass f), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
 
 end ofClass
 
+@[macro_inline]
 instance : FunLike (𝒜 →ₐᵍ[R] ℬ) A B where
   coe f := f.toFun
   coe_injective f g h := by
@@ -79,7 +83,7 @@ attribute [coe] GradedAlgHom.toAlgHom
 instance : CoeOut (𝒜 →ₐᵍ[R] ℬ) (A →ₐ[R] B) := ⟨toAlgHom⟩
 
 @[simp] lemma toAlgHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
-    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHomClass.toAlgHom f := rfl
+    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHom.ofClass f := rfl
 
 @[simp] lemma toGradedRingHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) :
@@ -95,8 +99,8 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 @[simp] theorem coe_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A → B) = f := rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
-    ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
+theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
 
 theorem coe_toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
@@ -123,29 +127,35 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
+  AlgHom.toRingHom_injective.comp coe_toAlgHom_injective
 
-theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
-  AlgHom.coe_monoidHom_injective.comp coe_toAlgHom_injective
+theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
+  AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
-  AlgHom.coe_addMonoidHom_injective.comp coe_toAlgHom_injective
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_injective := toMonoidHom_injective
+
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
+  AlgHom.toAddMonoidHom_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 /-- Consider using `congr(f $h)` instead. -/
 protected theorem congr_arg (f : 𝒜 →ₐᵍ[R] ℬ) {x y : A} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 @[ext]
 theorem ext {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ H
 
 @[simp]
-theorem mk_coe {f : 𝒜 →ₐᵍ[R] ℬ} (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
+theorem mk_coe {f : 𝒜 →ₐᵍ[R] ℬ} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
   rfl
 
 @[simp]

@@ -6,9 +6,11 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
-public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Gaussian random variables
@@ -136,11 +138,11 @@ lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X
   all_goals fun_prop
 
 lemma memLp_two [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
-    MemLp X 2 P := hX.memLp (by norm_num)
+    MemLp X 2 P := hX.memLp (by simp)
 
 lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
     Integrable X P :=
-  memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
+  memLp_one_iff_integrable.1 <| hX.memLp (by simp)
 
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
@@ -231,7 +233,7 @@ lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
-  convert! hX.map (∑ i, .proj i)
+  convert hX.map (∑ i, .proj i)
   ext; simp
 
 lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]

@@ -6,10 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Control.Combinators
-public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.CasesM
 
 import Mathlib.Tactic.Attr.Register
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic control operations

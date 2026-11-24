@@ -91,6 +91,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+@[oeis A164555 "numerators", oeis A027642 "denominators"]
 def bernoulli' (n : ℕ) : ℚ :=
   1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
@@ -126,12 +127,12 @@ theorem bernoulli'_zero : bernoulli' 0 = 1 := by
   simp
 
 @[simp]
-theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
+theorem bernoulli'_one : bernoulli' 1 = 2⁻¹ := by
   rw [bernoulli'_def]
   norm_num
 
 @[simp]
-theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
+theorem bernoulli'_two : bernoulli' 2 = 6⁻¹ := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 
@@ -141,10 +142,23 @@ theorem bernoulli'_three : bernoulli' 3 = 0 := by
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 
 @[simp]
-theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
-  have : Nat.choose 4 2 = 6 := by decide -- shrug
+theorem bernoulli'_four : bernoulli' 4 = -30⁻¹ := by
+  have : Nat.choose 4 2 = 6 := rfl
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
+
+@[simp]
+theorem bernoulli'_five : bernoulli' 5 = 0 := by
+  have : Nat.choose 5 2 = 10 := rfl
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
+
+@[simp]
+theorem bernoulli'_six : bernoulli' 6 = 42⁻¹ := by
+  have H₁ : Nat.choose 6 2 = 15 := rfl
+  have H₂ : Nat.choose 6 4 = 15 := rfl
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, H₁, H₂]
 
 end Examples
 
@@ -175,10 +189,10 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
   suffices (∑ p ∈ antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
-    simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
+    simpa [map_sum, Nat.factorial] using congr(algebraMap ℚ A $this)
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
-  convert! bernoulli'_spec' n using 1
+  convert bernoulli'_spec' n using 1
   apply sum_congr rfl
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
@@ -203,21 +217,42 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
   congr
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
+@[oeis A027641 "numerators", oeis A027642 "denominators"]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
 theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
   simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2]
 
+theorem neg_bernoulli'_succ_eq_bernoulli (n : ℕ) :
+    -bernoulli' (n + 1) = (-1) ^ n * bernoulli (n + 1) := by
+  simp [bernoulli, ← mul_assoc, ← pow_add]
+
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
+theorem bernoulli_one : bernoulli 1 = -2⁻¹ := by norm_num [bernoulli]
 
 @[simp]
 theorem bernoulli_two : bernoulli 2 = 6⁻¹ := by
   simp [bernoulli]
+
+@[simp]
+theorem bernoulli_three : bernoulli 3 = 0 := by
+  simp [bernoulli]
+
+@[simp]
+theorem bernoulli_four : bernoulli 4 = -30⁻¹ := by
+  norm_num [bernoulli]
+
+@[simp]
+theorem bernoulli_five : bernoulli 5 = 0 := by
+  simp [bernoulli]
+
+@[simp]
+theorem bernoulli_six : bernoulli 6 = 42⁻¹ := by
+  norm_num [bernoulli]
 
 @[simp]
 theorem bernoulli_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli n = 0 := by
@@ -265,7 +300,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- massage it to match the structure of the goal, then convert piece by piece
   rw [sum_eq_add_sum_sdiff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
-  convert! eq_sub_of_add_eq' H using 1
+  convert eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one
@@ -374,7 +409,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   cases p with | zero => simp | succ p =>
   let f i := bernoulli i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   let f' i := bernoulli' i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
-  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert!
+  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert
     this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
@@ -446,17 +481,18 @@ private lemma sum_pow_add_indicator_eq_zero {p : ℕ} (l : ℕ) [Fact p.Prime] :
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
   grind
 
-/- A rational number `x` is `p`-integral if `p` does not divide its denominator, i.e. it lies in
-the valuation subring of the `p`-adic valuation. -/
-private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := x ∈ (Rat.padicValuation p).integer
+/- The subring of rationals that are `p`-integral, i.e. the valuation subring of the `p`-adic
+valuation. -/
+private noncomputable abbrev pIntegrals (p : ℕ) [Fact p.Prime] : Subring ℚ :=
+  (Rat.padicValuation p).integer
 
-private lemma pIntegral_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
-    pIntegral p x ↔ ¬ p ∣ x.den :=
+private lemma mem_pIntegrals_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    x ∈ pIntegrals p ↔ ¬ p ∣ x.den :=
   Rat.padicValuation_le_one_iff
 
 /- Dividing a `p`-integral rational by a `p`-coprime nat stays `p`-integral. -/
 private lemma pIntegral_div_natCast {p : ℕ} [Fact p.Prime] {a : ℚ} {n : ℕ}
-    (ha : pIntegral p a) (hn : ¬ p ∣ n) : pIntegral p (a / n) := by
+    (ha : a ∈ pIntegrals p) (hn : ¬ p ∣ n) : (a / n) ∈ pIntegrals p := by
   have hvn : Rat.padicValuation p n = 1 := by
     simpa [Int.padicValuation_eq_one_iff, Int.natCast_dvd_natCast]
   rw [div_eq_mul_inv]
@@ -487,8 +523,8 @@ private lemma sum_one_div_prime_eq_indicator_div_add {k p : ℕ} (hk : k > 0) [F
     simp [vonStaudtIndicator, hdvd]
 
 /- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
-private lemma pIntegral_pow_div {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
-    (hv : M.factorization p ≤ N) : pIntegral p ((p : ℚ) ^ N / M) := by
+private lemma pow_div_mem_pIntegrals {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
+    (hv : M.factorization p ≤ N) : ((p : ℚ) ^ N / M) ∈ pIntegrals p := by
   set e := M.factorization p
   set M' := M / p ^ e
   have hM'_cop : M'.Coprime p := (Nat.coprime_ordCompl Fact.out hM).symm
@@ -504,7 +540,7 @@ private lemma pIntegral_pow_div {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
     norm_cast
     simp
   rw [hrw]
-  exact pIntegral_iff_not_dvd_den.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1
+  exact mem_pIntegrals_iff_not_dvd_den.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1
     (hM'_cop.coprime_dvd_left (by
       rw [hM'_eq]; exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _))).symm)
 
@@ -524,12 +560,13 @@ private lemma choose_two_mul_succ_mul_div_eq {k m : ℕ} (x : ℚ) (hm_lt : m < 
   rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia), mul_right_comm _ x, mul_right_comm _ x]
   refine congrArg (· * x) ?_
   rw [show (2 * (k : ℚ) - 2 * (m : ℚ) + 1) = (↑(2 * k + 1 - 2 * m) : ℚ) by norm_cast; lia]
-  exact_mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
+  exact mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
-private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
+private lemma choose_mul_pow_div_mem_pIntegrals {k m p : ℕ} [Fact p.Prime]
     (hd : 2 * k - 2 * m ≥ 2) :
-    pIntegral p (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) := by
+    (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) ∈
+      pIntegrals p := by
   set d := 2 * k - 2 * m with hd_def
   have ⟨hd_plus_one_ne_zero, h_exp, hkm⟩ :
       d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
@@ -537,14 +574,14 @@ private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p
     simp only [hd_def]; push_cast [Nat.cast_sub hkm]; ring
   rw [h_exp, h_denom_rat, mul_div_assoc]
   exact mul_mem (natCast_mem _ ((2 * k).choose (2 * m)))
-    (pIntegral_pow_div hd_plus_one_ne_zero (factorization_succ_le_sub_one hd))
+    (pow_div_mem_pIntegrals hd_plus_one_ne_zero (factorization_succ_le_sub_one hd))
 
 /- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
 to prove `p`-integrality of the even term. -/
-private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
-    (ih : pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
-    pIntegral p (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
-      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) := by
+private lemma bernoulli_even_term_mem_pIntegrals {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
+    (ih : (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) ∈ pIntegrals p) :
+    (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
+      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) ∈ pIntegrals p := by
   have hp_ne : (p : ℚ) ≠ 0 := mod_cast (Nat.Prime.ne_zero Fact.out)
   set P := (p : ℚ) ^ (2 * k - 2 * m - 1)
   have hpow : (p : ℚ) ^ (2 * k - 2 * m) = P * p := by
@@ -556,7 +593,7 @@ private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact 
     vonStaudtIndicator (2 * m) p * ((2 * k + 1).choose (2 * m)) *
       P / (2 * k + 1) := by rw [hpow]; field_simp [hp_ne]; ring
   rw [hdecomp]
-  have hcmp := pIntegral_choose_mul_pow_div (p := p) hm_lt (by lia)
+  have hcmp := choose_mul_pow_div_mem_pIntegrals (k := k) (m := m) (p := p) (by lia)
   have H x := choose_two_mul_succ_mul_div_eq x hm_lt
   apply sub_mem
   · rw [mul_assoc, mul_div_assoc]
@@ -573,15 +610,16 @@ private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact 
     · simp
 
 /- The full remainder sum in Faulhaber's formula is `p`-integral. -/
-private lemma pIntegral_faulhaber_sum {k p : ℕ} [Fact p.Prime]
-    (ih : ∀ m < k, 0 < m → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
-    pIntegral p (∑ i ∈ range (2 * k),
-      bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) := by
+private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} [Fact p.Prime]
+    (ih : ∀ m, 0 < m → m < k →
+      (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) ∈ pIntegrals p) :
+    (∑ i ∈ range (2 * k),
+      bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) ∈ pIntegrals p := by
   refine (Rat.padicValuation p).map_sum_le fun i hi ↦ ?_
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
-    exact_mod_cast pIntegral_pow_div (by lia)
+    exact mod_cast pow_div_mem_pIntegrals (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)
   · rw [zero_add, Nat.choose_one_right, bernoulli_one]
     push_cast
@@ -589,15 +627,15 @@ private lemma pIntegral_faulhaber_sum {k p : ℕ} [Fact p.Prime]
     obtain rfl | hp2 := eq_or_ne p 2
     · push_cast
       rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
-      exact_mod_cast Int.padicValuation_le_one ..
+      exact mod_cast Int.padicValuation_le_one ..
     · rw [Valuation.map_neg]
-      refine pIntegral_pow_div two_ne_zero <|
+      refine pow_div_mem_pIntegrals two_ne_zero <|
          (factorization_eq_zero_of_lt ?_).trans_le (by lia)
       exact (Prime.odd_iff Fact.out).mp <| Prime.odd_of_ne_two Fact.out hp2
   · rcases Nat.even_or_odd (i + 2) with ⟨m, hm⟩ | hodd
     · have ⟨hm_pos, hm_lt, hi_eq⟩ : 0 < m ∧ m < k ∧ i + 2 = 2 * m := by lia
       simp only [hi_eq]
-      exact pIntegral_bernoulli_even_term hm_lt (ih m hm_lt hm_pos)
+      exact bernoulli_even_term_mem_pIntegrals hm_lt (ih m hm_pos hm_lt)
     · simp [bernoulli_eq_zero_of_odd hodd (by lia)]
 
 private lemma sum_pow_filter_eq_faulhaber {k : ℕ} (p : ℕ) (hk : 0 < k) :
@@ -635,7 +673,7 @@ private lemma bernoulli_add_indicator_eq_sub {k p : ℕ} (hk : k > 0) [Fact p.Pr
   obtain ⟨T, hT_int⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
   use T
   have hT : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p =
-      p * T := by unfold vonStaudtIndicator; exact_mod_cast hT_int
+      p * T := by unfold vonStaudtIndicator; exact mod_cast hT_int
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
@@ -645,20 +683,21 @@ private lemma bernoulli_add_indicator_eq_sub {k p : ℕ} (hk : k > 0) [Fact p.Pr
 
 /- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
 private lemma pIntegral_bernoulli_add_indicator {p : ℕ} [Fact p.Prime] :
-    ∀ {k}, k > 0 → Even k → pIntegral p (bernoulli k + vonStaudtIndicator k p / p) := by
-  suffices ∀ k > 0, pIntegral p (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p) by
+    ∀ {k}, k > 0 → Even k → (bernoulli k + vonStaudtIndicator k p / p) ∈ pIntegrals p := by
+  suffices ∀ k > 0, (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p) ∈ pIntegrals p by
     grind [even_iff_exists_two_mul]
   intro k hk
   induction k using Nat.strong_induction_on with
   | h k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
-    exact sub_mem (intCast_mem _ T) (pIntegral_faulhaber_sum ih)
+    exact sub_mem (intCast_mem _ T)
+      (faulhaber_sum_mem_pIntegrals fun m hm_pos hm_lt ↦ ih m hm_lt hm_pos)
 
 lemma not_dvd_den_bernoulli_add_ite {p k : ℕ} (hp : p.Prime)
     (hk₀ : k ≠ 0) (hk : Even k) : ¬ p ∣ (bernoulli k + (if p - 1 ∣ k then 1 else 0) / p).den := by
   have : Fact p.Prime := ⟨hp⟩
-  rw [← pIntegral_iff_not_dvd_den]
+  rw [← mem_pIntegrals_iff_not_dvd_den]
   exact pIntegral_bernoulli_add_indicator hk₀.bot_lt hk
 
 /-- For even `k > 0`, a prime `p` divides the denominator of `bernoulli k` exactly when
@@ -666,11 +705,11 @@ lemma not_dvd_den_bernoulli_add_ite {p k : ℕ} (hp : p.Prime)
 theorem dvd_den_bernoulli_iff {p k : ℕ} (hp : p.Prime) (hm : Even k) (hm0 : k ≠ 0) :
     p ∣ (bernoulli k).den ↔ p - 1 ∣ k := by
   have : Fact p.Prime := ⟨hp⟩
-  rw [← not_iff_not, ← pIntegral_iff_not_dvd_den]
-  have : pIntegral p (bernoulli k + vonStaudtIndicator k p / p) :=
+  rw [← not_iff_not, ← mem_pIntegrals_iff_not_dvd_den]
+  have : (bernoulli k + vonStaudtIndicator k p / p) ∈ pIntegrals p :=
     pIntegral_bernoulli_add_indicator (by lia) hm
   refine ⟨fun h ↦ ?_, by grind [vonStaudtIndicator]⟩
-  have h1p : ¬ pIntegral p (1 / p) := by simp [pIntegral_iff_not_dvd_den, hp.ne_zero]
+  have h1p : ¬ (1 / p : ℚ) ∈ pIntegrals p := by simp [mem_pIntegrals_iff_not_dvd_den, hp.ne_zero]
   contrapose! h1p
   simpa [vonStaudtIndicator, h1p] using sub_mem this h
 
@@ -691,11 +730,11 @@ theorem sub_one_dvd_of_dvd_den_bernoulli {p k : ℕ} (hp : p.Prime) (hk : p ∣ 
 /- For `(p - 1) ∤ k`, `bernoulli k` is `p`-integral (contrapositive of
 `sub_one_dvd_of_dvd_den_bernoulli`). -/
 private theorem pIntegral_bernoulli_of_not_dvd {p k : ℕ} [Fact p.Prime] (hk : ¬ p - 1 ∣ k) :
-    pIntegral p (bernoulli k) :=
-  pIntegral_iff_not_dvd_den.2 (mt (sub_one_dvd_of_dvd_den_bernoulli Fact.out) hk)
+    bernoulli k ∈ pIntegrals p :=
+  mem_pIntegrals_iff_not_dvd_den.2 (mt (sub_one_dvd_of_dvd_den_bernoulli Fact.out) hk)
 
 private theorem pIntegral_mul_bernoulli {p k : ℕ} [Fact p.Prime] :
-    pIntegral p (p * bernoulli k) := by
+    (p * bernoulli k : ℚ) ∈ pIntegrals p := by
   have hp : p.Prime := Fact.out
   obtain rfl | rfl | he | ⟨ho, hk₁⟩ : k = 0 ∨ k = 1 ∨ (Even k ∧ k ≠ 0) ∨ (Odd k ∧ 1 < k) := by grind
   · simp
@@ -717,7 +756,7 @@ private theorem pIntegral_mul_bernoulli {p k : ℕ} [Fact p.Prime] :
 theorem not_dvd_mul_bernoulli {p k : ℕ} (hp : p.Prime) :
     ¬ p ∣ (p * bernoulli k).den := by
   have : Fact p.Prime := ⟨hp⟩
-  rw [← pIntegral_iff_not_dvd_den]
+  rw [← mem_pIntegrals_iff_not_dvd_den]
   exact pIntegral_mul_bernoulli
 
 theorem squarefree_den_bernoulli {k : ℕ} :
@@ -734,13 +773,13 @@ theorem squarefree_den_bernoulli {k : ℕ} :
 
 /- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
 private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : Even k) [Fact p.Prime] :
-    pIntegral p (bernoulli k + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q) := by
+    (bernoulli k + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q) ∈ pIntegrals p := by
   obtain rfl | hk₀ : k = 0 ∨ k > 0 := by grind [even_iff_exists_two_mul]
   · simp [vonStaudtPrimes, range_add_one, not_prime_one, not_prime_zero, Finset.filter_insert,
       Finset.filter_singleton]
   rw [sum_one_div_prime_eq_indicator_div_add (p := p) (by lia), ← add_assoc]
-  apply add_mem (pIntegral_bernoulli_add_indicator hk₀ hk) (_ : pIntegral _ _)
-  rw [pIntegral_iff_not_dvd_den, ← Nat.Prime.coprime_iff_not_dvd Fact.out]
+  apply add_mem (pIntegral_bernoulli_add_indicator hk₀ hk) (_ : _ ∈ pIntegrals _)
+  rw [mem_pIntegrals_iff_not_dvd_den, ← Nat.Prime.coprime_iff_not_dvd Fact.out]
   exact (prod_one_div_prime_den_coprime _).symm.of_dvd_right (Rat.den_sum_dvd_prod_den _ _)
 
 /-- **von Staudt-Clausen theorem:** For any even natural number $k$, the sum
@@ -750,25 +789,25 @@ theorem vonStaudt_clausen {k : ℕ} (hk : Even k) :
     bernoulli k + ∑ p ∈ range (k + 2) with p.Prime ∧ p - 1 ∣ k, (1 / p : ℚ) ∈
       Set.range Int.cast := by
   rw [Set.mem_range]
-  refine ⟨_, Rat.coe_int_num_of_den_eq_one <| eq_one_iff_not_exists_prime_dvd.2 fun p hp ↦ ?_⟩
+  refine ⟨_, Rat.intCast_num_of_den_eq_one <| eq_one_iff_not_exists_prime_dvd.2 fun p hp ↦ ?_⟩
   have : Fact p.Prime := ⟨hp⟩
-  rw [← pIntegral_iff_not_dvd_den]
+  rw [← mem_pIntegrals_iff_not_dvd_den]
   exact not_dvd_den_vonStaudt_sum hk
 
 /-- The denominator of a `p`-integral rational is a unit mod `p`. -/
-private theorem den_ne {p : ℕ} [Fact p.Prime] {x : ℚ} (hx : pIntegral p x) :
+private theorem den_ne {p : ℕ} [Fact p.Prime] {x : ℚ} (hx : x ∈ pIntegrals p) :
     (x.den : ZMod p) ≠ 0 := by
-  rwa [Ne, ZMod.natCast_eq_zero_iff, ← pIntegral_iff_not_dvd_den]
+  rwa [Ne, ZMod.natCast_eq_zero_iff, ← mem_pIntegrals_iff_not_dvd_den]
 
 /- Casting respects addition of two `p`-integral rationals. -/
 private theorem cast_add_pIntegral {p : ℕ} [Fact p.Prime] {a b : ℚ}
-    (ha : pIntegral p a) (hb : pIntegral p b) :
+    (ha : a ∈ pIntegrals p) (hb : b ∈ pIntegrals p) :
     ((a + b : ℚ) : ZMod p) = a + b :=
   Rat.cast_add_of_ne_zero (den_ne ha) (den_ne hb)
 
 /- Casting respects multiplication of two `p`-integral rationals. -/
 private theorem cast_mul_pIntegral {p : ℕ} [Fact p.Prime] {a b : ℚ}
-    (ha : pIntegral p a) (hb : pIntegral p b) :
+    (ha : a ∈ pIntegrals p) (hb : b ∈ pIntegrals p) :
     (((a * b : ℚ)) : ZMod p) = (a : ZMod p) * (b : ZMod p) :=
   Rat.cast_mul_of_ne_zero (den_ne ha) (den_ne hb)
 
@@ -810,7 +849,7 @@ theorem faulhaber_mod_sq {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : Even k) (hk1 :
             * ((k.choose i : ℚ) * ((p : ℚ) ^ (k - 2 - i) / ((k + 1 - i : ℕ) : ℚ))) := by ring
       rw [hpeel, hregroup]
       refine mul_mem (pIntegral_mul_bernoulli) (mul_mem (natCast_mem _ _) ?_)
-      refine pIntegral_pow_div (by omega) ?_
+      refine pow_div_mem_pIntegrals (by omega) ?_
       have h3 : 3 ≤ k + 1 - i := by omega
       have hml := Nat.mul_factorization_le (n := k + 1 - i) (p := p)
       have h5 : 5 * (k + 1 - i).factorization p ≤ p * (k + 1 - i).factorization p := by gcongr
@@ -963,16 +1002,16 @@ theorem voronoi_congr {p : ℕ} [Fact p.Prime] {c k : ℕ} (hc : ¬ p ∣ c) (hk
   have hp0 : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr hp.ne_zero
   obtain ⟨C, hC⟩ := voronoi_int (p := p) hc
   obtain ⟨W, hWden, hWeq⟩ := faulhaber_mod_sq (p := p) hk hk1
-  have hWpint : pIntegral p W := Rat.padicValuation_le_one_iff.mpr hWden
+  have hWpint : W ∈ pIntegrals p := Rat.padicValuation_le_one_iff.mpr hWden
   set Sz : ℤ := ∑ j ∈ Ico 1 p, (j : ℤ) ^ k with hSz
   set Vz : ℤ := ∑ j ∈ Ico 1 p, ((c * j / p : ℕ) : ℤ) * (j : ℤ) ^ (k - 1) with hVz
-  have hpck : pIntegral p ((c : ℚ) ^ k) := by
+  have hpck : (c : ℚ) ^ k ∈ pIntegrals p := by
     have hck : (c : ℚ) ^ k = ((c ^ k : ℕ) : ℚ) := by push_cast; ring
     rw [hck]
     exact natCast_mem _ _
-  have hpc : pIntegral p ((c : ℚ) ^ k - 1) := sub_mem hpck (one_mem _)
-  have hpB : pIntegral p (bernoulli k) := pIntegral_bernoulli_of_not_dvd hk1
-  have cast_sub_pIntegral : ∀ {a b : ℚ}, pIntegral p a → pIntegral p b →
+  have hpc : (c : ℚ) ^ k - 1 ∈ pIntegrals p := sub_mem hpck (one_mem _)
+  have hpB : bernoulli k ∈ pIntegrals p := pIntegral_bernoulli_of_not_dvd hk1
+  have cast_sub_pIntegral : ∀ {a b : ℚ}, a ∈ pIntegrals p → b ∈ pIntegrals p →
       (((a - b : ℚ)) : ZMod p) = (a : ZMod p) - (b : ZMod p) := by
     intro a b ha hb
     rw [sub_eq_add_neg, cast_add_pIntegral ha (neg_mem hb), Rat.cast_neg, ← sub_eq_add_neg]
@@ -993,7 +1032,7 @@ theorem voronoi_congr {p : ℕ} [Fact p.Prime] {c k : ℕ} (hc : ¬ p ∣ c) (hk
     exact_mod_cast hC
   have hWq : (Sz : ℚ) - (p : ℚ) * bernoulli k = (p : ℚ) ^ 2 * W := by rw [← hSQ]; exact hWeq
   set M : ℚ := (C : ℚ) - ((c : ℚ) ^ k - 1) * W with hM
-  have hMpint : pIntegral p M :=
+  have hMpint : M ∈ pIntegrals p :=
     sub_mem (intCast_mem _ C) (mul_mem hpc hWpint)
   have hstar : ((c : ℚ) ^ k - 1) * bernoulli k
       = (k : ℚ) * (c : ℚ) ^ (k - 1) * (Vz : ℚ) + (p : ℚ) * M := by
@@ -1012,7 +1051,7 @@ theorem voronoi_congr {p : ℕ} [Fact p.Prime] {c k : ℕ} (hc : ¬ p ∣ c) (hk
     push_cast
     ring
   have hck1 : (c : ℚ) ^ (k - 1) = ((c ^ (k - 1) : ℕ) : ℚ) := by push_cast; ring
-  have hpck1 : pIntegral p ((c : ℚ) ^ (k - 1)) := by
+  have hpck1 : (c : ℚ) ^ (k - 1) ∈ pIntegrals p := by
     rw [hck1]
     exact natCast_mem _ _
   have castR : (((k : ℚ) * (c : ℚ) ^ (k - 1) * (Vz : ℚ) + (p : ℚ) * M : ℚ) : ZMod p)

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.ZornAtoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrafilters
 
@@ -251,7 +254,7 @@ theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 
 theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =>
-  Filter.pure_injective (congr_arg Ultrafilter.toFilter h :)
+  Filter.pure_injective congr($(h).toFilter)
 
 instance [Inhabited α] : Inhabited (Ultrafilter α) :=
   ⟨pure default⟩
@@ -280,7 +283,7 @@ instance lawfulMonad : LawfulMonad Ultrafilter where
   id_map f := coe_injective (id_map f.toFilter)
   pure_bind a f := coe_injective (Filter.pure_bind a ((Ultrafilter.toFilter) ∘ f))
   bind_assoc _ _ _ := coe_injective (filter_eq rfl)
-  bind_pure_comp f x := coe_injective (bind_pure_comp f x.1)
+  bind_pure_comp f x := coe_injective (bind_pure_comp f x.toFilter)
   map_const := rfl
   seqLeft_eq _ _ := rfl
   seqRight_eq _ _ := rfl

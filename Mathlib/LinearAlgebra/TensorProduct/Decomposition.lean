@@ -14,7 +14,6 @@ In this file, we describe the properties of decomposition under tensor product. 
 decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `N`, the `R`-module
 `M ⊗[R] N` has a decomposition into pieces `fun i ↦ (ℳ i) ⊗[R] N`. Given a commutative `R`-algebra
 `S`, the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S`.
-
 -/
 
 public section
@@ -113,7 +112,7 @@ lemma coe_decomposeTensor_apply (x : (⨁ i, decomposeTensor ℳ N i)) :
         (directSumLeft R R (fun i ↦ ℳ i) N).symm ((of (fun i ↦ ℳ i ⊗[R] N) i) y) :=
       (TensorProduct.directSumLeft_symm_of R R (M₁ := fun i ↦ ℳ i) y).symm
     rw [coeAddMonoidHom_of, LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply,
-      ← (LinearEquiv.rTensor N _).coe_coe, LinearEquiv.coe_rTensor, ← rTensor_comp_apply,
+      ← (LinearEquiv.rTensor N _).coe_toLinearMap, LinearEquiv.coe_rTensor, ← rTensor_comp_apply,
       decomposeLinearEquiv_comp_subtype, this, LinearEquiv.apply_symm_apply,
       decomposeTensorEquiv_of_apply, decomposeTensorEquiv_apply]
   | add x y hx hy => simp [hx, hy]

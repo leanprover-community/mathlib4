@@ -5,17 +5,20 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Int.Sqrt
+
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Rat.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Square root on rational numbers
 
 This file defines the square root function on rational numbers `Rat.sqrt`
 and proves several theorems about it.
-
 -/
 
 @[expose] public section

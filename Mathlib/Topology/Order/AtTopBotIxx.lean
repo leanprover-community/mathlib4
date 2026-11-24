@@ -5,9 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Topology.Order.Basic
+
 import Mathlib.Topology.Order.LeftRightNhds
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Filter.atTop` and `Filter.atBot` for intervals in a linear order topology
@@ -83,7 +87,7 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → 
   rw [comap_coe_nhdsLT_eq_atTop_iff]
   refine ⟨hsb, fun hsne a ha ↦ ?_⟩
   rcases hs hsne with ⟨c, hcb, hcs⟩
-  rcases hb.lt_iff_exists_lt.mp (max_lt ha hcb) with ⟨x, hxb, hacx⟩
+  rcases hb.nonempty_Ioo_of_lt (max_lt ha hcb) with ⟨x, hacx, hxb⟩
   rw [max_lt_iff] at hacx
   exact ⟨x, hcs ⟨hacx.2, hxb⟩, hacx.1, hxb⟩
 
@@ -97,7 +101,7 @@ theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a 
     (hb : IsSuccPrelimit b := by exact .of_dense _) :
     map ((↑) : s → X) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
-  · have : IsEmpty s := ⟨fun x => hb'.subset (hsb x.2)⟩
+  · have : IsEmpty s := ⟨fun x => hb'.subset (hsb x.property)⟩
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
   · rw [← comap_coe_nhdsLT_of_Ioo_subset hsb (fun _ => hs a ha) hb, map_comap_of_mem]
     rw [Subtype.range_val]

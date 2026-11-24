@@ -41,8 +41,8 @@ of `E` commuting with `p`. -/
 def deck (p : E → X) : Subgroup (E ≃ₜ E) where
   carrier := { h | p ∘ h = p }
   one_mem' := rfl
-  mul_mem' {f g} hf hg := by ext e; exact (congrFun hf (g e)).trans (congrFun hg e)
-  inv_mem' {f} hf := by ext e; simpa using (congrFun hf (f.symm e)).symm
+  mul_mem' {f g} hf hg := by ext e; exact congr($hf (g e)).trans congr($hg e)
+  inv_mem' {f} hf := by ext e; simpa using congr($hf (f.symm e)).symm
 
 namespace deck
 
@@ -51,10 +51,10 @@ variable {p : E → X}
 theorem mem_iff {h : E ≃ₜ E} : h ∈ deck p ↔ p ∘ h = p := Iff.rfl
 
 @[simp]
-theorem comp_eq (h : deck p) : p ∘ (h : E ≃ₜ E) = p := h.2
+theorem comp_eq (h : deck p) : p ∘ (h : E ≃ₜ E) = p := h.property
 
 theorem proj_smul (h : deck p) (e : E) : p (h • e) = p e :=
-  congrFun h.2 e
+  congr($(h.property) e)
 
 instance : ContinuousConstSMul (deck p) E :=
   ⟨fun h ↦ (h : E ≃ₜ E).continuous⟩

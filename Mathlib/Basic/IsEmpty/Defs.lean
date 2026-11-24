@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Types that are empty
 
@@ -37,7 +40,7 @@ instance : IsEmpty False :=
   ⟨id⟩
 
 instance Fin.isEmpty : IsEmpty (Fin 0) :=
-  ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
+  ⟨fun n ↦ Nat.not_lt_zero n.val n.isLt⟩
 
 instance Fin.isEmpty' : IsEmpty (Fin Nat.zero) :=
   Fin.isEmpty
@@ -78,11 +81,11 @@ instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕ β) 
 
 /-- Subtypes of an empty type are empty. -/
 instance [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ IsEmpty.false x.1⟩
+  ⟨fun x ↦ IsEmpty.false x.val⟩
 
 /-- Subtypes by an all-false predicate are empty. -/
 theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ hp _ x.2⟩
+  ⟨fun x ↦ hp _ x.property⟩
 
 /-- Subtypes by `False` are empty. -/
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
@@ -130,9 +133,15 @@ theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+protected instance (priority := 100) subsingleton : Subsingleton α :=
   ⟨isEmptyElim⟩
 
 protected lemma congr_fun (f g : α → β) : f = g := funext fun a ↦ IsEmpty.elim' inferInstance a
 
 end IsEmpty
+
+/-- `Fin k` is empty iff `k = 0`. -/
+@[simp, grind =]
+lemma Fin.isEmpty_iff {k : Nat} : IsEmpty (Fin k) ↔ k = 0 where
+  mp h := by cases k with | zero => rfl | succ k => exact h.elim 0
+  mpr h := by subst h; infer_instance

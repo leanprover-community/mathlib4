@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
 /-! # Restriction of the continuous functional calculus to a scalar subring
@@ -38,7 +37,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     spectrum S a ≃ₜ spectrum R a where
   toFun := MapsTo.restrict f _ _ h.subset_preimage
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
-  left_inv x := Subtype.ext <| h.rightInvOn x.2
+  left_inv x := Subtype.ext <| h.rightInvOn x.property
   right_inv x := Subtype.ext <| h.left_inv x
 
 lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
@@ -77,9 +76,9 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
     (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
     h.starAlgHom φ (.restrict (spectrum R a) <| .id R) = a := by
   simp only [SpectrumRestricts.starAlgHom_apply]
-  convert! h_id
+  convert h_id
   ext x
-  exact h.rightInvOn x.2
+  exact h.rightInvOn x.property
 
 open ContinuousMap in
 lemma starAlgHom_injective {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}
@@ -165,12 +164,12 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
     congr! 1 with x hx
     lift x to spectrum S a using hx
     simp [Function.comp]
-  · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
-      refine fun hg' ↦ hg ?_
+  · have hcont (hg' : ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a)) :
+        ContinuousOn g (spectrum R a) := by
       rw [halg.isEmbedding.continuousOn_iff]
       simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
         hg'.comp halg.isEmbedding.continuous.continuousOn (fun _ : R ↦ spectrum.algebraMap_mem S)
-    rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn a this]
+    grind
 
 end Generic
 
@@ -209,7 +208,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
     σₙ S a ≃ₜ σₙ R a where
   toFun := MapsTo.restrict f _ _ h.subset_preimage
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
-  left_inv x := Subtype.ext <| h.rightInvOn x.2
+  left_inv x := Subtype.ext <| h.rightInvOn x.property
   right_inv x := Subtype.ext <| h.left_inv x
 
 universe u v w
@@ -227,7 +226,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
     C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
   (φ.restrictScalars R).comp <|
-    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S) (algebraMapCLM R S).continuous)
+    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S).toNonUnitalStarAlgHom
+        (algebraMapCLM R S).continuous)
       |>.comp <| nonUnitalStarAlgHom_precomp R
         ⟨⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
@@ -243,9 +243,9 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (h : QuasispectrumRestricts a f) (h_id : φ (.id _) = a) :
     h.nonUnitalStarAlgHom φ (.id _) = a := by
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
-  convert! h_id
+  convert h_id
   ext x
-  exact h.rightInvOn x.2
+  exact h.rightInvOn x.property
 
 open ContinuousMapZero in
 lemma nonUnitalStarAlgHom_injective {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
@@ -254,7 +254,7 @@ lemma nonUnitalStarAlgHom_injective {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙ�
     Function.Injective (h.nonUnitalStarAlgHom φ) :=
   have : h.homeomorph.symm 0 = 0 := Subtype.ext (map_zero <| algebraMap _ _)
   hφ.comp <|
-    (postcomp_injective ⟨⟨(StarAlgHom.ofId R S), (algebraMapCLM R S).continuous⟩, _⟩ halg).comp <|
+    (postcomp_injective ⟨⟨(StarAlgHom.ofId R S), (algebraMapCLM R S).continuous⟩, _⟩ halg).comp
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.injective)
 
 variable [TopologicalSpace A]
@@ -336,16 +336,13 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S
     congr! 1 with x hx
     lift x to σₙ S a using hx
     simp
-  · simp only [not_and_or] at hg
-    obtain (hg | hg) := hg
-    · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a) := by
-        refine fun hg' ↦ hg ?_
-        rw [halg.isEmbedding.continuousOn_iff]
-        simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
-          hg'.comp halg.isEmbedding.continuous.continuousOn
-          (fun _ : R ↦ quasispectrum.algebraMap_mem S)
-      rw [cfcₙ_apply_of_not_continuousOn a hg, cfcₙ_apply_of_not_continuousOn a this]
-    · rw [cfcₙ_apply_of_not_map_zero a hg, cfcₙ_apply_of_not_map_zero a (by simpa [h.map_zero])]
+  · have hcont (hg' : ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a)) :
+        ContinuousOn g (σₙ R a) := by
+      rw [halg.isEmbedding.continuousOn_iff]
+      simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
+        hg'.comp halg.isEmbedding.continuous.continuousOn
+        (fun _ : R ↦ quasispectrum.algebraMap_mem S)
+    grind [h.map_zero, map_eq_zero]
 
 end Generic
 

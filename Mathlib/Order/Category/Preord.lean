@@ -7,9 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Category of preorders
@@ -166,7 +166,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := ↧X.1
+  obj X := ↧X.carrier
   map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
