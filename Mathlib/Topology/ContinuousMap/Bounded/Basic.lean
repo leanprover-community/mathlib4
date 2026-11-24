@@ -52,6 +52,8 @@ class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [Topologica
 
 export BoundedContinuousMapClass (map_bounded)
 
+/-- Turn an element of a type `F` satisfying `BoundedContinuousMapClass F α β` into an actual
+`BoundedContinuousFunction`. -/
 def BoundedContinuousFunction.ofClass [TopologicalSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [BoundedContinuousMapClass F α β] (f : F) :
     BoundedContinuousFunction α β where

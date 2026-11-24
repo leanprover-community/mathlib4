@@ -156,6 +156,8 @@ instance toContDiffMapSupportedInClass :
 
 variable {E F F'}
 
+/-- Reinterpret a continuously differentiable map supported in a compact  `f : 𝓓^{n}_{K}(E, F)`
+as a continuous bounded map `E →ᵇ F`. -/
 def toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) : E →ᵇ F := .ofClass f
 
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
