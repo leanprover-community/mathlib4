@@ -69,22 +69,11 @@ section rankOne
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
-    nontriviality R
+    have (w : SpecialLinearGroup R V) : (w : V →ₗ[R] V) = LinearMap.id :=
+      (LinearMap.det_eq_one_iff_eq_id_of_finrank_eq_one d1 _).mp <| by
+        rw [← LinearEquiv.coe_det, w.prop, Units.val_one]
     ext x
-    by_cases hx : x = 0
-    · simp [hx]
-    suffices ∀ (u : SpecialLinearGroup R V), (u : V →ₗ[R] V) = LinearMap.id by
-      simp only [LinearMap.ext_iff, LinearEquiv.coe_coe, LinearMap.id_coe, id_eq] at this
-      simp [this u, this v]
-    intro u
-    ext x
-    set c := (LinearEquiv.smul_id_of_finrank_eq_one d1).symm u with hc
-    rw [LinearEquiv.eq_symm_apply] at hc
-    suffices c = 1 by
-      simp [← hc, LinearEquiv.smul_id_of_finrank_eq_one, this]
-    have hu := u.prop
-    simpa [← Units.val_inj, LinearEquiv.coe_det, ← hc,
-      LinearEquiv.smul_id_of_finrank_eq_one, d1] using hu
+    simp [← LinearEquiv.coe_coe, this]
 
 end rankOne
 
