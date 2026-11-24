@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
 
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!

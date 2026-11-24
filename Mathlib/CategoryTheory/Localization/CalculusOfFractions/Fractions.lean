@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on fractions
 

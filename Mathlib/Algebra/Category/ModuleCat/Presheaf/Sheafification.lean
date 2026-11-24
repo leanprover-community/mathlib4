@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheafification functor for presheaves of modules
 

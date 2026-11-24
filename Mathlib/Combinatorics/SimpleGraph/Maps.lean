@@ -6,8 +6,9 @@ Authors: Hunter Monroe, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Dart
-public import Mathlib.Data.FunLike.Fintype
-public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs

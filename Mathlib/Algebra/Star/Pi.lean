@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Results about Star on Pi Types
 

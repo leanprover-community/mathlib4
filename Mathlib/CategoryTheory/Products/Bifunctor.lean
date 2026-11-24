@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Products.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about functors out of product categories.
 -/

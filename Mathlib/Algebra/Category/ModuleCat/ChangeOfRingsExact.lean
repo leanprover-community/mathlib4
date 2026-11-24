@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness of functors for change of rings.
 

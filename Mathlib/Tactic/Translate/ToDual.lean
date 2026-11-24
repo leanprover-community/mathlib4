@@ -353,8 +353,10 @@ elab "to_dual_name_hint" hints:(ident ident),* : command => do
     guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
     guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
-/-- `to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
+/--
+`to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
 where `e` can be an arbitrary expression.
+To see the expected type of `e` and/or provide a tactic proof, use `to_dual_for src := by ...`
 
 TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg := ...)` syntax.
   This can be added if necessary.

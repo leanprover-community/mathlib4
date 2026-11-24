@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product and direct limits commute with each other.
 

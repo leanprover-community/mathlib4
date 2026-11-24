@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditiv
 
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization with respect to a Serre class
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.Ring.Commute
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers: lemmas about `Commute`
 -/

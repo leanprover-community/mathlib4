@@ -5,9 +5,10 @@ Authors: Eric Wieser, Zhangir Azerbayev
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Multilinear.Basis
+
+import Mathlib.Algebra.Group.Action.FunLike
 
 
 /-!
