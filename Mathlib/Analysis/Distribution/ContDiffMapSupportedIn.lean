@@ -194,6 +194,11 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ⇑f.toBoundedContinuousFunction = (f : E → F) := rfl
 
+@[simp]
+theorem toBoundedContinuousFunction_injective :
+    Function.Injective (toBoundedContinuousFunction : 𝓓^{n}_{K}(E, F) → E →ᵇ F) :=
+  fun f g h ↦ by ext; simp [← coe_toBoundedContinuousFunction, h]
+
 section AddCommGroup
 
 instance : Zero 𝓓^{n}_{K}(E, F) where
