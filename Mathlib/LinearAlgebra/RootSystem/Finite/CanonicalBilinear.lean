@@ -26,7 +26,7 @@ Weyl group.
   space.
 * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
-## Main results:
+## Main results
 * `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
   weight vector is a sum of squares.
 * `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
