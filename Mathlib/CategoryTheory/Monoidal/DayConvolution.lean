@@ -35,6 +35,7 @@ a monoidal structure.
 
 
 ## References
+
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)

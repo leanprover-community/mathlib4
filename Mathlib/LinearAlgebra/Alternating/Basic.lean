@@ -30,6 +30,7 @@ arguments of the same type.
   by `Fin n.succ`.
 
 ## Implementation notes
+
 `AlternatingMap` is defined in terms of `map_eq_zero_of_eq`, as this is easier to work with than
 using `map_swap` as a definition, and does not require `Neg N`.
 

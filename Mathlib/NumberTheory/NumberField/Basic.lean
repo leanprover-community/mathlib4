@@ -23,15 +23,18 @@ This file defines a number field and the ring of integers corresponding to it.
   as the integral closure of ℤ in the number field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 number field, ring of integers
 -/
 

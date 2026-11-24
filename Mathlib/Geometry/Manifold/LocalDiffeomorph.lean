@@ -52,6 +52,7 @@ different, i.e. for a structomorphism one has to impose `H = H'` which is often 
 practice.
 
 ## Tags
+
 local diffeomorphism, manifold
 -/
 
