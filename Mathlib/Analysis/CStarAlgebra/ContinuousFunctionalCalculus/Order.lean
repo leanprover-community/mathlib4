@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Unitization
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
@@ -42,7 +43,7 @@ continuous functional calculus, normal, selfadjoint
 
 public section
 
-open scoped NNReal CStarAlgebra
+open scoped NNReal CStarAlgebra ComplexOrder
 
 local notation "σₙ" => quasispectrum
 
@@ -61,7 +62,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
@@ -79,7 +80,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
   rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization
@@ -87,53 +88,26 @@ open Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
-    CStarAlgebra.spectralOrder _
-
-instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
-    CStarAlgebra.spectralOrderedRing _
-
-@[simp, norm_cast]
-lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
-  -- TODO: prove the more general result for star monomorphisms and use it here.
-  simp [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    ← quasispectrumRestricts_iff_spectrumRestricts_inr']
-
-alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
-
-lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : A⁺¹) := ha.inr
-
-lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹) := by cfc_tac) : 0 ≤ a := inr_nonneg_iff.mp ha
-
-@[simp]
-lemma inr_le_inr_iff {a b : A} : (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
-  rw [← sub_nonneg, ← sub_nonneg (a := b), ← inr_sub ℂ b a, inr_nonneg_iff]
-
-@[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
-
-alias ⟨le_of_inr, inr_mono⟩ := inr_le_inr_iff
-
-
 lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
     (hf : ConvexOn ℝ s (inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
   refine ⟨hf.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff]
+  rw [← inr_le_inr_iff ℂ]
   simpa using hf.2 hx hy ha hb hab
 
 lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
     (hf₂ : ConcaveOn ℝ s (inr (R := ℂ) ∘ f)) : ConcaveOn ℝ s f := by
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff]
+  rw [← inr_le_inr_iff ℂ]
   simpa using hf₂.2 hx hy ha hb hab
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
-  cfcₙ_eq_cfc_inr inr_nonneg_iff ..
+  cfcₙ_eq_cfc_inr (inr_nonneg_iff ℂ) ..
 
 lemma sqrt_inr (a : A) : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
-  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff] at ha
+  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff ℂ] at ha
   · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
   · grind [CFC.sqrt, inr_zero]
 
@@ -244,7 +218,7 @@ lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a :
 lemma nnNorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
   rw [← NNReal.coe_le_coe]
-  exact norm_le_iff_le_algebraMap a r.2
+  exact norm_le_iff_le_algebraMap a r.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_le_iff_of_nonneg := nnNorm_le_iff_of_nonneg
 
@@ -283,7 +257,7 @@ lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
 
 lemma mem_Icc_algebraMap_iff_nnNorm_le {x : A} {r : ℝ≥0} :
     x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
-  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+  mem_Icc_algebraMap_iff_norm_le (hr := r.property)
 
 @[deprecated (since := "2026-10-31")]
 alias mem_Icc_algebraMap_iff_nnnorm_le := mem_Icc_algebraMap_iff_nnNorm_le
@@ -463,14 +437,13 @@ open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
-    exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
+    exact spectrum_nonneg_of_nonneg ((Unitization.inr_nonneg_iff ℂ).mpr ha) hx
 
 lemma norm_le_norm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
-    simpa only [ge_iff_le, Unitization.norm_inr] using
-      this a b (by simpa) (by rwa [Unitization.inr_le_inr_iff])
+    simpa only [ge_iff_le, Unitization.norm_inr] using this a b (by simpa) (by simpa)
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
   exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
@@ -492,7 +465,7 @@ alias nnnorm_le_nnnorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_le_of_nonneg
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
-    rw [← Unitization.inr_le_inr_iff]
+    rw [← Unitization.inr_le_inr_iff ℂ]
     simpa [Unitization.norm_inr] using this a b <| hb.inr ℂ
   intro a b hb
   calc
@@ -602,7 +575,7 @@ open Unitization Set Metric
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
-  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff, iff_comm]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff ℂ, iff_comm]
   exact (norm_le_one_iff_of_nonneg _ ·)
 
 lemma inr_mem_Icc_iff_nnNorm_le {x : A} :
@@ -618,7 +591,7 @@ lemma preimage_inr_Icc_zero_one :
 
 lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
   rintro - ⟨a, ha, rfl⟩
-  exact Unitization.inr_nonneg_iff.mpr ha
+  exact (Unitization.inr_nonneg_iff ℂ).mpr ha
 
 end Icc
 
@@ -652,25 +625,6 @@ lemma self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e�
   CFC.sqrt_eq_nnrpow e ▸ self_le_nnrpow_of_nonneg_of_norm_le_one he0 he1 (by simp) (by simp)
 
 end CStarAlgebra
-
-open CStarAlgebra Unitization CFC in
-lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
-    (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
-  suffices a * e = a from
-    ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
-  suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
-    mod_cast this a e he.inr ha.inr (inr_mono hae)
-  intro a e he ha hae
-  suffices sqrt a * (1 - e : A⁺¹) = 0 by
-    simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
-      using congr(sqrt a * $this)
-  rw [← norm_eq_zero, ← sq_eq_zero_iff, ← norm_star_mul_mul_self_of_nonneg, norm_eq_zero]
-  refine le_antisymm ?_ <| star_left_conjugate_nonneg ha _
-  grw [star_left_conjugate_le_conjugate hae (1 - e), mul_assoc, he.mul_one_sub_self, mul_zero]
-
-lemma IsStarProjection.conjugate_of_nonneg_of_le {a e : A} (he : IsStarProjection e)
-    (ha : 0 ≤ a) (hae : a ≤ e) : e * a * e = a := by
-  grind [he.mul_right_and_mul_left_of_nonneg_of_le ha hae]
 
 end CStar_nonunital
 

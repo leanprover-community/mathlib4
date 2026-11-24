@@ -69,7 +69,6 @@ none of what we have called `upperCentralSeries G`, `(⊤ : Subgroup G).lowerCen
 the sequences satisfying `IsAscendingCentralSeries` or `IsDescendingCentralSeries`
 are actually central series. Note that the fact that the upper and lower central series
 are not central series if `G` is not nilpotent is a standard abuse of notation.
-
 -/
 
 @[expose] public section
@@ -1096,7 +1095,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
   let ps := (Nat.card G).primeFactors
   have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
     intro p P
-    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.property
     exact P.isPGroup.isNilpotent
   exact nilpotent_of_mulEquiv e
 

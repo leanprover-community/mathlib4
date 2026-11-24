@@ -42,8 +42,10 @@ variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G}
 `a : A`, this is the function `G → A` sending `sg` to `ρ(s)(a)` for all `s : S` and everything else
 to 0. -/
 noncomputable def indToCoindAux (g : G) : A →ₗ[k] (G → A) :=
-  LinearMap.pi (fun g₁ => if h : (QuotientGroup.rightRel S).r g₁ g then
-    A.ρ ⟨g₁ * g⁻¹, by rcases h with ⟨s, rfl⟩; exact mul_inv_cancel_right s.1 g ▸ s.2⟩ else 0)
+  LinearMap.pi fun g₁ =>
+    if h : (QuotientGroup.rightRel S).r g₁ g then
+      A.ρ ⟨g₁ * g⁻¹, by rcases h with ⟨s, rfl⟩; exact mul_inv_cancel_right s.val g ▸ s.property⟩
+    else 0
 
 variable {A}
 
@@ -51,7 +53,7 @@ variable {A}
 lemma indToCoindAux_self (g : G) (a : A) :
     indToCoindAux A g a g = a := by
   rw [indToCoindAux, LinearMap.pi_apply, dite_eq_left]
-  · simp [← S.1.one_def]
+  · simp [← S.toSubmonoid.one_def]
   · rfl
 
 lemma indToCoindAux_of_not_rel (g g₁ : G) (a : A) (h : ¬(QuotientGroup.rightRel S).r g₁ g) :
@@ -64,29 +66,30 @@ lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
   rcases em ((QuotientGroup.rightRel S).r g₁ g) with ⟨s₁, rfl⟩ | h
   · simp only [indToCoindAux, LinearMap.pi_apply]
     rw [dite_eq_left ⟨s * s₁, mul_assoc ..⟩, dite_eq_left ⟨s₁, rfl⟩]
-    simp [S.1.smul_def, mul_assoc, ← S.1.mul_def]
+    simp [S.toSubmonoid.smul_def, mul_assoc, ← S.toSubmonoid.mul_def]
   · rw [indToCoindAux_of_not_rel _ _ _ h, indToCoindAux_of_not_rel, map_zero]
-    exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.1.smul_def, mul_assoc]⟩) h
+    exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.toSubmonoid.smul_def, mul_assoc]⟩) h
 
 @[simp]
 lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s₁, rfl⟩ | h
   · simp only [indToCoindAux, LinearMap.pi_apply]
-    rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩,
+    rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.toSubmonoid.smul_def, smul_eq_mul, mul_assoc]⟩,
       dite_eq_left ⟨s₁, rfl⟩, ← mul_apply_eq_comp, ← map_mul]
     congr
-    simp [Subtype.ext_iff, S.1.smul_def, mul_assoc]
+    simp [Subtype.ext_iff, S.toSubmonoid.smul_def, mul_assoc]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
-    exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.1.smul_def, mul_assoc]⟩) h
+    exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.toSubmonoid.smul_def, mul_assoc]⟩) h
 
 @[simp]
 lemma indToCoindAux_snd_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A g₁ a (g₂ * g₃⁻¹) = indToCoindAux A (g₁ * g₃) a g₂ := by
   rcases em ((QuotientGroup.rightRel S).r (g₂ * g₃⁻¹) g₁) with ⟨s, hs⟩ | h
-  · simp [S.1.smul_def, mul_assoc, ← eq_mul_inv_iff_mul_eq.1 hs]
+  · simp [S.toSubmonoid.smul_def, mul_assoc, ← eq_mul_inv_iff_mul_eq.1 hs]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
-    exact mt (fun ⟨s, hs⟩ => ⟨s, by simpa [S.1.smul_def, eq_mul_inv_iff_mul_eq, mul_assoc]⟩) h
+    exact mt (fun ⟨s, hs⟩ =>
+      ⟨s, by simpa [S.toSubmonoid.smul_def, eq_mul_inv_iff_mul_eq, mul_assoc]⟩) h
 
 @[simp]
 lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :
@@ -96,7 +99,7 @@ lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :
 lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
     indToCoindAux B g₁ (f.hom a) g₂ = f.hom (indToCoindAux A g₁ a g₂) := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s, rfl⟩ | h
-  · simp [S.1.smul_def, hom_comm_apply]
+  · simp [S.toSubmonoid.smul_def, hom_comm_apply]
   · simp [indToCoindAux_of_not_rel (h := h)]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -120,9 +123,9 @@ variable (A) in
 @[simps]
 noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   toFun f := ∑ g : Quotient (QuotientGroup.rightRel S), Quotient.liftOn g (fun g =>
-    IndV.mk S.subtype _ g (f.1 g)) fun g₁ g₂ ⟨s, (hs : _ * _ = _)⟩ =>
+    IndV.mk S.subtype _ g (f.val g)) fun g₁ g₂ ⟨s, (hs : _ * _ = _)⟩ =>
       (Submodule.Quotient.eq _).2 <| Coinvariants.mem_ker_of_eq s
-        (.single g₂ 1 ⊗ₜ[k] f.1 g₂) _ <| by have := f.2 s g₂; simp_all
+        (.single g₂ 1 ⊗ₜ[k] f.val g₂) _ <| by have := f.property s g₂; simp_all
   map_add' _ _ := by simpa [← Finset.sum_add_distrib, TensorProduct.tmul_add] using
       Finset.sum_congr rfl fun z _ => Quotient.inductionOn z fun _ => by simp
   map_smul' _ _ := by simpa [Finset.smul_sum] using Finset.sum_congr rfl fun z _ =>
@@ -130,13 +133,13 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
 
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
-    (hx : f.1.support ⊆ MulAction.orbit S g) :
-    coindToInd A f = IndV.mk S.subtype _ g (f.1 g) := by
+    (hx : f.val.support ⊆ MulAction.orbit S g) :
+    coindToInd A f = IndV.mk S.subtype _ g (f.val g) := by
   rw [coindToInd_apply, Finset.sum_eq_single ⟦g⟧]
   · simp
   · intro b _ hb
     induction b using Quotient.inductionOn with | h b =>
-    have : f.1 b = 0 := by
+    have : f.val b = 0 := by
       simp_all only [Function.support_subset_iff, ne_eq, Quotient.eq]
       contrapose! hx
       use b, hx, hb
@@ -155,7 +158,7 @@ lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id :=
   · simp
   · intro b _ hb
     induction b using Quotient.inductionOn with | h b =>
-    simpa using indToCoindAux_of_not_rel b a (g.1 b) (mt Quotient.sound hb.symm)
+    simpa using indToCoindAux_of_not_rel b a (g.val b) (mt Quotient.sound hb.symm)
   · simp
 
 set_option backward.isDefEq.respectTransparency.types false in

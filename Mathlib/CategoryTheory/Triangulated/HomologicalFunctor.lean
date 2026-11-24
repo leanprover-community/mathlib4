@@ -41,7 +41,6 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -206,8 +205,6 @@ lemma homologySequence_comp :
 
 attribute [local simp] smul_smul
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
@@ -216,14 +213,12 @@ lemma homologySequence_exact₂ :
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
     (by simp) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
     ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
-set_option backward.defeqAttrib.useBackward true in
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)

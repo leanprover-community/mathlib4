@@ -59,15 +59,15 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*
   `C^n` on its source. -/
 theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
     (i j : atlas H M) :
-    ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
-      ((i.1.extend I).symm ≫ j.1.extend I).source := by
-  have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
+    ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.val.extend I ∘ (i.val.extend I).symm) (range I))
+      ((i.val.extend I).symm ≫ j.val.extend I).source := by
+  have h : ((i.val.extend I).symm ≫ j.val.extend I).source ⊆ range I := by
     refine I.extendCoordChange_source.trans_subset ?_; apply image_subset_range
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
-  refine (I.contDiffOn_extendCoordChange (subset_maximalAtlas i.2)
-    (subset_maximalAtlas j.2) x hx).mono_of_mem_nhdsWithin ?_
+  refine (I.contDiffOn_extendCoordChange (subset_maximalAtlas i.property)
+    (subset_maximalAtlas j.property) x hx).mono_of_mem_nhdsWithin ?_
   exact I.extendCoordChange_source_mem_nhdsWithin hx
 
 open IsManifold
@@ -86,46 +86,47 @@ E -----> H -----> M --> H --> E
 within the set `range I ⊆ E` at `I (i x) : E`. -/
 @[simps indexAt coordChange]
 def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
-  baseSet i := i.1.source
-  isOpen_baseSet i := i.1.open_source
+  baseSet i := i.val.source
+  isOpen_baseSet i := i.val.open_source
   indexAt := achart H
   mem_baseSet_at := mem_chart_source H
   coordChange i j x :=
-    fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
+    fderivWithin 𝕜 (j.val.extend I ∘ (i.val.extend I).symm) (range I) (i.val.extend I x)
   coordChange_self i x hx v := by
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_fun_id, ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
-    · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
-      exact (i.1.extend I).right_inv hy
-    · simp_rw [Function.comp_apply, i.1.extend_left_inv hx]
+    · filter_upwards [i.val.extend_target_mem_nhdsWithin hx] with y hy
+      exact (i.val.extend I).right_inv hy
+    · simp_rw [Function.comp_apply, i.val.extend_left_inv hx]
   continuousOn_coordChange i j := by
     have : IsManifold I (0 + 1) M := by simpa
     refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
-      (i.1.continuousOn_extend.mono ?_) ?_
-    · rw [i.1.extend_source]; exact inter_subset_left
-    exact mapsTo_iff_image_subset.2 (i.1.extend_image_source_inter j.1).subset
+      (i.val.continuousOn_extend.mono ?_) ?_
+    · rw [i.val.extend_source]; exact inter_subset_left
+    exact mapsTo_iff_image_subset.2 (i.val.extend_image_source_inter j.val).subset
   coordChange_comp := by
     have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
-    · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
+    · have := i.val.extend_preimage_mem_nhds (I := I) hxi
+        (j.val.extend_source_mem_nhds (I := I) hxj)
       filter_upwards [nhdsWithin_le_nhds this] with y hy
-      simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
-    · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
-    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas k.2) hxj hxk).differentiableWithinAt one_ne_zero
-    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas i.2)
-        (subset_maximalAtlas j.2) hxi hxj).differentiableWithinAt one_ne_zero
+      simp_rw [Function.comp_apply, (j.val.extend I).left_inv hy]
+    · simp_rw [Function.comp_apply, i.val.extend_left_inv hxi, j.val.extend_left_inv hxj]
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas j.property)
+        (subset_maximalAtlas k.property) hxj hxk).differentiableWithinAt one_ne_zero
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas i.property)
+        (subset_maximalAtlas j.property) hxi hxj).differentiableWithinAt one_ne_zero
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
-    · rw [Function.comp_apply, i.1.extend_left_inv hxi]
+    · rw [Function.comp_apply, i.val.extend_left_inv hxi]
 
 /-- `simp`-normal form is `tangentBundleCore_localTriv_baseSet`. -/
-theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
+theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.val.source := rfl
 
 @[simp]
 theorem tangentBundleCore_localTriv_baseSet (i) :
-    ((tangentBundleCore I M).localTriv i).baseSet = i.1.source := rfl
+    ((tangentBundleCore I M).localTriv i).baseSet = i.val.source := rfl
 
 theorem tangentBundleCore_coordChange_achart (x x' z : M) :
     (tangentBundleCore I M).coordChange (achart H x) (achart H x') z =
@@ -194,14 +195,14 @@ namespace TangentBundle
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
       ((tangentBundleCore I M).toFiberBundleCore.localTriv
-        (achart H p.1)).toOpenPartialHomeomorph ≫ₕ
-        (chartAt H p.1).prod (OpenPartialHomeomorph.refl E) :=
+        (achart H p.proj)).toOpenPartialHomeomorph ≫ₕ
+        (chartAt H p.proj).prod (OpenPartialHomeomorph.refl E) :=
   rfl
 
 theorem chartAt_toPartialEquiv (p : TM) :
     (chartAt (ModelProd H E) p).toPartialEquiv =
-      (tangentBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv (achart H p.1) ≫
-        (chartAt H p.1).toPartialEquiv.prod (PartialEquiv.refl E) :=
+      (tangentBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv (achart H p.proj) ≫
+        (chartAt H p.proj).toPartialEquiv.prod (PartialEquiv.refl E) :=
   rfl
 
 theorem trivializationAt_eq_localTriv (x : M) :
@@ -227,22 +228,23 @@ theorem trivializationAt_baseSet (x : M) :
 
 theorem trivializationAt_apply (x : M) (z : TM) :
     trivializationAt E (TangentSpace I) x z =
-      (z.1, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.1).extend I).symm) (range I)
-        ((chartAt H z.1).extend I z.1) z.2) :=
+      (z.proj, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.proj).extend I).symm)
+        (range I) ((chartAt H z.proj).extend I z.proj) z.snd) :=
   rfl
 
 @[simp, mfld_simps]
-theorem trivializationAt_fst (x : M) (z : TM) : (trivializationAt E (TangentSpace I) x z).1 = z.1 :=
+theorem trivializationAt_fst (x : M) (z : TM) :
+    (trivializationAt E (TangentSpace I) x z).1 = z.proj :=
   rfl
 
 @[simp, mfld_simps]
 theorem mem_chart_source_iff (p q : TM) :
-    p ∈ (chartAt (ModelProd H E) q).source ↔ p.1 ∈ (chartAt H q.1).source := by
+    p ∈ (chartAt (ModelProd H E) q).source ↔ p.proj ∈ (chartAt H q.proj).source := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
 
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
-    p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
+    p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.proj).target := by
   /- porting note: was
   simp +contextual only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
@@ -252,12 +254,12 @@ theorem mem_chart_target_iff (p : H × E) (q : TM) :
   simp +contextual only [and_iff_left_iff_imp, mfld_simps]
 
 @[simp, mfld_simps]
-theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.1 p.1 :=
+theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.proj p.proj :=
   rfl
 
 @[simp, mfld_simps]
 theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
-    ((chartAt (ModelProd H E) q).symm p).1 = ((chartAt H q.1).symm : H → M) p.1 :=
+    ((chartAt (ModelProd H E) q).symm p).proj = ((chartAt H q.proj).symm : H → M) p.1 :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -310,12 +312,12 @@ lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
     (tangentBundleCore I M).IsContMDiff I n := by
   have : IsManifold I n M := .of_le (n := n + 1) (le_self_add)
   refine ⟨fun i j => ?_⟩
-  rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
+  rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.property),
     contMDiffOn_iff_contDiffOn]
   · refine ((contDiffOn_fderiv_coord_change (I := I) i j).congr fun x hx => ?_).mono ?_
     · rw [PartialEquiv.trans_source'] at hx
-      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
-    · exact (i.1.extend_image_source_inter j.1).subset
+      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.val.extend I).right_inv hx.1]
+    · exact (i.val.extend_image_source_inter j.val).subset
   · apply inter_subset_left
 
 omit [IsManifold I 1 M] in
@@ -350,7 +352,7 @@ end TangentBundleInstances
 set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem trivializationAt_model_space_apply (p : TangentBundle I H) (x : H) :
-    trivializationAt E (TangentSpace I) x p = (p.1, p.2) := by
+    trivializationAt E (TangentSpace I) x p = (p.proj, p.snd) := by
   simp only [TangentBundle.trivializationAt_apply]
   have : fderivWithin 𝕜 (↑I ∘ ↑I.symm) (range I) (I p.proj) =
       fderivWithin 𝕜 id (range I) (I p.proj) :=
@@ -365,7 +367,8 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     (chartAt (ModelProd H E) p).toPartialEquiv = (TotalSpace.toProd H E).toPartialEquiv := by
   ext x : 1
   · ext; · rfl
-    exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
+    exact (tangentBundleCore I H).coordChange_self (achart _ x.proj) x.proj
+      (mem_achart_source H x.proj) x.snd
   · ext; · rfl
     apply heq_of_eq
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
@@ -449,7 +452,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
-    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
+    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.snd) := by
   change CMDiff n ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
   · convert! contMDiff_snd

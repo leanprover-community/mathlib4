@@ -23,7 +23,6 @@ the subexpression using `kabstract` (which is what `rw` uses to find the positio
 
 `rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
 whether this is the case.
-
 -/
 
 public section

@@ -49,7 +49,6 @@ We take this as our definition as it is easier to work with. It is implemented a
   prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
-
 -/
 
 @[expose] public section
@@ -111,7 +110,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
   exact h a (hA' ha)
 
 /-- The restriction of an equidecomposition as an equidecomposition. -/
-@[simps!]
+@[simps! -isSimp]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   isDecompOn' := ⟨f.witness,

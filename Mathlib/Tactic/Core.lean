@@ -13,7 +13,6 @@ public import Mathlib.Init
 
 /-!
 # Generally useful tactics.
-
 -/
 
 public meta section

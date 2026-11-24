@@ -23,7 +23,6 @@ birationality and rationality.
   `sX : X ⟶ S` and `sY : Y ⟶ S`.
 - `Scheme.IsRationalOver sX`: `X` is rational over `S` via structure map `sX : X ⟶ S`,
   i.e. birational over `S` to some affine space `𝔸(n; S)`.
-
 -/
 
 @[expose] public section
@@ -148,7 +147,7 @@ lemma IsOver.restrictTarget {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Open
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
 @[trans, simps! source target iso]
 noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso Z :=
-  have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.2
+  have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.is_open'
   (f.restrictTarget _ this inf_le_left).trans' (g.restrictSource _ this inf_le_right) rfl
 
 lemma IsOver.trans {f : X.PartialIso Y} {g : Y.PartialIso Z} (hf : f.IsOver sX sY)

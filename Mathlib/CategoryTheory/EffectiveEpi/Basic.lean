@@ -32,7 +32,6 @@ our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
 - [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
-
 -/
 
 @[expose] public section

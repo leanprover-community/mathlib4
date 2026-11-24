@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.NatInt
@@ -349,7 +349,7 @@ instance : FunLike (G →+c[a, b] H) G H where
   coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
-@[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
+@[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.map_add_const' = f := rfl
 @[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
 
 instance : AddConstMapClass (G →+c[a, b] H) G H a b where
@@ -508,7 +508,7 @@ def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
   toFun f := ⟨fun x ↦ f ⟨Int.fract x, Int.fract_nonneg _, Int.fract_lt_one _⟩ + ⌊x⌋ • a, fun x ↦ by
     simp [add_one_zsmul, add_assoc]⟩
   invFun f x := f x
-  left_inv _ := by ext x; simp [Int.fract_eq_self.2 x.2, Int.floor_eq_zero_iff.2 x.2]
+  left_inv _ := by ext x; simp [Int.fract_eq_self.2 x.property, Int.floor_eq_zero_iff.2 x.property]
   right_inv f := by ext x; simp [map_fract]
 
 end FloorRing
