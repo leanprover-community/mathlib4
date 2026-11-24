@@ -291,6 +291,28 @@ theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [A
       exact (Module.finrank_eq_card_basis b).symm.trans h
     exact Matrix.det_isEmpty
 
+/-- An endomorphism of a free module of rank one is the scalar multiple of the identity by its
+determinant. -/
+theorem eq_det_smul_id_of_finrank_eq_one [Module.Free A M] (h : Module.finrank A M = 1)
+    (f : M →ₗ[A] M) : f = f.det • LinearMap.id := by
+  nontriviality M
+  have := Module.nontrivial A M
+  obtain ⟨c, rfl, -⟩ := f.existsUnique_eq_smul_id_of_finrank_eq_one h
+  simp [h]
+
+/-- An endomorphism of a free module of rank one maps each vector to its multiple by the
+determinant. -/
+theorem apply_eq_det_smul_of_finrank_eq_one [Module.Free A M] (h : Module.finrank A M = 1)
+    (f : M →ₗ[A] M) (x : M) : f x = f.det • x :=
+  LinearMap.congr_fun (eq_det_smul_id_of_finrank_eq_one h f) x
+
+/-- An endomorphism of a free module of rank one has determinant `1` if and only if it is the
+identity. -/
+theorem det_eq_one_iff_eq_id_of_finrank_eq_one [Module.Free A M] (h : Module.finrank A M = 1)
+    (f : M →ₗ[A] M) : f.det = 1 ↔ f = LinearMap.id :=
+  ⟨fun hf ↦ (eq_det_smul_id_of_finrank_eq_one h f).trans (by rw [hf, one_smul]),
+    fun hf ↦ hf ▸ det_id⟩
+
 /-- Conjugating a linear map by a linear equiv does not change its determinant. -/
 @[simp]
 theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (e : M ≃ₗ[A] N) :
@@ -443,6 +465,13 @@ theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det 
 theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
     LinearEquiv.det ((e.symm.trans f).trans e) = LinearEquiv.det f := by
   rw [← Units.val_inj, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
+
+/-- The inverse of `LinearEquiv.smul_id_of_finrank_eq_one` is the determinant. -/
+@[simp]
+theorem smul_id_of_finrank_eq_one_symm_apply [StrongRankCondition R] [Module.Free R M]
+    (h : Module.finrank R M = 1) (f : M →ₗ[R] M) :
+    (smul_id_of_finrank_eq_one h).symm f = LinearMap.det f :=
+  (symm_apply_eq _).mpr (LinearMap.eq_det_smul_id_of_finrank_eq_one h f)
 
 attribute [irreducible] LinearEquiv.det
 

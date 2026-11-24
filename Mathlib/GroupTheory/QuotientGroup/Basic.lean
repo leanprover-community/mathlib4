@@ -307,6 +307,10 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [hN : N.
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
   quotientInfEquivProdNormalizerQuotient H N le_normalizer_of_normal
 
+@[simp]
+theorem quotientInfEquivProdNormalQuotient_coe_apply (H N : Subgroup G) [hN : N.Normal] (x : H) :
+    quotientInfEquivProdNormalQuotient H N x = ↑(⟨x, mem_sup_left x.prop⟩ : ↥(H ⊔ N)) := rfl
+
 end SndIsomorphismThm
 
 section ThirdIsoThm
