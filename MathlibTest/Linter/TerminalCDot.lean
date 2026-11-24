@@ -96,7 +96,7 @@ example (p : Nat → Prop) (h0 : p 0) : ∃ n, p n := by
 -- We don't lint redundant non-terminal focus dots,
 -- because then the unused tactic linter is triggered anyways.
 /--
-warning: Unused tactic linter: `skip` does nothing.
+warning: Unused tactic linter: there are no goals left for `skip`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
