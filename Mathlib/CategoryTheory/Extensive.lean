@@ -426,7 +426,7 @@ end Functor
 
 section FiniteCoproducts
 
-theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin [FinitaryPreExtensive C] {n : ℕ}
+private theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin [FinitaryPreExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
@@ -453,7 +453,7 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive 
   apply FinitaryPreExtensive.isUniversal_finiteCoproducts_fin
   exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
 
-theorem FinitaryExtensive.isVanKampen_finiteCoproducts_fin [FinitaryExtensive C] {n : ℕ}
+private theorem FinitaryExtensive.isVanKampen_finiteCoproducts_fin [FinitaryExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
