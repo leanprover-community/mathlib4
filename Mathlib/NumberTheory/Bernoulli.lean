@@ -6,15 +6,16 @@ Authors: Johan Commelin, Kevin Buzzard, Seewoo Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.RingTheory.PowerSeries.Exp
-public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.RingTheory.ZMod.UnitsCyclic
-public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.RingTheory.PowerSeries.Exp
+public import Mathlib.RingTheory.ZMod.UnitsCyclic
+
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
@@ -688,7 +689,7 @@ private lemma pIntegral_bernoulli_add_indicator {p : ℕ} [Fact p.Prime] :
     grind [even_iff_exists_two_mul]
   intro k hk
   induction k using Nat.strong_induction_on with
-  | h k ih =>
+  | ind k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
     exact sub_mem (intCast_mem _ T)
@@ -709,9 +710,9 @@ theorem dvd_den_bernoulli_iff {p k : ℕ} (hp : p.Prime) (hm : Even k) (hm0 : k 
   have : (bernoulli k + vonStaudtIndicator k p / p) ∈ pIntegrals p :=
     pIntegral_bernoulli_add_indicator (by lia) hm
   refine ⟨fun h ↦ ?_, by grind [vonStaudtIndicator]⟩
+  intro hdvd
   have h1p : ¬ (1 / p : ℚ) ∈ pIntegrals p := by simp [mem_pIntegrals_iff_not_dvd_den, hp.ne_zero]
-  contrapose! h1p
-  simpa [vonStaudtIndicator, h1p] using sub_mem this h
+  exact h1p (by simpa [vonStaudtIndicator, hdvd] using sub_mem this h)
 
 /--
 If a prime `p` divides the denominator of a Bernoulli number `bernoulli k` then `p - 1 ∣ k`.
@@ -1186,7 +1187,7 @@ theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
 
 /-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
 the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
-theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+theorem not_sq_dvd_den_bernoulli (_hk : 0 < k) (_hpk : p - 1 ∣ 2 * k) :
     ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
   rw [pow_two]
   exact fun h => absurd (Nat.isUnit_iff.mp (squarefree_den_bernoulli (k := 2 * k) p h))
