@@ -122,8 +122,8 @@ The function returns `none` if the certificate is invalid. -/
 def SturmCertificate.entries? (d : SturmCertificate) : Option (List (List ℤ)) :=
   if coeffLead d.s != 0 then sturmEntries? d.s (coeffDerivative d.s) d.steps else none
 
-/-- Compute the number of real roots of the polynomial in the `SturmCertificate`.
-The function returns `none` if the certificate is invalid. -/
+/-- Compute the number of distinct real roots of the polynomial in the `SturmCertificate`. The
+function returns `none` if the certificate is invalid. -/
 def realRootCount? (d : SturmCertificate) : Option ℕ :=
   d.entries?.map fun sturmSeq =>
     let atTop := (sturmSeq.map coeffLead).signVariations
@@ -132,7 +132,7 @@ def realRootCount? (d : SturmCertificate) : Option ℕ :=
     atBot - atTop
 
 /-- Compute the integer `d ^ (p.length - 1) * f (n / d)`, where `f` is the polynomial
-that `p` represents and d > 0.
+that `p` represents and `d > 0`.
 
 `evalScaled n d p = d ^ (p.length - 1) * aeval (n / d : ℚ) (ofCoeffList p)` -/
 def evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) : ℤ :=
