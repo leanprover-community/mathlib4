@@ -103,10 +103,6 @@ theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p :
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))
 
 protected theorem Splits.derivative {p : ℝ[X]} (hp : p.Splits) : p.derivative.Splits := by
-  rw [splits_iff_card_roots] at hp ⊢
-  have := card_roots_le_derivative p
-  have := card_roots' p.derivative
-  have := natDegree_derivative_le p
-  lia
+  lia [splits_iff_card_roots, card_roots_le_derivative, card_roots', natDegree_derivative_le]
 
 end Polynomial
