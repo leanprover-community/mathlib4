@@ -69,13 +69,16 @@ variable {G}
 theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
   Set.mem_toFinset
 
-theorem not_isDiag_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiag :=
-  not_isDiag_of_mem_edgeSet _ ∘ mem_edgeFinset.1
+theorem not_isDiagonal_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiagonal :=
+  not_isDiagonal_of_mem_edgeSet _ ∘ mem_edgeFinset.1
+
+@[deprecated (since := "2026-09-06")]
+alias not_isDiag_of_mem_edgeFinset := not_isDiagonal_of_mem_edgeFinset
 
 /-- Mapping an edge to a finite set produces a finset of size `2`. -/
 theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
     (e : Sym2 V).toFinset.card = 2 :=
-  Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
+  Sym2.card_toFinset_of_not_isDiagonal e.val (G.not_isDiagonal_of_mem_edgeFinset e.prop)
 
 @[simp]
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp [edgeFinset]
@@ -134,12 +137,12 @@ variable [Fintype V]
 
 @[simp]
 theorem edgeFinset_top [DecidableEq V] :
-    (⊤ : SimpleGraph V).edgeFinset = Sym2.diagSetᶜ.toFinset := by simp [← coe_inj]
+    (⊤ : SimpleGraph V).edgeFinset = Sym2.diagonalSetᶜ.toFinset := by simp [← coe_inj]
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two [DecidableEq V] :
     #(⊤ : SimpleGraph V).edgeFinset = (Fintype.card V).choose 2 := by
-  simp_rw [edgeFinset, Set.toFinset_card, edgeSet_top, ← Sym2.card_diagSet_compl]
+  simp_rw [edgeFinset, Set.toFinset_card, edgeSet_top, ← Sym2.card_diagonalSet_compl]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).choose 2 := by

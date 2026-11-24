@@ -113,32 +113,57 @@ theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
 
 end Prod
 
+end Function
+
 /- ### The diagonal map -/
 
-/-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
-
-section Diag
+namespace Prod
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
-theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+/-- The diagonal map into `Prod`. -/
+@[inline] protected def diagonal {α} : α → α × α := fun a : α ↦ (a, a)
 
-@[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
+@[deprecated (since := "2026-09-06")] protected alias _root_.Function.diag := Prod.diagonal
 
-theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
+theorem diagonal_def : Prod.diagonal = fun a : α ↦ (a, a) := rfl
 
-@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diag := rfl
-@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
-@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_def := diagonal_def
 
-@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
+@[simp, grind =] theorem diagonal_apply : Prod.diagonal a = (a, a) := rfl
 
-@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_apply := diagonal_apply
 
-@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
+theorem diagonal_injective : Function.Injective (α := α) Prod.diagonal :=
+  fun _ _ ↦ congrArg Prod.fst
 
-end Diag
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_injective := diagonal_injective
+
+@[simp] theorem fst_comp_diagonal : Prod.fst ∘ Prod.diagonal = @id α := rfl
+@[simp] theorem snd_comp_diagonal : Prod.snd ∘ Prod.diagonal = @id α := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.fst_comp_diag := fst_comp_diagonal
+@[deprecated (since := "2026-09-06")] alias _root_.Function.snd_comp_diag := snd_comp_diagonal
+
+@[simp] theorem diagonal_comp : Prod.diagonal ∘ f = Function.prod f f := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_comp := diagonal_comp
+
+@[simp] theorem map_comp_diagonal : Prod.map f g ∘ Prod.diagonal = Function.prod f g := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.map_comp_diag := map_comp_diagonal
+
+@[simp] theorem swap_comp_diagonal : Prod.swap ∘ Prod.diagonal = Prod.diagonal (α := α) := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.swap_comp_diag := swap_comp_diagonal
+
+end Prod
+
+namespace Function
+
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄}
+
+@[simp] theorem prod_id_id {α : Type*} : Function.prod (@id α) id = Prod.diagonal := rfl
 
 /- ### `onFun` function -/
 

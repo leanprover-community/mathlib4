@@ -13,7 +13,7 @@ import Mathlib.Data.Sum.Basic
 # Sets in product and pi types
 
 This file proves basic properties of product of sets in `α × β` and in `Π i, α i`, and of the
-diagonal of a type.
+diagonal of a type and of a set.
 
 ## Main declarations
 
@@ -21,8 +21,9 @@ This file contains basic results on the following notions, which are defined in 
 
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
   `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.
-* `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
-* `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
+* `Set.diagonalUniv`: Diagonal of a type. `Set.diagonalUniv α = {(x, x) | x : α}`.
+* `Set.diagonal`: Diagonal of a set. `s ×ˢ s` intersected with the diagonal.
+* `Set.offDiagonal`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
 
@@ -407,55 +408,69 @@ lemma eqOn_prodMap_iff {f f' : α → γ} {g g' : β → δ}
 
 end Prod
 
-/-! ### Diagonal
+/-! ### DiagonalUniv
 
-In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`fun x ↦ (x, x)`.
+In this section we prove some lemmas about the diagonal set `diagonalUniv α = {p | p.1 = p.2}`
+and the diagonal map `fun x ↦ (x, x)`.
 -/
 
 
-section Diagonal
+section DiagonalUniv
 
 variable {α : Type*} {s t : Set α}
 
-lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
+lemma diagonalUniv_nonempty [Nonempty α] : (diagonalUniv α).Nonempty :=
+  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonalUniv x⟩
 
-instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
+instance decidableMemDiagonalUniv [h : DecidableEq α] (x : α × α) :
+    Decidable (x ∈ diagonalUniv α) :=
   h x.1 x.2
 
-theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
+theorem preimage_coe_coe_diagonalUniv (s : Set α) :
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonalUniv α =
+      diagonalUniv s := by
   ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
+  simp [Set.diagonalUniv]
 
 @[simp]
-theorem range_diag : range Function.diag = diagonal α := by
+theorem range_diagonal : range Prod.diagonal = diagonalUniv α := by
   ext ⟨x, y⟩
-  simp [diagonal, eq_comm]
+  simp [diagonalUniv, eq_comm]
 
-theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by grind
+@[deprecated (since := "2026-10-14")] alias range_diag := range_diagonal
+
+theorem diagonalUniv_subset_iff {s} : diagonalUniv α ⊆ s ↔ ∀ x, (x, x) ∈ s := by grind
 
 @[simp]
-theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
+theorem prod_subset_compl_diagonalUniv_iff_disjoint :
+    s ×ˢ t ⊆ (diagonalUniv α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
+@[deprecated (since := "2026-11-18")]
+alias prod_subset_compl_diagonal_iff_disjoint := prod_subset_compl_diagonalUniv_iff_disjoint
+
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : Function.diag ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diagonal_preimage_prod (s t : Set α) : Prod.diagonal ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : Function.diag ⁻¹' s ×ˢ s = s :=
+@[deprecated (since := "2026-10-14")] alias diag_preimage_prod := diagonal_preimage_prod
+
+theorem diagonal_preimage_prod_self (s : Set α) : Prod.diagonal ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : Function.diag '' s = diagonal α ∩ s ×ˢ s := by
-  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
+@[deprecated (since := "2026-10-14")] alias diag_preimage_prod_self := diagonal_preimage_prod_self
 
-theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
-  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+theorem diagonalUniv_eq_univ_iff : diagonalUniv α = univ ↔ Subsingleton α := by
+  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonalUniv_iff]
 
-theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
+@[deprecated (since := "2026-11-18")] alias diagonal_eq_univ_iff := diagonalUniv_eq_univ_iff
 
-end Diagonal
+theorem diagonalUniv_eq_univ [Subsingleton α] : diagonalUniv α = univ :=
+  diagonalUniv_eq_univ_iff.2 ‹_›
+
+@[deprecated (since := "2026-11-18")] alias diagonal_eq_univ := diagonalUniv_eq_univ
+
+end DiagonalUniv
 
 /-- A function is `Function.const α a` for some `a` if and only if `∀ x y, f x = f y`. -/
 theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
@@ -491,7 +506,10 @@ lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
-def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+def toPullbackDiagonal (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+
+@[deprecated (since := "2026-10-14")] alias toPullbackDiag := toPullbackDiagonal
+@[deprecated (since := "2026-10-14")] alias toPullbackDiag_coe := toPullbackDiagonal_coe
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
 def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
@@ -529,8 +547,8 @@ theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X}
     mapPullback g id g (by rfl) (by rfl) ⁻¹' pullbackDiagonal f = pullbackDiagonal (f ∘ g) :=
   ext fun _ ↦ inj.eq_iff
 
-theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
-    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+theorem image_toPullbackDiagonal (f : X → Y) (s : Set X) :
+    toPullbackDiagonal f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
   ext x
   constructor
   · rintro ⟨x, hx, rfl⟩
@@ -539,80 +557,206 @@ theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
     rintro ⟨rfl : x = y, h2x⟩
     exact mem_image_of_mem _ h2x.1
 
-theorem range_toPullbackDiag (f : X → Y) : range (toPullbackDiag f) = pullbackDiagonal f := by
-  rw [← image_univ, image_toPullbackDiag, univ_prod_univ, preimage_univ, inter_univ]
+@[deprecated (since := "2026-10-14")] alias image_toPullbackDiag := image_toPullbackDiagonal
 
-theorem injective_toPullbackDiag (f : X → Y) : (toPullbackDiag f).Injective :=
+theorem range_toPullbackDiagonal (f : X → Y) :
+    range (toPullbackDiagonal f) = pullbackDiagonal f := by
+  rw [← image_univ, image_toPullbackDiagonal, univ_prod_univ, preimage_univ, inter_univ]
+
+@[deprecated (since := "2026-10-14")] alias range_toPullbackDiag := range_toPullbackDiagonal
+
+theorem injective_toPullbackDiagonal (f : X → Y) : (toPullbackDiagonal f).Injective :=
   fun _ _ h ↦ congr_arg Prod.fst (congr_arg Subtype.val h)
+
+@[deprecated (since := "2026-10-14")] alias injective_toPullbackDiag := injective_toPullbackDiagonal
 
 end Pullback
 
 namespace Set
 
-section OffDiag
+/-! ### Diagonal of a set -/
+
+section Diagonal
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
+instance decidableMemDiagonal [DecidablePred (· ∈ s)] [DecidableEq α] (x : α × α) :
+    Decidable (x ∈ s.diagonal) := inferInstanceAs (Decidable (_ ∧ _))
+
+theorem diagonal_monotone : Monotone (diagonal : Set α → Set (α × α)) := fun _ _ h _ =>
+  And.imp_left (@h _)
+
+@[simp]
+theorem diagonal_nonempty : s.diagonal.Nonempty ↔ s.Nonempty := by
+  simp [← empty_ne_iff_nonempty, Set.ext_iff]
+
+@[simp]
+theorem diagonal_eq_empty : s.diagonal = ∅ ↔ s = ∅ := by
+  simp [Set.ext_iff]
+
+alias ⟨_, Nonempty.diagonal_nonempty⟩ := diagonal_nonempty
+
+@[simp]
+theorem diagonal_empty : (∅ : Set α).diagonal = ∅ := by grind
+
+theorem diagonal_subset_prod : s.diagonal ⊆ s ×ˢ s := by grind
+
+theorem diagonal_eq_sep_prod : s.diagonal = {x ∈ s ×ˢ s | x.1 = x.2} := by grind
+
+theorem diagonal_eq_diagonalUniv_inter : s.diagonal = diagonalUniv α ∩ s ×ˢ s := by grind
+
+@[simp]
+theorem diagonal_singleton (a : α) : ({a} : Set α).diagonal = {(a, a)} := by grind
+
+@[simp]
+theorem diagonal_univ : (univ : Set α).diagonal = diagonalUniv α := by grind
+
+theorem diagonal_inter : (s ∩ t).diagonal = s.diagonal ∩ t.diagonal := by grind
+
+theorem diagonal_union : (s ∪ t).diagonal = s.diagonal ∪ t.diagonal := by grind
+
+theorem diagonal_insert (a : α) (s : Set α) :
+    (insert a s).diagonal = insert (a, a) s.diagonal := by grind
+
+@[simp] theorem diagonal_image (s : Set α) : Prod.diagonal '' s = s.diagonal := by grind
+
+@[deprecated diagonal_image +typeChanged (since := "2026-10-14")]
+theorem diag_image (s : Set α) : Prod.diagonal '' s = diagonalUniv α ∩ s ×ˢ s :=
+  (diagonal_image s).trans diagonal_eq_diagonalUniv_inter
+
+theorem image_diagonal {β : Type*} (f : α × α → β) :
+    f '' s.diagonal = (f ∘ Prod.diagonal) '' s := by grind
+
+theorem preimage_coe_coe_diagonal (s : Set α) :
+    Prod.map Subtype.val Subtype.val ⁻¹' s.diagonal = diagonalUniv s := by grind
+
+lemma mk_mem_diagonal (h : a ∈ s) : (a, a) ∈ s.diagonal := by simpa
+
+lemma diagonal_subset_diagonalUniv : s.diagonal ⊆ diagonalUniv α := by grind
+
+lemma diagonal_subset_iff {t : Set (α × α)} : s.diagonal ⊆ t ↔ ∀ a ∈ s, (a, a) ∈ t := by grind
+
+lemma diagonal_injective : (diagonal : Set α → Set (α × α)).Injective := fun _ _ ↦ by
+  simp [Set.ext_iff]
+
+@[simp] lemma diagonal_inj : s.diagonal = t.diagonal ↔ s = t := diagonal_injective.eq_iff
+
+lemma diagonal_sdiff : (s \ t).diagonal = s.diagonal \ t.diagonal := by grind
+
+@[simp] lemma fst_image_diagonal : Prod.fst '' s.diagonal = s := by ext; simp
+@[simp] lemma snd_image_diagonal : Prod.snd '' s.diagonal = s := by ext; simp
+
+end Diagonal
+
+section OffDiagonal
+
+variable {α : Type*} {s t : Set α} {a : α}
+
+theorem offDiagonal_monotone : Monotone (offDiagonal : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
 
-@[simp]
-theorem offDiag_nonempty : s.offDiag.Nonempty ↔ s.Nontrivial := by
-  simp [offDiag, Set.Nonempty, Set.Nontrivial]
+@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_monotone
 
 @[simp]
-theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
+theorem offDiagonal_nonempty : s.offDiagonal.Nonempty ↔ s.Nontrivial := by
+  simp [offDiagonal, Set.Nonempty, Set.Nontrivial]
 
-alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
+@[deprecated (since := "2026-09-06")] alias offDiag_nonempty := offDiagonal_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
+@[simp]
+theorem offDiagonal_eq_empty : s.offDiagonal = ∅ ↔ s.Subsingleton := by
+  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiagonal_nonempty.not]
+
+@[deprecated (since := "2026-09-06")] alias offDiag_eq_empty := offDiagonal_eq_empty
+
+alias ⟨_, Nontrivial.offDiagonal_nonempty⟩ := offDiagonal_nonempty
+
+@[deprecated (since := "2026-09-06")]
+alias Nontrivial.offDiag_nonempty := Nontrivial.offDiagonal_nonempty
+
+alias ⟨_, Subsingleton.offDiagonal_eq_empty⟩ := offDiagonal_eq_empty
+
+@[deprecated (since := "2026-09-06")]
+alias Subsingleton.offDiag_eq_empty := Subsingleton.offDiagonal_eq_empty
 
 variable (s t)
 
-theorem offDiag_subset_prod : s.offDiag ⊆ s ×ˢ s := fun _ hx => ⟨hx.1, hx.2.1⟩
+theorem offDiagonal_subset_prod : s.offDiagonal ⊆ s ×ˢ s := fun _ hx => ⟨hx.1, hx.2.1⟩
 
-theorem offDiag_eq_sep_prod : s.offDiag = { x ∈ s ×ˢ s | x.1 ≠ x.2 } :=
+@[deprecated (since := "2026-09-06")] alias offDiag_subset_prod := offDiagonal_subset_prod
+
+theorem offDiagonal_eq_sep_prod : s.offDiagonal = { x ∈ s ×ˢ s | x.1 ≠ x.2 } :=
   ext fun _ => and_assoc.symm
 
-@[simp]
-theorem offDiag_empty : (∅ : Set α).offDiag = ∅ := by simp
+@[deprecated (since := "2026-09-06")] alias offDiag_eq_sep_prod := offDiagonal_eq_sep_prod
 
 @[simp]
-theorem offDiag_singleton (a : α) : ({a} : Set α).offDiag = ∅ := by simp
+theorem offDiagonal_empty : (∅ : Set α).offDiagonal = ∅ := by simp
+
+@[deprecated (since := "2026-09-06")] alias offDiag_empty := offDiagonal_empty
 
 @[simp]
-theorem offDiag_univ : (univ : Set α).offDiag = (diagonal α)ᶜ :=
+theorem offDiagonal_singleton (a : α) : ({a} : Set α).offDiagonal = ∅ := by simp
+
+@[deprecated (since := "2026-09-06")] alias offDiag_singleton := offDiagonal_singleton
+
+@[simp]
+theorem offDiagonal_univ : (univ : Set α).offDiagonal = (diagonalUniv α)ᶜ :=
   ext <| by simp
 
+@[deprecated (since := "2026-09-06")] alias offDiag_univ := offDiagonal_univ
+
 @[simp]
-theorem prod_sdiff_diagonal : s ×ˢ s \ diagonal α = s.offDiag :=
+theorem prod_sdiff_diagonalUniv : s ×ˢ s \ diagonalUniv α = s.offDiagonal :=
   ext fun _ => and_assoc
 
 @[simp]
-theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
+theorem disjoint_diagonalUniv_offDiagonal : Disjoint (diagonalUniv α) s.offDiagonal :=
   disjoint_left.mpr fun _ hd ho => ho.2.2 hd
 
-theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
+@[deprecated (since := "2026-09-06")]
+alias disjoint_diagonal_offDiag := disjoint_diagonalUniv_offDiagonal
+
+theorem offDiagonal_inter : (s ∩ t).offDiagonal = s.offDiagonal ∩ t.offDiagonal :=
   ext fun x => by
-    simp only [mem_offDiag, mem_inter_iff]
+    simp only [mem_offDiagonal, mem_inter_iff]
     tauto
+
+@[deprecated (since := "2026-09-06")] alias offDiag_inter := offDiagonal_inter
 
 variable {s t}
 
-theorem offDiag_union (h : Disjoint s t) :
-    (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
+theorem offDiagonal_union (h : Disjoint s t) :
+    (s ∪ t).offDiagonal = s.offDiagonal ∪ t.offDiagonal ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
-  simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
+  simp only [mem_offDiagonal, mem_union, ne_eq, mem_prod]
   constructor
   · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
   · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;>
       simp [*, h.ne_of_mem, Ne.symm]
 
-theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+@[deprecated (since := "2026-09-06")] alias offDiag_union := offDiagonal_union
+
+theorem offDiagonal_insert (ha : a ∉ s) :
+    (insert a s).offDiagonal = s.offDiagonal ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
-end OffDiag
+@[deprecated (since := "2026-09-06")] alias offDiag_insert := offDiagonal_insert
+
+variable (s)
+
+theorem diagonal_union_offDiagonal : s.diagonal ∪ s.offDiagonal = s ×ˢ s := by grind
+
+@[simp]
+theorem disjoint_diagonal_offDiagonal : Disjoint s.diagonal s.offDiagonal := by grind
+
+@[simp]
+theorem prod_sdiff_offDiagonal : s ×ˢ s \ s.offDiagonal = s.diagonal := by grind
+
+@[simp]
+theorem prod_sdiff_diagonal : s ×ˢ s \ s.diagonal = s.offDiagonal := by grind
+
+end OffDiagonal
 
 /-! ### Cartesian set-indexed product of sets -/
 
