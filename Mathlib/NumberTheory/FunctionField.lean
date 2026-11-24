@@ -40,6 +40,7 @@ adding them back in lemmas when they are needed.
 * [M. Rosen, *Number Theory in Function Fields*][rosen2002]
 
 ## Tags
+
 function field, ring of integers
 -/
 

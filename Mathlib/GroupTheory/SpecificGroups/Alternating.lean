@@ -49,6 +49,7 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
 

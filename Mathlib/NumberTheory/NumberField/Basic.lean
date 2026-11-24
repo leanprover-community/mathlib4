@@ -33,6 +33,7 @@ but are independent of that choice.
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 number field, ring of integers
 -/
 

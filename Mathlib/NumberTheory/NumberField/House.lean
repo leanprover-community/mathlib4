@@ -20,6 +20,7 @@ the largest of the modulus of its conjugates.
 * [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tags
+
 number field, algebraic number, house
 -/
 

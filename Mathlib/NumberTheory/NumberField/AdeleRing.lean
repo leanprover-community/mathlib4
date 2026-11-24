@@ -28,6 +28,7 @@ direct product of the infinite adele ring and the finite adele ring.
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
+
 adele ring, number field
 -/
 

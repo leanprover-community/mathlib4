@@ -27,6 +27,7 @@ Since `Mathlib/Algebra/Group/Ext.lean` proved several injectivity lemmas, we do 
 sometimes we don't need them to prove extensionality.
 
 ## Tags
+
 semiring, ring, extensionality
 -/
 

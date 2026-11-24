@@ -53,6 +53,7 @@ We are only interested in Dedekind domains with Krull dimension 1.
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation
 -/
 

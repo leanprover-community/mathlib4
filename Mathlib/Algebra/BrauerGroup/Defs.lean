@@ -30,6 +30,7 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 * [Algebraic Number Theory, *J.W.S Cassels*][cassels1967algebraic]
 
 ## Tags
+
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 

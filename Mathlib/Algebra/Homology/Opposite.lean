@@ -24,6 +24,7 @@ It is convenient to define both `op` and `opSymm`; this is because given a compl
 `c.symm.symm` is not defeq to `c`.
 
 ## Tags
+
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
 

@@ -61,6 +61,7 @@ possible.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 1.4.12
 
 ## Tags
+
 presheaf, over category, coyoneda
 -/
 

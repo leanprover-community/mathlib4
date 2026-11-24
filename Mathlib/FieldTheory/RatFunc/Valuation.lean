@@ -26,6 +26,7 @@ This file defines the valuation at infinity on the field of rational functions `
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 function field, ring of integers
 -/
 

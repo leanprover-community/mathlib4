@@ -54,6 +54,7 @@ using only `coverEntropy`.
   with a `liminf` and a `limsup`.
 
 ## Tags
+
 cover, entropy
 
 ## TODO

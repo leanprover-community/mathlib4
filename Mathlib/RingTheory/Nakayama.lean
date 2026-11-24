@@ -43,6 +43,7 @@ Note that a version of Statement (1) in
 * [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV)
 
 ## Tags
+
 Nakayama, Jacobson
 -/
 

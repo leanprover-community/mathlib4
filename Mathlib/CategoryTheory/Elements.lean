@@ -31,6 +31,7 @@ so this is mostly just a more convenient API. We prove the equivalence in
 * <https://ncatlab.org/nlab/show/category+of+elements>
 
 ## Tags
+
 category of elements, Grothendieck construction, comma category
 -/
 

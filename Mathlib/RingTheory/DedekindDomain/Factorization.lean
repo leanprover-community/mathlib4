@@ -52,6 +52,7 @@ Since we are only interested in the factorization of nonzero fractional ideals, 
 `val_v(0) = 0` so that every `val_v` is in `ℤ` and we can avoid having to use `WithTop ℤ`.
 
 ## Tags
+
 dedekind domain, fractional ideal, ideal, factorization
 -/
 

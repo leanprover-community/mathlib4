@@ -29,6 +29,7 @@ field, its finite adèle ring is just defined to be the trivial ring.
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
+
 finite adèle ring, dedekind domain
 -/
 
