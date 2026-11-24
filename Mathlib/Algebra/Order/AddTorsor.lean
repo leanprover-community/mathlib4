@@ -34,6 +34,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * `IsOrderedMonoid.toIsOrderedSMul`
 * `IsOrderedAddMonoid.toIsOrderedVAdd`
 * `IsOrderedSMul.toCovariantClassLeft`

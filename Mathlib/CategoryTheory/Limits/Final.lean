@@ -46,11 +46,13 @@ In the end of the file, we characterize the finality of some important induced f
 Grothendieck construction (`Grothendieck.pre` and `Grothendieck.map`).
 
 ## Naming
+
 There is some discrepancy in the literature about naming; some say 'cofinal' instead of 'final'.
 The explanation for this is that the 'co' prefix here is *not* the usual category-theoretic one
 indicating duality, but rather indicating the sense of "along with".
 
 ## See also
+
 In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
 `C` is filtered.
 
