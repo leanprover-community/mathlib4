@@ -613,6 +613,13 @@ lemma isoHomologyι_inv_hom_id :
     (K.isoHomologyι i j hj h).inv ≫ K.homologyι i = 𝟙 _ :=
   (K.isoHomologyι i j hj h).inv_hom_id
 
+variable {K L} in
+@[reassoc]
+lemma isoHomologyι_inv_naturality [L.HasHomology i] (h' : L.d i j = 0) :
+    (K.isoHomologyι i j hj h).inv ≫ homologyMap φ i =
+    opcyclesMap φ _ ≫ (L.isoHomologyι i j hj h').inv := by
+  simp [← cancel_mono (L.homologyι i)]
+
 end
 
 section
@@ -659,6 +666,13 @@ lemma isoHomologyπ_hom_inv_id :
 lemma isoHomologyπ_inv_hom_id :
     (K.isoHomologyπ i j hi h).inv ≫ K.homologyπ j = 𝟙 _ :=
   (K.isoHomologyπ i j hi h).inv_hom_id
+
+variable {K L} in
+@[reassoc]
+lemma isoHomologyπ_inv_naturality [L.HasHomology j] (h' : L.d i j = 0) :
+    homologyMap φ j ≫ (L.isoHomologyπ i j hi h').inv =
+    (K.isoHomologyπ i j hi h).inv ≫ cyclesMap φ j := by
+  simp [← cancel_epi (K.isoHomologyπ i j hi h).hom]
 
 end
 
@@ -756,10 +770,8 @@ variable {K L}
 @[reassoc (attr := simp)]
 lemma isoHomologyι₀_inv_naturality [L.HasHomology 0] :
     K.isoHomologyι₀.inv ≫ HomologicalComplex.homologyMap φ 0 =
-      HomologicalComplex.opcyclesMap φ 0 ≫ L.isoHomologyι₀.inv := by
-  simp only [assoc, ← cancel_mono (L.homologyι 0),
-    HomologicalComplex.homologyι_naturality, HomologicalComplex.isoHomologyι_inv_hom_id_assoc,
-    HomologicalComplex.isoHomologyι_inv_hom_id, comp_id]
+      HomologicalComplex.opcyclesMap φ 0 ≫ L.isoHomologyι₀.inv :=
+  HomologicalComplex.isoHomologyι_inv_naturality _ _ _ _ (by simp) ..
 
 end ChainComplex
 
@@ -790,10 +802,8 @@ variable {K L}
 @[reassoc (attr := simp)]
 lemma isoHomologyπ₀_inv_naturality [L.HasHomology 0] :
     HomologicalComplex.homologyMap φ 0 ≫ L.isoHomologyπ₀.inv =
-      K.isoHomologyπ₀.inv ≫ HomologicalComplex.cyclesMap φ 0 := by
-  simp only [← cancel_epi (K.homologyπ 0), HomologicalComplex.homologyπ_naturality_assoc,
-    HomologicalComplex.isoHomologyπ_hom_inv_id, comp_id,
-    HomologicalComplex.isoHomologyπ_hom_inv_id_assoc]
+      K.isoHomologyπ₀.inv ≫ HomologicalComplex.cyclesMap φ 0 :=
+  HomologicalComplex.isoHomologyπ_inv_naturality ..
 
 end CochainComplex
 

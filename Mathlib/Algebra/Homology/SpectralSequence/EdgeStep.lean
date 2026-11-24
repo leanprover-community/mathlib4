@@ -38,7 +38,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 namespace SpectralSequence
 
-variable (E E' : SpectralSequence C c r₀)
+variable (E E' : SpectralSequence C c r₀) (f : E ⟶ E')
 
 /-- This is the condition that the differential to an object `E_r^{pq}`
 on a page of a spectral sequence is zero (both `r` and `pq` are fixed). -/
@@ -70,6 +70,18 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeMonoAt pq r] :
     Mono (E.edgeMonoStep pq r r' hrr') := by
   dsimp [edgeMonoStep]
   infer_instance
+
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+    [E'.HasEdgeMonoAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    (f.hom r').f pq ≫ E'.edgeMonoStep pq r r' hrr' =
+      E.edgeMonoStep pq r r' hrr' ≫ (f.hom r).f pq := by
+  have := E.le₀_of_hasEdgeMonoAt pq r
+  simp [edgeMonoStep, ← f.comm'_assoc r r' pq,
+    HomologicalComplex.isoHomologyπ_inv_naturality_assoc (f.hom r) _ _ rfl]
 
 @[reassoc (attr := simp)]
 lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
@@ -139,6 +151,19 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeEpiAt pq r] :
     Epi (E.edgeEpiStep pq r r' hrr') := by
   dsimp [edgeEpiStep]
   infer_instance
+
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma edgeEpiStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
+    [E'.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    haveI := E.le₀_of_hasEdgeEpiAt pq r
+    (f.hom r).f pq ≫ E'.edgeEpiStep pq r r' hrr' =
+      E.edgeEpiStep pq r r' hrr' ≫ (f.hom r').f pq := by
+  have := E.le₀_of_hasEdgeEpiAt pq r
+  simp [edgeEpiStep, ← f.comm r r' pq,
+    HomologicalComplex.isoHomologyι_inv_naturality_assoc (f.hom r) _ _ rfl
+      (E.d_eq_zero_of_hasEdgeEpiAt pq _ r)]
 
 @[reassoc (attr := simp)]
 lemma d_comp_edgeEpiStep (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
