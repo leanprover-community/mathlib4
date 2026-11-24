@@ -929,7 +929,7 @@ lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' �
 lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
       .fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
-  simp [toMatrix_prod, LinearMap.ext_iff]
+  simp [toMatrix_prod_eq_fromBlocks, LinearMap.ext_iff]
 
 end ToMatrix
 
