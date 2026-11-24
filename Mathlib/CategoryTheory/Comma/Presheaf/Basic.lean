@@ -37,6 +37,7 @@ to interact with the actual construction, the mere existence of the equivalence 
 triangle should generally be sufficient.
 
 ## Main results
+
 * `overEquivPresheafCostructuredArrow`:
   the equivalence `Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
 * `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`: the natural isomorphism

@@ -21,12 +21,14 @@ Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`,
 We prove several properties of this valuation, including the existence of uniformizers.
 
 ## Main definitions
+
 - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
 - `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
   `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
+
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of
