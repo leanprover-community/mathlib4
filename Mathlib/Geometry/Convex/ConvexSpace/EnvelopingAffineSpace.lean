@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.EnvelopingModule
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
@@ -28,6 +29,11 @@ out of `EnvelopingAffineSpace K X`.
 * `Convexity.envelopingAffineSubspace K X`: The affine subspace of `EnvelopingModule K X` of
   elements of mass `1`.
 * `Convexity.EnvelopingAffineSpace K X`: The enveloping affine space of `X`, as a type.
+* `Convexity.EnvelopingAffineSpace.instConvexSpace`: The enveloping affine space is a convex space,
+  as a convex subset of the enveloping module. This agrees with its convex space structure as an
+  affine space, see `Convexity.EnvelopingAffineSpace.instIsAffineConvexSpace`.
+* `Convexity.EnvelopingAffineSpace.isAffineMap_of`: The canonical map from `X` to its enveloping
+  affine space is affine.
 * `Convexity.affineSpan_range_of`: The enveloping affine space is the affine span of `X`.
 * `Convexity.direction_envelopingAffineSubspace`: The direction of the enveloping affine space is
   the kernel of the mass.
@@ -155,7 +161,33 @@ lemma direction_envelopingAffineSubspace [Nonempty X] :
     simp_all [vsub_eq_sub]
   · exact fun hv ↦ ⟨v + of K x₀, by simp [hv], (add_sub_cancel_right _ _).symm⟩
 
+/-- The enveloping affine space is a convex subset of the enveloping module. -/
+lemma isConvexSet_envelopingAffineSubspace :
+    IsConvexSet K (envelopingAffineSubspace K X : Set (EnvelopingModule K X)) := by
+  refine .of_sConvexComb_mem fun w hw ↦ ?_
+  have (v) (hv : v ∈ w.weights.support) : mass K X v = 1 := hw hv
+  simp only [SetLike.mem_coe, mem_envelopingAffineSubspace, sConvexComb_eq_sum, map_finsuppSum,
+    map_smul, smul_eq_mul]
+  exact (Finsupp.sum_congr (g2 := fun _ r ↦ r) fun v hv ↦ by rw [this v hv, mul_one]).trans w.total
+
 namespace EnvelopingAffineSpace
+
+/-- The enveloping affine space is a convex space as a convex subset of the enveloping module.
+
+When `X` is nonempty, this agrees with the convex space structure coming from the affine space
+structure, see `Convexity.EnvelopingAffineSpace.instIsAffineConvexSpace`. -/
+instance instConvexSpace : ConvexSpace K (EnvelopingAffineSpace K X) :=
+  .subtype _ isConvexSet_envelopingAffineSubspace
+
+@[simp] lemma coe_sConvexComb (w : StdSimplex K (EnvelopingAffineSpace K X)) :
+    (w.sConvexComb : EnvelopingModule K X) = w.iConvexComb (↑) := rfl
+
+@[fun_prop]
+lemma isAffineMap_subtypeVal :
+    IsAffineMap K ((↑) : EnvelopingAffineSpace K X → EnvelopingModule K X) := ⟨fun _ ↦ rfl⟩
+
+instance : IsCancelConvexSpace K (EnvelopingAffineSpace K X) :=
+  .of_injective isAffineMap_subtypeVal Subtype.val_injective
 
 instance [Nonempty X] : Nonempty (EnvelopingAffineSpace K X) :=
   ⟨⟨of K (Classical.arbitrary X), of_mem_envelopingAffineSubspace _⟩⟩
@@ -165,6 +197,12 @@ variable (K) in
 def of (x : X) : EnvelopingAffineSpace K X := ⟨EnvelopingModule.of K x, mass_of x⟩
 
 @[simp] lemma coe_of (x : X) : (of K x : EnvelopingModule K X) = EnvelopingModule.of K x := rfl
+
+@[fun_prop]
+lemma isAffineMap_of : IsAffineMap K (of K : X → EnvelopingAffineSpace K X) where
+  map_sConvexComb w := Subtype.ext <| by
+    rw [coe_of, EnvelopingModule.isAffineMap_of.map_sConvexComb, coe_sConvexComb, iConvexComb_map]
+    rfl
 
 /-- The canonical map from a cancellative convex space to its enveloping affine space is
 injective. -/
@@ -212,6 +250,19 @@ def linearMapEquiv :
 @[simp] lemma linearMapEquiv_symm_apply_coe (φ : EnvelopingAffineSpace K X →ᵃ[K] M)
     (a : EnvelopingAffineSpace K X) : (linearMapEquiv K X M).symm φ a = φ a :=
   linearExtend_coe φ a
+
+/-- The convex space structure on the enveloping affine space coming from the enveloping module
+agrees with the one coming from its affine space structure. -/
+instance instIsAffineConvexSpace : IsAffineConvexSpace K (envelopingAffineSubspace K X).direction
+    (EnvelopingAffineSpace K X) where
+  sConvexComb_eq_convexComb w := Subtype.ext <| by
+    have := Finset.map_affineCombination w.weights.support id w.weights w.total
+      (envelopingAffineSubspace K X).subtype
+    rw [AffineSubspace.subtype_apply] at this
+    rw [AddTorsor.convexCombination, this,
+      Finset.affineCombination_eq_linear_combination _ _ _ w.total, coe_sConvexComb,
+      iConvexComb_eq_sum]
+    rfl
 
 end EnvelopingAffineSpace
 end Convexity
