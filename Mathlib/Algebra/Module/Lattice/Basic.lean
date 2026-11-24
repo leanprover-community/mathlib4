@@ -186,6 +186,12 @@ theorem finrank_span_eq_finrank [FaithfulSMul R A] [IsLattice A M] :
     finrank A (span A (M : Set V)) = finrank R M :=
   congr(Cardinal.toNat $(rank_span_eq_rank A M))
 
+/-- If the `R`-span of `s` is a lattice, then the `A`-rank of `s` equals its `R`-rank. -/
+theorem _root_.Set.finrank_eq_of_isLattice [FaithfulSMul R A] (s : Set V)
+    (hs : IsLattice A (span R s)) : Set.finrank A s = Set.finrank R s := by
+  rw [Set.finrank, Set.finrank, ← span_span_of_tower R A s]
+  exact finrank_span_eq_finrank A _
+
 end CommRing
 
 section Field
@@ -193,13 +199,6 @@ section Field
 variable (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 variable (M : Submodule R V)
-
-/-- If the `R`-span of `s` is a lattice, then the `K`-rank of `s` equals its `R`-rank. -/
-theorem _root_.Set.finrank_eq_of_isLattice (s : Set V) (hs : IsLattice K (span R s)) :
-    Set.finrank K s = Set.finrank R s := by
-  have := IsDomain.of_faithfulSMul R K
-  rw [Set.finrank, Set.finrank, ← span_span_of_tower R K s]
-  exact finrank_span_eq_finrank K _
 
 /-- An `R`-module `M` is a lattice in an ambient `K`-module `V` if and only if `M`
 is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span. -/
