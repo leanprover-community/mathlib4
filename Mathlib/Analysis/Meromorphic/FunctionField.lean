@@ -83,6 +83,7 @@ theorem coe_mem_functionRing (hf : MeromorphicOn f U) :
 The surjective algebra homomorphism mapping a meromorphic function to the element of
 `functionRing 𝕜 𝕜' U` that it represents.
 -/
+@[simps!]
 def toFunctionRingAlgHom : subalgebra 𝕜 𝕜' U →ₐ[𝕜] functionRing 𝕜 𝕜' U :=
   ((Germ.coeAlgHom 𝕜 _).comp (subalgebra 𝕜 𝕜' U).val).codRestrict _
     fun f ↦ coe_mem_functionRing f.property
