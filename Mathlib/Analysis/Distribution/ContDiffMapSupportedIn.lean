@@ -190,7 +190,7 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    ⇑f.toBoundedContinuousFunction = (f : E → F) := rfl
 
 section AddCommGroup
 

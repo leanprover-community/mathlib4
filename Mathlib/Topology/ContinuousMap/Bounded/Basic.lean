@@ -34,9 +34,6 @@ variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
 /-- `α →ᵇ β` is the type of bounded continuous functions `α → β` from a topological space to a
 metric space.
 
-When possible, instead of parametrizing results over `(f : α →ᵇ β)`,
-you should parametrize over `(F : Type*) [BoundedContinuousMapClass F α β] (f : F)`.
-
 When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
     [PseudoMetricSpace β] : Type max u v extends ContinuousMap α β where
@@ -76,11 +73,13 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass (α →ᵇ β
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      map_bounded' := map_bounded f }⟩
+def ofClass [FunLike F α β] [BoundedContinuousMapClass F α β] (f : F) : α →ᵇ β where
+  toFun := f
+  continuous_toFun := map_continuous f
+  map_bounded' := map_bounded f
+
+protected theorem coe_ofClass [FunLike F α β] [BoundedContinuousMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
