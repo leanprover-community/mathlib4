@@ -9,6 +9,9 @@ public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 public import Mathlib.Order.OmegaCompletePartialOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete Partial Orders
 
@@ -17,17 +20,17 @@ These are partial orders for which every directed set has a least upper bound.
 
 ## Main declarations
 
-- `CompletePartialOrder`: Typeclass for (directly) complete partial orders.
+* `CompletePartialOrder`: Typeclass for (directly) complete partial orders.
 
 ## Main statements
 
-- `CompletePartialOrder.toOmegaCompletePartialOrder`: A complete partial order is an ω-complete
+* `CompletePartialOrder.toOmegaCompletePartialOrder`: A complete partial order is an ω-complete
   partial order.
-- `CompleteLattice.toCompletePartialOrder`: A complete lattice is a complete partial order.
+* `CompleteLattice.toCompletePartialOrder`: A complete lattice is a complete partial order.
 
 ## References
 
-- [B. A. Davey and H. A. Priestley, Introduction to lattices and order][davey_priestley]
+* ‍\[B. A. Davey and H. A. Priestley, Introduction to lattices and order\]\[davey\_priestley\]
 
 ## Tags
 
@@ -47,7 +50,8 @@ class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α, Orde
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
   lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
 
-/-- Create a `CompletePartialOrder` from a `PartialOrder` and `SupSet`
+/--
+Create a `CompletePartialOrder` from a `PartialOrder` and `SupSet`
 such that for every directed set `d`, `sSup d` is the least upper bound of `d`.
 
 The bottom element is defined as `sSup ∅`.

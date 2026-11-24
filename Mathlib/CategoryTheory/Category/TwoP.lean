@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.TwoPointing
 public import Mathlib.CategoryTheory.Category.Bipointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of two-pointed types
 
@@ -15,7 +18,7 @@ This defines `TwoP`, the category of two-pointed types.
 
 ## References
 
-* [nLab, *coalgebra of the real interval*]
+* ‍\[nLab, _coalgebra of the real interval_\]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
 

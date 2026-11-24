@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 import Mathlib.RingTheory.RootsOfUnity.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units of a number field
 
@@ -24,11 +27,11 @@ field `K` and its torsion subgroup.
 
 * `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if
   `|norm ℚ x| = 1`.
-
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
   places `w` of `K`.
 
 ## Tags
+
 number field, units
 -/
 

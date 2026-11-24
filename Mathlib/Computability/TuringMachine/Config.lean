@@ -8,6 +8,9 @@ module
 public import Mathlib.Computability.PartrecBasis
 public import Mathlib.Computability.StateTransition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modelling partial recursive functions using Turing machines
 
@@ -20,6 +23,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 * `ToPartrec.Code`: a simplified basis for partial recursive functions, valued in
   `List ℕ →. List ℕ`.
+
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
 
@@ -34,29 +38,35 @@ open Relation
 namespace Turing
 
 /-!
-## A simplified basis for partrec
+# A simplified basis for partrec
 
 This section constructs the type `Code`, which is a data type of programs with `List ℕ` input and
 output, with enough expressivity to write any partial recursive function. The primitives are:
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
 * `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
+
   * `succ [] = [1]`
   * `succ (n :: v) = [n + 1]`
 * `tail` returns the tail of the input
+
   * `tail [] = []`
   * `tail (n :: v) = v`
 * `cons f fs` calls `f` and `fs` on the input and conses the results:
+
   * `cons f fs v = (f v).head :: fs v`
 * `comp f g` calls `f` on the output of `g`:
+
   * `comp f g v = f (g v)`
 * `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
   a successor (similar to `Nat.casesOn`).
+
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
 * `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
   again or finish:
+
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
@@ -83,28 +93,35 @@ inductive Code
   | fix : Code → Code
   deriving DecidableEq, Inhabited
 
-/-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`.
+/--
+The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`.
 By convention, functions that return a single result return a singleton `[n]`,
 or in some cases `n :: v` where `v` will be ignored by a subsequent function.
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
 * `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
+
   * `succ [] = [1]`
   * `succ (n :: v) = [n + 1]`
 * `tail` returns the tail of the input
+
   * `tail [] = []`
   * `tail (n :: v) = v`
 * `cons f fs` calls `f` and `fs` on the input and conses the results:
+
   * `cons f fs v = (f v).head :: fs v`
 * `comp f g` calls `f` on the output of `g`:
+
   * `comp f g v = f (g v)`
 * `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
   a successor (similar to `Nat.casesOn`).
+
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
 * `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
   again or finish:
+
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
@@ -196,12 +213,15 @@ def pred : Code :=
 theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
   simp [pred]; cases v.headI <;> simp
 
-/-- `rfind f` performs the function of the `rfind` primitive of partial recursive functions.
+/--
+`rfind f` performs the function of the `rfind` primitive of partial recursive functions.
 `rfind f v` returns the smallest `n` such that `(f (n :: v)).head = 0`.
 
 It is implemented as:
 
-    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+```
+rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+```
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
 it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
@@ -210,7 +230,8 @@ it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the 
 def rfind (f : Code) : Code :=
   comp pred <| comp (fix <| cons f <| cons succ tail) zero'
 
-/-- `prec f g` implements the `prec` (primitive recursion) operation of partial recursive
+/--
+`prec f g` implements the `prec` (primitive recursion) operation of partial recursive
 functions. `prec f g` evaluates as:
 
 * `prec f g [] = [f []]`
@@ -219,10 +240,12 @@ functions. `prec f g` evaluates as:
 
 It is implemented as:
 
-    G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
-    F (0 :: f_v :: v) = (f_v :: v)
-    F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
-    prec f g (a :: v) = [(F (a :: f v :: v)).head]
+```
+G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
+F (0 :: f_v :: v) = (f_v :: v)
+F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
+prec f g (a :: v) = [(F (a :: f v :: v)).head]
+```
 
 Because `fix` always evaluates its body at least once, we must special case the `0` case to avoid
 calling `g` more times than necessary (which could be bad if `g` diverges). If the input is
@@ -231,7 +254,8 @@ we evaluate the function from the bottom up, with initial state `0 :: n :: f v :
 number counts up, providing arguments for the applications to `g`, while the second number counts
 down, providing the exit condition (this is the initial `b` in the return value of `G`, which is
 stripped by `fix`). After the `fix` is complete, the final state is `n :: 0 :: res :: v` where
-`res` is the desired result, and the rest reduces this to `[res]`. -/
+`res` is the desired result, and the rest reduces this to `[res]`.
+-/
 def prec (f g : Code) : Code :=
   let G :=
     cons tail <|
@@ -382,13 +406,13 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
 end Code
 
 /-!
-## From compositional semantics to sequential semantics
+# From compositional semantics to sequential semantics
 
 Our initial sequential model is designed to be as similar as possible to the compositional
 semantics in terms of its primitives, but it is a sequential semantics, meaning that rather than
 defining an `eval c : List ℕ →. List ℕ` function for each program, defined by recursion on
 programs, we have a type `Cfg` with a step function `step : Cfg → Option cfg` that provides a
-deterministic evaluation order. In order to do this, we introduce the notion of a *continuation*,
+deterministic evaluation order. In order to do this, we introduce the notion of a _continuation_,
 which can be viewed as a `Code` with a hole in it where evaluation is currently taking place.
 Continuations can be assigned a `List ℕ →. List ℕ` semantics as well, with the interpretation
 being that given a `List ℕ` result returned from the code in the hole, the remainder of the
@@ -437,19 +461,22 @@ def Cont.eval : Cont → List ℕ →. List ℕ
   | Cont.comp f k => fun v => Code.eval f v >>= Cont.eval k
   | Cont.fix f k => fun v => if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
 
-/-- The set of configurations of the machine:
+/--
+The set of configurations of the machine:
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
 * `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
 
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
-to a `ret` "in zero steps" using the `stepNormal` function. -/
+to a `ret` "in zero steps" using the `stepNormal` function.
+-/
 inductive Cfg
   | halt : List ℕ → Cfg
   | ret : Cont → List ℕ → Cfg
   deriving Inhabited
 
-/-- Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`. This goes by
+/--
+Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`. This goes by
 recursion on `c`, building an augmented continuation and a value to pass to it.
 
 * `zero' v = 0 :: v` evaluates immediately, so we return it to the parent continuation
@@ -476,7 +503,8 @@ def stepNormal : Code → Cont → List ℕ → Cfg
     v.headI.rec (stepNormal f k v.tail) fun y _ => stepNormal g k (y::v.tail)
   | Code.fix f => fun k v => stepNormal f (Cont.fix f k) v
 
-/-- Evaluating a continuation `k : Cont` on input `v : List ℕ`. This is the second part of
+/--
+Evaluating a continuation `k : Cont` on input `v : List ℕ`. This is the second part of
 evaluation, when we receive results from continuations built by `stepNormal`.
 
 * `Cont.halt v = v`, so we are done and transition to the `Cfg.halt v` state
@@ -503,7 +531,8 @@ def step : Cfg → Option Cfg
   | Cfg.halt _ => none
   | Cfg.ret k v => some (stepRet k v)
 
-/-- In order to extract a compositional semantics from the sequential execution behavior of
+/--
+In order to extract a compositional semantics from the sequential execution behavior of
 configurations, we observe that continuations have a monoid structure, with `Cont.halt` as the unit
 and `Cont.then` as the multiplication. `Cont.then k₁ k₂` runs `k₁` until it halts, and then takes
 the result of `k₁` and passes it to `k₂`.
@@ -571,13 +600,15 @@ theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).t
 
 open StateTransition
 
-/-- This is a temporary definition, because we will prove in `code_is_ok` that it always holds.
+/--
+This is a temporary definition, because we will prove in `code_is_ok` that it always holds.
 It asserts that `c` is semantically correct; that is, for any `k` and `v`,
 `eval (stepNormal c k v) = eval (Cfg.ret k (Code.eval c v))`, as an equality of partial values
 (so one diverges iff the other does).
 
 In particular, we can let `k = Cont.halt`, and then this asserts that `stepNormal c Cont.halt v`
-evaluates to `Cfg.halt (Code.eval c v)`. -/
+evaluates to `Cfg.halt (Code.eval c v)`.
+-/
 def Code.Ok (c : Code) :=
   ∀ k v, StateTransition.eval step (stepNormal c k v) =
     Code.eval c v >>= fun v => StateTransition.eval step (Cfg.ret k v)

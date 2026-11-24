@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.LeftRightNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of monotone functions
 
@@ -33,13 +36,15 @@ section LinearOrder
 variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 variable [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
 
-/-- If `f` is a function strictly monotone on a right neighborhood of `a` and the
+/--
+If `f` is a function strictly monotone on a right neighborhood of `a` and the
 image of this neighborhood under `f` meets every interval `(f a, b]`, `b > f a`, then `f` is
 continuous at `a` from the right.
 
 The assumption `hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b` is required because otherwise the
 function `f : ℝ → ℝ` given by `f x = if x ≤ 0 then x else x + 1` would be a counter-example at
-`a = 0`. -/
+`a = 0`.
+-/
 theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
@@ -53,12 +58,14 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
     rintro x hx ⟨_, hxc⟩
     exact ((h_mono.lt_iff_lt hx hcs).2 hxc).trans_le hcb
 
-/-- If `f` is a monotone function on a right neighborhood of `a` and the image of this neighborhood
+/--
+If `f` is a monotone function on a right neighborhood of `a` and the image of this neighborhood
 under `f` meets every interval `(f a, b)`, `b > f a`, then `f` is continuous at `a` from the right.
 
 The assumption `hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b` cannot be replaced by the weaker
 assumption `hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b` we use for strictly monotone functions
-because otherwise the function `ceil : ℝ → ℤ` would be a counter-example at `a = 0`. -/
+because otherwise the function `ceil : ℝ → ℤ` would be a counter-example at `a = 0`.
+-/
 theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
@@ -121,13 +128,15 @@ theorem StrictMonoOn.continuousWithinAt_right_of_surjOn {f : α → β} {s : Set
     let ⟨c, hcs, hcb⟩ := hfs hb
     ⟨c, hcs, hcb.symm ▸ hb, hcb.le⟩
 
-/-- If `f` is a strictly monotone function on a left neighborhood of `a` and the image of this
+/--
+If `f` is a strictly monotone function on a left neighborhood of `a` and the image of this
 neighborhood under `f` meets every interval `[b, f a)`, `b < f a`, then `f` is continuous at `a`
 from the left.
 
 The assumption `hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)` is required because otherwise the
 function `f : ℝ → ℝ` given by `f x = if x < 0 then x else x + 1` would be a counter-example at
-`a = 0`. -/
+`a = 0`.
+-/
 theorem StrictMonoOn.continuousWithinAt_left_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)) :
     ContinuousWithinAt f (Iic a) a :=
@@ -135,12 +144,14 @@ theorem StrictMonoOn.continuousWithinAt_left_of_exists_between {f : α → β} {
     let ⟨c, hcs, hcb, hca⟩ := hfs b hb
     ⟨c, hcs, hca, hcb⟩
 
-/-- If `f` is a monotone function on a left neighborhood of `a` and the image of this neighborhood
+/--
+If `f` is a monotone function on a left neighborhood of `a` and the image of this neighborhood
 under `f` meets every interval `(b, f a)`, `b < f a`, then `f` is continuous at `a` from the left.
 
 The assumption `hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ioo b (f a)` cannot be replaced by the weaker
 assumption `hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)` we use for strictly monotone functions
-because otherwise the function `floor : ℝ → ℤ` would be a counter-example at `a = 0`. -/
+because otherwise the function `floor : ℝ → ℤ` would be a counter-example at `a = 0`.
+-/
 theorem continuousWithinAt_left_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (hf : MonotoneOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ioo b (f a)) :
     ContinuousWithinAt f (Iic a) a :=
@@ -266,7 +277,7 @@ theorem Monotone.continuous_of_surjective [DenselyOrdered β] {f : α → β} (h
 end LinearOrder
 
 /-!
-### Continuity of order isomorphisms
+# Continuity of order isomorphisms
 
 In this section we prove that an `OrderIso` is continuous, hence it is a `Homeomorph`. We prove
 this for an `OrderIso` between to partial orders with order topology.

@@ -10,6 +10,9 @@ public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Basic.Real.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic on `OrderType`s
 
@@ -35,11 +38,11 @@ The following are notations in the `OrderType` namespace:
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Order_type>
-* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.][dauben_1990]
-* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
-  1977.][enderton_1977]
+* [https://en.wikipedia.org/wiki/Order\_type](https://en.wikipedia.org/wiki/Order_type)
+* ‍\[Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.\]\[dauben\_1990\]
+* ‍\[Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.\]\[enderton\_1977\]
 
 ## Tags
 

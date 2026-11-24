@@ -14,6 +14,9 @@ import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner anodyne extensions and pushout-products, inner fibrations and pullbacks
 
@@ -33,7 +36,7 @@ For implementation details, see `SSet/AnodyneExtensions/PushoutProduct`.
 
 ## References
 
-- [Jack McKoen, *A Formalization of Functor Quasi-Categories in Lean 4*][mckoen2026]
+* ‍\[Jack McKoen, _A Formalization of Functor Quasi-Categories in Lean 4_\]\[mckoen2026\]
 
 ## Note
 

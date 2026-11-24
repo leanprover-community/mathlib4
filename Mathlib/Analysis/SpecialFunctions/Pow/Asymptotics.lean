@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and asymptotics of power functions at `+∞`
 
@@ -22,9 +25,7 @@ open Real NNReal ENNReal Filter Set
 
 open scoped Topology
 
-/-!
-## Limits at `+∞`
--/
+/-! # Limits at `+∞` -/
 
 
 section Limits
@@ -160,9 +161,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
 
 end Limits
 
-/-!
-## Asymptotic results: `IsBigO`, `IsLittleO` and `IsTheta`
--/
+/-! # Asymptotic results: `IsBigO`, `IsLittleO` and `IsTheta` -/
 
 
 namespace Complex

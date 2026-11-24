@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral Presentation of the Proximity Function
 
@@ -18,7 +21,7 @@ If `f : ℂ → ℂ` is meromorphic, this file establishes a presentation of the
 and logarithmic counting functions, and is one of the key ingredients in the proof of Cartan's
 classic formula for the characteristic function.
 
-See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
+See Section VI.2 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] for a detailed
 discussion.
 -/
 
@@ -33,7 +36,7 @@ variable {f : ℂ → ℂ} {R : ℝ}
 namespace Cartan
 
 /-!
-### Integrability of the Cartan Kernel
+# Integrability of the Cartan Kernel
 
 The proof of the integral presentation of the proximity function relies on an extended computation,
 applying Fubini's theorem to the Cartan kernel of integration. This section defines the kernel and

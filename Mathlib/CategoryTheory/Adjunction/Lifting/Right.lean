@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Monad.Equalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoint lifting
 
@@ -47,11 +50,12 @@ Please try to keep them in sync.
 
 ## TODO
 
-- Dualise to lift left adjoints through comonads (by reversing 2-cells).
-- Investigate whether it is possible to give a more explicit description of the lifted adjoint,
+* Dualise to lift left adjoints through comonads (by reversing 2-cells).
+* Investigate whether it is possible to give a more explicit description of the lifted adjoint,
   especially in the case when the isomorphism `comm` is `Iso.refl _`
 
 ## References
+
 * https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 * https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
@@ -101,7 +105,8 @@ abbrev unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
   unitEqualizes adj₁ h X
 
-/-- (Implementation)
+/--
+(Implementation)
 To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
 
 `U' F X ⟶ U' F L U' F X ⟶ U' F U F L U' F X ⟶ U' F U F X`
@@ -173,7 +178,8 @@ noncomputable def constructRightAdjoint (h : ∀ X : B, RegularMono (adj₁.unit
 
 end LiftRightAdjoint
 
-/-- The adjoint triangle theorem: Suppose `U : A ⥤ B` has a left adjoint `F` such that each unit
+/--
+The adjoint triangle theorem: Suppose `U : A ⥤ B` has a left adjoint `F` such that each unit
 `η_X : X ⟶ UFX` is a regular monomorphism. Then if a category `C` has equalizers of coreflexive
 pairs, then a functor `L : C ⥤ B` has a right adjoint if the composite `L ⋙ F` does.
 
@@ -212,7 +218,8 @@ lemma isLeftAdjoint_triangle_lift_comonadic (F : B ⥤ A) [ComonadicLeftAdjoint 
 variable {D : Type u₄}
 variable [Category.{v₄} D]
 
-/-- Suppose we have a commutative square of functors
+/--
+Suppose we have a commutative square of functors
 
 ```
       Q
@@ -235,7 +242,8 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
   have := ((Adjunction.ofIsLeftAdjoint (U ⋙ L)).ofNatIsoLeft comm).isLeftAdjoint
   isLeftAdjoint_triangle_lift Q (Adjunction.ofIsLeftAdjoint V) h
 
-/-- Suppose we have a commutative square of functors
+/--
+Suppose we have a commutative square of functors
 
 ```
       Q

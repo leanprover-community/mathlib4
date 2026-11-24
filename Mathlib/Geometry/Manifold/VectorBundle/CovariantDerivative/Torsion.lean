@@ -8,7 +8,11 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
-/-! # Torsion of an affine connection
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Torsion of an affine connection
 
 We define the torsion tensor of an affine connection, i.e. a covariant derivative on the tangent
 bundle `TM` of some manifold `M`.
@@ -33,7 +37,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-/-! ## Torsion tensor of an unbundled covariant derivative on `TM` on a set `s` -/
+/-! # Torsion tensor of an unbundled covariant derivative on `TM` on a set `s` -/
 namespace IsCovariantDerivativeOn
 
 /-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
@@ -105,7 +109,7 @@ lemma torsion_antisymm (hcov : IsCovariantDerivativeOn E cov univ) (X₀ Y₀ : 
 
 end IsCovariantDerivativeOn
 
-/-! ## Torsion tensor of a bundled covariant derivative on `TM` -/
+/-! # Torsion tensor of a bundled covariant derivative on `TM` -/
 namespace CovariantDerivative
 
 open VectorField

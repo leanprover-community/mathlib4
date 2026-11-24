@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
-/-! # Conditions under which the complex of morphisms is bounded below
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditions under which the complex of morphisms is bounded below
 
 If `K` and `L` are cochain complexes indexed by `ℤ` in a `R`-linear category,
 we show that the cochain complex `linearHomComplex R K L` of morphisms
 from `K` to `L` is `≥ n` if `K ≤ p`, `L ≥ q`, and `p + n ≤ q`.
 In particular, if `K ≤ 0` and `L ≥ 0`, then `linearHomComplex R K L` if `≥ 0`.
-
 -/
 
 @[expose] public section

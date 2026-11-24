@@ -11,12 +11,15 @@ public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 import Mathlib.RingTheory.Flat.TorsionFree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Krull Dimension of quotient regular sequence
 
 ## Main results
 
-- `Module.supportDim_add_length_eq_supportDim_of_isRegular`: If `M` is a finite module over a
+* `Module.supportDim_add_length_eq_supportDim_of_isRegular`: If `M` is a finite module over a
   Noetherian local ring `R`, `r₁, …, rₙ` is an `M`-sequence, then
   `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/

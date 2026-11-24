@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Data.Int.DivMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite type with `n` elements
 
@@ -111,9 +114,7 @@ lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
 
 section coe
 
-/-!
-### coercions and constructions
--/
+/-! # coercions and constructions -/
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   Fin.ext_iff.symm
@@ -153,9 +154,7 @@ end coe
 
 section Order
 
-/-!
-### order
--/
+/-! # order -/
 
 /-- `Fin.lt_or_ge` is an alias of `Fin.lt_or_le`.
 It is preferred since it follows the mathlib naming convention. -/
@@ -181,6 +180,8 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
+
+set_option doc.verso false
 /-- Use the ordering on `Fin n` for checking recursive definitions.
 
 For example, the following definition is not accepted by the termination checker,
@@ -194,6 +195,8 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
+
+set_option doc.verso true
 /-- `Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
@@ -229,7 +232,7 @@ theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
 
 end Order
 
-/-! ### Coercions to `ℤ` and the `fin_omega` tactic. -/
+/-! # Coercions to `ℤ` and the `fin_omega` tactic. -/
 
 open Int
 
@@ -282,9 +285,7 @@ macro "fin_omega" : tactic => `(tactic|
 
 section Add
 
-/-!
-### addition, numerals, and coercion from Nat
--/
+/-! # addition, numerals, and coercion from Nat -/
 
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
@@ -459,9 +460,7 @@ end DivMod
 
 section Rec
 
-/-!
-### recursion and induction principles
--/
+/-! # recursion and induction principles -/
 
 @[elab_as_elim]
 lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}

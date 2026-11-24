@@ -11,6 +11,9 @@ public import Mathlib.Data.DFinsupp.Module
 
 import Mathlib.Algebra.Order.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise order on finitely supported dependent functions
 
@@ -30,7 +33,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
-/-! ### Order structures -/
+/-! # Order structures -/
 
 
 section Zero
@@ -136,7 +139,7 @@ theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support 
 end Lattice
 end Zero
 
-/-! ### Algebraic order structures -/
+/-! # Algebraic order structures -/
 
 instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=

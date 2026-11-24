@@ -14,6 +14,9 @@ import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrability of Functions Prominently Involving the Logarithm
 
@@ -31,9 +34,7 @@ open Filter MeasureTheory MeromorphicOn Metric Real
 
 open scoped Interval
 
-/-!
-### Interval Integrability for Logarithms of Real Meromorphic Functions
--/
+/-! # Interval Integrability for Logarithms of Real Meromorphic Functions -/
 
 section IntervalIntegrable
 
@@ -102,9 +103,7 @@ theorem intervalIntegrable_log_cos : IntervalIntegrable (log ∘ cos) volume a b
 
 end IntervalIntegrable
 
-/-!
-### Circle Integrability for Logarithms of Complex Meromorphic Functions
--/
+/-! # Circle Integrability for Logarithms of Complex Meromorphic Functions -/
 
 section CircleIntegrable
 

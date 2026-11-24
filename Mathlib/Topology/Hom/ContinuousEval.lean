@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled maps with evaluation continuous in both variables
 
@@ -38,11 +41,13 @@ protected theorem Continuous.eval (hf : Continuous f) (hg : Continuous g) :
     Continuous fun z ↦ f z (g z) :=
   continuous_eval.comp (hf.prodMk hg)
 
-/-- If a type `F'` of bundled morphisms admits a continuous projection
+/--
+If a type `F'` of bundled morphisms admits a continuous projection
 to a type satisfying `ContinuousEval`,
 then `F'` satisfies this predicate too.
 
-The word "forget" in the name is motivated by the term "forgetful functor". -/
+The word "forget" in the name is motivated by the term "forgetful functor".
+-/
 theorem ContinuousEval.of_continuous_forget {F' : Type*} [FunLike F' X Y] [TopologicalSpace F']
     {f : F' → F} (hc : Continuous f) (hf : ∀ g, ⇑(f g) = g := by intro; rfl) :
     ContinuousEval F' X Y where

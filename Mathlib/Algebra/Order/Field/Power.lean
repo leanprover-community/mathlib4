@@ -12,9 +12,10 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.CharZero
 
-/-!
-# Lemmas about powers in ordered fields.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Lemmas about powers in ordered fields. -/
 
 public section
 
@@ -103,7 +104,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
 
-/-! ### Bernoulli's inequality -/
+/-! # Bernoulli's inequality -/
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=

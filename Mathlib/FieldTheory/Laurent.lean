@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Laurent expansions of rational functions
 
@@ -19,7 +22,7 @@ public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 Implemented as the quotient of two Taylor expansions, over domains.
 An auxiliary definition is provided first to make the construction of the `AlgHom` easier,
-  which works on `CommRing` which are not necessarily domains.
+which works on `CommRing` which are not necessarily domains.
 -/
 
 @[expose] public section

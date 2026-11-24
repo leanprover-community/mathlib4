@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comonoid objects in a Cartesian monoidal category.
 
@@ -41,8 +44,10 @@ def cartesianComon : C ⥤ Comon C where
     }
   }
   map f := .mk' f (f_comul := by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this argument was provided by the auto_param. -/
+    #adaptation_note /--
+                     Prior to https://github.com/leanprover/lean4/pull/12244
+this argument was provided by the auto\_param.
+                     -/
     simp +instances)
 
 variable {C}

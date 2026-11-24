@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of continuum
 
@@ -15,7 +18,7 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
+* `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
 
 @[expose] public section
@@ -57,9 +60,7 @@ theorem continuum_lt_lift {c : Cardinal.{u}} : 𝔠 < lift.{v} c ↔ 𝔠 < c :=
 theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 := by
   rw [← lift_continuum.{v, u}, lift_lt]
 
-/-!
-### Inequalities
--/
+/-! # Inequalities -/
 
 
 theorem aleph0_lt_continuum : ℵ₀ < 𝔠 :=
@@ -94,9 +95,7 @@ theorem continuum_toNat : toNat continuum = 0 :=
 theorem continuum_toENat : toENat continuum = ⊤ :=
   (toENat_eq_top.2 aleph0_le_continuum)
 
-/-!
-### Addition
--/
+/-! # Addition -/
 
 
 @[simp]
@@ -127,9 +126,7 @@ theorem ofNat_add_continuum {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) + 𝔠 = �
 theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + ofNat(n) = 𝔠 :=
   continuum_add_nat n
 
-/-!
-### Multiplication
--/
+/-! # Multiplication -/
 
 
 @[simp]
@@ -160,9 +157,7 @@ theorem ofNat_mul_continuum {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) * 𝔠 = �
 theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * ofNat(n) = 𝔠 :=
   continuum_mul_nat (OfNat.ofNat_ne_zero n)
 
-/-!
-### Power
--/
+/-! # Power -/
 
 
 @[simp]

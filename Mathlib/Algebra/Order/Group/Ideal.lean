@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Ideal
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.WellFoundedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semigroup ideals in a canonically ordered and well-quasi-ordered monoid
 
@@ -17,7 +20,8 @@ finitely generated, and the semigroup ideals satisfy the ascending chain conditi
 
 ## References
 
-* [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
+* ‍\[Samuel Eilenberg and M. P. Schützenberger, _Rational Sets in Commutative
+  Monoids_\]\[eilenberg1969\]
 -/
 
 public section

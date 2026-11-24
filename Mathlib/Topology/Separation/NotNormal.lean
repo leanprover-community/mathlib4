@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Not normal topological spaces
 
@@ -16,7 +19,7 @@ discrete subspace of cardinality continuum is not a normal topological space.
 
 ## References
 
-* [Willard's *General Topology*][zbMATH02107988]
+* ‍\[Willard's _General Topology_\]\[zbMATH02107988\]
 -/
 
 public section

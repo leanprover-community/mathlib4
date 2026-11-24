@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous inversion
 
@@ -20,9 +23,7 @@ open Set Filter Topology Pointwise
 
 variable {G H α : Type*}
 
-/-!
-### `ContinuousInv` and `ContinuousNeg`
--/
+/-! # `ContinuousInv` and `ContinuousNeg` -/
 
 section ContinuousInv
 

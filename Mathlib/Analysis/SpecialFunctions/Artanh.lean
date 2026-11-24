@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse of the tanh function
 
@@ -14,19 +17,16 @@ In this file we define an inverse of tanh as a function from ℝ to (-1, 1).
 
 ## Main definitions
 
-- `Real.artanh`: An inverse function of `Real.tanh` as a function from ℝ to (-1, 1).
-
-- `Real.tanhPartialEquiv`: `Real.tanh` and `Real.artanh` bundled as a `PartialEquiv`
+* `Real.artanh`: An inverse function of `Real.tanh` as a function from ℝ to (-1, 1).
+* `Real.tanhPartialEquiv`: `Real.tanh` and `Real.artanh` bundled as a `PartialEquiv`
   from ℝ to (-1, 1).
 
 ## Main Results
 
-- `Real.tanh_artanh`, `Real.artanh_tanh`: tanh and artanh are inverse in the appropriate domains.
-
-- `Real.tanh_bijOn`, `Real.tanh_injective`, `Real.tanh_surjOn`: `Real.tanh` is
+* `Real.tanh_artanh`, `Real.artanh_tanh`: tanh and artanh are inverse in the appropriate domains.
+* `Real.tanh_bijOn`, `Real.tanh_injective`, `Real.tanh_surjOn`: `Real.tanh` is
   bijective, injective and surjective as a function from ℝ to (-1, 1)
-
-- `Real.artanh_bijOn`, `Real.artanh_injOn`, `Real.artanh_surjOn`: `Real.artanh` is bijective,
+* `Real.artanh_bijOn`, `Real.artanh_injOn`, `Real.artanh_surjOn`: `Real.artanh` is bijective,
   injective and surjective as a function from (-1, 1) to ℝ
 
 ## Tags

@@ -10,6 +10,9 @@ public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Logic.Equiv.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable types
 
@@ -27,9 +30,7 @@ open Function
 instance : Countable ℤ :=
   Countable.of_equiv ℕ Equiv.intEquivNat.symm
 
-/-!
-### Definition in terms of `Function.Embedding`
--/
+/-! # Definition in terms of `Function.Embedding` -/
 
 section Embedding
 
@@ -52,9 +53,7 @@ protected lemma Function.Embedding.uncountable [Uncountable α] (f : α ↪ β) 
 
 end Embedding
 
-/-!
-### Operations on `Type*`s
--/
+/-! # Operations on `Type*`s -/
 
 section type
 
@@ -141,9 +140,7 @@ section sort
 
 variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 
-/-!
-### Operations on `Sort*`s
--/
+/-! # Operations on `Sort*`s -/
 
 instance [Countable α] [Countable β] : Countable (α ⊕' β) :=
   Countable.of_equiv (PLift α ⊕ PLift β) (Equiv.plift.sumPSum Equiv.plift)

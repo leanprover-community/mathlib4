@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exterior product of alternating maps
 
@@ -110,22 +113,20 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
     suffices (b fun i ↦ v (σ (Sum.inr i))) = 0 by simp_all
     exact b.map_eq_zero_of_eq _ hv fun hij' => hij (hij' ▸ rfl)
 
-/-- Like `MultilinearMap.domCoprod`, but ensures the result is also alternating.
+/--
+Like `MultilinearMap.domCoprod`, but ensures the result is also alternating.
 
-Note that this is usually defined (for instance, as used in Proposition 22.24 in [Gallier2011Notes])
-over integer indices `ιa = Fin n` and `ιb = Fin m`, as
-$$
-(f \wedge g)(u_1, \ldots, u_{m+n}) =
-  \sum_{\operatorname{shuffle}(m, n)} \operatorname{sign}(\sigma)
-    f(u_{\sigma(1)}, \ldots, u_{\sigma(m)}) g(u_{\sigma(m+1)}, \ldots, u_{\sigma(m+n)}),
-$$
-where $\operatorname{shuffle}(m, n)$ consists of all permutations of $[1, m+n]$ such that
-$\sigma(1) < \cdots < \sigma(m)$ and $\sigma(m+1) < \cdots < \sigma(m+n)$.
+Note that this is usually defined (for instance, as used in Proposition 22.24 in
+‍\[Gallier2011Notes\]) over integer indices `ιa = Fin n` and `ιb = Fin m`, as
+$$`  (f \wedge g)(u_1, \ldots, u_{m+n}) = \sum_{\operatorname{shuffle}(m, n)} \operatorname{sign}(\sigma) f(u_{\sigma(1)}, \ldots, u_{\sigma(m)}) g(u_{\sigma(m+1)}, \ldots, u_{\sigma(m+n)}),  `
+where $`\operatorname{shuffle}(m, n)` consists of all permutations of $`[1, m+n]` such that
+$`\sigma(1) < \cdots < \sigma(m)` and $`\sigma(m+1) < \cdots < \sigma(m+n)`.
 
 Here, we generalize this by replacing:
+
 * the product in the sum with a tensor product
-* the filtering of $[1, m+n]$ to shuffles with an isomorphic quotient
-* the additions in the subscripts of $\sigma$ with an index of type `Sum`
+* the filtering of $`[1, m+n]` to shuffles with an isomorphic quotient
+* the additions in the subscripts of $`\sigma` with an index of type `Sum`
 
 The specialized version can be obtained by combining this definition with `finSumFinEquiv` and
 `LinearMap.mul'`.

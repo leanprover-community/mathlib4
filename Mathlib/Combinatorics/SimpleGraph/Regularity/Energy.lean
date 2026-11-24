@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Energy of a partition
 
@@ -23,7 +26,7 @@ has an energy greater than the previous one plus some fixed constant.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section

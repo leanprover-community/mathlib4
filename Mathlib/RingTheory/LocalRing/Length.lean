@@ -8,15 +8,19 @@ module
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Length
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lengths along extensions of local rings
 
 This file proves results relating lengths along extensions of local rings.
 
 ## Main results
-- `IsLocalRing.length_restrictScalars`: If `B/A` is an extension of local rings, and if `M`
+
+* `IsLocalRing.length_restrictScalars`: If `B/A` is an extension of local rings, and if `M`
   is a `B`-module, then `ℓ_A(M) = ℓ_B(M) * [κ(B) : κ(A)]`.
-- `IsLocalRing.length_baseChange`: If `B/A` is a flat extension of local rings, and if `M` is an
+* `IsLocalRing.length_baseChange`: If `B/A` is a flat extension of local rings, and if `M` is an
   `A`-module, then `ℓ_B(B ⊗[A] M) = ℓ_A(M) * ℓ_B(B ⧸ m_A)`.
 -/
 

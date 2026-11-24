@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.ClassGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The class group of a Unique Factorization Domain is trivial
 
@@ -15,12 +18,13 @@ The main application is to Unique Factorization Domains,
 which are known to be GCD Domains.
 
 ## Main result
-- `IsGCDMonoid.subsingleton_classGroup` : the class group of a GCD domain is trivial.
+
+* `IsGCDMonoid.subsingleton_classGroup` : the class group of a GCD domain is trivial.
   This includes unique factorization domains.
 
 ## References
 
-- [stacks-project]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
+* ‍\[stacks-project\]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
 -/
 
 open scoped nonZeroDivisors
@@ -78,9 +82,11 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
   rw [← mem_span_singleton, span, ← hJK, normalize_apply]
   exact mul_mem_mul (J.mul_mem_right _ hb) (hTK hc)
 
-/-- In a GCD domain, an integral ideal that is invertible as a fractional ideal is principal.
+/--
+In a GCD domain, an integral ideal that is invertible as a fractional ideal is principal.
 
-Public API note: see `ClassGroup.isPrincipal_of_isUnit_coeIdeal`. -/
+Public API note: see `ClassGroup.isPrincipal_of_isUnit_coeIdeal`.
+-/
 private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
@@ -103,9 +109,11 @@ private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
   · simp [hIK, ha0]
   · simpa [hIK] using (inferInstance : (Ideal.span {a}).IsPrincipal)
 
-/-- In a GCD domain, every invertible fractional ideal is principal.
+/--
+In a GCD domain, every invertible fractional ideal is principal.
 
-Public API note: see `ClassGroup.isPrincipal_coeSubmodule_of_isUnit`. -/
+Public API note: see `ClassGroup.isPrincipal_coeSubmodule_of_isUnit`.
+-/
 private theorem isPrincipal_fractionalIdeal_of_isUnit
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by

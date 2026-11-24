@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic independence persists to the algebraic closure
 
@@ -16,7 +19,6 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 * `AlgebraicIndependent.extendScalars`: if A/S/R is a tower of algebras with S/R algebraic,
   then a family of elements in A that are algebraically independent over R remains algebraically
   independent over S, provided that S has no zero divisors.
-
 * `AlgebraicIndependent.algebraicClosure`: an algebraically independent family remains
   algebraically independent over the algebraic closure.
 -/

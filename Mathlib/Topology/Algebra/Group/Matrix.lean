@@ -12,6 +12,9 @@ public import Mathlib.Topology.Instances.Matrix
 
 import Mathlib.Topology.Algebra.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on matrix groups
 
@@ -26,9 +29,7 @@ open Matrix Topology
 variable {n R S : Type*} [Fintype n] [DecidableEq n]
   [CommRing R] [TopologicalSpace R] [CommRing S] [TopologicalSpace S] {f : R →+* S}
 
-/-!
-### Topology of the general linear group
--/
+/-! # Topology of the general linear group -/
 
 namespace Matrix.GeneralLinearGroup
 
@@ -74,9 +75,7 @@ lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopo
 
 end Matrix.GeneralLinearGroup
 
-/-!
-### Topology of the special linear group
--/
+/-! # Topology of the special linear group -/
 namespace Matrix.SpecialLinearGroup
 
 local notation "SL" => SpecialLinearGroup
@@ -132,9 +131,7 @@ instance isTopologicalGroup : IsTopologicalGroup (SL n R) where
 
 @[deprecated (since := "2026-08-21")] alias topologicalGroup := isTopologicalGroup
 
-/-!
-### Mapping `SL(n, R)` to `GL(n, R)`
--/
+/-! # Mapping `SL(n, R)` to `GL(n, R)` -/
 section toGL
 
 set_option fun_prop.projDefaultTransparency true in
@@ -170,9 +167,7 @@ end toGL
 
 section mapGL
 
-/-!
-### Shortcuts for the composite `SL(n, R) → GL(n, S)`
--/
+/-! # Shortcuts for the composite `SL(n, R) → GL(n, S)` -/
 variable [Algebra R S] [IsTopologicalRing S]
 
 omit [IsTopologicalRing R]

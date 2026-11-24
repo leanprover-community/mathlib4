@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.Asymptotics.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Super-Polynomial Function Decay
 
@@ -21,7 +24,7 @@ one of the following equivalent definitions (the definition is in terms of the f
 * `f` is `O(x ^ c)` for all integers `c` (`superpolynomialDecay_iff_isBigO`)
 
 These conditions are all equivalent to conditions in terms of polynomials, replacing `x ^ c` with
-  `p(x)` or `p(x)⁻¹` as appropriate, since asymptotically `p(x)` behaves like `X ^ p.natDegree`.
+`p(x)` or `p(x)⁻¹` as appropriate, since asymptotically `p(x)` behaves like `X ^ p.natDegree`.
 These further equivalences are not proven in mathlib but would be good future projects.
 
 The definition of superpolynomial decay for `f : α → β` is relative to a parameter `k : α → β`.
@@ -30,18 +33,18 @@ Equivalently `f x` decays faster than `p.eval (k x)` for all polynomials `p : β
 The definition is also relative to a filter `l : Filter α` where the decay rate is compared.
 
 When the map `k` is given by `n ↦ ↑n : ℕ → ℝ` this defines negligible functions:
-https://en.wikipedia.org/wiki/Negligible_function
+https://en.wikipedia.org/wiki/Negligible\_function
 
 When the map `k` is given by `(r₁,...,rₙ) ↦ r₁*...*rₙ : ℝⁿ → ℝ` this is equivalent
-  to the definition of rapidly decreasing functions given here:
+to the definition of rapidly decreasing functions given here:
 https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
 ## Main statements
 
 * `SuperpolynomialDecay.polynomial_mul` says that if `f(x)` is negligible,
-    then so is `p(x) * f(x)` for any polynomial `p`.
+  then so is `p(x) * f(x)` for any polynomial `p`.
 * `superpolynomialDecay_iff_zpow_tendsto_zero` gives an equivalence between definitions in terms
-    of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
+  of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
 -/
 
 @[expose] public section

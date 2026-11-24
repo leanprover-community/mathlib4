@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.Opens
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective spectrum of a graded ring
 
@@ -17,15 +20,16 @@ are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
 ## Notation
-- `A` is a commutative ring
-- `σ` is a class of additive submonoids of `A`
-- `𝒜 : ℕ → σ` is the grading of `A`;
+
+* `A` is a commutative ring
+* `σ` is a class of additive submonoids of `A`
+* `𝒜 : ℕ → σ` is the grading of `A`;
 
 ## Main definitions
 
 * `ProjectiveSpectrum 𝒜`: The projective spectrum of a graded ring `A`, or equivalently, the set of
   all homogeneous ideals of `A` that is both prime and relevant i.e. not containing irrelevant
-  ideal. Henceforth, we call elements of projective spectrum *relevant homogeneous prime ideals*.
+  ideal. Henceforth, we call elements of projective spectrum _relevant homogeneous prime ideals_.
 * `ProjectiveSpectrum.zeroLocus 𝒜 s`: The zero locus of a subset `s` of `A`
   is the subset of `ProjectiveSpectrum 𝒜` consisting of all relevant homogeneous prime ideals that
   contain `s`.
@@ -61,13 +65,15 @@ namespace ProjectiveSpectrum
 
 instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
 
-/-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
+/--
+The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.
 
 An element `f` of `A` can be thought of as a dependent function on the projective spectrum of `𝒜`.
 At a point `x` (a homogeneous prime ideal) the function (i.e., element) `f` takes values in the
 quotient ring `A` modulo the prime ideal `x`. In this manner, `zeroLocus s` is exactly the subset
-of `ProjectiveSpectrum 𝒜` where all "functions" in `s` vanish simultaneously. -/
+of `ProjectiveSpectrum 𝒜` where all "functions" in `s` vanish simultaneously.
+-/
 def zeroLocus (s : Set A) : Set (ProjectiveSpectrum 𝒜) :=
   { x | s ⊆ x.asHomogeneousIdeal }
 
@@ -83,13 +89,15 @@ theorem zeroLocus_span (s : Set A) : zeroLocus 𝒜 (Ideal.span s) = zeroLocus �
 
 variable {𝒜}
 
-/-- The vanishing ideal of a set `t` of points of the projective spectrum of a commutative ring `R`
+/--
+The vanishing ideal of a set `t` of points of the projective spectrum of a commutative ring `R`
 is the intersection of all the relevant homogeneous prime ideals in the set `t`.
 
 An element `f` of `A` can be thought of as a dependent function on the projective spectrum of `𝒜`.
 At a point `x` (a homogeneous prime ideal) the function (i.e., element) `f` takes values in the
 quotient ring `A` modulo the prime ideal `x`. In this manner, `vanishingIdeal t` is exactly the
-ideal of `A` consisting of all "functions" that vanish on all of `t`. -/
+ideal of `A` consisting of all "functions" that vanish on all of `t`.
+-/
 def vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) : HomogeneousIdeal 𝒜 :=
   ⨅ (x : ProjectiveSpectrum 𝒜) (_ : x ∈ t), x.asHomogeneousIdeal
 
@@ -405,7 +413,7 @@ end BasicOpen
 section Order
 
 /-!
-## The specialization order
+# The specialization order
 
 We endow `ProjectiveSpectrum 𝒜` with a partial order,
 where `x ≤ y` if and only if `y ∈ closure {x}`.

@@ -7,14 +7,17 @@ module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for measurability of operations
 
 In this file we define classes `MeasurableMul` etc. and prove dot-style lemmas
 (`Measurable.mul`, `AEMeasurable.mul` etc). For binary operations we define two typeclasses:
 
-- `MeasurableMul` says that both left and right multiplication are measurable;
-- `MeasurableMul₂` says that `fun p : α × α => p.1 * p.2` is measurable,
+* `MeasurableMul` says that both left and right multiplication are measurable;
+* `MeasurableMul₂` says that `fun p : α × α => p.1 * p.2` is measurable,
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableMul₂`
@@ -52,9 +55,7 @@ open scoped Pointwise
 universe u v
 variable {α : Type*}
 
-/-!
-### Binary operations: `(· + ·)`, `(· * ·)`, `(· - ·)`, `(· / ·)`
--/
+/-! # Binary operations: `(· + ·)`, `(· * ·)`, `(· - ·)`, `(· / ·)` -/
 
 
 /-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
@@ -689,9 +690,7 @@ theorem aemeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
 end GroupWithZero
 end MulAction
 
-/-!
-### Opposite monoid
--/
+/-! # Opposite monoid -/
 
 
 section Opposite
@@ -751,9 +750,7 @@ instance measurableSMul₂_opposite_of_mul {M : Type*} [Mul M] [MeasurableSpace 
 
 end Opposite
 
-/-!
-### Big operators: `∏` and `∑`
--/
+/-! # Big operators: `∏` and `∑` -/
 
 
 section Monoid

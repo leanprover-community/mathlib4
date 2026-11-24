@@ -11,12 +11,15 @@ public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integers are a ring
 
 This file contains the commutative ring instance on `ℤ`.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -75,7 +78,7 @@ lemma cast_mul_eq_zsmul_cast {α : Type*} [AddGroupWithOne α] :
   induction m <;> simp [_root_.pow_succ, *]
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.

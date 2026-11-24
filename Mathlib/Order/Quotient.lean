@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-### Order instances on quotients
+# Order instances on quotients
 
 We define a `Preorder` instance on a general `Quotient`, as the transitive closure of the
 `x ≤ y ∨ x ≈ y` relation. This is the quotient object in the category of preorders.
@@ -16,7 +19,7 @@ We define a `Preorder` instance on a general `Quotient`, as the transitive closu
 We show that in the case of a linear order with `Set.OrdConnected` equivalence classes, this
 relation is automatically transitive (we don't need to take the transitive closure), and gives a
 `LinearOrder` structure on the quotient. In that case, the resulting order is sometimes called a
-**condensation**.
+*condensation*.
 -/
 
 public section

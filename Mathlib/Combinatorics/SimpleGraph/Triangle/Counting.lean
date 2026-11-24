@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 
 import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangle counting lemma
 
@@ -18,7 +21,7 @@ In this file, we prove the triangle counting lemma.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 public section

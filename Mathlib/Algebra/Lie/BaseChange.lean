@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.Lie.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
 
@@ -178,10 +181,12 @@ open LieModule
 
 set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
-/-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
+/--
+If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.
 
-This "base change" operation is also known as "extension of scalars". -/
+This "base change" operation is also known as "extension of scalars".
+-/
 def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
   { (N : Submodule R M).baseChange A with
     lie_mem := by

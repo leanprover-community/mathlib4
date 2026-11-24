@@ -10,9 +10,10 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 
 import Mathlib.RingTheory.Finiteness.Subalgebra
 
-/-!
-# Constructs a basis for exterior powers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Constructs a basis for exterior powers -/
 
 @[expose] public section
 
@@ -156,7 +157,7 @@ lemma pairingDual_eq_dualBasis_constr [Finite I] :
 
 variable (R)
 
-/-! ### Freeness and dimension of `⋀[R]^n M`. -/
+/-! # Freeness and dimension of `⋀[R]^n M`. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) := by

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie-Rinehart ideals
 
@@ -17,26 +20,24 @@ This can be defined independently of `R` and of most Lie-Rinehart algebra axioms
 ## Main definitions/statements
 
 * We define `StrictLieRinehartIdeal` to be an `A`-submodule of `L` forming an ideal under the Lie
-bracket, and acting trivially on `A`.
-
+  bracket, and acting trivially on `A`.
 * The inverse image of a strict Lie-Rinehart ideal under a Lie-Rinehart algebra homomorphism over
-`f : L₁ →ₗ⁅.id R A⁆ L₂` is a strict Lie-Rinehart ideal. In particular the kernel of such an `f`
-is a strict ideal.
+  `f : L₁ →ₗ⁅.id R A⁆ L₂` is a strict Lie-Rinehart ideal. In particular the kernel of such an `f`
+  is a strict ideal.
 
 ## Remark on strictness
 
-The strict notion corresponds to ideals which realize kernels of Lie-Rinehart homomorphisms over
-the identity algebra map of `A`. Strict ideals are simply called ideals in
-[castiglioni_garcia-martinez_ladra_2018]. We use the word strict, because more flexible notions of
-ideals exist, see [albuquerque_barreiro_calderon_sanchez_2021].
+The strict notion corresponds to ideals which realize kernels of Lie-Rinehart homomorphisms over the
+identity algebra map of `A`. Strict ideals are simply called ideals in
+‍\[castiglioni\_garcia-martinez\_ladra\_2018\]. We use the word strict, because more flexible
+notions of ideals exist, see \[albuquerque\_barreiro\_calderon\_sanchez\_2021\].
 
 ## References
 
-* [J. L. Castiglioni, X. García-Martínez, M. Ladra,
-  *Universal central extensions of Lie-Rinehart algebras*][castiglioni_garcia-martinez_ladra_2018]
-* [H. Albuquerque, E. Barreiro, A. J. Calderón, J. M. Sánchez,
-  *Split Lie-Rinehart algebras*][albuquerque_barreiro_calderon_sanchez_2021]
-
+* ‍\[J. L. Castiglioni, X. García-Martínez, M. Ladra, _Universal central extensions of Lie-Rinehart
+  algebras_\]\[castiglioni\_garcia-martinez\_ladra\_2018\]
+* ‍\[H. Albuquerque, E. Barreiro, A. J. Calderón, J. M. Sánchez,
+  _Split Lie-Rinehart algebras_\]\[albuquerque\_barreiro\_calderon\_sanchez\_2021\]
 -/
 
 public section

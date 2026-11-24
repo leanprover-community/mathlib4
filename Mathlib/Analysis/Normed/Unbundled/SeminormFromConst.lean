@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # SeminormFromConst
 
-
-In this file, we prove [BGR, Proposition 1.3.2/2][bosch-guntzer-remmert] : starting from a
+In this file, we prove \[BGR, Proposition 1.3.2/2\]\[bosch-guntzer-remmert\] : starting from a
 power-multiplicative seminorm on a commutative ring `R` and a nonzero `c : R`, we create a new
 power-multiplicative seminorm for which `c` is multiplicative.
 
@@ -21,6 +23,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
   as the limit of `f (x * c ^ n) / (f c) ^ n`.
 
 ## Main Results
+
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst c f`
   is nonarchimedean when `f` is nonarchimedean.
 * `seminormFromConst_isPowMul` : the function `seminormFromConst c f`
@@ -29,7 +32,8 @@ power-multiplicative seminorm for which `c` is multiplicative.
   `seminormFromConst c f (c * x) = seminormFromConst c f c * seminormFromConst c f x`.
 
 ## References
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
 
@@ -99,10 +103,12 @@ theorem tendsto_seminormFromConst_seq_atTop (x : R) :
   tendsto_atTop_ciInf (seminormFromConst_seq_antitone c f x)
     (seminormFromConst_bddBelow c f x)
 
-/-- For a ring seminorm `f` on `R` and `c ∈ R`, the ring seminorm on `R` defined as the limit of
+/--
+For a ring seminorm `f` on `R` and `c ∈ R`, the ring seminorm on `R` defined as the limit of
 `f (x * c ^ n) / (f c) ^ n`.
 
-We leave this definition unexposed. Use the limit `tendsto_seminormFromConst` instead. -/
+We leave this definition unexposed. Use the limit `tendsto_seminormFromConst` instead.
+-/
 @[no_expose]
 def seminormFromConst : RingSeminorm R :=
   let g x : ℝ := iInf (seminormFromConst_seq c f x)

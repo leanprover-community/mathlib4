@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Init
 
-/-!
-## `funProp` environment extension that stores all registered function properties
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # `funProp` environment extension that stores all registered function properties -/
 
 public meta section
 
@@ -20,7 +21,8 @@ open Lean Meta
 namespace Meta.FunProp
 
 
-/-- Basic information about function property
+/--
+Basic information about function property
 
 To use `funProp` to prove a function property `P : (α→β)→Prop` one has to provide `FunPropDecl`.
 -/
@@ -41,7 +43,7 @@ structure FunPropDecls where
   deriving Inhabited
 
 set_option linter.style.docString.empty false in
-/-- -/
+/--  -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
 /-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,

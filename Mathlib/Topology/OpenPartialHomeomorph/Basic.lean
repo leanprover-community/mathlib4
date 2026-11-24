@@ -9,9 +9,11 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 public import Mathlib.Topology.PartialHomeomorph.Basic
 public import Mathlib.Topology.Sets.Opens
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial homeomorphisms: basic theory
-
 
 ## Main definitions
 
@@ -207,9 +209,7 @@ theorem isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
 
 end OpenPartialHomeomorph
 
-/-!
-## Open embeddings
--/
+/-! # Open embeddings -/
 namespace Topology.IsOpenEmbedding
 
 variable (f : X → Y) (h : IsOpenEmbedding f)

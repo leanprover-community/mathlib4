@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic facts about real (semi)normed spaces
 
@@ -14,11 +17,10 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
 
 ## Main results
 
-- `closure_ball`, `frontier_ball`, `interior_closedBall`, `frontier_closedBall`, `interior_sphere`,
+* `closure_ball`, `frontier_ball`, `interior_closedBall`, `frontier_closedBall`, `interior_sphere`,
   `frontier_sphere`: formulas for the closure/interior/frontier
   of nontrivial balls and spheres in a real seminormed space;
-
-- `interior_closedBall'`, `frontier_closedBall'`, `interior_sphere'`, `frontier_sphere'`:
+* `interior_closedBall'`, `frontier_closedBall'`, `interior_sphere'`, `frontier_sphere'`:
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 

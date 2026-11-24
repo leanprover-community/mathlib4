@@ -11,9 +11,10 @@ public import Mathlib.Data.PNat.Defs
 
 import Mathlib.Algebra.GroupWithZero.Divisibility
 
-/-!
-# Further lemmas for the Rational Numbers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Further lemmas for the Rational Numbers -/
 
 @[expose] public section
 
@@ -327,9 +328,7 @@ protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ
 protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, b ≠ 0 ∧ p (a / b) := by
   simpa using Rat.forall (p := (¬ p ·)).not
 
-/-!
-### Denominator as `ℕ+`
--/
+/-! # Denominator as `ℕ+` -/
 
 
 section PNatDen

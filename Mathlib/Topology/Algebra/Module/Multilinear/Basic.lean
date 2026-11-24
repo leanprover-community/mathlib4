@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 import Mathlib.Algebra.BigOperators.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous multilinear maps
 
@@ -85,8 +88,10 @@ instance continuousMapClass :
     ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (L₁ : ContinuousMultilinearMap R M₁ M₂) (v : ∀ i, M₁ i) : M₂ :=
   L₁ v
 
@@ -554,9 +559,11 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
-/-- If two continuous `R`-multilinear maps from `R` are equal on 1, then they are equal.
+/--
+If two continuous `R`-multilinear maps from `R` are equal on 1, then they are equal.
 
-This is the multilinear version of `ContinuousLinearMap.ext_ring`. -/
+This is the multilinear version of `ContinuousLinearMap.ext_ring`.
+-/
 @[ext]
 theorem ext_ring [Finite ι] [TopologicalSpace R]
     ⦃f g : ContinuousMultilinearMap R (fun _ : ι => R) M₂⦄
@@ -623,10 +630,12 @@ section Algebra
 variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [ContinuousMul A]
 
-/-- The continuous multilinear map on `A^n`, where `A` is a normed algebra over `𝕜`, associating to
+/--
+The continuous multilinear map on `A^n`, where `A` is a normed algebra over `𝕜`, associating to
 `m` the product of all the `m i`.
 
-See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
+See also: `ContinuousMultilinearMap.mkPiAlgebra`.
+-/
 protected def mkPiAlgebraFin : A [×n]→L[R] A where
   cont := by
     change Continuous fun m => (List.ofFn m).prod
@@ -648,10 +657,12 @@ section CommAlgebra
 variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
   [TopologicalSpace A] [ContinuousMul A]
 
-/-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
+/--
+The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
 over `𝕜`, associating to `m` the product of all the `m i`.
 
-See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
+See also `ContinuousMultilinearMap.mkPiAlgebraFin`.
+-/
 protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
   cont := continuous_finsetProd _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A

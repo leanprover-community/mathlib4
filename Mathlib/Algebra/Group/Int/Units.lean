@@ -11,9 +11,10 @@ public import Mathlib.Tactic.Tauto
 
 import Mathlib.Algebra.Group.Basic
 
-/-!
-# Units in the integers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Units in the integers -/
 
 public section
 
@@ -22,7 +23,7 @@ open Nat
 
 namespace Int
 
-/-! #### Units -/
+/-! # Units -/
 
 variable {u v : ℤ}
 

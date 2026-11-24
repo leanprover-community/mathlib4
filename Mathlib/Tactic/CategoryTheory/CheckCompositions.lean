@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.CategoryTheory.Category.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 The `check_compositions` tactic,
 which checks the typing of categorical compositions in the goal,
@@ -73,7 +76,8 @@ def checkCompositionsTac : TacticM Unit := withMainContext do
   let e ← getMainTarget
   checkCompositions e
 
-/-- For each composition `f ≫ g` in the goal,
+/--
+For each composition `f ≫ g` in the goal,
 which internally is represented as `CategoryStruct.comp C inst X Y Z f g`,
 infer the types of `f` and `g` and check whether their sources and targets agree
 with `X`, `Y`, and `Z` at "instances and reducible" transparency,

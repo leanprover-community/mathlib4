@@ -9,6 +9,9 @@ public import Mathlib.Topology.MetricSpace.Congruence
 
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Similarities
 
@@ -18,9 +21,11 @@ triangles in the plane.
 
 ## Implementation notes
 
-For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry).
+For more details see the [Zulip
+discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry).
 
 ## Notation
+
 Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ : ι → P₁` and
 `v₂ : ι → P₂` be indexed families of points.
 
@@ -141,7 +146,8 @@ lemma comp_right_iff [FunLike F P₂ P₃] [DilationClass F P₂ P₃] (f : F) :
 
 end Dilation
 
-/-! Similarity is preserved under isometries.
+/-!
+Similarity is preserved under isometries.
 
 While these are trivial consequences of the dilation results, they avoid ending up with a
 `toDilation` in the expression, and so are easier to apply to plain functions.

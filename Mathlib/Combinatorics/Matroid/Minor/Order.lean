@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Contract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Minors
 
 A matroid `N = M ／ C ＼ D` obtained from a matroid `M` by a contraction then a delete,
-(or equivalently, by any number of contractions/deletions in any order) is a *minor* of `M`.
+(or equivalently, by any number of contractions/deletions in any order) is a _minor_ of `M`.
 This gives a partial order on `Matroid α` that is ubiquitous in matroid theory,
 and interacts nicely with duality and linear representations.
 
@@ -38,7 +41,7 @@ section Minor
 
 variable {α : Type*} {M M' N : Matroid α} {e : α} {I C D : Set α}
 
-/-! ### Minors -/
+/-! # Minors -/
 
 /-- `N` is a minor of `M` if `N = M ／ C ＼ D` for some `C` and `D`.
 The definition itself does not require `C` and `D` to be disjoint,

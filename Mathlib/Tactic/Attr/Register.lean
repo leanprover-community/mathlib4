@@ -9,14 +9,17 @@ public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be ma
 public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Attributes used in `Mathlib`
 
 In this file we define all `simp`-like and `label`-like attributes used in `Mathlib`. We declare all
 of them in one file for two reasons:
 
-- in Lean 4, one cannot use an attribute in the same file where it was declared;
-- this way it is easy to see which simp sets contain a given lemma.
+* in Lean 4, one cannot use an attribute in the same file where it was declared;
+* this way it is easy to see which simp sets contain a given lemma.
 -/
 
 public meta section
@@ -112,12 +115,14 @@ register_simp_attr enat_to_nat_coe
 /-- A simp set for the `pnat_to_nat` tactic. -/
 register_simp_attr pnat_to_nat_coe
 
-/-- `mon_tauto` is a simp set to prove tautologies about morphisms from some (tensor) power of `M`
+/--
+`mon_tauto` is a simp set to prove tautologies about morphisms from some (tensor) power of `M`
 to `M`, where `M` is a (commutative) monoid object in a (braided) monoidal category.
 
-**This `simp` set is incompatible with the standard simp set.**
+*This `simp` set is incompatible with the standard simp set.*
 If you want to use it, make sure to add the following to your simp call to disable the problematic
 default simp lemmas:
+
 ```
 -MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
 -MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
@@ -134,6 +139,7 @@ prescribed by the presence of unitors, associators and commutators in its expres
 
 This simp set is opinionated about its normal form, which is why it cannot be used concurrently with
 some of the simp lemmas in the standard simp set:
+
 * It eliminates all mentions of whiskers by rewriting them to tensored homs,
   which goes against `whiskerLeft_id` and `id_whiskerRight`:
   `X ◁ f = 𝟙 X ⊗ₘ f`, `f ▷ X = 𝟙 X ⊗ₘ f`.
@@ -157,21 +163,21 @@ commutators `TensorProduct.comm` inwards (to the right) until they cancel agains
 co-multiplications.
 
 The simp set makes the following choice of normal form
+
 * It regards `TensorProduct.map`, `TensorProduct.assoc`, `TensorProduct.comm` as the primitive
   constructions and rewrites everything else such as `lTensor`, `leftComm` using them.
 * It rewrites both sides into a right associated composition of linear maps.
   In particular `LinearMap.comp_assoc` and `LinearEquiv.coe_trans` are tagged.
 * It rewrites `(f₂ ⊗ g₂) ∘ (f₁ ⊗ g₁)` into `(f₂ ∘ f₁) ⊗ (g₂ ∘ g₁)`.
 
-## Notes
+# Notes
 
-- It is not confluent with `(ε ⊗ₘ id) ∘ₗ δ = λ⁻¹`.
+* It is not confluent with `(ε ⊗ₘ id) ∘ₗ δ = λ⁻¹`.
   It is often useful to `trans` (or `calc`) with a term containing
   `(ε ⊗ₘ _) ∘ₗ δ` or `(_ ⊗ₘ ε) ∘ₗ δ`,
   and use one of `map_counit_comp_comul_left` `map_counit_comp_comul_right`
   `map_counit_comp_comul_left_assoc` `map_counit_comp_comul_right_assoc` to continue.
-
-- Some lemmas (e.g. `lid_comp_map : λ ∘ₗ (f ⊗ₘ g) = g ∘ₗ λ ∘ₗ (f ⊗ₘ id)`) loops when tagged as simp,
+* Some lemmas (e.g. `lid_comp_map : λ ∘ₗ (f ⊗ₘ g) = g ∘ₗ λ ∘ₗ (f ⊗ₘ id)`) loops when tagged as simp,
   so we wrap it inside a rudimentary simproc that only fires when `g ≠ id`.
 -/
 register_simp_attr coassoc_simps

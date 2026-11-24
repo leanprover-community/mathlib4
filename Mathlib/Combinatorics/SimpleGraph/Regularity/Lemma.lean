@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Szemerédi's Regularity Lemma
 
@@ -19,22 +22,24 @@ any graph on at least `l` vertices can be partitioned into at least `l` parts an
 such that the resulting partitioned graph is `ε`-uniform.
 
 This statement is very robust to tweaking and many different versions exist. Here, we prove the
-version where the resulting partition is equitable (aka an *equipartition*), namely all parts have
+version where the resulting partition is equitable (aka an _equipartition_), namely all parts have
 the same size up to a difference of `1`.
 
 The proof we formalise goes as follows:
-1. Define an auxiliary measure of edge density, the *energy* of a partition.
+
+1. Define an auxiliary measure of edge density, the _energy_ of a partition.
 2. Start with an arbitrary equipartition of size `l`.
 3. Repeatedly break up the parts of the current equipartition in a big but controlled number of
-  parts. The key point is to break along the witnesses of non-uniformity, so that a lesser portion
-  of the pairs of parts are non-`ε`-uniform.
+   parts. The key point is to break along the witnesses of non-uniformity, so that a lesser portion
+   of the pairs of parts are non-`ε`-uniform.
 4. Check that this results in an equipartition with an energy greater than the energy of the current
-  partition, plus some constant.
+   partition, plus some constant.
 5. Since the energy is between zero and one, we can't run this process forever. Check that when the
-  process stops we have an `ε`-uniform equipartition.
+   process stops we have an `ε`-uniform equipartition.
 
 This file only contains the final result. The supporting material is spread across the
 `Combinatorics/SimpleGraph/Regularity` folder:
+
 * `Combinatorics/SimpleGraph/Regularity/Bound`: Definition of the bound on the number of parts.
   Numerical inequalities involving the lemma constants.
 * `Combinatorics/SimpleGraph/Regularity/Energy`: Definition of the energy of a simple graph along a
@@ -47,7 +52,7 @@ This file only contains the final result. The supporting material is spread acro
   Check that density between non-uniform parts increases, and that density between uniform parts
   doesn't decrease too much.
 * `Combinatorics/SimpleGraph/Regularity/Increment`: Gather all those broken up parts into the new
-  equipartition (aka *increment partition*). Check that energy increases by at least a fixed amount.
+  equipartition (aka _increment partition_). Check that energy increases by at least a fixed amount.
 * `Combinatorics/SimpleGraph/Regularity/Lemma`: Wrap everything up into an induction on the energy.
 
 ## TODO
@@ -60,7 +65,7 @@ We currently only prove the equipartition version of SRL.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 public section

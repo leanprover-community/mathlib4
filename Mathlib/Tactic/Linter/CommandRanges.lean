@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "commandRanges" linter
 
@@ -29,6 +32,7 @@ namespace Mathlib.Linter
 /--
 The "commandRanges" linter logs the `getRange?` and the `getRangeWithTrailing?` for each command.
 The format is `[start, end, trailing]`, where
+
 * `start` is the start of the command,
 * `end` is the end of the command, not including trailing whitespace and comments,
 * `trailing` is the "syntactic end" of the command, so it contains all trailing whitespace and

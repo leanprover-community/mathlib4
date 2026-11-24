@@ -11,13 +11,16 @@ public import Mathlib.Probability.Kernel.Defs
 import Mathlib.Analysis.SpecialFunctions.Sigmoid
 import Mathlib.Probability.CDF
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representation of kernels
 
 This file contains results about isolation of kernels randomness. In particular, it shows that,
 when the target space is a standard Borel space, any Markov kernel can be represented as the image
 of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemma 4.22 in
-[Foundations of Modern Probability][kallenberg2021].
+‍\[Foundations of Modern Probability\]\[kallenberg2021\].
 
 ## Main results
 
@@ -25,7 +28,6 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   for a Markov kernel `κ : Kernel X Y` with `Y` a standard Borel space,
   there exists a jointly measurable function `f : X → I → Y` such that for all `a : X`,
   `volume.map (f a) = κ a`.
-
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
   for a probability measure `μ` on a standard Borel space `Y`,
   there exists a measurable function `f : I → Y` such that `volume.map f = μ`.

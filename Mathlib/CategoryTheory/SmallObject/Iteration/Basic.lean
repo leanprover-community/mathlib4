@@ -9,7 +9,11 @@ public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 
-/-! # Transfinite iterations of a successor structure
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Transfinite iterations of a successor structure
 
 In this file, we introduce the structure `SuccStruct` on a category `C`.
 It consists of the data of an object `X₀ : C`, a successor map `succ : C → C`

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shapes of homological complexes
 
@@ -46,7 +49,8 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 
 noncomputable section
 
-/-- A `c : ComplexShape ι` describes the shape of a chain complex,
+/--
+A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
 Typically `ι` will be `ℕ`, `ℤ`, or `Fin n`.
 
@@ -75,7 +79,8 @@ namespace ComplexShape
 
 variable {ι : Type*}
 
-/-- The complex shape where only differentials from each `X.i` to itself are allowed.
+/--
+The complex shape where only differentials from each `X.i` to itself are allowed.
 
 This is mostly only useful so we can describe the relation of "related in `k` steps" below.
 -/
@@ -107,7 +112,8 @@ theorem symm_bijective :
     Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-/-- The "composition" of two `ComplexShape`s.
+/--
+The "composition" of two `ComplexShape`s.
 
 We need this to define "related in k steps" later.
 -/

@@ -11,11 +11,14 @@ public import Mathlib.Logic.Embedding.Set
 
 import Mathlib.Data.Finset.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on finiteness of sets
 
-This file should contain lemmas that prove some result under the *assumption* of `Set.Finite`.
-If your proof has as *result* `Set.Finite`, then it should go to a more specific file.
+This file should contain lemmas that prove some result under the _assumption_ of `Set.Finite`.
+If your proof has as _result_ `Set.Finite`, then it should go to a more specific file.
 
 ## Tags
 
@@ -34,7 +37,7 @@ variable {α : Type u} {β : Type v}
 
 namespace Set
 
-/-! ### Properties -/
+/-! # Properties -/
 
 theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n ↪ α), range f = s :=
@@ -66,11 +69,11 @@ theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
 theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ :=
   sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩
 
-/-! ### Infinite sets -/
+/-! # Infinite sets -/
 
 variable {s : Set α}
 
-/-! ### Order properties -/
+/-! # Order properties -/
 
 @[to_dual]
 theorem exists_min_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :

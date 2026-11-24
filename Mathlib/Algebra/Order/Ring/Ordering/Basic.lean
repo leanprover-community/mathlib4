@@ -12,6 +12,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring orderings
 
@@ -19,7 +22,7 @@ We prove basic properties of (pre)orderings on rings.
 
 ## References
 
-- [*An introduction to real algebra*, T.Y. Lam][lam_1984]
+* ‍\[_An introduction to real algebra_, T.Y. Lam\]\[lam\_1984\]
 -/
 
 @[expose] public section

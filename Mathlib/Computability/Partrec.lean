@@ -9,6 +9,9 @@ public import Mathlib.Computability.Primrec.List
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.PFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The partial recursive functions
 
@@ -20,13 +23,14 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 
 ## Main definitions
 
-- `Nat.Partrec f`: `f` is partial recursive, for functions `f : ℕ →. ℕ`
-- `Partrec f`: `f` is partial recursive, for partial functions between `Primcodable` types
-- `Computable f`: `f` is partial recursive, for total functions between `Primcodable` types
+* `Nat.Partrec f`: `f` is partial recursive, for functions `f : ℕ →. ℕ`
+* `Partrec f`: `f` is partial recursive, for partial functions between `Primcodable` types
+* `Computable f`: `f` is partial recursive, for total functions between `Primcodable` types
 
 ## References
 
-* [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
+* ‍\[Mario Carneiro, _Formalizing computability theory via partial recursive
+  functions_\]\[carneiro2019\]
 -/
 
 public section
@@ -734,16 +738,18 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
         rcases am with ⟨a₂, am₂, fa₂⟩
         exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂
-    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
-    without the `obtain`/`specialize`. It is not yet clear whether this is due to defeq abuse
-    in Mathlib or a problem in the new canonicalizer; a minimization would help. The original
-    proof was:
-    ```
-    have := h₁ (Nat.lt_succ_self _)
-    grind [mem_unique, PFun.mem_fix_iff]
-    ```
-    -/
+    #adaptation_note /--
+                     Before https://github.com/leanprover/lean4/pull/13166 (replacing grind's
+canonicalizer with a type-directed normalizer), `grind` closed this goal
+without the `obtain`/`specialize`. It is not yet clear whether this is due to
+defeq abuse in Mathlib or a problem in the new canonicalizer; a minimization
+would help. The original proof was:
+
+                     ```
+have := h₁ (Nat.lt_succ_self _)
+grind [mem_unique, PFun.mem_fix_iff]
+```
+                     -/
     obtain ⟨c, hc⟩ := h₁ (Nat.lt_succ_self _)
     specialize this _ _ hc
     grind [mem_unique, PFun.mem_fix_iff]

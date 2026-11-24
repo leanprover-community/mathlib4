@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 
 import Mathlib.Tactic.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polygons
 
@@ -94,7 +97,7 @@ theorem HasNondegenerateVertices.three_le [NeZero n] [Nontrivial R] {poly : Poly
 
 end Polygon
 
-/-! ### Interconversion with `Affine.Triangle` -/
+/-! # Interconversion with `Affine.Triangle` -/
 
 namespace Affine.Triangle
 

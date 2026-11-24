@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Grothendieck
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck pretopologies
 
@@ -27,9 +30,9 @@ coverage, pretopology, site
 
 ## References
 
-* [nLab, *Grothendieck pretopology*](https://ncatlab.org/nlab/show/Grothendieck+pretopology)
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-* [Stacks, *00VG*](https://stacks.math.columbia.edu/tag/00VG)
+* [nLab, _Grothendieck pretopology_](https://ncatlab.org/nlab/show/Grothendieck+pretopology)
+* ‍\[S. MacLane, I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
+* [Stacks, _00VG_](https://stacks.math.columbia.edu/tag/00VG)
 -/
 
 @[expose] public section
@@ -46,6 +49,8 @@ open Category Limits Presieve
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
 variable (C)
 
+
+set_option doc.verso false
 /--
 A (Grothendieck) pretopology on `C` consists of a collection of families of morphisms with a fixed
 target `X` for every object `X` in `C`, called "coverings" of `X`, which satisfies the following
@@ -70,6 +75,8 @@ structure Pretopology extends Precoverage C where
     ∀ ⦃X : C⦄ (S : Presieve X) (Ti : ∀ ⦃Y⦄ (f : Y ⟶ X), S f → Presieve Y),
       S ∈ coverings X → (∀ ⦃Y⦄ (f) (H : S f), Ti f H ∈ coverings Y) → S.bind Ti ∈ coverings X
 
+
+set_option doc.verso true
 namespace Pretopology
 
 instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
@@ -104,10 +111,11 @@ instance : Inhabited (Pretopology C) :=
 
 variable {C}
 
-/-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
+/--
+A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
-See also [MM92] Chapter III, Section 2, Equation (2).
+See also \[MM92\] Chapter III, Section 2, Equation (2).
 -/
 @[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
@@ -133,9 +141,10 @@ theorem mem_toGrothendieck (K : Pretopology C) (X S) :
 end Pretopology
 
 variable {C} in
-/-- The largest pretopology generating the given Grothendieck topology.
+/--
+The largest pretopology generating the given Grothendieck topology.
 
-See [MM92] Chapter III, Section 2, Equations (3,4).
+See \[MM92\] Chapter III, Section 2, Equations (3,4).
 -/
 def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopology C where
   coverings X := {R | Sieve.generate R ∈ J X}

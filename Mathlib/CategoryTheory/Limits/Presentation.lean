@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limit presentations
 
@@ -19,14 +22,14 @@ presentation of a colimit of objects that are equipped with presentations.)
 
 ## Main definitions:
 
-- `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
+* `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : Dᵢ ⟶ X` making `X` into the colimit of the `Dᵢ`.
-- `CategoryTheory.Limits.LimitPresentation`: A limit presentation of `X` over `J` is a diagram
+* `CategoryTheory.Limits.LimitPresentation`: A limit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : X ⟶ Dᵢ` making `X` into the limit of the `Dᵢ`.
 
 ## TODOs:
 
-- Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
+* Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
 
 @[expose] public section

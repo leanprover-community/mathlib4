@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Galois.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Main definitions and results
 
@@ -14,7 +17,6 @@ In a field extension `K/k`
 
 * `FiniteGaloisIntermediateField` : The type of intermediate fields of `K/k`
   that are finite and Galois over `k`
-
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
   finite `s : Set K` to `k`.
 

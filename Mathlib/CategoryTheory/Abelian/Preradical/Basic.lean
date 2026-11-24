@@ -9,10 +9,13 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Subobject.MonoOver
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preradicals
 
-A **preradical** on an abelian category `C` is a monomorphism in the functor category `C ⥤ C`
+A *preradical* on an abelian category `C` is a monomorphism in the functor category `C ⥤ C`
 with codomain `𝟭 C`, i.e. an element of `MonoOver (𝟭 C)`.
 
 ## Main definitions
@@ -24,8 +27,8 @@ with codomain `𝟭 C`, i.e. an element of `MonoOver (𝟭 C)`.
 
 ## References
 
-* [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
-* [Bo Stenström, *Rings of Quotients*][stenstrom1975]
+* ‍\[Bo Stenström, _Rings and Modules of Quotients_\]\[stenstrom1971\]
+* ‍\[Bo Stenström, _Rings of Quotients_\]\[stenstrom1975\]
 
 ## Tags
 

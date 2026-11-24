@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of Harmonic Functions
 
@@ -29,9 +32,7 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
   {f : ℂ → F} {x : ℂ}
 
-/-!
-## Harmonicity of Analytic Functions on the Complex Plane
--/
+/-! # Harmonicity of Analytic Functions on the Complex Plane -/
 
 /--
 Continuously complex-differentiable functions on ℂ are harmonic.
@@ -68,9 +69,7 @@ If `f : ℂ → ℂ` is complex-analytic, then its complex conjugate is harmonic
 theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) : HarmonicAt (conj f) x :=
   (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
 
-/-!
-## Harmonicity of `log ‖analytic‖`
--/
+/-! # Harmonicity of `log ‖analytic‖` -/
 
 /- Helper lemma for AnalyticAt.harmonicAt_log_norm -/
 private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁g : AnalyticAt ℂ g z)

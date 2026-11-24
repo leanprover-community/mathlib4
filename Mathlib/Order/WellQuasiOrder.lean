@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well quasi-orders
 
@@ -28,14 +31,16 @@ wqo, pwo, well quasi-order, partial well order, dickson order
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
-/-- A well quasi-order or WQO is a relation such that any infinite sequence contains an infinite
+/--
+A well quasi-order or WQO is a relation such that any infinite sequence contains an infinite
 monotonic subsequence, or equivalently, two elements `f m` and `f n` with `m < n` and
 `r (f m) (f n)`.
 
 For a preorder, this is equivalent to having a well-founded order with no infinite antichains.
 
 Despite the nomenclature, we don't require the relation to be preordered. Moreover, a well
-quasi-order will not in general be a well-order. -/
+quasi-order will not in general be a well-order.
+-/
 def WellQuasiOrdered (r : α → α → Prop) : Prop :=
   ∀ f : ℕ → α, ∃ m n : ℕ, m < n ∧ r (f m) (f n)
 
@@ -117,9 +122,11 @@ theorem WellQuasiOrdered.of_surjective {α β} {r : α → α → Prop}
   have ⟨_, _, hle, hr⟩ := h (Function.surjInv hf ∘ seq)
   exact ⟨_, _, hle, by simpa [Function.surjInv_eq] using f.map_rel hr⟩
 
-/-- A typeclass for an order with a well-quasi-ordered `≤` relation.
+/--
+A typeclass for an order with a well-quasi-ordered `≤` relation.
 
-Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
+Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation.
+-/
 @[mk_iff wellQuasiOrderedLE_def]
 class WellQuasiOrderedLE (α : Type*) [LE α] where
   wqo : @WellQuasiOrdered α (· ≤ ·)

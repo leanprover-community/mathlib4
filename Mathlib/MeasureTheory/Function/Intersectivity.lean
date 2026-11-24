@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Average
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bergelson's intersectivity lemma
 
@@ -18,8 +21,8 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 
 ## References
 
-[Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`*][bergelson1985]
+‍\[Bergelson, _Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
+`ℤᵐ`_\]\[bergelson1985\]
 
 ## TODO
 
@@ -39,10 +42,12 @@ open scoped ENNReal
 
 variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {r : ℝ≥0∞}
 
-/-- **Bergelson Intersectivity Lemma**: In a finite measure space, a sequence of events that have
+/--
+*Bergelson Intersectivity Lemma*: In a finite measure space, a sequence of events that have
 measure at least `r` has an infinite subset whose finite intersections all have positive volume.
 
-TODO: The infinity of `t` should be strengthened to `t` having positive natural density. -/
+TODO: The infinity of `t` should be strengthened to `t` having positive natural density.
+-/
 lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ : r ≠ 0)
     (hr : ∀ n, r ≤ μ (s n)) :
     ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by

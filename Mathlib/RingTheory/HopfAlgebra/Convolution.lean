@@ -8,11 +8,15 @@ module
 public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution product on Hopf algebra maps
 
 This file constructs the ring structure on bialgebra homs `C → A` where `C` and `A` are Hopf
 algebras and multiplication is given by
+
 ```
          |
          μ
@@ -22,13 +26,15 @@ f * g = f g
          δ
          |
 ```
+
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 
 It also provides:
-- `HopfAlgebra.ofAntipodeOfAdjoin`, which upgrades a bialgebra `A` to a Hopf algebra
-given an algebra hom `S : A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities on a generating set.
- `HopfAlgebra.ofSurjective`, which transfers the Hopf algebra axioms along a
-surjective bialgebra homomorphism intertwining the antipodes.
+
+* `HopfAlgebra.ofAntipodeOfAdjoin`, which upgrades a bialgebra `A` to a Hopf algebra
+  given an algebra hom `S : A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities on a generating set.
+  `HopfAlgebra.ofSurjective`, which transfers the Hopf algebra axioms along a
+  surjective bialgebra homomorphism intertwining the antipodes.
 -/
 
 public section

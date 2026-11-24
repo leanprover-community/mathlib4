@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphisms
 
@@ -15,19 +18,19 @@ This file defines isomorphisms between objects of a category.
 
 ## Main definitions
 
-- `structure Iso` : a bundled isomorphism between two objects of a category;
-- `class IsIso` : an unbundled version of `Iso`;
+* `structure Iso` : a bundled isomorphism between two objects of a category;
+* `class IsIso` : an unbundled version of `Iso`;
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
-- `inv f`, for the inverse of a morphism with `[IsIso f]`
-- `asIso` : convert from `IsIso` to `Iso` (noncomputable);
-- `of_iso` : convert from `Iso` to `IsIso`;
-- standard operations on isomorphisms (composition, inverse etc)
+* `inv f`, for the inverse of a morphism with `[IsIso f]`
+* `asIso` : convert from `IsIso` to `Iso` (noncomputable);
+* `of_iso` : convert from `Iso` to `IsIso`;
+* standard operations on isomorphisms (composition, inverse etc)
 
 ## Notation
 
-- `X ≅ Y` : same as `Iso X Y`;
-- `α ≪≫ β` : composition of two isomorphisms; it is called `Iso.trans`
+* `X ≅ Y` : same as `Iso X Y`;
+* `α ≪≫ β` : composition of two isomorphisms; it is called `Iso.trans`
 
 ## Tags
 
@@ -45,11 +48,13 @@ namespace CategoryTheory
 
 open Category
 
-/-- An isomorphism (a.k.a. an invertible morphism) between two objects of a category.
+/--
+An isomorphism (a.k.a. an invertible morphism) between two objects of a category.
 The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
-the role of morphisms. -/
+the role of morphisms.
+-/
 @[stacks 0017, wikidata Q189112]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
@@ -231,10 +236,12 @@ def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
 end Iso
 
 set_option linter.translate.warnInvalid false in
-/-- The `IsIso` typeclass expresses that a morphism is invertible.
+/--
+The `IsIso` typeclass expresses that a morphism is invertible.
 
 Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
-the inverse using `inv f`. -/
+the inverse using `inv f`.
+-/
 @[to_dual self]
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/

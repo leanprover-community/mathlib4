@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear growth
 
@@ -16,8 +19,8 @@ versions, using a `liminf` and a `limsup` respectively. Most properties are deve
 
 ## Main definitions
 
-- `linearGrowthInf`, `linearGrowthSup`: respectively, `liminf` and `limsup` of `(u n) / n`.
-- `linearGrowthInfTopHom`, `linearGrowthSupBotHom`: the functions `linearGrowthInf`,
+* `linearGrowthInf`, `linearGrowthSup`: respectively, `liminf` and `limsup` of `(u n) / n`.
+* `linearGrowthInfTopHom`, `linearGrowthSupBotHom`: the functions `linearGrowthInf`,
   `linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## TODO
@@ -35,7 +38,7 @@ namespace LinearGrowth
 open EReal Filter Function
 open scoped Topology
 
-/-! ### Definition -/
+/-! # Definition -/
 
 section definition
 
@@ -49,7 +52,7 @@ noncomputable def linearGrowthSup (u : ℕ → R) : R := limsup (fun n ↦ u n /
 
 end definition
 
-/-! ### Basic properties -/
+/-! # Basic properties -/
 
 section basic_properties
 
@@ -153,7 +156,7 @@ lemma _root_.Frequently.le_linearGrowthSup (h : ∃ᶠ n : ℕ in atTop, a * n �
     a ≤ linearGrowthSup u :=
   le_linearGrowthSup_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' <| by gcongr
 
-/-! ### Special cases -/
+/-! # Special cases -/
 
 lemma linearGrowthSup_bot : linearGrowthSup (⊥ : ℕ → EReal) = (⊥ : EReal) := by
   nth_rw 2 [← limsup_const (f := atTop (α := ℕ)) ⊥]
@@ -211,7 +214,7 @@ lemma tendsto_atTop_of_linearGrowthInf_pos (h : 0 < linearGrowthInf u) :
   rw [← coe_coe_eq_natCast, ← coe_mul, EReal.coe_lt_coe_iff, mul_comm]
   exact (div_lt_iff₀ a_0).1 (hn.trans_lt (Nat.cast_lt.2 k_n))
 
-/-! ### Addition and negation -/
+/-! # Addition and negation -/
 
 lemma le_linearGrowthInf_add :
     linearGrowthInf u + linearGrowthInf v ≤ linearGrowthInf (u + v) := by
@@ -259,7 +262,7 @@ lemma linearGrowthSup_inv : linearGrowthSup (-u) = - linearGrowthInf u := by
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]
 
-/-! ### Affine bounds -/
+/-! # Affine bounds -/
 
 lemma linearGrowthInf_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTop, u n ≤ v n + b) :
     linearGrowthInf u ≤ linearGrowthInf v := by
@@ -281,7 +284,7 @@ lemma linearGrowthSup_le_of_eventually_le (hb : b ≠ ⊤) (h : ∀ᶠ n in atTo
     · exact Or.inr EReal.zero_ne_top
     · exact Or.inr EReal.zero_ne_bot
 
-/-! ### Infimum and supremum -/
+/-! # Infimum and supremum -/
 
 lemma linearGrowthInf_inf :
     linearGrowthInf (u ⊓ v) = min (linearGrowthInf u) (linearGrowthInf v) := by
@@ -329,7 +332,7 @@ lemma linearGrowthSup_iSup {ι : Type*} [Finite ι] (u : ι → ℕ → EReal) :
 
 end basic_properties
 
-/-! ### Composition -/
+/-! # Composition -/
 
 section composition
 
@@ -411,7 +414,7 @@ lemma linearGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 0 ≤ u n)
   rw [comp_apply, mul_comm a b, mul_assoc b a]
   exact uvn_b.trans <| by gcongr
 
-/-! ### Monotone sequences -/
+/-! # Monotone sequences -/
 
 lemma _root_.Monotone.linearGrowthInf_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
     0 ≤ linearGrowthInf u := by

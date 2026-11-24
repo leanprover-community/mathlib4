@@ -7,16 +7,18 @@ module
 
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # seminormFromBounded
 
-In this file, we prove [BGR, Proposition 1.2.1/2][bosch-guntzer-remmert] : given a nonzero
+In this file, we prove \[BGR, Proposition 1.2.1/2\]\[bosch-guntzer-remmert\] : given a nonzero
 additive group seminorm on a commutative ring `R` such that for some `c : ℝ` and every `x y : R`,
 the inequality `f (x * y) ≤ c * f x * f y` is satisfied, we create a ring seminorm on `R`.
 
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
 this condition holds.
-
 
 ## Main Definitions
 
@@ -27,7 +29,6 @@ this condition holds.
   nonnegative, multiplicatively bounded and subadditive, that it preserves `0` and negation, and
   that `f` has trivial kernel.
 
-
 ## Main Results
 
 * `seminormFromBounded_isNonarchimedean` : if `f : R → ℝ` is a nonnegative, multiplicatively
@@ -37,7 +38,8 @@ this condition holds.
   `seminormFromBounded' f`.
 
 ## References
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Transfer Homomorphism
 
@@ -15,14 +18,15 @@ In this file we construct the transfer homomorphism.
 
 ## Main definitions
 
-- `diff ϕ S T` : The difference of two left transversals `S` and `T` under the homomorphism `ϕ`.
-- `transfer ϕ` : The transfer homomorphism induced by `ϕ`.
-- `transferCenterPow`: The transfer homomorphism `G →* center G`.
+* `diff ϕ S T` : The difference of two left transversals `S` and `T` under the homomorphism `ϕ`.
+* `transfer ϕ` : The transfer homomorphism induced by `ϕ`.
+* `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
-- `transferCenterPow_apply`:
+
+* `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
-- `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
+* `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
 

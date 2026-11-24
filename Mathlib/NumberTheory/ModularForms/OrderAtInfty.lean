@@ -12,6 +12,9 @@ import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.EReal.Inv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order at infinity
 
@@ -21,14 +24,14 @@ independent of any holomorphy or periodicity hypotheses; but if `f` is periodic 
 holomorphic on `ℍ ∪ ∞`, we show that the order of vanishing is determined by the order of
 vanishing of its `q`-expansion (divided by the period).
 
-### Main statements (general functions)
+## Main statements (general functions)
 
 * `UpperHalfPlane.le_orderAtInfty_iff`: the order is at least `t` iff there is an exponential
   bound at every rate `s < t`.
 * `orderAtInfty_eq_of_isTheta`: matching exponential upper and lower bounds determine the order at
   infinity.
 
-### Main statements (periodic holomorphic functions)
+## Main statements (periodic holomorphic functions)
 
 Here the functions are holomorphic on `ℍ`, bounded at infinity, and periodic with positive
 period `h`. (The obvious examples are modular forms, but we keep the hypotheses un-bundled, since
@@ -50,9 +53,7 @@ public section
 
 namespace UpperHalfPlane
 
-/-!
-## Elementary theory for arbitrary functions
--/
+/-! # Elementary theory for arbitrary functions -/
 
 variable {E : Type*} {f : ℍ → E} {s t : ℝ}
 
@@ -205,7 +206,7 @@ lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL 
     orderAtInfty_comp_equiv (fun τ ↦ ‖f τ‖) (MulAction.toPerm g) ha him
 
 /-!
-## Theory for periodic holomorphic functions
+# Theory for periodic holomorphic functions
 
 If we assume `f` is periodic, and holomorphic on `ℍ ∪ ∞`, then its order at infinity is related
 to the order of vanishing of its cusp function.
@@ -312,9 +313,7 @@ lemma orderAtInfty_mul_of_holo (hh : 0 < h) {h' : ℝ} (hh' : 0 < h')
     (Fin.forall_fin_two.mpr ⟨fun _ ↦ hfhol, fun _ ↦ hghol⟩)
     (Fin.forall_fin_two.mpr ⟨fun _ ↦ hfbdd, fun _ ↦ hgbdd⟩)
 
-/-!
-## Relation to the `q`-expansion
--/
+/-! # Relation to the `q`-expansion -/
 
 /-- The order at infinity is the order of the `q`-expansion divided by the period. -/
 lemma orderAtInfty_eq_qExpansion_order (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)

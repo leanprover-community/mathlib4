@@ -12,6 +12,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Order.Filter.AtTopBot.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
 
@@ -33,9 +36,7 @@ variable {G : Type*} [CommGroup G] {g g' : G}
 -- don't declare `[IsTopologicalAddGroup G]`, here as some results require
 -- `[IsUniformAddGroup G]` instead
 
-/-!
-## Sums over `ℕ`
--/
+/-! # Sums over `ℕ` -/
 
 section Nat
 
@@ -306,7 +307,7 @@ end IsTopologicalGroup
 end Nat
 
 /-!
-## Sums over `ℤ`
+# Sums over `ℤ`
 
 In this section we prove a variety of lemmas relating sums over `ℕ` to sums over `ℤ`.
 -/

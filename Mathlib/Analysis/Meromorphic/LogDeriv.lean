@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Order
 
-/-!
-# Meromorphic API for the Logarithmic Derivative
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Meromorphic API for the Logarithmic Derivative -/
 
 @[expose] public section
 
@@ -21,7 +22,7 @@ variable
   {f g : 𝕜 → 𝕜'} {x : 𝕜} {U : Set 𝕜}
 
 /-!
-## Arithmetic on Codiscrete Sets
+# Arithmetic on Codiscrete Sets
 
 The pointwise lemma `logDeriv_mul` requires differentiability and nonvanishing of the factors at the
 point in question. For meromorphic functions whose order is nowhere `⊤`, both conditions hold away

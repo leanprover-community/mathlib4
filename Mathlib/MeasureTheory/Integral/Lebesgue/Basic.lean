@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
 
@@ -230,12 +233,14 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
   · exact le_of_eq <| SimpleFunc.lintegral_congr <| this.mono fun a hnt => by
       simp [restrict_apply s ht.compl, hnt]
 
-/-- Lebesgue integral over a set is monotone in function.
+/--
+Lebesgue integral over a set is monotone in function.
 
 This version assumes that the upper estimate is an a.e. measurable function
 and the estimate holds a.e. on the set.
 See also `setLIntegral_mono_ae'` for a version that assumes measurability of the set
-but assumes no regularity of either function. -/
+but assumes no regularity of either function.
+-/
 theorem setLIntegral_mono_ae {s : Set α} {f g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.restrict s))
     (hfg : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ := by
   rcases exists_measurable_le_lintegral_eq (μ.restrict s) f with ⟨f', hf'm, hle, hf'⟩
@@ -316,10 +321,12 @@ theorem lintegral_eq_zero_of_ae_eq_zero {f : α → ℝ≥0∞} (h : f =ᵐ[μ] 
     ∫⁻ a, f a ∂μ = 0 :=
   (lintegral_congr_ae h).trans lintegral_zero
 
-/-- The Lebesgue integral is zero iff the function is a.e. zero.
+/--
+The Lebesgue integral is zero iff the function is a.e. zero.
 
 The measurability assumption is necessary, otherwise there are counterexamples: for instance, the
-conclusion fails if `f` is the characteristic function of a Vitali set. -/
+conclusion fails if `f` is the characteristic function of a Vitali set.
+-/
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by

@@ -8,9 +8,10 @@ module
 public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.RingTheory.RootsOfUnity.Complex
 
-/-!
-# Further Results on multiplicative characters
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Further Results on multiplicative characters -/
 
 @[expose] public section
 
@@ -83,9 +84,7 @@ end Ring
 
 section IsCyclic
 
-/-!
-### Multiplicative characters on finite monoids with cyclic unit group
--/
+/-! # Multiplicative characters on finite monoids with cyclic unit group -/
 
 variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
 variable {R : Type*} [CommMonoidWithZero R]
@@ -129,9 +128,7 @@ end IsCyclic
 
 section FiniteField
 
-/-!
-### Multiplicative characters on finite fields
--/
+/-! # Multiplicative characters on finite fields -/
 
 section Fintype
 

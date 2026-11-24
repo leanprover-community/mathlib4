@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.Algebra.Module.LocalizedModule.Int
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness properties under localization
 
@@ -18,11 +21,11 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 ## Main results
 
-- `Module.Finite.of_isLocalizedModule`: If `M` is a finite `R`-module,
+* `Module.Finite.of_isLocalizedModule`: If `M` is a finite `R`-module,
   `S` is a submonoid of `R`, `Rₚ` is the localization of `R` at `S`
   and `Mₚ` is the localization of `M` at `S`, then `Mₚ` is a finite
   `Rₚ`-module.
-- `Module.Finite.of_localizationSpan_finite`: If `M` is an `R`-module
+* `Module.Finite.of_localizationSpan_finite`: If `M` is an `R`-module
   and `{ r }` is a finite set generating the unit ideal such that
   `Mᵣ` is a finite `Rᵣ`-module for each `r`, then `M` is a finite `R`-module.
 

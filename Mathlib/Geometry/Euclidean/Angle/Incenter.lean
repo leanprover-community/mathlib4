@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Euclidean.Triangle
 import Mathlib.Geometry.Euclidean.Angle.Bisector
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles and incenters and excenters.
 
@@ -391,8 +394,10 @@ lemma angle_excenter_singleton_sub {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ 
       t.angle_excenter_singleton_eq_pi_sub_angle_div_two h₁₂ h₁₃ h₂₃, angle_comm]
   field
 
-/-- Auxiliary lemma for dist_nsPole_point_eq_dist_nsPole_excenter in an oriented
-two-dimensional space: affine independence sub-proof. -/
+/--
+Auxiliary lemma for dist\_nsPole\_point\_eq\_dist\_nsPole\_excenter in an oriented
+two-dimensional space: affine independence sub-proof.
+-/
 private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux_indep [Fact (finrank ℝ V = 2)]
     [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
@@ -465,8 +470,10 @@ private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux_indep [Fact (finrank
   simp_rw [← Set.image_univ, B, A, C, ← Set.image_singleton]
   grind
 
-/-- Auxiliary lemma for dist_nsPole_point_eq_dist_nsPole_excenter in an oriented
-two-dimensional space. -/
+/--
+Auxiliary lemma for dist\_nsPole\_point\_eq\_dist\_nsPole\_excenter in an oriented
+two-dimensional space.
+-/
 private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux [Fact (finrank ℝ V = 2)]
     [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

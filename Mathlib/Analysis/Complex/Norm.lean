@@ -9,9 +9,10 @@ public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Basic.Complex.Basic
 
-/-!
-  # Norm on the complex numbers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Norm on the complex numbers -/
 
 @[expose] public section
 
@@ -284,7 +285,7 @@ theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_c
 theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nndist_comm, nndist_conj_self]
 
-/-! ### Cauchy sequences -/
+/-! # Cauchy sequences -/
 
 theorem isCauSeq_re (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).re := fun _ ε0 ↦
   (f.cauchy ε0).imp fun i H j ij ↦

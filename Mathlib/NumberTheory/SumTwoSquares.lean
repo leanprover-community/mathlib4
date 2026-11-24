@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of two squares
 
@@ -40,9 +43,7 @@ theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
 
 end Fermat
 
-/-!
-### Generalities on sums of two squares
--/
+/-! # Generalities on sums of two squares -/
 
 
 section General
@@ -63,9 +64,7 @@ theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b =
 
 end General
 
-/-!
-### Results on when -1 is a square modulo a natural number
--/
+/-! # Results on when -1 is a square modulo a natural number -/
 
 
 section NegOneSquare
@@ -138,9 +137,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     rw [Nat.cast_mul]
     exact help p q hp hq
 
-/-!
-### Relation to sums of two squares
--/
+/-! # Relation to sums of two squares -/
 
 
 /-- If `-1` is a square modulo the natural number `n`, then `n` is a sum of two squares. -/
@@ -198,9 +195,7 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
 
 end NegOneSquare
 
-/-!
-### Characterization in terms of the prime factorization
--/
+/-! # Characterization in terms of the prime factorization -/
 
 
 section Main

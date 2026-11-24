@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Sublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boolean subalgebras
 
@@ -194,9 +197,11 @@ instance instInfSet : InfSet (BooleanSubalgebra α) where
 
 instance instInhabited : Inhabited (BooleanSubalgebra α) := ⟨⊥⟩
 
-/-- The top Boolean subalgebra is isomorphic to the original Boolean algebra.
+/--
+The top Boolean subalgebra is isomorphic to the original Boolean algebra.
 
-This is the Boolean subalgebra version of `Equiv.Set.univ α`. -/
+This is the Boolean subalgebra version of `Equiv.Set.univ α`.
+-/
 def topEquiv : (⊤ : BooleanSubalgebra α) ≃o α where
   toEquiv := Equiv.Set.univ _
   map_rel_iff' := .rfl

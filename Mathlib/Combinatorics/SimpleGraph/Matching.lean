@@ -13,12 +13,15 @@ import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matchings
 
-A *matching* for a simple graph is a set of disjoint pairs of adjacent vertices, and the set of all
-the vertices in a matching is called its *support* (and sometimes the vertices in the support are
-said to be *saturated* by the matching). A *perfect matching* is a matching whose support contains
+A _matching_ for a simple graph is a set of disjoint pairs of adjacent vertices, and the set of all
+the vertices in a matching is called its _support_ (and sometimes the vertices in the support are
+said to be _saturated_ by the matching). A _perfect matching_ is a matching whose support contains
 every vertex of the graph.
 
 In this module, we represent a matching as a subgraph whose vertices are each incident to at most
@@ -28,24 +31,20 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * `SimpleGraph.Subgraph.IsMatching`: `M.IsMatching` means that `M` is a matching of its
   underlying graph.
-
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
-
 * `SimpleGraph.IsMatchingFree` means that a graph `G` has no perfect matchings.
-
 * `SimpleGraph.IsCycles` means that a graph consists of cycles (including cycles of length 0,
   also known as isolated vertices)
-
 * `SimpleGraph.IsAlternating` means that edges in a graph `G` are alternatingly
   included and not included in some other graph `G'`
 
 ## TODO
 
-* Define an `other` function and prove useful results about it (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/266205863)
-
-* Provide a bicoloring for matchings (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/265495120)
-
+* Define an `other` function and prove useful results about it
+  (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/266205863)
+* Provide a bicoloring for matchings
+  (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/265495120)
 * Tutte's Theorem
 -/
 
@@ -62,7 +61,7 @@ namespace Subgraph
 
 /--
 The subgraph `M` of `G` is a matching if every vertex of `M` is incident to exactly one edge in `M`.
-We say that the vertices in `M.support` are *matched* or *saturated*.
+We say that the vertices in `M.support` are _matched_ or _saturated_.
 -/
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 

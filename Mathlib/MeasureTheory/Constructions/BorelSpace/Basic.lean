@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel (measurable) space
 
@@ -119,11 +122,12 @@ namespace Mathlib.Tactic.Borelize
 
 open Lean Elab Term Tactic Meta
 
-/-- The behaviour of `borelize α` depends on the existing assumptions on `α`.
+/--
+The behaviour of `borelize α` depends on the existing assumptions on `α`.
 
-- if `α` is a topological space with instances `[MeasurableSpace α] [BorelSpace α]`, then
+* if `α` is a topological space with instances `[MeasurableSpace α] [BorelSpace α]`, then
   `borelize α` replaces the former instance by `borel α`;
-- otherwise, `borelize α` adds instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`.
+* otherwise, `borelize α` adds instances `borel α : MeasurableSpace α` and `⟨rfl⟩ : BorelSpace α`.
 
 Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
@@ -280,12 +284,14 @@ theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK :
   rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
   exact fun x hx y hy ↦ (hy.mem_measurableSet_iff hs).1 (hKs hx)
 
-/-- In an R₁ topological space with Borel measure `μ`,
+/--
+In an R₁ topological space with Borel measure `μ`,
 the measure of the closure of a compact set `K` is equal to the measure of `K`.
 
 See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
 for a version that assumes `μ` to be outer regular
-but does not assume the `σ`-algebra to be Borel. -/
+but does not assume the `σ`-algebra to be Borel.
+-/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
   refine le_antisymm ?_ (measure_mono subset_closure)

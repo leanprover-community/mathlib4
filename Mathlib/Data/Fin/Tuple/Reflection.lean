@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for tuples `Fin m → α`
 
@@ -58,6 +61,8 @@ example {f₁ f₂ : α → β} (a₁ a₂ : α) : seq ![f₁, f₂] ![a₁, a�
 def map (f : α → β) {m} : (Fin m → α) → Fin m → β :=
   seq fun _ => f
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] :=
@@ -68,6 +73,8 @@ example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a�
 theorem map_eq (f : α → β) {m} (v : Fin m → α) : map f v = f ∘ v :=
   seq_eq _ _
 
+
+set_option doc.verso true
 example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] :=
   (map_eq _ _).symm
 
@@ -75,6 +82,8 @@ example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a�
 def etaExpand {m} (v : Fin m → α) : Fin m → α :=
   map id v
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (a : Fin 2 → α) : a = ![a 0, a 1] :=
@@ -85,6 +94,8 @@ example (a : Fin 2 → α) : a = ![a 0, a 1] :=
 theorem etaExpand_eq {m} (v : Fin m → α) : etaExpand v = v :=
   map_eq id v
 
+
+set_option doc.verso true
 example (a : Fin 2 → α) : a = ![a 0, a 1] :=
   (etaExpand_eq _).symm
 
@@ -93,6 +104,8 @@ def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
   | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
@@ -106,6 +119,8 @@ theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, 
     rfl
   | .succ n, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
 
+
+set_option doc.verso true
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
   (forall_iff _).symm
 
@@ -114,6 +129,8 @@ def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
   | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
@@ -126,6 +143,8 @@ theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, 
     rfl
   | .succ n, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
 
+
+set_option doc.verso true
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
 
@@ -144,6 +163,8 @@ def prod [Mul α] [One α] : ∀ {m} (_ : Fin m → α), α
   | 1, v => v 0
   | _ + 2, v => prod (fun i => v (Fin.castSucc i)) * v (Fin.last _)
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
@@ -161,6 +182,8 @@ theorem prod_eq [CommMonoid α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a 
   | 1, a => (Fintype.prod_unique a).symm
   | n + 2, a => by rw [Fin.prod_univ_castSucc, prod, prod_eq]
 
+
+set_option doc.verso true
 example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
   (prod_eq _).symm
 

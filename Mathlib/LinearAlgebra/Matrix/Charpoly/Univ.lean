@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The universal characteristic polynomial
 
@@ -38,7 +41,8 @@ variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [Decida
 variable (f : R →+* S)
 
 variable (R) in
-/-- The universal characteristic polynomial for `n × n`-matrices,
+/--
+The universal characteristic polynomial for `n × n`-matrices,
 is the characteristic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
 Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
@@ -46,7 +50,8 @@ see `Matrix.charpoly.univ_coeff_isHomogeneous`.
 
 By evaluating the coefficients at the entries of a matrix `M`,
 one obtains the characteristic polynomial of `M`,
-see `Matrix.charpoly.univ_map_eval₂Hom`. -/
+see `Matrix.charpoly.univ_map_eval₂Hom`.
+-/
 noncomputable
 abbrev univ : Polynomial (MvPolynomial (n × n) R) :=
   charpoly <| mvPolynomialX n n R

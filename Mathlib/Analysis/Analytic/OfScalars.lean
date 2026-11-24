@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar series
 
@@ -14,6 +17,7 @@ This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in ter
 `c₀, c₁, c₂, …`.
 
 ## Main definitions / results:
+
 * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
 * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
   otherwise.

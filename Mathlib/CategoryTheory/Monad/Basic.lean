@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monads
 
@@ -30,11 +33,13 @@ universe v₁ u₁
 -- morphism levels before object levels. See note [category theory universes].
 variable (C : Type u₁) [Category.{v₁} C]
 
-/-- The data of a monad on C consists of an endofunctor T together with natural transformations
+/--
+The data of a monad on C consists of an endofunctor T together with natural transformations
 `η : 𝟭 C ⟶ T` and `μ : T ⋙ T ⟶ T` satisfying three equations:
-- `T μ_X ≫ μ_X = μ_(TX) ≫ μ_X` (associativity)
-- `η_(TX) ≫ μ_X = 1_X` (left unit)
-- `Tη_X ≫ μ_X = 1_X` (right unit)
+
+* `T μ_X ≫ μ_X = μ_(TX) ≫ μ_X` (associativity)
+* `η_(TX) ≫ μ_X = 1_X` (left unit)
+* `Tη_X ≫ μ_X = 1_X` (right unit)
 -/
 structure Monad extends C ⥤ C where
   /-- The unit for the monad. -/
@@ -45,11 +50,13 @@ structure Monad extends C ⥤ C where
   left_unit (X : C) : dsimp% η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
   right_unit (X : C) : dsimp% toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
 
-/-- The data of a comonad on C consists of an endofunctor G together with natural transformations
+/--
+The data of a comonad on C consists of an endofunctor G together with natural transformations
 `ε : G ⟶ 𝟭 C` and `δ : G ⟶ G ⋙ G` satisfying three equations:
-- `δ_X ≫ G δ_X = δ_X ≫ δ_(GX)` (coassociativity)
-- `δ_X ≫ ε_(GX) = 1_X` (left counit)
-- `δ_X ≫ G ε_X = 1_X` (right counit)
+
+* `δ_X ≫ G δ_X = δ_X ≫ δ_(GX)` (coassociativity)
+* `δ_X ≫ ε_(GX) = 1_X` (left counit)
+* `δ_X ≫ G ε_X = 1_X` (right counit)
 -/
 @[to_dual]
 structure Comonad extends C ⥤ C where

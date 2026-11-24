@@ -8,14 +8,17 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Topology.Constructions.SumProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological monoids - definitions
 
 In this file we define three mixin typeclasses:
 
-- `ContinuousMul M` says that the multiplication on `M` is continuous as a function on `M × M`;
-- `ContinuousAdd M` says that the addition on `M` is continuous as a function on `M × M`.
-- `SeparatelyContinuousMul M` says that the multiplication on `M` is continuous in each argument
+* `ContinuousMul M` says that the multiplication on `M` is continuous as a function on `M × M`;
+* `ContinuousAdd M` says that the addition on `M` is continuous as a function on `M × M`.
+* `SeparatelyContinuousMul M` says that the multiplication on `M` is continuous in each argument
   separately. This is strictly weaker than `ContinuousMul M`, but arises frequently in practice in
   functional analysis where one often considers topologies weaker than the norm topology. In these
   topologies it is frequently the case that the multiplication is not jointly continuous, but is
@@ -32,23 +35,27 @@ public section
 
 open scoped Topology
 
-/-- Basic hypothesis to talk about a topological additive monoid or a topological additive
+/--
+Basic hypothesis to talk about a topological additive monoid or a topological additive
 semigroup. A topological additive monoid over `M`, for example, is obtained by requiring both the
 instances `AddMonoid M` and `ContinuousAdd M`.
 
 Continuity in each argument separately can be stated using `SeparatelyContinuousAdd α`. If one wants
 only continuity in either the left or right argument, but not both one can use
-`ContinuousConstVAdd α α`/`ContinuousConstVAdd αᵐᵒᵖ α`. -/
+`ContinuousConstVAdd α α`/`ContinuousConstVAdd αᵐᵒᵖ α`.
+-/
 class ContinuousAdd (M : Type*) [TopologicalSpace M] [Add M] : Prop where
   continuous_add : Continuous fun p : M × M => p.1 + p.2
 
-/-- Basic hypothesis to talk about a topological monoid or a topological semigroup.
+/--
+Basic hypothesis to talk about a topological monoid or a topological semigroup.
 A topological monoid over `M`, for example, is obtained by requiring both the instances `Monoid M`
 and `ContinuousMul M`.
 
 Continuity in each argument separately can be stated using `SeparatelyContinuousMul α`. If one wants
 only continuity in either the left or right argument, but not both one can use
-`ContinuousConstSMul α α`/`ContinuousConstSMul αᵐᵒᵖ α`. -/
+`ContinuousConstSMul α α`/`ContinuousConstSMul αᵐᵒᵖ α`.
+-/
 @[to_additive]
 class ContinuousMul (M : Type*) [TopologicalSpace M] [Mul M] : Prop where
   continuous_mul : Continuous fun p : M × M => p.1 * p.2

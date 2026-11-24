@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Coeff
 
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials and degrees
 
@@ -68,8 +71,9 @@ theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
     p.eval x = ∑ i ∈ Finset.range n, p.coeff i * x ^ i := by
   rw [eval_eq_sum, p.sum_over_range' _ _ hn]; simp
 
-/-- A reformulation of the expansion of (1 + y)^d:
-$$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdot y^{i - 1}.$$
+/--
+A reformulation of the expansion of (1 + y)^d:
+$$`(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdot y^{i - 1}.`
 -/
 theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
     eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =

@@ -9,17 +9,20 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Oka
 public import Mathlib.RingTheory.Noetherian.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian rings and prime ideals
 
 ## Main results
 
-- `IsNoetherianRing.of_prime`: a ring where all prime ideals are finitely generated is a noetherian
+* `IsNoetherianRing.of_prime`: a ring where all prime ideals are finitely generated is a noetherian
   ring
 
 ## References
 
-- [cohen1950]: *Commutative rings with restricted minimum condition*, I. S. Cohen, Theorem 2
+* ‍\[cohen1950\]: _Commutative rings with restricted minimum condition_, I. S. Cohen, Theorem 2
 -/
 
 public section

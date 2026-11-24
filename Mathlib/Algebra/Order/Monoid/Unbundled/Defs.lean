@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Order.Monotone.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Covariants and contravariants
 
@@ -74,21 +78,26 @@ section Variants
 variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
 variable (M N)
 
-/-- `Covariant` is useful to formulate succinctly statements about the interactions between an
+/--
+`Covariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
-See the `CovariantClass` doc-string for its meaning. -/
+See the `CovariantClass` doc-string for its meaning.
+-/
 def Covariant : Prop :=
   ∀ (m) {n₁ n₂}, r n₁ n₂ → r (μ m n₁) (μ m n₂)
 
-/-- `Contravariant` is useful to formulate succinctly statements about the interactions between an
+/--
+`Contravariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
-See the `ContravariantClass` doc-string for its meaning. -/
+See the `ContravariantClass` doc-string for its meaning.
+-/
 def Contravariant : Prop :=
   ∀ (m) {n₁ n₂}, r (μ m n₁) (μ m n₂) → r n₁ n₂
 
-/-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
+/--
+Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
 `CovariantClass` says that "the action `μ` preserves the relation `r`."
 
 More precisely, the `CovariantClass` is a class taking two Types `M N`, together with an "action"
@@ -104,7 +113,8 @@ class CovariantClass : Prop where
   `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)` -/
   protected elim : Covariant M N μ r
 
-/-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
+/--
+Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
 `ContravariantClass` says that "if the result of the action `μ` on a pair satisfies the
 relation `r`, then the initial pair satisfied the relation `r`."
 
@@ -122,140 +132,172 @@ class ContravariantClass : Prop where
   `r` also holds for the pair `(n₁, n₂)`. -/
   protected elim : Contravariant M N μ r
 
-/-- Typeclass for monotonicity of multiplication on the left,
+/--
+Typeclass for monotonicity of multiplication on the left,
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
-/-- Typeclass for monotonicity of multiplication on the right,
+/--
+Typeclass for monotonicity of multiplication on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
-/-- Typeclass for monotonicity of addition on the left,
+/--
+Typeclass for monotonicity of addition on the left,
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
-/-- Typeclass for monotonicity of addition on the right,
+/--
+Typeclass for monotonicity of addition on the right,
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftMono MulRightMono
 
-/-- Typeclass for monotonicity of multiplication on the left,
+/--
+Typeclass for monotonicity of multiplication on the left,
 namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
-/-- Typeclass for monotonicity of multiplication on the right,
+/--
+Typeclass for monotonicity of multiplication on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
-/-- Typeclass for monotonicity of addition on the left,
+/--
+Typeclass for monotonicity of addition on the left,
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
-/-- Typeclass for monotonicity of addition on the right,
+/--
+Typeclass for monotonicity of addition on the right,
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 
-/-- Typeclass for strict reverse monotonicity of multiplication on the left,
+/--
+Typeclass for strict reverse monotonicity of multiplication on the left,
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
-/-- Typeclass for strict reverse monotonicity of multiplication on the right,
+/--
+Typeclass for strict reverse monotonicity of multiplication on the right,
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedMonoid`. -/
+`IsOrderedMonoid`.
+-/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
-/-- Typeclass for strict reverse monotonicity of addition on the left,
+/--
+Typeclass for strict reverse monotonicity of addition on the left,
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
-/-- Typeclass for strict reverse monotonicity of addition on the right,
+/--
+Typeclass for strict reverse monotonicity of addition on the right,
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`.
+-/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
 
-/-- Typeclass for reverse monotonicity of multiplication on the left,
+/--
+Typeclass for reverse monotonicity of multiplication on the left,
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedCancelMonoid`. -/
+`IsOrderedCancelMonoid`.
+-/
 class MulLeftReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_left'` instead. -/
   protected le_of_mul_le_mul_left' {a b₁ b₂ : M} : a * b₁ ≤ a * b₂ → b₁ ≤ b₂
 
-/-- Typeclass for reverse monotonicity of multiplication on the right,
+/--
+Typeclass for reverse monotonicity of multiplication on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedCancelMonoid`. -/
+`IsOrderedCancelMonoid`.
+-/
 class MulRightReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_right'` instead. -/
   protected le_of_mul_le_mul_right' {b a₁ a₂ : M} : a₁ * b ≤ a₂ * b → a₁ ≤ a₂
 
-/-- Typeclass for reverse monotonicity of addition on the left,
+/--
+Typeclass for reverse monotonicity of addition on the left,
 namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedCancelAddMonoid`. -/
+`IsOrderedCancelAddMonoid`.
+-/
 class AddLeftReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_left` instead. -/
   protected le_of_add_le_add_left {a b₁ b₂ : M} : a + b₁ ≤ a + b₂ → b₁ ≤ b₂
 
-/-- Typeclass for reverse monotonicity of addition on the right,
+/--
+Typeclass for reverse monotonicity of addition on the right,
 namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedCancelAddMonoid`. -/
+`IsOrderedCancelAddMonoid`.
+-/
 class AddRightReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_right` instead. -/
   protected le_of_add_le_add_right {b a₁ a₂ : M} : a₁ + b ≤ a₂ + b → a₁ ≤ a₂

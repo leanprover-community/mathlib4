@@ -10,7 +10,11 @@ public meta import Mathlib.Lean.Elab.Tactic.Meta
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-/-! # Executing actions using the infotree
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Executing actions using the infotree
 
 This file contains helper functions for running `CoreM`, `MetaM` and tactic actions
 in the context of an infotree node.
@@ -24,9 +28,11 @@ namespace Lean.Elab.ContextInfo
 
 variable {α}
 
-/-- Embeds a `CoreM` action in `CommandElabM` by supplying the information stored in `info`.
+/--
+Embeds a `CoreM` action in `CommandElabM` by supplying the information stored in `info`.
 
 Copy of `ContextInfo.runCoreM` that makes use of the `CommandElabM` context for:
+
 * logging messages produced by the `CoreM` action,
 * metavariable generation,
 * auxiliary declaration generation.
@@ -53,9 +59,11 @@ def runCoreMWithMessages (info : ContextInfo) (x : CoreM α) : CommandElabM α :
     traceState.traces := state.traceState.traces ++ newState.traceState.traces }
   return x
 
-/-- Embeds a `MetaM` action in `CommandElabM` by supplying the information stored in `info`.
+/--
+Embeds a `MetaM` action in `CommandElabM` by supplying the information stored in `info`.
 
 Copy of `ContextInfo.runMetaM` that makes use of the `CommandElabM` context for:
+
 * message logging (messages produced by the `CoreM` action are migrated back),
 * metavariable generation,
 * auxiliary declaration generation,
@@ -81,11 +89,13 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
     x goal.mvarId!
 
-/-- Run tactic code, given by a piece of syntax, in the context of an infotree node.
+/--
+Run tactic code, given by a piece of syntax, in the context of an infotree node.
 The optional `MetaM` argument `m` performs postprocessing on the goals produced.
 
 Messages logged by `code` (for example `Try this` suggestions) are discarded:
-use `runTacticCodeCapturingInfoTree` to inspect them. -/
+use `runTacticCodeCapturingInfoTree` to inspect them.
+-/
 def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax)
     (m : Σ α : Type, MVarId → MetaM α := ⟨MVarId, pure⟩) :
     CommandElabM (List m.1) := do
@@ -99,9 +109,12 @@ def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : S
   finally
     modify fun s => { s with messages }
 
-/-- Embeds a `CoreM` action in `CommandElabM`, returning both the result and the InfoTrees produced.
+/--
+Embeds a `CoreM` action in `CommandElabM`, returning both the result and the InfoTrees produced.
 
-Similar to `runCoreMWithMessages` but also captures InfoTrees for extracting "Try this:" suggestions. -/
+Similar to `runCoreMWithMessages` but also captures InfoTrees for extracting "Try this:"
+suggestions.
+-/
 def runCoreMCapturingInfoTree (info : ContextInfo) (x : CoreM α) :
     CommandElabM (α × PersistentArray InfoTree) := do
   let env := info.env.setExporting false
@@ -137,10 +150,12 @@ def runTacticCapturingInfoTree (ctx : ContextInfo) (i : TacticInfo) (goal : MVar
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
     x goal.mvarId!
 
-/-- Run tactic code in the context of an infotree node, capturing InfoTrees for suggestion extraction.
+/--
+Run tactic code in the context of an infotree node, capturing InfoTrees for suggestion extraction.
 
 Returns both the resulting goals and the InfoTrees produced during tactic execution.
-Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions. -/
+Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions.
+-/
 def runTacticCodeCapturingInfoTree (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId)
     (code : Syntax) : CommandElabM (List MVarId × PersistentArray InfoTree) := do
   let termCtx ← liftTermElabM read

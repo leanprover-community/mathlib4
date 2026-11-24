@@ -12,6 +12,9 @@ import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diagonal matrices
 
@@ -39,10 +42,12 @@ section Diagonal
 
 variable [DecidableEq n]
 
-/-- `diagonal d` is the square matrix such that `(diagonal d) i i = d i` and `(diagonal d) i j = 0`
+/--
+`diagonal d` is the square matrix such that `(diagonal d) i i = d i` and `(diagonal d) i j = 0`
 if `i ≠ j`.
 
 This is available in bundled forms as:
+
 * `Matrix.diagonalAddMonoidHom`
 * `Matrix.diagonalLinearMap`
 * `Matrix.diagonalRingHom`
@@ -286,9 +291,11 @@ end Diagonal
 
 section Diag
 
-/-- The diagonal of a square matrix.
+/--
+The diagonal of a square matrix.
 
 This is available in bundled forms as:
+
 * `Matrix.diagAddMonoidHom`
 * `Matrix.diagLinearMap`
 -/

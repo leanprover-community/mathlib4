@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse function theorem
 
@@ -30,7 +33,6 @@ and prove two versions of the inverse function theorem:
 * `HasStrictFDerivAt.to_localInverse`: if `f` has an invertible derivative `f'` at `a` in the
   strict sense (`hf`), then `hf.localInverse f f' a` has derivative `f'.symm` at `f a` in the
   strict sense;
-
 * `HasStrictFDerivAt.to_local_left_inverse`: if `f` has an invertible derivative `f'` at `a` in
   the strict sense and `g` is locally left inverse to `f` near `a`, then `g` has derivative
   `f'.symm` at `f a` in the strict sense.
@@ -62,13 +64,14 @@ open ContinuousLinearMap (id)
 
 
 /-!
-### Inverse function theorem
+# Inverse function theorem
 
 Let `f : E → F` be a map defined on a complete vector
 space `E`. Assume that `f` has an invertible derivative `f' : E ≃L[𝕜] F` at `a : E` in the strict
 sense. Then `f` approximates `f'` in the sense of `ApproximatesLinearOn` on an open neighborhood
 of `a`, and we can apply `ApproximatesLinearOn.toOpenPartialHomeomorph` to construct the inverse
-function. -/
+function.
+-/
 
 namespace HasStrictFDerivAt
 
@@ -190,11 +193,13 @@ theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     hf.image_mem_toOpenPartialHomeomorph_target <| by
     simpa [← localInverse_def] using hf
 
-/-- If `f : E → F` has an invertible derivative `f'` at `a` in the sense of strict differentiability
+/--
+If `f : E → F` has an invertible derivative `f'` at `a` in the sense of strict differentiability
 and `g (f x) = x` in a neighborhood of `a`, then `g` has derivative `f'.symm` at `f a`.
 
 For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[CompleteSpace E]`
-see `of_local_left_inverse`. -/
+see `of_local_left_inverse`.
+-/
 theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) (f a) :=
   hf.to_localInverse.congr_of_eventuallyEq <| (hf.localInverse_unique hg).mono fun _ => Eq.symm

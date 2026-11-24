@@ -8,10 +8,14 @@ module
 public import Mathlib.Control.Bitraversable.Lemmas
 public import Mathlib.Control.Traversable.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitraversable instances
 
 This file provides `Bitraversable` instances for concrete bifunctors:
+
 * `Prod`
 * `Sum`
 * `Functor.Const`
@@ -21,7 +25,8 @@ This file provides `Bitraversable` instances for concrete bifunctors:
 
 ## References
 
-* Hackage: <https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html>
+* Hackage: [
+  https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html)
 
 ## Tags
 

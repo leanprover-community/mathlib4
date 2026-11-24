@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change of cotangent spaces
 
@@ -17,8 +20,8 @@ cotangent space of the extended ideal `I · (T ⊗[R] S)`.
 
 ## Main definitions
 
-- `Ideal.tensorCotangentHom`: The canonical map `T ⊗[R] I/I² → (I · (T ⊗[R] S))/(I · (T ⊗[R] S))²`.
-- `Ideal.tensorCotangentEquiv`: When `T` is `R`-flat, `tensorCotangentHom` is an isomorphism.
+* `Ideal.tensorCotangentHom`: The canonical map `T ⊗[R] I/I² → (I · (T ⊗[R] S))/(I · (T ⊗[R] S))²`.
+* `Ideal.tensorCotangentEquiv`: When `T` is `R`-flat, `tensorCotangentHom` is an isomorphism.
 -/
 
 @[expose] public noncomputable section

@@ -9,13 +9,17 @@ public meta import Lean.Elab.Declaration
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Suppressing compilation to executable code in a file or in a section
 
 Currently, the compiler may spend a lot of time trying to produce executable code for complicated
 definitions. This is a waste of resources for definitions in area of mathematics that will never
-lead to executable code. The command `suppress_compilation` is a hack to disable code generation
-on all definitions (in a section or in a whole file). See the issue https://github.com/leanprover-community/mathlib4/issues/7103
+lead to executable code. The command `suppress_compilation` is a hack to disable code generation on
+all definitions (in a section or in a whole file). See the issue
+https://github.com/leanprover-community/mathlib4/issues/7103
 
 To compile a definition even when `suppress_compilation` is active, use
 `unsuppress_compilation in def foo : ...`. This is activated by default on notations to make

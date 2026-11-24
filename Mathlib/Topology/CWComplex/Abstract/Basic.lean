@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Sphere
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # CW-complexes
 
@@ -17,11 +20,10 @@ This file defines (relative) CW-complexes using a categorical approach.
 ## Main definitions
 
 * `RelativeCWComplex`: A relative CW-complex is the colimit of an expanding sequence of subspaces
-  `sk i` (called the $(i-1)$-skeleton) for `i ≥ 0`, where `sk 0` (i.e., the $(-1)$-skeleton) is an
-  arbitrary topological space, and each `sk (n + 1)` (i.e., the $n$-skeleton) is obtained from
-  `sk n` (i.e., the $(n-1)$-skeleton) by attaching `n`-disks.
-
-* `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., $(-1)$-skeleton) is empty.
+  `sk i` (called the $`(i-1)`-skeleton) for `i ≥ 0`, where `sk 0` (i.e., the $`(-1)`-skeleton) is an
+  arbitrary topological space, and each `sk (n + 1)` (i.e., the $`n`-skeleton) is obtained from
+  `sk n` (i.e., the $`(n-1)`-skeleton) by attaching `n`-disks.
+* `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., $`(-1)`-skeleton) is empty.
 
 ## Implementation Notes
 
@@ -30,12 +32,13 @@ defining them via colimits and transfinite compositions.
 For a classical approach that defines CW complexes via explicit cells and attaching maps,
 see `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 The two approaches are equivalent but serve different purposes:
+
 * This approach is more suitable for categorical arguments and generalizations
 * The classical approach is more convenient for concrete geometric arguments
 
 ## References
 
-* [R. Fritsch and R. Piccinini, *Cellular Structures in Topology*][fritsch-piccinini1990]
+* ‍\[R. Fritsch and R. Piccinini, _Cellular Structures in Topology_\]\[fritsch-piccinini1990\]
 
 ## TODO
 

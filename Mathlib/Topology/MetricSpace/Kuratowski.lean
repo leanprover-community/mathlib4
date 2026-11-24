@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Topology.Sets.Compacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Kuratowski embedding
 
@@ -28,7 +31,7 @@ variable {α : Type u}
 
 namespace KuratowskiEmbedding
 
-/-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
+/-! # Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
 variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
@@ -105,7 +108,8 @@ def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α 
 
 /--
 The Kuratowski embedding is an isometry.
-Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]. -/
+Theorem 2.1 of \[Assaf Naor, _Metric Embeddings and Lipschitz Extensions_\]\[Naor-2015\].
+-/
 protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
@@ -121,7 +125,7 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
 A function `f : α → ℓ^∞(ι, ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
 extension to the whole space.
 
-Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]
+Theorem 2.2 of \[Assaf Naor, _Metric Embeddings and Lipschitz Extensions_\]\[Naor-2015\]
 
 The same result for the case of a finite type `ι` is implemented in
 `LipschitzOnWith.extend_pi`.

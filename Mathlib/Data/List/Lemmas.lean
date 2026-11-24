@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.Set.Image
 
-/-! # Some lemmas about lists involving sets
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Some lemmas about lists involving sets
 
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
@@ -78,8 +82,9 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
 
 
 /-!
-  ### MapAccumr and Foldr
-  Some lemmas relation `mapAccumr` and `foldr`
+# MapAccumr and Foldr
+
+Some lemmas relation `mapAccumr` and `foldr`
 -/
 section MapAccumr
 

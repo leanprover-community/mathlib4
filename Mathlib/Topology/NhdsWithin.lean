@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods relative to a subset
 
@@ -32,9 +35,7 @@ open Set Filter Function Topology
 
 variable {α β : Type*} [TopologicalSpace α]
 
-/-!
-## Properties of the neighborhood-within filter
--/
+/-! # Properties of the neighborhood-within filter -/
 
 @[simp]
 theorem nhds_bind_nhdsWithin {a : α} {s : Set α} : ((𝓝 a).bind fun x => 𝓝[s] x) = 𝓝[s] a :=
@@ -496,9 +497,7 @@ lemma Set.MapsTo.preimage_mem_nhdsWithin {f : α → β} {s : Set α} {t : Set �
     (hst : MapsTo f s t) : f ⁻¹' t ∈ 𝓝[s] x :=
   Filter.mem_of_superset self_mem_nhdsWithin hst
 
-/-!
-### `nhdsWithin` and subtypes
--/
+/-! # `nhdsWithin` and subtypes -/
 
 theorem mem_nhdsWithin_subtype {s : Set α} {a : { x // x ∈ s }} {t u : Set { x // x ∈ s }} :
     t ∈ 𝓝[u] a ↔ t ∈ comap ((↑) : s → α) (𝓝[(↑) '' u] a) := by
@@ -553,9 +552,7 @@ theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t
   simp only [SetCoe.exists, exists_and_left, exists_eq_left]
   exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
 
-/-!
-## The `nhdsSetWithin`-filter
--/
+/-! # The `nhdsSetWithin`-filter -/
 
 variable [TopologicalSpace β]
 

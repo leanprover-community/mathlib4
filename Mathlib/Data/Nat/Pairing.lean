@@ -9,6 +9,10 @@ public import Mathlib.Data.Set.Lattice.Image
 
 import Mathlib.Data.Nat.Sqrt
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Naturals pairing function
 

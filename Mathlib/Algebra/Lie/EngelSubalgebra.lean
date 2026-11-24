@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Engel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Engel subalgebras
 
@@ -39,11 +42,13 @@ namespace LieSubalgebra
 
 variable (R)
 
-/-- The Engel subalgebra `Engel R x` consists of
+/--
+The Engel subalgebra `Engel R x` consists of
 all `y : L` such that `(ad R L x)^n` kills `y` for some `n`.
 
 Engel subalgebras are self-normalizing (`LieSubalgebra.normalizer_engel`),
-and minimal ones are nilpotent, hence Cartan subalgebras. -/
+and minimal ones are nilpotent, hence Cartan subalgebras.
+-/
 @[simps!]
 def engel (x : L) : LieSubalgebra R L :=
   { (ad R L x).maxGenEigenspace 0 with

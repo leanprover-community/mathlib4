@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
 import Mathlib.Data.ZMod.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive characters of finite rings and fields
 
@@ -18,7 +21,7 @@ a finite ring or field.
 
 ## Main definitions and results
 
-We define an additive character `ψ` to be *primitive* if `mulShift ψ a` is trivial only when
+We define an additive character `ψ` to be _primitive_ if `mulShift ψ a` is trivial only when
 `a = 0`.
 
 We show that when `ψ` is primitive, then the map `a ↦ mulShift ψ a` is injective
@@ -56,8 +59,10 @@ lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
   simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte,
     ← map_nsmul_eq_pow, nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_eq_one]
 
-/-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
-elements are nontrivial. -/
+/--
+An additive character is _primitive_ iff all its multiplicative shifts by nonzero
+elements are nontrivial.
+-/
 def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulShift ψ a ≠ 1
 
 /-- The composition of a primitive additive character with an injective monoid homomorphism
@@ -105,9 +110,7 @@ structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] wh
   /-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
   prim : IsPrimitive char
 
-/-!
-### Additive characters on `ZMod n`
--/
+/-! # Additive characters on `ZMod n` -/
 
 section ZMod
 
@@ -200,15 +203,15 @@ end ZModChar
 
 end Additive
 
-/-!
-### Existence of a primitive additive character on a finite field
--/
+/-! # Existence of a primitive additive character on a finite field -/
 
-/-- There is a primitive additive character on the finite field `F` if the characteristic
+/--
+There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
 
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
-additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
+additive character on `ZMod p`, where `p` is the characteristic of `F`.
+-/
 noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
@@ -228,9 +231,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     exact ne_one_iff.2
       ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', IsPrimitive.of_ne_one hψ'⟩
-/-!
-### The sum of all character values
--/
+/-! # The sum of all character values -/
 
 section sum
 
@@ -266,9 +267,7 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
     simp_rw [mul_comm]
     exact mod_cast sum_eq_zero_of_ne_one (hψ h)
 
-/-!
-### Complex-valued additive characters
--/
+/-! # Complex-valued additive characters -/
 
 section Ring
 

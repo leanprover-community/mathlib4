@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecificLimits.RCLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Estimates for the complex logarithm
 
@@ -30,9 +33,7 @@ Refactor using general Taylor series theory, once this exists in Mathlib.
 
 namespace Complex
 
-/-!
-### Integral representation of the complex log
--/
+/-! # Integral representation of the complex log -/
 
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
@@ -58,9 +59,7 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
   convert! log_eq_integral hz using 5
   rw [sub_eq_add_neg, smul_neg]
 
-/-!
-### The Taylor polynomials of the logarithm
--/
+/-! # The Taylor polynomials of the logarithm -/
 
 /-- The `n`th Taylor polynomial of `log` at `1`, as a function `ℂ → ℂ` -/
 noncomputable
@@ -98,9 +97,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
     convert HasDerivAt.const_mul _ this using 2
     ring
 
-/-!
-### Bounds for the difference between log and its Taylor polynomials
--/
+/-! # Bounds for the difference between log and its Taylor polynomials -/
 
 lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     HasDerivAt (fun z : ℂ ↦ log (1 + z) - logTaylor (n + 1) z) ((-z) ^ n * (1 + z)⁻¹) z := by

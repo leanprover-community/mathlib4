@@ -12,10 +12,14 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Find
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic of semirings
 
 ## Main definitions
+
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
@@ -33,9 +37,11 @@ namespace CharP
 section AddMonoidWithOne
 variable [AddMonoidWithOne R] (p : ℕ)
 
-/-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
+/--
+The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
 
-*Warning*: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide.
+_Warning_: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide.
+
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`;
 * `CharZero R` requires an injection `ℕ ↪ R`.
 
@@ -311,7 +317,7 @@ lemma not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p �
 end NeZero
 
 /-!
-### Exponential characteristic
+# Exponential characteristic
 
 This section defines the exponential characteristic, which is defined to be 1 for a ring with
 characteristic 0 and the same as the ordinary characteristic, if the ordinary characteristic is

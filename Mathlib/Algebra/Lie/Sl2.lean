@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lie algebra `sl₂` and its representations
 
@@ -15,6 +18,7 @@ distinguished position in the general theory. This file provides some basic defi
 about `sl₂`.
 
 ## Main definitions:
+
 * `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
   standard relations for `sl₂`.
 * `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a

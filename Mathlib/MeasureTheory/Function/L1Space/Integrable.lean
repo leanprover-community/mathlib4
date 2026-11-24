@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrable functions
 
@@ -49,7 +52,7 @@ variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
 
 namespace MeasureTheory
 
-/-! ### The predicate `Integrable` -/
+/-! # The predicate `Integrable` -/
 
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
@@ -964,7 +967,7 @@ end ENNReal
 
 section PosPart
 
-/-! ### Lemmas used for defining the positive part of an `L¹` function -/
+/-! # Lemmas used for defining the positive part of an `L¹` function -/
 
 
 @[fun_prop]

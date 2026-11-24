@@ -9,6 +9,9 @@ public import Mathlib.Computability.Language
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular Expressions
 
@@ -18,9 +21,9 @@ computer science such as the POSIX standard.
 
 ## TODO
 
-Currently, we do not show that regular expressions and DFAs/NFAs are equivalent.
-Multiple competing PRs towards that goal are in review.
-See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
+Currently, we do not show that regular expressions and DFAs/NFAs are equivalent. Multiple competing
+PRs towards that goal are in review. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
 -/
 
 @[expose] public section
@@ -36,8 +39,10 @@ variable {α β γ : Type*}
 -- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
-/-- This is the definition of regular expressions. The names used here are meant to mirror the
+/--
+This is the definition of regular expressions. The names used here are meant to mirror the
 [definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
+
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
@@ -91,7 +96,8 @@ theorem plus_def (P Q : RegularExpression α) : plus P Q = P + Q :=
 theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
-/-- `matches' P` provides a language which contains all strings that `P` matches.
+/--
+`matches' P` provides a language which contains all strings that `P` matches.
 
 Not named `matches` since that is a reserved word.
 -/

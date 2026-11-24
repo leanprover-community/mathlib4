@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.PathConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasiconvex and quasiconcave functions
 
@@ -26,7 +29,7 @@ quasiconcavity, and monotonicity implies quasilinearity.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Quasiconvex_function
+* https://en.wikipedia.org/wiki/Quasiconvex\_function
 -/
 
 @[expose] public section

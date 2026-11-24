@@ -265,3 +265,16 @@ notation3 "Objet " "mathématique" => Type
 #guard_msgs in #check PSum
 
 end Test
+
+/-! If `doc.verso` was enabled in the file defining `notation3`, defining `notation3`
+with Verso disabled would break. -/
+
+set_option doc.verso false
+
+/-- A {lean}`Type` -/
+notation3 "foo" => Type
+
+set_option doc.verso true
+
+/-- A {lean}`Type` -/
+notation3 "foo2" => Type

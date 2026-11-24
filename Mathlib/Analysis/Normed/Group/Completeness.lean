@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 
 import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completeness of normed groups
 
@@ -22,7 +25,7 @@ series.
 
 ## References
 
-* [bergh_lofstrom_1976] `NormedAddCommGroup.completeSpace_of_summable_imp_tendsto` and
+* ‍\[bergh\_lofstrom\_1976\] `NormedAddCommGroup.completeSpace_of_summable_imp_tendsto` and
   `NormedAddCommGroup.summable_imp_tendsto_of_complete` correspond to the two directions of
   Lemma 2.2.1.
 

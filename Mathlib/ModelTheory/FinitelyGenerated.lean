@@ -10,6 +10,9 @@ public import Mathlib.ModelTheory.Substructures
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Finite.Range
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely Generated First-Order Structures
 
@@ -18,11 +21,10 @@ generated, similarly to other finitely-generated objects in the algebra library.
 
 ## Main Definitions
 
-- `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
-- `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
-- `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
-- `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
-
+* `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
+* `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
+* `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
+* `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
 
 ## TODO
 

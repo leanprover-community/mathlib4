@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.BooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint indexed families of sets
 
@@ -22,9 +25,7 @@ open Function
 
 variable {α β : Type*} {ι : Sort*} {κ : ι → Sort*}
 
-/-!
-### Disjoint sets
--/
+/-! # Disjoint sets -/
 
 section Disjoint
 

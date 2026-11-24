@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.UniformSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform structure on topological groups
 
@@ -15,7 +18,7 @@ Given a topological group `G`, one can naturally build two uniform structures
 (the "left" and "right" ones) on `G` inducing its topology.
 This file defines typeclasses for groups equipped with either of these uniform structures, as well
 as a separate typeclass for the (very common) case where the given uniform structure
-coincides with **both** the left and right uniform structures.
+coincides with *both* the left and right uniform structures.
 
 ## Main declarations
 
@@ -60,46 +63,54 @@ open Filter
 
 variable {G Gₗ Gᵣ : Type*}
 
-/-- A **right-uniform additive group** is a topological additive group endowed with the associated
+/--
+A *right-uniform additive group* is a topological additive group endowed with the associated
 right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
 `(x, y) ↦ y + (-x)`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
-precisely when `y + (-x)` is infinitely close to `0`. -/
+precisely when `y + (-x)` is infinitely close to `0`.
+-/
 class IsRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     extends IsTopologicalAddGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.2 + (-x.1)) (𝓝 0)
 
-/-- A **right-uniform group** is a topological group endowed with the associated
+/--
+A *right-uniform group* is a topological group endowed with the associated
 right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
 `(x, y) ↦ y * x⁻¹`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
-precisely when `y * x⁻¹` is infinitely close to `1`. -/
+precisely when `y * x⁻¹` is infinitely close to `1`.
+-/
 @[to_additive]
 class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     extends IsTopologicalGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
 
-/-- A **left-uniform additive group** is a topological additive group endowed with the associated
+/--
+A *left-uniform additive group* is a topological additive group endowed with the associated
 left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
 `(x, y) ↦ (-x) + y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
-precisely when `(-x) + y` is infinitely close to `0`. -/
+precisely when `(-x) + y` is infinitely close to `0`.
+-/
 class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     extends IsTopologicalAddGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
 
-/-- A **left-uniform group** is a topological group endowed with the associated
+/--
+A *left-uniform group* is a topological group endowed with the associated
 left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
 `(x, y) ↦ x⁻¹ * y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
-precisely when `x⁻¹ * y` is infinitely close to `1`. -/
+precisely when `x⁻¹ * y` is infinitely close to `1`.
+-/
 @[to_additive]
 class IsLeftUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     extends IsTopologicalGroup G where
@@ -175,32 +186,36 @@ open Filter Set
 
 variable {α : Type*} {β : Type*}
 
-/-- A uniform group is a group in which multiplication and inversion are uniformly continuous.
+/--
+A uniform group is a group in which multiplication and inversion are uniformly continuous.
 
 `IsUniformGroup G` is equivalent to the fact that `G` is a topological group, and the uniformity
-coincides with **both** the associated left and right uniformities
+coincides with *both* the associated left and right uniformities
 (see `IsUniformGroup.isRightUniformGroup`, `IsUniformGroup.isLeftUniformGroup` and
 `IsUniformGroup.of_left_right`).
 
-Since there are topological groups where these two uniformities do **not** coincide,
+Since there are topological groups where these two uniformities do *not* coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
 case for commutative groups, which are the main motivation for the existence of this
-typeclass. -/
+typeclass.
+-/
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
-/-- A uniform additive group is an additive group in which addition and negation are
+/--
+A uniform additive group is an additive group in which addition and negation are
 uniformly continuous.
 
 `IsUniformAddGroup G` is equivalent to the fact that `G` is a topological additive group, and the
-uniformity coincides with **both** the associated left and right uniformities
+uniformity coincides with *both* the associated left and right uniformities
 (see `IsUniformAddGroup.isRightUniformAddGroup`, `IsUniformAddGroup.isLeftUniformAddGroup` and
 `IsUniformAddGroup.of_left_right`).
 
-Since there are topological groups where these two uniformities do **not** coincide,
+Since there are topological groups where these two uniformities do *not* coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
 case for commutative groups, which are the main motivation for the existence of this
-typeclass. -/
+typeclass.
+-/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
 
@@ -610,20 +625,24 @@ open Filter
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
-/-- The right uniformity on a topological group (as opposed to the left uniformity).
+/--
+The right uniformity on a topological group (as opposed to the left uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`IsUniformGroup.of_compactSpace`). -/
+`IsUniformGroup.of_compactSpace`).
+-/
 @[to_additive (attr := instance_reducible)
-/-- The right uniformity on a topological additive group (as opposed to the left
+/--
+The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+additive groups (see `IsUniformAddGroup.of_compactSpace`).
+-/]
 def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
   symm :=
@@ -653,20 +672,24 @@ open Filter
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
-/-- The left uniformity on a topological group (as opposed to the right uniformity).
+/--
+The left uniformity on a topological group (as opposed to the right uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`IsUniformGroup.of_compactSpace`). -/
+`IsUniformGroup.of_compactSpace`).
+-/
 @[to_additive (attr := instance_reducible)
-/-- The left uniformity on a topological additive group (as opposed to the right
+/--
+The left uniformity on a topological additive group (as opposed to the right
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+additive groups (see `IsUniformAddGroup.of_compactSpace`).
+-/]
 def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
   symm :=

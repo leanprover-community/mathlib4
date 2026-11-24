@@ -11,11 +11,15 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The rank of a linear map
 
 ## Main Definition
--  `LinearMap.rank`: The rank of a linear map.
+
+* `LinearMap.rank`: The rank of a linear map.
 -/
 
 public section
@@ -72,9 +76,11 @@ variable [AddCommGroup V'₁] [Module K V'₁]
 theorem rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le_right g f
 
-/-- The rank of the composition of two maps is less than the minimum of their ranks.
+/--
+The rank of the composition of two maps is less than the minimum of their ranks.
 
-See `lift_rank_comp_le` for the universe-polymorphic version. -/
+See `lift_rank_comp_le` for the universe-polymorphic version.
+-/
 theorem rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) :
     rank (f.comp g) ≤ min (rank f) (rank g) := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le g f

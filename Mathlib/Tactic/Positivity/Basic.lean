@@ -15,8 +15,11 @@ public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Positivity.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `positivity` core extensions
+# `positivity` core extensions
 
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
@@ -551,10 +554,12 @@ meta def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
     pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
 
-/-- Extension for `Nat.gcd`.
+/--
+Extension for `Nat.gcd`.
 Uses positivity of the left term, if available, then tries the right term.
 
-The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
+The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`.
+-/
 @[positivity Nat.gcd _ _]
 meta def evalNatGCD : PositivityExt where eval {u α} z p e :=
   match p with | none => throwError "not PartialOrder ℕ" | some p => do

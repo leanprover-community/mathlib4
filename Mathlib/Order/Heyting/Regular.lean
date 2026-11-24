@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Heyting regular elements
 
@@ -24,7 +27,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 ## References
 
-* [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
+* ‍\[Francis Borceux, _Handbook of Categorical Algebra III_\]\[borceux-vol3\]
 -/
 
 @[expose] public section

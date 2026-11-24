@@ -11,6 +11,9 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.Tactic.MoveAdd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integral of the real power of a nonnegative function
 
@@ -48,13 +51,15 @@ variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
 
 section Layercake
 
-/-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) ≥ t}`.
 
 See `MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul` for a version with sets of the form
-`{ω | f(ω) > t}` instead. -/
+`{ω | f(ω) > t}` instead.
+-/
 theorem lintegral_rpow_eq_lintegral_meas_le_mul
     {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f) (f_mble : AEMeasurable f μ) {p : ℝ} (p_pos : 0 < p) :
     ∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ =
@@ -82,13 +87,15 @@ end Layercake
 
 section LayercakeLT
 
-/-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
+/--
+An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
 be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) > t}`.
 
 See `MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul` for a version with sets of the form
-`{ω | f(ω) ≥ t}` instead. -/
+`{ω | f(ω) ≥ t}` instead.
+-/
 theorem lintegral_rpow_eq_lintegral_meas_lt_mul
     {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f) (f_mble : AEMeasurable f μ) {p : ℝ} (p_pos : 0 < p) :
     ∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ =

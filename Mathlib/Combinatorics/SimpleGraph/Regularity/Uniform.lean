@@ -12,6 +12,9 @@ public import Mathlib.Order.Partition.Equipartition
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.SetTheory.Cardinal.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graph uniformity and uniform partitions
 
@@ -39,7 +42,7 @@ greater than `(1 - ε)`.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section
@@ -49,7 +52,7 @@ open Finset
 
 variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
-/-! ### Graph uniformity -/
+/-! # Graph uniformity -/
 
 
 namespace SimpleGraph
@@ -189,7 +192,7 @@ theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : 
 
 end SimpleGraph
 
-/-! ### Uniform partitions -/
+/-! # Uniform partitions -/
 
 
 variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph α)
@@ -277,7 +280,7 @@ theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht
     (hst : s ≠ t) : G.nonuniformWitness ε s t ∈ P.nonuniformWitnesses G ε s :=
   mem_image_of_mem _ <| mem_filter.2 ⟨ht, hst, h⟩
 
-/-! ### Equipartitions -/
+/-! # Equipartitions -/
 
 open SimpleGraph in
 lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
@@ -389,7 +392,7 @@ lemma IsEquipartition.sum_nonUniforms_lt (hA : A.Nonempty) (hε : 0 < ε) (hP : 
 
 end Finpartition
 
-/-! ### Reduced graph -/
+/-! # Reduced graph -/
 
 namespace SimpleGraph
 

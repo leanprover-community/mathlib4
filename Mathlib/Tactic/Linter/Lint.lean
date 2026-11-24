@@ -12,11 +12,14 @@ public meta import Batteries.Tactic.Lint -- shake: keep
 public meta import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linters for Mathlib
 
 In this file we define additional linters for mathlib,
-which concern the *behaviour* of the linted code, and not issues of code style or formatting.
+which concern the _behaviour_ of the linted code, and not issues of code style or formatting.
 
 Perhaps these should be moved to Batteries in the future.
 -/
@@ -60,7 +63,7 @@ end Batteries.Tactic.Lint
 namespace Mathlib.Linter
 
 /-!
-### `dupNamespace` linter
+# `dupNamespace` linter
 
 The `dupNamespace` linter produces a warning when a component of a declaration name is repeated
 several times. The repetition does not have to be consecutive. Examples: `Nat.Nat.foo`,

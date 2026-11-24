@@ -12,6 +12,9 @@ import Mathlib.Analysis.Matrix.Normed
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Topology.UniformSpace.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the matrix exponential
 
@@ -58,7 +61,7 @@ results for general rings are instead stated about `Ring.inverse`:
 
 ## References
 
-* https://en.wikipedia.org/wiki/Matrix_exponential
+* https://en.wikipedia.org/wiki/Matrix\_exponential
 -/
 
 public section

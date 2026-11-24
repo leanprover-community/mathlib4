@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parallel pairs of natural transformations between ind-objects
 
@@ -15,10 +18,10 @@ We show that if `A` and `B` are ind-objects and `f` and `g` are natural transfor
 `A` and `B`, then there is a small filtered category `I` such that `A`, `B`, `f` and `g` are
 commonly presented by diagrams and natural transformations in `I ⥤ C`.
 
-
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
-  our proof is more direct).
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Proposition 6.1.15
+  (though our proof is more direct).
 -/
 
 @[expose] public section

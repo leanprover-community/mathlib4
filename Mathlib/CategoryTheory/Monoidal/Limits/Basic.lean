@@ -8,17 +8,22 @@ module
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
 
 When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is lax monoidal,
 i.e. there are morphisms
+
 * `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
 
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
+
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 

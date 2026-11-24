@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.RingTheory.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Azumaya Algebras
 
@@ -22,7 +25,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 ## Reference
 
-* [Benson Farb, R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
+* ‍\[Benson Farb, R. Keith Dennis, _Noncommutative Algebra_\]\[bensonfarb1993\]
 
 ## Tags
 

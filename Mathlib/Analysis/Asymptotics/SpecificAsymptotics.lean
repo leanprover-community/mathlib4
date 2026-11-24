@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A collection of specific asymptotic results
 
@@ -212,7 +215,7 @@ end NormedLinearOrderedField
 section boundedRange
 
 /-!
-## Bounded Range versus `IsBigO` Asymptotics
+# Bounded Range versus `IsBigO` Asymptotics
 
 For a continuous function `f` into a seminormed space, having bounded range is equivalent to being
 `O(1)` along the cocompact filter (`Continuous.isBounded_range_iff_isBigO`). On an unbounded linear

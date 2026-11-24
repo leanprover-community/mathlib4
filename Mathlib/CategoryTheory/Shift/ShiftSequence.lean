@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.CommShift
 
-/-! # Sequences of functors from a category equipped with a shift
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Sequences of functors from a category equipped with a shift
 
 Let `F : C ⥤ A` be a functor from a category `C` that is equipped with a
 shift by an additive monoid `M`. In this file, we define a typeclass

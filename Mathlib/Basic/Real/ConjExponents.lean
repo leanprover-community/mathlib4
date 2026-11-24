@@ -9,12 +9,15 @@ public import Mathlib.Basic.ENNReal.Holder
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real conjugate exponents
 
 This file defines Hölder triple and Hölder conjugate exponents in `ℝ` and `ℝ≥0`. Real numbers `p`,
-`q` and `r` form a *Hölder triple* if `0 < p` and `0 < q` and `p⁻¹ + q⁻¹ = r⁻¹` (which of course
-implies `0 < r`). We say `p` and `q` are *Hölder conjugate* if `p`, `q` and `1` are a Hölder triple.
+`q` and `r` form a _Hölder triple_ if `0 < p` and `0 < q` and `p⁻¹ + q⁻¹ = r⁻¹` (which of course
+implies `0 < r`). We say `p` and `q` are _Hölder conjugate_ if `p`, `q` and `1` are a Hölder triple.
 In this case, `1 < p` and `1 < q`. This property shows up often in analysis, especially when dealing
 with `L^p` spaces.
 
@@ -52,11 +55,13 @@ structure HolderTriple (p q r : ℝ) : Prop where
   left_pos : 0 < p
   right_pos : 0 < q
 
-/-- Real numbers `p q : ℝ` are **Hölder conjugate** if they are positive and satisfy the
+/--
+Real numbers `p q : ℝ` are *Hölder conjugate* if they are positive and satisfy the
 equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `Real.HolderTriple p q 1`. This condition
 shows up in many theorems in analysis, notably related to `L^p` norms.
 
-It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `Real.holderConjugate_iff`. -/
+It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `Real.holderConjugate_iff`.
+-/
 abbrev HolderConjugate (p q : ℝ) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p / (p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
@@ -222,11 +227,13 @@ structure HolderTriple (p q r : ℝ≥0) : Prop where
   left_pos : 0 < p
   right_pos : 0 < q
 
-/-- Nonnegative real numbers `p q : ℝ≥0` are **Hölder conjugate** if they are positive and satisfy
+/--
+Nonnegative real numbers `p q : ℝ≥0` are *Hölder conjugate* if they are positive and satisfy
 the equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `NNReal.HolderTriple p q 1`. This
 condition shows up in many theorems in analysis, notably related to `L^p` norms.
 
-It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `NNReal.holderConjugate_iff`. -/
+It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `NNReal.holderConjugate_iff`.
+-/
 abbrev HolderConjugate (p q : ℝ≥0) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/

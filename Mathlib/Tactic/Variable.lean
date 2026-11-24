@@ -9,6 +9,9 @@ public meta import Lean.Linter.UnusedVariables
 public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `variable?` command
 
@@ -18,7 +21,7 @@ arguments. For example, `variable? [Module R M]` is the same as
 arguments can be inferred from previous variables then they will be omitted.
 
 An inherent limitation with this command is that variables are recorded in the scope as
-*syntax*. This means that `variable?` needs to pretty print the expressions we get
+_syntax_. This means that `variable?` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
 -/
 
@@ -46,6 +49,8 @@ def bracketedBinderType : Syntax → Option Term
   | `(bracketedBinderF|[$[$_ :]? $ty])               => some ty
   | _                                                => none
 
+
+set_option doc.verso false
 /-- The `variable?` command has the same syntax as `variable`, but it will auto-insert
 missing instance arguments wherever they are needed.
 It does not add variables that can already be deduced from others in the current context.
@@ -84,16 +89,20 @@ for quantified binders such as `[∀ i, F i]`. -/
 syntax (name := «variable?»)
   "variable?" (ppSpace bracketedBinder)* (" =>" (ppSpace bracketedBinder)*)? : command
 
+
+set_option doc.verso true
 /--
 Attribute to record aliases for the `variable?` command. Aliases are structures that have no
-fields, and additional typeclasses are recorded as *arguments* to the structure.
+fields, and additional typeclasses are recorded as _arguments_ to the structure.
 
 Example:
+
 ```
 @[variable_alias]
 structure VectorSpace (k V : Type*)
   [Field k] [AddCommGroup V] [Module k V]
 ```
+
 Then `variable? [VectorSpace k V]` ensures that these three typeclasses are present in
 the current scope. Notice that it's looking at the arguments to the `VectorSpace` type
 constructor. You should not have any fields in `variable_alias` structures.
@@ -152,11 +161,13 @@ partial def getSubproblem
   | .ok v _ => return v
   | .error .. => Term.applyResult res
 
-/-- Tries elaborating binders, inserting new binders whenever typeclass inference fails.
+/--
+Tries elaborating binders, inserting new binders whenever typeclass inference fails.
 `i` is the index of the next binder that needs to be checked.
 
 The `toOmit` array keeps track of which binders should be removed at the end,
-in particular the `variable_alias` binders and any redundant binders. -/
+in particular the `variable_alias` binders and any redundant binders.
+-/
 partial def completeBinders' (maxSteps : Nat) (gas : Nat)
     (checkRedundant : Bool)
     (binders : TSyntaxArray ``bracketedBinder)

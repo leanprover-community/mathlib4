@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
 
@@ -32,9 +35,7 @@ open scoped Topology
 
 namespace MeromorphicAt
 
-/-!
-## Principles of Isolated Zeros
--/
+/-! # Principles of Isolated Zeros -/
 
 /--
 The principle of isolated zeros: If `f` is meromorphic at `x`, then `f` vanishes eventually in a
@@ -86,9 +87,7 @@ alias MeromorphicOn.codiscreteWithin_setOfPred_ne_zero :=
 alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
   _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
 
-/-!
-## Identity Principles
--/
+/-! # Identity Principles -/
 
 /--
 Formulation of `MeromorphicAt.frequently_zero_iff_eventuallyEq_zero` as an identity principle: If

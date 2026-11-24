@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectrum mapping theorem
 
@@ -16,7 +19,7 @@ fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜`
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
 spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
 these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
-has positive degree), which is the **spectral mapping theorem**.
+has positive degree), which is the *spectral mapping theorem*.
 
 In addition, this file contains the fact that every element of a finite-dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
@@ -26,7 +29,7 @@ eigenvalue.
 ## Main statements
 
 * `spectrum.subset_polynomial_aeval`, `spectrum.map_polynomial_aeval_of_degree_pos`,
-  `spectrum.map_polynomial_aeval_of_nonempty`: variations on the **spectral mapping theorem**.
+  `spectrum.map_polynomial_aeval_of_nonempty`: variations on the *spectral mapping theorem*.
 * `spectrum.nonempty_of_isAlgClosed_of_finiteDimensional`: the spectrum is nonempty for any
   element of a nontrivial finite-dimensional algebra over an algebraically closed field.
 
@@ -90,9 +93,11 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
   simpa only [aeval_X, aeval_C, map_sub] using! hk
 
-/-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
+/--
+The _spectral mapping theorem_ for polynomials.  Note: the assumption `degree p > 0`
 is necessary in case `σ a = ∅`, for then the left-hand side is `∅` and the right-hand side,
-assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`. -/
+assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`.
+-/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hdeg : 0 < degree p) : σ (aeval a p) = (eval · p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`

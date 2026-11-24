@@ -14,6 +14,9 @@ import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.Tactic.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homogenization of an affine space
 
@@ -36,19 +39,21 @@ Note that the homogenization is isomorphic to `V × R`, where `V` is the vector 
 
 ## References
 
-* [J. Gallier, *Geometric Methods and Applications for Computer Science and
-  Engineering*][Gallier2011GeometricMethods]
-* [X. Gràcia, R. Martín, *Vector Hulls of Affine Spaces and Affine Bundles*][Gracia2008]
+* ‍\[J. Gallier, _Geometric Methods and Applications for Computer Science and
+  Engineering_\]\[Gallier2011GeometricMethods\]
+* ‍\[X. Gràcia, R. Martín, _Vector Hulls of Affine Spaces and Affine Bundles_\]\[Gracia2008\]
 -/
 
 public noncomputable section
 
-/-- Given an affine space `P` over `R`, `Homogenization R P` is a vector space containing `P` as a
+/--
+Given an affine space `P` over `R`, `Homogenization R P` is a vector space containing `P` as a
 hyperplane that does not pass through the origin.
 
 Values of type `Homogenization R P` can be constructed as linear combinations of
 `Homogenization.ofPoint` and `Homogenization.ofVector`. To define a linear map on
-`Homogenization R P`, use `Homogenization.lift`. -/
+`Homogenization R P`, use `Homogenization.lift`.
+-/
 /- To simplify the implementation, we define the homogenization as `V × R`, with the element
 `(v, c)` representing `ofVector v + c • ofPoint (Classical.arbitrary P)`. -/
 @[nolint unusedArguments]
@@ -123,9 +128,11 @@ theorem ofVector_injective : Function.Injective (ofVector (R := R) (P := P)) :=
 theorem ofPoint_injective : Function.Injective (ofPoint (R := R) (P := P)) :=
   ofPoint.linear_injective_iff.mp ofVector_injective
 
-/-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`.
+/--
+Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`.
 
-See also `induction_of_point` and `ofVector_ofPoint_cases`. -/
+See also `induction_of_point` and `ofVector_ofPoint_cases`.
+-/
 @[induction_eliminator, cases_eliminator]
 theorem induction_on {motive : Homogenization R P → Prop} (x : Homogenization R P)
     (h : ∀ (v : V) (c : R) (p : P), motive (ofVector v + c • ofPoint p)) : motive x := by
@@ -184,10 +191,12 @@ private theorem liftAux_ofPoint (f : P →ᵃ[R] W) (p : P) : liftAux f (ofPoint
   change f.linear (p -ᵥ Classical.arbitrary P) + (1 : R) • f (Classical.arbitrary P) = f p
   simp
 
-/-- An affine map on `P` taking values in a vector space extends uniquely to a linear map on
+/--
+An affine map on `P` taking values in a vector space extends uniquely to a linear map on
 `Homogenization R P`.
 
-See also `Homogenization.liftₗ` for a version that is linear over some semiring. -/
+See also `Homogenization.liftₗ` for a version that is linear over some semiring.
+-/
 @[expose]
 def lift : (P →ᵃ[R] W) ≃+ (Homogenization R P →ₗ[R] W) where
   toFun := private liftAux

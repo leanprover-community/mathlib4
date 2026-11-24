@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Multiset.ZeroCons
 
-/-!
-# Basic results on multisets
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Basic results on multisets -/
 
 @[expose] public section
 
@@ -24,7 +25,7 @@ variable {α : Type*}
 
 namespace Multiset
 
-/-! ### `Multiset.toList` -/
+/-! # `Multiset.toList` -/
 
 section ToList
 
@@ -64,7 +65,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
 
 end ToList
 
-/-! ### Induction principles -/
+/-! # Induction principles -/
 
 /-- The strong induction principle for multisets. -/
 @[elab_as_elim]

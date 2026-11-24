@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of group homology
 
@@ -388,7 +391,7 @@ lemma map₁_one (φ : A ⟶ res (1 : G →* H) B) :
 section CoresCoinf
 
 /-!
-### Exactness of the corestriction-coinflation sequence in degree 1
+# Exactness of the corestriction-coinflation sequence in degree 1
 
 Given a group homomorphism `f : G →* H`, the `n`th corestriction map is the map
 `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity map on `Res(f)(A)`. Similarly, given

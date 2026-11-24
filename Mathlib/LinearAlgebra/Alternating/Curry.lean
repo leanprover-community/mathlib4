@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying alternating forms
 
@@ -24,12 +27,14 @@ variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
 
 namespace AlternatingMap
 
-/-- Given an alternating map `f` in `n+1` variables, split the first variable to obtain
+/--
+Given an alternating map `f` in `n+1` variables, split the first variable to obtain
 a linear map into alternating maps in `n` variables, given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.
-It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
+It can be thought of as a map $`Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))`.
 
 This is `MultilinearMap.curryLeft` for `AlternatingMap`. See also
-`AlternatingMap.curryLeftLinearMap`. -/
+`AlternatingMap.curryLeftLinearMap`.
+-/
 @[simps apply_toMultilinearMap]
 def curryLeft (f : M [⋀^Fin n.succ]→ₗ[R] N) : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
   toFun m :=

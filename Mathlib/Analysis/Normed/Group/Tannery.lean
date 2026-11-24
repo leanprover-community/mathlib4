@@ -12,14 +12,17 @@ import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tannery's theorem
 
-Tannery's theorem gives a sufficient criterion for the limit of an infinite sum (with respect to
-an auxiliary parameter) to equal the sum of the pointwise limits. See
-https://en.wikipedia.org/wiki/Tannery%27s_theorem. It is a special case of the dominated convergence
-theorem (with the measure chosen to be the counting measure); but we give here a direct proof, in
-order to avoid some unnecessary hypotheses that appear when specialising the general
+Tannery's theorem gives a sufficient criterion for the limit of an infinite sum (with respect to an
+auxiliary parameter) to equal the sum of the pointwise limits. See
+https://en.wikipedia.org/wiki/Tannery%27s\_theorem. It is a special case of the dominated
+convergence theorem (with the measure chosen to be the counting measure); but we give here a direct
+proof, in order to avoid some unnecessary hypotheses that appear when specialising the general
 measure-theoretic result.
 -/
 
@@ -30,7 +33,8 @@ open Filter
 open scoped Topology
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- **Tannery's theorem**: topological sums commute with termwise limits, when the norms of the
+/--
+*Tannery's theorem*: topological sums commute with termwise limits, when the norms of the
 summands are eventually uniformly bounded by a summable function.
 
 (This is the special case of the Lebesgue dominated convergence theorem for the counting measure
@@ -39,6 +43,7 @@ measure-theoretic result, e.g. `G` is not assumed to be an `ℝ`-vector space or
 and the limit is along an arbitrary filter rather than `atTop ℕ`.)
 
 See also:
+
 * `MeasureTheory.tendsto_integral_of_dominated_convergence` (for general integrals, but
   with more assumptions on `G`)
 * `continuous_tsum` (continuity of infinite sums in a parameter)

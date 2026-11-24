@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fernique's theorem for rotation-invariant measures
 
@@ -64,8 +67,8 @@ Summing over all annuli (over `n`) gives a finite value for the integral.
 
 ## References
 
-* [Xavier Fernique, *Intégrabilité des vecteurs gaussiens*][fernique1970integrabilite]
-* [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
+* ‍\[Xavier Fernique, _Intégrabilité des vecteurs gaussiens_\]\[fernique1970integrabilite\]
+* ‍\[Martin Hairer, _An introduction to stochastic PDEs_\]\[hairer2009introduction\]
 
 ## TODO
 

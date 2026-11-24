@@ -14,6 +14,9 @@ import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite products and sums over types and sets
 
@@ -35,14 +38,12 @@ Definitions in this file:
 
 * `finsum f : M` : the sum of `f x` as `x` ranges over the support of `f`, if it's finite.
   Zero otherwise.
-
 * `finprod f : M` : the product of `f x` as `x` ranges over the multiplicative support of `f`, if
   it's finite. One otherwise.
 
 ## Notation
 
 * `∑ᶠ i, f i` and `∑ᶠ i : α, f i` for `finsum f`
-
 * `∏ᶠ i, f i` and `∏ᶠ i : α, f i` for `finprod f`
 
 This notation works for functions `f : p → M`, where `p : Prop`, so the following works:
@@ -80,9 +81,7 @@ finsum, finprod, finite sum, finite product
 
 open Function Set
 
-/-!
-### Definition and relation to `Finset.sum` and `Finset.prod`
--/
+/-! # Definition and relation to `Finset.sum` and `Finset.prod` -/
 
 section sort
 
@@ -608,9 +607,7 @@ lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
   · rw [finprod_of_not_hasFiniteMulSupport H]
     exact finprod_one.symm.le
 
-/-!
-### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
--/
+/-! # Distributivity w.r.t. addition, subtraction, and (scalar) multiplication -/
 
 
 set_option backward.isDefEq.respectTransparency false in
@@ -748,9 +745,7 @@ theorem finprod_mem_div_distrib [DivisionCommMonoid G] (f g : α → G) (hs : s.
     ∏ᶠ i ∈ s, f i / g i = (∏ᶠ i ∈ s, f i) / ∏ᶠ i ∈ s, g i := by
   simp only [div_eq_mul_inv, finprod_mem_mul_distrib hs, finprod_mem_inv_distrib g hs]
 
-/-!
-### `∏ᶠ x ∈ s, f x` and set operations
--/
+/-! # `∏ᶠ x ∈ s, f x` and set operations -/
 
 
 /-- The product of any function over an empty set is `1`. -/
@@ -1385,9 +1380,7 @@ lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
 
 end type
 
-/-!
-### Some API for `fun a ↦ f a ^ count a s` on multisets
--/
+/-! # Some API for `fun a ↦ f a ^ count a s` on multisets -/
 
 namespace Multiset
 

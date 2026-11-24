@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restrictions of continuous linear maps to submodules
 
@@ -19,10 +22,10 @@ to subspaces of the domain/codomain.
 * `Submodule.subtypeL S` is the inclusion map `S →L[R] M` when `S : Submodule R M`.
   In other words, it is `Submodule.subtype S` bundled as a `ContinuousLinearMap`.
 * `ContinuousLinearMap.domRestrict f S` is the map `S →SL[σ] N` obtained by restricting
-  `f : M →SL[σ] N` to a subspace `S` of the *domain*.
+  `f : M →SL[σ] N` to a subspace `S` of the _domain_.
   This is the continuous version of `LinearMap.domRestrict`.
 * `ContinuousLinearMap.codRestrict f S h` is the map `M →SL[σ] S` obtained by co-restricting
-  `f : M →SL[σ] N` to a subspace `S` of the *codomain*; this requires a proof `h` that all values
+  `f : M →SL[σ] N` to a subspace `S` of the _codomain_; this requires a proof `h` that all values
   of `f` indeed belong to `S`.
   This is the continuous version of `LinearMap.codRestrict`.
 * `ContinuousLinearMap.rangeRestrict f` is an abbreviation for

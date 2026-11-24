@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Forward difference operators and Newton series
 
@@ -18,7 +21,7 @@ defined for this operator, scoped in namespace `fwdDiff`.
 
 We prove two key formulae about this operator:
 
-* `shift_eq_sum_fwdDiff_iter`: the **Gregory-Newton formula**, expressing `f (y + n • h)` as a
+* `shift_eq_sum_fwdDiff_iter`: the *Gregory-Newton formula*, expressing `f (y + n • h)` as a
   linear combination of forward differences of `f` at `y`, for `n ∈ ℕ`;
 * `fwdDiff_iter_eq_sum_shift`: formula expressing the `n`-th forward difference of `f` at `y` as
   a linear combination of `f (y + k • h)` for `0 ≤ k ≤ n`.
@@ -73,7 +76,7 @@ end smul
 
 namespace fwdDiff_aux
 /-!
-## Forward-difference and shift operators as linear endomorphisms
+# Forward-difference and shift operators as linear endomorphisms
 
 This section contains versions of the forward-difference operator and the shift operator bundled as
 `ℤ`-linear endomorphisms. These are useful for certain proofs; but they are slightly annoying to
@@ -208,7 +211,7 @@ lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
     rw [sub_mul, ← AddChar.map_add_eq_mul, add_comm h x, one_mul]
 
 /-!
-## Forward differences of polynomials
+# Forward differences of polynomials
 
 We prove formulae about the forward difference operator applied to polynomials:
 
@@ -218,7 +221,7 @@ We prove formulae about the forward difference operator applied to polynomials:
   The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-    sums over `range n`).
+  sums over `range n`).
 * `sum_range_shift_eq_sum_fwdDiff_iter` :
   A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
 -/

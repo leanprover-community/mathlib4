@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.List.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Association Lists
 
@@ -30,7 +33,7 @@ provides ways to access, modify, and combine `AList`s.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Association_list>
+* [https://en.wikipedia.org/wiki/Association\_list](https://en.wikipedia.org/wiki/Association_list)
 -/
 
 @[expose] public section
@@ -66,7 +69,7 @@ theorem ext : ∀ {s t : AList β}, s.entries = t.entries → s = t
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
   rw [AList.ext_iff]; infer_instance
 
-/-! ### keys -/
+/-! # keys -/
 
 
 /-- The list of keys of an association list. -/
@@ -80,7 +83,7 @@ theorem keys_nodup (s : AList β) : s.keys.Nodup :=
 theorem keys_mk (l : List (Sigma β)) (h) : (AList.mk l h).keys = l.keys :=
   rfl
 
-/-! ### mem -/
+/-! # mem -/
 
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
@@ -97,7 +100,7 @@ theorem mem_of_perm {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 theorem mem_mk {l : List (Sigma β)} {h} {x : α} : x ∈ AList.mk l h ↔ x ∈ l.keys :=
   .rfl
 
-/-! ### empty -/
+/-! # empty -/
 
 
 /-- The empty association list. -/
@@ -119,7 +122,7 @@ theorem empty_entries : (∅ : AList β).entries = [] :=
 theorem keys_empty : (∅ : AList β).keys = [] :=
   rfl
 
-/-! ### singleton -/
+/-! # singleton -/
 
 
 /-- The singleton association list. -/
@@ -134,7 +137,7 @@ theorem singleton_entries (a : α) (b : β a) : (singleton a b).entries = [Sigma
 theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = [a] :=
   rfl
 
-/-! ### lookup -/
+/-! # lookup -/
 
 
 section
@@ -177,7 +180,7 @@ theorem keys_subset_keys_of_entries_subset_entries
   rw [← mem_keys, ← lookup_isSome, this]
   exact Option.isSome_some
 
-/-! ### replace -/
+/-! # replace -/
 
 section
 variable [DecidableEq α]
@@ -205,7 +208,7 @@ end
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ) (d : δ) (m : AList β) : δ :=
   m.entries.foldl (fun r a => f r a.1 a.2) d
 
-/-! ### erase -/
+/-! # erase -/
 
 
 section
@@ -239,7 +242,7 @@ theorem lookup_erase_ne {a a'} {s : AList β} (h : a ≠ a') : lookup a (erase a
 theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase a').erase a :=
   ext kerase_kerase
 
-/-! ### insert -/
+/-! # insert -/
 
 
 /-- Insert a key-value pair into an association list and erase any existing pair
@@ -361,7 +364,7 @@ theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
     @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=
   @insertRec_insert α β _ C H0 IH ⟨a, b⟩ l h
 
-/-! ### extract -/
+/-! # extract -/
 
 
 /-- Erase a key from the map, and return the corresponding value, if found. -/
@@ -375,7 +378,7 @@ def extract (a : α) (s : AList β) : Option (β a) × AList β :=
 theorem extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup a s, erase a s) := by
   simp [extract]; constructor <;> rfl
 
-/-! ### union -/
+/-! # union -/
 
 
 /-- `s₁ ∪ s₂` is the key-based union of two association lists. It is
@@ -441,7 +444,7 @@ theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entri
 
 end
 
-/-! ### disjoint -/
+/-! # disjoint -/
 
 
 /-- Two associative lists are disjoint if they have no common keys. -/

@@ -11,6 +11,9 @@ public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.Quotients
 public import Mathlib.Order.DirectedInverseSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct Limits of First-Order Structures
 
@@ -18,12 +21,12 @@ This file constructs the direct limit of a directed system of first-order embedd
 
 ## Main Definitions
 
-- `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
+* `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
-- `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
   from the components to another module that respect the directed system structure give rise to
   a unique map out of the direct limit.
-- `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
 
@@ -74,7 +77,8 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 end DirectedSystem
 
 set_option linter.unusedVariables false in
-/-- Alias for `Σ i, G i`.
+/--
+Alias for `Σ i, G i`.
 
 Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma` which depends on `f`.
 This way, Lean can infer what `L` and `f` are in the `Setoid` instance.

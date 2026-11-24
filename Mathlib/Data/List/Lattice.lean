@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Data.List.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice structure of lists
 
@@ -35,7 +38,7 @@ namespace List
 
 variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 
-/-! ### `Disjoint` -/
+/-! # `Disjoint` -/
 
 
 section Disjoint
@@ -49,7 +52,7 @@ end Disjoint
 
 variable [DecidableEq α]
 
-/-! ### `union` -/
+/-! # `union` -/
 
 
 section Union
@@ -96,7 +99,7 @@ theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys
 
 end Union
 
-/-! ### `inter` -/
+/-! # `inter` -/
 
 
 section Inter
@@ -169,7 +172,7 @@ theorem Sublist.inter_right {l₁ l₂ l₃ : List α} (h : l₁.Sublist l₂) :
 
 end Inter
 
-/-! ### `bagInter` -/
+/-! # `bagInter` -/
 
 
 section BagInter

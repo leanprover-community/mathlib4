@@ -10,10 +10,14 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 
 import Mathlib.Tactic.Ring.NamePowerVars
 
-/-! # Exponential module of a commutative ring
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Exponential module of a commutative ring
 
 Let `R` be a commutative ring. The exponential module of `R` is the set of all power series
-`f : R⟦X⟧` that are *exponential* or *of exponential type*, i.e.,  `f (X₀ + X₁) = f X₀ * f X₁`
+`f : R⟦X⟧` that are _exponential_ or _of exponential type_, i.e.,  `f (X₀ + X₁) = f X₀ * f X₁`
 where `X₀` and `X₁` are two indeterminates, and `f(0) = 1`. It is an abelian group under
 multiplication, and an `R`-module under rescaling.
 
@@ -21,9 +25,7 @@ multiplication, and an `R`-module under rescaling.
 
 * `PowerSeries.IsExponential` : for `f : R⟦X⟧`, `IsExponential f` says that `f` is of
   exponential type.
-
 * `PowerSeries.ExponentialModule R` : the exponential module of the commutative ring `R`.
-
 * `PowerSeries.ExponentialModule.linearMap`: for an `A`-algebra map `f : R →ₐ[A] S`, we define
   the induced `linearMap f : ExponentialModule R →ₗ[A] ExponentialModule S`.
 
@@ -31,7 +33,6 @@ multiplication, and an `R`-module under rescaling.
 
 * `PowerSeries.IsExponential.neg` : if `f : R⟦X⟧` is an exponential power series, then the power
   series `f(-X)` is exponential.
-
 * `PowerSeries.IsExponential.invOfUnit_eq_rescale_neg_one` : if `f : R⟦X⟧` is of exponential type,
   then the inverse of `f` is equal to the power series `f(-X)`.
 
@@ -40,7 +41,6 @@ multiplication, and an `R`-module under rescaling.
 Once substitution of power series is available for `CommSemiring` (work in progress),
 `PowerSeries.IsExponential` and `PowerSeries.ExponentialModule R` could automatically be generalized
 to that setting.
-
 -/
 
 public section

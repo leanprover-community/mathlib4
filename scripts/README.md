@@ -100,6 +100,12 @@ file used by the library's own linters.
   - `master`s remote is `upstream` but its pushRemote is `origin`
 
   Other subcommands to automate git-related actions may be added in the future.
+- `MigrateDocstrings.lean` (`lake exe migrate-docstrings`) migrates Markdown docstrings to Verso
+  syntax, inserting the `{url}`, `{cite}`, and `{library_note}` roles and the `code` code block.
+  It wraps the `verso-migrate-docstrings` tool, supplying the bibliography keys from
+  `docs/references.bib` and the library note labels found under `Mathlib/`.
+  It rewrites files in place by default: `lake exe migrate-docstrings Mathlib/Foo.lean`.
+  Pass `--dry-run` to preview the result on stdout without writing.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)

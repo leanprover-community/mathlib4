@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.LinearAlgebra.LinearPMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension theorems
 
 We prove two extension theorems:
+
 * `riesz_extension`:
   [M. Riesz extension theorem](https://en.wikipedia.org/wiki/M._Riesz_extension_theorem) says that
   if `s` is a convex cone in a real vector space `E`, `p` is a submodule of `E`
@@ -33,7 +37,7 @@ open Set LinearMap
 variable {E F G : Type*}
 
 /-!
-### M. Riesz extension theorem
+# M. Riesz extension theorem
 
 Given a convex cone `s` in a vector space `E`, a submodule `p`, and a linear `f : p → ℝ`, assume
 that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then there exists a globally defined linear

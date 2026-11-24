@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Meromorphic.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Trailing Coefficient of a Meromorphic Function
 
@@ -55,9 +58,7 @@ If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero
     (h : meromorphicOrderAt f x = ⊤) :
     meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
-/-!
-## Characterization of the Trailing Coefficient
--/
+/-! # Characterization of the Trailing Coefficient -/
 
 /--
 Definition of the trailing coefficient in case where `f` is meromorphic and a presentation of the
@@ -135,9 +136,7 @@ lemma MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt (h : MeromorphicAt f
   · rw [h₁g.meromorphicTrailingCoeffAt_of_eq_nhdsNE h₃g]
     apply h₁g.continuousAt.continuousWithinAt
 
-/-!
-## Elementary Properties
--/
+/-! # Elementary Properties -/
 
 /--
 If `f` is meromorphic of finite order at `x`, then the trailing coefficient is not zero.
@@ -176,9 +175,7 @@ theorem meromorphicTrailingCoeffAt_id_sub_const [DecidableEq 𝕜] {x y : 𝕜} 
     apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop)
     simp_all [sub_ne_zero]
 
-/-!
-## Congruence Lemma
--/
+/-! # Congruence Lemma -/
 
 /--
 If two functions agree in a punctured neighborhood, then their trailing coefficients agree.
@@ -194,9 +191,7 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
   rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g,
     h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g (h.symm.trans h₃g)]
 
-/-!
-## Behavior under Arithmetic Operations
--/
+/-! # Behavior under Arithmetic Operations -/
 
 /--
 Taking the negative commutes with taking `meromorphicTrailingCoeffAt`.
@@ -507,9 +502,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_fun_pow {n : ℕ} {f : 𝕜 → �
     meromorphicTrailingCoeffAt (fun z ↦ f z ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n :=
   MeromorphicAt.meromorphicTrailingCoeffAt_pow h₁
 
-/-!
-## Behavior under Composition
--/
+/-! # Behavior under Composition -/
 
 /--
 If `g` is analytic at `x` and not locally constant, and `f` is meromorphic at `g x`, express the

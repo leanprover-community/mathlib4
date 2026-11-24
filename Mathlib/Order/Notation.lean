@@ -11,6 +11,9 @@ public meta import Qq
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation classes for lattice operations
 
@@ -51,7 +54,7 @@ postfix:1024 "ᶜ" => compl
 
 initialize_simps_projections Compl
 
-/-! ### `Sup` and `Inf` -/
+/-! # `Sup` and `Inf` -/
 
 attribute [ext] Min Max
 
@@ -141,7 +144,8 @@ attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
 set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
-/-- Syntax typeclass for Heyting negation `￢`.
+/--
+Syntax typeclass for Heyting negation `￢`.
 
 The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`

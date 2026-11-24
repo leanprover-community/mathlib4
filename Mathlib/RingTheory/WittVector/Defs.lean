@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.WittVector.StructurePolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Witt vectors
 
@@ -32,9 +35,8 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -42,17 +44,20 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 noncomputable section
 
-/-- `WittVector p R` is the ring of `p`-typical Witt vectors over the commutative ring `R`,
+/--
+`WittVector p R` is the ring of `p`-typical Witt vectors over the commutative ring `R`,
 where `p` is a prime number.
 
 If `p` is invertible in `R`, this ring is isomorphic to `ℕ → R` (the product of `ℕ` copies of `R`).
 If `R` is a ring of characteristic `p`, then `WittVector p R` is a ring of characteristic `0`.
 The canonical example is `WittVector p (ZMod p)`,
-which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
+which is isomorphic to the `p`-adic integers `ℤ_[p]`.
+-/
 structure WittVector (p : ℕ) (R : Type*) where
   /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
   mk (p) ::
-  /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
+  /--
+  `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
 
   This concept does not have a standard name in the literature.
   -/
@@ -163,7 +168,8 @@ This can be defined more generally but we use only a specific instance here. -/
 def peval {k : ℕ} (φ : MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → ℕ → R) : R :=
   aeval (Function.uncurry x) φ
 
-/-- Let `φ` be a family of polynomials, indexed by natural numbers, whose variables come from the
+/--
+Let `φ` be a family of polynomials, indexed by natural numbers, whose variables come from the
 disjoint union of `k` copies of `ℕ`, and let `xᵢ` be a Witt vector for `0 ≤ i < k`.
 
 `eval φ x` evaluates `φ` mapping the variable `X_(i, n)` to the `n`th coefficient of `xᵢ`.

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Derivation.Basic
 
 import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivations of univariate polynomials
 
@@ -130,7 +133,7 @@ def compAEval : Derivation R R[X] <| AEval R M a where
 /--
 A form of the chain rule: if `f` is a polynomial over `R`
 and `d : A → M` is an `R`-derivation then for all `a : A` we have
-$$ d(f(a)) = f' (a) d a. $$
+$$`  d(f(a)) = f' (a) d a.  `
 The equation is in the `R[X]`-module `Module.AEval R M a`.
 For the same equation in `M`, see `Derivation.compAEval_eq`.
 -/
@@ -141,7 +144,7 @@ theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
 /--
 A form of the chain rule: if `f` is a polynomial over `R`
 and `d : A → M` is an `R`-derivation then for all `a : A` we have
-$$ d(f(a)) = f' (a) d a. $$
+$$`  d(f(a)) = f' (a) d a.  `
 The equation is in `M`. For the same equation in `Module.AEval R M a`,
 see `Derivation.compAEval_eq`.
 -/

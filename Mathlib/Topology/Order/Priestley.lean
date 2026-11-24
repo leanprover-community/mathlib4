@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Priestley spaces
 
@@ -25,8 +28,8 @@ We do not include compactness in the definition, so a Priestley space is to be d
 
 ## References
 
-* [Wikipedia, *Priestley space*](https://en.wikipedia.org/wiki/Priestley_space)
-* [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
+* [Wikipedia, _Priestley space_](https://en.wikipedia.org/wiki/Priestley_space)
+* ‍\[Davey, Priestley _Introduction to Lattices and Order_\]\[davey\_priestley\]
 -/
 
 public section

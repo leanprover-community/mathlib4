@@ -12,12 +12,15 @@ public import Batteries.Tactic.Init
 public import Mathlib.Basic.Logic.Basic  -- shake: keep (Qq output dependency)
 public import Mathlib.Util.AtomM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intuitionistic tautology (`itauto`) decision procedure
 
 The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known
 `G4ip` algorithm:
-[Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
+‍\[Dyckhoff, _Contraction-free sequent calculi for intuitionistic logic_\]\[dyckhoff\_1992\].
 
 All built in propositional connectives are supported: `True`, `False`, `And`, `Or`, `→`,
 `Not`, `Iff`, `Xor`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
@@ -46,7 +49,9 @@ The intuitionistic logic rules are separated into three groups:
 
 * level 1: No splitting, validity preserving: apply whenever you can.
   Left rules in `Context.add`, right rules in `prove`.
+
   * `Context.add`:
+
     * simplify `Γ, ⊤ ⊢ B` to `Γ ⊢ B`
     * `Γ, ⊥ ⊢ B` is true
     * simplify `Γ, A ∧ B ⊢ C` to `Γ, A, B ⊢ C`
@@ -55,16 +60,20 @@ The intuitionistic logic rules are separated into three groups:
     * simplify `Γ, A ∧ B → C ⊢ D` to `Γ, A → B → C ⊢ D`
     * simplify `Γ, A ∨ B → C ⊢ D` to `Γ, A → C, B → C ⊢ D`
   * `prove`:
+
     * `Γ ⊢ ⊤` is true
     * simplify `Γ ⊢ A → B` to `Γ, A ⊢ B`
   * `search`:
+
     * `Γ, P ⊢ P` is true
     * simplify `Γ, P, P → A ⊢ B` to `Γ, P, A ⊢ B`
 * level 2: Splitting rules, validity preserving: apply after level 1 rules. Done in `prove`
+
   * simplify `Γ ⊢ A ∧ B` to `Γ ⊢ A` and `Γ ⊢ B`
   * simplify `Γ, A ∨ B ⊢ C` to `Γ, A ⊢ C` and `Γ, B ⊢ C`
 * level 3: Splitting rules, not validity preserving: apply only if nothing else applies.
   Done in `search`
+
   * `Γ ⊢ A ∨ B` follows from `Γ ⊢ A`
   * `Γ ⊢ A ∨ B` follows from `Γ ⊢ B`
   * `Γ, (A₁ → A₂) → C ⊢ B` follows from `Γ, A₂ → C, A₁ ⊢ A₂` and `Γ, C ⊢ B`
@@ -203,10 +212,12 @@ inductive Proof
   * `ak = .eq`: `(p: (A = B) → C) ⊢ (A → B) → (B → A) → C`
   -/
   | curry (ak : AndKind) (p : Proof) : Proof
-  /-- This is a partial application of curry.
+  /--
+  This is a partial application of curry.
+
   * `ak = .and`: `(p: A ∧ B → C) (q : A) ⊢ B → C`
-  * `ak = .iff`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
-  * `ak = .eq`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
+* `ak = .iff`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
+* `ak = .eq`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
   -/
   | curry₂ (ak : AndKind) (p q : Proof) : Proof
   /-- `(p: A → B) (q: A) ⊢ B` -/
@@ -228,7 +239,9 @@ inductive Proof
   * `classical = true`: `(p: Prop) ⊢ p ∨ ¬p`
   -/
   | em (classical : Bool) (p : Name) : Proof
-  /-- The variable `x` here names the variable that will be used in the elaborated proof.
+  /--
+  The variable `x` here names the variable that will be used in the elaborated proof.
+
   * `(p: ((x:A) → B) → C) ⊢ B → C`
   -/
   | impImpSimp (x : Name) (p : Proof) : Proof
@@ -400,7 +413,8 @@ def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool 
 
 mutual
 
-/-- The search phase, which deals with the level 3 rules, which are rules that are not validity
+/--
+The search phase, which deals with the level 3 rules, which are rules that are not validity
 preserving and so require proof search. One obvious one is the or-introduction rule: we prove
 `A ∨ B` by proving `A` or `B`, and we might have to try one and backtrack.
 
@@ -410,7 +424,8 @@ assumption), and `(A₁ → A₂) → C ⊢ B`. We decompose the double implicat
 prove `A₁ → A₂`, which can be written `A₂ → C, A₁ ⊢ A₂` (where we used `A₁` to simplify
 `(A₁ → A₂) → C`), and one to use the consequent, `C ⊢ B`. The search here is that there are
 potentially many implications to split like this, and we have to try all of them if we want to be
-complete. -/
+complete.
+-/
 partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
   if let some p := Γ[B]? then return (true, p)
   fun n =>
@@ -434,7 +449,8 @@ partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
     | r => r
   else ((false, .sorry), n)
 
-/-- The main prover. This receives a context of proven or assumed lemmas and a target proposition,
+/--
+The main prover. This receives a context of proven or assumed lemmas and a target proposition,
 and returns a proof or `none` (with state for the fresh variable generator).
 The intuitionistic logic rules are separated into three groups:
 
@@ -634,7 +650,8 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
     let (e, g) ← g.intro1; g.withContext do
       applyProof g (Γ.insert e.name (.fvar e)) (p.app (.hyp e.name))
 
-/-- A decision procedure for intuitionistic propositional logic.
+/--
+A decision procedure for intuitionistic propositional logic.
 
 * `useDec` will add `a ∨ ¬ a` to the context for every decidable atomic proposition `a`.
 * `useClassical` will allow `a ∨ ¬ a` to be added even if the proposition is not decidable,
@@ -698,6 +715,8 @@ def itautoCore (g : MVarId)
 
 open Elab Tactic
 
+
+set_option doc.verso false
 /-- `itauto` solves the main goal when it is a tautology of intuitionistic propositional logic.
 Unlike `grind` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
 option), and the proof search is tailored for this use case. `itauto` is complete for intuitionistic
@@ -718,6 +737,8 @@ example (p : Prop) : ¬ (p ↔ ¬ p) := by itauto
 -/
 syntax (name := itauto) "itauto" "!"? (" *" <|> (" [" term,* "]"))? : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic
   | `(tactic| itauto $[!%$cl]?) => liftMetaTactic (itautoCore · false cl.isSome #[] *> pure [])
   | `(tactic| itauto $[!%$cl]? *) => liftMetaTactic (itautoCore · true cl.isSome #[] *> pure [])

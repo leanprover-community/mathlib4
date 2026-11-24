@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Module.AEval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial module
 
@@ -20,22 +23,25 @@ module structures on `ℕ →₀ M` of interest. See the docstring of `Polynomia
 universe u v
 open Polynomial
 
-/-- The `R[X]`-module `M[X]` for an `R`-module `M`.
+/--
+The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 
 We require all the module instances `Module S (PolynomialModule R M)` to factor through `R` except
 `Module R[X] (PolynomialModule R M)`.
 In this constraint, we have the following instances for example :
-- `R` acts on `PolynomialModule R R[X]`
-- `R[X]` acts on `PolynomialModule R R[X]` as `R[Y]` acting on `R[X][Y]`
-- `R` acts on `PolynomialModule R[X] R[X]`
-- `R[X]` acts on `PolynomialModule R[X] R[X]` as `R[X]` acting on `R[X][Y]`
-- `R[X][X]` acts on `PolynomialModule R[X] R[X]` as `R[X][Y]` acting on itself
+
+* `R` acts on `PolynomialModule R R[X]`
+* `R[X]` acts on `PolynomialModule R R[X]` as `R[Y]` acting on `R[X][Y]`
+* `R` acts on `PolynomialModule R[X] R[X]`
+* `R[X]` acts on `PolynomialModule R[X] R[X]` as `R[X]` acting on `R[X][Y]`
+* `R[X][X]` acts on `PolynomialModule R[X] R[X]` as `R[X][Y]` acting on itself
 
 This is also the reason why `R` is included in the alias, or else there will be two different
 instances of `Module R[X] (PolynomialModule R[X])`.
 
-See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
+See
+https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
 for the full discussion.
 -/
 @[nolint unusedArguments]

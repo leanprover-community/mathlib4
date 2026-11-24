@@ -10,6 +10,9 @@ public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.RCLike.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polar sets in the strong dual of a normed space
 
@@ -22,7 +25,7 @@ In this file we study polar sets in the strong dual `StrongDual` of a normed spa
 
 ## References
 
-* [Conway, John B., A course in functional analysis][conway1990]
+* ‍\[Conway, John B., A course in functional analysis\]\[conway1990\]
 
 ## Tags
 

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Set.Basic
 
-/-!
-# Order structures and monotonicity lemmas for `Set`
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Order structures and monotonicity lemmas for `Set` -/
 
 public section
 
@@ -67,7 +68,7 @@ end LinearOrder
 
 end Set
 
-/-! ### Monotone lemmas for sets -/
+/-! # Monotone lemmas for sets -/
 
 section Monotone
 variable {α β : Type*}

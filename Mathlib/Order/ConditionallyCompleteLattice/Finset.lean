@@ -9,9 +9,10 @@ public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
-/-!
-# Conditionally complete lattices and finite sets.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Conditionally complete lattices and finite sets. -/
 
 public section
 
@@ -206,7 +207,7 @@ theorem iSup_ne_top [Finite ι] [Nontrivial α] {f : ι → α} (h : ∀ x, f x 
 end CompleteLinearOrder
 
 /-!
-### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
+# Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
 Like the `Sup` of a `ConditionallyCompleteLattice`, `Finset.sup'` also requires the set to be
 non-empty. As a result, we can translate between the two.

@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Algebra.Order.Group.OrderIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice ordered groups
 
-Lattice ordered groups were introduced by [Birkhoff][birkhoff1942]. They form the algebraic
+Lattice ordered groups were introduced by \[Birkhoff\]\[birkhoff1942\]. They form the algebraic
 underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 
 A lattice ordered group is a type `α` satisfying:
+
 * `Lattice α`
 * `CommGroup α`
 * `MulLeftMono α`
@@ -21,16 +25,16 @@ A lattice ordered group is a type `α` satisfying:
 
 This file establishes basic properties of lattice ordered groups. It is shown that when the group is
 commutative, the lattice is distributive. This also holds in the non-commutative case
-([Birkhoff][birkhoff1942],[Fuchs][fuchs1963]) but we do not yet have the machinery to establish this
-in mathlib.
+(\[Birkhoff\]\[birkhoff1942\],\[Fuchs\]\[fuchs1963\]) but we do not yet have the machinery to
+establish this in mathlib.
 
 ## References
 
-* [Birkhoff, Lattice-ordered Groups][birkhoff1942]
-* [Bourbaki, Algebra II][bourbaki1981]
-* [Fuchs, Partially Ordered Algebraic Systems][fuchs1963]
-* [Zaanen, Lectures on "Riesz Spaces"][zaanen1966]
-* [Banasiak, Banach Lattices in Applications][banasiak]
+* ‍\[Birkhoff, Lattice-ordered Groups\]\[birkhoff1942\]
+* ‍\[Bourbaki, Algebra II\]\[bourbaki1981\]
+* ‍\[Fuchs, Partially Ordered Algebraic Systems\]\[fuchs1963\]
+* ‍\[Zaanen, Lectures on "Riesz Spaces"\]\[zaanen1966\]
+* ‍\[Banasiak, Banach Lattices in Applications\]\[banasiak\]
 
 ## Tags
 

@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.RatFunc.Basic
 
 import Mathlib.Basic.Sign.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Cauchy index of a rational function
 
@@ -46,14 +49,14 @@ The jump is defined algebraically, through the reduced representation `f = f.num
 `rootMultiplicity x f.denom` is odd, and only poles of odd order make `f` change sign. At such a
 pole the direction of the jump is the sign of `f.num * f.denom` (which is equal to the sign of `f`)
 immediately to the right of `x`, that is `signRight x (f.num * f.denom)`. For an arbitrary
-representation `f = q / p`, `RatFunc.jump_div` recovers the formula of [li2014]: the jump is
+representation `f = q / p`, `RatFunc.jump_div` recovers the formula of \[li2014\]: the jump is
 `signRight x (p * q)` when `rootMultiplicity x p - rootMultiplicity x q` is odd (with truncated
 subtraction), and `0` otherwise.
 
 ## References
 
-* [S. Basu, R. Pollack, M.-F. Roy, *Algorithms in Real Algebraic Geometry*][basu2006]
-* [W. Li, *The Sturm–Tarski Theorem*, Archive of Formal Proofs][li2014]
+* ‍\[S. Basu, R. Pollack, M.-F. Roy, _Algorithms in Real Algebraic Geometry_\]\[basu2006\]
+* ‍\[W. Li, _The Sturm–Tarski Theorem_, Archive of Formal Proofs\]\[li2014\]
 -/
 
 open Polynomial Set SignType
@@ -63,7 +66,7 @@ public noncomputable section
 
 namespace RatFunc
 
-/-! ### The jump of a rational function at a point -/
+/-! # The jump of a rational function at a point -/
 
 variable {K : Type*} [Field K] [LinearOrder K]
 
@@ -85,11 +88,13 @@ theorem jump_algebraMap (p : K[X]) (x : K) : jump (algebraMap _ _ p) x = 0 :=
 theorem jump_zero (x : K) : jump 0 x = 0 := by
   simpa using jump_algebraMap 0 x
 
-/-- The jump of `q / p` at `x`, computed from any representation of the rational function as a
+/--
+The jump of `q / p` at `x`, computed from any representation of the rational function as a
 quotient of polynomials.
 
 Note that the statement uses truncated `ℕ` subtraction since if `x` is a root of both `p` and `q`
-but with greater multiplicity in the numerator `q`, then there is no jump. -/
+but with greater multiplicity in the numerator `q`, then there is no jump.
+-/
 theorem jump_div [IsStrictOrderedRing K] (p q : K[X]) (x : K) :
     jump (algebraMap _ _ q / algebraMap _ _ p) x =
       if Odd (rootMultiplicity x p - rootMultiplicity x q) then (signRight x (p * q) : ℤ)
@@ -188,7 +193,7 @@ theorem jump_derivative_mul_div [IsStrictOrderedRing K] {p : K[X]} {x : K}
   · simp [Nat.sub_eq_zero_of_le ((rootMultiplicity_pos hq).mpr hq0), hq0]
   · simp [rootMultiplicity_eq_zero hq0, signRight_of_eval_ne_zero hq0]
 
-/-! ### The Cauchy index -/
+/-! # The Cauchy index -/
 
 /-- The Cauchy index of the rational function `f` on the open interval `(a, b)`: the sum of the
 jumps of `f` at its poles in `(a, b)`. The roots of `f.denom` are exactly the poles of `f`. -/

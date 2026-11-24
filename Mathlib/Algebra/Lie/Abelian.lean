@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.OfAssociative
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trivial Lie modules and Abelian Lie algebras
 
@@ -19,12 +22,12 @@ In this file we define these concepts and provide some related definitions and r
 
 ## Main definitions
 
-  * `LieModule.IsTrivial`
-  * `IsLieAbelian`
-  * `isMulCommutative_iff_isLieAbelian`
-  * `LieModule.ker`
-  * `LieModule.maxTrivSubmodule`
-  * `LieAlgebra.center`
+* `LieModule.IsTrivial`
+* `IsLieAbelian`
+* `isMulCommutative_iff_isLieAbelian`
+* `LieModule.ker`
+* `LieModule.maxTrivSubmodule`
+* `LieAlgebra.center`
 
 ## Tags
 

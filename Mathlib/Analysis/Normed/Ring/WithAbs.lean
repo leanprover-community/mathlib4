@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Ring.TransferInstance
 
 import Mathlib.Algebra.Algebra.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `WithAbs` type synonym
 
@@ -18,21 +21,24 @@ import Mathlib.Algebra.Algebra.Tower
 `v`-dependent instances (such as `NormedRing`) where `v` is an absolute value on `R`.
 
 ## Main definitions
-- `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
+
+* `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
   a function that takes an absolute value on a semiring and returns the semiring. This can be used
   to assign and infer instances on a semiring that depend on absolute values.
-- `WithAbs.equiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
+* `WithAbs.equiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
 -/
 
 @[expose] public section
 
 variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 
-/-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
+/--
+Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
 on a semiring that depend on absolute values.
 
-This is also helpful when dealing with several absolute values on the same semiring. -/
+This is also helpful when dealing with several absolute values on the same semiring.
+-/
 structure WithAbs [Semiring R] (v : AbsoluteValue R S) where
   /-- Converts an element of `R` to an element of `WithAbs v`. -/
   toAbs (v) ::

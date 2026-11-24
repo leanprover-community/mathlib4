@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Topology.Algebra.ConstMulAction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deck transformations
 
-For a map `p : E → X`, the **deck transformation group** `deck p` is the subgroup of
+For a map `p : E → X`, the *deck transformation group* `deck p` is the subgroup of
 `E ≃ₜ E` consisting of self-homeomorphisms `h` with `p ∘ h = p`. No topology on `X` or
 continuity of `p` is assumed.
 

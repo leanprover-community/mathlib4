@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
-/-! # Presentable objects in discrete categories
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Presentable objects in discrete categories
 
 The purpose of this file is to show that a category with a single
 object and a single morphism is locally presentable.

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsemiring of opposite semirings
 
@@ -49,7 +52,7 @@ theorem unop_op (S : Subsemiring R) : S.op.unop = S := rfl
 @[simp]
 theorem op_unop (S : Subsemiring Rᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-! # Lattice results -/
 
 theorem op_le_iff {S₁ : Subsemiring R} {S₂ : Subsemiring Rᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=
   MulOpposite.op_surjective.forall

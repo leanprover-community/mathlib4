@@ -12,6 +12,9 @@ public import Mathlib.Logic.Relation
 
 import Batteries.Data.List.Pairwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pairwise relations on a list
 
@@ -40,7 +43,7 @@ variable {α : Type*} {R : α → α → Prop} {l l₁ l₂ : List α} {a b : α
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
-/-! ### Pairwise -/
+/-! # Pairwise -/
 
 theorem pairwise_iff_forall_infix {α : Type*} {l : List α} {R : α → α → Prop} :
     l.Pairwise R ↔
@@ -126,7 +129,7 @@ theorem Pairwise.head!_le [Inhabited α] [Std.Refl R] (h : l.Pairwise R)
 theorem pairwise_replicate_of_refl {n} [Std.Refl R] : (replicate n a).Pairwise R :=
   pairwise_replicate.mpr (Or.inr <| refl_of ..)
 
-/-! ### Pairwise filtering -/
+/-! # Pairwise filtering -/
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 
@@ -151,7 +154,7 @@ theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
     Pairwise (fun a b => decide (R a b) = true) l := by
   refine h.imp fun {a b} h => by simpa using h
 
-/-! ## TFAE -/
+/-! # TFAE -/
 
 section TFAE
 

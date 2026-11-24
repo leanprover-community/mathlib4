@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMapCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The simplicial set of affine simplices in a convex space
 
@@ -30,7 +33,6 @@ simplicial set `toSSet R Y` is contractible.
 This construction shall be used in the construction of the subdivision operator
 on the singular homology complex of topological spaces, which shall be used in the
 proof of the excision theorem (TODO @joelriou).
-
 -/
 
 @[expose] public noncomputable section

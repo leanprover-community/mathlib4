@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 
 import Mathlib.Order.Filter.Bases.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters
 
@@ -40,9 +43,7 @@ theorem Tendsto.eventually_forall_ge_atTop [Preorder β] {l : Filter α}
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
   rw [← Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
-/-!
-### Sequences
--/
+/-! # Sequences -/
 
 /-- If `u` is a sequence which is unbounded above,
 then after any point, it reaches a value strictly greater than all previous values.

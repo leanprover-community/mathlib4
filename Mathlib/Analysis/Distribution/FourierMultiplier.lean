@@ -7,16 +7,22 @@ module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 
-/-! # Fourier multiplier on Schwartz functions and tempered distributions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Fourier multiplier on Schwartz functions and tempered distributions
 
 We define a Fourier multiplier as continuous linear maps on Schwartz functions and tempered
 distributions. The multiplier function is throughout assumed to have temperate growth.
 
 ## Main definitions
+
 * `SchwartzMap.fourierMultiplierCLM`: Fourier multiplier on Schwartz functions
 * `TemperedDistribution.fourierMultiplierCLM`: Fourier multiplier on tempered distribution
 
 ## Main statements
+
 * `SchwartzMap.lineDeriv_eq_fourierMultiplierCLM`: the directional derivative is equal to the
   Fourier multiplier with `inner ℝ . m`.
 * `SchwartzMap.laplacian_eq_fourierMultiplierCLM`: the Laplacian is equal to the Fourier multiplier
@@ -33,7 +39,7 @@ variable {ι 𝕜 E F : Type*}
 
 namespace SchwartzMap
 
-/-! ## Schwartz functions -/
+/-! # Schwartz functions -/
 
 open scoped SchwartzMap
 
@@ -127,7 +133,7 @@ end SchwartzMap
 
 namespace TemperedDistribution
 
-/-! ## Tempered distributions -/
+/-! # Tempered distributions -/
 
 open scoped SchwartzMap
 

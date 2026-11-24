@@ -12,6 +12,9 @@ public import Mathlib.Topology.DenseEmbedding
 
 import Mathlib.Topology.Connected.TotallyDisconnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further properties of homeomorphisms
 
@@ -197,7 +200,8 @@ def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X
 @[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The product over `S ⊕ T` of a family of topological spaces
+/--
+The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `Homeomorph`.
@@ -208,7 +212,8 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
   __ := Equiv.sumPiEquivProdPi _
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> dsimp <;> fun_prop
 
-/-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
+/--
+The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
 space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `Homeomorph`.
@@ -471,10 +476,12 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
   have hC' : IsClosed (f '' C) := (hC.isCompact.image hf).isClosed
   rwa [Equiv.image_eq_preimage_symm] at hC'
 
-/-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
+/--
+Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 
 This is not true when T2 is weakened to T1
-(see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
+(see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`).
+-/
 @[simps toEquiv]
 def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Continuous f) : X ≃ₜ Y :=
   { f with

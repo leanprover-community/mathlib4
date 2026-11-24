@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coherence tactic for bicategories
 
@@ -266,6 +269,8 @@ instance : MkEqOfNaturality BicategoryM where
 
 open Elab.Tactic
 
+
+set_option doc.verso false
 /-- Close the goal of the form `η.hom = θ.hom`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
@@ -277,6 +282,8 @@ example {B : Type} [Bicategory B] {a : B} :
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.pureCoherence Bicategory.Context `bicategory mvarId
 
+
+set_option doc.verso true
 @[inherit_doc pureCoherence]
 elab "bicategory_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← Bicategory.pureCoherence <| ← getMainGoal

@@ -11,9 +11,10 @@ public import Mathlib.Tactic.FunProp.Core
 meta import Lean.Elab.InfoTree.Main
 import Mathlib.Tactic.InferParam
 
-/-!
-## `funProp` tactic syntax
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # `funProp` tactic syntax -/
 
 public meta section
 
@@ -27,6 +28,8 @@ open Lean.Parser.Tactic
 /-- `fun_prop` config elaborator -/
 declare_config_elab elabFunPropConfig FunProp.Config
 
+
+set_option doc.verso false
 /-- `fun_prop` solves a goal of the form `P f`, where `P` is a predicate and `f` is a function,
 by decomposing `f` into a composition of elementary functions, and proving `P` on each of those
 by matching against a set of `@[fun_prop]` lemmas.
@@ -61,6 +64,8 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
+
+set_option doc.verso true
 private def assumptionDischarge : Expr → MetaM (Option Expr) :=
   fun e => do tacticToDischarge (← `(tactic| first | with_reducible assumption | infer_param)) e
 
@@ -126,13 +131,17 @@ def funPropTac : Tactic
 
 
 
-/-- Command that prints all function properties attached to a function.
+/--
+Command that prints all function properties attached to a function.
 
 For example
+
 ```
 #print_fun_prop_theorems HAdd.hAdd
 ```
+
 might print out
+
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
@@ -147,6 +156,7 @@ Differentiable
 ```
 
 You can also see only theorems about a concrete function property
+
 ```
 #print_fun_prop_theorems HAdd.hAdd Continuous
 ```

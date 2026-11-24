@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bicategory of based categories
 
@@ -20,7 +23,7 @@ We also define a type of functors between based categories `𝒳` and `𝒴`, wh
 `BasedFunctor 𝒳 𝒴` and denote as `𝒳 ⥤ᵇ 𝒴`. These are defined as functors between the underlying
 categories `𝒳.obj` and `𝒴.obj` which commute with the projections to `𝒮`.
 
-Natural transformations between based functors `F G : 𝒳 ⥤ᵇ 𝒴 ` are given by the structure
+Natural transformations between based functors `F G : 𝒳 ⥤ᵇ 𝒴  ` are given by the structure
 `BasedNatTrans F G`. These are defined as natural transformations `α` between the functors
 underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`.
 -/

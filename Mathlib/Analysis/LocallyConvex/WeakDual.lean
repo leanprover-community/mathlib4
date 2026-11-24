@@ -9,6 +9,9 @@ public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak Dual in Topological Vector Spaces
 
@@ -36,8 +39,8 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-* [Rudin, *Functional Analysis*][rudin1991]
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
+* ‍\[Rudin, _Functional Analysis_\]\[rudin1991\]
 
 ## Tags
 

@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Pi
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Trace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
 
@@ -25,20 +28,20 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `LieModule.genWeightSpaceOf`
-  * `LieModule.genWeightSpace`
-  * `LieModule.Weight`
-  * `LieModule.posFittingCompOf`
-  * `LieModule.posFittingComp`
-  * `LieModule.iSup_ucs_eq_genWeightSpace_zero`
-  * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
-  * `LieModule.isCompl_genWeightSpace_zero_posFittingComp`
-  * `LieModule.iSupIndep_genWeightSpace`
-  * `LieModule.iSup_genWeightSpace_eq_top`
+* `LieModule.genWeightSpaceOf`
+* `LieModule.genWeightSpace`
+* `LieModule.Weight`
+* `LieModule.posFittingCompOf`
+* `LieModule.posFittingComp`
+* `LieModule.iSup_ucs_eq_genWeightSpace_zero`
+* `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
+* `LieModule.isCompl_genWeightSpace_zero_posFittingComp`
+* `LieModule.iSupIndep_genWeightSpace`
+* `LieModule.iSup_genWeightSpace_eq_top`
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b]
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 7--9_\]\[bourbaki1975b\]
 
 ## Tags
 
@@ -148,10 +151,12 @@ lemma lie_mem_maxGenEigenspace_toEnd
 
 variable (M)
 
-/-- If `M` is a representation of a nilpotent Lie algebra `L`, `χ` is a scalar, and `x : L`, then
+/--
+If `M` is a representation of a nilpotent Lie algebra `L`, `χ` is a scalar, and `x : L`, then
 `genWeightSpaceOf M χ x` is the maximal generalized `χ`-eigenspace of the action of `x` on `M`.
 
-It is a Lie submodule because `L` is nilpotent. -/
+It is a Lie submodule because `L` is nilpotent.
+-/
 def genWeightSpaceOf [LieRing.IsNilpotent L] (χ : R) (x : L) : LieSubmodule R L M :=
   { 𝕎(M, χ, x) with
     lie_mem := by
@@ -174,12 +179,14 @@ theorem coe_genWeightSpaceOf_zero (x : L) :
     ↑(genWeightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
   simp [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq]
 
-/-- If `M` is a representation of a nilpotent Lie algebra `L`
+/--
+If `M` is a representation of a nilpotent Lie algebra `L`
 and `χ : L → R` is a family of scalars,
 then `genWeightSpace M χ` is the intersection of the maximal generalized `χ x`-eigenspaces
 of the action of `x` on `M` as `x` ranges over `L`.
 
-It is a Lie submodule because `L` is nilpotent. -/
+It is a Lie submodule because `L` is nilpotent.
+-/
 def genWeightSpace (χ : L → R) : LieSubmodule R L M :=
   ⨅ x, genWeightSpaceOf M (χ x) x
 
@@ -242,10 +249,12 @@ instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L
 
 @[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
-/-- The proposition that a weight of a Lie module is zero.
+/--
+The proposition that a weight of a Lie module is zero.
 
 We make this definition because we cannot define a `Zero (Weight R L M)` instance since the weight
-space of the zero function can be trivial. -/
+space of the zero function can be trivial.
+-/
 def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 
 @[simp] lemma IsZero.eq {χ : Weight R L M} (hχ : χ.IsZero) : (χ : L → R) = 0 := hχ
@@ -381,14 +390,16 @@ lemma iSup_ucs_eq_genWeightSpace_zero [IsNoetherian R M] :
 
 variable {L}
 
-/-- If `M` is a representation of a nilpotent Lie algebra `L`, and `x : L`, then
+/--
+If `M` is a representation of a nilpotent Lie algebra `L`, and `x : L`, then
 `posFittingCompOf R M x` is the infimum of the decreasing system
 `range φₓ ⊇ range φₓ² ⊇ range φₓ³ ⊇ ⋯` where `φₓ : End R M := toEnd R L M x`. We call this
 the "positive Fitting component" because with appropriate assumptions (e.g., `R` is a field and
 `M` is finite-dimensional) `φₓ` induces the so-called Fitting decomposition: `M = M₀ ⊕ M₁` where
 `M₀ = genWeightSpaceOf M 0 x` and `M₁ = posFittingCompOf R M x`.
 
-It is a Lie submodule because `L` is nilpotent. -/
+It is a Lie submodule because `L` is nilpotent.
+-/
 def posFittingCompOf (x : L) : LieSubmodule R L M :=
   { toSubmodule := ⨅ k, LinearMap.range (toEnd R L M x ^ k)
     lie_mem := by
@@ -437,11 +448,13 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
 
 variable (L)
 
-/-- If `M` is a representation of a nilpotent Lie algebra `L` with coefficients in `R`, then
+/--
+If `M` is a representation of a nilpotent Lie algebra `L` with coefficients in `R`, then
 `posFittingComp R L M` is the span of the positive Fitting components of the action of `x` on `M`,
 as `x` ranges over `L`.
 
-It is a Lie submodule because `L` is nilpotent. -/
+It is a Lie submodule because `L` is nilpotent.
+-/
 def posFittingComp : LieSubmodule R L M :=
   ⨆ x, posFittingCompOf R M x
 
@@ -662,9 +675,11 @@ lemma injOn_genWeightSpace :
   contrapose! hχ₂
   simpa [hχ₁₂] using disjoint_genWeightSpace R L M hχ₂
 
-/-- Lie module weight spaces are independent.
+/--
+Lie module weight spaces are independent.
 
-See also `LieModule.iSupIndep_genWeightSpace'`. -/
+See also `LieModule.iSupIndep_genWeightSpace'`.
+-/
 lemma iSupIndep_genWeightSpace : iSupIndep fun χ : L → R ↦ genWeightSpace M χ := by
   simp only [← LieSubmodule.iSupIndep_toSubmodule, genWeightSpace,
     LieSubmodule.iInf_toSubmodule]
@@ -759,9 +774,11 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
   rw [← N.toEnd_restrict_eq_toEnd y]
   exact Module.End.genEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
 
-/-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
+/--
+For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 
-See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
+See also `LieModule.iSup_genWeightSpace_eq_top'`.
+-/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   simp only [← LieSubmodule.toSubmodule_inj, LieSubmodule.iSup_toSubmodule,

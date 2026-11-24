@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.Additive.SmallTripling
 
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Approximate subgroups
 
@@ -21,6 +24,7 @@ be covered by a small number of translates of `A`.
 
 Approximate subgroups are a central concept in additive combinatorics, as a natural weakening and
 flexible substitute of genuine subgroups. As such, they share numerous properties with subgroups:
+
 * `IsApproximateSubgroup.image`: Group homomorphisms send approximate subgroups to approximate
   subgroups
 * `IsApproximateSubgroup.pow_inter_pow`: The intersection of (non-trivial powers of) two approximate
@@ -29,11 +33,13 @@ flexible substitute of genuine subgroups. As such, they share numerous propertie
 
 Approximate subgroups are close qualitatively and quantitatively to other concepts in additive
 combinatorics:
+
 * `IsApproximateSubgroup.card_pow_le`: An approximate subgroup has small powers.
 * `IsApproximateSubgroup.of_small_tripling`: A set of small tripling can be made an approximate
   subgroup by squaring.
 
 It can be readily confirmed that approximate subgroups are a weakening of subgroups:
+
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
 

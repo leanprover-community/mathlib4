@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
 public import Mathlib.CategoryTheory.MarkovCategory.Positive
 public import Mathlib.Probability.Kernel.Category.SFinKer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stoch
 
@@ -26,14 +29,14 @@ The category of measurable spaces with Markov kernels is a positive Markov categ
 Among categories of measurable spaces and probability kernels, `Stoch` stands out as the unique
 positive Markov category. In contrast, `SFinKer` and the category of finite kernels (not
 implemented) do not satisfy positivity. To see why, consider the counterexample with
-$X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_{\varnothing}$ and
-$\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their composition is
+$`X = Y = \{\varnothing\}`, kernels $`\kappa(\cdot | \varnothing) = 2\delta_{\varnothing}` and
+$`\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}`: although their composition is
 deterministic, the positivity equation fails.
 
 ## References
 
-* [A synthetic approach to
-  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+* ‍\[A synthetic approach to
+  Markov kernels, conditional independence and theorems on sufficient statistics\]\[fritz2020\]
 -/
 
 public section

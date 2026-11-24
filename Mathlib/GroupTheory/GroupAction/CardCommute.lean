@@ -10,11 +10,15 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 
 import Mathlib.GroupTheory.Coset.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of group actions involving quotient groups
 
 This file proves cardinality properties of group actions which use the quotient group construction,
 notably
+
 * the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
 * `card_comm_eq_card_conjClasses_mul_card`
 

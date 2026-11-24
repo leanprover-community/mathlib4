@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Mathlib.RingTheory.Coalgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional inner product space with a (co)algebra structure
 
@@ -61,14 +64,16 @@ namespace InnerProductSpace
 section coalgebraOfAlgebra
 variable {A : Type*} [Ring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
-/-- A finite-dimensional inner product space with an algebra structure induces
+/--
+A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
 
 This is implemented by providing a linear equivalence between the inner product
 space and an algebra.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
   counit := innerₛₗ 𝕜 (e.symm 1)
@@ -92,10 +97,12 @@ end coalgebraOfAlgebra
 section algebraOfCoalgebra
 variable [Coalgebra 𝕜 E]
 
-/-- The multiplication on a finite-dimensional inner product space with a coalgebra structure
+/--
+The multiplication on a finite-dimensional inner product space with a coalgebra structure
 given by `x * y = (adjoint comul) (x ⊗ₜ y)`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev mulOfCoalgebra :
     Mul E where mul x y := adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y)
 
@@ -106,11 +113,13 @@ lemma AlgebraOfCoalgebra.mul_def (x y : E) :
 attribute [local simp] AlgebraOfCoalgebra.mul_def
 
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
-/-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
+/--
+A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
 where multiplication is given by `x * y = (adjoint comul) (x ⊗ₜ y)` and
 `1 = (adjoint counit) (1 : 𝕜)`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev ringOfCoalgebra :
     Ring E where
   left_distrib x y z := by simp [tmul_add]
@@ -139,11 +148,13 @@ noncomputable abbrev ringOfCoalgebra :
     exact one_smul _ _
 
 attribute [local instance] InnerProductSpace.ringOfCoalgebra in
-/-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
+/--
+A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
 `algebraMap = adjoint counit`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
   algebraMap :=
     { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))

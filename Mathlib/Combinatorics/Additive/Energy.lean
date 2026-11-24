@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive energy
 
@@ -22,6 +25,7 @@ additive combinatorics.
 ## Notation
 
 The following notations are defined in the `Combinatorics.Additive` scope:
+
 * `E[s, t]` for `Finset.addEnergy s t`.
 * `Eₘ[s, t]` for `Finset.mulEnergy s t`.
 * `E[s]` for `E[s, s]`.
@@ -44,15 +48,19 @@ namespace Finset
 section Mul
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 
-/-- The multiplicative energy `Eₘ[s, t]` of two finsets `s` and `t` in a group is the number of
+/--
+The multiplicative energy `Eₘ[s, t]` of two finsets `s` and `t` in a group is the number of
 quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
 
-The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
+The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`.
+-/
 @[to_additive
-/-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
+/--
+The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
 
-The notation `E[s, t]` is available in scope `Combinatorics.Additive`. -/]
+The notation `E[s, t]` is available in scope `Combinatorics.Additive`.
+-/]
 def mulEnergy (s t : Finset α) : ℕ :=
   #{x ∈ ((s ×ˢ s) ×ˢ t ×ˢ t) | x.1.1 * x.2.1 = x.1.2 * x.2.2}
 

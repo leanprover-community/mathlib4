@@ -7,10 +7,13 @@ module
 
 public import Mathlib.GroupTheory.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Virtually cyclic groups
 
-A group is *virtually cyclic* if it has a cyclic subgroup of finite index.
+A group is _virtually cyclic_ if it has a cyclic subgroup of finite index.
 Virtually cyclic groups are fundamental in geometric group theory: they are
 exactly the elementary subgroups of hyperbolic groups, the groups with at most
 two ends, and the conclusion of the curvature-free Margulis lemma of

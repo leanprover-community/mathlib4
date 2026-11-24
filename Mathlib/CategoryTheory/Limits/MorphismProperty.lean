@@ -10,9 +10,10 @@ public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 import Mathlib.CategoryTheory.Limits.Comma
 
-/-!
-# (Co)limits in subcategories of comma categories defined by morphism properties
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # (Co)limits in subcategories of comma categories defined by morphism properties -/
 
 @[expose] public section
 
@@ -215,11 +216,13 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
-/-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
+/--
+Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
 Without the cancellation property, this does not in general. Consider for example
-`P = Function.Surjective` on `Type`. -/
+`P = Function.Surjective` on `Type`.
+-/
 instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan :=

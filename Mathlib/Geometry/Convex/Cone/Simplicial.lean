@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial cones
 
-A **simplicial cone** is a pointed convex cone that equals the conic hull of a finite linearly
+A *simplicial cone* is a pointed convex cone that equals the conic hull of a finite linearly
 independent set of vectors. We do not require that the generators span the ambient module.
 However, when the cone is also generating, its generators linearly span the module.
 
@@ -26,7 +29,7 @@ However, when the cone is also generating, its generators linearly span the modu
 
 ## References
 
-* [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
+* ‍\[Aubrun et al. _Entangleability of cones_\]\[aubrunEntangleabilityCones2021\]
 -/
 
 @[expose] public section

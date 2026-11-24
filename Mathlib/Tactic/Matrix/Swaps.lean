@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Matrix.Defs  -- shake: keep (Qq dependency)
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permutations from lists of swaps
 
@@ -19,11 +22,11 @@ permutations of matrix literals corresponding to those swaps.
 
 ## Main definitions
 
-- `permOfSwaps`: the permutation `swap a₀ b₀ * swap a₁ b₁ * ⋯` of a list of swaps, with its sign
+* `permOfSwaps`: the permutation `swap a₀ b₀ * swap a₁ b₁ * ⋯` of a list of swaps, with its sign
   `intCast_sign_permOfSwaps`.
-- `mkSwapsLitQ`: build the list literal of the swaps.
-- `certifyPermSign`, certify the sign of the permutation of swaps.
-- `certifyPermEq`: certify the row arrangement `A.submatrix σ id = Aσ` of a matrix literal.
+* `mkSwapsLitQ`: build the list literal of the swaps.
+* `certifyPermSign`, certify the sign of the permutation of swaps.
+* `certifyPermEq`: certify the row arrangement `A.submatrix σ id = Aσ` of a matrix literal.
 -/
 
 public section

@@ -10,24 +10,28 @@ public import Mathlib.RingTheory.Localization.Defs
 
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of algebras
 
 ## Main definitions
 
-- `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
+* `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
   surjection `P →ₐ[R] R`.
+* `Algebra.Extension.Hom`: Given a commuting square
 
-- `Algebra.Extension.Hom`: Given a commuting square
-  ```
-  R --→ P -→ S
-  |          |
-  ↓          ↓
-  R' -→ P' → S
-  ```
-  A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
+```
+R --→ P -→ S
+|          |
+↓          ↓
+R' -→ P' → S
+```
 
-- `Algebra.Extension.Cotangent`:
+A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
+
+* `Algebra.Extension.Cotangent`:
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 -/
 
@@ -192,13 +196,16 @@ section
 variable [Algebra R R'] [Algebra R' R''] [Algebra R R'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
-/-- Given a commuting square
+/--
+Given a commuting square
+
 ```
 R --→ P -→ S
 |          |
 ↓          ↓
 R' -→ P' → S
 ```
+
 A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 -/
 @[ext]

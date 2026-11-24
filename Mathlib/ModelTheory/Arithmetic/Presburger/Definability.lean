@@ -12,6 +12,9 @@ public import Mathlib.ModelTheory.Definability
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.LinearAlgebra.Matrix.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presburger definability and semilinear sets
 
@@ -21,19 +24,20 @@ definable.
 
 ## Main Results
 
-- `presburger.definable_iff_isSemilinearSet`: a set is Presburger definable in `ℕ` if and only if it
+* `presburger.definable_iff_isSemilinearSet`: a set is Presburger definable in `ℕ` if and only if it
   is semilinear.
-- `presburger.definable₁_iff_ultimately_periodic`: in the 1-dimensional case, a set is Presburger
+* `presburger.definable₁_iff_ultimately_periodic`: in the 1-dimensional case, a set is Presburger
   arithmetic definable in `ℕ` if and only if it is ultimately periodic, i.e. periodic after some
   number `k`.
-- `presburger.mul_not_definable`: the graph of multiplication is not Presburger definable in `ℕ`.
+* `presburger.mul_not_definable`: the graph of multiplication is not Presburger definable in `ℕ`.
 
 ## References
 
-* [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
-* [Seymour Ginsburg and Edwin H. Spanier, *Semigroups, Presburger Formulas, and
-  Languages*][ginsburg1966]
-* [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
+* ‍\[Seymour Ginsburg and Edwin H. Spanier, _Bounded ALGOL-Like Languages_\]\[ginsburg1964\]
+* ‍\[Seymour Ginsburg and Edwin H. Spanier, _Semigroups, Presburger Formulas, and
+  Languages_\]\[ginsburg1966\]
+* ‍\[Samuel Eilenberg and M. P. Schützenberger, _Rational Sets in Commutative
+  Monoids_\]\[eilenberg1969\]
 -/
 
 public section

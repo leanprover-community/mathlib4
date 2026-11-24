@@ -12,6 +12,10 @@ public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Relation.Rfl
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # The `congr!` tactic
 
@@ -122,60 +126,68 @@ structure Congr!.Config where
   `.reducible`.
   -/
   postTransparency : TransparencyMode := TransparencyMode.default
-  /-- For passes that synthesize a congruence lemma using one side of the equality,
-  we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
-  then we start with the left-hand side.
+  /--
+  For passes that synthesize a congruence lemma using one side of the equality,
+we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
+then we start with the left-hand side.
 
   This can be used to control which side's definitions are expanded when applying the
-  congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
+congruence lemma (if `preferLHS = true` then the RHS can be expanded).
+  -/
   preferLHS : Bool := true
-  /-- Allow both sides to be partial applications, and allow overapplications.
-  When false, given an equality `f a b = g x y z` this means we never consider
-  proving `f a = g x y`.
+  /--
+  Allow both sides to be partial applications, and allow overapplications.
+When false, given an equality `f a b = g x y z` this means we never consider
+proving `f a = g x y`.
 
   In this case, we might still consider `f = g x` if a pass generates a congruence lemma using the
-  left-hand side. Use `sameFun := true` to ensure both sides are applications
-  of the same function (making it be similar to the `congr` tactic). -/
+left-hand side. Use `sameFun := true` to ensure both sides are applications
+of the same function (making it be similar to the `congr` tactic).
+  -/
   partialApp : Bool := true
   /-- Whether to require that both sides of an equality be applications of defeq functions.
   That is, if true, `f a = g x` is only considered if `f` and `g` are defeq (making it be similar
   to the `congr` tactic). -/
   sameFun : Bool := false
-  /-- The maximum number of arguments to consider when doing congruence of function applications.
-  For example, with `f a b c = g w x y z`, setting `maxArgs := some 2` means it will only consider
-  either `f a b = g w x y` and `c = z` or `f a = g w x`, `b = y`, and `c = z`. Setting
-  `maxArgs := none` (the default) means no limit.
+  /--
+  The maximum number of arguments to consider when doing congruence of function applications.
+For example, with `f a b c = g w x y z`, setting `maxArgs := some 2` means it will only consider
+either `f a b = g w x y` and `c = z` or `f a = g w x`, `b = y`, and `c = z`. Setting
+`maxArgs := none` (the default) means no limit.
 
   When the functions are dependent, `maxArgs` can prevent congruence from working at all.
-  In `Fintype.card α = Fintype.card β`, one needs to have `maxArgs` at `2` or higher since
-  there is a `Fintype` instance argument that depends on the first.
+In `Fintype.card α = Fintype.card β`, one needs to have `maxArgs` at `2` or higher since
+there is a `Fintype` instance argument that depends on the first.
 
   When there aren't such dependency issues, setting `maxArgs := some 1` causes `congr!` to
-  do congruence on a single argument at a time. This can be used in conjunction with the
-  iteration limit to control exactly how many arguments are to be processed by congruence. -/
+do congruence on a single argument at a time. This can be used in conjunction with the
+iteration limit to control exactly how many arguments are to be processed by congruence.
+  -/
   maxArgs : Option Nat := none
-  /-- For type arguments that are implicit or have forward dependencies, whether or not `congr!`
-  should generate equalities even if the types do not look plausibly equal.
+  /--
+  For type arguments that are implicit or have forward dependencies, whether or not `congr!`
+should generate equalities even if the types do not look plausibly equal.
 
   We have a heuristic in the main congruence generator that types
-  `α` and `β` are *plausibly equal* according to the following algorithm:
+`α` and `β` are _plausibly equal_ according to the following algorithm:
 
-  - If the types are both propositions, they are plausibly equal (`Iff`s are plausible).
-  - If the types are from different universes, they are not plausibly equal.
-  - Suppose in whnf we have `α = f a₁ ... aₘ` and `β = g b₁ ... bₘ`. If `f` is not definitionally
-    equal to `g` or `m ≠ n`, then `α` and `β` are not plausibly equal.
-  - If there is some `i` such that `aᵢ` and `bᵢ` are not plausibly equal, then `α` and `β` are
-    not plausibly equal.
-  - Otherwise, `α` and `β` are plausibly equal.
+  * If the types are both propositions, they are plausibly equal (`Iff`s are plausible).
+* If the types are from different universes, they are not plausibly equal.
+* Suppose in whnf we have `α = f a₁ ... aₘ` and `β = g b₁ ... bₘ`. If `f` is not definitionally
+  equal to `g` or `m ≠ n`, then `α` and `β` are not plausibly equal.
+* If there is some `i` such that `aᵢ` and `bᵢ` are not plausibly equal, then `α` and `β` are
+  not plausibly equal.
+* Otherwise, `α` and `β` are plausibly equal.
 
   The purpose of this is to prevent considering equalities like `ℕ = ℤ` while allowing equalities
-  such as `Fin n = Fin m` or `Subtype p = Subtype q` (so long as these are subtypes of the
-  same type).
+such as `Fin n = Fin m` or `Subtype p = Subtype q` (so long as these are subtypes of the
+same type).
 
   The way this is implemented is that when the congruence generator is comparing arguments when
-  looking at an equality of function applications, it marks a function parameter as "fixed" if the
-  provided arguments are types that are not plausibly equal. The effect of this is that congruence
-  succeeds only if those arguments are defeq at `transparency` transparency. -/
+looking at an equality of function applications, it marks a function parameter as "fixed" if the
+provided arguments are types that are not plausibly equal. The effect of this is that congruence
+succeeds only if those arguments are defeq at `transparency` transparency.
+  -/
   typeEqs : Bool := false
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
@@ -228,18 +240,20 @@ private def applyCongrThm?
       trace[congr!] "{e.toMessageData}"
     throw e
 
-/-- Returns whether or not it's reasonable to consider an equality between types `ty1` and `ty2`.
+/--
+Returns whether or not it's reasonable to consider an equality between types `ty1` and `ty2`.
 The heuristic is the following:
 
-- If `ty1` and `ty2` are in `Prop`, then yes.
-- If in whnf both `ty1` and `ty2` have the same head and if (recursively) it's reasonable to
+* If `ty1` and `ty2` are in `Prop`, then yes.
+* If in whnf both `ty1` and `ty2` have the same head and if (recursively) it's reasonable to
   consider an equality between corresponding type arguments, then yes.
-- Otherwise, no.
+* Otherwise, no.
 
 This helps keep congr from going too far and generating hypotheses like `ℝ = ℤ`.
 
 To keep things from going out of control, there is a `maxDepth`. Additionally, if we do the check
-with `maxDepth = 0` then the heuristic answers "no". -/
+with `maxDepth = 0` then the heuristic answers "no".
+-/
 def Congr!.plausiblyEqualTypes (ty1 ty2 : Expr) (maxDepth : Nat := 5) : MetaM Bool :=
   match maxDepth with
   | 0 => return false
@@ -588,10 +602,11 @@ that is trivial. If there are any patterns in the current `CongrMetaM` state the
 of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
-- deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
-- deleting Prop hypotheses that are already in the local context.
-- converting `x ≍ y` to `x = y` if possible.
-- converting `x = y` to `x ↔ y` if possible.
+
+* deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
+* deleting Prop hypotheses that are already in the local context.
+* converting `x ≍ y` to `x = y` if possible.
+* converting `x = y` to `x ↔ y` if possible.
 -/
 partial
 def Lean.MVarId.introsClean (mvarId : MVarId) : CongrMetaM (List MVarId) :=
@@ -699,11 +714,13 @@ def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (O
       return ← mvarId.change (← mkEq lhs' rhs')
   return mvarId
 
-/-- A more insistent version of `Lean.MVarId.congrN`.
+/--
+A more insistent version of `Lean.MVarId.congrN`.
 See the documentation on the `congr!` syntax.
 
 The `depth?` argument controls the depth of the recursion. If `none`, then it uses a reasonably
-large bound that is linear in the expression depth. -/
+large bound that is linear in the expression depth.
+-/
 def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
     (patterns : List (TSyntax `rintroPat) := []) :

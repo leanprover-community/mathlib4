@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Central.Defs
 
 import Mathlib.Algebra.Module.Torsion.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Central Algebras
 
@@ -16,9 +19,9 @@ In this file, we prove some basic results about central algebras over a commutat
 
 ## Main results
 
-- `Algebra.IsCentral.center_eq_bot`: the center of a central algebra over `K` is equal to `K`.
-- `Algebra.IsCentral.self`: a commutative ring is a central algebra over itself.
-- `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
+* `Algebra.IsCentral.center_eq_bot`: the center of a central algebra over `K` is equal to `K`.
+* `Algebra.IsCentral.self`: a commutative ring is a central algebra over itself.
+* `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
 

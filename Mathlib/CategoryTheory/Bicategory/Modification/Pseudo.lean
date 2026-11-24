@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modifications between transformations of pseudofunctors
 
@@ -132,9 +135,11 @@ structure Hom where
   /-- The underlying modification of strong transformations. -/
   as : Modification η θ
 
-/-- Category structure on the strong transformations between pseudofunctors.
+/--
+Category structure on the strong transformations between pseudofunctors.
 
-Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace. -/
+Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace.
+-/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Hom

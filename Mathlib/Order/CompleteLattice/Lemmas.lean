@@ -9,6 +9,9 @@ public import Mathlib.Data.Bool.Set
 public import Mathlib.Data.Nat.Set
 public import Mathlib.Order.CompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of complete lattices
 
@@ -17,6 +20,7 @@ This file contains results on complete lattices that need more theory to develop
 ## Naming conventions
 
 In lemma names,
+
 * `sSup` is called `sSup`
 * `sInf` is called `sInf`
 * `⨆ i, s i` is called `iSup`
@@ -46,9 +50,7 @@ section
 
 variable [CompleteLattice α] {f : ι → α} {a b : α}
 
-/-!
-### `iSup` and `iInf` under `Bool`
--/
+/-! # `iSup` and `iInf` under `Bool` -/
 
 @[to_dual]
 theorem iSup_bool_eq {f : Bool → α} : ⨆ b : Bool, f b = f true ⊔ f false := by
@@ -58,9 +60,7 @@ theorem iSup_bool_eq {f : Bool → α} : ⨆ b : Bool, f b = f true ⊔ f false 
 theorem sup_eq_iSup (x y : α) : x ⊔ y = ⨆ b : Bool, cond b x y := by
   rw [iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 
-/-!
-### `iSup` and `iInf` under `ℕ`
--/
+/-! # `iSup` and `iInf` under `ℕ` -/
 
 @[to_dual]
 theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = ⨆ i, u (i + n) := by
@@ -108,9 +108,7 @@ theorem iInf_nat_gt_zero_eq (f : ℕ → α) : ⨅ i > 0, f i = ⨅ i, f (i + 1)
 
 end
 
-/-!
-### Instances
--/
+/-! # Instances -/
 
 section CompleteLattice
 

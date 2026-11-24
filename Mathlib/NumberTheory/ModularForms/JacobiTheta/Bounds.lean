@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic bounds for Jacobi theta functions
 
@@ -107,7 +110,7 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
 section k_eq_zero
 
 /-!
-## Sum over `ℕ` with `k = 0`
+# Sum over `ℕ` with `k = 0`
 
 Here we use direct comparison with a geometric series.
 -/
@@ -152,7 +155,7 @@ end k_eq_zero
 section k_eq_one
 
 /-!
-## Sum over `ℕ` with `k = 1`
+# Sum over `ℕ` with `k = 1`
 
 Here we use comparison with the series `∑ n * r ^ n`, where `r = exp (-π * t)`.
 -/

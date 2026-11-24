@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Logic.Encodable.Basic
 
-/-! # The nonnegative rationals are `Encodable`.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The nonnegative rationals are `Encodable`.
 
 As a consequence we also get the instance `Countable ℚ≥0`.
 -/

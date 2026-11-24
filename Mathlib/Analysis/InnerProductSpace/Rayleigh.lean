@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 import Mathlib.Analysis.InnerProductSpace.Calculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Rayleigh quotient
 
@@ -51,8 +54,10 @@ namespace ContinuousLinearMap
 
 variable (T : E →L[𝕜] E)
 
-/-- The *Rayleigh quotient* of a continuous linear map `T` (over `ℝ` or `ℂ`) at a vector `x` is
-the quantity `re ⟪T x, x⟫ / ‖x‖ ^ 2`. -/
+/--
+The _Rayleigh quotient_ of a continuous linear map `T` (over `ℝ` or `ℂ`) at a vector `x` is
+the quantity `re ⟪T x, x⟫ / ‖x‖ ^ 2`.
+-/
 noncomputable abbrev rayleighQuotient (x : E) := T.reApplyInnerSelf x / ‖(x : E)‖ ^ 2
 
 theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :

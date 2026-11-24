@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 import Mathlib.LinearAlgebra.Basis.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent
 
@@ -22,7 +25,7 @@ smooth algebras (TODO @chrisflav).
 
 ## Main results
 
-- `PreSubmersivePresentation.isUnit_jacobian_of_cotangentRestrict_bijective`:
+* `PreSubmersivePresentation.isUnit_jacobian_of_cotangentRestrict_bijective`:
   If the `fᵢ` form a basis of `I/I²` and the restricted cotangent complex
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strictly convex sets
 
@@ -373,7 +376,7 @@ end AddCommGroup
 end LinearOrderedField
 
 /-!
-#### Convex sets in an ordered space
+# Convex sets in an ordered space
 
 Relates `Convex` and `Set.OrdConnected`.
 -/

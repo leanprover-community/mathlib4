@@ -18,6 +18,9 @@ import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.MeasureTheory.Group.Circle
 import Mathlib.NumberTheory.LSeries.SumCoeff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Wiener-Ikehara Tauberian theorem
 
@@ -31,9 +34,9 @@ for `Re s > 1` (which the bound implies); it is assumed here because it simplifi
 ## Main results
 
 * `WienerIkehara.tendsto_sum_div`, `WienerIkehara.tendsto_sum_range_div`: the Wiener-Ikehara
-Tauberian theorem, summing over reals `n ≤ x` and over naturals `n < N` respectively.
+  Tauberian theorem, summing over reals `n ≤ x` and over naturals `n < N` respectively.
 * `WienerIkehara.tendsto_sum_div_smooth`, `WienerIkehara.tendsto_sum_div_smooth_real`: versions
-for smooth cutoffs.
+  for smooth cutoffs.
 
 ## Proof outline
 
@@ -553,10 +556,12 @@ private lemma exists_fourier_eq : ∃ g : 𝓢(ℝ, ℂ), ∀ y > 0, 𝓕 g (c�
   rw [exp_log hy]
 
 include bound hG hG' hpos hsmooth hsupp hplus in
-/-- A smoothed *Wiener-Ikehara Tauberian Theorem*: If `f` is a nonnegative arithmetic
+/--
+A smoothed _Wiener-Ikehara Tauberian Theorem_: If `f` is a nonnegative arithmetic
 function with `∑ i < n, f i ≤ C * n` whose L-series has a simple pole at `s = 1` with residue `A`
 and otherwise extends continuously to the closed half-plane `re s ≥ 1`, then `f` behaves like `A`
-asymptotically with respect to smooth weights with compact support in `(0, ∞)`. -/
+asymptotically with respect to smooth weights with compact support in `(0, ∞)`.
+-/
 lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
     atTop (𝓝 (A * ∫ y in Ioi 0, ψ y)) := by
   obtain ⟨g, hg⟩ := exists_fourier_eq hsmooth hsupp hplus
@@ -688,15 +693,19 @@ private lemma eventually_sum_range_div_lt {c : ℝ} (hc : A < c) :
   exacts [hpos _, summable_mul (hasCompactSupport_indicator_Ico _ _) hN, summable_mul h2 hN]
 
 include bound hG hG' hpos in
-/-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n < N`; see
-`WienerIkehara.tendsto_sum_div` for the version summing over reals `n ≤ x`. -/
+/--
+The _Wiener-Ikehara Tauberian Theorem_, summing over naturals `n < N`; see
+`WienerIkehara.tendsto_sum_div` for the version summing over reals `n ≤ x`.
+-/
 theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N) atTop (𝓝 A) :=
   tendsto_order.mpr ⟨fun _ ↦ eventually_lt_sum_range_div bound hG hG' hpos,
     fun _ ↦ eventually_sum_range_div_lt bound hG hG' hpos⟩
 
 include bound hG hG' hpos in
-/-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n ≤ x` for real `x`; see
-`WienerIkehara.tendsto_sum_range_div` for the version summing over naturals `n < N`. -/
+/--
+The _Wiener-Ikehara Tauberian Theorem_, summing over naturals `n ≤ x` for real `x`; see
+`WienerIkehara.tendsto_sum_range_div` for the version summing over naturals `n < N`.
+-/
 theorem tendsto_sum_div : Tendsto (fun x ↦ (∑ n ∈ .Icc 0 ⌊x⌋₊, f n) / x) atTop (𝓝 A) := by
   have : Tendsto (fun x ↦ (∑ i ∈ .range (⌊x⌋₊ + 1), f i) / (⌊x⌋₊ + 1) * ((⌊x⌋₊ + 1) / x)) atTop
       (𝓝 A) := by

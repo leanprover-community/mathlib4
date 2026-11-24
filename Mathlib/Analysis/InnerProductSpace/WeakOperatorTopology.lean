@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The weak operator topology in Hilbert spaces
 
@@ -18,10 +21,10 @@ applications of elements of the dual and inner products with vectors in the spac
 
 ## Main results
 
-+ `ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto`: a function `f : α → E →WOT[𝕜] F`
+* `ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto`: a function `f : α → E →WOT[𝕜] F`
   tends to `𝓝 A` if and only if `fun a ↦ ⟪y, (f a) x⟫_𝕜` tends to `𝓝 ⟪y, A x⟫_𝕜` for all
   `x : E`, `y : F`. Also included are the corresponding characterizations of continuity.
-+ The adjoint operation is continuous in the weak operator topology, declared as an instance of
+* The adjoint operation is continuous in the weak operator topology, declared as an instance of
   `ContinuousStar (F →WOT[𝕜] F)`.
 -/
 

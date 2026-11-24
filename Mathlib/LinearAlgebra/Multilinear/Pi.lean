@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between (dependent) functions and multilinear maps
 
@@ -17,8 +20,8 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
   This is useful because all the intermediate results are bundled:
 
-  - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
-  - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
+  * `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
+  * `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 -/
 
 @[expose] public section
@@ -36,9 +39,11 @@ variable [Semiring R] [Semiring S] {σ : R →+* S}
 variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module S N]
 
-/-- Two multilinear maps from finite families are equal if they agree on the generators.
+/--
+Two multilinear maps from finite families are equal if they agree on the generators.
 
-This is a multilinear version of `LinearMap.pi_ext`. -/
+This is a multilinear version of `LinearMap.pi_ext`.
+-/
 @[ext]
 theorem pi_ext [Finite ι] [∀ i, Finite (κ i)] [∀ i, DecidableEq (κ i)]
     ⦃f g : (Π i, Π j : κ i, M i j) →ₘₛₗ[σ] N⦄

@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Principal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal arithmetic with cardinals
 
@@ -19,7 +22,7 @@ public section
 universe u v
 open Cardinal Ordinal Set
 
-/-! ### Cardinal operations with ordinal indices -/
+/-! # Cardinal operations with ordinal indices -/
 
 namespace Cardinal
 
@@ -43,7 +46,7 @@ lemma mk_biUnion_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 
 end Cardinal
 
-/-! ### Cardinality of ordinals -/
+/-! # Cardinality of ordinals -/
 
 namespace Ordinal
 
@@ -233,7 +236,7 @@ theorem isPrincipal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : IsPrincipal (�
   apply (isInitial_ord c).isPrincipal_opow
   rwa [omega0_le_ord]
 
-/-! ### Initial ordinals are principal -/
+/-! # Initial ordinals are principal -/
 
 theorem isPrincipal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : IsPrincipal (· + ·) c.ord := by
   intro a b ha hb

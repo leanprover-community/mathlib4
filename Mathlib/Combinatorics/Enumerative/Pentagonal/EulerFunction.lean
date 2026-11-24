@@ -11,14 +11,17 @@ public import Mathlib.Combinatorics.Enumerative.Pentagonal.PowerSeries
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler function and pentagonal number theorem
 
-This file proves the pentagonal number theorem for $‖x‖ < 1$ in a complete normed ring (e.g. `ℂ`):
+This file proves the pentagonal number theorem for $`‖x‖ < 1` in a complete normed ring (e.g. `ℂ`):
 
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k} $$
+$$`  \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k}  `
 
-where $a_k = k(3k - 1)/2$ are the pentagonal numbers. We state the theorem in two parts by
+where $`a_k = k(3k - 1)/2` are the pentagonal numbers. We state the theorem in two parts by
 introducing the Euler function `eulerFunction`, defined as a power series whose coefficients are
 related to pentagonal numbers. We then show that this function is equal to both sides.
 
@@ -30,7 +33,7 @@ related to pentagonal numbers. We then show that this function is equal to both 
 
 ## References
 
-* https://en.wikipedia.org/wiki/Euler_function
+* https://en.wikipedia.org/wiki/Euler\_function
 -/
 
 open Filter Finset
@@ -82,9 +85,11 @@ end Pentagonal
 
 public section
 
-/-- The Euler function $\phi(x) = \sum_{k=-\infty}^{\infty}(-1)^k x^{k (3k - 1) / 2}$, defined
+/--
+The Euler function $`\phi(x) = \sum_{k=-\infty}^{\infty}(-1)^k x^{k (3k - 1) / 2}`, defined
 as a power series with the same coefficients as `PowerSeries.pentagonalSeries`. See
-`eulerFunction_eq_tsum_pentagonal` for the expression using pentagonal numbers. -/
+`eulerFunction_eq_tsum_pentagonal` for the expression using pentagonal numbers.
+-/
 noncomputable def eulerFunction (x : R) : R :=
   ∑' n, (PowerSeries.pentagonalSeries R).coeff n * x ^ n
 

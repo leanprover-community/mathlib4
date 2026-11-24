@@ -10,6 +10,9 @@ public import Mathlib.Topology.Separation.Connected
 
 import Mathlib.Topology.LocalAtTarget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of connected components under open and closed maps
 
@@ -17,10 +20,10 @@ Let `f : X → Y` be an open and closed map.
 
 ## Main results
 
-- `IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton`: If `Y` is connected,
+* `IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton`: If `Y` is connected,
   the number of connected components of `X` is bounded by the cardinality of the fiber
   of `f` at `y`.
-- `IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton`: If `f` is also continuous
+* `IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton`: If `f` is also continuous
   with finite fibers and `Y` has finitely many connected components, so does `X`.
 -/
 

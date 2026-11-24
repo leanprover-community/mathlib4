@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.ContinuedFractions.Basic
 public import Mathlib.Algebra.Order.Floor.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computable Continued Fractions
 
@@ -16,7 +19,7 @@ public import Mathlib.Algebra.Order.Floor.Defs
 We formalise the standard computation of (regular) continued fractions for linear ordered floor
 fields. The algorithm is rather simple. Here is an outline of the procedure adapted from Wikipedia:
 
-Take a value `v`. We call `⌊v⌋` the *integer part* of `v` and `v - ⌊v⌋` the *fractional part* of
+Take a value `v`. We call `⌊v⌋` the _integer part_ of `v` and `v - ⌊v⌋` the _fractional part_ of
 `v`.  A continued fraction representation of `v` can then be given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
 `[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`.  This
 process stops when the fractional part hits 0.
@@ -30,9 +33,9 @@ For an example, refer to `IntFractPair.stream`.
 
 ## Main definitions
 
-- `GenContFract.IntFractPair.stream`: computes the stream of integer and fractional parts of a given
+* `GenContFract.IntFractPair.stream`: computes the stream of integer and fractional parts of a given
   value as described in the summary.
-- `GenContFract.of`: computes the generalised continued fraction of a value `v`.
+* `GenContFract.of`: computes the generalised continued fraction of a value `v`.
   In fact, it computes a regular continued fraction that terminates if and only if `v` is rational.
 
 ## Implementation Notes
@@ -53,7 +56,7 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 
 ## References
 
-- https://en.wikipedia.org/wiki/Continued_fraction
+* https://en.wikipedia.org/wiki/Continued\_fraction
 
 ## Tags
 
@@ -125,19 +128,22 @@ variable [DivisionRing K] [LinearOrder K] [FloorRing K]
 protected def of (v : K) : IntFractPair K :=
   ⟨⌊v⌋, Int.fract v⟩
 
-/-- Creates the stream of integer and fractional parts of a value `v` needed to obtain the continued
+/--
+Creates the stream of integer and fractional parts of a value `v` needed to obtain the continued
 fraction representation of `v` in `GenContFract.of`. More precisely, given a value `v : K`, it
 recursively computes a stream of option `ℤ × K` pairs as follows:
-- `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
-- `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
+
+* `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
+* `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
   if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
-- `stream v (n + 1) = none`, otherwise
+* `stream v (n + 1) = none`, otherwise
 
 For example, let `(v : ℚ) := 3.4`. The process goes as follows:
-- `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩ = some ⟨3, 0.4⟩`
-- `stream v 1 = some ⟨⌊0.4⁻¹⌋, 0.4⁻¹ - ⌊0.4⁻¹⌋⟩ = some ⟨⌊2.5⌋, 2.5 - ⌊2.5⌋⟩ = some ⟨2, 0.5⟩`
-- `stream v 2 = some ⟨⌊0.5⁻¹⌋, 0.5⁻¹ - ⌊0.5⁻¹⌋⟩ = some ⟨⌊2⌋, 2 - ⌊2⌋⟩ = some ⟨2, 0⟩`
-- `stream v n = none`, for `n ≥ 3`
+
+* `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩ = some ⟨3, 0.4⟩`
+* `stream v 1 = some ⟨⌊0.4⁻¹⌋, 0.4⁻¹ - ⌊0.4⁻¹⌋⟩ = some ⟨⌊2.5⌋, 2.5 - ⌊2.5⌋⟩ = some ⟨2, 0.5⟩`
+* `stream v 2 = some ⟨⌊0.5⁻¹⌋, 0.5⁻¹ - ⌊0.5⁻¹⌋⟩ = some ⟨⌊2⌋, 2 - ⌊2⌋⟩ = some ⟨2, 0⟩`
+* `stream v n = none`, for `n ≥ 3`
 -/
 protected def stream (v : K) : Stream' <| Option (IntFractPair K)
   | 0 => some (IntFractPair.of v)
@@ -171,7 +177,8 @@ protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
 
 end IntFractPair
 
-/-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
+/--
+Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
 terminates if and only if `v` is rational
 (see `Mathlib/Algebra/ContinuedFractions/Computation/TerminatesIffRat.lean`).
 

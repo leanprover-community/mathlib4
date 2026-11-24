@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Set.Basic
 
 import Mathlib.Algebra.Ring.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic instances for unit intervals
 
@@ -23,6 +26,7 @@ Note: Instances for the interval `Ici 0` are dealt with in
 ## Main definitions
 
 The strongest typeclass provided on each interval is:
+
 * `Set.Icc.instCommMonoidWithZero`, `Set.Icc.instIsCancelMulZero`
 * `Set.Ico.instCommSemigroup`, `Set.Ico.instSemigroupWithZero`, `Set.Ico.instIsCancelMulZero`
 * `Set.Ioc.instCancelCommMonoid`
@@ -47,7 +51,7 @@ open Set
 
 variable {R : Type*}
 
-/-! ### Instances for `↥(Set.Icc 0 1)` -/
+/-! # Instances for `↥(Set.Icc 0 1)` -/
 
 
 namespace Set.Icc
@@ -195,7 +199,7 @@ end OrderedAddCommGroup
 
 end Set.Icc
 
-/-! ### Instances for `↥(Set.Ico 0 1)` -/
+/-! # Instances for `↥(Set.Ico 0 1)` -/
 
 
 namespace Set.Ico
@@ -290,7 +294,7 @@ instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
 
 end Set.Ico
 
-/-! ### Instances for `↥(Set.Ioc 0 1)` -/
+/-! # Instances for `↥(Set.Ioc 0 1)` -/
 
 namespace Set.Ioc
 
@@ -408,7 +412,7 @@ instance instCancelCommMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrdered
 
 end Set.Ioc
 
-/-! ### Instances for `↥(Set.Ioo 0 1)` -/
+/-! # Instances for `↥(Set.Ioo 0 1)` -/
 
 namespace Set.Ioo
 

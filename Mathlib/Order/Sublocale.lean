@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sublocale
 
@@ -21,7 +24,7 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 
 ## References
 
-* [J. Picada A. Pultr, *Frames and Locales*][picado2012]
+* ‍\[J. Picada A. Pultr, _Frames and Locales_\]\[picado2012\]
 * https://ncatlab.org/nlab/show/sublocale
 * https://ncatlab.org/nlab/show/nucleus
 -/
@@ -31,21 +34,27 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 variable {X : Type*} [Order.Frame X]
 open Set
 
-/-- A sublocale of a locale `X` is a set `S` which is closed under all meets and such that
+/--
+A sublocale of a locale `X` is a set `S` which is closed under all meets and such that
 `x ⇨ s ∈ S` for all `x : X` and `s ∈ S`.
 
 Note that locales are the same thing as frames, but with reverse morphisms, which is why we assume
-`Frame X`. We only need to define locales categorically. See `Locale`. -/
+`Frame X`. We only need to define locales categorically. See `Locale`.
+-/
 structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
-  /-- A sublocale is closed under all meets.
+  /--
+  A sublocale is closed under all meets.
 
-  Do NOT use directly. Use `Sublocale.sInf_mem` instead. -/
+  Do NOT use directly. Use `Sublocale.sInf_mem` instead.
+  -/
   sInf_mem' : ∀ s ⊆ carrier, sInf s ∈ carrier
-  /-- A sublocale is closed under heyting implication.
+  /--
+  A sublocale is closed under heyting implication.
 
-  Do NOT use directly. Use `Sublocale.himp_mem` instead. -/
+  Do NOT use directly. Use `Sublocale.himp_mem` instead.
+  -/
   himp_mem' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 
 namespace Sublocale

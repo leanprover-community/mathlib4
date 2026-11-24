@@ -16,6 +16,9 @@ public import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Type of functions with locally finite support
 
@@ -37,7 +40,7 @@ variable
   {Y : Type*}
 
 /-!
-## Definition, coercion to functions and basic extensionality lemmas
+# Definition, coercion to functions and basic extensionality lemmas
 
 A function with locally finite support within `U` is a function `X → Y` whose support is locally
 finite within `U` and entirely contained in `U`.  For T1-spaces, the theorem
@@ -158,9 +161,7 @@ lemma ext [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D
 lemma coe_injective [Zero Y] :
     Injective (· : locallyFinsuppWithin U Y → X → Y) := DFunLike.coe_injective
 
-/-!
-## Singleton Indicators as Functions with Locally Finite Support
--/
+/-! # Singleton Indicators as Functions with Locally Finite Support -/
 
 /--
 Is analogy to `Finsupp.single`, this definition presents the indicator function
@@ -193,9 +194,7 @@ Simplifier lemma: coercion of `single x y` to a function.
   ext
   simp [Pi.single_apply]
 
-/-!
-## Elementary properties of the support
--/
+/-! # Elementary properties of the support -/
 
 /--
 Simplifier lemma: Functions with locally finite support within `U` evaluate to zero outside of `U`.
@@ -265,7 +264,7 @@ theorem finiteSupport [T2Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
     D.supportWithinDomain).finite D.discreteSupport
 
 /-!
-## Lattice ordered group structure
+# Lattice ordered group structure
 
 If `X` is a suitable instance, this section equips functions with locally finite support within `U`
 with the standard structure of a lattice ordered group, where addition, comparison, min and max are
@@ -593,9 +592,7 @@ lemma exists_single_le_pos [DecidableEq X] {D : locallyFinsupp X ℤ} (h : 0 < D
 
 end LinearOrder
 
-/-!
-## Restriction
--/
+/-! # Restriction -/
 
 /--
 If `V` is a subset of `U`, then functions with locally finite support within `U` restrict to
@@ -772,7 +769,7 @@ lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
 
 
 /-!
-### Composition a.k.a. `mapRange`
+# Composition a.k.a. `mapRange`
 
 See the documentation of `Finsupp.mapRange` for further explanation and a list of similar
 definitions.
@@ -783,8 +780,8 @@ section MapRange
 variable {Y Z : Type*} [Zero Y] [Zero Z]
 
 /--
-The composition of `f : Y → Z` and `g : locallyFinsuppWithin` is `mapRange f hf g :
-locallyFinsuppWithin`, which is well-defined when `f 0 = 0`.
+The composition of `f : Y → Z` and `g : locallyFinsuppWithin` is
+`mapRange f hf g : locallyFinsuppWithin`, which is well-defined when `f 0 = 0`.
 -/
 def mapRange (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
     locallyFinsuppWithin U Z where
@@ -807,9 +804,7 @@ end MapRange
 
 section Truncation
 
-/-!
-## Truncation of a Function with Locally Finite Support
--/
+/-! # Truncation of a Function with Locally Finite Support -/
 
 variable {Y : Type*} {y : Y} [Zero Y] [LinearOrder Y]
 

@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Linarith
 
 import Mathlib.Algebra.Order.Field.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields
 
@@ -96,9 +99,7 @@ namespace Mathlib.Meta.NormNum
 
 open Qq
 
-/-!
-### `norm_num` extension for `Nat.floor`
--/
+/-! # `norm_num` extension for `Nat.floor` -/
 
 theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌊r⌋₊) m := by

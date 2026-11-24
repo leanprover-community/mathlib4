@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Harmonic Functions
 
@@ -28,9 +31,7 @@ open scoped Topology
 
 namespace InnerProductSpace
 
-/-!
-## Definition
--/
+/-! # Definition -/
 
 variable (f x) in
 /--
@@ -53,9 +54,7 @@ Harmonic functions are two times continuously differentiable.
 lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :=
   fun x hx ↦ (hf x hx).1.contDiffWithinAt
 
-/-!
-## Elementary Properties
--/
+/-! # Elementary Properties -/
 
 /--
 If two functions agree in a neighborhood of `x`, then one is harmonic at `x` iff so is the other.
@@ -109,9 +108,7 @@ Harmonic functions are continuous.
     ContinuousOn f s :=
   fun x hx ↦ (h x hx).1.continuousAt.continuousWithinAt (s := s)
 
-/-!
-## Vector Space Structure
--/
+/-! # Vector Space Structure -/
 
 /--
 Sums of harmonic functions are harmonic.
@@ -177,9 +174,7 @@ Scalar multiples of harmonic functions are harmonic.
 theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
     HarmonicOnNhd (c • f) s := fun x hx ↦ (h x hx).const_smul
 
-/-!
-## Compatibility with Linear Maps
--/
+/-! # Compatibility with Linear Maps -/
 
 /--
 Compositions of continuous `ℝ`-linear maps with harmonic functions are harmonic.

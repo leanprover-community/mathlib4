@@ -11,7 +11,11 @@ public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.NormNum
 
-/-! # Basic properties of the simplex category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Basic properties of the simplex category
 
 In `Mathlib/AlgebraicTopology/SimplexCategory/Defs.lean`, we define the simplex
 category with objects `ℕ` and morphisms `n ⟶ m` the monotone maps from
@@ -224,7 +228,7 @@ end Init
 section Generators
 
 /-!
-## Generating maps for the simplex category
+# Generating maps for the simplex category
 
 TODO: prove that the simplex category is equivalent to
 one given by the following generators and relations.

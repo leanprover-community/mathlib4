@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
-/-!
-# Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system -/
 
 public section
 
@@ -30,7 +31,7 @@ namespace Base
 variable {b : P.Base} (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
 include hij hi hj
 
-/-- This is Lemma 2.5 (a) from [Geck][Geck2017]. -/
+/-- This is Lemma 2.5 (a) from \[Geck\]\[Geck2017\]. -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
     α k - α j ∈ Φ := by
@@ -79,7 +80,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
-/-- This is Lemma 2.5 (b) from [Geck][Geck2017]. -/
+/-- This is Lemma 2.5 (b) from \[Geck\]\[Geck2017\]. -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
@@ -105,7 +106,7 @@ end Base
 
 section chainBotCoeff_mul_chainTopCoeff
 
-/-! The proof of Lemma 2.6 from [Geck][Geck2017]. -/
+/-! The proof of Lemma 2.6 from \[Geck\]\[Geck2017\]. -/
 
 variable {b : P.Base} {i j k l m : ι}
 
@@ -331,7 +332,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   lia
 
 open chainBotCoeff_mul_chainTopCoeff in
-/-- This is Lemma 2.6 from [Geck][Geck2017]. -/
+/-- This is Lemma 2.6 from \[Geck\]\[Geck2017\]. -/
 lemma chainBotCoeff_mul_chainTopCoeff :
     (P.chainBotCoeff i m + 1) * (P.chainTopCoeff j k + 1) =
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by

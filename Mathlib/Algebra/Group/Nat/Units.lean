@@ -9,9 +9,10 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Basic.Unique
 
-/-!
-# The unit of the natural numbers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # The unit of the natural numbers -/
 
 public section
 
@@ -19,7 +20,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
-/-! #### Units -/
+/-! # Units -/
 
 lemma units_eq_one (u : ℕˣ) : u = 1 := Units.ext <| Nat.eq_one_of_dvd_one ⟨u.inv, u.val_inv.symm⟩
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Subalgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie submodules of a Lie algebra
 
@@ -15,11 +18,11 @@ use it to define various important operations, notably the Lie span of a subset 
 
 ## Main definitions
 
-  * `LieSubmodule`
-  * `LieSubmodule.wellFounded_of_noetherian`
-  * `LieSubmodule.lieSpan`
-  * `LieSubmodule.map`
-  * `LieSubmodule.comap`
+* `LieSubmodule`
+* `LieSubmodule.wellFounded_of_noetherian`
+* `LieSubmodule.lieSpan`
+* `LieSubmodule.map`
+* `LieSubmodule.comap`
 
 ## Tags
 
@@ -894,8 +897,10 @@ theorem le_ker_iff_map (M' : LieSubmodule R L M) : M' ≤ f.ker ↔ LieSubmodule
 
 variable (f)
 
-/-- The range of a morphism of Lie modules `f : M → N` is a Lie submodule of `N`.
-See Note [range copy pattern]. -/
+/--
+The range of a morphism of Lie modules `f : M → N` is a Lie submodule of `N`.
+See Note \[range copy pattern\].
+-/
 def range : LieSubmodule R L N :=
   (LieSubmodule.map f ⊤).copy (Set.range f) Set.image_univ.symm
 
@@ -1008,9 +1013,11 @@ lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
 
 variable [LieAlgebra R L] [LieModule R L M]
 
-/-- The natural equivalence between the 'top' Lie subalgebra and the enclosing Lie algebra.
+/--
+The natural equivalence between the 'top' Lie subalgebra and the enclosing Lie algebra.
 
-This is the Lie subalgebra version of `Submodule.topEquiv`. -/
+This is the Lie subalgebra version of `Submodule.topEquiv`.
+-/
 def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
     invFun := fun x ↦ ⟨x, Set.mem_univ x⟩ }

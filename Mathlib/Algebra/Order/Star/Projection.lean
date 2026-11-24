@@ -8,14 +8,17 @@ module
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordering star projections in star-ordered rings
 
 ## Main results
 
-+ `IsStarProjection.sub_tfae`: equivalent conditions for `IsStarProjection (q - p)` in a star ring
+* `IsStarProjection.sub_tfae`: equivalent conditions for `IsStarProjection (q - p)` in a star ring
   when `p` and `q` are star projections.
-+ `IsStarProjection.le_tfae`: equivalent conditions for `p ≤ q` when `p` and `q` are star
+* `IsStarProjection.le_tfae`: equivalent conditions for `p ≤ q` when `p` and `q` are star
   projections in a star-ordered ring with a proper star (e.g., a C⋆-algebra).
   This list subsumes the one appearing in `IsStarProjection.sub_tfae`.
 -/
@@ -32,14 +35,17 @@ section HasUniqueDiv
 
 variable [HasUniqueDiv R] {p q : R}
 
-/-- For star projections `p` and `q` in a star ring with no additive torsion, the following are
+/--
+For star projections `p` and `q` in a star ring with no additive torsion, the following are
 equivalent:
+
 1. `q - p` is a star projection
 2. `q - p` is idempotent
 3. `p ⋆⟂ (q - p)`
 4. `q * p = p`
 5. `p * q = p`
-6. `q * p * q = p` -/
+6. `q * p * q = p`
+-/
 lemma sub_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
     List.TFAE
       [IsStarProjection (q - p),
@@ -64,8 +70,10 @@ section IsProperStar
 
 variable [PartialOrder R] [StarOrderedRing R] [IsProperStar R] {p q : R}
 
-/-- For star projections `p` and `q` in a star-ordered ring with a proper star (e.g., a
+/--
+For star projections `p` and `q` in a star-ordered ring with a proper star (e.g., a
 C⋆-algebra), the following are equivalent:
+
 1. `p ≤ q`
 2. `q - p` is a star projection
 3. `q - p` is idempotent
@@ -73,7 +81,8 @@ C⋆-algebra), the following are equivalent:
 5. `q * p = p`
 6. `p * q = p`
 7. `q * p * q = p`
-8. `p * q * p = p` -/
+8. `p * q * p = p`
+-/
 lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
     List.TFAE
       [p ≤ q,

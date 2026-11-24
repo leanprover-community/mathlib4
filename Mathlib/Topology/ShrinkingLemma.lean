@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shrinking lemma
 
@@ -39,7 +42,8 @@ variable {ι X : Type*} [TopologicalSpace X]
 namespace ShrinkingLemma
 
 -- the trivial refinement needs `u` to be a covering
-/-- Auxiliary definition for the proof of the shrinking lemma. A partial refinement of a covering
+/--
+Auxiliary definition for the proof of the shrinking lemma. A partial refinement of a covering
 `⋃ i, u i` of a set `s` is a map `v : ι → Set X` and a set `carrier : Set ι` such that
 
 * `s ⊆ ⋃ i, v i`;
@@ -49,7 +53,8 @@ namespace ShrinkingLemma
 
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
-a maximal element, then show that the maximal element must have `carrier = univ`. -/
+a maximal element, then show that the maximal element must have `carrier = univ`.
+-/
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) (p : Set X → Prop) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X

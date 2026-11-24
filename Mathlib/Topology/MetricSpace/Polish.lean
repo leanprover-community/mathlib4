@@ -11,6 +11,9 @@ public import Mathlib.Topology.Sets.Opens
 
 import Mathlib.Topology.GDelta.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polish spaces
 
@@ -53,10 +56,11 @@ open scoped Uniformity
 
 variable {α : Type*} {β : Type*}
 
-/-! ### Basic properties of Polish spaces -/
+/-! # Basic properties of Polish spaces -/
 
 
-/-- A Polish space is a topological space with second countable topology, that can be endowed
+/--
+A Polish space is a topological space with second countable topology, that can be endowed
 with a metric for which it is complete.
 
 To endow a Polish space with a complete metric space structure, do
@@ -250,7 +254,7 @@ end CompleteCopy
 end TopologicalSpace.Opens
 
 /-!
-### A Gδ subset of a Polish space is Polish
+# A Gδ subset of a Polish space is Polish
 
 In particular, an open subset of a Polish space is Polish.
 
@@ -326,7 +330,7 @@ end GδEmbedding
 
 namespace PolishSpace
 
-/-! ### Clopenable sets in Polish spaces -/
+/-! # Clopenable sets in Polish spaces -/
 
 /-- A set in a topological space is clopenable if there exists a finer Polish topology for which
 this set is open and closed. It turns out that this notion is equivalent to being Borel-measurable,

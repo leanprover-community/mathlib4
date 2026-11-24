@@ -9,6 +9,9 @@ public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The zero and limit cases in the induction for Nöbeling's theorem
 
@@ -19,7 +22,7 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 
 ## References
 
-- [scholze2019condensed], Theorem 5.4.
+* ‍\[scholze2019condensed\], Theorem 5.4.
 -/
 
 @[expose] public section
@@ -32,7 +35,7 @@ variable {I : Type u} (C : Set (I → Bool)) [LinearOrder I]
 
 section Zero
 /-!
-## The zero case of the induction
+# The zero case of the induction
 
 In this case, we have `contained C 0` which means that `C` is either empty or a singleton.
 -/
@@ -108,7 +111,7 @@ variable [WellFoundedLT I]
 
 section Limit
 /-!
-## The limit case of the induction
+# The limit case of the induction
 
 We relate linear independence in `LocallyConstant (π C (ord I · < o')) ℤ` with linear independence
 in `LocallyConstant C ℤ`, where `contained C o` and `o' < o`.
@@ -118,19 +121,17 @@ independent if and only if a certain directed union is linearly independent. Eac
 directed union is in bijection with the good products w.r.t. `π C (ord I · < o')` for an ordinal
 `o' < o`, and these are linearly independent by the inductive hypothesis.
 
-### Main definitions
+## Main definitions
 
 * `GoodProducts.smaller` is the image of good products coming from a smaller ordinal.
-
 * `GoodProducts.range_equiv`: The image of the `GoodProducts` in `C` is equivalent to the union of
   `smaller C o'` over all ordinals `o' < o`.
 
-### Main results
+## Main results
 
 * `Products.limitOrdinal`: for `o` a limit ordinal such that `contained C o`, a product `l` is good
   w.r.t. `C` iff it there exists an ordinal `o' < o` such that `l` is good w.r.t.
   `π C (ord I · < o')`.
-
 * `GoodProducts.linearIndependent_iff_union_smaller` is the result mentioned above, that the good
   products are linearly independent iff a directed union is.
 -/

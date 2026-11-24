@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.Finiteness.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimum Cardinality of generating set of a submodule
 
@@ -28,19 +31,19 @@ implemented as `spanFinrank` and `spanRank`.
 
 * `FG.exists_span_set_card_eq_spanFinrank` : Any submodule has a generating set of cardinality equal
   to `spanRank`.
-
 * `rank_eq_spanRank_of_free` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is a free `R`-module, then the `spanRank` of `M` equals to the
   rank of M.
-
 * `rank_le_spanRank` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is an `R`-module, then the `spanRank` of `M` is less than or equal
   to the rank of M.
 
 ## Tags
+
 submodule, generating subset, span rank
 
 ## Remark
+
 Note that the corresponding API - `Module.rank` is only defined for a module rather than a
 submodule, so there is some asymmetry here. Further refactoring might be needed if this difference
 creates a friction later on.

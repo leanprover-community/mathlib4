@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Hom
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditionally complete linear ordered fields
 
@@ -65,7 +68,7 @@ scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_arc
 namespace LinearOrderedField
 
 /-!
-### Rational cut map
+# Rational cut map
 
 The idea is that a conditionally complete linear ordered field is fully characterized by its copy of
 the rationals. Hence we define `LinearOrderedField.cutMap β : α → Set β` which sends `a : α` to the
@@ -141,7 +144,7 @@ namespace ConditionallyCompleteLinearOrderedField
 open LinearOrderedField
 
 /-!
-### Induced map
+# Induced map
 
 `LinearOrderedField.cutMap` spits out a `Set β`. To get something in `β`, we now take the supremum.
 -/

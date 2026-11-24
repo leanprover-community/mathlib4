@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The face lattice of a pointed cone
 
@@ -77,7 +80,7 @@ theorem toPointedCone_lt_toPointedCone {F₁ F₂ : Face C} :
 @[simp]
 theorem mem_toPointedCone {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
 
-/-! ### Infimum, supremum and lattice -/
+/-! # Infimum, supremum and lattice -/
 
 /-- The infimum of two faces `F₁`, `F₂` of `C` is the intersection of the cones `F₁` and `F₂`. -/
 instance : Min (Face C) where
@@ -130,7 +133,7 @@ theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by
   apply (⊥ : Face C).isFaceOf.lineal_le.antisymm'
   exact fun x hx ↦ bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
 
-/-! ### Product -/
+/-! # Product -/
 section Prod
 
 open Submodule

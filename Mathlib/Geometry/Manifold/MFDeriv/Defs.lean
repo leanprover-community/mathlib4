@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative of functions between manifolds
 
@@ -44,13 +47,14 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
   tangent bundle of `M'`.
 
 Various related results are proven in separate files: see
-- `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
-- `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
+
+* `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
+* `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
   for functions between vector spaces,
-- `SpecificFunctions.lean` for results on the differential of the identity, constant functions,
+* `SpecificFunctions.lean` for results on the differential of the identity, constant functions,
   products and arithmetic operators (like addition or scalar multiplication),
-- `Atlas.lean` for differentiability of charts, models with corners and extended charts,
-- `UniqueDifferential.lean` for various properties of unique differentiability sets in manifolds.
+* `Atlas.lean` for differentiability of charts, models with corners and extended charts,
+* `UniqueDifferential.lean` for various properties of unique differentiability sets in manifolds.
 
 ## Implementation notes
 
@@ -78,7 +82,7 @@ of a small open set around `x` will not be contained in the source of the prefer
 we include continuity in the definition of differentiability (which is reasonable since with any
 definition, differentiability implies continuity).
 
-*Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
+_Warning_: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
 restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
@@ -96,6 +100,7 @@ copy of the vector space, instead of more usual definitions such as the space of
 the space of equivalence classes of smooth curves in the manifold.
 
 ## Tags
+
 derivative, manifold
 -/
 
@@ -109,7 +114,7 @@ open Set ChartedSpace
 section DerivativesDefinitions
 
 /-!
-### Derivative of maps between manifolds
+# Derivative of maps between manifolds
 
 The derivative of a map `f` between manifolds `M` and `M'` at `x` is a bounded linear
 map from the tangent space to `M` at `x`, to the tangent space to `M'` at `f x`. Since we defined
@@ -208,14 +213,16 @@ def UniqueMDiffOn (s : Set M) :=
   ∀ x ∈ s, UniqueMDiffWithinAt I s x
 
 variable (I I') in
-/-- `MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
+/--
+`MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
 has a derivative at the point `x` within the set `s`.
 This is a generalization of `DifferentiableWithinAt` to manifolds.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
-this would not mean anything relevant. -/
+this would not mean anything relevant.
+-/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
 
@@ -237,14 +244,16 @@ theorem MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt
   mdifferentiableWithinAt_iff' .. |>.1 hf |>.2
 
 variable (I I') in
-/-- `MDifferentiableAt I I' f x` indicates that the function `f` between manifolds
+/--
+`MDifferentiableAt I I' f x` indicates that the function `f` between manifolds
 has a derivative at the point `x`.
 This is a generalization of `DifferentiableAt` to manifolds.
 
 We require continuity in the definition, as otherwise points close to `x` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
-this would not mean anything relevant. -/
+this would not mean anything relevant.
+-/
 def MDifferentiableAt (f : M → M') (x : M) :=
   LiftPropAt (DifferentiableWithinAtProp I I') f x
 
@@ -284,7 +293,8 @@ def OpenPartialHomeomorph.MDifferentiable (f : OpenPartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 
 variable (I I') in
-/-- `HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
+/--
+`HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
 has, at the point `x` and within the set `s`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
@@ -294,7 +304,8 @@ The order of arguments is changed as the type of the derivative `f'` depends on 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
-this would not mean anything relevant. -/
+this would not mean anything relevant.
+-/
 def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousWithinAt f s x ∧
@@ -303,14 +314,16 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 
 variable (I I') in
-/-- `HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
+/--
+`HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
-this would not mean anything relevant. -/
+this would not mean anything relevant.
+-/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f)

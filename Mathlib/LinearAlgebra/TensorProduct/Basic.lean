@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universal property of the tensor product
 
@@ -114,11 +117,13 @@ theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
   liftAux.smulₛₗ _ _
 
 variable (f') in
-/-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
+/--
+Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`.
 
-This works for semilinear maps. -/
+This works for semilinear maps.
+-/
 def lift : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { liftAux f' with map_smul' := liftAux.smulₛₗ }
 
@@ -154,12 +159,14 @@ theorem lift_mk_compr₂ₛₗ (g : M ⊗ N →ₛₗ[σ₁₂] P₂) : lift ((m
 theorem lift_mk_compr₂ (f : M ⊗ N →ₗ[R] P) : lift ((mk R M N).compr₂ f) = f := by
   rw [lift_compr₂ f, lift_mk, LinearMap.comp_id]
 
-/-- This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
+/--
+This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
 it in some cases, notably when one wants to show equality of two linear maps. The `@[ext]`
 attribute is now added locally where it is needed. Using this as the `@[ext]` lemma instead of
 `TensorProduct.ext'` allows `ext` to apply lemmas specific to `M →ₗ _` and `N →ₗ _`.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 theorem ext {g h : M ⊗ N →ₛₗ[σ₁₂] P₂} (H : (mk R M N).compr₂ₛₗ g = (mk R M N).compr₂ₛₗ h) :
     g = h := by
   rw [← lift_mk_compr₂ₛₗ g, H, lift_mk_compr₂ₛₗ]
@@ -408,7 +415,8 @@ theorem tmul_sub (m : M) (p₁ p₂ : P) : m ⊗ₜ (p₁ - p₂) = m ⊗ₜ[R] 
 theorem sub_tmul (m₁ m₂ : M) (n : N) : (m₁ - m₂) ⊗ₜ n = m₁ ⊗ₜ[R] n - m₂ ⊗ₜ[R] n :=
   (mk R M N).map_sub₂ _ _ _
 
-/-- While the tensor product will automatically inherit a ℤ-module structure from
+/--
+While the tensor product will automatically inherit a ℤ-module structure from
 `AddCommGroup.toIntModule`, that structure won't be compatible with lemmas like `tmul_smul` unless
 we use a `ℤ-Module` instance provided by `TensorProduct.left_module`.
 

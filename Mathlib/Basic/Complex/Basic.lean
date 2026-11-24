@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Torsion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The complex numbers
 
@@ -27,7 +30,7 @@ assert_not_exists Multiset Algebra
 
 open Set Function
 
-/-! ### Definition and basic arithmetic -/
+/-! # Definition and basic arithmetic -/
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
@@ -233,7 +236,7 @@ lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im * r := by simp [ofRe
 theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
 
-/-! ### The imaginary unit, `I` -/
+/-! # The imaginary unit, `I` -/
 
 
 /-- The imaginary unit. -/
@@ -284,7 +287,7 @@ def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
 theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
     equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
 
-/-! ### Commutative ring instance and lemmas -/
+/-! # Commutative ring instance and lemmas -/
 
 
 /-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
@@ -335,7 +338,7 @@ instance addCommGroup : AddCommGroup ℂ where
   add_comm := by intros; ext <;> simp <;> ring
   neg_add_cancel := by intros; ext <;> simp
 
-/-! ### Casts -/
+/-! # Casts -/
 
 instance instNatCast : NatCast ℂ where natCast n := ofReal n
 instance instIntCast : IntCast ℂ where intCast n := ofReal n
@@ -366,7 +369,7 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
     (OfScientific.ofScientific m s e : ℂ).im = 0 := rfl
 
 
-/-! ### Ring structure -/
+/-! # Ring structure -/
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
@@ -450,7 +453,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 
-/-! ### Complex conjugation -/
+/-! # Complex conjugation -/
 
 
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
@@ -500,7 +503,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
 theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
 
-/-! ### Norm squared -/
+/-! # Norm squared -/
 
 
 /-- The norm squared function. -/
@@ -672,7 +675,7 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
   simp only [map_neg, mul_neg, neg_re, normSq_neg]
   ring
 
-/-! ### Inversion -/
+/-! # Inversion -/
 
 
 @[no_expose]
@@ -707,7 +710,7 @@ lemma div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / n
 lemma div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / normSq w := by
   simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm]
 
-/-! ### Field instance and lemmas -/
+/-! # Field instance and lemmas -/
 
 noncomputable instance instField : Field ℂ where
   mul_inv_cancel := @Complex.mul_inv_cancel
@@ -783,7 +786,7 @@ lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     (z / ofNat(n)).im = z.im / ofNat(n) := div_natCast_im z n
 
-/-! ### Characteristic zero -/
+/-! # Characteristic zero -/
 
 
 instance instCharZero : CharZero ℂ :=
@@ -798,7 +801,8 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
-/-- Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string
+/--
+Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string
 
 Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.

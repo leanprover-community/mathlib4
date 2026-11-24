@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Erasing an element from a finite set
 
@@ -37,7 +40,7 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### erase -/
+/-! # erase -/
 
 section Erase
 

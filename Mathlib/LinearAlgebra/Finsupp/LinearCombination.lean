@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp.linearCombination`
 
@@ -17,10 +20,8 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 * `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι →₀ R` to the linear combination of
   `v i` with coefficients `l i`;
 * `Finsupp.linearCombinationOn`: a restricted version of `Finsupp.linearCombination` with domain
-
 * `Fintype.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
   `v i` with coefficients `l i` (for a finite type `ι`)
-
 * `Finsupp.bilinearCombination R S`, `Fintype.bilinearCombination R S`:
   a bilinear version of `Finsupp.linearCombination` and `Fintype.linearCombination`.
   It requires that `M` is both an `R`-module and an `S`-module, with `SMulCommClass R S M`;
@@ -232,7 +233,8 @@ theorem linearCombination_fin_zero (f : Fin 0 → M) : linearCombination R f = 0
 
 variable (α) (M) (v)
 
-/-- `Finsupp.linearCombinationOn M v s` interprets `p : α →₀ R` as a linear combination of a
+/--
+`Finsupp.linearCombinationOn M v s` interprets `p : α →₀ R` as a linear combination of a
 subset of the vectors in `v`, mapping it to the span of those vectors.
 
 The subset is indicated by a set `s : Set α` of indices.
@@ -278,11 +280,12 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
 variable [Module S M] [SMulCommClass R S M]
 
 variable (S) in
-/-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+/--
+`Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`, as a bilinear map of `v` and `f`.
 In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
@@ -304,11 +307,12 @@ variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] 
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
 variable (v : α → M)
 
-/-- `Fintype.linearCombination R v f` is the linear combination of vectors in `v` with weights
+/--
+`Fintype.linearCombination R v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
 -/
 protected def Fintype.linearCombination : (α → R) →ₗ[R] M where
   toFun f := ∑ i, f i • v i
@@ -349,11 +353,12 @@ theorem span_range_eq_top_iff_surjective_fintypeLinearCombination :
       Function.Surjective (Fintype.linearCombination R v) := by
   rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
 
-/-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+/--
+`Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
 -/
 protected def Fintype.bilinearCombination : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v := Fintype.linearCombination R v

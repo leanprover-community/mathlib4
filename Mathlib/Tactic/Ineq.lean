@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Data.Ineq
 public meta import Mathlib.Lean.Expr.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parsing inequalities in expressions
 
@@ -21,7 +24,8 @@ open Lean Meta
 namespace Lean.Expr
 open Mathlib
 
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
+/--
+Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
 `Mathlib.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
 (in)equality.
 
@@ -40,7 +44,8 @@ def ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
   | some p => return (Ineq.lt, p)
   | none => throwError "Not a comparison: {e}"
 
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
+/--
+Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
 relation (as a `Mathlib.Ineq`) together with the type in which the (in)equality occurs, the two
 sides of the (in)equality, and a Boolean flag indicating the presence or absence of the `¬`.
 

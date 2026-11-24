@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Topology.Defs.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Openness and closedness of a set
 
@@ -17,13 +20,13 @@ a topology.
 
 ## Implementation notes
 
-Topology in mathlib heavily uses filters (even more than in Bourbaki). See explanations in
-<https://leanprover-community.github.io/theories/topology.html>.
+Topology in mathlib heavily uses filters (even more than in Bourbaki). See explanations in [
+https://leanprover-community.github.io/theories/topology.html](https://leanprover-community.github.io/theories/topology.html).
 
 ## References
 
-* [N. Bourbaki, *General Topology*][bourbaki1966]
-* [I. M. James, *Topologies and Uniformities*][james1999]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
+* ‍\[I. M. James, _Topologies and Uniformities_\]\[james1999\]
 
 ## Tags
 
@@ -220,7 +223,7 @@ theorem IsClosed.and :
   IsClosed.inter
 
 /-!
-### Limits of filters in topological spaces
+# Limits of filters in topological spaces
 
 In this section we define functions that return a limit of a filter (or of a function along a
 filter), if it exists, and a random point otherwise. These functions are rarely used in Mathlib,

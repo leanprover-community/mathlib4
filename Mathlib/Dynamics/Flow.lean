@@ -13,6 +13,9 @@ public import Mathlib.Topology.ContinuousOn
 
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flows and invariant sets
 
@@ -40,9 +43,7 @@ open Set Function
 
 variable {τ α : Type*}
 
-/-!
-### Invariant sets
--/
+/-! # Invariant sets -/
 section Invariant
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t` in `τ`. -/
@@ -75,9 +76,7 @@ theorem isForwardInvariant_iff_isInvariant [Preorder τ] [Zero τ] [IsBotZeroCla
 
 end Invariant
 
-/-!
-### Flows
--/
+/-! # Flows -/
 
 variable (τ α) in
 /-- A flow on a topological space `α` by an additive topological
@@ -261,9 +260,11 @@ end Orbit
 
 variable {β γ : Type*} [TopologicalSpace β] [TopologicalSpace γ] (ψ : Flow τ β) (χ : Flow τ γ)
 
-/-- Given flows `ϕ` by `τ` on `α` and `ψ` by `τ` on `β`, a function `π : α → β` is called a
-*semiconjugacy* from `ϕ` to `ψ` if `π` is continuous and surjective, and `π ∘ (ϕ t) = (ψ t) ∘ π` for
-all `t : τ`. -/
+/--
+Given flows `ϕ` by `τ` on `α` and `ψ` by `τ` on `β`, a function `π : α → β` is called a
+_semiconjugacy_ from `ϕ` to `ψ` if `π` is continuous and surjective, and `π ∘ (ϕ t) = (ψ t) ∘ π` for
+all `t : τ`.
+-/
 structure IsSemiconjugacy (π : α → β) (ϕ : Flow τ α) (ψ : Flow τ β) : Prop where
   cont : Continuous π
   surj : Function.Surjective π
@@ -278,7 +279,7 @@ theorem IsSemiconjugacy.comp {π : α → β} {ρ : β → γ}
 theorem isSemiconjugacy_id_iff_eq (ϕ ψ : Flow τ α) : IsSemiconjugacy id ϕ ψ ↔ ϕ = ψ :=
   ⟨fun h => ext h.semiconj, fun h => h.recOn ⟨continuous_id, surjective_id, fun _ => .id_left⟩⟩
 
-/-- A flow `ψ` is called a *factor* of `ϕ` if there exists a semiconjugacy from `ϕ` to `ψ`. -/
+/-- A flow `ψ` is called a _factor_ of `ϕ` if there exists a semiconjugacy from `ϕ` to `ψ`. -/
 def IsFactorOf (ψ : Flow τ β) (ϕ : Flow τ α) : Prop := ∃ π : α → β, IsSemiconjugacy π ϕ ψ
 
 theorem IsSemiconjugacy.isFactorOf {π : α → β} (h : IsSemiconjugacy π ϕ ψ) : IsFactorOf ψ ϕ :=

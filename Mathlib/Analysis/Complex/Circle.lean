@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Field.UnitBall
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The circle
 
@@ -22,6 +25,7 @@ We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)`
 `Circle`, and show that this map is a group homomorphism.
 
 We define two additive characters onto the circle:
+
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
   notation `𝐞` in the scope `FourierTransform`). This uses the analyst convention that there is a
   `2 * π` in the exponent.

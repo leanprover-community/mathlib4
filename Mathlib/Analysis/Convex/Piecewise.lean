@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex and concave piecewise functions
 
@@ -19,13 +22,13 @@ This file proves convex and concave theorems for piecewise functions.
   function `g` increasing and convex on `Set.Ici e`, such that `f e = g e`, is convex on the
   universal set.
 
-  This version has the boundary point included in the left-hand function.
+This version has the boundary point included in the left-hand function.
 
-  See `convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic` for the version with the
-  boundary point included in the right-hand function.
+See `convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic` for the version with the
+boundary point included in the right-hand function.
 
-  See concave version(s) `concaveOn_univ_piecewise_Iic_of_monotoneOn_Iic_antitoneOn_Ici`
-  and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
+See concave version(s) `concaveOn_univ_piecewise_Iic_of_monotoneOn_Iic_antitoneOn_Ici`
+and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
 -/
 
 public section

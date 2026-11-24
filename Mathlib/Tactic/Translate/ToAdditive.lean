@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Tactic.Translate.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `@[to_additive]` attribute.
 
@@ -33,7 +36,8 @@ syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 @[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
-/-- The attribute `to_additive` can be used to automatically transport theorems
+/--
+The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 
@@ -86,10 +90,12 @@ For `simps` this also ensures that some generated lemmas are added to the additi
 `@[to_additive (attr := to_additive)]` is a special case, where the `to_additive`
 attribute is added to the generated lemma only, to additivize it again.
 This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `VAdd`. Example:
+
 ```
 @[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
 lemma Pow_lemma ... :=
 ```
+
 In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
@@ -98,7 +104,7 @@ The `(rename := ...)` syntax can be used for specifying the argument names of th
 declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
 will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
 
-## Implementation notes
+# Implementation notes
 
 The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
@@ -109,12 +115,13 @@ and can be found in the `Tactic.ToAdditive.GuessName` file. If you introduce a n
 should be translated by `to_additive` you should add the translation to this dictionary.
 
 In the `mul_comm'` example above, `to_additive` maps:
+
 * `mul_comm'` to `add_comm'`,
 * `CommSemigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
 * `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
 
-### Heuristics
+## Heuristics
 
 `to_additive` uses heuristics to determine whether a particular identifier has to be
 mapped to its additive version. The heuristic looks at the argument that is determined by its
@@ -126,6 +133,7 @@ mapped to its additive version. The heuristic looks at the argument that is dete
   It is usually the first argument.
 
 Examples:
+
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   relevant argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. Its relevant argument contains the identifier
@@ -139,9 +147,9 @@ and this usually doesn't make sense if this is on a fixed type.
 
 Identifiers that have the `@[to_additive]` attribute are ignored.
 For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
-You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
+You can turn this behavior off by _also_ adding the `@[to_additive_dont_translate]` attribute.
 
-### Troubleshooting
+## Troubleshooting
 
 If `@[to_additive]` fails because the additive declaration raises a type mismatch, there are
 various things you can try.
@@ -152,6 +160,7 @@ mismatch error.
   additivized. This happened because the heuristic applied, and the first argument contains a
   fixed type, like `ℕ` or `ℝ`. However, the heuristic misfires on some other declarations.
   Solutions:
+
   * First figure out what the fixed type is in the first argument of the declaration that didn't
     get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
     it is hard, you can run `set_option trace.translate_detail true` and search the output for the
@@ -166,6 +175,7 @@ mismatch error.
     If none of the arguments have a multiplicative structure, then the heuristic should not apply at
     all. This can be achieved with `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
+
   * Make sure the `relevant_arg` of `d` is a type with a multiplicative structure.
     You can see the value of `relevant_arg` using `to_additive?` on `d`.
     The reason is that `@[to_additive]` doesn't additivize declarations if their `relevant_arg`
@@ -177,6 +187,7 @@ mismatch error.
     multiplicative structure.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
+
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
     (e.g. `NPow.npow n x` corresponds to `x ^ n`, but it is convenient that `NPow.npow` has this
@@ -196,7 +207,7 @@ attribute [to_additive foo_add_bar] foo_bar
 This will allow future uses of `to_additive` to recognize that
 `foo_bar` should be replaced with `foo_add_bar`.
 
-### Handling of hidden definitions
+## Handling of hidden definitions
 
 Before transporting the “main” declaration `src`, `to_additive` first
 scans its type and value for names starting with `src`, and transports
@@ -205,12 +216,12 @@ them. This includes auxiliary definitions like `src._match_1`
 In addition to transporting the “main” declaration, `to_additive` transports
 its equational lemmas and tags them as equational lemmas for the new declaration.
 
-### Structure fields and constructors
+## Structure fields and constructors
 
 If `src` is a structure, then the additive version has to be already written manually.
 In this case `to_additive` adds all structure fields to its mapping.
 
-### Name generation
+## Name generation
 
 * If `@[to_additive]` is called without a `name` argument, then the
   new name is autogenerated.  First, it takes the longest prefix of
@@ -218,25 +229,25 @@ In this case `to_additive` adds all structure fields to its mapping.
   this prefix with its additive counterpart. Second, it takes the last
   part of the name (i.e., after the last dot), and replaces common
   name parts (“mul”, “one”, “inv”, “prod”) with their additive versions.
-
 * You can add a namespace translation using the following command:
+
   ```
   insert_to_additive_translation QuotientGroup QuotientAddGroup
   ```
+
   Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
   namespace will be created in the `QuotientAddGroup` namespace.
   This is not necessary if there is already a declaration with name `QuotientGroup`.
-
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
-
 * If `@[to_additive]` is called with a `name` argument
   `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
   new name as is.
 
 As a safety check, in the first case `to_additive` double checks
-that the new name differs from the original one. -/
+that the new name differs from the original one.
+-/
 syntax (name := to_additive) "to_additive" "?"? attrArgs : attr
 
 @[inherit_doc to_additive]

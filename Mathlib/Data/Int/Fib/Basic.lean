@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Fib.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fibonacci numbers extended onto the integers
 
@@ -20,10 +23,12 @@ Definition of the sequence: `F₀ = 0`, `F₁ = 1`, and `Fₙ₊₂ = Fₙ₊₁
 
 namespace Int
 
-/-- The Fibonacci sequence for integers. This satisfies `fib 0 = 0`, `fib 1 = 1`,
+/--
+The Fibonacci sequence for integers. This satisfies `fib 0 = 0`, `fib 1 = 1`,
 `fib (n + 2) = fib n + fib (n + 1)`.
 
-This is an extension of `Nat.fib`. -/
+This is an extension of `Nat.fib`.
+-/
 @[pp_nodot, oeis A000045]
 def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then n.toNat.fib else

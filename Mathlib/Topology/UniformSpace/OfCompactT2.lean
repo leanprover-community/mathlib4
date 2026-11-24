@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact separated uniform spaces
 
@@ -34,9 +37,7 @@ open scoped Topology SetRel
 
 variable {γ : Type*}
 
-/-!
-### Uniformity on compact spaces
--/
+/-! # Uniformity on compact spaces -/
 
 
 /-- The unique uniform structure inducing a given compact topological structure. -/

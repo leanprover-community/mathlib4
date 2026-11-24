@@ -8,20 +8,24 @@ module
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
-/-! # Linear topologies on modules and rings
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Linear topologies on modules and rings
 
 Let `M` be a (left) module over a ring `R`. Following
 [Stacks: Definition 15.36.1](https://stacks.math.columbia.edu/tag/07E8), we say that a
-topology on `M` is *`R`-linear* if it is invariant by translations and admits a basis of
+topology on `M` is _`R`-linear_ if it is invariant by translations and admits a basis of
 neighborhoods of 0 consisting of (left) `R`-submodules.
 
 If `M` is an `(R, R')`-bimodule, we show that a topology is both `R`-linear and `R'`-linear
 if and only if there exists a basis of neighborhoods of 0 consisting of `(R, R')`-subbimodules.
 
-In particular, we say that a topology on the ring `R` is *linear* if it is linear if
+In particular, we say that a topology on the ring `R` is _linear_ if it is linear if
 it is linear when `R` is viewed as an `(R, Rᵐᵒᵖ)`-bimodule. By the previous results,
 this means that there exists a basis of neighborhoods of 0 consisting of two-sided ideals,
-hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n° 3][bourbaki1981].
+hence our definition agrees with \[N. Bourbaki, _Algebra II_, chapter 4, §2, n° 3\]\[bourbaki1981\].
 
 ## Main definitions and statements
 
@@ -39,7 +43,6 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   witnessing `R`-linearity and `R'`-linearity may have nothing to do with each other
 * `IsLinearTopology.tendsto_smul_zero`: assume that the topology on `M` is linear.
   For `m : ι → M` such that `m i` tends to 0, `r i • m i` still tends to 0 for any `r : ι → R`.
-
 * `IsLinearTopology.hasBasis_twoSidedIdeal`: if the ring `R` is linearly topologized,
   in the sense that we have both `IsLinearTopology R R` and `IsLinearTopology Rᵐᵒᵖ R`,
   then there exists a basis of neighborhoods of 0 consisting of two-sided ideals.
@@ -54,20 +57,20 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
 
 ## Notes on the implementation
 
-* Some statements assume `ContinuousAdd M` where `ContinuousConstVAdd M M`
-  (invariance by translation) would be enough. In fact, in presence of `IsLinearTopology R M`,
-  invariance by translation implies that `M` is a topological additive group on which `R` acts
-  by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R R` imply that
-  `R` is a topological ring. All of this will follow from https://github.com/leanprover-community/mathlib4/issues/18437.
+* Some statements assume `ContinuousAdd M` where `ContinuousConstVAdd M M` (invariance by
+  translation) would be enough. In fact, in presence of `IsLinearTopology R M`, invariance by
+  translation implies that `M` is a topological additive group on which `R` acts by homeomorphisms.
+  Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R R` imply that `R` is a topological
+  ring. All of this will follow from https://github.com/leanprover-community/mathlib4/issues/18437.
 
-  Nevertheless, we don't plan on adding those facts as instances: one should use directly
-  results from https://github.com/leanprover-community/mathlib4/issues/18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
-
+  Nevertheless, we don't plan on adding those facts as instances: one should use directly results
+  from https://github.com/leanprover-community/mathlib4/issues/18437 to get `IsTopologicalAddGroup`
+  and `IsTopologicalRing` instances.
 * The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
   is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`
   to allow for more complicated types than `Submodule R M` or `Ideal R`. Unfortunately, the scalar
   ring in `SMulMemClass` is an `outParam`, which means that Lean only considers one base ring for
-  a given subobject type. For example, Lean will *never* find `SMulMemClass (TwoSidedIdeal R) R R`
+  a given subobject type. For example, Lean will _never_ find `SMulMemClass (TwoSidedIdeal R) R R`
   because it prioritizes the (later-defined) instance of `SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R`.
 
   This makes `IsLinearTopology.mk_of_hasBasis` un-applicable to `TwoSidedIdeal` (and probably other
@@ -88,15 +91,17 @@ variable {R R' M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Modu
   [SMulCommClass R R' M] [TopologicalSpace M]
 
 variable (R M) in
-/-- Consider a (left-)module `M` over a ring `R`. A topology on `M` is *`R`-linear*
+/--
+Consider a (left-)module `M` over a ring `R`. A topology on `M` is _`R`-linear_
 if the open sub-`R`-modules of `M` form a basis of neighborhoods of zero.
 
 Typically one would also that the topology is invariant by translation (`ContinuousConstVAdd M M`),
 or equivalently that `M` is a topological group, but we do not assume it for the definition.
 
-In particular, we say that a topology on the ring `R` is *linear* if it is both
+In particular, we say that a topology on the ring `R` is _linear_ if it is both
 `R`-linear and `Rᵐᵒᵖ`-linear for the obvious module structures. To spell this in Lean,
-simply use `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]`. -/
+simply use `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]`.
+-/
 class _root_.IsLinearTopology where
   hasBasis_submodule' : (𝓝 (0 : M)).HasBasis
     (fun N : Submodule R M ↦ (N : Set M) ∈ 𝓝 0) (fun N : Submodule R M ↦ (N : Set M))
@@ -133,12 +138,14 @@ lemma mk_of_hasBasis' {ι : Sort*} {S : Type*} [SetLike S M]
     (fun _ ↦ h.mem_iff.mp)
 
 variable (R) in
-/-- To show that `M` is linearly-topologized as an `R`-module, it suffices to show
+/--
+To show that `M` is linearly-topologized as an `R`-module, it suffices to show
 that it has a basis of neighborhoods of zero made of `R`-submodules.
 
 Note: for technical reasons detailed in the module docstring, Lean sometimes struggles to find the
 right `SMulMemClass` instance. See `IsLinearTopology.mk_of_hasBasis'` for a more
-explicit variant. -/
+explicit variant.
+-/
 lemma mk_of_hasBasis {ι : Sort*} {S : Type*} [SetLike S M]
     [SMulMemClass S R M] [AddSubmonoidClass S M]
     {p : ι → Prop} {s : ι → S}
@@ -165,15 +172,17 @@ instance [DiscreteTopology M] : IsLinearTopology R M :=
 
 variable (R R') in
 open Set Pointwise in
-/-- Assume that `M` is a module over two rings `R` and `R'`, and that its topology
+/--
+Assume that `M` is a module over two rings `R` and `R'`, and that its topology
 is linear with respect to each of these rings. Then, it has a basis of neighborhoods of zero
 made of sub-`(R, R')`-bimodules.
 
-The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*][kaplansky_topological_1947].
-TODO: Formalize the lemma in its full strength.
+The proof is inspired by lemma 9 in \[I. Kaplansky, _Topological
+Rings_\]\[kaplansky\_topological\_1947\]. TODO: Formalize the lemma in its full strength.
 
 Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubgroup`s with
-extra conditions. -/
+extra conditions.
+-/
 lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     (𝓝 (0 : M)).HasBasis
       (fun I : AddSubgroup M ↦ (I : Set M) ∈ 𝓝 0 ∧
@@ -292,11 +301,13 @@ theorem hasBasis_right_ideal [IsLinearTopology Rᵐᵒᵖ R] :
   hasBasis_submodule Rᵐᵒᵖ
 
 open Set Pointwise in
-/-- If a ring `R` is linearly ordered as a left *and* right module over itself,
-then it has a basis of neighborhoods of zero made of *two-sided* ideals.
+/--
+If a ring `R` is linearly ordered as a left _and_ right module over itself,
+then it has a basis of neighborhoods of zero made of _two-sided_ ideals.
 
-This is usually called a *linearly topologized ring*, but we do not add a specific spelling:
-you should use `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]` instead. -/
+This is usually called a _linearly topologized ring_, but we do not add a specific spelling:
+you should use `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]` instead.
+-/
 lemma hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     (𝓝 (0 : R)).HasBasis (fun I : TwoSidedIdeal R ↦ (I : Set R) ∈ 𝓝 0)
       (fun I : TwoSidedIdeal R ↦ (I : Set R)) :=

@@ -11,21 +11,27 @@ public import Mathlib.Order.UpperLower.Closure
 
 import Mathlib.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birkhoff representation
 
 This file proves two facts which together are commonly referred to as "Birkhoff representation":
+
 1. Any nonempty finite partial order is isomorphic to the partial order of sup-irreducible elements
-  in its lattice of lower sets.
+   in its lattice of lower sets.
 2. Any nonempty finite distributive lattice is isomorphic to the lattice of lower sets of its
-  partial order of sup-irreducible elements.
+   partial order of sup-irreducible elements.
 
 ## Main declarations
 
 For a finite nonempty partial order `α`:
+
 * `OrderEmbedding.supIrredLowerSet`: `α` is isomorphic to the order of its irreducible lower sets.
 
 If `α` is moreover a distributive lattice:
+
 * `OrderIso.lowerSetSupIrred`: `α` is isomorphic to the lattice of lower sets of its irreducible
   elements.
 * `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
@@ -44,7 +50,7 @@ partial orders. TODO: extend to morphisms.
 
 ## References
 
-* [G. Birkhoff, *Rings of sets*][birkhoff1937]
+* ‍\[G. Birkhoff, _Rings of sets_\]\[birkhoff1937\]
 
 ## Tags
 

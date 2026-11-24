@@ -9,9 +9,10 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Nat.Sqrt
 
-/-!
-# `IsSquare` and `Even` for natural numbers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # `IsSquare` and `Even` for natural numbers -/
 
 public section
 
@@ -19,7 +20,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
-/-! #### Parity -/
+/-! # Parity -/
 
 variable {m n : ℕ}
 

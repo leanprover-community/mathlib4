@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernel and range of group homomorphisms
 
@@ -20,19 +23,15 @@ Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and 
 
 Notation used here:
 
-- `G N` are `Group`s
-
-- `x` is an element of type `G`
-
-- `f g : N →* G` are group homomorphisms
+* `G N` are `Group`s
+* `x` is an element of type `G`
+* `f g : N →* G` are group homomorphisms
 
 Definitions in the file:
 
 * `MonoidHom.range f` : the range of the group homomorphism `f` is a subgroup
-
 * `MonoidHom.ker f` : the kernel of a group homomorphism `f` is the subgroup of elements `x : G`
   such that `f x = 1`
-
 * `MonoidHom.eqLocus f g` : given group homomorphisms `f`, `g`, the elements of `G` such that
   `f x = g x` form a subgroup of `G`
 
@@ -42,6 +41,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 

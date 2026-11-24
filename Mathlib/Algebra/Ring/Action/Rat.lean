@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
-/-!
-# Actions by nonnegative rational numbers
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Actions by nonnegative rational numbers -/
 
 public section
 
@@ -18,7 +19,7 @@ assert_not_exists IsOrderedMonoid
 
 variable {R : Type*}
 
-/-! ### Scalar multiplication -/
+/-! # Scalar multiplication -/
 
 namespace NNRat
 variable [DivisionSemiring R]

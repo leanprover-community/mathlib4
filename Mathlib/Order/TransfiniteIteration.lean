@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfinite iteration of a function `I → I`
 
@@ -23,7 +26,8 @@ that `transfiniteIteration φ i₀ j = ⊤` if we assume that `j ↦ transfinite
 not injective (which shall hold when we know `Cardinal.mk I < Cardinal.mk J`).
 
 ## TODO (@joelriou)
-* deduce that in a Grothendieck abelian category, there is a *set* `I` of monomorphisms
+
+* deduce that in a Grothendieck abelian category, there is a _set_ `I` of monomorphisms
   such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
   and then an object `X` is injective iff `X ⟶ 0` has the right lifting
   property with respect to `I`.
@@ -38,11 +42,15 @@ variable {I J : Type*} [LinearOrder J] [WellFoundedLT J] (φ : I → I) (i₀ : 
 section SupSet
 variable [SupSet I]
 
-/-- The `j`th-iteration of a function `φ : I → I` when `j : J` belongs to a well-ordered type,
-defined by taking *suprema* at limit points. -/
+/--
+The `j`th-iteration of a function `φ : I → I` when `j : J` belongs to a well-ordered type,
+defined by taking _suprema_ at limit points.
+-/
 @[to_dual (dont_translate := J)
-/-- The `j`th-iteration of a function `φ : I → I` when `j : J` belongs to a well-ordered type,
-defined by taking *infima* at limit points. -/]
+/--
+The `j`th-iteration of a function `φ : I → I` when `j : J` belongs to a well-ordered type,
+defined by taking _infima_ at limit points.
+-/]
 noncomputable def supTransfiniteIterate (j : J) : I → I :=
   let := SuccOrder.ofLinearWellFoundedLT J
   SuccOrder.limitRecOn j

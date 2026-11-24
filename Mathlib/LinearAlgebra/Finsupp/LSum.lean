@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.LinearAlgebra.Finsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums as a linear map
 
@@ -88,10 +91,11 @@ variable (S)
 variable [Module S N] [SMulCommClass R₂ S N]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
+/--
+Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
 -/
 def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
   toFun F :=
@@ -174,10 +178,12 @@ theorem llift_symm_apply (f : (X →₀ R) →ₗ[R] M) (x : X) :
 
 end
 
-/-- An equivalence of domains induces a linear equivalence of finitely supported functions.
+/--
+An equivalence of domains induces a linear equivalence of finitely supported functions.
 
 This is `Finsupp.domCongr` as a `LinearEquiv`.
-See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
+See also `LinearMap.funCongrLeft` for the case of arbitrary functions.
+-/
 protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
     simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using! (lmapDomain M R e).map_smul

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed lattice ordered groups
 
@@ -23,7 +26,7 @@ topology.
 
 ## References
 
-* [Meyer-Nieberg, Banach lattices][MeyerNieberg1991]
+* ‍\[Meyer-Nieberg, Banach lattices\]\[MeyerNieberg1991\]
 
 ## Tags
 
@@ -34,14 +37,15 @@ public section
 
 
 /-!
-### Normed lattice ordered groups
+# Normed lattice ordered groups
 
 Motivated by the theory of Banach Lattices, this section introduces normed lattice ordered groups.
 -/
 
 section SolidNorm
 
-/-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
+/--
+Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is _solid_ if, for `a`
 and `b` in `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`.
 -/
 class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop where

@@ -16,6 +16,9 @@ public import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Topology.Algebra.InfiniteSum.ContinuousEval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fréchet derivatives of analytic functions.
 
@@ -890,9 +893,7 @@ theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ Metric.eball 0
 
 end HasFPowerSeriesOnBall
 
-/-!
-### Derivative of a linear map into multilinear maps
--/
+/-! # Derivative of a linear map into multilinear maps -/
 
 namespace ContinuousLinearMap
 

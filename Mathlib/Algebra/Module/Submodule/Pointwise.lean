@@ -10,7 +10,11 @@ public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Order.Group.Action
 
-/-! # Pointwise instances on `Submodule`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise instances on `Submodule`s
 
 This file provides:
 
@@ -24,6 +28,7 @@ and the actions
 which matches the action of `Set.mulActionSet`.
 
 This file also provides:
+
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
   `N : Submodule R M` by defining `s • N` to be the smallest submodule containing all `a • n`
   where `a ∈ s` and `n ∈ N`.
@@ -57,13 +62,15 @@ section Semiring
 
 variable [Semiring R] [AddCommGroup M] [Module R M]
 
-/-- The submodule with every element negated. Note if `R` is a ring and not just a semiring, this
+/--
+The submodule with every element negated. Note if `R` is a ring and not just a semiring, this
 is a no-op, as shown by `Submodule.neg_eq_self`.
 
 Recall that When `R` is the semiring corresponding to the nonnegative elements of `R'`,
 `Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
@@ -84,9 +91,11 @@ theorem neg_toAddSubmonoid (S : Submodule R M) : (-S).toAddSubmonoid = -S.toAddS
 theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
   Iff.rfl
 
-/-- `Submodule.pointwiseNeg` is involutive.
+/--
+`Submodule.pointwiseNeg` is involutive.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
   neg_neg _S := SetLike.coe_injective <| neg_neg _
@@ -179,9 +188,11 @@ section
 
 variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 
-/-- The action on a submodule corresponding to applying the action to every element.
+/--
+The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribSMul.toLinearMap R M a : M →ₗ[R] M)
@@ -262,12 +273,14 @@ section
 
 variable [Semiring α] [Module α M] [SMulCommClass α R M]
 
-/-- The action on a submodule corresponding to applying the action to every element.
+/--
+The action on a submodule corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. Note that `add_smul` does
-not hold so this cannot be stated as a `Module`. -/
+not hold so this cannot be stated as a `Module`.
+-/
 @[instance_reducible]
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
@@ -279,29 +292,32 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 end
 
 /-!
-### Sets acting on Submodules
+# Sets acting on Submodules
 
 Let `R` be a (semi)ring and `M` an `R`-module. Let `S` be a monoid which acts on `M` distributively,
 then subsets of `S` can act on submodules of `M`.
 For subset `s ⊆ S` and submodule `N ≤ M`, we define `s • N` to be the smallest submodule containing
 all `r • n` where `r ∈ s` and `n ∈ N`.
 
-#### Results
+## Results
+
 For arbitrary monoids `S` acting distributively on `M`, there is an induction principle for `s • N`:
 To prove `P` holds for all `s • N`, it is enough
 to prove:
-- for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
-- for all `r` and `m ∈ s • N`, `P (r • n)`;
-- for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
-- `P 0`.
+
+* for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
+* for all `r` and `m ∈ s • N`, `P (r • n)`;
+* for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
+* `P 0`.
 
 To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 
-#### Notes
-- If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
+## Notes
+
+* If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
   then this action actually gives a module structure on submodules of `M` over subsets of `R`.
-- If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
+* If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
   and `Submodule.singleton_set_smul` can be generalized as well.
 -/
 
@@ -375,10 +391,11 @@ variable {s N} in
 /--
 Induction principle for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
 to prove:
-- for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
-- for all `r` and `m ∈ s • N`, `P (r • n)`;
-- for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
-- `P 0`.
+
+* for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
+* for all `r` and `m ∈ s • N`, `P (r • n)`;
+* for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
+* `P 0`.
 
 To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`

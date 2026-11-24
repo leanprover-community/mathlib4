@@ -9,6 +9,9 @@ public import Mathlib.ModelTheory.Semantics
 
 import Mathlib.Algebra.Module.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presburger arithmetic
 
@@ -16,13 +19,13 @@ This file defines the first-order language of Presburger arithmetic as (0,1,+).
 
 ## Main Definitions
 
-- `FirstOrder.Language.presburger`: the language of Presburger arithmetic.
+* `FirstOrder.Language.presburger`: the language of Presburger arithmetic.
 
 ## TODO
 
-- Generalize `presburger.sum` (maybe also `NatCast` and `SMul`) for classes like
+* Generalize `presburger.sum` (maybe also `NatCast` and `SMul`) for classes like
   `FirstOrder.Language.IsOrdered`.
-- Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
+* Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
 -/
 
@@ -72,10 +75,12 @@ instance : SMul ℕ (presburger.Term α) where
 
 @[simp] theorem succ_nsmul {n : ℕ} : (n + 1) • t = n • t + t := rfl
 
-/-- Summation over a finite set of terms in Presburger arithmetic.
+/--
+Summation over a finite set of terms in Presburger arithmetic.
 
 It is defined via choice, so the result only makes sense when the structure satisfies
-commutativity (see `realize_sum`). -/
+commutativity (see `realize_sum`).
+-/
 noncomputable def sum {β : Type*} (s : Finset β) (f : β → presburger.Term α) : presburger.Term α :=
   (s.toList.map f).sum
 

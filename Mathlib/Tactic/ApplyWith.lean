@@ -10,6 +10,9 @@ public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `applyWith` tactic
 
@@ -22,7 +25,8 @@ public meta section
 namespace Mathlib.Tactic
 open Lean Parser Meta Elab Tactic Term
 
-/-- A configuration with at least one configuration option.
+/--
+A configuration with at least one configuration option.
 
 In comparison, `optConfig` allows zero or more options.
 -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hermite polynomials
 
@@ -66,7 +69,7 @@ theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
   simp only [map_one, mul_one, derivative_one, sub_zero]
 
-/-! ### Lemmas about `Polynomial.coeff` -/
+/-! # Lemmas about `Polynomial.coeff` -/
 
 
 section coeff

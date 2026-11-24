@@ -7,15 +7,19 @@ module
 
 public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological entropy of subsets: monotonicity, closure, union
 
 This file contains general results about the topological entropy of various subsets of the same
 dynamical system `(X, T)`. We prove that:
-- the topological entropy `CoverEntropy T F` of `F` is monotone in `F`: the larger the subset,
+
+* the topological entropy `CoverEntropy T F` of `F` is monotone in `F`: the larger the subset,
   the larger its entropy.
-- the topological entropy of a subset equals the entropy of its closure.
-- the entropy of the union of two sets is the maximum of their entropies. We generalize
+* the topological entropy of a subset equals the entropy of its closure.
+* the entropy of the union of two sets is the maximum of their entropies. We generalize
   the latter property to finite unions.
 
 ## Implementation notes
@@ -43,7 +47,7 @@ open scoped SetRel Uniformity
 
 variable {X : Type*} {T : X → X} {F G s t : Set X} {U V : SetRel X X} {n : ℕ}
 
-/-! ### Monotonicity of entropy as a function of the subset -/
+/-! # Monotonicity of entropy as a function of the subset -/
 
 section Subset
 
@@ -92,7 +96,7 @@ lemma coverEntropy_monotone [UniformSpace X] (T : X → X) :
 
 end Subset
 
-/-! ### Closure -/
+/-! # Closure -/
 
 section Closure
 
@@ -141,7 +145,7 @@ theorem coverEntropy_closure (h : Continuous T) :
 
 end Closure
 
-/-! ### Finite unions -/
+/-! # Finite unions -/
 
 section Union
 

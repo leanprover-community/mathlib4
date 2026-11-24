@@ -11,6 +11,9 @@ public import Mathlib.Logic.Encodable.Basic
 
 import Mathlib.Data.List.MinMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Denumerable types
 
@@ -182,7 +185,7 @@ namespace Nat.Subtype
 
 open Function
 
-/-! ### Subsets of `ℕ` -/
+/-! # Subsets of `ℕ` -/
 
 variable {s : Set ℕ} [Infinite s]
 

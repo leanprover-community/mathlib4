@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary map of options
 
@@ -103,7 +106,7 @@ theorem map_uncurry (f : α → β → γ) (x : Option (α × β)) :
     x.map (uncurry f) = map₂ f (x.map Prod.fst) (x.map Prod.snd) := by grind
 
 /-!
-### Algebraic replacement rules
+# Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
 to the associativity, commutativity, distributivity, ... of `Option.map₂` of those operations.
