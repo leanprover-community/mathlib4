@@ -51,7 +51,7 @@ See also
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
 and was ported to mathlib by Kim Morrison.
 
-### Implementation note
+### Implementation notes
 
 Currently we describe `pullback`, `map`, etc., as functors.
 It may be better to just say that they are monotone functions,
