@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The 1-hypercover of a glue data
 

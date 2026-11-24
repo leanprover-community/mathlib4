@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Valuation.RankOne
 
 import Mathlib.GroupTheory.ArchimedeanDensely
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete Valuative Relations
 

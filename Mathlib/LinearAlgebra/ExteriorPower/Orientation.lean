@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.Orientation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orientations and volume forms on exterior powers
 

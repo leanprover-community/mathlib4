@@ -6,9 +6,10 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Properties of faithfully flat algebras
@@ -96,7 +97,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     apply TensorProduct.ext'
     intro x y
     simp
-  rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
+  rw [this, coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
@@ -126,7 +127,7 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
-  simp [this]
+  simpa using this
 
 /-- If `B` is a faithfully-flat `A`-algebra, every ideal in `A` is the preimage of some ideal
 in `B`. -/

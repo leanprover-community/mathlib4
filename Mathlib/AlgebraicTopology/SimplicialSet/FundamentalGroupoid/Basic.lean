@@ -7,7 +7,11 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
-public import Mathlib.CategoryTheory.IsoCat
+
+import Mathlib.CategoryTheory.IsoCat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The fundamental groupoid of a simplicial set

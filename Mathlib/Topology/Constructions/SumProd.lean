@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.SeparatedNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint unions and products of topological spaces
 

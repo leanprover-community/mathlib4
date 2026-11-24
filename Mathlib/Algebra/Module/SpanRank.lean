@@ -38,6 +38,7 @@ implemented as `spanFinrank` and `spanRank`.
   to the rank of M.
 
 ## Tags
+
 submodule, generating subset, span rank
 
 ## Remark

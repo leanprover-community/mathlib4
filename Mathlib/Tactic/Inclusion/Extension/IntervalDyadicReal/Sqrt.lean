@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sqrt extension for tactic `dyadic_interval`
 

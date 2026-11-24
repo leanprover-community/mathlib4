@@ -5,11 +5,12 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Orientation
-public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -172,7 +173,7 @@ oriented real inner product space of dimension 2. -/
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
+    LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, LinearEquiv.trans_apply,
     LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast

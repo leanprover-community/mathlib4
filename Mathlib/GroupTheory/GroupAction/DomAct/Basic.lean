@@ -33,7 +33,7 @@ We also define actions of `Mᵈᵐᵃ` on:
 - `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
 - `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
 
-## Implementation details
+## Implementation notes
 
 ### Motivation
 

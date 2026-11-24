@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms induced on quotient categories
 

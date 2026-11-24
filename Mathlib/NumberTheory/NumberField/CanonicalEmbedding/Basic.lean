@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
+
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Canonical embedding of a number field
@@ -177,7 +178,8 @@ theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIn
     rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
       latticeBasis_apply]
     rfl
-  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, this,
+    Basis.repr_self]
 
 end NumberField.canonicalEmbedding
 
@@ -717,7 +719,8 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
     rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
       latticeBasis_apply]
     rfl
-  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, this,
+    Basis.repr_self]
 
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 

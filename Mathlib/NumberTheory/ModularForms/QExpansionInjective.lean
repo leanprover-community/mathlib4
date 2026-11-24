@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 import Mathlib.Algebra.Polynomial.Laurent.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injectivity of the `q`-expansion on the graded ring of modular forms
 

@@ -9,12 +9,12 @@ public import Mathlib.Basic.Finite.Set
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
 
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -47,6 +47,7 @@ We also show well-founded lattices are compactly generated
 (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
+
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
 
 ## Tags
