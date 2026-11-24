@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Daoud Ali Hassoun. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daoud Ali Hassoun
+-/
 import Mathlib.Tactic.Ring
 
 /-!
@@ -8,22 +13,19 @@ recurrence `s_{k+1} = s_k^2 - 2` and the Chebyshev dynamical step `X_{k+1} = 2 X
 via the modulo-6 Diophantine reduction `s_k = 6m_k + 2`.
 
 ## Main Results
-- `norm_preservation_invariant`: Norm preservation in quadratic ring Z[√3].
-- `six_k_recurrence_invariant`: Recurrence on the 6k parameter m_k.
-- `chebyshev_step_equivalence`: Equivalence to Chebyshev polynomial T_2(X).
+- `norm_preservation_invariant`: Norm preservation in quadratic ring `ℤ[√3]`.
+- `six_k_recurrence_invariant`: Recurrence on the 6k parameter `m_k`.
+- `chebyshev_step_equivalence`: Equivalence to Chebyshev polynomial `T_2(X)`.
 - `primality_condition_equivalence`: Primality zero-criterion isomorphism.
-- `chebyshev_double_jump`: Double-step jump identity T_4(X) = 8Y(Y-1) + 1.
+- `chebyshev_double_jump`: Double-step jump identity `T_4(X) = 8Y(Y-1) + 1`.
 - `hassoun_logarithmic_jump`: Exact power reduction in commutative rings.
-
-## Author
-- Daoud Ali Hassoun
 -/
 
 namespace LucasChebyshev
 
 variable {R : Type*} [CommRing R]
 
-/-- Algebraic norm preservation in the quadratic extension ring Z[√3]. -/
+/-- Algebraic norm preservation in the quadratic extension ring `ℤ[√3]`. -/
 theorem norm_preservation_invariant (u v : R) :
     let u_next := u^2 + 3 * v^2
     let v_next := 2 * u * v
@@ -42,7 +44,7 @@ theorem six_k_recurrence_invariant (m : R) :
   dsimp [s, s_next, m_next]
   ring
 
-/-- Isomorphism between the 6k-parameter and Chebyshev dynamics T_2(X) = 2X^2 - 1. -/
+/-- Isomorphism between the 6k-parameter and Chebyshev dynamics `T_2(X) = 2X^2 - 1`. -/
 theorem chebyshev_step_equivalence (m : R) :
     let X := 3 * m + 1
     let m_next := 2 * m * (3 * m + 2)
@@ -52,7 +54,7 @@ theorem chebyshev_step_equivalence (m : R) :
   dsimp [X, m_next, X_next]
   ring
 
-/-- Primality condition equivalence: s = 0 <-> 2(3m + 1) = 0. -/
+/-- Primality condition equivalence: `s = 0 ↔ 2(3m + 1) = 0`. -/
 theorem primality_condition_equivalence (m : R) :
     let s := 6 * m + 2
     (s = 0) ↔ (2 * (3 * m + 1) = 0) := by
@@ -68,7 +70,7 @@ theorem primality_condition_equivalence (m : R) :
     rw [hf]
     exact h
 
-/-- Two-step unrolled Chebyshev evaluation: T_4(X) = 8Y(Y-1) + 1. -/
+/-- Two-step unrolled Chebyshev evaluation: `T_4(X) = 8Y(Y-1) + 1`. -/
 theorem chebyshev_double_jump (X : R) :
     let step1 := 2 * X^2 - 1
     let step2 := 2 * step1^2 - 1
