@@ -121,7 +121,6 @@ variable (G) in
 theorem girth_eq_toNat_egirth : G.girth = G.egirth.toNat :=
   rfl
 
-variable (G) in
 theorem natCast_girth_le_egirth : G.girth ≤ G.egirth :=
   G.egirth.natCast_toNat_le_self
 
@@ -152,7 +151,7 @@ theorem le_girth {n : ℕ} :
   simp [and_comm]
 
 lemma Walk.IsCycle.girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.natCast_girth_le_egirth.trans h.egirth_le_length
+  ENat.natCast_le_natCast.mp <| natCast_girth_le_egirth.trans h.egirth_le_length
 
 @[deprecated (since := "2026-07-05")] alias girth_le_length := Walk.IsCycle.girth_le_length
 
@@ -169,7 +168,7 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
 
 lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.natCast_girth_le_egirth.trans hwc.egirth_le_length
+  ENat.natCast_le_natCast.mp <| natCast_girth_le_egirth.trans hwc.egirth_le_length
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
@@ -181,7 +180,7 @@ lemma exists_girth_eq_length :
 lemma girth_le_two_mul_ediam_add_one : G.girth ≤ 2 * G.ediam + 1 := by
   by_cases h : G.IsAcyclic
   · simp [girth_eq_zero.mpr h]
-  · exact le_trans G.natCast_girth_le_egirth <| egirth_le_two_mul_ediam_add_one h
+  · exact le_trans natCast_girth_le_egirth <| egirth_le_two_mul_ediam_add_one h
 
 lemma girth_le_two_mul_diam_add_one (h : G.ediam ≠ ⊤) : G.girth ≤ 2 * G.diam + 1 := by
   exact_mod_cast natCast_diam_eq_ediam_iff.mpr h ▸ girth_le_two_mul_ediam_add_one
