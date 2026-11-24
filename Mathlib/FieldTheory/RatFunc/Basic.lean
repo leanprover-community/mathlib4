@@ -1072,6 +1072,11 @@ theorem denom_inv_dvd (x : K⟮X⟯) : denom x⁻¹ ∣ num x := by
   nth_rw 1 [← x.num_div_denom]
   rw [inv_div]
 
+/-- The denominator of `1 / p` divides `p`. -/
+theorem denom_inv_algebraMap_dvd (p : K[X]) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom ∣ p := by
+  simpa using denom_div_dvd (1 : K[X]) p
+
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
   convert denom_inv_dvd x⁻¹
