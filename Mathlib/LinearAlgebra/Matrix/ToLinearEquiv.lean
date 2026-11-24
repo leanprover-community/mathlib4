@@ -222,18 +222,16 @@ omit [Fintype n] in
 theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite n]
     {M : Matrix l m A} {N : Matrix m n A} (h : N.Nondegenerate) :
     (M * N).Nondegenerate ↔ M.Nondegenerate := by
+  by_cases! Subsingleton R
+  · simp [nondegenerate_iff, SeparatingLeft, SeparatingRight, Subsingleton.eq_zero]
   obtain ⟨e₂⟩ := h.nonempty_equiv
   by_cases hlm : Nonempty (l ≃ m)
   · obtain ⟨e₁⟩ := hlm
-    have := Fintype.ofFinite l
-    have := Fintype.ofFinite n
     classical
     rw [← nondegenerate_submatrix_iff e₁.symm.bijective e₂.bijective (M := M * N),
-      ← nondegenerate_submatrix_iff e₁.symm.bijective Function.bijective_id (M := M),
-      submatrix_mul M N _ _ _ Function.bijective_id]
-    have hN' := h.submatrix Function.bijective_id e₂.bijective
-    simp only [nondegenerate_iff_det_ne_zero, det_mul] at hN' ⊢
-    exact mul_ne_zero_iff_right hN'
+      ← nondegenerate_submatrix_iff e₁.symm.bijective Function.bijective_id (M := M)]
+    simp [submatrix_mul (e₂ := id), nondegenerate_iff_nonsingular, nonsingular_mul_iff,
+      (h.submatrix _ e₂.bijective).nonsingular]
   · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm (hM.nonempty_equiv))
     obtain ⟨e₁⟩ := hMN.nonempty_equiv
     exact ⟨e₁.trans e₂.symm⟩
