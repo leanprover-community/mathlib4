@@ -60,12 +60,9 @@ theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
     legendreSym a = -1 ↔ ¬legendreSym a = 1 := by
   lia [eq_one_or_neg_one ha]
 
-/-- The Legendre symbol is a homomorphism of monoids with zero. -/
-@[simp]
-noncomputable abbrev hom : R →*₀ ℤ := legendreSym.toMonoidWithZeroHom
-
 /-- The square of the symbol is 1 if `a` is a unit. -/
-theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := MonoidWithZeroHom.sq_one hom ha
+theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := by
+  classical exact legendreSym.toMonoidWithZeroHom.sq_one ha
 
 /-- The residue of an element is a square in `ResidueField R` if and only if its reduction in
 `ZMod p` is a square. -/
