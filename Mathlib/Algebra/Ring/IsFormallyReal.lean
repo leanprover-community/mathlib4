@@ -60,7 +60,7 @@ theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s
     rcases eq_or_ne a 0 with (rfl | ne_a)
     · simp_all
     · rcases eq_or_ne s 0 with (rfl | ne_s)
-      · simpa using .sq ne_a
+      · simpa using IsSumNonzeroSq.sq ne_a
       · exact .sq_add ne_a (ih ne_s)
 
 alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
