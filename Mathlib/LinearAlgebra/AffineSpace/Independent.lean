@@ -1001,7 +1001,7 @@ theorem affineIndepOn_pair (p₁ p₂ : P) : AffineIndepOn k id {p₁, p₂} := 
 
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
-  rw [← affineIndepOn_id_range_iff (Matrix.injective_pair_iff_ne.mpr h)]
+  rw [← affineIndepOn_id_range_iff (Matrix.pair_injective_iff.mpr h)]
   simpa using affineIndepOn_pair k p₂ p₁
 
 variable {k}
