@@ -316,8 +316,8 @@ lemma sum_strongDual_eval_single_le_norm [DecidableEq ι]
   refine φ.le_opNorm_of_le ?_
   simp only [AddSubgroup.coe_norm, AddSubgroup.val_finsetSum, coe_smul, coe_single]
   refine lp.norm_le_of_forall_le (by positivity) fun i ↦ ?_
-  rw [lp.coeFn_sum, Finset.sum_apply]
-  simp only [lp.coeFn_smul, Pi.smul_apply, lp.coeFn_single, Pi.single_apply, smul_eq_mul]
+  rw [FunLike.coe_sum, Finset.sum_apply]
+  simp only [FunLike.coe_smul, Pi.smul_apply, lp.coeFn_single, Pi.single_apply, smul_eq_mul]
   by_cases! hi : i ∈ s
   · rw [s.sum_eq_single_of_mem i hi fun b _ hb ↦ by simp [hb.symm]]
     obtain (h | h) := eq_or_ne (φ (single i 1)) 0
@@ -336,10 +336,14 @@ lemma strongDual_eval_single_memℓp_one [DecidableEq ι]
 
 /-- The map from the (strong) dual of `c₀(ι, 𝕜)` to `ℓ¹(ι, 𝕜)` given by
 `fun φ i ↦ φ (single i 1)`. This is the inverse of `lp.tendstoZero.lpOneToStrongDual`. -/
-@[simps]
 noncomputable def strongDualTolpOne [DecidableEq ι]
     (φ : StrongDual 𝕜 c₀(ι, 𝕜)) : ℓ¹(ι, 𝕜) :=
-  ⟨fun i ↦ φ (single i 1), strongDual_eval_single_memℓp_one φ⟩
+  lp.mk (fun i ↦ φ (single i 1)) (strongDual_eval_single_memℓp_one φ)
+
+@[simp]
+lemma strongDualTolpOne_apply [DecidableEq ι] (φ : StrongDual 𝕜 c₀(ι, 𝕜)) (i : ι) :
+    strongDualTolpOne φ i = φ (single i 1) :=
+  rfl
 
 lemma norm_strongDualTolpOne_apply_le [DecidableEq ι]
     (φ : StrongDual 𝕜 c₀(ι, 𝕜)) : ‖strongDualTolpOne φ‖ ≤ ‖φ‖ :=
@@ -358,13 +362,13 @@ noncomputable def lpOneToStrongDualLinearEquiv [DecidableEq ι] :
     left_inv x := by
       ext i
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
-        strongDualTolpOne_coe, lpOneToStrongDual_apply_apply]
+        strongDualTolpOne_apply, lpOneToStrongDual_apply_apply]
       rw [tsum_eq_single i (fun j hj ↦ by simp [hj])]
       simp
     right_inv φ := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
       ext x
-      simp only [lpOneToStrongDual_apply_apply, strongDualTolpOne_coe]
+      simp only [lpOneToStrongDual_apply_apply, strongDualTolpOne_apply]
       simp_rw [← smul_eq_mul, ← map_smul, smul_single, smul_eq_mul, mul_one]
       exact φ.hasSum (hasSum_single x) |>.tsum_eq }
 
