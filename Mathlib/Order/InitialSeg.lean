@@ -138,10 +138,10 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 /-- Composition of functions shows that `≼i` is transitive -/
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
-  ⟨f.1.trans g.1, fun a c h => by
+  ⟨f.toRelEmbedding.trans g.toRelEmbedding, fun a c h => by
     simp only [RelEmbedding.coe_trans, coe_coe_fn, comp_apply] at h ⊢
-    rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
-    rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
+    rcases g.mem_range_of_rel' _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
+    rcases f.mem_range_of_rel' _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 
 @[simp]
 theorem refl_apply (x : α) : InitialSeg.refl r x = x :=
@@ -410,7 +410,7 @@ def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r (r · a)
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
 
 @[simp]
-theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
+theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.val :=
   rfl
 
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
@@ -508,8 +508,8 @@ end InitialSeg
 /-- The function in `collapse`. -/
 private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
   (RelEmbedding.wellFounded' f).fix' _ fun a IH =>
-    have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
-      fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
+    have H : f a ∈ { b | ∀ a h, s (IH a h).val b } :=
+      fun b h => trans_trichotomous_left (IH b h).property (f.map_rel_iff.2 h)
     ⟨_, WellFounded.not_lt_min inferInstance _ H⟩
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :

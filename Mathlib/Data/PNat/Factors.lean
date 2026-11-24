@@ -11,6 +11,9 @@ public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.PNat.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime factors of nonzero naturals
 
@@ -202,8 +205,8 @@ theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := 
 /-- The product map gives a homomorphism from the additive monoid
 of multisets to the multiplicative monoid ℕ+. -/
 @[simp]
-theorem prod_zero : (0 : PrimeMultiset).prod = 1 := by
-  exact Multiset.prod_zero
+theorem prod_zero : (0 : PrimeMultiset).prod = 1 :=
+  Multiset.prod_zero
 
 @[simp]
 theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by

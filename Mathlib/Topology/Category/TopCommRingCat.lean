@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of topological commutative rings
 
@@ -89,7 +92,7 @@ instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
 
 /-- The forgetful functor to `TopCat`. -/
 instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
-  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
+  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.val, f.property⟩) HEq.rfl
 
 instance forgetToTopCatCommRing (R : TopCommRingCat) :
     CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=
@@ -107,7 +110,7 @@ instance : (forget₂ TopCommRingCat.{u} TopCat.{u}).ReflectsIsomorphisms where
     -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)
     -- and a `RingEquiv`.
-    let e_Ring : X ≃+* Y := { f.1, ((forget TopCat).mapIso i_Top).toEquiv with }
+    let e_Ring : X ≃+* Y := { f.val, ((forget TopCat).mapIso i_Top).toEquiv with }
     -- Putting these together we obtain the isomorphism we're after:
     exact
       ⟨⟨⟨e_Ring.symm, map_continuous i_Top.inv.hom⟩,

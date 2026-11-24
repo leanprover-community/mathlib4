@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norms on `ℝ` and `ℝ≥0`
 

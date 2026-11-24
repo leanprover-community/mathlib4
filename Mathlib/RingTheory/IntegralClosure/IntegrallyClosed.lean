@@ -157,7 +157,7 @@ theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
 
 theorem integralClosure_subring_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure S A).toSubring ≤ T ↔ .ofClass S ≤ T := by
-  rw [integralClosure_le_iff, Subtype.forall, IsConcreteLE.le_iff]; rfl
+  rw [integralClosure_le_iff, Subtype.forall, le_iff_mem_imp_mem]; rfl
 
 end Subring
 
@@ -260,11 +260,11 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
 
 theorem of_equiv (f : R ≃+* S) [h : IsIntegrallyClosed R] : IsIntegrallyClosed S := by
   let _ : Algebra S R := f.symm.toRingHom.toAlgebra
-  let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
-  let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
+  let f' : S ≃ₐ[S] R := AlgEquiv.ofCommutes (e := f.symm) fun _ ↦ rfl
+  let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f'
   refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
   rcases (isIntegrallyClosed_iff _).mp h ((isIntegral_algEquiv g).mpr hx).tower_top with ⟨z, hz⟩
-  exact ⟨f.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f.symm z).symm.trans <|
+  exact ⟨f'.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f'.symm z).symm.trans <|
     (AlgEquiv.symm_apply_eq g).mpr hz⟩
 
 variable (R S K)

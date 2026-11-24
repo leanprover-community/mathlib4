@@ -230,7 +230,7 @@ theorem mem_map_of_mem (f : F) {S : Submonoid M} {x : M} (hx : x ∈ S) : f x �
 
 @[to_additive]
 theorem apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
-  mem_map_of_mem f x.2
+  mem_map_of_mem f x.property
 
 @[to_additive]
 theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
@@ -866,7 +866,7 @@ lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_
   /-- The `AddMonoidHom` from the preimage of an `AddSubmonoid` to itself. -/]
 def submonoidComap (f : M →* N) (N' : Submonoid N) :
     N'.comap f →* N' where
-  toFun x := ⟨f x, x.2⟩
+  toFun x := ⟨f x, x.property⟩
   map_one' := Subtype.ext f.map_one
   map_mul' x y := Subtype.ext (f.map_mul x y)
 
@@ -874,7 +874,7 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
 lemma submonoidComap_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
     Surjective (f.submonoidComap N') := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
-  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  use ⟨x, mem_comap.mpr (hx ▸ y.property)⟩
   apply Subtype.val_injective
   simp [hx]
 
@@ -892,7 +892,7 @@ See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
   /-- The `AddMonoidHom` from an `AddSubmonoid` to its image.
   See `AddEquiv.AddSubmonoidMap` for a variant for `AddEquiv`s. -/]
 def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
-  toFun x := ⟨f x, ⟨x, x.2, rfl⟩⟩
+  toFun x := ⟨f x, ⟨x, x.property, rfl⟩⟩
   map_one' := Subtype.ext f.map_one
   map_mul' x y := Subtype.ext <| f.map_mul x y
 
@@ -955,7 +955,7 @@ theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ 
 /-- The `MonoidHom` associated to an inclusion of `Submonoid`s. -/
 @[to_additive /-- The `AddMonoidHom` associated to an inclusion of `AddSubmonoid`s. -/]
 def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {S T : Submonoid M} (h : S ≤ T) (a : S) : (inclusion h a : M) = a :=
@@ -1122,7 +1122,7 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := MonoidHom.mem_mrange.mp x.2
+        let ⟨x', hx'⟩ := MonoidHom.mem_mrange.mp x.property
         show f (g x) = x by rw [← hx', h x'] }
 
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between
@@ -1142,7 +1142,7 @@ theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
 
 @[to_additive (attr := simp)]
 theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
-    (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
+    (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.property⟩ :=
   rfl
 
 end MulEquiv

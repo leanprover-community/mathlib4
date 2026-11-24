@@ -767,7 +767,7 @@ theorem integral_coe_le_of_lintegral_coe_le {f : α → ℝ≥0} {b : ℝ≥0} (
     ∫ a, (f a : ℝ) ∂μ ≤ b := by
   by_cases hf : Integrable (fun a => (f a : ℝ)) μ
   · exact (lintegral_coe_le_coe_iff_integral_le hf).1 h
-  · rw [integral_undef hf]; exact b.2
+  · rw [integral_undef hf]; exact b.property
 
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
@@ -1130,8 +1130,8 @@ theorem MeasurePreserving.integral_comp' {β} [MeasurableSpace β] {ν} {f : α 
 theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
     ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
-  rw [← map_comap_subtype_coe hs]
-  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
+  rw [← map_comap_subtypeVal hs]
+  exact ((MeasurableEmbedding.subtypeVal hs).integral_map _).symm
 
 attribute [local instance] Measure.Subtype.measureSpace in
 theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :

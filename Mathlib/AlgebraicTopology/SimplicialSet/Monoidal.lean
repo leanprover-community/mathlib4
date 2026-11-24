@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on simplicial sets
 

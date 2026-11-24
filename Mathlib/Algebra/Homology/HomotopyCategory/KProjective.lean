@@ -18,7 +18,8 @@ and show that bounded above complexes of projective objects are K-projective.
 * Provide an API for computing `Ext`-groups using a projective resolution
 
 ## References
-* [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
+
+* [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1988]
 -/
 
 @[expose] public section
@@ -106,8 +107,6 @@ lemma isKProjective_of_op {K : CochainComplex C ℤ}
       ((opEquivalence C).functor.map f.op) (acyclic_op hL)).trans
         (.ofEq (by simp)))⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] opEquivalence ChainComplex.cochainComplexEquivalence in
 open Cochain.InductionUp in
 lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)

@@ -84,7 +84,7 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     · apply t₂.hom_ext
       intro ⟨j⟩
       simp [hs, ht]
-  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.1))
+  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.as))
   fac s j := by simp
 
 end HasLimitOfHasProductsOfHasEqualizers
@@ -356,7 +356,7 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
       simp [reassoced_s, reassoced_t]
-  uniq q m w := hi.hom_ext (i.coequalizer_ext (t₂.hom_ext fun j => by simpa using w j.1))
+  uniq q m w := hi.hom_ext (i.coequalizer_ext (t₂.hom_ext fun j => by simpa using w j.as))
   fac s j := by simp
 
 end HasColimitOfHasCoproductsOfHasCoequalizers

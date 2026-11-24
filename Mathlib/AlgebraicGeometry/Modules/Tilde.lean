@@ -22,6 +22,7 @@ Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` 
 such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
+
 * `AlgebraicGeometry.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `AlgebraicGeometry.tilde.adjunction` : `~` is left adjoint to taking global sections.
 -/
@@ -38,7 +39,6 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
@@ -55,18 +55,19 @@ set_option backward.isDefEq.respectTransparency false in
 open PrimeSpectrum in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules is fully faithful. -/
 def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithful where
-  preimage {M N} f := ⟨fun U ↦ ModuleCat.ofHom ⟨(f.1.app U).hom.toAddHom, by
+  preimage {M N} f := ⟨fun U ↦ ModuleCat.ofHom ⟨(f.hom.app U).hom.toAddHom, by
     intro t m
-    apply TopCat.Presheaf.IsSheaf.section_ext (modulesSpecToSheaf.obj N).2
+    apply TopCat.Presheaf.IsSheaf.section_ext (modulesSpecToSheaf.obj N).property
     intro x hxU
     obtain ⟨a, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU : basicOpen _ ≤ _⟩ :=
-      PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.2
+      PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.is_open'
     refine ⟨_, hrU, hxr, ?_⟩
     refine Eq.trans ?_ (N.val.map_smul (homOfLE hrU).op t _).symm
-    change N.1.map (homOfLE hrU).op (f.1.app _ _) = _ • N.1.map (homOfLE hrU).op (f.1.app _ _)
+    change N.val.map (homOfLE hrU).op (f.hom.app _ _) =
+      _ • N.val.map (homOfLE hrU).op (f.hom.app _ _)
     have (x : _) :
-        f.1.app _ (M.1.map (homOfLE hrU).op _) = N.1.map (homOfLE hrU).op (f.1.app _ x) :=
-      congr($(f.1.naturality (homOfLE hrU).op).hom x)
+        f.hom.app _ (M.val.map (homOfLE hrU).op _) = N.val.map (homOfLE hrU).op (f.hom.app _ x) :=
+      congr($(f.hom.naturality (homOfLE hrU).op).hom x)
     rw [← this, ← this, M.val.map_smul]
     generalize (Spec R).ringCatSheaf.obj.map (homOfLE hrU).op t = t
     let := Module.compHom (R := Γ(Spec R, basicOpen r)) Γ(M, basicOpen r)
@@ -78,7 +79,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       .of_algebraMap_smul fun _ _ ↦ rfl
     exact (IsLocalization.linearMap_compatibleSMul (.powers (M := R) r)
       Γ(Spec R, basicOpen r) Γ(M, basicOpen r) Γ(N, basicOpen r)).map_smul
-      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; congrm $(f.1.naturality i).hom x⟩
+      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; congrm $(f.hom.naturality i).hom x⟩
   map_preimage f := rfl
   preimage_map f := rfl
 
@@ -151,7 +152,7 @@ end Scheme.Modules
 def tilde : (Spec R).Modules where
   val := moduleStructurePresheaf R M
   isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _).2
-    (structureSheafInType R M).2
+    (structureSheafInType R M).property
 
 namespace tilde
 
@@ -160,7 +161,7 @@ set_option backward.isDefEq.respectTransparency false in
 `structurePresheafInModuleCat`. They are defeq as types but the `Smul` instance are not defeq. -/
 noncomputable
 def modulesSpecToSheafIso :
-    (modulesSpecToSheaf.obj (tilde M)).1 ≅ structurePresheafInModuleCat R M :=
+    (modulesSpecToSheaf.obj (tilde M)).obj ≅ structurePresheafInModuleCat R M :=
   NatIso.ofComponents (fun U ↦ LinearEquiv.toModuleIso
     (X₁ := (modulesSpecToSheaf.obj (tilde M)).presheaf.obj _)
     { __ := AddEquiv.refl _,
@@ -212,19 +213,19 @@ protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
   ext p x
-  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _))
+  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.val.asIdeal.primeCompl
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl M)
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl N)
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl P) _ _) _))
 
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
     (U : TopologicalSpace.Opens (PrimeSpectrum R)) :
-    toOpen M U ≫ (modulesSpecToSheaf.map (tilde.map f)).1.app _ =
+    toOpen M U ≫ (modulesSpecToSheaf.map (tilde.map f)).hom.app _ =
     f ≫ toOpen N U := by
-  ext x; exact Subtype.ext (funext fun y ↦ IsLocalizedModule.map_apply y.1.asIdeal.primeCompl
-    (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
-     (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N) _ x)
+  ext x; exact Subtype.ext (funext fun y ↦ IsLocalizedModule.map_apply y.val.asIdeal.primeCompl
+    (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl M)
+     (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl N) _ x)
 
 variable (R) in
 /-- Tilde as a functor -/
@@ -272,7 +273,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec R).Modules) :
           simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
           obtain ⟨n, a, e⟩ : ∃ n, f.unop ∣ g.unop ^ n := by
             simpa only [Ideal.mem_radical_iff, Ideal.mem_span_singleton] using
-              (basicOpen_le_basicOpen_iff _ _).mp (i.1.hom.le)
+              (basicOpen_le_basicOpen_iff _ _).mp (Opposite.unop i).hom.le
           refine ((Commute.isUnit_mul_iff (b := algebraMap R _ a) (.map (.all _ _) _)).mp ?_).1
           rw [← map_mul, ← e, map_pow]
           exact (M.isUnit_algebraMap_end_of_le_basicOpen g.unop le_rfl).pow n
@@ -287,8 +288,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec R).Modules) (U) :
     tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) U ≫
-      (modulesSpecToSheaf.map M.fromTildeΓ).1.app (.op U) =
-    (modulesSpecToSheaf.obj M).1.map (homOfLE le_top).op := by
+      (modulesSpecToSheaf.map M.fromTildeΓ).hom.app (.op U) =
+    (modulesSpecToSheaf.obj M).obj.map (homOfLE le_top).op := by
   wlog hU : U = PrimeSpectrum.basicOpen 1 generalizing U
   · rw [← tilde.toOpen_res _ (PrimeSpectrum.basicOpen 1) _ (homOfLE (by simp)), Category.assoc,
       NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
@@ -595,7 +596,7 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
     have : PreservesColimitsOfSize.{u, u} (restrictFunctor u) := inferInstance
     let F := (overEquiv (W i.1)).functor ⋙ restrictFunctor u
     let iso : SheafOfModules.overFunctor X.ringCatSheaf _ ⋙ F ≅ restrictFunctor
-      (Scheme.Opens.ι i.2.1) := (Functor.associator _ _ _).symm ≪≫
+      (Scheme.Opens.ι i.2.val) := (Functor.associator _ _ _).symm ≪≫
         Functor.isoWhiskerRight (Scheme.Modules.overFunctorEquiv _) _ ≪≫
         (restrictFunctorComp _ _).symm ≪≫ (restrictFunctorCongr (by simp [u]))
     exact SheafOfModules.Presentation.ofIsIso.{u, u, u} (iso.app M).hom <|
@@ -605,7 +606,7 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
     refine iSup_congr fun i ↦ ?_
     rw [heq i, sSup_eq_iSup']
   · intro j
-    exact hsub _ j.2.2
+    exact hsub _ j.2.property
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)

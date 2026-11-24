@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Profinite sets have enough projectives
 

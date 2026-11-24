@@ -41,7 +41,7 @@ of the exterior algebra.
 
 * `ιMulti` is the `AlternatingMap` corresponding to the wedge product of `ι R m` terms.
 
-## Implementation details
+## Implementation notes
 
 The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.
@@ -347,7 +347,7 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
   rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
-  refine ⟨fun i => ιInv (f i).1, ?_⟩
+  refine ⟨fun i => ιInv (f i).val, ?_⟩
   rw [ιMulti_apply]
   congr with i
   obtain ⟨v, hv⟩ := (f i).prop

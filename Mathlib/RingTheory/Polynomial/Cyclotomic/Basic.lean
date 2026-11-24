@@ -30,7 +30,7 @@ with coefficients in any ring `R`.
 * `Polynomial.cyclotomic_eq_prod_X_pow_sub_one_pow_moebius` : The Möbius inversion formula for
   `cyclotomic n R` over an abstract fraction field for `R[X]`.
 
-## Implementation details
+## Implementation notes
 
 Our definition of `cyclotomic' n R` makes sense in any integral domain `R`, but the interesting
 results hold if there is a primitive `n`-th root of unity in `R`. In particular, our definition is
@@ -564,7 +564,7 @@ theorem coprime_of_root_cyclotomic {n : ℕ} {p : ℕ} [hprime : Fact p.Prime] {
   rcases n.eq_zero_or_pos with rfl | hpos
   · simp at hroot
   apply Nat.Coprime.symm
-  rw [hprime.1.coprime_iff_not_dvd]
+  rw [hprime.out.coprime_iff_not_dvd]
   intro h
   replace h := (ZMod.natCast_eq_zero_iff a p).2 h
   rw [IsRoot.def, eq_natCast, h, ← coeff_zero_eq_eval_zero] at hroot

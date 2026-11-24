@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles in circles and spheres
 
@@ -174,8 +177,8 @@ theorem IsTangentAt_of_angle_eq_pi_div_two {s : Sphere P} {p q : P} (h : ∠ q p
 /-- A line through `p` is tangent to the sphere at `p` if and only if the angle between the line and
 the radius at `p` equals `π / 2`. -/
 theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈ s) :
-    s.IsTangentAt p line[ℝ, p, q] ↔ ∠ q p s.center = π / 2 := by
-  exact ⟨fun h ↦ IsTangentAt.angle_eq_pi_div_two h (right_mem_affineSpan_pair ℝ p q),
+    s.IsTangentAt p line[ℝ, p, q] ↔ ∠ q p s.center = π / 2 :=
+  ⟨fun h ↦ IsTangentAt.angle_eq_pi_div_two h (right_mem_affineSpan_pair ℝ p q),
     fun h ↦ IsTangentAt_of_angle_eq_pi_div_two h hp⟩
 
 end Sphere

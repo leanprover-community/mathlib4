@@ -20,7 +20,7 @@ This file provides the inner product space structure on tensor product spaces.
 We define the inner product on `E ⊗ F` by `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`, when `E` and `F` are
 inner product spaces.
 
-## Main definitions:
+## Main definitions
 
 * `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
   where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
@@ -739,7 +739,7 @@ open LinearMap
 /-- If `E` and `F` are continuously and linearly equivalent and `G` and `H` are continuously and
 linearly equivalent, then `E ⊗ G` and `F ⊗ H` are continuously and linearly equivalent. -/
 noncomputable def congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) : E ⊗[𝕜] G ≃L[𝕜] F ⊗[𝕜] H :=
-  ContinuousLinearEquiv.equivOfInverse' (mapL f g) (mapL f.symm g.symm)
+  ContinuousLinearEquiv.ofContinuousLinearMap (mapL f g) (mapL f.symm g.symm)
     (by ext; simp [← mapL_comp])
     (by ext; simp [← mapL_comp])
 

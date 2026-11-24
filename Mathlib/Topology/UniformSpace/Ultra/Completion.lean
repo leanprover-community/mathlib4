@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completions of ultrametric (nonarchimedean) uniform spaces
 

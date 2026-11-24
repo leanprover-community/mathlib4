@@ -5,10 +5,11 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
+
+import Mathlib.Algebra.FiveLemma
 
 /-!
 # Adic completion as tensor product
@@ -364,7 +365,7 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
     Function.Injective (AlgebraTensorModule.map LinearMap.id f :
         AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] N) := by
   rw [tensor_map_id_left_eq_map I f]
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective,
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective,
     EquivLike.injective_comp]
   exact map_injective I hf
 

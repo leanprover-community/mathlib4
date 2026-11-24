@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.ModuleCat.Projective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ulift functor for ModuleCat
 

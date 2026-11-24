@@ -70,6 +70,7 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
+@[deprecated "use `@[no_expose] def` instead" (since := "2026-11-23")]
 elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
     declSig:ppIndent(optDeclSig) val:declVal :
     command => do

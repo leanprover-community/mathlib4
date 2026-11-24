@@ -27,6 +27,7 @@ Note that most of statements that apply to semilinear maps only hold when the ri
 is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 ## Main Results
+
 * `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
   spaces is surjective if and only if it contains a ball.
 -/
@@ -82,7 +83,7 @@ variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontri
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x hr.le,
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x r,
     convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
   exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 
@@ -128,15 +129,15 @@ end
 namespace ContinuousLinearMap
 
 theorem bound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ :=
-  SemilinearMapClass.bound_of_continuous f f.2
+  SemilinearMapClass.bound_of_continuous f f.cont
 
 theorem nnbound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     ∃ C : ℝ≥0, 0 < C ∧ ∀ x : E, ‖f x‖₊ ≤ C * ‖x‖₊ :=
-  SemilinearMapClass.nnbound_of_continuous f f.2
+  SemilinearMapClass.nnbound_of_continuous f f.cont
 
 theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     ∃ C : ℝ≥0, 0 < C ∧ ∀ x : E, ‖f x‖ₑ ≤ C * ‖x‖ₑ :=
-  SemilinearMapClass.ebound_of_continuous f f.2
+  SemilinearMapClass.ebound_of_continuous f f.cont
 
 section
 
@@ -201,7 +202,7 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   opNorm_le_bound f hMp fun x =>
     (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.2 h, le_refl]
+      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.cont h, le_refl]
 
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
     (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
@@ -334,7 +335,7 @@ theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜
 theorem opNorm_le_iff_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
     ‖f‖ ≤ K ↔ LipschitzWith K f :=
   ⟨fun h ↦ by simpa using AddMonoidHomClass.lipschitz_of_bound f K <| le_of_opNorm_le f h,
-    fun hf ↦ f.opNorm_le_bound K.2 <| hf.norm_le_mul (map_zero f)⟩
+    fun hf ↦ f.opNorm_le_bound K.property <| hf.norm_le_mul (map_zero f)⟩
 
 alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitzWith⟩ := opNorm_le_iff_lipschitzWith
 

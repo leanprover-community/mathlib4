@@ -148,11 +148,11 @@ instance {X : Scheme.{u}} [X.Over S] (v : n → Γ(X, ⊤)) :
 @[simps]
 def homOverEquiv {X : Scheme.{u}} [X.Over S] :
     { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
-  toFun f i := f.1.appTop (coord S i)
+  toFun f i := f.val.appTop (coord S i)
   invFun v := ⟨homOfVector (X ↘ S) v, inferInstance⟩
   left_inv f := by
     ext : 2
-    · simp [f.2.1]
+    · simp [f.property.comp_over]
     · rw [homOfVector_appTop_coord]
   right_inv v := by ext i; simp [-TopologicalSpace.Opens.map_top, homOfVector_appTop_coord]
 

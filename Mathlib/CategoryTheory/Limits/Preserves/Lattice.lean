@@ -11,6 +11,9 @@ public import Mathlib.Order.Hom.CompleteLattice
 
 import Mathlib.CategoryTheory.Limits.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice Homs that Preserve Limits and Colimits
 

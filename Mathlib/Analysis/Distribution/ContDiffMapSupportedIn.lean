@@ -59,7 +59,7 @@ In the `Distributions` scope, we introduce the following notations:
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 
-## Implementation details
+## Implementation notes
 
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
@@ -918,8 +918,8 @@ variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f :=
+  f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :

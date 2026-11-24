@@ -64,18 +64,15 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
   map_one := map_one
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-@[coe]
-def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
+def _root_.BialgEquiv.ofClass (f : F) : A ≃ₐc[R] B :=
   { (f : A ≃ₗc[R] B), (f : A →ₐc[R] B) with }
 
-/-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
-  coe f := toBialgEquiv f
+@[deprecated (since := "2026-11-22")] alias toBialgEquiv := BialgEquiv.ofClass
 
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
   map_add := map_add
-  commutes := AlgHomClass.commutes
+  map_smulₛₗ := map_smul
 
 end BialgEquivClass
 
@@ -99,7 +96,7 @@ def toAlgEquiv (f : A ≃ₐc[R] B) : A ≃ₐ[R] B :=
   { f.toCoalgEquiv with
     map_mul' := map_mul f.toMulEquiv
     map_add' := map_add f.toCoalgEquiv
-    commutes' := AlgHomClass.commutes f.toBialgHom }
+    map_smul' := map_smul f.toBialgHom }
 
 /-- The equivalence of types underlying a bialgebra equivalence. -/
 def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f => f.toCoalgEquiv.toEquiv
@@ -142,6 +139,10 @@ theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B)
   toBialgHom_injective.eq_iff
 
 @[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
+
+@[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
+    ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
 
 end
 
@@ -280,7 +281,7 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
   BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
-@[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
+lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
 /-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
@@ -327,5 +328,9 @@ noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐ
 
 @[simp]
 lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
+
+@[simp]
+lemma toEquiv_ofBijective (f : A →ₐc[R] B) (hf) : (ofBijective f hf).toEquiv = .ofBijective f hf :=
+  rfl
 
 end BialgEquiv
