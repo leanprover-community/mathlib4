@@ -377,7 +377,7 @@ instance : LatticeHomClass (LatticeHom α β) α β where
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 
-@[to_dual] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
+@[to_dual (attr := simp)] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
 @[simp] lemma coe_mk (f : SupHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]

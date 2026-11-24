@@ -46,7 +46,7 @@ theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
 theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 
-@[deprecated normUnit_eq_one (since := "2026-11-23")]
+@[deprecated normUnit_eq_one +typeChanged (since := "2026-11-23")]
 theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 
