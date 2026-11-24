@@ -159,7 +159,7 @@ theorem comp_d₀₁_eq :
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
   ext x a y
   simp only [cochainsIso₀, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     LinearEquiv.funUnique_apply, LinearMap.coe_single, Function.comp_apply, Function.eval,
     d₀₁_hom_apply, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl, Category.comp_id,
     cochainsIso₁, Iso.symm_hom, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
