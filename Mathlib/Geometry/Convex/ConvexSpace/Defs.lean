@@ -451,8 +451,7 @@ lemma iConvexComb_single (x : StdSimplex R I) :
     x.iConvexComb single = x := by
   aesop
 
-variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K]
-
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] in
 lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
     [DecidablePred (· ∈ s)] :
     convexCombPair
