@@ -159,10 +159,11 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] (f : B →ₐ[A] C) (h : P = Q.comap
     exact (over_def Q p).trans <|
       congrFun (congrArg comap f.comp_algebraMap.symm) _
 
-theorem LiesOver.of_eq_map_equiv [P.LiesOver p] (σ : B ≃ₐ[A] C) (h : Q = P.map σ.toRingHom) :
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] (σ : B ≃ₐ[A] C) (h : Q = P.map σ) :
     Q.LiesOver p := by
-  rw [← show _ = P.map σ.toRingHom from comap_symm (.ofClass σ)] at h
-  exact of_eq_comap p (AlgEquiv.ofClass σ).symm h
+  apply of_eq_comap p (σ.symm : C →ₐ[A] B) (Q := P)
+  rw [h]
+  exact (comap_symm (RingEquiv.ofClass σ)).symm
 
 variable {p} in
 instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).LiesOver p :=
