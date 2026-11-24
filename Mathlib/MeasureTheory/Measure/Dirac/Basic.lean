@@ -61,7 +61,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
   by_cases ha : a ∈ s
   · have : s ∩ {a} = {a} := by simpa
     simp [*]
-  · have : s ∩ {a} = ∅ := inter_singleton_eq_empty.2 ha
+  · have : s ∩ {a} = ∅ := inter_singleton_eq_empty.mpr ha
     simp [*]
 
 /-- Two measures on a countable space are equal if they agree on singletons. -/
@@ -181,11 +181,11 @@ theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : ae (dirac a) = pure
 
 theorem ae_eq_dirac₀ {f : α → β} (hf : AEMeasurable f (dirac a)) (hfa : MeasurableSet {f a}) :
     f =ᵐ[dirac a] const α (f a) :=
-  (mem_ae_dirac_iff₀ (hf.nullMeasurable hfa)).2 rfl
+  (mem_ae_dirac_iff₀ (hf.nullMeasurable hfa)).mpr rfl
 
 theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf : Measurable f) :
     f =ᵐ[dirac a] const α (f a) :=
-  (ae_dirac_iff <| show MeasurableSet (f ⁻¹' {f a}) from hf <| measurableSet_singleton _).2 rfl
+  (ae_dirac_iff <| show MeasurableSet (f ⁻¹' {f a}) from hf <| measurableSet_singleton _).mpr rfl
 
 theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
@@ -228,7 +228,7 @@ lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_ennreal {ι : Type*} {mδ : M
 lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_nnreal {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ≥0} {d : ι → δ} (h : HasSum c 1) :
     IsProbabilityMeasure (Measure.sum fun i ↦ c i • .dirac (d i)) :=
-  (ENNReal.hasSum_coe.2 h).isProbabilityMeasure_sum_dirac_ennreal
+  (ENNReal.hasSum_coe.mpr h).isProbabilityMeasure_sum_dirac_ennreal
 
 lemma _root_.HasSum.isProbabilityMeasure_sum_dirac {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ} {d : ι → δ} (h1 : ∀ i, 0 ≤ c i) (h2 : HasSum c 1) :
