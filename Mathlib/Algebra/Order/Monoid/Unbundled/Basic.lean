@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.GRewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoids
 

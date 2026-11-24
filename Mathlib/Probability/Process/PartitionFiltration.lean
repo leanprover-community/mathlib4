@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Process.Filtration
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtration built from the finite partitions of a countably generated measurable space
 

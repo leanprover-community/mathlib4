@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a triangulated subcategory
 

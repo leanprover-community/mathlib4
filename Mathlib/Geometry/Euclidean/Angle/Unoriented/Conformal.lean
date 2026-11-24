@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles and conformal maps
 

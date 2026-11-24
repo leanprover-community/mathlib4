@@ -5,9 +5,9 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Topology.MetricSpace.Isometry
 
+import Mathlib.Algebra.Group.IsApply
 import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!

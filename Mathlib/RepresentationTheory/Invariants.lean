@@ -8,6 +8,9 @@ module
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.Rep.Res
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subspace of invariants a group representation
 

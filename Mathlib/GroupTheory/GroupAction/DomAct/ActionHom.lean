@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 

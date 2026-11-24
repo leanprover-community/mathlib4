@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Topology.Baire.CompleteMetrizable
 
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!
 # Banach open mapping theorem
@@ -321,7 +321,7 @@ theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous 
   rw [continuous_def]
   intro s hs
   rw [← e.image_eq_preimage_symm]
-  rw [← e.coe_coe] at h ⊢
+  rw [← e.coe_toLinearMap] at h ⊢
   exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 
 /-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when

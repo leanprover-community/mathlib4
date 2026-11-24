@@ -7,6 +7,8 @@ import Mathlib.Init
 import Mathlib.Util.AssertNoSorry
 import Qq
 
+set_option linter.style.header true
+
 /--
 warning: The module doc-string for a file should be the first command after the imports
 and any necessary `set_option` commands.
@@ -24,7 +26,6 @@ Note: module Mathlib.Util.AssertNoSorry is directly imported by this module
 Note: This linter can be disabled with `set_option linter.directoryDependency false`
 -/
 #guard_msgs in
-set_option linter.style.header true in
 example := trivial
 
 /-!

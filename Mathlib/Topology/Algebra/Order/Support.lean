@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Support
 
 import Mathlib.Algebra.Order.Group.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topological support of sup and inf of functions
 

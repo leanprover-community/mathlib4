@@ -10,6 +10,9 @@ public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Homotopy.Lifting
 public import Mathlib.Topology.Instances.ZMultiples
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental group of the circle
 

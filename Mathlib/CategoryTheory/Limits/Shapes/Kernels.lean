@@ -356,11 +356,13 @@ def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f 
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
 
 /-- A commuting square induces a morphism of kernels. -/
-@[to_dual (reorder := X X', Y Y', f f', 7 11, p q)
+@[to_dual (reorder := f f', p q)
 /-- A commuting square induces a morphism of cokernels. -/]
-abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
-    (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
+abbrev kernel.map {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f']
+    (p : X ⟶ X') (q : Y ⟶ Y') (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
+
+attribute [to_dual none] kernel.map.congr_simp cokernel.map.congr_simp
 
 @[to_dual (attr := simp)]
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
@@ -425,7 +427,6 @@ lemma kernel.map_zero {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel 
   cat_disch
 
 /-- A commuting square of isomorphisms induces an isomorphism of kernels. -/
-@[simps]
 def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q : Y ≅ Y')
     (w : f ≫ q.hom = p.hom ≫ f') : kernel f ≅ kernel f' where
   hom := kernel.map f f' p.hom q.hom w
@@ -436,7 +437,6 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
         simp [w])
 
 /-- A commuting square of isomorphisms induces an isomorphism of cokernels. -/
-@[simps]
 def cokernel.mapIso [HasCokernel f] {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f']
     (p : X ≅ X') (q : Y ≅ Y')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
@@ -444,6 +444,10 @@ def cokernel.mapIso [HasCokernel f] {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'
   inv := cokernel.map f' f p.inv q.inv (by
         refine (cancel_mono q.hom).1 ?_
         simp [w])
+
+to_dual_for kernel.mapIso := cokernel.mapIso f f' q p (by simp [(Iso.inv_comp_eq _).mp w])
+to_dual_for cokernel.mapIso := kernel.mapIso f f' q p (by simp [(Iso.inv_comp_eq _).mp w])
+attribute [simps (attr := to_dual none)] kernel.mapIso cokernel.mapIso
 
 /-- Every kernel of the zero morphism is an isomorphism -/
 @[to_dual /-- The cokernel of the zero morphism is an isomorphism -/]
