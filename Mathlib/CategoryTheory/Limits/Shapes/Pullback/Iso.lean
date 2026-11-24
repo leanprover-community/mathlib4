@@ -65,6 +65,9 @@ theorem pullbackConeOfLeftIso_π_app_right : (pullbackConeOfLeftIso f g).π.app 
 def pullbackConeOfLeftIsoIsLimit : IsLimit (pullbackConeOfLeftIso f g) :=
   PullbackCone.isLimitAux' _ fun s => ⟨s.snd, by simp [← s.condition_assoc]⟩
 
+@[deprecated (since := "2026-11-24")]
+alias pushoutCoconeOfLeftIsoIsLimit := pushoutCoconeOfLeftIsoIsColimit
+
 @[to_dual]
 theorem hasPullback_of_left_iso : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsoIsLimit f g⟩⟩⟩
@@ -118,6 +121,9 @@ theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.ap
 @[to_dual /-- Verify that the constructed cocone is indeed a colimit. -/]
 def pullbackConeOfRightIsoIsLimit : IsLimit (pullbackConeOfRightIso f g) :=
   PullbackCone.isLimitAux' _ fun s => ⟨s.fst, by simp [s.condition_assoc]⟩
+
+@[deprecated (since := "2026-11-24")]
+alias pushoutCoconeOfRightIsoIsLimit := pushoutCoconeOfRightIsoIsColimit
 
 @[to_dual]
 theorem hasPullback_of_right_iso : HasPullback f g :=
