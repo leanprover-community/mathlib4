@@ -43,7 +43,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [CommGroup A]`
 
 * `instance [CommMonoid α] : CommRing (FreeCommGroup α)`
 
-## Implementation details
+## Implementation notes
 
 The definitions are
 `def FreeCommGroup : Type u := Group.Abelianization (FreeGroup α)` and
@@ -589,8 +589,7 @@ theorem of_one : (FreeAddCommGroup.of 1 : FreeAddCommGroup α) = 1 :=
 
 end One
 
-attribute [local instance] nonUnitalNonAssocRing one
-
+attribute [local instance] nonUnitalNonAssocRing one in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAddCommGroup α) where
   mul_assoc x y z := by
@@ -614,6 +613,7 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
+attribute [local instance] nonUnitalNonAssocRing one in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance ring : Ring (FreeAddCommGroup α) where
   mul_one x := by
@@ -693,8 +693,7 @@ theorem liftMonoid_symm_coe (f : FreeAddCommGroup α →+* R) :
 
 end Monoid
 
-attribute [local instance] ring
-
+attribute [local instance] ring in
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance [CommMonoid α] : CommRing (FreeAddCommGroup α) where
   mul_comm x y := by

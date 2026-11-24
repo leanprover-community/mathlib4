@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Submodule.Range
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp`s supported on a given submodule
 
@@ -69,7 +72,7 @@ theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
 
 theorem supported_eq_span_single (s : Set α) :
     supported R R s = span R ((fun i => single i 1) '' s) := by
-  refine (span_eq_of_le _ ?_ (IsConcreteLE.le_iff.2 fun l hl => ?_)).symm
+  refine (span_eq_of_le _ ?_ (le_iff_mem_imp_mem.2 fun l hl => ?_)).symm
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
@@ -113,7 +116,7 @@ theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
   ext l a
   by_cases h : a ∈ s
   · simp [h]
-  simpa [h] using ((mem_supported' R l.1).1 l.2 a h).symm
+  simpa [h] using ((mem_supported' R l.val).1 l.property a h).symm
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
@@ -239,7 +242,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
   · rcases Finset.mem_image.1 (mapDomain_support hx) with ⟨c, hc, rfl⟩
     exact Function.invFunOn_mem (by simpa using hl hc)
   · rw [← LinearMap.comp_apply, ← lmapDomain_comp]
-    refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
+    refine (mapDomain_congr rfl fun c hc => ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}

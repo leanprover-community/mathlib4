@@ -6,9 +6,9 @@ Authors: Andrew Yang, Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Extensive
-public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Adhesive categories
@@ -34,6 +34,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
   has all pullbacks and all pushouts and is adhesive
 
 ## References
+
 - https://ncatlab.org/nlab/show/adhesive+category
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 -/

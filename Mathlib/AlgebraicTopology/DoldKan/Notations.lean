@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notations for the Dold-Kan equivalence
 

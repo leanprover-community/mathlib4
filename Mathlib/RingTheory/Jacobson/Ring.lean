@@ -5,9 +5,10 @@ Authors: Devon Tuma
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -39,6 +40,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   over a Jacobson ring are Jacobson.
 
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 
@@ -200,9 +202,10 @@ theorem IsLocalization.isMaximal_of_isMaximal_notMem
 correspond to maximal ideals in the original ring `R` that don't contain `y` -/
 def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
-  toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
-  invFun p := ⟨Ideal.map (algebraMap R S) p.1,
-    isMaximal_of_isMaximal_notMem y p.1 p.2.1 p.2.2⟩
+  toFun p := ⟨Ideal.comap (algebraMap R S) p.val,
+    (isMaximal_iff_isMaximal_disjoint S y p.val).1 p.property⟩
+  invFun p := ⟨Ideal.map (algebraMap R S) p.val,
+    isMaximal_of_isMaximal_notMem y p.val p.property.1 p.property.2⟩
   left_inv J := Subtype.ext (map_under (powers y) S J)
   right_inv := fun ⟨_, hIm, hI⟩ ↦ Subtype.ext <| under_map_of_isPrime_disjoint _ S hIm.isPrime
     ((disjoint_powers_iff_notMem_of_isPrime y).2 hI)
@@ -674,7 +677,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   rw [RingHom.comp_assoc] at this
   convert this
   refine RingHom.ext fun x => ?_
-  exact ((renameEquiv R e).commutes' x).symm
+  exact ((renameEquiv R e).commutes x).symm
 
 end MvPolynomial
 
@@ -731,4 +734,4 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     (f : K →+* L) (g : L →+* A) (hfg : (g.comp f).FiniteType) :
     f.Finite := by
   algebraize [f, (g.comp f)]
-  exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
+  exact finite_of_algHom_finiteType_of_isJacobsonRing { toRingHom := g, commutes' _ := rfl }

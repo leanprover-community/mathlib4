@@ -38,6 +38,7 @@ and the corresponding dual statements.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -179,8 +180,8 @@ def KernelFork.IsLimit.ofι {W : C} (g : W ⟶ X) (eq : g ≫ f = 0)
 def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
     (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
     IsLimit (KernelFork.ofι i w) :=
-  ofι _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
-    rw [← cancel_mono i, (h k hk).2, hm])
+  ofι _ _ (fun {_} k hk => (h k hk).val) (fun {_} k hk => (h k hk).property)
+    (fun {A} k hk m hm => by rw [← cancel_mono i, (h k hk).property, hm])
 
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
 @[to_dual isCokernelEpiComp
@@ -190,8 +191,8 @@ def isKernelCompMono {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : 
   Fork.IsLimit.mk' _ fun s =>
     let s' : KernelFork f := Fork.ofι s.ι (by rw [← cancel_mono g]; simp [← hh, s.condition])
     let l := KernelFork.IsLimit.lift' i s'.ι s'.condition
-    ⟨l.1, l.2, fun hm => by
-      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.2.symm⟩
+    ⟨l.val, l.property, fun hm => by
+      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.property.symm⟩
 
 @[to_dual isCokernelEpiComp_desc]
 theorem isKernelCompMono_lift {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : Mono g]
@@ -356,11 +357,13 @@ def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f 
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
 
 /-- A commuting square induces a morphism of kernels. -/
-@[to_dual (reorder := X X', Y Y', f f', 7 11, p q)
+@[to_dual (reorder := f f', p q)
 /-- A commuting square induces a morphism of cokernels. -/]
-abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
-    (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
+abbrev kernel.map {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel f] [HasKernel f']
+    (p : X ⟶ X') (q : Y ⟶ Y') (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
+
+attribute [to_dual none] kernel.map.congr_simp cokernel.map.congr_simp
 
 @[to_dual (attr := simp)]
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
@@ -425,7 +428,6 @@ lemma kernel.map_zero {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel 
   cat_disch
 
 /-- A commuting square of isomorphisms induces an isomorphism of kernels. -/
-@[simps]
 def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q : Y ≅ Y')
     (w : f ≫ q.hom = p.hom ≫ f') : kernel f ≅ kernel f' where
   hom := kernel.map f f' p.hom q.hom w
@@ -436,7 +438,6 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
         simp [w])
 
 /-- A commuting square of isomorphisms induces an isomorphism of cokernels. -/
-@[simps]
 def cokernel.mapIso [HasCokernel f] {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f']
     (p : X ≅ X') (q : Y ≅ Y')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
@@ -444,6 +445,10 @@ def cokernel.mapIso [HasCokernel f] {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'
   inv := cokernel.map f' f p.inv q.inv (by
         refine (cancel_mono q.hom).1 ?_
         simp [w])
+
+to_dual_for kernel.mapIso := cokernel.mapIso f f' q p (by simp [(Iso.inv_comp_eq _).mp w])
+to_dual_for cokernel.mapIso := kernel.mapIso f f' q p (by simp [(Iso.inv_comp_eq _).mp w])
+attribute [simps (attr := to_dual none)] kernel.mapIso cokernel.mapIso
 
 /-- Every kernel of the zero morphism is an isomorphism -/
 @[to_dual /-- The cokernel of the zero morphism is an isomorphism -/]

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian monoidal structure on `CompHausLike`
 

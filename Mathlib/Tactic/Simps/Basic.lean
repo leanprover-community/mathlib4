@@ -20,7 +20,7 @@ public import Mathlib.Util.AddRelatedDecl
 This file defines the `@[simps]` attribute, to automatically generate `simp` lemmas
 reducing a definition when projections are applied to it.
 
-## Implementation Notes
+## Implementation notes
 
 There are three attributes being defined here
 * `@[simps]` is the attribute for objects of a structure or instances of a class. It will

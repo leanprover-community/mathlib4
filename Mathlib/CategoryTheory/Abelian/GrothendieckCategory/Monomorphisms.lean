@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monomorphisms in Grothendieck abelian categories
 

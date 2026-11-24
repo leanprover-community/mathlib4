@@ -6,7 +6,8 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # Colimits in ModuleCat
@@ -25,7 +26,7 @@ about `colimit F` when objects and morphisms in `C` have some algebraic structur
   and `x : Fᵢ` we have `r • x = 0` implies `x = 0`, then if `r • x = 0` for `x : colimit F`, then
   `x = 0`.
 
-## Implementation details
+## Implementation notes
 
 For now, we specialize our results to `C = ModuleCat R`, which is the only place they are used.
 In the future they might be generalized by assuming a `HasForget₂ C (ModuleCat R)` instance,

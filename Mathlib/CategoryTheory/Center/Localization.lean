@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of the center of a category
 

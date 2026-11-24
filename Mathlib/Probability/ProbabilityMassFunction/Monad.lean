@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monad Operations for Probability Mass Functions
 

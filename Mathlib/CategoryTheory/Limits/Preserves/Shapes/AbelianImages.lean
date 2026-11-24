@@ -39,67 +39,39 @@ variable [HasCokernel f] [HasKernel (cokernel.π f)] [PreservesColimit (parallel
   [PreservesLimit (parallelPair (cokernel.π f) 0) F]
   [HasKernel (cokernel.π (F.map f))]
 
+insert_to_dual_translation CategoryTheory.Abelian.PreservesImage
+  CategoryTheory.Abelian.PreservesCoimage
+
+to_dual_name_hint ι π, Inv Hom, Image Coimage
+
 /-- If a functor preserves kernels and cokernels, it preserves abelian images. -/
+@[to_dual /-- If a functor preserves kernels and cokernels, it preserves abelian coimages. -/]
 def PreservesImage.iso : F.obj (Abelian.image f) ≅ Abelian.image (F.map f) :=
   PreservesKernel.iso F _ ≪≫ kernel.mapIso _ _ (Iso.refl _) (PreservesCokernel.iso F _) (by simp)
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 theorem PreservesImage.iso_hom_ι :
     (PreservesImage.iso F f).hom ≫ Abelian.image.ι (F.map f) = F.map (Abelian.image.ι f) := by
   simp [iso]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 theorem PreservesImage.factorThruImage_iso_hom :
     F.map (Abelian.factorThruImage f) ≫ (PreservesImage.iso F f).hom =
       Abelian.factorThruImage (F.map f) := by
   ext; simp [iso]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 theorem PreservesImage.iso_inv_ι :
     (PreservesImage.iso F f).inv ≫ F.map (Abelian.image.ι f) = Abelian.image.ι (F.map f) := by
   simp [iso]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 theorem PreservesImage.factorThruImage_iso_inv :
     Abelian.factorThruImage (F.map f) ≫ (PreservesImage.iso F f).inv =
       F.map (Abelian.factorThruImage f) := by
   simp [Iso.comp_inv_eq]
 
 end Images
-
-section Coimages
-
-variable [HasKernel f] [HasCokernel (kernel.ι f)] [PreservesLimit (parallelPair f 0) F]
-  [PreservesColimit (parallelPair (kernel.ι f) 0) F]
-  [HasCokernel (kernel.ι (F.map f))]
-
-/-- If a functor preserves kernels and cokernels, it preserves abelian coimages. -/
-def PreservesCoimage.iso : F.obj (Abelian.coimage f) ≅ Abelian.coimage (F.map f) :=
-  PreservesCokernel.iso F _ ≪≫ cokernel.mapIso _ _ (PreservesKernel.iso F _) (Iso.refl _) (by simp)
-
-@[reassoc (attr := simp)]
-theorem PreservesCoimage.iso_hom_π :
-    F.map (Abelian.coimage.π f) ≫ (PreservesCoimage.iso F f).hom = Abelian.coimage.π (F.map f) := by
-  simp [iso]
-
-@[reassoc (attr := simp)]
-theorem PreservesCoimage.factorThruCoimage_iso_inv :
-    (PreservesCoimage.iso F f).inv ≫ F.map (Abelian.factorThruCoimage f) =
-      Abelian.factorThruCoimage (F.map f) := by
-  ext; simp [iso]
-
-@[reassoc (attr := simp)]
-theorem PreservesCoimage.factorThruCoimage_iso_hom :
-    (PreservesCoimage.iso F f).hom ≫ Abelian.factorThruCoimage (F.map f) =
-      F.map (Abelian.factorThruCoimage f) := by
-  simp [← Iso.eq_inv_comp]
-
-@[reassoc (attr := simp)]
-theorem PreservesCoimage.iso_inv_π :
-    Abelian.coimage.π (F.map f) ≫ (PreservesCoimage.iso F f).inv = F.map (Abelian.coimage.π f) := by
-  simp [Iso.comp_inv_eq]
-
-end Coimages
 
 variable [HasKernel f] [HasCokernel f] [HasKernel (cokernel.π f)] [HasCokernel (kernel.ι f)]
   [PreservesLimit (parallelPair f 0) F] [PreservesColimit (parallelPair f 0) F]

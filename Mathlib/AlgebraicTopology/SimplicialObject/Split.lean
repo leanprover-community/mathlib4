@@ -30,6 +30,7 @@ Simplicial objects equipped with a splitting form a category
 `SimplicialObject.Split C`.
 
 ## References
+
 * [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
 -/
 
@@ -65,12 +66,12 @@ variable {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ)
 
 /-- The epimorphism in `SimplexCategory` associated to `A : Splitting.IndexSet Δ` -/
 def e :=
-  A.2.1
+  A.2.val
 
 instance : Epi A.e :=
-  A.2.2
+  A.2.property
 
-theorem ext' : A = ⟨A.1, ⟨A.e, A.2.2⟩⟩ := rfl
+theorem ext' : A = ⟨A.1, ⟨A.e, A.2.property⟩⟩ := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e ≫ eqToHom (by rw [h₁]) = A₂.e) :

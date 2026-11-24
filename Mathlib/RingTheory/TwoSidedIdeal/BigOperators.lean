@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between `∑, ∏` and two-sided ideals
 -/

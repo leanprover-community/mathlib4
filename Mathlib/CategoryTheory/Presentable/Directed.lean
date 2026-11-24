@@ -28,6 +28,7 @@ which are not necessarily *subcategories* (the class of morphisms `W` does not
 have to be multiplicative.)
 
 ## References
+
 * [Alexander Grothendieck and Jean-Louis Verdier, *Exposé I : Préfaisceaux*,
   SGA 4 I 8.1.6][sga-4-tome-1]
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -283,10 +284,10 @@ lemma isCardinalFiltered_aux
       fst _ := ⟨⟩
       snd _ := ⟨⟩ }
   let index : MultispanIndex shape J :=
-    { left x := x.1.2.2
+    { left x := x.val.2.2
       right _ := m₁
-      fst x := (D x.1.1).isTerminal.lift x.2.1 ≫ u x.1.1
-      snd x := (D x.1.2.1).isTerminal.lift x.2.2 ≫ u x.1.2.1 }
+      fst x := (D x.val.1).isTerminal.lift x.property.1 ≫ u x.val.1
+      snd x := (D x.val.2.1).isTerminal.lift x.property.2 ≫ u x.val.2.1 }
   have hκ : Cardinal.aleph0 ≤ κ := Cardinal.IsRegular.aleph0_le Fact.out
   have hL : HasCardinalLT shape.L κ := by
     have : HasCardinalLT (ι × (Σ (i : ι), Subtype (D i).P)) κ :=
@@ -326,7 +327,7 @@ def D₁ : Diagram J κ :=
 @[simps!]
 def D₂ : Diagram J κ where
   W := (D₁ D hι m).W ⊔ MorphismProperty.ofHoms
-    fun (x : (Σ (i : ι), (Subtype (D i).P))) ↦ (D x.1).isTerminal.lift x.2.2 ≫ u x.1
+    fun (x : (Σ (i : ι), (Subtype (D i).P))) ↦ (D x.1).isTerminal.lift x.2.property ≫ u x.1
   P := (D₁ D hι m).P
   src := by
     simp only [D₁_W, D₁_P]
@@ -370,8 +371,8 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
   isCardinalFiltered_preorder _ _ (fun ι D hι ↦ by
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
     obtain ⟨m, u, hm₀, hm⟩ := isCardinalFiltered_aux J κ hJ D hι
-    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : x.2.1 ⟶ m :=
-      (D x.1).isTerminal.lift x.2.2 ≫ u x.1
+    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : x.2.val ⟶ m :=
+      (D x.1).isTerminal.lift x.2.property ≫ u x.1
     have hD {i : ι} : ¬ (D i).P m := fun hi ↦ (hm₀ i).false ((D i).isTerminal.lift hi)
     let he : (D₂ D hι u).IsTerminal m := by
       have H {i : ι} {j : J} (hj : (D i).P j) {f : j ⟶ m} (hf : (D₂ D hι u).W f) :
@@ -459,7 +460,7 @@ lemma final_functor : (functor J κ).Final := by
     ⟨_, IsFiltered.coeqHom (f₁ ≫ t) (f₂ ≫ t),
       by simpa using IsFiltered.coeq_condition (f₁ ≫ t) (f₂ ≫ t)⟩
   have h₁ : ¬ (D.P m₁) := fun h₁ ↦ hm₀.false (u ≫ D.isTerminal.lift h₁)
-  let φ (x : Subtype D.P) : x.1 ⟶ m₁ := D.isTerminal.lift x.2 ≫ t ≫ u
+  let φ (x : Subtype D.P) : x.val ⟶ m₁ := D.isTerminal.lift x.property ≫ t ≫ u
   have h₂ {j : J} (hj : D.P j) {f : j ⟶ m₁} (hf : (D₄ D φ).W f) :
       f = φ ⟨_, hj⟩ := by
     obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨⟩⟩) := hf
@@ -537,7 +538,6 @@ lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w}
 
 end IsCardinalFiltered
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
 lemma IsFiltered.exists_directed
     (J : Type w) [SmallCategory J] [IsFiltered J] :

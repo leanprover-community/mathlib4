@@ -33,6 +33,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
   [BGR, Lemma 3.2.1./3].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

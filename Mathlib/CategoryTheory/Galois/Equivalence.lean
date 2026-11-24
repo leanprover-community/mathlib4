@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Action.Continuous
 public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.Topology.Category.FinTopCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fiber functors induce an equivalence of categories
 
