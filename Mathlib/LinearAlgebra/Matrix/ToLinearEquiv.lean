@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.LinearAlgebra.Matrix.Nonsingular
 
 import Mathlib.RingTheory.Localization.Integer
 
@@ -33,15 +34,35 @@ matrix, linear equivalence, linear isomorphism, determinant, inverse
 
 open Module
 
-variable {n : Type*} [Fintype n]
+variable {m n R : Type*}
 
 namespace Matrix
+
+theorem SeparatingLeft.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition R]
+    {N : Matrix m n R} (hN : N.SeparatingLeft) : Fintype.card m ≤ Fintype.card n := by
+  refine card_le_of_injective R (vecMulLinear N) ?_
+  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+  exact fun v hv ↦ hN.eq_zero_of_vecMul_eq_zero hv
+
+theorem SeparatingRight.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition Rᵐᵒᵖ]
+    {N : Matrix m n R} (hN : N.SeparatingRight) : Fintype.card n ≤ Fintype.card m :=
+  SeparatingLeft.card_le ((separatingLeft_map_op_iff (M := Nᵀ)).mpr (by simpa using hN))
+
+/-- Nondegenerate matrices are square. -/
+theorem Nondegenerate.nonempty_equiv [Finite m] [Finite n] [Ring R]
+    [StrongRankCondition R] [StrongRankCondition Rᵐᵒᵖ]
+    {N : Matrix m n R} (hN : N.Nondegenerate) : Nonempty (m ≃ n) := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  exact ⟨Fintype.equivOfCardEq (le_antisymm
+    (SeparatingLeft.card_le hN.separatingLeft) (SeparatingRight.card_le hN.separatingRight))⟩
+
+variable [Fintype n]
 
 section LinearEquiv
 
 open LinearMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 section ToLinearEquiv'
 
@@ -198,17 +219,33 @@ theorem separatingLeft_iff_separatingRight [Finite n] : M.SeparatingLeft ↔ M.S
 alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
   separatingLeft_iff_separatingRight
 
-theorem Nondegenerate.mul_iff_right (h : N.Nondegenerate) :
+omit [Fintype n] in
+theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite n]
+    {M : Matrix l m A} {N : Matrix m n A} (h : N.Nondegenerate) :
     (M * N).Nondegenerate ↔ M.Nondegenerate := by
-  classical
-  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
-  exact mul_ne_zero_iff_right h
+  by_cases hlm : Nonempty (l ≃ m)
+  · obtain ⟨e₁⟩ := hlm
+    obtain ⟨e₂⟩ := h.nonempty_equiv
+    have := Fintype.ofFinite l
+    have := Fintype.ofFinite n
+    classical
+    rw [← nondegenerate_submatrix_iff e₁.symm.bijective e₂.bijective (M := M * N),
+      ← nondegenerate_submatrix_iff e₁.symm.bijective Function.bijective_id (M := M),
+      submatrix_mul M N _ _ _ Function.bijective_id]
+    have hN' := h.submatrix Function.bijective_id e₂.bijective
+    simp only [nondegenerate_iff_det_ne_zero, det_mul] at hN' ⊢
+    exact mul_ne_zero_iff_right hN'
+  · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm (hM.nonempty_equiv))
+    obtain ⟨e₁⟩ := hMN.nonempty_equiv
+    obtain ⟨e₂⟩ := h.nonempty_equiv
+    exact ⟨e₁.trans e₂.symm⟩
 
-theorem Nondegenerate.mul_iff_left (h : M.Nondegenerate) :
+omit [Fintype n] in
+theorem Nondegenerate.mul_iff_left {l m : Type*} [Finite l] [Fintype m] [Finite n]
+    {M : Matrix l m A} {N : Matrix m n A} (h : M.Nondegenerate) :
     (M * N).Nondegenerate ↔ N.Nondegenerate := by
-  classical
-  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
-  exact mul_ne_zero_iff_left h
+  rw [← nondegenerate_transpose_iff (M := M * N), transpose_mul,
+    Nondegenerate.mul_iff_right h.transpose, nondegenerate_transpose_iff]
 
 omit [Fintype n] in
 theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
