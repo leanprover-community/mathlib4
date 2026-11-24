@@ -50,6 +50,13 @@ class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [Topologica
     [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 
+def BoundedContinuousFunction.ofClass [TopologicalSpace α] [PseudoMetricSpace β] [FunLike F α β]
+    [BoundedContinuousMapClass F α β] (f : F) :
+    BoundedContinuousFunction α β where
+  toFun := f
+  continuous_toFun := map_continuous f
+  map_bounded' := BoundedContinuousMapClass.map_bounded f
+
 end
 
 export BoundedContinuousMapClass (map_bounded)
@@ -73,11 +80,7 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass (α →ᵇ β
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-def ofClass [FunLike F α β] [BoundedContinuousMapClass F α β] (f : F) : α →ᵇ β where
-  toFun := f
-  continuous_toFun := map_continuous f
-  map_bounded' := map_bounded f
-
+@[simp]
 protected theorem coe_ofClass [FunLike F α β] [BoundedContinuousMapClass F α β] (f : F) :
     ⇑(ofClass f) = f := rfl
 
