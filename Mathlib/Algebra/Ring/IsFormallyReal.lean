@@ -60,8 +60,8 @@ theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s
     rcases eq_or_ne a 0 with (rfl | ne_a)
     · simp_all
     · rcases eq_or_ne s 0 with (rfl | ne_s)
-      · simpa using IsSumNonzeroSq.sq ne_a
-      · exact IsSumNonzeroSq.sq_add ne_a (ih ne_s)
+      · simpa using .sq ne_a
+      · exact .sq_add ne_a (ih ne_s)
 
 alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
 
@@ -83,15 +83,7 @@ attribute [norm_cast] coe_sumNonzeroSq
 @[simp]
 theorem closure_mul_self : closure {x * x | x ≠ (0 : R)} = sumNonzeroSq R := by
   refine closure_eq_of_le (fun x hx ↦ by aesop) (fun x hx ↦ ?_)
-  -- TODO : fix aesop timeout and change to `induction hx <;> aesop`
-  induction hx with
-  | sq ha => aesop
-  | sq_add ha hs ih =>
-    -- `aesop` times out
-    apply add_mem
-    · apply AddSubsemigroup.mem_closure_of_mem
-      aesop
-    aesop
+  induction hx <;> aesop
 
 end AddSubsemigroup
 
@@ -116,7 +108,7 @@ theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     | sq ha => grind
     | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) hs.isSumSq]
 
-theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
+theorem of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
   not_isSumNonzeroSq_zero := by
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
@@ -124,6 +116,9 @@ theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     induction hx with
     | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
     | sq_add ha hs ih => grind [hs.isSumSq]
+
+@[deprecated (since := "2026-11-24")]
+alias of_eq_zero_of_eq_zero_of_mul_self_add := of_eq_zero_of_mul_self_add
 
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
   of_eq_zero_of_mul_self_of_eq_zero_of_add mul_self_eq_zero.mp <|
@@ -147,8 +142,11 @@ theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₂ = 0 := by
   simp_all [eq_zero_of_add_right hs₁ hs₂ h]
 
-theorem eq_zero_of_isSumSq_of_neg_isSumSq [NonUnitalNonAssocRing R] [IsFormallyReal R]
+theorem eq_zero_of_isSumSq_of_isSumSq_neg [NonUnitalNonAssocRing R] [IsFormallyReal R]
     {s : R} (h₁ : IsSumSq s) (h₂ : IsSumSq (-s)) : s = 0 :=
   eq_zero_of_add_right h₁ h₂ (by simp)
+
+@[deprecated (since := "2026-11-24")]
+alias eq_zero_of_isSumSq_of_neg_isSumSq := eq_zero_of_isSumSq_of_isSumSq_neg
 
 end IsFormallyReal

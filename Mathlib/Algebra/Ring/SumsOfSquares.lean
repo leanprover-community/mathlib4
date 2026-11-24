@@ -185,7 +185,7 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSq R) (by simpa)
 
-private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T] :
+private theorem Submonoid.subsemiringClosure_square {T : Type*} [CommSemiring T] :
     (Submonoid.square T).subsemiringClosure = .closure {x : T | IsSquare x} := by
   simp [Submonoid.subsemiringClosure_eq_closure]
 
@@ -200,8 +200,11 @@ def sumSq : Subsemiring T where
   __ := NonUnitalSubsemiring.sumSq T
   one_mem' := by simp
 
-@[simp] theorem sumSq_toNonUnitalSubsemiring :
+@[simp] theorem toNonUnitalSubsemiring_sumSq :
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
+
+@[deprecated (since := "2026-11-24")]
+alias sumSq_toNonUnitalSubsemiring := toNonUnitalSubsemiring_sumSq
 
 @[simp, membership =]
 theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
@@ -211,7 +214,7 @@ theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSq T := by
   apply_fun toNonUnitalSubsemiring using toNonUnitalSubsemiring_injective
-  simp [← Submonoid.square_subsemiringClosure]
+  simp [← Submonoid.subsemiringClosure_square]
 
 end Subsemiring
 
