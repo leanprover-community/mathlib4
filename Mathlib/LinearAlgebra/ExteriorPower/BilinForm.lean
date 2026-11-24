@@ -70,7 +70,7 @@ public lemma discr_def :
   calc
     _ = B.exteriorPower _ (vol x • vol.symm 1) (vol y • vol.symm 1) := by
       rw [discr_def, LinearMap.map_smul₂, map_smul]
-      exact mul_rotate' ..
+      ring
     _ = _ := by simp [← map_smul]
 
 end Discriminant
