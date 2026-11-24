@@ -71,7 +71,7 @@ lemma _root_.Module.Basis.extendOfIsFullLattice_repr_apply {M : Submodule R V}
     congr($this x i)
   refine b.ext fun j ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, coe_subtype, ← b.extendOfIsFullLattice_apply A, Basis.repr_self,
+    LinearEquiv.coe_toLinearMap, coe_subtype, ← b.extendOfIsFullLattice_apply A, Basis.repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 lemma _root_.Module.Basis.span_extendOfIsFullLattice {M : Submodule R V} [IsFullLattice A M]
@@ -86,7 +86,7 @@ lemma _root_.Module.Basis.image_equivFun_extendOfIsFullLattice {M : Submodule R 
     (b.extendOfIsFullLattice A).equivFun '' M = span R (Set.range (Pi.basisFun A ι)) := by
   classical
   nth_rw 2 [← b.span_extendOfIsFullLattice A]
-  rw [← LinearEquiv.coe_coe, ← LinearMap.coe_restrictScalars R, ← map_coe, map_span,
+  rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_restrictScalars R, ← map_coe, map_span,
     ← Set.range_comp]
   congr 3
   ext
