@@ -29,7 +29,7 @@ which basis we choose for the definition of the map `trace`. Since there always 
 such basis by the theorem `exists_hilbertBasis` we use the axiom of choice to simply choose any.
 This mirrors the construction of `LinearMap.trace`.
 
-### ToDo
+## TODO
  - generalize from `E →L[ℂ] E` to `E →L[𝕜] E` once CFC for the latter has been implemented.
 
 -/
@@ -76,7 +76,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-variable {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
 
 open ComplexOrder
 open scoped ComplexConjugate ENNReal InnerProductSpace
