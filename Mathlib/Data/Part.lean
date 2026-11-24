@@ -22,6 +22,7 @@ translate back and forth between a partial value with a decidable domain and an 
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
 
 ## Main declarations
+
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.
 * `Part.some a`: The partial value whose domain is `True` and whose value is `a`.

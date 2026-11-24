@@ -16,7 +16,8 @@ import Mathlib.RingTheory.Finiteness.Quotient
 /-!
 # The different ideal
 
-## Main definition
+## Main definitions
+
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 - `differentIdeal`: The different ideal of an extension of integral domains.

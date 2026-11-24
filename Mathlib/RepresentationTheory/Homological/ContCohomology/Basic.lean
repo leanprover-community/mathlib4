@@ -15,6 +15,14 @@ public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 We define continuous cohomology as the homology of the homogeneous cochain complex.
 
+## Main definitions
+
+- `TopRep.homogeneousCochains`:
+  The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
+- `continuousCohomology`:
+  The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
+
+
 ## Implementation details
 
 We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
@@ -27,12 +35,6 @@ For the differential map, instead of a finite sum we use the inductive definitio
 `d₋₁ : M → C(G, M) := const : m ↦ g ↦ m` and
 `dₙ₊₁ : C(G, _) → C(G, C(G, _)) := const - C(G, dₙ) : f ↦ g ↦ f - dₙ (f (g))`
 See `TopRep.d`.
-
-## Main definition
-- `TopRep.homogeneousCochains`:
-  The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
-- `continuousCohomology`:
-  The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
 
 ## TODO
 

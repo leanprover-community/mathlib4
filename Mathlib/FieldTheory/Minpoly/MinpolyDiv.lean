@@ -14,6 +14,7 @@ import Mathlib.FieldTheory.Minpoly.Finite
 # Results about `minpoly R x / (X - C x)`
 
 ## Main definition
+
 - `minpolyDiv`: The polynomial `minpoly R x / (X - C x)`.
 
 We used the contents of this file to describe the dual basis of a power basis under the trace form.

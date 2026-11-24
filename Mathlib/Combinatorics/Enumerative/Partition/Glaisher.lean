@@ -17,6 +17,7 @@ divisible by $d$ is equal to the number of partitions in which no part is repeat
 times.
 
 ## Main declarations
+
 * `Nat.Partition.card_restricted_eq_card_countRestricted`: Glaisher's theorem.
 * `Nat.Partition.card_odds_eq_card_distincts`: Euler's partition theorem, a special case
   of Glaisher's theorem when `m = 2`. This is also Theorem 45 from the
