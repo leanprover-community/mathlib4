@@ -37,7 +37,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     spectrum S a ≃ₜ spectrum R a where
   toFun := MapsTo.restrict f _ _ h.subset_preimage
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
-  left_inv x := Subtype.ext <| h.rightInvOn x.2
+  left_inv x := Subtype.ext <| h.rightInvOn x.property
   right_inv x := Subtype.ext <| h.left_inv x
 
 lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
@@ -78,7 +78,7 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
   simp only [SpectrumRestricts.starAlgHom_apply]
   convert h_id
   ext x
-  exact h.rightInvOn x.2
+  exact h.rightInvOn x.property
 
 open ContinuousMap in
 lemma starAlgHom_injective {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}
@@ -208,7 +208,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
     σₙ S a ≃ₜ σₙ R a where
   toFun := MapsTo.restrict f _ _ h.subset_preimage
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
-  left_inv x := Subtype.ext <| h.rightInvOn x.2
+  left_inv x := Subtype.ext <| h.rightInvOn x.property
   right_inv x := Subtype.ext <| h.left_inv x
 
 universe u v w
@@ -245,7 +245,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
   convert h_id
   ext x
-  exact h.rightInvOn x.2
+  exact h.rightInvOn x.property
 
 open ContinuousMapZero in
 lemma nonUnitalStarAlgHom_injective {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}

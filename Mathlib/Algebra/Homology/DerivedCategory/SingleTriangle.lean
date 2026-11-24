@@ -18,7 +18,6 @@ the associated distinguished triangle in the derived category:
 * when the canonical t-structure on the derived category is formalized, refactor
   this definition to make it a particular case of the triangle induced by a short
   exact sequence in the heart of a t-structure
-
 -/
 
 @[expose] public section
@@ -62,7 +61,6 @@ noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
 and the triangle attached to the corresponding short exact sequence of cochain complexes

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 public import Mathlib.Topology.MetricSpace.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cocompact maps in normed groups
 
@@ -19,7 +22,6 @@ This file gives a characterization of cocompact maps in terms of norm estimates.
 * `CocompactMapClass.norm_le`: Every cocompact map satisfies a norm estimate
 * `ContinuousMapClass.toCocompactMapClass_of_norm`: Conversely, this norm estimate implies that a
   map is cocompact.
-
 -/
 
 public section

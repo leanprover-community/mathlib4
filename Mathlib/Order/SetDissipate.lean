@@ -8,12 +8,14 @@ module
 
 public import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dissipate
 
 The function `dissipate` takes `s : α → Set β` with `LE α` and returns `⋂ y ≤ x, s y`.
 It is related to `accumulate s := ⋃ y ≤ x, s y`.
-
 -/
 
 @[expose] public section
@@ -97,7 +99,7 @@ lemma directed_dissipate {s : ℕ → Set α} : Directed (· ⊇ ·) (dissipate 
 
 lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Directed (· ⊇ ·) s) :
     (∃ n, dissipate s n = ∅) ↔ ∃ n, s n = ∅ := by
-  refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩⟩
+  refine ⟨?_, by gcongr; exact dissipate_subset le_rfl⟩
   contrapose!
   intro h n
   obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n

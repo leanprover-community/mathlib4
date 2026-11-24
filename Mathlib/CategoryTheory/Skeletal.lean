@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Thin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skeleton of a category
 
@@ -424,7 +427,7 @@ instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
           apply Quotient.sound (equiv_of_both_ways f g)) }
 
 theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
-  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
+  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.hom.le.antisymm i.inv.le
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|

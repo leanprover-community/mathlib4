@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure-theoretic results about the additive circle
 
@@ -20,7 +23,6 @@ The file is a place to collect measure-theoretic results about the additive circ
   equal
 * `AddCircle.isAddFundamentalDomain_of_ae_ball`: a ball is a fundamental domain for rational
   angle rotation in the additive circle
-
 -/
 
 public section

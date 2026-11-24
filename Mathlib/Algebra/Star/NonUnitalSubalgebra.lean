@@ -770,11 +770,11 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' top_toNonUnitalSubalgebra
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -1188,6 +1188,8 @@ end Center
 
 section Centralizer
 
+open scoped Pointwise
+
 variable (R)
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
@@ -1227,6 +1229,7 @@ end Centralizer
 end NonUnitalStarSubalgebra
 
 -- TODO: this could potentially be moved earlier, but currently no file has enough imports.
+open scoped Pointwise in
 /-- `s ∪ star s` commutes pairwise if and only if all elements of `s` are normal, elements of `s`
 commute pairwise, and distinct elements of `s` commute with the `star` of the other. -/
 lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :

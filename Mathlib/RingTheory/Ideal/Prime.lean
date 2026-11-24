@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Prime ideals
 
 This file contains the definition of `Ideal.IsPrime` for prime ideals.
@@ -45,10 +47,10 @@ class IsPrime (I : Ideal α) : Prop where
   mem_or_mem' : ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I
 
 theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.ne_top', h.mem_or_mem'⟩, fun h => ⟨h.1, h.2⟩⟩
 
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
-  hI.1
+  hI.ne_top'
 
 lemma notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
   fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
@@ -60,7 +62,7 @@ theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
   hI.one_notMem
 
 theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
-  hI.2
+  hI.mem_or_mem'
 
 theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
     x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
@@ -125,6 +127,48 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
   ext
   simp
 
+variable (S : Set (Ideal α)) (hS : ∀ P ∈ S, P.IsPrime)
+
+/-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
+@[no_expose]
+def sInfPrimeCompl : Submonoid α :=
+  ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
+
+lemma sInfPrimeCompl_def :
+    sInfPrimeCompl S hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := by rfl
+
+@[simp]
+theorem mem_sInfPrimeCompl_iff {x : α} : x ∈ sInfPrimeCompl S hS ↔ ∀ P ∈ S, x ∉ P := by
+  simp [sInfPrimeCompl_def]
+
+@[simp]
+theorem sInfPrimeCompl_empty :
+    sInfPrimeCompl ∅ (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
+  ext
+  simp
+
+@[simp]
+theorem sInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
+    sInfPrimeCompl {P} (by simp_all) = P.primeCompl := by
+  ext
+  simp
+
+theorem sInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
+    sInfPrimeCompl (S ∪ T) hST =
+      sInfPrimeCompl S (fun P hP ↦ hST P (Set.mem_union_left T hP)) ⊓
+      sInfPrimeCompl T (fun P hP ↦ hST P (Set.mem_union_right S hP)) := by
+  aesop
+
+theorem sInfPrimeCompl_le_primeCompl {P : Ideal α} (hP : P ∈ S) :
+    sInfPrimeCompl S hS ≤ P.primeCompl (hp := hS P hP) :=
+  fun _ hx ↦ (mem_sInfPrimeCompl_iff S hS).mp hx P hP
+
+theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hST : S ⊆ T) (hP : ∀ P ∈ T, P.IsPrime) :
+    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (fun P hPS ↦ hP P (hST hPS)) := by
+  intro x hx
+  rw [mem_sInfPrimeCompl_iff] at hx ⊢
+  exact fun P hp ↦ hx P (hST hp)
+
 end Ideal
 
 end Semiring
@@ -132,7 +176,7 @@ end Semiring
 section Ring
 
 theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
-  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.2 h⟩
+  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.mem_or_mem' h⟩
 
 end Ring
 
@@ -143,7 +187,7 @@ variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
 namespace Ideal
 
 theorem eq_bot_of_prime [h : I.IsPrime] : I = ⊥ :=
-  or_iff_not_imp_right.mp I.eq_bot_or_top h.1
+  or_iff_not_imp_right.mp I.eq_bot_or_top h.ne_top'
 
 end Ideal
 

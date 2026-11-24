@@ -8,15 +8,14 @@ module
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
-
 # Eigenvalues, Eigenvectors and Spectrum for Matrices
 
 This file collects results about eigenvectors, eigenvalues and spectrum specific to matrices
 over a nontrivial commutative ring, nontrivial commutative ring without zero divisors, or field.
 
 ## Tags
-eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
+eigenspace, eigenvector, eigenvalue, spectrum, matrix
 -/
 
 public section

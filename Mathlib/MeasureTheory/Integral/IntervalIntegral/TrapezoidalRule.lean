@@ -23,6 +23,7 @@ an error bound in terms of a bound on the second derivative of the integrand.
 - `trapezoidal_error_le`: the convergence theorem for the trapezoidal rule.
 
 ## References
+
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/

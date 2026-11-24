@@ -37,6 +37,7 @@ Instead of defining a new notion of topological entropy, we prove that
   defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
+
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
 `netEntropyEntourage` in this file: one uses a `liminf`, the other a `limsup`. When using covers,
 we chose the `limsup` definition as the default.
@@ -46,6 +47,7 @@ we chose the `limsup` definition as the default.
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
+
 net, entropy
 
 ## TODO
@@ -171,8 +173,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
-  exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
+  simp [Order.one_le_iff_ne_zero, netMaxcard_eq_zero_iff]
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)

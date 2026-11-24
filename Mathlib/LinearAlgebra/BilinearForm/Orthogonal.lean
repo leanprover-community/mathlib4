@@ -285,7 +285,7 @@ form if and only if that bilinear form restricted on to the subspace is nondegen
 theorem restrict_nondegenerate_iff_isCompl_orthogonal
     (b₁ : B.IsRefl) : (B.restrict W).Nondegenerate ↔ IsCompl W (B.orthogonal W) :=
   ⟨fun b₂ => isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂, fun h =>
-    B.nondegenerate_restrict_of_disjoint_orthogonal b₁ h.1⟩
+    B.nondegenerate_restrict_of_disjoint_orthogonal b₁ h.disjoint⟩
 
 lemma orthogonal_eq_top_iff (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) :
     B.orthogonal W = ⊤ ↔ W = ⊥ := by
@@ -324,8 +324,8 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
   refine ⟨fun m hm => Submodule.coe_eq_zero.1 (b₁.1 m fun n ↦ ?_),
     fun m hm => Submodule.coe_eq_zero.1 (b₁.2 m fun n ↦ ?_)⟩ <;>
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.1 <| this n
-  · rw [add_right, b₂ y m <| m.2 y hy, show B m z = 0 from hm ⟨z, hz⟩, add_zero]
-  · rw [add_left, m.2 y hy, show B z m = 0 from hm ⟨z, hz⟩, add_zero]
+  · rw [add_right, b₂ y m <| m.property y hy, show B m z = 0 from hm ⟨z, hz⟩, add_zero]
+  · rw [add_left, m.property y hy, show B z m = 0 from hm ⟨z, hz⟩, add_zero]
 
 end BilinForm
 

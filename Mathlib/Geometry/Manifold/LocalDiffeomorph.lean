@@ -52,8 +52,8 @@ different, i.e. for a structomorphism one has to impose `H = H'` which is often 
 practice.
 
 ## Tags
-local diffeomorphism, manifold
 
+local diffeomorphism, manifold
 -/
 
 public noncomputable section
@@ -362,7 +362,7 @@ lemma IsLocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen
 @[expose] def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
   ⟨range f, hf.isOpen_range⟩
 
-lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.1 = range f :=
+lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.carrier = range f :=
   rfl
 
 -- TODO: this result holds more generally for (local) structomorphisms

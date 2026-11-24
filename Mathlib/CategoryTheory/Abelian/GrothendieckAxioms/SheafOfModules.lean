@@ -9,10 +9,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.PresheafOfModules
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of sheaves of modules is Grothendieck abelian
-
-
 -/
 
 universe u

@@ -4,7 +4,7 @@
 # CI runs (build_template.yml, via the `get-tools` composite action) download this
 # artifact and use the tools directly, saving a full `master` checkout plus a ~30s
 # build on every run. They build the tools from source only when no artifact is
-# available or a non-`master` tools branch is requested (bors, ci_dev, nightly-testing).
+# available or a non-`master` tools branch is requested (bors, ci_dev).
 #
 # Trust model: this workflow is triggered *only* by pushes to `master` on the
 # canonical repository, so every artifact it emits is built from trusted `master`
@@ -30,8 +30,6 @@ permissions:
 jobs:
   publish:
     name: Build and publish tools
-    # Only publish from the canonical repository. nightly-testing has no `master`
-    # branch and builds its tools from `nightly-testing-green` on demand instead.
     if: github.repository == 'leanprover-community/mathlib4'
     # Must run on the same kind of runner as the consumers (build_template's `pr`
     # runners), so the binary we build here will run on the machines that use it.

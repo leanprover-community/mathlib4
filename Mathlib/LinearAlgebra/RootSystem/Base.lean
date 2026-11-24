@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Chain
 
 This file contains a theory of bases for root pairings / systems.
 
-## Implementation details
+## Implementation notes
 
 For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
 informal literature (e.g., it follows from [serre1965](Ch. V, §8, Proposition 7) that
@@ -42,7 +42,6 @@ is too strong.
 
 * Develop a theory of base / separation / positive roots for infinite systems which specialises to
   the concept here for finite systems.
-
 -/
 
 @[expose] public section

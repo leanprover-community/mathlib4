@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits on Grothendieck constructions preserving limits
 

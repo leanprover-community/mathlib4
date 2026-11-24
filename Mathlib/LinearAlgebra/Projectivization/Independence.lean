@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 In this file we define independence and dependence of families of elements in projective space.
 
-## Implementation Details
+## Implementation notes
 
 We use an inductive definition to define the independence of points in projective
 space, where the only constructor assumes an independent family of vectors from the

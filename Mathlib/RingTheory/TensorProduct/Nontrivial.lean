@@ -10,12 +10,13 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Nontriviality of tensor product of algebras
 
 This file contains some more results on nontriviality of tensor product of algebras.
-
 -/
 
 public section
