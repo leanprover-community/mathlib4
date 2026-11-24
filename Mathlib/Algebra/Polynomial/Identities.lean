@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Identities
+public import Mathlib.Tactic.LinearCombination
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
