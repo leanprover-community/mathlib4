@@ -206,8 +206,8 @@ instance (A : (CommAlgCat R)ᵒᵖ) [GrpObj A] : HopfAlgebra R A.unop :=
 variable (R) in
 /-- Commutative Hopf algebras over a commutative ring `R` are the same thing as cogroup
 `R`-algebras. -/
-@[expose, simps! functor_obj_unop_X inverse_obj unitIso_hom_app unitIso_inv_app counitIso_hom_app
-  counitIso_inv_app]
+@[expose, implicit_reducible, simps! functor_obj_unop_X inverse_obj unitIso_hom_app unitIso_inv_app
+  counitIso_hom_app counitIso_inv_app]
 def commHopfAlgCatEquivCogrpCommAlgCat : CommHopfAlgCat R ≌ (Grp (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := op <| .mk <| op <| .of R A
   functor.map {A B} f := op <| .mk <| .mk' <| op <| CommAlgCat.ofHom f.hom
