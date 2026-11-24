@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 import Mathlib.RingTheory.Artinian.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on the eigenvalue 0
 

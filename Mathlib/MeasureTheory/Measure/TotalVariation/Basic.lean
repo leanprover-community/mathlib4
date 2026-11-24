@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Measure.TotalVariation.Defs
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the total variation distance
 

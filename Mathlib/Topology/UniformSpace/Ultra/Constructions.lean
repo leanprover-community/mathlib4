@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces
 

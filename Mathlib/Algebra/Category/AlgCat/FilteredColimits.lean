@@ -12,6 +12,9 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtered colimits in the category of `R`-algebras
 

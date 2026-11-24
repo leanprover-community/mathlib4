@@ -11,6 +11,9 @@ public import Mathlib.Data.Int.Cast.Lemmas
 
 import Mathlib.Data.Int.Cast.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injectivity of `Int.Cast` into characteristic zero rings and fields.
 -/

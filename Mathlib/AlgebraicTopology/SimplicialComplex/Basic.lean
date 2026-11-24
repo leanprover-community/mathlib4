@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abstract Simplicial complexes
 

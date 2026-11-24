@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Basic
 
 import Mathlib.Algebra.Group.Nat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counting on ℕ
 
