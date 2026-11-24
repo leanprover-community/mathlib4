@@ -401,18 +401,18 @@ instance {M : Type*} [∀ i, SMul M (E i)] : IsSMulApply M (PreLp E) where
 @[simp] lemma ofFun_smul {M : Type*} [∀ i, SMul M (E i)] (c : M) (f : ∀ i, E i) :
     (ofFun (c • f) : PreLp E) = c • ofFun f := rfl
 
-@[deprecated _root_.zero_apply +typeChanged (since := "2026-11-20")]
-lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
-@[deprecated _root_.add_apply +typeChanged (since := "2026-11-20")]
-lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
-@[deprecated _root_.sub_apply +typeChanged (since := "2026-11-20")]
-lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
-@[deprecated _root_.neg_apply +typeChanged (since := "2026-11-20")]
-lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
-@[deprecated _root_.smul_apply +typeChanged (since := "2026-11-20")]
-lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
-@[deprecated _root_.smul_apply +typeChanged (since := "2026-11-20")]
-lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[deprecated zero_apply +typeChanged (since := "2026-11-20")]
+protected lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
+@[deprecated add_apply +typeChanged (since := "2026-11-20")]
+protected lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[deprecated sub_apply +typeChanged (since := "2026-11-20")]
+protected lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
+@[deprecated neg_apply +typeChanged (since := "2026-11-20")]
+protected lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
+@[deprecated smul_apply +typeChanged (since := "2026-11-20")]
+protected lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[deprecated smul_apply +typeChanged (since := "2026-11-20")]
+protected lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
 
 variable (E) in
 /-- `PreLp.equiv` as an isomorphism of additive groups. -/
