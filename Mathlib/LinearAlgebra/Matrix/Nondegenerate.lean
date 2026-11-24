@@ -214,6 +214,52 @@ theorem nondegenerate_submatrix_iff (hr : Function.Bijective r) (hc : Function.B
     (M.submatrix r c).Nondegenerate ↔ M.Nondegenerate :=
   ⟨.of_submatrix hr.surjective hc.surjective, .submatrix hr hc⟩
 
+section SMul
+variable {α : Type*} [DistribSMul α R] [SMulCommClass α R R] [IsScalarTower α R R] {t : α}
+
+theorem SeparatingRight.of_smul (h : (t • M).SeparatingRight) : M.SeparatingRight := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingRight_def] at h ⊢
+  exact fun w hw ↦ h w fun v ↦ by simp [smul_mulVec, dotProduct_smul, hw]
+
+theorem SeparatingRight.smul (ht : IsSMulRegular R t) (h : M.SeparatingRight) :
+    (t • M).SeparatingRight := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingRight_def] at h ⊢
+  exact fun w hw ↦ h w fun v ↦ ht <| by simpa [smul_mulVec, dotProduct_smul] using hw v
+
+theorem separatingRight_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).SeparatingRight ↔ M.SeparatingRight :=
+  ⟨.of_smul, .smul ht⟩
+
+theorem SeparatingLeft.of_smul (h : (t • M).SeparatingLeft) : M.SeparatingLeft := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingLeft_def] at h ⊢
+  exact fun v hv ↦ h v fun w ↦ by simp [smul_mulVec, dotProduct_smul, hv]
+
+theorem SeparatingLeft.smul (ht : IsSMulRegular R t) (h : M.SeparatingLeft) :
+    (t • M).SeparatingLeft := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingLeft_def] at h ⊢
+  exact fun v hv ↦ h v fun w ↦ ht <| by simpa [smul_mulVec, dotProduct_smul] using hv w
+
+theorem separatingLeft_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).SeparatingLeft ↔ M.SeparatingLeft :=
+  ⟨.of_smul, .smul ht⟩
+
+theorem Nondegenerate.of_smul (h : (t • M).Nondegenerate) : M.Nondegenerate :=
+  ⟨h.separatingLeft.of_smul, h.separatingRight.of_smul⟩
+
+theorem Nondegenerate.smul (ht : IsSMulRegular R t) (h : M.Nondegenerate) :
+    (t • M).Nondegenerate :=
+  ⟨h.separatingLeft.smul ht, h.separatingRight.smul ht⟩
+
+theorem nondegenerate_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).Nondegenerate ↔ M.Nondegenerate :=
+  ⟨.of_smul, .smul ht⟩
+
+end SMul
+
 end Finite
 
 end NonUnitalSemiring

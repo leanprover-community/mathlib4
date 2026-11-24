@@ -89,7 +89,8 @@ lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S
   obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
     ⟨P.toInvariantForm, P.rootForm_nondegenerate⟩
   replace hB : ((2 : R) • B.form.toMatrix b.toWeightBasis).Nondegenerate := by
-    rwa [Matrix.Nondegenerate.smul_iff two_ne_zero, LinearMap.BilinForm.nondegenerate_toMatrix_iff]
+    rwa [Matrix.nondegenerate_smul_iff (.of_ne_zero two_ne_zero),
+      LinearMap.BilinForm.nondegenerate_toMatrix_iff]
   have aux : (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)).Nondegenerate := by
     rw [Matrix.nondegenerate_iff_det_ne_zero, Matrix.det_diagonal, Finset.prod_ne_zero_iff]
     aesop
