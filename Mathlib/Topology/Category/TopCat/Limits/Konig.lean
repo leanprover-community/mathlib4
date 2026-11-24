@@ -51,7 +51,7 @@ variable (F : J ⥤ TopCat.{v})
 
 set_option backward.privateInPublic true in
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
-  Σ' (X Y : J) (_ : X ∈ G) (_ : Y ∈ G), X ⟶ Y
+  Σ' (Y X : J) (_ : Y ∈ G) (_ : X ∈ G), X ⟶ Y
 
 set_option backward.privateInPublic true in
 private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
@@ -64,7 +64,7 @@ a finite subset of objects and morphisms of `J`.
 -/
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
-  {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
+  {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.2.1) = u f.1}
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -112,7 +112,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partialSections F H =
-      ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
+      ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.2.1) = u f.1} := by
     ext1
     simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     rfl
@@ -135,7 +135,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
       partialSections.closed F _
   use u
   intro X Y f
-  let G : FiniteDiagram J := ⟨{X, Y}, {⟨X, Y, by grind, by grind, f⟩}⟩
+  let G : FiniteDiagram J := ⟨{X, Y}, {⟨Y, X, by grind, by grind, f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig
