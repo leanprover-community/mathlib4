@@ -5,11 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 
+import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -248,7 +248,7 @@ theorem sub_star (z : QuadraticAlgebra R a b) :
 /-- Conjugation as an `R`-algebra automorphism of `QuadraticAlgebra R a b`. -/
 def starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a b where
   __ := starRingAut
-  commutes' _ := by ext <;> simp
+  map_smul' _ _ := by ext <;> simp [mul_add, mul_left_comm]
 
 @[simp]
 theorem starAlgEquiv_apply (z : QuadraticAlgebra R a b) : starAlgEquiv z = star z := rfl
@@ -284,7 +284,7 @@ theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r)
 
 @[simp]
 theorem norm_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
-    [SMulCommClass S R R] (s : S) (z : QuadraticAlgebra R a b) :
+    (s : S) (z : QuadraticAlgebra R a b) :
     norm (s • z) = s ^ 2 • norm z := by
   simp [norm_def, mul_smul_comm, smul_sub, pow_two, mul_smul, smul_mul_assoc]
 

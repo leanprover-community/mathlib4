@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some constructions of matroids
 
@@ -28,7 +31,6 @@ For `E : Set α`, ...
 To avoid the tedious process of certifying the matroid axioms for each of these easy examples,
 we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove is a matroid)
 and then construct the other examples using duality and restriction.
-
 -/
 
 @[expose] public section

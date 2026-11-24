@@ -11,14 +11,15 @@ public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Points of the étale site
 
 In this file, we show that a morphism `Spec (.of Ω) ⟶ S` where `Ω` is
 a separably closed field defines a point on the small étale site of `S`.
 We show that these points form a conservative family.
-
 -/
 
 @[expose] public section
@@ -142,11 +143,11 @@ lemma isConservative_pointSmallEtale
     simp only [Functor.id_obj, pointSmallEtaleFiberObjToPreimage_coe, Etale.forget_obj_left] at hx'
     subst hx'
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
-    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).1, rfl⟩)
+    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).val, rfl⟩)
 
 lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale
-      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).2
+      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).invFun
         ⟨s, CommRingCat.ofHom
           (algebraMap (S.residueField s) _)⟩))).IsConservativeFamilyOfPoints :=
   isConservative_pointSmallEtale _ (by

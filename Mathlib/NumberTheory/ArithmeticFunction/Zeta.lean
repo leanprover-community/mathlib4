@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The arithmetic function `ζ`
 
@@ -161,7 +164,7 @@ theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmu
   rw [ppow_apply (succ_pos k), _root_.pow_succ']
   induction k <;> simp
 
-theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
+theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} :
     f.ppow (k + 1) = (f.ppow k).pmul f := by
   ext x
   rw [ppow_apply (succ_pos k), _root_.pow_succ]

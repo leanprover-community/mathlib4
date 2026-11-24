@@ -154,7 +154,6 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
   have hst (i : ι) : s i =ᵐ[μ] t i := by
     filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
@@ -279,7 +278,7 @@ theorem tendsto_measure_biInter_gt [LinearOrder ι] [TopologicalSpace ι]
     simp_rw [← map_coe_Ioi_atBot a ha, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
     apply tendsto_measure_iInter_atBot
     · rwa [Subtype.forall]
-    · exact fun i j h ↦ hm i j i.2 h
+    · exact fun i j h ↦ hm i j i.property h
     · simpa only [Subtype.exists, exists_prop]
   · rw [Order.not_isPredPrelimit_iff] at ha
     rcases ha with ⟨b, hab⟩

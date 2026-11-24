@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Limits.IsConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)Finality of the inclusions in joins of categories
 
 This file records the fact that `inclLeft C D : C ⥤ C ⋆ D` is initial if `C` is connected.
 Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
-
 -/
 
 @[expose] public section

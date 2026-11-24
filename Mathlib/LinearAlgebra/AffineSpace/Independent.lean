@@ -29,7 +29,6 @@ This file defines affinely independent families of points.
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section
@@ -367,7 +366,6 @@ protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndepende
     AffineIndependent k fun i : s => p i :=
   ha.comp_embedding (Embedding.subtype _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
@@ -375,9 +373,8 @@ protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent
   let f : Set.range p → ι := fun x => x.property.choose
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
-  convert! ha.comp_embedding fe
-  ext
-  simp [fe, hf]
+  convert ha.comp_embedding fe
+  exact (hf _).symm
 
 theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
     AffineIndependent k (p ∘ e) ↔ AffineIndependent k p := by
@@ -489,7 +486,7 @@ theorem affineIndepOn_congr {p q : ι → P} {s : Set ι} (h : Set.EqOn p q s) :
   rw [AffineIndepOn, AffineIndepOn]
   convert Iff.rfl using 2
   ext x
-  exact h.symm x.2
+  exact h.symm x.property
 
 protected theorem AffineIndepOn.congr {p q : ι → P} {s : Set ι} (hp : AffineIndepOn k p s)
     (h : Set.EqOn p q s) : AffineIndepOn k q s :=
@@ -895,7 +892,6 @@ section DivisionRing
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
@@ -914,18 +910,16 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     exact
       ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
         affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt⟩
-  · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁] at h
+  · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁, linearIndependent_subtype_iff] at h
     let bsv := Basis.extend h
     have hsvi := bsv.linearIndependent
     have hsvt := bsv.span_eq
     rw [Basis.coe_extend] at hsvi hsvt
-    rw [linearIndependent_subtype_iff] at hsvi h
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend (Set.subset_univ _) → v ≠ 0 := by
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
-    rw [← linearIndependent_subtype_iff,
-      linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
+    rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_mono hsv))
       simp [Set.image_image]
@@ -997,14 +991,18 @@ theorem affineIndepOn_pair_iff {p : ι → P} {i j : ι} (hij : i ≠ j) :
   rw [affineIndepOn_iff_linearIndepOn_vsub (Set.mem_insert i _), ne_comm,
     Set.insert_sdiff_self_of_notMem (by simpa), linearIndepOn_singleton_iff, vsub_ne_zero]
 
-/-- Two different points are affinely independent. -/
-theorem affineIndepOn_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndepOn k id {p₁, p₂} :=
-  (affineIndepOn_pair_iff k h).mpr h
+/-- Two points are affinely independent (as a set, so this is trivial when they are equal). -/
+theorem affineIndepOn_pair (p₁ p₂ : P) : AffineIndepOn k id {p₁, p₂} := by
+  rcases eq_or_ne p₁ p₂ with rfl | h
+  · simp
+  · exact (affineIndepOn_pair_iff k h).mpr h
+
+@[deprecated (since := "2026-11-04")] alias affineIndepOn_of_ne := affineIndepOn_pair
 
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [← affineIndepOn_id_range_iff (Matrix.injective_pair_iff_ne.mpr h)]
-  simpa using affineIndepOn_of_ne k h.symm
+  simpa using affineIndepOn_pair k p₂ p₁
 
 variable {k}
 
@@ -1131,10 +1129,12 @@ by `lineMap` with coefficient between 0 and 1. Then the coefficients of those tw
 combination lying in the span have the same sign. -/
 theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P}
     (h : AffineIndependent k p) {w : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1) {i₁ i₂ i₃ : ι}
-    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     {c : k} (hc0 : 0 < c) (hc1 : c < 1)
     (hs : s.affineCombination k p w ∈ line[k, p i₁, AffineMap.lineMap (p i₂) (p i₃) c]) :
     SignType.sign (w i₂) = SignType.sign (w i₃) := by
+  rcases eq_or_ne i₂ i₃ with rfl | h₂₃
+  · rfl
   classical
     rw [← s.affineCombination_piSingle k p h₁, ←
       s.affineCombination_affineCombinationLineMapWeights p h₂ h₃ c] at hs

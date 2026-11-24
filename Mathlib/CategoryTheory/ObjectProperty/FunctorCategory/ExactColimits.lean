@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
+
+import Mathlib.CategoryTheory.Limits.ColimitLimit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Exact colimits and preservation of limits
@@ -15,7 +19,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLim
 If a category `C` has exact colimits of shape `K'` and has finite limits, we
 show that the full subcategory of `J ⥤ C` consisting of functors preserving finite
 limits is stable under colimits of shape `K'`
-
 -/
 
 public section

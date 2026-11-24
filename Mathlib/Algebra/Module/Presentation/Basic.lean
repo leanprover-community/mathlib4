@@ -33,7 +33,6 @@ generators and relations.
 ## TODO
 * Relate this to `Module.FinitePresentation`
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
-
 -/
 
 @[expose] public noncomputable section
@@ -388,7 +387,7 @@ lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsP
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
-    rw [this, LinearMap.coe_comp, LinearEquiv.coe_coe]
+    rw [this, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap]
     exact Function.Bijective.comp e.bijective h.bijective
 
 end IsPresentation

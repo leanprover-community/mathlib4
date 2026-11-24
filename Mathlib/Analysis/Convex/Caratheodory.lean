@@ -33,7 +33,6 @@ This theorem was formalized as part of the Sphere Eversion project.
 
 ## Tags
 convex hull, caratheodory
-
 -/
 
 @[expose] public section
@@ -115,7 +114,7 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
     by_cases h : AffineIndependent 𝕜 ((↑) : t → E)
     · exact ⟨t, hts, h, hx⟩
     obtain ⟨y, hy⟩ := Caratheodory.mem_convexHull_erase h hx
-    exact ih _ (erase_ssubset y.2) (subset_trans (by simp) hts) hy
+    exact ih _ (erase_ssubset y.property) (subset_trans (by simp) hts) hy
   · iterate 3 convert Set.iUnion_subset _; intro
     exact convexHull_mono ‹_›
 
@@ -135,7 +134,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
-      (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
+      (hw₁ _ (Finset.mem_filter.mp i.property).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · rw [sum_coe_sort t' w, sum_filter_ne_zero, hw₂]
   · rw [sum_coe_sort t' fun e ↦ w e • e, sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃

@@ -98,8 +98,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
   by_cases hg : g 1 0 = 0
   · -- If `c = 0`, then `(g • τ).im = τ.im / d ^ 2` and `d ^ 2 ≥ 1`.
     -- (In fact `d = ±1`, but we do not need this stronger statement).
-    have : g 1 1 ≠ 0 := fun hg' ↦ zero_ne_one <| by
-      simpa only [Matrix.det_fin_two, hg, hg', mul_zero, mul_zero, sub_zero] using g.det_coe
+    have : g 1 1 ≠ 0 := d_ne_zero_of_c_eq_zero (R := ℤ) (g := g) hg
     have : (1 : ℝ) ≤ g 1 1 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs this)
     refine le_trans ?_ <| le_max_left _ _
     rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) = (g 1 1) ^ 2 by simp [hg, sq]]
@@ -114,7 +113,6 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
     have : (1 : ℝ) ≤ g 1 0 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs hg)
     nlinarith
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
 of `(max (im τ) (1 / im τ)) ^ t`. -/
@@ -130,7 +128,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp only [sl_moeb, f', Quotient.lift_mk]
+    simp only [sl_moeb, f', map_inv, Quotient.lift_mk]
     fun_prop
   have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
@@ -231,14 +229,15 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
     (qExpansion h f).coeff n = Real.exp (2 * π * n * y / h) *
-      fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩) n := by
+      AddCircle.fourierCoeffOn hh
+        (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩) n := by
   have hq (u : ℝ) : (1 / 𝕢 h (u + y * UpperHalfPlane.I) ^ n : ℂ) =
-      ↑(Real.exp (2 * π * n * y / h)) * fourier (-(n : ℤ)) (u : AddCircle h) := by
-    push_cast [fourier_coe_apply, Function.Periodic.qParam, one_div, ← Complex.exp_nat_mul,
-      ← Complex.exp_neg, ← Complex.exp_add]
+      ↑(Real.exp (2 * π * n * y / h)) * AddCircle.fourier (-(n : ℤ)) (u : AddCircle h) := by
+    push_cast [AddCircle.fourier_coe_apply, Function.Periodic.qParam, one_div,
+      ← Complex.exp_natCast_mul, ← Complex.exp_neg, ← Complex.exp_add]
     grind [Complex.I_sq]
   rw [qExpansion_coeff_eq_intervalIntegral hh hfper hfhol hfbdd n hy,
-    fourierCoeffOn_eq_integral, sub_zero]
+    AddCircle.fourierCoeffOn_eq_integral, sub_zero]
   simp_rw [hq, mul_assoc, intervalIntegral.integral_const_mul]
   simp [mul_left_comm]
 
@@ -248,7 +247,7 @@ up to a constant, the `-(n + 1)`-th coefficient is the constant term of the `q`-
 lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
-    fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩)
+    AddCircle.fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩)
       (-(n + 1 : ℕ) : ℤ) = 0 := by
   -- Up to a constant, this is the constant term of the `q`-expansion of `g = 𝕢 ^ (n + 1) * f`,
   -- which vanishes since `g` tends to `0` at `I∞`.
@@ -276,15 +275,15 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
     have := qExpansion_coeff_eq_intervalIntegral hh hgper hghol hgzero.isBoundedAtImInfty 0 hy
     simp only [h0, pow_zero, div_one, one_mul] at this
     rwa [eq_comm, mul_eq_zero_iff_left (by simpa using hh.ne')] at this
-  have key (u : ℝ) : fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
+  have key (u : ℝ) : AddCircle.fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
       f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ =
         Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
-    simp only [g, neg_neg, fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
-      ← Complex.exp_nat_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
+    simp only [g, neg_neg, AddCircle.fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
+      ← Complex.exp_natCast_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
     congr 2
     push_cast
     grind [Complex.I_sq]
-  rw [fourierCoeffOn_eq_integral, sub_zero]
+  rw [AddCircle.fourierCoeffOn_eq_integral, sub_zero]
   simp only [key, intervalIntegral.integral_const_mul, hint, mul_zero, smul_zero]
 
 /-- **Parseval's identity** for the `q`-expansion: the sum of the squared norms of the
@@ -298,7 +297,7 @@ lemma UpperHalfPlane.hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {
   let g : ℝ → ℂ := fun x ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩
   have hg : Continuous g := by fun_prop
   -- Parseval over `ℤ`, regrouped as a sum over `ℕ` of the terms `n` and `-(n + 1)`.
-  have hP := (hasSum_sq_fourierCoeffOn hh <|
+  have hP := (AddCircle.hasSum_sq_fourierCoeffOn hh <|
     (MeasureTheory.memLp_two_iff_integrable_sq_norm hg.aestronglyMeasurable).2
       (hg.norm.pow 2).integrableOn_Ioc).nat_add_neg_add_one
   simp only [sub_zero, smul_eq_mul] at hP
@@ -421,7 +420,7 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   generalize h : τ.im = t
   have ht : 0 < t := h ▸ τ.im_pos
   lift t to NNReal using ht.le
-  rw [← coe_nnnorm]
+  rw [← coe_nnNorm]
   norm_cast at ⊢ ht
   rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
   congr <;> simp [field, ht.ne']
@@ -454,7 +453,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   have hne : ‖(n : ℝ) ^ e‖ = n ^ e := Real.norm_of_nonneg (by positivity)
   have (x : ℝ) : F x ≤ 1 / h * (1 / Real.exp (-2 * π / h)) * (C * n ^ e) := by
     simp only [F, norm_mul, norm_div, norm_real, norm_one, norm_pow, mul_assoc]
-    rw [Real.norm_of_nonneg hh.le, Function.Periodic.norm_qParam, ← Real.exp_nat_mul]
+    rw [Real.norm_of_nonneg hh.le, Function.Periodic.norm_qParam, ← Real.exp_natCast_mul]
     gcongr
     · simp [field]
     · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]

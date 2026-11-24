@@ -176,7 +176,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
     simpa [Set.domRestrict_def, ← Function.comp_def, ← Filter.map_map,
-      subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
+      subtypeVal_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
@@ -375,6 +375,13 @@ theorem isComplete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
   rcases CompleteSpace.complete hf with ⟨x, hx⟩
   exact ⟨x, mem_univ x, hx⟩
 
+theorem CompleteSpace.of_comp_eq_id [UniformSpace β] (f : α → β) (g : β → α)
+    (hfg : f ∘ g = id) (hf : Continuous f) (hg : UniformContinuous g) [CompleteSpace α] :
+    CompleteSpace β := by
+  refine ⟨fun h ↦ ?_⟩
+  obtain ⟨x, hx⟩ := CompleteSpace.complete (h.map hg)
+  exact ⟨f x, by simpa [hfg, Filter.tendsto_id'] using (hf.tendsto x).comp hx⟩
+
 @[deprecated (since := "2026-07-27")] alias complete_univ := isComplete_univ
 
 instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
@@ -385,18 +392,16 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
     ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 
 lemma CompleteSpace.fst_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty β] :
-    CompleteSpace α where
-  complete hf :=
-    let ⟨y⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
-    ⟨a, by simpa only [map_fst_prod, nhds_prod_eq] using map_mono (m := Prod.fst) hab⟩
+    CompleteSpace α :=
+  let ⟨y⟩ := h
+  CompleteSpace.of_comp_eq_id Prod.fst (·, y) rfl continuous_fst
+    (uniformContinuous_id.prodMk uniformContinuous_const)
 
 lemma CompleteSpace.snd_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty α] :
-    CompleteSpace β where
-  complete hf :=
-    let ⟨x⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
-    ⟨b, by simpa only [map_snd_prod, nhds_prod_eq] using map_mono (m := Prod.snd) hab⟩
+    CompleteSpace β :=
+  let ⟨x⟩ := h
+  CompleteSpace.of_comp_eq_id Prod.snd (x, ·) rfl continuous_snd
+    (uniformContinuous_const.prodMk uniformContinuous_id)
 
 lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty β] :
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
@@ -834,7 +839,7 @@ def setSeq (n : ℕ) : Set α :=
   ⋂ m ∈ Set.Iic n, (setSeqAux hf U_mem m).val
 
 theorem setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
-  (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.1
+  (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).property.1
 
 theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq hf U_mem m :=
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
@@ -844,7 +849,7 @@ theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
 
 theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
     setSeq hf U_mem m ×ˢ setSeq hf U_mem n ⊆ U N := fun p hp => by
-  refine (setSeqAux hf U_mem N).2.2 ⟨?_, ?_⟩ <;> apply setSeq_sub_aux
+  refine (setSeqAux hf U_mem N).property.2 ⟨?_, ?_⟩ <;> apply setSeq_sub_aux
   · exact setSeq_mono hf U_mem hm hp.1
   · exact setSeq_mono hf U_mem hn hp.2
 
@@ -950,7 +955,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   replace hs (n : ℕ) := hs (B n) (hB.mem n)
   choose t tC ht using hs
   have := fun n => (tC n).to_subtype
-  choose o hox hos using fun (n : ℕ) (x : t n) (hx : ((B n).ball x.1 ∩ s).Nonempty) => hx
+  choose o hox hos using fun (n : ℕ) (x : t n) (hx : ((B n).ball x.val ∩ s).Nonempty) => hx
   refine ⟨⋃ (n) (x), range (o n x), iUnion₂_subset fun _ _ => range_subset_iff.2 (hos _ _),
     countable_iUnion fun _ => countable_iUnion fun _ => countable_range _, fun x hx => ?_⟩
   rw [mem_closure_iff_ball]

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Over X` when `C` has strict initial objects
 

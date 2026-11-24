@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects on categories equipped with shift
 
@@ -17,7 +20,6 @@ Given a predicate `P : ObjectProperty C` on objects of a category equipped with 
 by `A`, we define shifted properties of objects `P.shift a` for all `a : A`.
 We also introduce a typeclass `P.IsStableUnderShift A` to say that `P X`
 implies `P (X⟦a⟧)` for all `a : A`.
-
 -/
 
 @[expose] public section
@@ -45,7 +47,7 @@ instance (a : A) [P.IsClosedUnderIsomorphisms] :
 variable (A)
 
 @[simp]
-lemma shift_zero [P.IsClosedUnderIsomorphisms] : P.shift (0 : A) = P := by
+lemma shift_zero [P.IsClosedUnderIsomorphisms] : P.shift 0 = P := by
   ext X
   exact P.prop_iff_of_iso ((shiftFunctorZero C A).app X)
 
@@ -185,7 +187,7 @@ lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G
   apply le_antisymm
   · rw [shiftClosure_le_iff]
     conv_lhs => rw [← P.shift_zero G]
-    exact le_iSup P.shift (0 : G)
+    exact le_iSup P.shift 0
   · intro X hX
     obtain ⟨a, ha⟩ := (prop_iSup_iff _ _).mp hX
     exact ⟨X⟦a⟧, -a, (shiftShiftNeg X a).symm, ha⟩
@@ -195,7 +197,7 @@ variable [P.IsStableUnderShift A]
 noncomputable instance hasShift :
     HasShift P.FullSubcategory A :=
   P.fullyFaithfulι.hasShift (fun n ↦ ObjectProperty.lift _ (P.ι ⋙ shiftFunctor C n)
-    (fun X ↦ P.le_shift n _ X.2)) (fun _ => P.liftCompιIso _ _)
+    (fun X ↦ P.le_shift n _ X.property)) (fun _ => P.liftCompιIso _ _)
 
 instance commShiftι : P.ι.CommShift A :=
   Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _

@@ -58,7 +58,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     · exact isPrime_bot
     · exact (maximalIdeal.isMaximal ℕ).isPrime
     · rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff]
-  rw [← le_bot_iff, IsConcreteLE.not_le_iff_exists] at h0
+  rw [← le_bot_iff, not_le_iff_exists_mem_notMem] at h0
   classical
   let p := Nat.find h0
   have ⟨(hp : p ∈ P), (hp0 : p ≠ 0)⟩ := Nat.find_spec h0
@@ -67,7 +67,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
   push Not at hsp
-  have ⟨q, hq, hqp⟩ := IsConcreteLE.exists_of_lt
+  have ⟨q, hq, hqp⟩ := exists_mem_notMem_of_lt
     ((P.span_singleton_le_iff_mem.mpr hp).lt_of_ne (hsp p prime).symm)
   obtain rfl | hn1 := eq_or_ne n 0
   · exact Ideal.zero_mem _
@@ -94,10 +94,10 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
-    obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).2).resolve_left h1.ne'
+    obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).isPrime).resolve_left h1.ne'
     · exact (le_maximalIdeal_of_isPrime (s 2).asIdeal).not_gt (hmax.symm.trans_lt (s.step 1))
     obtain hmax | ⟨q, hq, hsq⟩ :=
-      (Ideal.isPrime_nat_iff.mp (s 2).2).resolve_left (h1.trans (s.step 1)).ne'
+      (Ideal.isPrime_nat_iff.mp (s 2).isPrime).resolve_left (h1.trans (s.step 1)).ne'
     · exact (le_maximalIdeal_of_isPrime (s 3).asIdeal).not_gt (hmax.symm.trans_lt (s.step 2))
     · exact hq.not_isUnit <| (Ideal.span_singleton_lt_span_singleton.mp
         ((hsp.symm.trans_lt (s.step 1)).trans_eq hsq)).isUnit_of_irreducible_right hp
@@ -106,5 +106,5 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     fin_cases i
     · exact bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr two_ne_zero)
     · simp_rw [Nat.maximalIdeal_eq_span_two_three]
-      exact IsConcreteLE.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
+      exact lt_iff_le_and_exists_mem_notMem.mpr ⟨Ideal.span_mono (by simp),
         3, Ideal.subset_span (by simp), Ideal.mem_span_singleton.not.mpr <| by simp⟩

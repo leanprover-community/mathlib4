@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Tactic.Field
+
+import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Bases in a vector space
@@ -28,7 +29,6 @@ import cycle.
 ## Tags
 
 basis, bases
-
 -/
 
 @[expose] public section
@@ -252,7 +252,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have Vinh : Inhabited V := ⟨0⟩
   refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
-  have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
+  have fb_eq : f b = hC ⟨f b, BC b.property⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
   dsimp
@@ -296,7 +296,7 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
   refine ⟨g, ?_, ?_⟩
   · ext x
-    have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
+    have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.property
     simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
     simpa using! congr($hg _).trans this
@@ -322,7 +322,7 @@ instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases IsConcreteLE.exists_of_lt hp with ⟨v, -, hpv⟩
+  rcases exists_mem_notMem_of_lt hp with ⟨v, -, hpv⟩
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 

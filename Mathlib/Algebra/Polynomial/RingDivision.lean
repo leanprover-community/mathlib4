@@ -11,11 +11,13 @@ public import Mathlib.RingTheory.Coprime.Basic
 
 import Mathlib.Tactic.ComputeDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
 We prove basic results about univariate polynomials.
-
 -/
 
 @[expose] public section

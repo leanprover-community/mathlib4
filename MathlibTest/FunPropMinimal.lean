@@ -19,8 +19,6 @@ two function properties `Con` and `Lin` which roughly correspond to `Continuity`
 
 @[expose] public section
 
-set_option linter.style.longLine false
-
 open Function
 
 variable {α β γ δ ι : Type _} {E : α → Type _}

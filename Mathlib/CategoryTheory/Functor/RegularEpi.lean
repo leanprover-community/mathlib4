@@ -10,14 +10,15 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The category of type-valued sheaves is a regular epi category
 
 This file proves that when the target category `D` is a regular epi category (i.e. every epimorphism
 is regular) and has pushouts and kernel pairs of epimorphisms, the functor category `C ⥤ D` is a
 regular epi category. This is an instance that applies directly when `D` is `Type*`.
-
 -/
 
 public section

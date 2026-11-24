@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shift induced from a category to another
 
@@ -22,7 +25,6 @@ the shift functors of a term of type `HasShift D A`.
 As this condition on the functor `F` is satisfied for quotient and localization
 functors, the main construction `HasShift.induced` in this file shall be
 used for both quotient and localized shifts.
-
 -/
 
 @[expose] public section

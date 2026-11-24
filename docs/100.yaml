@@ -290,7 +290,7 @@
   authors: Yuyang Zhao
 57:
   title  : Heron’s Formula
-  decl   : Theorems100.heron
+  decl   : Affine.Triangle.volume_eq_sqrt_mul_sub_mul_sub_mul_sub
   authors: Matt Kempster
 58:
   title  : Formula for the Number of Combinations
@@ -383,8 +383,8 @@
 76:
   title  : Fourier Series
   decls  :
-    - fourierCoeff
-    - hasSum_fourier_series_L2
+    - AddCircle.fourierCoeff
+    - AddCircle.hasSum_fourier_series_L2
   authors: Heather Macbeth
 77:
   title  : Sum of kth powers

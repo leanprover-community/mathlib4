@@ -244,6 +244,7 @@ lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R
 lemma cfcHom_injective : Function.Injective (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
+@[simp]
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1
@@ -614,7 +615,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
   rw [cfc_apply .., cfc_apply f a,
     cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
   swap
-  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
+  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.val; simp
   · congr
   · exact fun _ ↦ rfl
 
@@ -929,7 +930,7 @@ lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
     cfc f a ≤ cfc g a := by
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a]
-    exact cfcHom_mono ha fun x ↦ h x.1 x.2
+    exact cfcHom_mono ha fun x ↦ h x.val x.property
   · grind
 
 lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)

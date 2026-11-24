@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of powers of principal ideals
 
@@ -25,7 +28,6 @@ synthesis like `Module 𝒪[K] 𝓀[k]`, so the plain equiv versions are provide
 
 These equivs are defined here as opposed to in the quotients file since they cannot be
 formed as ring equivs.
-
 -/
 
 @[expose] public section

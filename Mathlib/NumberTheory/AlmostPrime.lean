@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Almost prime numbers
 
@@ -25,7 +28,6 @@ The terminology follows the standard definition of an
 * `Nat.IsAlmostPrime.mul`: the product of a `k`-almost-prime number and an
   `l`-almost-prime number is `(k + l)`-almost-prime.
 * `Nat.IsAtMostAlmostPrime.mul`: the analogous statement for at most `k` prime factors.
-
 -/
 
 @[expose] public section
