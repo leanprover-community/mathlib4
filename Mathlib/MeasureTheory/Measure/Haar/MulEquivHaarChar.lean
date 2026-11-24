@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scaling Haar measure by a continuous isomorphism
 
@@ -19,7 +22,6 @@ real constant which we call `mulEquivHaarChar φ`.
 * `mulEquivHaarChar φ`: the positive real such that `(mulEquivHaarChar φ) • map φ μ = μ`
   for `μ` a regular Haar measure.
 * `addEquivAddHaarChar φ`: the additive version.
-
 -/
 
 @[expose] public section

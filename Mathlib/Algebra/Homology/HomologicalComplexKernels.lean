@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernels and cokernels in categories of homological complexes
-
 -/
 
 public section

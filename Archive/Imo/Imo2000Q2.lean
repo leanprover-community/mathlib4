@@ -31,7 +31,6 @@ these gives `(uvw) ^ 2 ≤ (xyz) ^ 2`, from which the inequality follows.
 ## References
 
 * <https://artofproblemsolving.com/wiki/index.php?title=2000_IMO_Problems/Problem_2>
-
 -/
 
 @[expose] public section

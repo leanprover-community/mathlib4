@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.ZFC.Class
+public import Mathlib.SetTheory.ZFC.Ordinal
 
 /-!
 # Von Neumann hierarchy
@@ -38,7 +38,7 @@ namespace ZFSet
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
   ⋃ a : Set.Iio o, powerset (vonNeumann a)
 termination_by o
-decreasing_by exact a.2
+decreasing_by exact a.property
 
 @[inherit_doc]
 scoped notation "V_ " => vonNeumann
@@ -143,7 +143,7 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
   | zero => simp
   | add_one o ih => simp [ih]
   | limit o ho ih =>
-    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
+    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.property,
       vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
     apply iSup_card_le_card_iUnion.antisymm'
     rw [← lift_le.{u + 1}]

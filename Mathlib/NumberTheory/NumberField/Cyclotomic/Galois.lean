@@ -21,7 +21,7 @@ In this file, we study the Galois theory of cyclotomic extensions of `ℚ`.
 Let `n` be an integer. There is an isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ` that sends `σ`
 to `a_σ` such that `σ (ζₙ) = ζₙ ^ a_σ`.
 
-Following [Washington][washington.cyclotomic], we define the bijection between subfields
+Following [Washington][washington_cyclotomic], we define the bijection between subfields
 of `ℚ(ζₙ)` and subgroups of the group `Xₙ` of Dirichlet characters of level `n` such that
 `F` corresponds to `Y` if and only if the subgroup `H` of `(ℤ/nℤ)ˣ` corresponding to `F` by
 the above isomorphism is the orthogonal of `Y` for the nondegenerate pairing on `(ℤ/nℤ)ˣ × Xₙ`
@@ -40,7 +40,6 @@ defined by `(n, χ) ↦ χ n`.
 - `IsCyclotomicExtension.Rat.mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd`: assume that
   `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is the set of
   characters whose conductor divides `m`.
-
 -/
 
 @[expose] public section
@@ -217,7 +216,7 @@ theorem mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd (F : Intermedia
     χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔ χ.conductor ∣ m := by
   simp_rw [← χ.mem_conductorSet_iff_conductor_dvd hdiv, χ.mem_conductorSet_iff,
     factorsThrough_iff_ker_unitsMap hdiv, mem_intermediateFieldEquivSubgroupChar_iff,
-    IsConcreteLE.le_iff, ← (galEquivZMod n K).forall_congr_right, MonoidHom.mem_ker,
+    le_iff_mem_imp_mem, ← (galEquivZMod n K).forall_congr_right, MonoidHom.mem_ker,
     MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, ← (galEquivZMod_restrictNormal_apply n K F hdiv _),
     EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff,
     IntermediateField.mem_fixingSubgroup_iff, Units.ext_iff, toUnitHom_eq, coe_equivToUnitHom,

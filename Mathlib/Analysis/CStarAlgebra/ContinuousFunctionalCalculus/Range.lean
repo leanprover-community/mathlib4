@@ -28,7 +28,6 @@ consequences thereof.
   and `range_cfcₙ_nnreal_subset`.
 * `cfc_mem` and `cfcₙ_mem`: the continuous functional calculus of an element is contained in any
   closed star subalgebra containing the element.
-
 -/
 
 public section
@@ -286,7 +285,7 @@ instance Subtype.starOrderedRing (s : S) [hs : IsClosed (s : Set A)] : StarOrder
   .of_nonneg_iff' add_le_add_right fun x ↦ by
     refine ⟨?_, ?_⟩
     · intro (hx : 0 ≤ (x : A))
-      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem _ x.2⟩
+      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem _ x.property⟩
       ext
       simp only [MulMemClass.coe_mul, StarMemClass.coe_star]
       rw [IsSelfAdjoint.star_eq (by cfc_tac), ← cfcₙ_mul ..]

@@ -31,7 +31,6 @@ of sets `yoneda.obj U` to `F`.
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
 * if `U : C`, define an isomorphism
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
-
 -/
 
 @[expose] public noncomputable section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Data.Multiset.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice operations on multisets
 

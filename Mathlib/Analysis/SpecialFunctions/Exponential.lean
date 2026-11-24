@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
 # Calculus results on exponential in a Banach algebra
@@ -52,7 +53,6 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 - `Complex.exp_eq_exp_ℂ` : `Complex.exp = NormedSpace.exp ℂ ℂ`
 - `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
-
 -/
 
 public section

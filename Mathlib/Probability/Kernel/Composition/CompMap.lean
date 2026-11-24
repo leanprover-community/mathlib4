@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.Comp
 public import Mathlib.Probability.Kernel.Composition.MapComap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about compositions and maps of kernels
 
@@ -16,7 +19,6 @@ function.
 
 Map and comap are particular cases of composition: they correspond to composition with
 a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_eq_comap`.
-
 -/
 
 public section

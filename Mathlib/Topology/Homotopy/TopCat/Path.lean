@@ -8,13 +8,15 @@ module
 public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paths between points of an object of `TopCat`
 
 This file introduces a structure `TopCat.Path` for paths between
 two points of an object `X : TopCat`. The data is defined using
 a morphism `I ⟶ X` in the category `TopCat`.
-
 -/
 
 @[expose] public section

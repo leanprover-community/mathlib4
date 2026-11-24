@@ -23,8 +23,8 @@ the full subcategory `t.heart`.
 * Show that the heart is an abelian category.
 
 ## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
+* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 -/
 
 @[expose] public section

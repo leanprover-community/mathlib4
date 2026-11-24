@@ -8,8 +8,10 @@ module
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The adjunction between condensed sets and topological spaces
 
 This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1}` which is
@@ -90,7 +92,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
-  { toFun x := x.1 PUnit.unit
+  { toFun x := x.toFun PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }

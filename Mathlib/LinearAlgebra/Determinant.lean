@@ -7,10 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
@@ -577,7 +577,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ ?_
   intro x
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply,
     LinearEquiv.apply_symm_apply]
 
 namespace Module.Basis

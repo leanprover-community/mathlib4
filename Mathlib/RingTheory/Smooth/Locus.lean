@@ -94,7 +94,7 @@ lemma basicOpen_subset_smoothLocus_iff_smooth [FinitePresentation R A] {f : A} :
       Algebra.Smooth R (Localization.Away f) := by
   have : FinitePresentation A (Localization.Away f) := IsLocalization.Away.finitePresentation f
   rw [basicOpen_subset_smoothLocus_iff]
-  exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.1⟩
+  exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.formallySmooth⟩
 
 lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     smoothLocus R A = Set.univ ↔ Algebra.FormallySmooth R A := by

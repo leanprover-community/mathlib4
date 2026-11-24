@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial complexes from affinely independent points
 
@@ -47,7 +50,7 @@ def ofSimpleGraph {ι : Type*} [DecidableEq ι] (G : SimpleGraph ι) :
     rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
     · simp
     · constructor
-      · exact Finset.nonempty_iff_ne_empty.mpr (Sym2.toFinset_ne_empty e)
+      · exact e.toFinset_nonempty
       · intro b hb_sub hb_nonempty
         by_cases h : b.card = 1 <;>
           grind [Finset.card_eq_one, Finset.eq_of_subset_of_card_le hb_sub, Sym2.card_toFinset]

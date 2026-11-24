@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction, translation, norm and trace
 
@@ -285,7 +288,7 @@ omit [Subgroup.IsFiniteRelIndex 𝒢 ℋ] in
 lemma quotientFunc_restrict (hGH : 𝒢 ≤ ℋ) (q : ℋ ⧸ 𝒢.subgroupOf ℋ) :
     quotientFunc (f.restrict hGH) q = f := by
   induction q using QuotientGroup.induction_on' with
-  | H g => simp [slash_action_eqn _ _ (inv_mem g.2)]
+  | H g => simp [slash_action_eqn _ _ (inv_mem g.property)]
 
 /-- Composite of trace and restriction maps. -/
 lemma trace_restrict (hGH : 𝒢 ≤ ℋ) :

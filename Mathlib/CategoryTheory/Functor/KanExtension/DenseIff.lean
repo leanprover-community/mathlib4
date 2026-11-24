@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.RestrictedYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of dense functors
 
@@ -17,7 +20,6 @@ the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful.
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

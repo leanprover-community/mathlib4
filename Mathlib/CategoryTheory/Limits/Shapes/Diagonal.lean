@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 We provide various API and isomorphisms considering the diagonal object `Δ_{Y/X} := pullback f f`
 of a morphism `f : X ⟶ Y`.
-
 -/
 
 @[expose] public section

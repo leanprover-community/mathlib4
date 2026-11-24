@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
-
 # `I`-filtrations of modules
 
 This file contains the definitions and basic results around (stable) `I`-filtrations of modules.
@@ -36,7 +35,6 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian local rings.
 - `Ideal.iInf_pow_eq_bot_of_isDomain`:
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
-
 -/
 
 @[expose] public section
@@ -248,7 +246,7 @@ protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialMod
     rintro ⟨j, k⟩ e
     rw [Finset.mem_antidiagonal] at e
     subst e
-    exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.2 j) (hf k))
+    exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.property j) (hf k))
 
 @[simp]
 theorem mem_submodule (f : PolynomialModule R M) : f ∈ F.submodule ↔ ∀ i, f.coeff i ∈ F.N i :=
@@ -309,7 +307,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
-    exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
+    exact this (Submodule.smul_mem_smul ((l _).property <| n + 1 - n') hm)
   · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
     have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := fun i hi =>
@@ -418,7 +416,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]
   rw [eq_bot_iff]
   intro x hx
   obtain ⟨r, hr⟩ := (I.mem_iInf_smul_pow_eq_bot_iff x).mp hx
-  have := isUnit_of_sub_one_mem_jacobson (1 - r.1) (by simpa using h r.2)
+  have := isUnit_of_sub_one_mem_jacobson (1 - r.val) (by simpa using h r.property)
   apply this.smul_left_cancel.mp
   simp [sub_smul, hr]
 

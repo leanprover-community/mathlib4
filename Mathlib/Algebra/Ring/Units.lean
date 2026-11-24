@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units in semirings and rings
-
 -/
 
 public section

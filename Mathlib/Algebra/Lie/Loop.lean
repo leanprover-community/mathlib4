@@ -44,6 +44,7 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 * Positive energy representations induced from a fixed central character
 
 ## Tags
+
 lie ring, lie algebra, base change, Laurent polynomial
 -/
 

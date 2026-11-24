@@ -8,11 +8,13 @@ module
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of Hopf algebras
 
 We define the Hopf algebra instance on the tensor product of two Hopf algebras.
-
 -/
 
 public section
