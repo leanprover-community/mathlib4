@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits of presentable objects
 
@@ -53,11 +56,11 @@ lemma surjective (x : c.pt.obj cX.pt) :
   have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨y, hy⟩ := (Types.isLimitEquivSections (hc cX.pt)).symm.surjective x
   obtain ⟨j₀, z, hz⟩ : ∃ (j₀ : J) (z : (k : K) → (F.obj k).obj (X.obj j₀)),
-      ∀ (k : K), y.1 k = (F.obj k).map (cX.ι.app j₀) (z k) := by
-    have H (k : K) := Types.jointly_surjective_of_isColimit (hF k) (y.1 k)
+      ∀ (k : K), y.val k = (F.obj k).map (cX.ι.app j₀) (z k) := by
+    have H (k : K) := Types.jointly_surjective_of_isColimit (hF k) (y.val k)
     let j (k : K) : J := (H k).choose
     let z (k : K) : (F.obj k).obj (X.obj (j k)) := (H k).choose_spec.choose
-    have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.1 k :=
+    have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.val k :=
       (H k).choose_spec.choose_spec
     exact ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK),
       fun k ↦ (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
@@ -69,7 +72,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
       (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k')
         (x := (F.map φ).app _ (z k)) (y := z k')).1 (by
           dsimp at hz ⊢
-          simpa only [← NatTrans.naturality_apply, ← hz] using! y.2 φ)
+          simpa only [← NatTrans.naturality_apply, ← hz] using! y.property φ)
     let j {k k' : K} (φ : k ⟶ k') : J := (H φ).choose
     let g {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose
     have hg {k k' : K} (φ : k ⟶ k') :
@@ -112,14 +115,14 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
   have hy₁ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₁ = x₁ := by simp [y₁]
   have hy₂ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₂ = x₂ := by simp [y₂]
   have H (k : K) := (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k)
-    (x := y₁.1 k) (y := y₂.1 k)).1 (by
+    (x := y₁.val k) (y := y₂.val k)).1 (by
       simp only [y₁, y₂, Types.isLimitEquivSections_apply]
       dsimp at h ⊢
       simp only [← NatTrans.naturality_apply, h])
   let j₁ (k : K) : J := (H k).choose
   let f (k : K) : j ⟶ j₁ k := (H k).choose_spec.choose
-  have hf (k : K) : (F.obj k).map (X.map (f k)) (y₁.1 k) =
-      (F.obj k).map (X.map (f k)) (y₂.1 k) :=
+  have hf (k : K) : (F.obj k).map (X.map (f k)) (y₁.val k) =
+      (F.obj k).map (X.map (f k)) (y₂.val k) :=
     (H k).choose_spec.choose_spec
   have hK' := hasCardinalLT_of_hasCardinalLT_arrow hK
   let ψ (k : K) : j ⟶ IsCardinalFiltered.max j₁ hK' :=

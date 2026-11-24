@@ -5,14 +5,17 @@ Authors: Anne Baanen, Peter Nelson
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.SuperFactorial
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.RingTheory.Polynomial.Pochhammer
 
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Polynomial.Pochhammer
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Vandermonde matrix
@@ -75,14 +78,14 @@ namespace Matrix
 
 /-- A matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
 def rectVandermonde {α : Type*} (v w : α → R) (n : ℕ) : Matrix α (Fin n) R :=
-  .of fun i j ↦ (v i) ^ j.1 * (w i) ^ j.rev.1
+  .of fun i j ↦ (v i) ^ j.val * (w i) ^ j.rev.val
 
 /-- A square matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
 def projVandermonde (v w : Fin n → R) : Matrix (Fin n) (Fin n) R :=
   rectVandermonde v w n
 
 /-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`. -/
-def vandermonde (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j ↦ (v i) ^ j.1
+def vandermonde (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j ↦ (v i) ^ j.val
 
 lemma vandermonde_eq_projVandermonde (v : Fin n → R) : vandermonde v = projVandermonde v 1 := by
   simp [projVandermonde, rectVandermonde, vandermonde]
@@ -90,10 +93,10 @@ lemma vandermonde_eq_projVandermonde (v : Fin n → R) : vandermonde v = projVan
 /-- We don't mark this as `@[simp]` because the RHS is not simp-nf,
 and simplifying the RHS gives a bothersome `Nat` subtraction. -/
 theorem projVandermonde_apply {v w : Fin n → R} {i j : Fin n} :
-    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
+    projVandermonde v w i j = (v i) ^ j.val * (w i) ^ j.rev.val := rfl
 
 theorem rectVandermonde_apply {α : Type*} {v w : α → R} {i : α} {j : Fin n} :
-    rectVandermonde v w n i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
+    rectVandermonde v w n i j = (v i) ^ j.val * (w i) ^ j.rev.val := rfl
 
 @[simp]
 theorem vandermonde_apply (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) := rfl
@@ -133,7 +136,7 @@ theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} 
 
 theorem projVandermonde_apply_of_ne_zero
     {v w : Fin (n + 1) → K} {i j : Fin (n + 1)} (hw : w i ≠ 0) :
-    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
+    projVandermonde v w i j = (v i) ^ j.val * (w i) ^ n / (w i) ^ j.val := by
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
 theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :

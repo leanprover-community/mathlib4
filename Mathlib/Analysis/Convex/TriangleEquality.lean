@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Module.Normalize
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangle equality for finite sums
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Renaming variables of power series
 

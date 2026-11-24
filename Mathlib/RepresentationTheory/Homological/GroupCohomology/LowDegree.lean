@@ -159,7 +159,7 @@ theorem comp_d₀₁_eq :
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
   ext x a y
   simp only [cochainsIso₀, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     LinearEquiv.funUnique_apply, LinearMap.coe_single, Function.comp_apply, Function.eval,
     d₀₁_hom_apply, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl, Category.comp_id,
     cochainsIso₁, Iso.symm_hom, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
@@ -293,7 +293,7 @@ theorem cocycles₁.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : cocycles₁ A) :
 lemma cocycles₁.coe_sub (f g : cocycles₁ A) : ((f - g : cocycles₁ A) : G → A) = f - g := rfl
 
 @[simp]
-theorem cocycles₁.val_eq_coe (f : cocycles₁ A) : f.1 = f := rfl
+theorem cocycles₁.val_eq_coe (f : cocycles₁ A) : f.val = f := rfl
 
 @[ext]
 theorem cocycles₁_ext {f₁ f₂ : cocycles₁ A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
@@ -308,13 +308,13 @@ theorem mem_cocycles₁_iff (f : G → A) :
   simp_rw [mem_cocycles₁_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
 @[simp] theorem cocycles₁_map_one (f : cocycles₁ A) : f 1 = 0 := by
-  have := (mem_cocycles₁_def f).1 f.2 1 1
+  have := (mem_cocycles₁_def f).1 f.property 1 1
   simpa
 
 @[simp] theorem cocycles₁_map_inv (f : cocycles₁ A) (g : G) :
     A.ρ g (f g⁻¹) = -f g := by
   rw [← add_eq_zero_iff_eq_neg, ← cocycles₁_map_one f, ← mul_inv_cancel g,
-    (mem_cocycles₁_iff f).1 f.2 g g⁻¹]
+    (mem_cocycles₁_iff f).1 f.property g g⁻¹]
 
 theorem d₀₁_apply_mem_cocycles₁ (x : A) :
     d₀₁ A x ∈ cocycles₁ A :=
@@ -322,11 +322,11 @@ theorem d₀₁_apply_mem_cocycles₁ (x : A) :
 
 @[simp]
 theorem cocycles₁.d₁₂_apply (x : cocycles₁ A) :
-    d₁₂ A x = 0 := x.2
+    d₁₂ A x = 0 := x.property
 
 theorem cocycles₁_map_mul_of_isTrivial [A.IsTrivial] (f : cocycles₁ A) (g h : G) :
     f (g * h) = f g + f h := by
-  rw [(mem_cocycles₁_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
+  rw [(mem_cocycles₁_iff f).1 f.property, isTrivial_apply A.ρ g (f h), add_comm]
 
 theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ cocycles₁ A :=
@@ -361,7 +361,7 @@ theorem cocycles₂.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : cocycles₂
 lemma cocycles₂.coe_sub (f g : cocycles₂ A) : ((f - g : cocycles₂ A) : G × G → A) = f - g := rfl
 
 @[simp]
-theorem cocycles₂.val_eq_coe (f : cocycles₂ A) : f.1 = f := rfl
+theorem cocycles₂.val_eq_coe (f : cocycles₂ A) : f.val = f := rfl
 
 @[ext]
 theorem cocycles₂_ext {f₁ f₂ : cocycles₂ A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
@@ -381,18 +381,18 @@ theorem mem_cocycles₂_iff (f : G × G → A) :
 
 theorem cocycles₂_map_one_fst (f : cocycles₂ A) (g : G) :
     f (1, g) = f (1, 1) := by
-  have := ((mem_cocycles₂_iff f).1 f.2 1 1 g).symm
+  have := ((mem_cocycles₂_iff f).1 f.property 1 1 g).symm
   simpa
 
 theorem cocycles₂_map_one_snd (f : cocycles₂ A) (g : G) :
     f (g, 1) = A.ρ g (f (1, 1)) := by
-  have := (mem_cocycles₂_iff f).1 f.2 g 1 1
+  have := (mem_cocycles₂_iff f).1 f.property g 1 1
   simpa only [mul_one, add_left_inj, this]
 
 lemma cocycles₂_ρ_map_inv_sub_map_inv (f : cocycles₂ A) (g : G) :
     A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
       = f (1, 1) - f (g, 1) := by
-  have := (mem_cocycles₂_iff f).1 f.2 g g⁻¹ g
+  have := (mem_cocycles₂_iff f).1 f.property g g⁻¹ g
   simp only [mul_inv_cancel, inv_mul_cancel, cocycles₂_map_one_fst _ g]
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
@@ -403,7 +403,7 @@ theorem d₁₂_apply_mem_cocycles₂ (x : G → A) :
 
 @[simp]
 theorem cocycles₂.d₂₃_apply (x : cocycles₂ A) :
-    d₂₃ A x = 0 := x.2
+    d₂₃ A x = 0 := x.property
 
 end Cocycles
 
@@ -429,7 +429,7 @@ theorem coboundaries₁.coe_mk (f : G → A) (hf) :
     ((⟨f, hf⟩ : coboundaries₁ A) : G → A) = f := rfl
 
 @[simp]
-theorem coboundaries₁.val_eq_coe (f : coboundaries₁ A) : f.1 = f := rfl
+theorem coboundaries₁.val_eq_coe (f : coboundaries₁ A) : f.val = f := rfl
 
 @[ext]
 theorem coboundaries₁_ext {f₁ f₂ : coboundaries₁ A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
@@ -447,7 +447,7 @@ abbrev coboundariesToCocycles₁ : coboundaries₁ A →ₗ[k] cocycles₁ A :=
 
 @[simp]
 lemma coboundariesToCocycles₁_apply (x : coboundaries₁ A) :
-    coboundariesToCocycles₁ A x = x.1 := rfl
+    coboundariesToCocycles₁ A x = x.val := rfl
 
 theorem coboundaries₁_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
     coboundaries₁ A = ⊥ := by
@@ -462,7 +462,7 @@ theorem coboundaries₂.coe_mk (f : G × G → A) (hf) :
     ((⟨f, hf⟩ : coboundaries₂ A) : G × G → A) = f := rfl
 
 @[simp]
-theorem coboundaries₂.val_eq_coe (f : coboundaries₂ A) : f.1 = f := rfl
+theorem coboundaries₂.val_eq_coe (f : coboundaries₂ A) : f.val = f := rfl
 
 @[ext]
 theorem coboundaries₂_ext {f₁ f₂ : coboundaries₂ A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) :
@@ -481,7 +481,7 @@ abbrev coboundariesToCocycles₂ : coboundaries₂ A →ₗ[k] cocycles₂ A :=
 
 @[simp]
 lemma coboundariesToCocycles₂_apply (x : coboundaries₂ A) :
-    coboundariesToCocycles₂ A x = x.1 := rfl
+    coboundariesToCocycles₂ A x = x.val := rfl
 
 end Coboundaries
 
@@ -789,7 +789,7 @@ lemma cocyclesIso₀_inv_comp_iCocycles :
 
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
-    cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
+    cocyclesMk ((cochainsIso₀ A).inv x.val) (by ext g; simp [cochainsIso₀, x.property (g 0),
       inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (cocyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
     rw [iCocycles_mk]
@@ -810,13 +810,15 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
 def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
-  cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCocycles A 1 ≫ (cochainsIso₁ A).hom := by
-  simp [isoCocycles₁, iCocycles, HomologicalComplex.iCycles, iCycles]
+  simp [isoCocycles₁, iCocycles, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_inv_comp_iCocycles :
@@ -860,13 +862,15 @@ def isoShortComplexH2 :
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
 def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
-  cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
       iCocycles A 2 ≫ (cochainsIso₂ A).hom := by
-  simp [isoCocycles₂, iCocycles, HomologicalComplex.iCycles, iCycles]
+  simp [isoCocycles₂, iCocycles, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_inv_comp_iCocycles :
@@ -957,13 +961,14 @@ instance : Epi (H1π A) := epi_comp _ ((inhomogeneousCochains A).homologyπ 1)
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₁ A ⧸ coboundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCocycles₁ A).hom ≫
-      (shortComplexH1 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH1 A).moduleCatLeftHomologyData.π := by
+  simp [H1Iso, isoCocycles₁, HomologicalComplex.homologyπ]
 
 variable {A}
 
@@ -1026,13 +1031,14 @@ instance : Epi (H2π A) := epi_comp _ ((inhomogeneousCochains A).homologyπ 2)
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₂ A ⧸ coboundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCocycles₂ A).hom ≫
-      (shortComplexH2 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH2 A).moduleCatLeftHomologyData.π := by
+  simp [H2Iso, isoCocycles₂, HomologicalComplex.homologyπ]
 
 variable {A}
 

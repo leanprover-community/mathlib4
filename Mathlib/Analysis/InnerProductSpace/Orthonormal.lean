@@ -354,9 +354,9 @@ isometric equivalence. -/
 def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    rw [← LinearEquiv.coe_coe] at hf
+    rw [← coe_toLinearMap] at hf
     rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
-      ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
+      ← coe_toLinearMap f, Finsupp.apply_linearCombination,
       Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
 @[simp]
@@ -441,8 +441,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
     ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
-    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) := by
-    exact hv.inner_left_right_finset
+    (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) :=
+    hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]

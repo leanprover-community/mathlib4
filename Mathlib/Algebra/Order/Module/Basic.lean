@@ -10,6 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas about monotonicity of scalar multiplication
 -/

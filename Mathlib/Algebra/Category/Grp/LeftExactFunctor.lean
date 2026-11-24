@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.CommGrp_
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence
 

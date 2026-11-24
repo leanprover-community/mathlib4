@@ -1,4 +1,4 @@
-module  -- shake: keep-all --deprecated_module: ignore
+module -- shake: keep-all -- deprecated_module: ignore
 
 public import Counterexamples.AharoniKorman
 public import Counterexamples.CanonicallyOrderedCommSemiringTwoMul

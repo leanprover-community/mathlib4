@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convolution
 
 import Mathlib.Analysis.Calculus.ParametricIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of a convolution of functions
 

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Sites.Point.Category
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 import Mathlib.CategoryTheory.Types.Epimorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conservative families of points
 

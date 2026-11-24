@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coproducts in `Type`
 
@@ -309,7 +312,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           forall_exists_index]
         intro y e
         have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
-        rw [disjoint_iff.mp h₃.1] at this
+        rw [disjoint_iff.mp h₃.disjoint] at this
         exact this.elim
       · rintro T _ _ m rfl rfl
         ext x

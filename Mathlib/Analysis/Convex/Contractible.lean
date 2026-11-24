@@ -28,8 +28,9 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
     ContractibleSpace s := by
   refine
     (contractible_iff_id_nullhomotopic s).2 ⟨⟨x, h.mem hne⟩,
-      ⟨⟨⟨fun p ↦ ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), ?_⟩, ?_⟩, fun x ↦ by simp, fun x ↦ by simp⟩⟩⟩
-  · exact h p.2.2 p.1.2.1 (sub_nonneg.2 p.1.2.2) (add_sub_cancel _ _)
+      ⟨⟨⟨fun p ↦ ⟨p.1.val • x + (1 - p.1.val) • (p.2 : E), ?_⟩, ?_⟩, fun x ↦ by simp,
+        fun x ↦ by simp⟩⟩⟩
+  · exact h p.2.property p.1.property.1 (sub_nonneg.2 p.1.property.2) (add_sub_cancel _ _)
   · fun_prop
 
 /-- A non-empty convex set is a contractible space. -/

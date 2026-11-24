@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monomorphisms are stable under cobase change
 

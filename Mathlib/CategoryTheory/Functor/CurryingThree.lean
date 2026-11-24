@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Products.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying of functors in three variables
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflecting the property of being precoherent
 
