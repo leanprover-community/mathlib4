@@ -7,24 +7,27 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects presheaf
 
-Following Section I.3 of [Sheaves in Geometry and Logic][MM92], we define the subobjects presheaf
-`Subobject.presheaf C` mapping any object `X` to its type of subobjects `Subobject X`.
+Following Section I.3 of \[Sheaves in Geometry and Logic\]\[MM92\], we define the subobjects
+presheaf `Subobject.presheaf C` mapping any object `X` to its type of subobjects `Subobject X`.
 
 ## Main definitions
 
 Let `C` refer to a category with pullbacks.
 
 * `CategoryTheory.Subobject.presheaf C` is the presheaf that sends every object `X : C` to its type
-  of subobjects `Subobject X`, and every morphism `f : X ⟶ Y` to the function `Subobject Y →
-  Subobject X` that maps every subobject of `Y` to its pullback along `f`.
+  of subobjects `Subobject X`, and every morphism `f : X ⟶ Y` to the function
+  `Subobject Y → Subobject X` that maps every subobject of `Y` to its pullback along `f`.
 
 ## References
 
-* [S. MacLane and I. Moerdijk, *Sheaves in geometry and logic: A first introduction to topos
-  theory*][MM92]
+* ‍\[S. MacLane and I. Moerdijk, _Sheaves in geometry and logic: A first introduction to topos
+  theory_\]\[MM92\]
 
 ## Tags
 

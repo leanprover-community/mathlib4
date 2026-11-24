@@ -8,17 +8,22 @@ module
 public import Mathlib.RingTheory.Smooth.Locus
 public import Mathlib.RingTheory.Unramified.Locus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Etale locus of an algebra
 
 ## Main results
+
 Let `A` be a `R`-algebra.
-- `Algebra.etaleLocus` : The set of primes of `A` where it is étale over `R`.
-- `Algebra.basicOpen_subset_etaleLocus_iff` :
+
+* `Algebra.etaleLocus` : The set of primes of `A` where it is étale over `R`.
+* `Algebra.basicOpen_subset_etaleLocus_iff` :
   `D(f)` is contained in the etale locus if and only if `A_f` is formally etale over `R`.
-- `Algebra.etaleLocus_eq_univ_iff` :
+* `Algebra.etaleLocus_eq_univ_iff` :
   The etale locus is the whole spectrum if and only if `A` is formally etale over `R`.
-- `Algebra.isOpen_etaleLocus` :
+* `Algebra.isOpen_etaleLocus` :
   If `A` is of finite type over `R`, then the etale locus is open.
 -/
 

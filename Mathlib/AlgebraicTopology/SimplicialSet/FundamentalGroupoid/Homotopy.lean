@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopic maps induce isomorphic functors on the fundamental groupoid
 
@@ -39,12 +42,11 @@ namespace Edge
 open ConcreteCategory
 
 /-!
-Given ``h : SimplicialObject.Homotopy f g` where `f` and `g` are morphisms
-of simplicial sets `X ⟶ Y`, we define an edge `ofSimplicialObjectHomotopy h x`
-connecting `f.app _ x` and `g.app _ x` for any `x : X _⦋0⦌`.
-If `e` is an edge from `x` to `y`, we obtain a diagram involving edges which
-gives a commutative diagram in the fundamental groupoid (see the lemma
- `FundamentalGroupoid.comm_of_ofSimplicialObjectHomotopy`):
+Given \`\`h : SimplicialObject.Homotopy f g`where`f`and`g`are morphisms of simplicial sets`X ⟶
+Y`, we define an edge  `ofSimplicialObjectHomotopy h x`connecting`f.app \_ x`and`g.app \_
+x`for any`x : X
+‍\_⦋0⦌`. If  `e`is an edge from`x`to`y`, we obtain a diagram involving edges which gives a commutative diagram in the fundamental groupoid (see the lemma  `FundamentalGroupoid.comm\_of\_ofSimplicialObjectHomotopy\`):
+
 ```
 f.app _ x ---> g.app _ x
     |     \        |
@@ -54,6 +56,7 @@ f.app _ x ---> g.app _ x
     v         v    v
 f.app _ y ---> g.app _ y
 ```
+
 The horizontal edges are obtained by `Edge.ofSimplicialObjectHomotopy`,
 the vertical edges are the images of `e` by `f` and `g`, and
 the diagonal edge is defined as `Edge.diagOfSimplicialObjectHomotopy h e`.

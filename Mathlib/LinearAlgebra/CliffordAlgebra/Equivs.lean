@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Other constructions isomorphic to Clifford Algebras
 
@@ -62,7 +65,7 @@ and vice-versa:
 
 open CliffordAlgebra
 
-/-! ### The clifford algebra isomorphic to a ring -/
+/-! # The clifford algebra isomorphic to a ring -/
 
 
 namespace CliffordAlgebraRing
@@ -111,7 +114,7 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
 
 end CliffordAlgebraRing
 
-/-! ### The clifford algebra isomorphic to the complex numbers -/
+/-! # The clifford algebra isomorphic to the complex numbers -/
 
 
 namespace CliffordAlgebraComplex
@@ -187,9 +190,11 @@ theorem ofComplex_toComplex (c : CliffordAlgebra Q) : ofComplex (toComplex c) = 
 protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
   AlgEquiv.ofAlgHom toComplex ofComplex toComplex_comp_ofComplex ofComplex_comp_toComplex
 
-/-- The clifford algebra is commutative since it is isomorphic to the complex numbers.
+/--
+The clifford algebra is commutative since it is isomorphic to the complex numbers.
 
-TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
+TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space.
+-/
 instance : CommRing (CliffordAlgebra Q) where
   mul_comm := fun x y =>
     CliffordAlgebraComplex.equiv.injective <| by
@@ -215,7 +220,7 @@ theorem ofComplex_conj (c : ℂ) : ofComplex (conj c) = involute (ofComplex c) :
 
 end CliffordAlgebraComplex
 
-/-! ### The clifford algebra isomorphic to the quaternions -/
+/-! # The clifford algebra isomorphic to the quaternions -/
 
 
 namespace CliffordAlgebraQuaternion
@@ -326,7 +331,7 @@ theorem ofQuaternion_star (q : ℍ[R,c₁,0,c₂]) : ofQuaternion (star q) = sta
 
 end CliffordAlgebraQuaternion
 
-/-! ### The clifford algebra isomorphic to the dual numbers -/
+/-! # The clifford algebra isomorphic to the dual numbers -/
 
 
 namespace CliffordAlgebraDualNumber

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convexity properties of `rpow`
 
@@ -18,7 +21,7 @@ require calculus, and as such this file has only moderate dependencies.
 
 * `NNReal.strictConcaveOn_rpow`, `Real.strictConcaveOn_rpow`: strict concavity of
   `fun x ↦ x ^ p` for p ∈ (0,1)
-* `NNReal.concaveOn_rpow`, `Real.concaveOn_rpow`: concavity of `fun x ↦ x ^ p` for p ∈ [0,1]
+* `NNReal.concaveOn_rpow`, `Real.concaveOn_rpow`: concavity of `fun x ↦ x ^ p` for p ∈ \[0,1\]
 
 Note that convexity for `p > 1` can be found in `Analysis.Convex.SpecificFunctions.Basic`, which
 requires slightly less imports.

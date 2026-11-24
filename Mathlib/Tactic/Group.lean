@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependenc
 public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `group` tactic
 
@@ -21,8 +24,8 @@ some `ring_nf` invocations.
 
 ## TODO
 
-- Surface non-progress-related errors from `repeat`.
-- Allow `group`s `ifUnchanged` behavior to be configurable.
+* Surface non-progress-related errors from `repeat`.
+* Allow `group`s `ifUnchanged` behavior to be configurable.
 
 ## Tags
 
@@ -49,6 +52,8 @@ theorem _zpow_trick_one {G : Type*} [Group G] (a b : G) (m : ℤ) :
 theorem _zpow_trick_one' {G : Type*} [Group G] (a b : G) (n : ℤ) :
     a * b ^ n * b = a * b ^ (n + 1) := by rw [mul_assoc, mul_zpow_self]
 
+
+set_option doc.verso false
 /-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
 assume commutativity, instead using only the group axioms without any information about which group
 is manipulated. If the goal is an equality, and after normalization the two sides are equal, `group`
@@ -68,6 +73,8 @@ example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*
 -/
 syntax (name := group) "group" (location)? : tactic
 
+
+set_option doc.verso true
 macro_rules
 | `(tactic| group $[$loc]?) =>
   `(tactic| first

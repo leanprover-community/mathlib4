@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Topology.Order.Basic
 
-/-! # Order topology on `WithTop ι`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Order topology on `WithTop ι`
 
 When `ι` is a topological space with the order topology, we also endow `WithTop ι` with the order
 topology. If `ι` is second countable, we prove that `WithTop ι` also is.

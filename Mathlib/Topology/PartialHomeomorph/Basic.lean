@@ -8,9 +8,11 @@ module
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.PartialHomeomorph.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial homeomorphisms: basic theory
-
 
 ## Main definitions
 
@@ -198,9 +200,7 @@ def ofIsHomeomorphToEquiv (f : PartialEquiv X Y) (h : IsHomeomorph (f.toEquiv)) 
 
 end PartialHomeomorph
 
-/-!
-## Embeddings
--/
+/-! # Embeddings -/
 
 namespace Topology.IsEmbedding
 

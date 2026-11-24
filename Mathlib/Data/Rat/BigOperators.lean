@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Rat.Cast.CharZero
 
-/-! # Casting lemmas for rational numbers involving sums and products
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Casting lemmas for rational numbers involving sums and products -/
 
 public section
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniformly locally doubling measures
 
@@ -18,10 +21,10 @@ This file records basic facts about uniformly locally doubling measures.
 
 ## Main definitions
 
-  * `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
-    typeclass).
-  * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
-    appearing in the definition of a uniformly locally doubling measure.
+* `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
+  typeclass).
+* `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
+  appearing in the definition of a uniformly locally doubling measure.
 -/
 
 @[expose] public section
@@ -34,7 +37,8 @@ open Set Filter Metric MeasureTheory ENNReal NNReal
 
 open scoped Topology
 
-/-- A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`
+/--
+A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`
 such that for all sufficiently small radii `ε`, and for any centre, the measure of a ball of radius
 `2 * ε` is bounded by `C` times the measure of the concentric ball of radius `ε`.
 
@@ -42,7 +46,8 @@ Note: it is important that this definition makes a demand only for sufficiently 
 example we want hyperbolic space to carry the instance `IsUnifLocDoublingMeasure volume` but
 volumes grow exponentially in hyperbolic space. To be really explicit, consider the hyperbolic plane
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
-`A(2ε)/A(ε) ~ exp(ε)`. -/
+`A(2ε)/A(ε) ~ exp(ε)`.
+-/
 class IsUnifLocDoublingMeasure {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α]
   (μ : Measure α) : Prop where
   exists_measure_closedBall_le_mul'' :
@@ -57,9 +62,11 @@ theorem exists_measure_closedBall_le_mul :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε) :=
   exists_measure_closedBall_le_mul''
 
-/-- A doubling constant for a uniformly locally doubling measure.
+/--
+A doubling constant for a uniformly locally doubling measure.
 
-See also `IsUnifLocDoublingMeasure.scalingConstantOf`. -/
+See also `IsUnifLocDoublingMeasure.scalingConstantOf`.
+-/
 def doublingConstant : ℝ≥0 :=
   Classical.choose <| exists_measure_closedBall_le_mul μ
 

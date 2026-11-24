@@ -15,6 +15,9 @@ public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended metric spaces
 
@@ -281,9 +284,7 @@ theorem countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
 
 end EMetric
 
-/-!
-### Separation quotient
--/
+/-! # Separation quotient -/
 
 instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
   edist := SeparationQuotient.lift₂ edist fun _ _ _ _ hx hy =>

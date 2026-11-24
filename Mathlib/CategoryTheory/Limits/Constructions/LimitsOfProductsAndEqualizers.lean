@@ -14,6 +14,9 @@ public import Mathlib.Data.Fintype.Sigma
 
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing limits from products and equalizers.
 
@@ -215,12 +218,14 @@ variable (G : C ⥤ D) [G.ReflectsIsomorphisms] [CreatesLimitsOfShape WalkingPar
   [CreatesLimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 attribute [local instance] preservesLimit_of_preservesEqualizers_and_product in
-/-- If a functor creates equalizers and the appropriate products, it creates limits.
+/--
+If a functor creates equalizers and the appropriate products, it creates limits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
-on the specific definition that is used. -/
+on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
     CreatesLimitsOfShape J G where
@@ -236,12 +241,14 @@ noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
 
 end
 
-/-- If a functor creates equalizers and finite products, it creates finite limits.
+/--
+If a functor creates equalizers and finite products, it creates finite limits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
-on the specific definition that is used. -/
+on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEqualizers D]
     [HasFiniteProducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
@@ -249,12 +256,14 @@ noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEq
     [CreatesFiniteProducts G] : CreatesFiniteLimits G where
   createsFiniteLimits _ _ _ := createsLimitsOfShapeOfCreatesEqualizersAndProducts G
 
-/-- If a functor creates equalizers and products, it creates limits.
+/--
+If a functor creates equalizers and products, it creates limits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
-on the specific definition that is used. -/
+on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsLimitsOfSizeOfCreatesEqualizersAndProducts [HasEqualizers D]
     [HasProducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
@@ -283,12 +292,14 @@ lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
   exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts G
 
 attribute [local instance] preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
-/-- If a functor creates terminal objects and pullbacks, it creates finite limits.
+/--
+If a functor creates terminal objects and pullbacks, it creates finite limits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
-on the specific definition that is used. -/
+on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal D]
     [HasPullbacks D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
@@ -487,12 +498,14 @@ variable (G : C ⥤ D) [G.ReflectsIsomorphisms] [CreatesColimitsOfShape WalkingP
   [CreatesColimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
 attribute [local instance] preservesColimit_of_preservesCoequalizers_and_coproduct in
-/-- If a functor creates coequalizers and the appropriate coproducts, it creates colimits.
+/--
+If a functor creates coequalizers and the appropriate coproducts, it creates colimits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
-depend on the specific definition that is used. -/
+depend on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
     CreatesColimitsOfShape J G where
@@ -508,12 +521,14 @@ noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
 
 end
 
-/-- If a functor creates coequalizers and finite coproducts, it creates finite colimits.
+/--
+If a functor creates coequalizers and finite coproducts, it creates finite colimits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
-depend on the specific definition that is used. -/
+depend on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts [HasCoequalizers D]
     [HasFiniteCoproducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
@@ -521,12 +536,14 @@ noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts 
     [CreatesFiniteCoproducts G] : CreatesFiniteColimits G where
   createsFiniteColimits _ _ _ := createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts G
 
-/-- If a functor creates coequalizers and coproducts, it creates colimits.
+/--
+If a functor creates coequalizers and coproducts, it creates colimits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
-depend on the specific definition that is used. -/
+depend on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsColimitsOfSizeOfCreatesCoequalizersAndCoproducts [HasCoequalizers D]
     [HasCoproducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
@@ -557,12 +574,14 @@ lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
   apply PreservesFiniteCoproducts.of_preserves_binary_and_initial G
 
 attribute [local instance] preservesFiniteColimits_of_preservesInitial_and_pushouts in
-/-- If a functor creates initial objects and pushouts, it creates finite colimits.
+/--
+If a functor creates initial objects and pushouts, it creates finite colimits.
 
 We additionally require the rather strong condition that the functor reflects isomorphisms. It is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
-depend on the specific definition that is used. -/
+depend on the specific definition that is used.
+-/
 @[instance_reducible]
 noncomputable def createsFiniteColimitsOfCreatesInitialAndPushouts [HasInitial D]
     [HasPushouts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]

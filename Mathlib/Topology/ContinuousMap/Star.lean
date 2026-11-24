@@ -9,16 +9,17 @@ public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.ContinuousMap.Algebra
 
-/-!
-# Star structures on continuous maps.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Star structures on continuous maps. -/
 
 @[expose] public section
 
 namespace ContinuousMap
 
 /-!
-### Star structure
+# Star structure
 
 If `β` has a continuous star operation, we put a star structure on `C(α, β)` by using the
 star operation pointwise.
@@ -170,7 +171,7 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
 
 end Homeomorph
 
-/-! ### Evaluation as a bundled map -/
+/-! # Evaluation as a bundled map -/
 
 variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
 variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]

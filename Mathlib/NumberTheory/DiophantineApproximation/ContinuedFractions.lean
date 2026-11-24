@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diophantine Approximation using continued fractions
 
@@ -50,10 +53,12 @@ namespace Real
 
 variable {ξ : ℝ}
 
-/-- The main result, *Legendre's Theorem* on rational approximation:
+/--
+The main result, _Legendre's Theorem_ on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This is the version using `GenContFract.convs`. -/
+This is the version using `GenContFract.convs`.
+-/
 theorem exists_convs_eq_rat {q : ℚ}
     (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h

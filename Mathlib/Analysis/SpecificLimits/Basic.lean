@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Topology.Instances.EReal.Lemmas
 public import Mathlib.Topology.Instances.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A collection of specific limit computations
 
@@ -170,7 +173,7 @@ theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
     Tendsto f l atTop ↔ Tendsto g l atTop :=
   ⟨fun hf ↦ hf.den ha hlim, fun hg ↦ hg.num ha hlim⟩
 
-/-! ### Powers -/
+/-! # Powers -/
 
 
 theorem tendsto_add_one_pow_atTop_atTop_of_pos
@@ -310,7 +313,7 @@ lemma ENNReal.eq_zero_of_le_mul_pow {x r : ℝ≥0∞} {ε : ℝ≥0} (hr : r < 
   rw [← mul_zero (M₀ := ℝ≥0∞) (a := ε)]
   exact Tendsto.const_mul (tendsto_pow_atTop_nhds_zero_of_lt_one hr) (Or.inr coe_ne_top)
 
-/-! ### Geometric series -/
+/-! # Geometric series -/
 
 section Geometric
 
@@ -436,7 +439,7 @@ lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [E
 end Geometric
 
 /-!
-### Sequences with geometrically decaying distance in metric spaces
+# Sequences with geometrically decaying distance in metric spaces
 
 In this paragraph, we discuss sequences in metric spaces or emetric spaces for which the distance
 between two consecutive terms decays geometrically. We show that such sequences are Cauchy
@@ -570,7 +573,7 @@ theorem dist_le_of_le_geometric_two_of_tendsto {a : α} (ha : Tendsto f atTop (�
 
 end LeGeometric
 
-/-! ### Summability tests based on comparison with geometric series -/
+/-! # Summability tests based on comparison with geometric series -/
 
 
 /-- A series whose terms are bounded by the terms of a converging geometric series converges. -/
@@ -583,7 +586,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
   refine (one_div_le_one_div ?_ ?_).mpr (pow_right_mono₀ hm.le (fi a)) <;>
     exact pow_pos (zero_lt_one.trans hm) _
 
-/-! ### Positive sequences with small sums on countable types -/
+/-! # Positive sequences with small sums on countable types -/
 
 
 /-- For any positive `ε`, define on an encodable type a positive sequence with sum less than `ε` -/
@@ -662,9 +665,7 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
 
 end ENNReal
 
-/-!
-### Factorial
--/
+/-! # Factorial -/
 
 
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
@@ -693,9 +694,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
         norm_cast
         lia)
 
-/-!
-### Ceil and floor
--/
+/-! # Ceil and floor -/
 
 
 section

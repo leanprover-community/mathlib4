@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectrum of positive (semi)definite matrices
 
@@ -27,7 +30,7 @@ open scoped ComplexOrder
 namespace Matrix
 variable {m n 𝕜 : Type*} [Fintype m] [Fintype n] [RCLike 𝕜] {A : Matrix n n 𝕜}
 
-/-! ### Positive semidefinite matrices -/
+/-! # Positive semidefinite matrices -/
 
 /-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
 lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] (hA : IsHermitian A) :
@@ -67,7 +70,7 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
     0 ≤ (isHermitian_mul_conjTranspose_self A).eigenvalues i :=
   (posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
-/-! ### Positive definite matrices -/
+/-! # Positive definite matrices -/
 
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] (hA : A.IsHermitian) :

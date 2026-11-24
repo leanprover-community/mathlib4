@@ -15,6 +15,9 @@ import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.Fin.Tuple.Finset
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Schwartz-Zippel lemma
 
@@ -29,13 +32,13 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 
 ## Main results
 
-- `MvPolynomial.schwartz_zippel_sup_sum`:
+* `MvPolynomial.schwartz_zippel_sup_sum`:
   Sharper version of Schwartz-Zippel for a dependent product of sets `S i`, with the RHS being
   the supremum of `∑ i, degᵢ s / #(S i)` ranging over monomials `s` of the polynomial.
-- `MvPolynomial.schwartz_zippel_sum_degreeOf`:
+* `MvPolynomial.schwartz_zippel_sum_degreeOf`:
   Schwartz-Zippel for a dependent product of sets `S i`,
   with the RHS being the sum of `degᵢ p / #(S i)`.
-- `MvPolynomial.schwartz_zippel_totalDegree`:
+* `MvPolynomial.schwartz_zippel_totalDegree`:
   Nondependent version of `schwartz_zippel_sup_sum`, with the RHS being `p.totalDegree / #S`.
 
 ## TODO
@@ -47,9 +50,9 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 
 ## References
 
-* [demillo_lipton_1978]
-* [schwartz_1980]
-* [zippel_1979]
+* ‍\[demillo\_lipton\_1978\]
+* ‍\[schwartz\_1980\]
+* ‍\[zippel\_1979\]
 -/
 
 public section
@@ -64,11 +67,13 @@ variable {R : Type*} [CommRing R] [IsDomain R] [DecidableEq R]
 -- A user should be able to provide `hp` as a named argument
 -- regardless of whether one has used pattern-matching or induction to prove the lemma.
 set_option linter.unusedVariables false in
-/-- The **Schwartz-Zippel lemma**
+/--
+The *Schwartz-Zippel lemma*
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`
 evaluates to zero at points drawn at random from a product of finite subsets `S i` of the integral
-domain is bounded by the supremum of `∑ i, degᵢ s / #(S i)` ranging over monomials `s` of `p`. -/
+domain is bounded by the supremum of `∑ i, degᵢ s / #(S i)` ranging over monomials `s` of `p`.
+-/
 lemma schwartz_zippel_sup_sum :
     ∀ {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0) (S : Fin n → Finset R),
       #{x ∈ S ^^ n | eval x p = 0} / ∏ i, (#(S i) : ℚ≥0) ≤
@@ -171,11 +176,13 @@ lemma schwartz_zippel_sup_sum :
       gcongr
       simp [natDegree_finSuccEquiv, p']
 
-/-- The **Schwartz-Zippel lemma**
+/--
+The *Schwartz-Zippel lemma*
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`
 evaluates to zero at points drawn at random from a product of finite subsets `S i` of the integral
-domain is bounded by the sum of `degᵢ p / #(S i)`. -/
+domain is bounded by the sum of `degᵢ p / #(S i)`.
+-/
 lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0)
     (S : Fin n → Finset R) :
     #{x ∈ S ^^ n | eval x p = 0} / ∏ i, (#(S i) : ℚ≥0) ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := by
@@ -184,11 +191,13 @@ lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 
     _ ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := Finset.sup_le fun s hs ↦ by
       gcongr with i; exact monomial_le_degreeOf i hs
 
-/-- The **Schwartz-Zippel lemma**
+/--
+The *Schwartz-Zippel lemma*
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`
 evaluates to zero at points drawn at random from some finite subset `S` of the integral domain is
-bounded by the degree of `p` over `#S`. This version presents this lemma in terms of `Finset`. -/
+bounded by the degree of `p` over `#S`. This version presents this lemma in terms of `Finset`.
+-/
 lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0) (S : Finset R) :
     #{f ∈ piFinset fun _ ↦ S | eval f p = 0} / (#S ^ n : ℚ≥0) ≤ p.totalDegree / #S :=
   calc

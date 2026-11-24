@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals against peak functions
 
@@ -41,9 +44,7 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal
 
-/-!
-### General convergent result for integrals against a sequence of peak functions
--/
+/-! # General convergent result for integrals against a sequence of peak functions -/
 
 open Set
 
@@ -233,11 +234,10 @@ theorem tendsto_integral_peak_smul_of_integrable_of_tendsto
     (by simpa [← compl_eq_univ_sdiff] using hlφ) hiφ
     (by simpa) (by simpa) (by simpa [nhdsWithin_univ])
 
-/-!
-### Peak functions of the form `x ↦ (c x) ^ n / ∫ (c y) ^ n`
--/
+/-! # Peak functions of the form `x ↦ (c x) ^ n / ∫ (c y) ^ n` -/
 
-/-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
+/--
+If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
 concentrating around `x₀`. Therefore, `∫ (c x) ^ n * g / ∫ (c x) ^ n` converges to `g x₀` if `g` is
 integrable on `s` and continuous at `x₀`.
@@ -338,7 +338,8 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
   convert! this
   simp_rw [φ, ← smul_smul, integral_smul]
 
-/-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
+/--
+If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
 concentrating around `x₀`. Therefore, `∫ (c x) ^ n * g / ∫ (c x) ^ n` converges to `g x₀` if `g` is
 integrable on `s` and continuous at `x₀`.
@@ -378,9 +379,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
   tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn hs hc h'c hnc hnc₀ h₀
     (hmg.integrableOn_compact hs) (hmg x₀ this)
 
-/-!
-### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
--/
+/-! # Peak functions of the form `x ↦ c ^ dim * φ (c x)` -/
 
 open Module Bornology
 

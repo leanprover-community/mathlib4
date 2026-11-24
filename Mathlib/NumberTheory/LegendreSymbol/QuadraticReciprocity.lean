@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic reciprocity.
 
@@ -47,7 +50,7 @@ variable {p : ℕ} [Fact p.Prime]
 open ZMod
 
 /-!
-### The value of the Legendre symbol at `2` and `-2`
+# The value of the Legendre symbol at `2` and `-2`
 
 See `jacobiSym.at_two` and `jacobiSym.at_neg_two` for the corresponding statements
 for the Jacobi symbol.
@@ -89,7 +92,7 @@ end Values
 section Reciprocity
 
 /-!
-### The Law of Quadratic Reciprocity
+# The Law of Quadratic Reciprocity
 
 See `jacobiSym.quadratic_reciprocity` and variants for a version of Quadratic Reciprocity
 for the Jacobi symbol.

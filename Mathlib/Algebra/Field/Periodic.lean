@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Periodic
 
 import Mathlib.Algebra.Field.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodic functions
 
@@ -17,10 +20,9 @@ This file proves facts about periodic and antiperiodic functions from and to a f
 
 ## Main definitions
 
-* `Function.Periodic`: A function `f` is *periodic* if `∀ x, f (x + c) = f x`.
+* `Function.Periodic`: A function `f` is _periodic_ if `∀ x, f (x + c) = f x`.
   `f` is referred to as periodic with period `c` or `c`-periodic.
-
-* `Function.Antiperiodic`: A function `f` is *antiperiodic* if `∀ x, f (x + c) = -f x`.
+* `Function.Antiperiodic`: A function `f` is _antiperiodic_ if `∀ x, f (x + c) = -f x`.
   `f` is referred to as antiperiodic with antiperiod `c` or `c`-antiperiodic.
 
 Note that any `c`-antiperiodic function will necessarily also be `2 • c`-periodic.
@@ -40,7 +42,7 @@ open Set
 
 namespace Function
 
-/-! ### Periodicity -/
+/-! # Periodicity -/
 
 protected theorem Periodic.const_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
     (h : Periodic f c) (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) := fun x => by
@@ -119,7 +121,7 @@ theorem Periodic.image_uIcc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMono
       add_neg_cancel_right]
   | inr hc => rw [uIcc_of_le (le_add_of_nonneg_right hc.le), h.image_Icc hc]
 
-/-! ### Antiperiodicity -/
+/-! # Antiperiodicity -/
 
 theorem Antiperiodic.add_nat_mul_eq [NonAssocSemiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (x + n * c) = (-1) ^ n * f x := by

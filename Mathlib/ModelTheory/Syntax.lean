@@ -10,6 +10,9 @@ public import Mathlib.ModelTheory.LanguageMap
 
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basics on First-Order Syntax
 
@@ -18,31 +21,31 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 
 ## Main Definitions
 
-- A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
+* A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-- A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
+* A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
-- A `FirstOrder.Language.Sentence` is a formula with no free variables.
-- A `FirstOrder.Language.Theory` is a set of sentences.
-- The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
+* A `FirstOrder.Language.Sentence` is a formula with no free variables.
+* A `FirstOrder.Language.Theory` is a set of sentences.
+* The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
   `FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
-- Given an operation on terms and an operation on relations,
+* Given an operation on terms and an operation on relations,
   `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
-- `FirstOrder.Language.BoundedFormula.castLE` adds more bound variables.
-- `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the bound variables above a
+* `FirstOrder.Language.BoundedFormula.castLE` adds more bound variables.
+* `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the bound variables above a
   particular index.
-- `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
+* `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
   variables with given terms.
-- `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
-- Language maps can act on syntactic objects with functions such as
+* `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
+* Language maps can act on syntactic objects with functions such as
   `FirstOrder.Language.LHom.onFormula`.
-- `FirstOrder.Language.Term.constantsVarsEquiv` and
+* `FirstOrder.Language.Term.constantsVarsEquiv` and
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
   constants in the language and having extra free variables indexed by the same type.
 
 ## Implementation Notes
 
-- `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
+* `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
   Bruijn levels (the variable bounded by the outermost quantifier is indexed by `0`). Specifically,
   a `L.BoundedFormula α n` is a formula with free variables indexed by a type `α`, which cannot be
   quantified over, and bound variables indexed by `Fin n`, which can. For any
@@ -52,10 +55,11 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
-  hypothesis*][flypitch_cpp]
-- [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-  the continuum hypothesis*][flypitch_itp]
+
+* ‍\[J. Han, F. van Doorn, _A formal proof of the independence of the continuum
+  hypothesis_\]\[flypitch\_cpp\]
+* ‍\[J. Han, F. van Doorn, _A formalization of forcing and the unprovability of
+  the continuum hypothesis_\]\[flypitch\_itp\]
 -/
 
 @[expose] public section
@@ -614,18 +618,22 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
-/-- Take the disjunction of a finite set of formulas.
+/--
+Take the disjunction of a finite set of formulas.
 
 Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
-to equivalence of formulas. -/
+to equivalence of formulas.
+-/
 noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
-/-- Take the conjunction of a finite set of formulas.
+/--
+Take the conjunction of a finite set of formulas.
 
 Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
-to equivalence of formulas. -/
+to equivalence of formulas.
+-/
 noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
@@ -795,17 +803,21 @@ noncomputable def exClosure (φ : L.Formula α) : L.Sentence :=
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
-/-- Take the disjunction of finitely many formulas.
+/--
+Take the disjunction of finitely many formulas.
 
 Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
-to equivalence of formulas. -/
+to equivalence of formulas.
+-/
 noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iSup f
 
-/-- Take the conjunction of finitely many formulas.
+/--
+Take the conjunction of finitely many formulas.
 
 Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
-to equivalence of formulas. -/
+to equivalence of formulas.
+-/
 noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iInf f
 

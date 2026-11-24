@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Real.log` extension for tactic `dyadic_interval`
 
@@ -30,8 +33,8 @@ obtained by adding a `step prec`.
 
 ## References
 
-* <http://numbers.computation.free.fr/Constants/Algorithms/splitting.html>
-
+* [
+  http://numbers.computation.free.fr/Constants/Algorithms/splitting.html](http://numbers.computation.free.fr/Constants/Algorithms/splitting.html)
 -/
 
 public section
@@ -48,10 +51,12 @@ def smallArtanh (num den : ℕ) (n : ℕ) : ℕ × ℕ :=
   let r := go 0 n
   (num * r.2.2, den * r.2.1)
 where
-  /-- Binary splitting auxiliary function: `go a b` returns `(P, Q, R)` on segment `[a, b)`.
+  /--
+  Binary splitting auxiliary function: `go a b` returns `(P, Q, R)` on segment `[a, b)`.
 
   `R` is the numerator of `∑ k ∈ Finset.Ico a b, ∏ j ∈ Finset.Ico a k, t (j + 1) / t j` put over
-  the common denominator of the term ratios `((2 * k + 1) * num ^ 2) / ((2 * k + 3) * den ^ 2)`. -/
+the common denominator of the term ratios `((2 * k + 1) * num ^ 2) / ((2 * k + 3) * den ^ 2)`.
+  -/
   go : ℕ → ℕ → ℕ × ℕ × ℕ := fun a b =>
     match h : b - a with
     | 0 => (1, 1, 0)

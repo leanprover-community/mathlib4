@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Algebra.Order.Ring.NNRat
 import Mathlib.Data.Rat.Cast.CharZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Density of a finite set
 
@@ -24,11 +27,12 @@ This defines the density of a `Finset` and provides induction principles for fin
 ## Implementation notes
 
 There are many other ways to talk about the density of a finset and provide its API:
+
 1. Use the uniform measure
 2. Define finitely additive functions and generalise the `Finset.card` API to it. This could either
-  be done with
-  a. A structure `FinitelyAdditiveFun`
-  b. A typeclass `IsFinitelyAdditiveFun`
+   be done with
+   a. A structure `FinitelyAdditiveFun`
+   b. A typeclass `IsFinitelyAdditiveFun`
 
 Solution 1 would mean importing measure theory in simple files (not necessarily bad, but not
 amazing), and every single API lemma would require the user to prove that all the sets they are
@@ -60,9 +64,11 @@ variable {𝕜 α β : Type*} [Fintype α]
 namespace Finset
 variable {s t : Finset α} {a b : α}
 
-/-- Density of a finset.
+/--
+Density of a finset.
 
-`dens s` is the number of elements of `s` divided by the size of the ambient type `α`. -/
+`dens s` is the number of elements of `s` divided by the size of the ambient type `α`.
+-/
 def dens (s : Finset α) : ℚ≥0 := s.card / Fintype.card α
 
 lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α := rfl

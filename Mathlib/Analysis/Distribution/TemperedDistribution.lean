@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # TemperedDistribution
 
@@ -30,6 +33,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
+
 * `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` scoped in
   `SchwartzMap`
 -/
@@ -62,7 +66,7 @@ scoped[SchwartzMap] notation "𝓢'(" E ", " F ")" => TemperedDistribution E F
 
 end definition
 
-/-! ### Embeddings into tempered distributions -/
+/-! # Embeddings into tempered distributions -/
 
 section Embeddings
 
@@ -232,7 +236,7 @@ end Embeddings
 
 namespace TemperedDistribution
 
-/-! ### Scalar multiplication with temperate growth functions -/
+/-! # Scalar multiplication with temperate growth functions -/
 
 section Multiplication
 
@@ -317,7 +321,7 @@ theorem _root_.MeasureTheory.Lp.toTemperedDistribution_smul_eq {p q r : ℝ≥0�
 
 end Multiplication
 
-/-! ### Derivatives -/
+/-! # Derivatives -/
 
 section deriv
 
@@ -408,7 +412,7 @@ theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
 
 end lineDeriv
 
-/-! ### Laplacian-/
+/-! # Laplacian -/
 
 section Laplacian
 
@@ -452,7 +456,7 @@ theorem laplacian_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
 
 end Laplacian
 
-/-! ### Fourier transform -/
+/-! # Fourier transform -/
 
 section Fourier
 
@@ -597,9 +601,11 @@ variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
 
 open FourierTransform
 
-/-- The Fourier transform of the delta distribution is equal to the volume.
+/--
+The Fourier transform of the delta distribution is equal to the volume.
 
-Informally, this is usually represented as `𝓕 δ = 1`. -/
+Informally, this is usually represented as `𝓕 δ = 1`.
+-/
 theorem fourier_delta_zero : 𝓕 (delta (0 : E)) = volume.toTemperedDistribution := by
   ext f
   simp [SchwartzMap.fourier_coe, Real.fourier_eq]

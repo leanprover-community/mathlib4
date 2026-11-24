@@ -7,11 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
-/-!
-# Basic lemmas about the general linear group $GL(n, R)$
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file lists various basic lemmas about the general linear group $GL(n, R)$. For the definitions,
-see `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
+/-!
+# Basic lemmas about the general linear group $`GL(n, R)`
+
+This file lists various basic lemmas about the general linear group $`GL(n, R)`. For the
+definitions, see `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 -/
 
 @[expose] public section
@@ -20,8 +23,10 @@ namespace Matrix
 
 section Examples
 
-/-- The matrix $[a, -b; b, a]$ (inspired by multiplication by a complex number); it is an element of
-$GL_2(R)$ if `a ^ 2 + b ^ 2` is nonzero. -/
+/--
+The matrix $`[a, -b; b, a]` (inspired by multiplication by a complex number); it is an element of
+$`GL_2(R)` if `a ^ 2 + b ^ 2` is nonzero.
+-/
 @[simps! -fullyApplied val]
 def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
     Matrix.GeneralLinearGroup (Fin 2) R :=

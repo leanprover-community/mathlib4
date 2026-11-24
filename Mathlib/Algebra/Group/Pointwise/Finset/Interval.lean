@@ -10,7 +10,11 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
-/-! # Pointwise operations on intervals
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise operations on intervals
 
 This should be kept in sync with `Mathlib/Algebra/Order/Group/Pointwise/Interval.lean`.
 -/
@@ -23,7 +27,8 @@ namespace Finset
 
 open scoped Pointwise
 
-/-! ### Binary pointwise operations
+/-!
+# Binary pointwise operations
 
 Note that the subset operations below only cover the cases with the largest possible intervals on
 the LHS: to conclude that `Ioo a b * Ioo c d ⊆ Ioo (a * c) (c * d)`, you can use monotonicity of `*`

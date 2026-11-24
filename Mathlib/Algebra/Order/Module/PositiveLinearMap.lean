@@ -11,7 +11,11 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 import Mathlib.Algebra.Group.FunLike
 
-/-! # Positive linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Positive linear maps
 
 This file defines positive linear maps as a linear map that is also an order homomorphism.
 

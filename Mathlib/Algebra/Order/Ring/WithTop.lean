@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Order.Ring.Canonical
 
-/-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Structures involving `*` and `0` on `WithTop` and `WithBot`
+
 The main results of this section are `WithTop.instOrderedCommSemiring` and
 `WithBot.instOrderedCommSemiring`.
 -/

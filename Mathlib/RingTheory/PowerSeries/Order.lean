@@ -9,7 +9,11 @@ public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Basic
 
-/-! # Formal power series (in one variable) - Order
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Formal power series (in one variable) - Order
 
 The `PowerSeries.order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
 

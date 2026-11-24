@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Palindrome
 public import Mathlib.Data.Nat.Digits.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility tests for natural numbers in terms of digits.
 
@@ -32,7 +35,7 @@ theorem modEq_eleven_digits_sum (n : ℕ) :
   have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
   rwa [ofDigits_neg_one] at t
 
-/-! ## Divisibility  -/
+/-! # Divisibility -/
 
 theorem dvd_iff_dvd_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) :
     b ∣ n ↔ b ∣ (digits b' n).sum := by

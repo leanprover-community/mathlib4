@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of `C^n` manifolds modeled on `I`
 
@@ -15,6 +18,7 @@ This file defines the bundled category `ModelWithCorners.MfldCat.{u} I n` of `C^
 on a fixed `I : ModelWithCorners 𝕜 E H`, along with the forgetful functor to `TopCat`.
 
 ## Future work
+
 * Show that `ModelWithCorners.MfldCat I n` has coproducts given by disjoint unions.
 -/
 
@@ -54,9 +58,11 @@ instance : CoeSort (MfldCat I n) (Type u) := ⟨MfldCat.carrier⟩
 
 attribute [coe] MfldCat.carrier
 
-/-- The object of `ModelWithCorners.MfldCat I n` associated to a `C^n` manifold `X` modeled on `I`.
+/--
+The object of `ModelWithCorners.MfldCat I n` associated to a `C^n` manifold `X` modeled on `I`.
 
-This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`. -/
+This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`.
+-/
 abbrev of (X : Type u) [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X] :
     MfldCat I n := ⟨X⟩
 

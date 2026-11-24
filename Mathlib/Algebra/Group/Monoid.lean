@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoids
 
@@ -99,17 +102,21 @@ end MulOneClass
 
 section IsUnital
 
-/-- A multiplicative magma is **unital** if there exists a unit.
+/--
+A multiplicative magma is *unital* if there exists a unit.
 
-**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
-In general you should use `NonUnitalRing`, `Ring`, etc. -/
+*Note*: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc.
+-/
 @[mk_iff] class IsUnital (A : Type*) [Mul A] : Prop where
   isUnital : ∃ u : A, ∀ x : A, u * x = x ∧ x * u = x
 
-/-- A multiplicative magma is **not-unital** if there does not exist a unit.
+/--
+A multiplicative magma is *not-unital* if there does not exist a unit.
 
-**Note**: Do not use this unless it is the only reasonable way to phrase or prove a statement.
-In general you should use `NonUnitalRing`, `Ring`, etc. -/
+*Note*: Do not use this unless it is the only reasonable way to phrase or prove a statement.
+In general you should use `NonUnitalRing`, `Ring`, etc.
+-/
 @[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
   isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
 
@@ -121,10 +128,12 @@ variable {A : Type*}
 @[simp, push] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
   grind [not_isUnital_iff_isNotUnital]
 
-/-- A unital magma is `MulOneClass`.
+/--
+A unital magma is `MulOneClass`.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
   one := isUnital.choose
   one_mul a := (isUnital.choose_spec a).1
@@ -154,59 +163,81 @@ include hn ha
 end
 
 library_note «forgetful inheritance» /--
-Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
-`P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
-forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
-implementation would be to have a type class `rich` containing a field `R`, a type class `poor`
-containing a field `P`, and an instance from `rich` to `poor`. However, this creates diamond
-problems, and a better approach is to let `rich` extend `poor` and have a field saying that
-`F R = P`.
+                                     Suppose that one can put two mathematical structures on a type,
+a rich one `R` and a poor one `P`, and that one can deduce the
+poor structure from the rich structure through a map `F`
+(called a forgetful functor) (think `R = MetricSpace` and
+`P = TopologicalSpace`). A possible implementation would be to
+have a type class `rich` containing a field `R`, a type class
+`poor` containing a field `P`, and an instance from `rich` to
+`poor`. However, this creates diamond problems, and a better
+approach is to let `rich` extend `poor` and have a field saying
+that `F R = P`.
 
-To illustrate this, consider the pair `MetricSpace` / `TopologicalSpace`. Consider the topology
-on a product of two metric spaces. With the first approach, it could be obtained by going first from
-each metric space to its topology, and then taking the product topology. But it could also be
-obtained by considering the product metric space (with its sup distance) and then the topology
-coming from this distance. These would be the same topology, but not definitionally, which means
-that from the point of view of Lean's kernel, there would be two different `TopologicalSpace`
-instances on the product. This is not compatible with the way instances are designed and used:
-there should be at most one instance of a kind on each type. This approach has created an instance
-diamond that does not commute definitionally.
+                                     To illustrate this, consider the pair `MetricSpace` /
+`TopologicalSpace`. Consider the topology on a product of two
+metric spaces. With the first approach, it could be obtained by
+going first from each metric space to its topology, and then
+taking the product topology. But it could also be obtained by
+considering the product metric space (with its sup distance)
+and then the topology coming from this distance. These would be
+the same topology, but not definitionally, which means that
+from the point of view of Lean's kernel, there would be two
+different `TopologicalSpace` instances on the product. This is
+not compatible with the way instances are designed and used:
+there should be at most one instance of a kind on each type.
+This approach has created an instance diamond that does not
+commute definitionally.
 
-The second approach solves this issue. Now, a metric space contains both a distance, a topology, and
-a proof that the topology coincides with the one coming from the distance. When one defines the
-product of two metric spaces, one uses the sup distance and the product topology, and one has to
-give the proof that the sup distance induces the product topology. Following both sides of the
-instance diamond then gives rise (definitionally) to the product topology on the product space.
+                                     The second approach solves this issue. Now, a metric space
+contains both a distance, a topology, and a proof that the
+topology coincides with the one coming from the distance. When
+one defines the product of two metric spaces, one uses the sup
+distance and the product topology, and one has to give the
+proof that the sup distance induces the product topology.
+Following both sides of the instance diamond then gives rise
+(definitionally) to the product topology on the product space.
 
-Another approach would be to have the rich type class take the poor type class as an instance
-parameter. It would solve the diamond problem, but it would lead to a blow up of the number
-of type classes one would need to declare to work with complicated classes, say a real inner
-product space, and would create exponential complexity when working with products of
-such complicated spaces, that are avoided by bundling things carefully as above.
+                                     Another approach would be to have the rich type class take the
+poor type class as an instance parameter. It would solve the
+diamond problem, but it would lead to a blow up of the number
+of type classes one would need to declare to work with
+complicated classes, say a real inner product space, and would
+create exponential complexity when working with products of
+such complicated spaces, that are avoided by bundling things
+carefully as above.
 
-Note that this description of this specific case of the product of metric spaces is oversimplified
-compared to mathlib, as there is an intermediate typeclass between `MetricSpace` and
-`TopologicalSpace` called `UniformSpace`. The above scheme is used at both levels, embedding a
-topology in the uniform space structure, and a uniform structure in the metric space structure.
+                                     Note that this description of this specific case of the product
+of metric spaces is oversimplified compared to mathlib, as
+there is an intermediate typeclass between `MetricSpace` and
+`TopologicalSpace` called `UniformSpace`. The above scheme is
+used at both levels, embedding a topology in the uniform space
+structure, and a uniform structure in the metric space
+structure.
 
-Note also that, when `P` is a proposition, there is no such issue as any two proofs of `P` are
-definitionally equivalent in Lean.
+                                     Note also that, when `P` is a proposition, there is no such
+issue as any two proofs of `P` are definitionally equivalent in
+Lean.
 
-To avoid boilerplate, there are some designs that can automatically fill the poor fields when
-creating a rich structure if one doesn't want to do something special about them. For instance,
-in the definition of metric spaces, default tactics fill the uniform space fields if they are
-not given explicitly. One can also have a helper function creating the rich structure from a
-structure with fewer fields, where the helper function fills the remaining fields. See for instance
+                                     To avoid boilerplate, there are some designs that can
+automatically fill the poor fields when creating a rich
+structure if one doesn't want to do something special about
+them. For instance, in the definition of metric spaces, default
+tactics fill the uniform space fields if they are not given
+explicitly. One can also have a helper function creating the
+rich structure from a structure with fewer fields, where the
+helper function fills the remaining fields. See for instance
 `UniformSpace.ofCore` or `RealInnerProduct.ofCore`.
 
-For more details on this question, called the forgetful inheritance pattern, see [Competing
-inheritance paths in dependent type theory: a case study in functional
+                                     For more details on this question, called the forgetful
+inheritance pattern, see [Competing inheritance paths in
+dependent type theory: a case study in functional
 analysis](https://hal.inria.fr/hal-02463336).
--/
+                                     -/
 
 
 /-!
-### Design note on `AddMonoid` and `Monoid`
+# Design note on `AddMonoid` and `Monoid`
 
 An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
@@ -217,7 +248,7 @@ goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
 To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
 default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
-a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
+a `SMul ℕ α` instance using this action. See Note \[forgetful inheritance\] for more
 explanations on this pattern.
 
 For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
@@ -499,13 +530,16 @@ end IsDedekindFiniteMonoid
 end Monoid
 
 attribute [local instance] IsUnital.toMulOneClass in
-/-- A unital semigroup is a monoid.
+/--
+A unital semigroup is a monoid.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+/--
+An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective on commuting elements (i.e., `a + b = b + a → n • a = n • b → a = b`).
 
 For commutative additive monoids, this is equivalent to `n • a = n • b → a = b`.
@@ -521,7 +555,8 @@ it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive mo
 typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
 introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
 
-TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
+TODO: Generalize this definition to additive semigroups once we have the `PNat` action.
+-/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
   eq_of_nsmul_eq_nsmul_of_addCommute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
@@ -532,7 +567,8 @@ export IsAddTorsionFree (eq_of_nsmul_eq_nsmul_of_addCommute)
 @[deprecated (since := "2026-09-29")]
 alias IsAddTorsionFree.pow_left_injective := eq_of_nsmul_eq_nsmul_of_addCommute
 
-/-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
+/--
+A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
 injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
 
 For commutative monoids, this is equivalent to `a ^ n = b ^ n → a = b`.
@@ -547,7 +583,8 @@ commutative ones. Prefer using `HasUniqueRoots` over commutative monoids, so tha
 can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
 `[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
 
-TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
+TODO: Generalize this definition to semigroups once we have the `PNat` action.
+-/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
   eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
@@ -559,7 +596,8 @@ export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
 @[deprecated (since := "2026-09-29")]
 alias IsMulTorsionFree.pow_left_injective := eq_of_pow_eq_pow_of_commute
 
-/-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
+/--
+An additive monoid has unique divisibility if scalar multiplication by every non-zero element
 `n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
 
 `HasUniqueDiv` is stronger than `IsAddTorsionFree` for general additive monoids, but equivalent to
@@ -567,14 +605,16 @@ it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive mo
 typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
 introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
 
-TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
+TODO: Generalize this definition to additive semigroups once we have the `PNat` action.
+-/
 @[mk_iff]
 class HasUniqueDiv (M : Type*) [AddMonoid M] where
   nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
 
 export HasUniqueDiv (nsmul_right_injective)
 
-/-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
+/--
+A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
 This is the uniqueness counterpart to `RootableBy` which asserts existence.
 
 `HasUniqueRoots` is stronger than `IsMulTorsionFree` for general monoids, but equivalent to it for
@@ -582,7 +622,8 @@ commutative ones. Prefer using `HasUniqueRoots` for commutative monoids, so that
 can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
 `[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
 
-TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
+TODO: Generalize this definition to semigroups once we have the `PNat` action.
+-/
 @[mk_iff]
 class HasUniqueRoots (M : Type*) [Monoid M] where
   pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
@@ -602,11 +643,13 @@ class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type*) extends Monoid M, CommSemigroup M
 
-/-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
+/--
+Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
 
 This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
-priority performs better than low or high priority. -/
+priority performs better than low or high priority.
+-/
 @[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
@@ -678,11 +721,13 @@ instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type*) [CancelMonoid 
 
 end CancelMonoid
 
-/-! We initialize the projections for the monoid structures for `@[simps]` here.
+/-!
+We initialize the projections for the monoid structures for `@[simps]` here.
 
-The lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
+The lemmas generated for the `npow`/`zpow` projections will _not_ apply to `x ^ y`, since the
 argument order of these projections does not match the argument order of `^`. The `nsmul`/`zsmul`
-lemmas are correct. -/
+lemmas are correct.
+-/
 initialize_simps_projections Monoid
 initialize_simps_projections AddMonoid
 initialize_simps_projections CommMonoid

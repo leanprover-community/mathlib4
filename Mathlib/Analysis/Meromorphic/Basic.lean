@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Meromorphic functions
 
@@ -429,9 +432,7 @@ theorem meromorphicAt_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (
 end smul_iff
 
 section composition
-/-!
-### Composition with an analytic function
--/
+/-! # Composition with an analytic function -/
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]

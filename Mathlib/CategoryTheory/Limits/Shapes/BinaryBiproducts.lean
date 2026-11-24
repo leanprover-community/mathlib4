@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary biproducts
 
@@ -440,10 +443,12 @@ class HasBinaryBiproducts : Prop where
 
 attribute [instance 100] HasBinaryBiproducts.has_binary_biproduct
 
-/-- A category with finite biproducts has binary biproducts.
+/--
+A category with finite biproducts has binary biproducts.
 
 This is not an instance as typically in concrete categories there will be
-an alternative construction with nicer definitional properties. -/
+an alternative construction with nicer definitional properties.
+-/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
   { has_binary_biproduct := fun P Q =>
       HasBinaryBiproduct.mk
@@ -1094,11 +1099,14 @@ variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] [HasBinaryBiproducts
 def Indecomposable (X : C) : Prop :=
   ¬IsZero X ∧ ∀ Y Z, (X ≅ Y ⊞ Z) → IsZero Y ∨ IsZero Z
 
-/-- If
+/--
+If
+
 ```
 (f 0)
 (0 g)
 ```
+
 is invertible, then `f` is invertible.
 -/
 theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
@@ -1115,11 +1123,14 @@ theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
         simp only [Category.assoc]
         simp [t]⟩⟩⟩
 
-/-- If
+/--
+If
+
 ```
 (f 0)
 (0 g)
 ```
+
 is invertible, then `g` is invertible.
 -/
 theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)

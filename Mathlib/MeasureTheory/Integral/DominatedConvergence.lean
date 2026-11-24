@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The dominated convergence theorem
 
@@ -16,17 +19,18 @@ This file collects various results related to the Lebesgue dominated convergence
 for the Bochner integral.
 
 ## Main results
-- `MeasureTheory.tendsto_integral_of_dominated_convergence`:
+
+* `MeasureTheory.tendsto_integral_of_dominated_convergence`:
   the Lebesgue dominated convergence theorem for the Bochner integral
-- `MeasureTheory.hasSum_integral_of_dominated_convergence`:
+* `MeasureTheory.hasSum_integral_of_dominated_convergence`:
   the Lebesgue dominated convergence theorem for series
-- `MeasureTheory.integral_tsum`, `MeasureTheory.integral_tsum_of_summable_integral_norm`:
+* `MeasureTheory.integral_tsum`, `MeasureTheory.integral_tsum_of_summable_integral_norm`:
   the integral and `tsum`s commute, if the norms of the functions form a summable series
-- `intervalIntegral.hasSum_integral_of_dominated_convergence`: the Lebesgue dominated convergence
+* `intervalIntegral.hasSum_integral_of_dominated_convergence`: the Lebesgue dominated convergence
   theorem for parametric interval integrals
-- `intervalIntegral.continuous_of_dominated_interval`: continuity of the interval integral
+* `intervalIntegral.continuous_of_dominated_interval`: continuity of the interval integral
   w.r.t. a parameter
-- `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
+* `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
   measurable functions are continuous
 -/
 
@@ -34,9 +38,7 @@ public section
 
 open MeasureTheory Metric
 
-/-!
-## The Lebesgue dominated convergence theorem for the Bochner integral
--/
+/-! # The Lebesgue dominated convergence theorem for the Bochner integral -/
 section DominatedConvergenceTheorem
 
 open Set Filter TopologicalSpace ENNReal
@@ -156,7 +158,8 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
 end TendstoMono
 
 /-!
-## The Lebesgue dominated convergence theorem for interval integrals
+# The Lebesgue dominated convergence theorem for interval integrals
+
 As an application, we show continuity of parametric integrals.
 -/
 namespace intervalIntegral

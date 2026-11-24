@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Data.Vector.Snoc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normalization lemmas for `map` and `mapAccumr` on vectors
 
-  This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
+This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
 public section
@@ -20,9 +23,7 @@ variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ�
 namespace List
 namespace Vector
 
-/-!
-## Fold nested `mapAccumr`s into one
--/
+/-! # Fold nested `mapAccumr`s into one -/
 section Fold
 
 section Unary
@@ -172,7 +173,8 @@ end Binary
 end Fold
 
 /-!
-## Bisimulations
+# Bisimulations
+
 We can prove two applications of `mapAccumr` equal by providing a bisimulation relation that relates
 the initial states.
 
@@ -227,7 +229,7 @@ theorem mapAccumr₂_bisim_tail {ys : Vector β n} {f₁ : α → β → σ₁ �
 end Bisim
 
 /-!
-## Redundant state optimization
+# Redundant state optimization
 
 The following section are collection of rewrites to simplify, or even get rid, redundant
 accumulation state
@@ -341,9 +343,7 @@ theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ)
 
 end RedundantState
 
-/-!
-## Unused input optimizations
--/
+/-! # Unused input optimizations -/
 section UnusedInput
 variable {xs : Vector α n} {ys : Vector β n}
 
@@ -373,9 +373,7 @@ theorem mapAccumr₂_unused_input_right (f : α → β → σ → σ × γ) (f' 
 
 end UnusedInput
 
-/-!
-## Commutativity
--/
+/-! # Commutativity -/
 section Comm
 variable (xs ys : Vector α n)
 
@@ -389,9 +387,7 @@ theorem mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a
 
 end Comm
 
-/-!
-## Argument Flipping
--/
+/-! # Argument Flipping -/
 section Flip
 variable (xs : Vector α n) (ys : Vector β n)
 

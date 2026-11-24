@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.GradedFunLike
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms of graded (semi)rings
 
 This file defines bundled homomorphisms of graded (semi)rings. We use the same structure
 `GradedRingHom 𝒜 ℬ`, a.k.a. `𝒜 →+*ᵍ ℬ`, for both types of homomorphisms.
 
-We do **not** define a separate class of graded ring homomorphisms; instead, we use
+We do *not* define a separate class of graded ring homomorphisms; instead, we use
 `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]`.
 
 ## Main definitions
@@ -56,11 +59,13 @@ namespace GradedRingHom
 section ofClass
 variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
 
-/-- Turn an element of a type `F` satisfying
+/--
+Turn an element of a type `F` satisfying
 `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]` into an actual `GradedRingHom`.
 
 This should not be used directly. In the future, Mathlib will prefer structural projections over
-these general constructions from hom classes. -/
+these general constructions from hom classes.
+-/
 @[coe]
 def ofClass (f : F) : 𝒜 →+*ᵍ ℬ where
   __ := (f : A →+* B)

@@ -11,9 +11,10 @@ public import Mathlib.Data.Set.NAry
 
 import Mathlib.Data.ULift
 
-/-!
-# Finiteness of products
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Finiteness of products -/
 
 public section
 
@@ -80,7 +81,8 @@ variable {γ : Type*}
 
 namespace Set
 
-/-! ### Fintype instances
+/-!
+# Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
 -/
@@ -104,7 +106,8 @@ end FintypeInstances
 
 end Set
 
-/-! ### Finite instances
+/-!
+# Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
 in `Mathlib.Data.Set.Finite.Basic`. While every `Fintype` instance gives a `Finite` instance, those
@@ -131,7 +134,8 @@ end Finite.Set
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).
@@ -190,7 +194,7 @@ end Prod
 
 end SetFiniteConstructors
 
-/-! ### Properties -/
+/-! # Properties -/
 
 theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
@@ -205,7 +209,7 @@ theorem finite_image_fst_and_snd_iff {s : Set (α × β)} :
   ⟨fun h => (h.1.prod h.2).subset fun _ h => ⟨mem_image_of_mem _ h, mem_image_of_mem _ h⟩,
     fun h => ⟨h.image _, h.image _⟩⟩
 
-/-! ### Infinite sets -/
+/-! # Infinite sets -/
 
 variable {s t : Set α}
 

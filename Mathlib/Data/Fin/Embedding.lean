@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fin.SuccPred
 public import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embeddings of `Fin n`
 
@@ -38,9 +41,7 @@ variable {n m : ℕ}
 
 section Order
 
-/-!
-### order
--/
+/-! # order -/
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
 @[simps -fullyApplied apply]
@@ -56,9 +57,7 @@ end Order
 
 section Succ
 
-/-!
-### succ and casts into larger Fin types
--/
+/-! # succ and casts into larger Fin types -/
 
 /-- `Fin.succ` as an `Embedding` -/
 def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where

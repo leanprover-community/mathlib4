@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
-/-! # Induced shift sequences
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Induced shift sequences
 
 When `G : C ⥤ A` is a functor from a category equipped with a shift by a
 monoid `M`, we have defined in the file `Mathlib/CategoryTheory/Shift/ShiftSequence.lean`

@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.PrimitiveElement
 
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm for (finite) ring extensions
 
@@ -32,7 +35,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 ## References
 
-* https://en.wikipedia.org/wiki/Field_norm
+* https://en.wikipedia.org/wiki/Field\_norm
 -/
 
 public section

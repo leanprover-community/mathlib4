@@ -12,10 +12,13 @@ import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Rify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Zarankiewicz function
 
-This file defines the **Zarankiewicz function** in terms of bipartite graphs.
+This file defines the *Zarankiewicz function* in terms of bipartite graphs.
 -/
 
 public section
@@ -24,11 +27,13 @@ open Finset Fintype
 
 namespace SimpleGraph
 
-/-- The **Zarankiewicz function** of natural numbers `m`, `n`, `s`, and `t` is the maximum
+/--
+The *Zarankiewicz function* of natural numbers `m`, `n`, `s`, and `t` is the maximum
 number of edges in a `completeBipartiteGraph (Fin s) (Fin t)`-free bipartite graph with parts of
 size `m` and `n`.
 
-This is the *extremal graph theory* version of the **Zarankiewicz function**. -/
+This is the _extremal graph theory_ version of the *Zarankiewicz function*.
+-/
 noncomputable def zarankiewicz (m n s t : ℕ) : ℕ :=
   open Classical in
   sup { G : SimpleGraph (Fin m ⊕ Fin n) | G ≤ completeBipartiteGraph (Fin m) (Fin n)

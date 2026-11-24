@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Topology.Bornology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bornology structure on products and subtypes
 
@@ -45,9 +48,7 @@ instance {p : α → Prop} : Bornology (Subtype p) :=
 
 namespace Bornology
 
-/-!
-### Bounded sets in `α × β`
--/
+/-! # Bounded sets in `α × β` -/
 
 
 theorem cobounded_prod : cobounded (α × β) = (cobounded α).coprod (cobounded β) :=
@@ -88,9 +89,7 @@ theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   exact (isBounded_prod_of_nonempty (hs.prod hs)).trans and_self_iff
 
-/-!
-### Bounded sets in `Π i, X i`
--/
+/-! # Bounded sets in `Π i, X i` -/
 
 
 theorem cobounded_pi : cobounded (∀ i, X i) = Filter.coprodᵢ fun i => cobounded (X i) :=
@@ -118,9 +117,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
     simp only [not_exists, ne_empty_iff_nonempty, ← univ_pi_nonempty_iff] at hne
     exact isBounded_pi_of_nonempty hne
 
-/-!
-### Bounded sets in `{x // p x}`
--/
+/-! # Bounded sets in `{x // p x}` -/
 
 
 theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Set α} :
@@ -136,9 +133,7 @@ alias isBounded_image_subtype_val := isBounded_image_subtypeVal
 
 end Bornology
 
-/-!
-### Bounded spaces
--/
+/-! # Bounded spaces -/
 
 
 open Bornology
@@ -168,7 +163,7 @@ instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
   (IsBounded.all { x | p x }).boundedSpace_subtype
 
 /-!
-### `Additive`, `Multiplicative`
+# `Additive`, `Multiplicative`
 
 The bornology on those type synonyms is inherited without change.
 -/
@@ -187,7 +182,7 @@ instance [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
   ‹BoundedSpace α›
 
 /-!
-### Order dual
+# Order dual
 
 The bornology on this type synonym is inherited without change.
 -/

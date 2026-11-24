@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of monoids has all colimits.
 
@@ -15,6 +18,7 @@ We do this construction knowing nothing about monoids.
 In particular, I want to claim that this file could be produced by a python script
 that just looks at what Lean 3's `#print monoid` printed a long time ago (it no longer looks like
 this due to the addition of `npow` fields):
+
 ```
 structure monoid : Type u → Type u
 fields:
@@ -32,6 +36,7 @@ A slightly bolder claim is that we could do this with tactics, as well.
 
 Note: `Monoid` and `CommRing` are no longer flat structures in Mathlib4, and so `#print Monoid`
 gives the less clear
+
 ```
 inductive Monoid.{u} : Type u → Type u
 number of parameters: 1

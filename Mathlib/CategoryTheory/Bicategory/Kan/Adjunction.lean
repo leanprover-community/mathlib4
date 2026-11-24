@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.Tactic.TFAE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions as Kan extensions
 
@@ -20,7 +23,7 @@ We also show that a left adjoint commutes with a left Kan extension. Under the a
 
 ## References
 
-* [Riehl, *Category theory in context*, Proposition 6.5.2][riehl2017]
+* ‍\[Riehl, _Category theory in context_, Proposition 6.5.2\]\[riehl2017\]
 
 ## TODO
 

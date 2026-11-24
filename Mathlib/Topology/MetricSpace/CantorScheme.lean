@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.PiNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Topological) Schemes and their induced maps
 
@@ -32,7 +35,7 @@ in this file. See instead `PiNat.res`.
 
 ## References
 
-* [kechris1995] (Chapters 6-7)
+* ‍\[kechris1995\] (Chapters 6-7)
 
 ## Tags
 

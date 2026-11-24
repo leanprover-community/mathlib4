@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Probability.Process.Stopping
 
-/-! # Local properties of processes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Local properties of processes
 
 This file defines local and stable properties of stochastic processes with respect to a filtration.
 This is notably useful for local martingales.

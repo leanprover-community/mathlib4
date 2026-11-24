@@ -9,8 +9,11 @@ public import Mathlib.Combinatorics.Quiver.Basic
 
 import Mathlib.Order.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Wide subquivers
+# Wide subquivers
 
 A wide subquiver `H` of a quiver `H` consists of a subset of the edge set `a ⟶ b` for
 every pair of vertices `a b : V`. We include 'wide' in the name to emphasize that these

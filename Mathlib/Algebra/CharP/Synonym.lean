@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Ring.Synonym
 
 import Mathlib.Algebra.CharZero.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic of the order type synonyms
 
@@ -21,7 +24,7 @@ public section
 
 variable {R : Type*}
 
-/-! ### Order dual -/
+/-! # Order dual -/
 
 namespace OrderDual
 
@@ -38,7 +41,7 @@ theorem ringChar_eq [NonAssocSemiring R] : ringChar Rᵒᵈ = ringChar R :=
 
 end OrderDual
 
-/-! ### Lexicographical order -/
+/-! # Lexicographical order -/
 
 namespace Lex
 

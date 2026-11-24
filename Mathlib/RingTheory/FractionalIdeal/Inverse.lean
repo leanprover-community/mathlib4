@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.FractionalIdeal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse operator for fractional ideals
 
@@ -17,13 +20,13 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 
 ## Main definitions
 
-- `FractionalIdeal.instInv` defines `I⁻¹ := 1 / I`.
+* `FractionalIdeal.instInv` defines `I⁻¹ := 1 / I`.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Algebra.FinitePresentation` is local
 
@@ -16,7 +19,7 @@ In this file we show that being a finitely presented algebra is local.
 
 ## Main results
 
-- `Algebra.FinitePresentation.of_span_eq_top_target`: finite presentation is local on the
+* `Algebra.FinitePresentation.of_span_eq_top_target`: finite presentation is local on the
   (algebraic) target
 -/
 

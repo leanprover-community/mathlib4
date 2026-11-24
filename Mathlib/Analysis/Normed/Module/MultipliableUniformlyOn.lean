@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform convergence of products of functions
 
@@ -50,12 +53,14 @@ lemma Summable.tendstoUniformlyOn_tsum_nat_log_one_add {f : ℕ → α → ℂ} 
   rw [← Nat.cofinite_eq_atTop] at h
   exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finsetRange
 
-/-- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
+/--
+If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
 on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
 convergent on `𝔖`.
 
 Note that the non-vanishing assumption is really needed here: if this assumption is dropped then
-one obtains a counterexample if `ι = α = ℕ` and `f i x` is `0` if `i = x` and `1` otherwise. -/
+one obtains a counterexample if `ι = α = ℕ` and `f i x` is `0` if `i = x` and `1` otherwise.
+-/
 lemma hasProdUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) s)
     (hfn : ∀ x ∈ s, ∀ i, f i x ≠ 0)
     (hg : BddAbove <| (fun x ↦ (∑' i, log (f i x)).re) '' s) :

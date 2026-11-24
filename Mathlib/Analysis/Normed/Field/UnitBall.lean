@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Group.BallSphere
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures on unit balls and spheres
 
@@ -24,9 +27,7 @@ open Set Metric
 
 variable {𝕜 : Type*}
 
-/-!
-### Algebraic structures on `Metric.ball 0 1`
--/
+/-! # Algebraic structures on `Metric.ball 0 1` -/
 
 /-- Unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
 def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
@@ -88,9 +89,7 @@ instance Metric.unitBall.instIsRightCancelMulZero [NonUnitalSeminormedRing 𝕜]
 instance Metric.unitBall.instIsCancelMulZero [NonUnitalSeminormedRing 𝕜]
     [IsCancelMulZero 𝕜] : IsCancelMulZero (ball (0 : 𝕜) 1) where
 
-/-!
-### Algebraic instances for `Metric.closedBall 0 1`
--/
+/-! # Algebraic instances for `Metric.closedBall 0 1` -/
 
 /-- Closed unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
 def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
@@ -176,9 +175,7 @@ instance Metric.unitClosedBall.instIsCancelMulZero [SeminormedRing 𝕜] [IsCanc
     [NormOneClass 𝕜] : IsCancelMulZero (closedBall (0 : 𝕜) 1) :=
   Subtype.val_injective.isCancelMulZero _ rfl fun _ _ ↦ rfl
 
-/-!
-### Algebraic instances on the unit sphere
--/
+/-! # Algebraic instances on the unit sphere -/
 
 /-- Unit sphere in a seminormed ring (with strictly multiplicative norm) as a bundled
 `Submonoid`. -/

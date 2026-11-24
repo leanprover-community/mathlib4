@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative cell complexes
 
@@ -24,6 +27,7 @@ formalization of the small object argument,
 see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgument.lean`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/small+object+argument
 -/
 

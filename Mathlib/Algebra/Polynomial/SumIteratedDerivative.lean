@@ -12,6 +12,9 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sum of iterated derivatives
 
@@ -55,7 +58,7 @@ Sum of iterated derivatives of a polynomial, as a linear map
 
 This definition does not allow different weights for the derivatives. It is likely that it could be
 extended to allow them, but this was not needed for the initial use case (the integration by parts
-of the integral $I_i$ in the
+of the integral $`I_i` in the
 [Lindemann-Weierstrass](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem)
 theorem).
 -/

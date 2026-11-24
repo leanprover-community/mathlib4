@@ -9,6 +9,9 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional conversion tactics
 
@@ -75,6 +78,8 @@ macro_rules
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
 
+
+set_option doc.verso false
 /--
 `conv in pat => cs` runs the `conv` tactic sequence `cs`
 on the first subexpression matching the pattern `pat` in the target.
@@ -91,6 +96,8 @@ conv in (occs := *) x + y => rw [add_comm]
 macro (name := convInConv) "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
   `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
 
+
+set_option doc.verso true
 /--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
   which proves the goal `⊢ p`.
@@ -151,6 +158,7 @@ The command `#whnf e` evaluates `e` to Weak Head Normal Form, which means that t
 of the expression is reduced to a primitive - a lambda or forall, or an axiom or inductive type.
 It is similar to `#reduce e`, but it does not reduce the expression completely,
 only until the first constructor is exposed. For example:
+
 ```
 open Nat List
 set_option pp.notation false
@@ -159,6 +167,7 @@ set_option pp.notation false
 #reduce [1, 2, 3].map succ
 -- cons 2 (cons 3 (cons 4 nil))
 ```
+
 The head of this expression is the `List.cons` constructor,
 so we can see from this much that the list is not empty,
 but the subterms `Nat.succ 1` and `List.map Nat.succ (List.cons 2 (List.cons 3 List.nil))` are

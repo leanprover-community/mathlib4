@@ -10,9 +10,10 @@ public import Mathlib.Data.List.Zip
 public import Mathlib.Data.Multiset.Bind
 public import Mathlib.Data.Multiset.Range
 
-/-!
-# The powerset of a multiset
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # The powerset of a multiset -/
 
 @[expose] public section
 
@@ -22,7 +23,7 @@ open List
 
 variable {α : Type*}
 
-/-! ### powerset -/
+/-! # powerset -/
 
 -- TODO: Write a more efficient version (this is slightly slower due to the `map (↑)`).
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
@@ -183,7 +184,7 @@ lemma powerset_strictMono : StrictMono (@Multiset.powerset α) :=
 lemma powerset_mono : Monotone (@Multiset.powerset α) :=
   powerset_strictMono.monotone
 
-/-! ### powersetCard -/
+/-! # powersetCard -/
 
 
 /-- Helper function for `powersetCard`. Given a list `l`, `powersetCardAux n l` is the list

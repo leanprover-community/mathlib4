@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Chebyshev
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Order.Partition.Equipartition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma
 
@@ -27,7 +30,7 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section

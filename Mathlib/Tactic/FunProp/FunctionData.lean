@@ -9,8 +9,11 @@ public meta import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.ToBatteries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `funProp` data structure holding information about a function
+# `funProp` data structure holding information about a function
 
 `FunctionData` holds data about function in the form `fun x ↦ f x₁ ... xₙ`.
 -/
@@ -57,9 +60,11 @@ def FunctionData.domainType (f : FunctionData) : MetaM Expr :=
   withLCtx f.lctx f.insts do
     inferType f.mainVar
 
-/-- Is head function of `f` a constant?
+/--
+Is head function of `f` a constant?
 
-If the head of `f` is a projection return the name of corresponding projection function. -/
+If the head of `f` is a projection return the name of corresponding projection function.
+-/
 def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
 
   match f.fn with
@@ -187,12 +192,15 @@ inductive DecompositionResult
   /-- The decomposition failed for some other reason. -/
   | failed
 
-/-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
+/--
+Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
 
 Returns `DecompositionResult.failed` if:
-  - `n=0`
-  - `yₙ` contains `x`
-  - `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f` -/
+
+* `n=0`
+* `yₙ` contains `x`
+* `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f`
+-/
 def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM DecompositionResult := do
   unless fData.args.size > 0 do return .failed
   withLCtx fData.lctx fData.insts do
@@ -267,9 +275,11 @@ def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResul
     return .comp f g
 
 
-/-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
+/--
+Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 
 The result is:
+
 ```
 (fun (yᵢ',yⱼ',...) ↦ f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x ↦ (yᵢ, yⱼ, ...))
 ```

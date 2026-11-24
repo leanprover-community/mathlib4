@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
 import Mathlib.Analysis.Normed.Order.UpperLower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order-connected sets are null-measurable
 
@@ -32,15 +35,15 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 
 1. To show an order-connected set is null-measurable, it is enough to show it has null frontier.
 2. Since an order-connected set is the intersection of its upper and lower closure, it's enough to
-  show that upper and lower sets have null frontier.
+   show that upper and lower sets have null frontier.
 3. WLOG let's prove it for an upper set `s`.
 4. By the Lebesgue density theorem, it is enough to show that any frontier point `x` of `s` is not a
-  Lebesgue point, namely we want the density of `s` over small balls centered at `x` to not tend to
-  either `0` or `1`.
+   Lebesgue point, namely we want the density of `s` over small balls centered at `x` to not tend to
+   either `0` or `1`.
 5. This is true, since by the upper setness of `s` we can intercalate a ball of radius `δ / 4` in
-  `s` intersected with the upper quadrant of the ball of radius `δ` centered at `x` (recall that the
-  balls are taken in the ∞-norm, so they are cubes), and another ball of radius `δ / 4` in `sᶜ` and
-  the lower quadrant of the ball of radius `δ` centered at `x`.
+   `s` intersected with the upper quadrant of the ball of radius `δ` centered at `x` (recall that
+   the balls are taken in the ∞-norm, so they are cubes), and another ball of radius `δ / 4` in `sᶜ`
+   and the lower quadrant of the ball of radius `δ` centered at `x`.
 
 ## TODO
 
@@ -54,11 +57,13 @@ open scoped Topology
 
 variable {ι : Type*} [Fintype ι] {s : Set (ι → ℝ)} {x : ι → ℝ}
 
-/-- If we can fit a small ball inside a set `s` intersected with any neighborhood of `x`, then the
+/--
+If we can fit a small ball inside a set `s` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `0`.
 
 Along with `aux₁`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
-that the frontier of an order-connected set is null. -/
+that the frontier of an order-connected set is null.
+-/
 private lemma aux₀
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s) :
@@ -83,11 +88,13 @@ private lemma aux₀
       ← div_pow, mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
   all_goals positivity
 
-/-- If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the
+/--
+If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `1`.
 
 Along with `aux₀`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
-that the frontier of an order-connected set is null. -/
+that the frontier of an order-connected set is null.
+-/
 private lemma aux₁
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior sᶜ) :

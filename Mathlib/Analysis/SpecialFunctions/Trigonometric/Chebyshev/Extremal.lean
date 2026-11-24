@@ -11,22 +11,26 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev polynomials over the reals: some extremal properties
 
 * Chebyshev polynomials have largest leading coefficient,
-following proof in https://math.stackexchange.com/a/978145/1277
+  following proof in https://math.stackexchange.com/a/978145/1277
 * Chebyshev polynomials maximize iterated derivatives at 1 and beyond
 
 ## Main statements
 
-* leadingCoeff_le_of_forall_abs_le_one: If `P` is a real polynomial of degree at most `n` and
+* leadingCoeff\_le\_of\_forall\_abs\_le\_one: If `P` is a real polynomial of degree at most `n` and
   `|P (x)| ≤ 1` for all `x ∈ [-1, 1]` then the leading coefficient of `P` is at most `2 ^ (n - 1)`
-* leadingCoeff_eq_iff_of_forall_abs_le_one: When `n ≥ 2`, equality holds iff `P = T_n`
-* eval_iterate_derivative_le_of_forall_abs_le_one: If `P` is a real polynomial of degree at most `n`
-  and `|P (x)| ≤ 1` for all `x ∈ [-1, 1]` then for all `x ≥ 1`, `P ^ (k) (x) ≤ T_n ^ (k)(x)`
-* eval_iterate_derivative_eq_iff_of_forall_abs_le_one: If `0 < k ≤ n` then equality holds iff
-  `P = T_n`
+* leadingCoeff\_eq\_iff\_of\_forall\_abs\_le\_one: When `n ≥ 2`, equality holds iff `P = T_n`
+* eval\_iterate\_derivative\_le\_of\_forall\_abs\_le\_one: If `P` is a real polynomial of degree at
+  most `n` and `|P (x)| ≤ 1` for all `x ∈ [-1, 1]` then for all `x ≥ 1`,
+  `P ^ (k) (x) ≤ T_n ^ (k)(x)`
+* eval\_iterate\_derivative\_eq\_iff\_of\_forall\_abs\_le\_one: If `0 < k ≤ n` then equality holds
+  iff `P = T_n`
 
 ## Implementation
 
@@ -35,9 +39,9 @@ similar approach.
 
 By monotonicity of `2 ^ (n - 1)`, we can assume that `P` has degree exactly `n`.
 Using Lagrange interpolation, we can give a formula for the leading coefficient of `P`
-as a linear combination of the values of `P` on the Chebyshev nodes (sumNodes_eq_coeff).
+as a linear combination of the values of `P` on the Chebyshev nodes (sumNodes\_eq\_coeff).
 The Chebyshev polynomial `T_n` has value `±1` on the nodes, with the same signs as the
-coefficients of the linear combination (negOnePow_mul_leadingCoeffC_pos).
+coefficients of the linear combination (negOnePow\_mul\_leadingCoeffC\_pos).
 Since `|P (x)| ≤ 1` on the nodes, this implies that the leading coefficient of `P` is bounded
 by that of `T_n`, which is known to equal `2 ^ (n - 1)`.
 Moreover, equality holds iff `P` and `T_n` agree on the nodes, which implies that they coincide.

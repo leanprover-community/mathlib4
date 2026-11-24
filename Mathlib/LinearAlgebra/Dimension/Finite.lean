@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditions for rank to be finite
 
@@ -274,11 +277,13 @@ noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
   simp [Cardinal.natCast_lt_aleph0]
 
-/-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
+/--
+If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.
 
 Note that the `Fintype` hypothesis required here can be provided by
-`iSupIndep.fintypeNeBotOfFiniteDimensional`. -/
+`iSupIndep.fintypeNeBotOfFiniteDimensional`.
+-/
 theorem iSupIndep.subtype_ne_bot_le_finrank
     {p : ι → Submodule R M} (hp : iSupIndep p) [Fintype { i // p i ≠ ⊥ }] :
     Fintype.card { i // p i ≠ ⊥ } ≤ finrank R M := by simpa using hp.subtype_ne_bot_le_finrank_aux

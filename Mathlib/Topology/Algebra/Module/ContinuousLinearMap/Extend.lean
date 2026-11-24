@@ -7,13 +7,18 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
-/-! # Extension of continuous linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Extension of continuous linear maps
 
 In this file we provide a way to extend a continuous linear map defined on a dense
 subspace to the entire space.
 
 * `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
-  `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`. -/
+  `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`.
+-/
 
 namespace ContinuousLinearMap
 variable {𝕜 𝕜₂ E F Eₗ : Type*} [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]

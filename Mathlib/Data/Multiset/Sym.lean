@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.List.Sym
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-! # Unordered tuples of elements of a multiset
 
 Defines `Multiset.sym` and the specialized `Multiset.sym2` for computing multisets of all

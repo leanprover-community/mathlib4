@@ -15,6 +15,9 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended GCD and divisibility over ℤ
 
@@ -35,7 +38,7 @@ Bézout's lemma, Bezout's lemma
 
 @[expose] public section
 
-/-! ### Extended Euclidean algorithm -/
+/-! # Extended Euclidean algorithm -/
 
 
 namespace Nat
@@ -152,7 +155,7 @@ theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (
 
 end Nat
 
-/-! ### Divisibility over ℤ -/
+/-! # Divisibility over ℤ -/
 
 
 namespace Int

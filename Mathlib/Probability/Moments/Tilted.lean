@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Tilted
 public import Mathlib.Probability.Moments.MGFAnalytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results relating `Measure.tilted` to `mgf` and `cgf`
 
@@ -38,7 +41,7 @@ namespace ProbabilityTheory
 
 section Apply
 
-/-! ### Apply lemmas for `tilted` expressed with `mgf` or `cgf`. -/
+/-! # Apply lemmas for `tilted` expressed with `mgf` or `cgf`. -/
 
 lemma tilted_mul_apply_mgf' {s : Set Ω} (hs : MeasurableSet s) :
     μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
@@ -89,7 +92,7 @@ end Apply
 
 section Integral
 
-/-! ### Integral of `tilted` expressed with `mgf` or `cgf`. -/
+/-! # Integral of `tilted` expressed with `mgf` or `cgf`. -/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 

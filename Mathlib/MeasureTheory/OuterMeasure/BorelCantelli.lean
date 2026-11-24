@@ -7,22 +7,25 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.AE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel-Cantelli lemma, part 1
 
-In this file we show one implication of the **Borel-Cantelli lemma**:
+In this file we show one implication of the *Borel-Cantelli lemma*:
 if `s i` is a countable family of sets such that `∑' i, μ (s i)` is finite,
 then a.e. all points belong to finitely many sets of the family.
 
 We prove several versions of this lemma:
 
-- `MeasureTheory.ae_finite_setOfPred_mem`: as stated above;
-- `MeasureTheory.measure_limsup_cofinite_eq_zero`:
+* `MeasureTheory.ae_finite_setOfPred_mem`: as stated above;
+* `MeasureTheory.measure_limsup_cofinite_eq_zero`:
   in terms of `Filter.limsup` along `Filter.cofinite`;
-- `MeasureTheory.measure_limsup_atTop_eq_zero`:
+* `MeasureTheory.measure_limsup_atTop_eq_zero`:
   in terms of `Filter.limsup` along `(Filter.atTop : Filter ℕ)`.
 
-For the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
+For the _second_ Borel-Cantelli lemma (applying to independent sets in a probability space),
 see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
 
@@ -35,13 +38,15 @@ namespace MeasureTheory
 
 variable {α ι F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] [Countable ι] {μ : F}
 
-/-- One direction of the **Borel-Cantelli lemma**
-(sometimes called the "*first* Borel-Cantelli lemma"):
+/--
+One direction of the *Borel-Cantelli lemma*
+(sometimes called the "_first_ Borel-Cantelli lemma"):
 if `(s i)` is a countable family of sets such that `∑' i, μ (s i)` is finite,
 then the limit superior of the `s i` along the cofinite filter is a null set.
 
-Note: for the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
-see `ProbabilityTheory.measure_limsup_eq_one`. -/
+Note: for the _second_ Borel-Cantelli lemma (applying to independent sets in a probability space),
+see `ProbabilityTheory.measure_limsup_eq_one`.
+-/
 theorem measure_limsup_cofinite_eq_zero {s : ι → Set α} (hs : ∑' i, μ (s i) ≠ ∞) :
     μ (limsup s cofinite) = 0 := by
   refine bot_unique <| ge_of_tendsto' (ENNReal.tendsto_tsum_compl_atTop_zero hs) fun t ↦ ?_
@@ -52,21 +57,25 @@ theorem measure_limsup_cofinite_eq_zero {s : ι → Set α} (hs : ∑' i, μ (s 
       exact iInter₂_subset _ t.finite_toSet
     _ ≤ ∑' i : {i // i ∉ t}, μ (s i) := measure_iUnion_le _
 
-/-- One direction of the **Borel-Cantelli lemma**
-(sometimes called the "*first* Borel-Cantelli lemma"):
+/--
+One direction of the *Borel-Cantelli lemma*
+(sometimes called the "_first_ Borel-Cantelli lemma"):
 if `(s i)` is a sequence of sets such that `∑' i, μ (s i)` is finite,
 then the limit superior of the `s i` along the `atTop` filter is a null set.
 
-Note: for the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
-see `ProbabilityTheory.measure_limsup_eq_one`. -/
+Note: for the _second_ Borel-Cantelli lemma (applying to independent sets in a probability space),
+see `ProbabilityTheory.measure_limsup_eq_one`.
+-/
 theorem measure_limsup_atTop_eq_zero {s : ℕ → Set α} (hs : ∑' i, μ (s i) ≠ ∞) :
     μ (limsup s atTop) = 0 := by
   rw [← Nat.cofinite_eq_atTop, measure_limsup_cofinite_eq_zero hs]
 
-/-- One direction of the **Borel-Cantelli lemma**
-(sometimes called the "*first* Borel-Cantelli lemma"):
+/--
+One direction of the *Borel-Cantelli lemma*
+(sometimes called the "_first_ Borel-Cantelli lemma"):
 if `(s i)` is a countable family of sets such that `∑' i, μ (s i)` is finite,
-then a.e. all points belong to finitely many sets of the family. -/
+then a.e. all points belong to finitely many sets of the family.
+-/
 theorem ae_finite_setOfPred_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     ∀ᵐ x ∂μ, {i | x ∈ s i}.Finite := by
   rw [ae_iff, ← measure_limsup_cofinite_eq_zero h]

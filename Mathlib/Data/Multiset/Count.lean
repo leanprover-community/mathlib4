@@ -8,9 +8,10 @@ module
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Multiset.ZeroCons
 
-/-!
-# Counting multiplicity in a multiset
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Counting multiplicity in a multiset -/
 
 @[expose] public section
 
@@ -30,7 +31,7 @@ section
 variable (p : α → Prop) [DecidablePred p]
 
 
-/-! ### countP -/
+/-! # countP -/
 
 
 /-- `countP p s` counts the number of elements of `s` (with multiplicity) that
@@ -113,7 +114,7 @@ theorem countP_congr {s s' : Multiset α} (hs : s = s')
 
 end
 
-/-! ### Multiplicity of an element -/
+/-! # Multiplicity of an element -/
 
 
 section
@@ -198,7 +199,7 @@ theorem le_iff_count {s t : Multiset α} : s ≤ t ↔ ∀ a, count a s ≤ coun
 
 end
 
-/-! ### Lift a relation to `Multiset`s -/
+/-! # Lift a relation to `Multiset`s -/
 
 section Rel
 

@@ -9,16 +9,20 @@ public import Mathlib.RingTheory.SimpleRing.Defs
 
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
-/-! # Basic Properties of Simple rings
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
+/-!
+# Basic Properties of Simple rings
+
+A ring `R` is *simple* if it has only two two-sided ideals, namely `⊥` and `⊤`.
 
 ## Main results
 
-- `IsSimpleRing.instNontrivial`: simple rings are non-trivial.
-- `DivisionRing.isSimpleRing`: division rings are simple.
-- `RingHom.injective`: every ring homomorphism from a simple ring to a nontrivial ring is injective.
-- `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
+* `IsSimpleRing.instNontrivial`: simple rings are non-trivial.
+* `DivisionRing.isSimpleRing`: division rings are simple.
+* `RingHom.injective`: every ring homomorphism from a simple ring to a nontrivial ring is injective.
+* `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
   ring is injective.
 -/
 

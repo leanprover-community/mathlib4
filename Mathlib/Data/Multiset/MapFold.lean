@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Multiset.Replicate
 public import Mathlib.Data.Set.List
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mapping and folding multisets
 
@@ -36,7 +39,7 @@ variable {α : Type*} {β : Type v} {γ : Type*}
 
 namespace Multiset
 
-/-! ### `Multiset.map` -/
+/-! # `Multiset.map` -/
 
 
 /-- `map f s` is the lift of the list `map` operation. The multiplicity
@@ -214,7 +217,7 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
     obtain ⟨t, rfl⟩ := ih
     exact ⟨y ::ₘ t, map_cons _ _ _⟩
 
-/-! ### `Multiset.fold` -/
+/-! # `Multiset.fold` -/
 
 
 section foldl
@@ -316,7 +319,7 @@ theorem foldl_induction (f : α → α → α) [RightCommutative f] (x : α) (p 
     p (foldl f x s) :=
   foldl_induction' f x p p s p_f px p_s
 
-/-! ### Map for partial functions -/
+/-! # Map for partial functions -/
 
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (s : Multiset α) :
     ∀ H, @pmap _ _ p (fun a _ => f a) s H = map f s :=
@@ -362,7 +365,7 @@ lemma erase_attach_map (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
 
 end
 
-/-! ### Subtraction -/
+/-! # Subtraction -/
 
 section sub
 variable [DecidableEq α] {s t : Multiset α}
@@ -376,7 +379,7 @@ lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
 
 end sub
 
-/-! ### Lift a relation to `Multiset`s -/
+/-! # Lift a relation to `Multiset`s -/
 
 
 section Rel

@@ -18,6 +18,9 @@ public import Mathlib.Tactic.Abel
 
 import Mathlib.Algebra.Group.FunLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine maps
 
@@ -46,8 +49,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 
 ## References
 
-* https://en.wikipedia.org/wiki/Affine_space
-* https://en.wikipedia.org/wiki/Principal_homogeneous_space
+* https://en.wikipedia.org/wiki/Affine\_space
+* https://en.wikipedia.org/wiki/Principal\_homogeneous\_space
 -/
 
 @[expose] public section
@@ -520,7 +523,7 @@ theorem coe_prodMap (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) : ⇑(f.prodMap 
 theorem prodMap_apply (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) (x) : f.prodMap g x = (f x.1, g x.2) :=
   rfl
 
-/-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
+/-! # Definition of `AffineMap.lineMap` and lemmas about it -/
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
@@ -744,11 +747,13 @@ instance : Module R (P1 →ᵃ[k] V2) := fast_instance% FunLike.module
 
 variable (R)
 
-/-- The space of affine maps between two modules is linearly equivalent to the product of the
+/--
+The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
 linear part.
 
-See note [bundled maps over different rings] -/
+See note \[bundled maps over different rings\]
+-/
 @[simps]
 def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) where
   toFun f := ⟨f 0, f.linear⟩
@@ -775,7 +780,8 @@ section Pi
 
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
   [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
-/-- `pi` construction for affine maps. From a family of affine maps it produces an affine
+/--
+`pi` construction for affine maps. From a family of affine maps it produces an affine
 map into a family of affine spaces.
 
 This is the affine version of `LinearMap.pi`.
@@ -838,8 +844,10 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
   rw [← Pi.single_zero default]
   apply h
 
-/-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
-note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
+/--
+This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
+note \[partially-applied ext lemmas\]. Analogous to `LinearMap.pi_ext'`
+-/
 @[ext (iff := false)]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by

@@ -11,6 +11,9 @@ public meta import Lean.Meta.Tactic.TryThis
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `observe` tactic.
 
@@ -23,7 +26,8 @@ namespace Mathlib.Tactic.LibrarySearch
 
 open Lean Meta Elab Tactic Meta.Tactic.TryThis LibrarySearch
 
-/-- `observe hp : p` asserts the proposition `p` as a hypothesis named `hp`, and tries to prove it
+/--
+`observe hp : p` asserts the proposition `p` as a hypothesis named `hp`, and tries to prove it
 using `exact?`.
 If no proof is found, the tactic fails.
 In other words, this tactic is equivalent to `have hp : p := by exact?`.

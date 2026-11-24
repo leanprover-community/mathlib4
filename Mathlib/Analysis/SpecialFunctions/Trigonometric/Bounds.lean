@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial bounds for trigonometric functions
 
@@ -76,7 +79,8 @@ theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin 
   simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @lt_sin_mul ((π / 2)⁻¹ * x)
     (mul_pos (inv_pos.2 pi_div_two_pos) hx) (by rwa [← div_eq_inv_mul, div_lt_one pi_div_two_pos])
 
-/-- One half of **Jordan's inequality**.
+/--
+One half of *Jordan's inequality*.
 
 In the range `[0, π / 2]`, we have a linear lower bound on `sin`. The other half is given by
 `Real.sin_le`.
@@ -145,9 +149,11 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
-/-- For 0 < x we have x - x ^ 3 / 6 < sin x.
+/--
+For 0 < x we have x - x ^ 3 / 6 < sin x.
 
-This inequality is tight, in that the constant 6 is best possible. -/
+This inequality is tight, in that the constant 6 is best possible.
+-/
 theorem sin_gt_sub_cube {x : ℝ} (hx : 0 < x) : x - x ^ 3 / 6 < Real.sin x := by
   let f (t : ℝ) : ℝ := Real.sin t - (t - t ^ 3 / 6)
   have hderiv (t : ℝ) : deriv f t = cos t - 1 + t ^ 2 / 2 := by
@@ -159,9 +165,11 @@ theorem sin_gt_sub_cube {x : ℝ} (hx : 0 < x) : x - x ^ 3 / 6 < Real.sin x := b
   have h0 : f 0 < f x := hmono (by simp) hx.le hx
   grind [Real.sin_zero]
 
-/-- For 0 ≤ x we have x - x ^ 3 / 6 ≤ sin x.
+/--
+For 0 ≤ x we have x - x ^ 3 / 6 ≤ sin x.
 
-This inequality is tight, in that the constant 6 is best possible. -/
+This inequality is tight, in that the constant 6 is best possible.
+-/
 theorem sin_ge_sub_cube {x : ℝ} (hx : 0 ≤ x) : x - x ^ 3 / 6 ≤ Real.sin x := by
   obtain rfl | hx := hx.eq_or_lt
   · simp
@@ -178,10 +186,12 @@ theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using! (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
-/-- For all `0 < x < π/2` we have `x < tan x`.
+/--
+For all `0 < x < π/2` we have `x < tan x`.
 
 This is proved by checking that the function `tan x - x` vanishes
-at zero and has non-negative derivative. -/
+at zero and has non-negative derivative.
+-/
 theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   let U := Ico 0 (π / 2)
   have intU : interior U = Ioo 0 (π / 2) := interior_Ico
@@ -218,10 +228,12 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
   · rw [tan_zero]
   · exact le_of_lt (lt_tan h1' h2)
 
-/-- For `0 < x` we have `arctan x < x`.
+/--
+For `0 < x` we have `arctan x < x`.
 
 This is `lt_tan` reflected in the diagonal: `tan` lies above the identity on `(0, π / 2)`, hence
-its inverse lies below it. -/
+its inverse lies below it.
+-/
 theorem arctan_lt_self (h : 0 < x) : arctan x < x := by
   simpa using lt_tan (arctan_pos.2 h) (arctan_lt_pi_div_two x)
 

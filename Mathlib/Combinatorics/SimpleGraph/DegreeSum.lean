@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degree-sum formula and handshaking lemma
 
@@ -18,11 +21,11 @@ a corollary, is that the number of odd-degree vertices is even.
 
 ## Main definitions
 
-- `SimpleGraph.sum_degrees_eq_twice_card_edges` is the degree-sum formula.
-- `SimpleGraph.even_card_odd_degree_vertices` is the handshaking lemma.
-- `SimpleGraph.odd_card_odd_degree_vertices_ne` is that the number of odd-degree
+* `SimpleGraph.sum_degrees_eq_twice_card_edges` is the degree-sum formula.
+* `SimpleGraph.even_card_odd_degree_vertices` is the handshaking lemma.
+* `SimpleGraph.odd_card_odd_degree_vertices_ne` is that the number of odd-degree
   vertices different from a given odd-degree vertex is odd.
-- `SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree` is that the existence of an
+* `SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree` is that the existence of an
   odd-degree vertex implies the existence of another one.
 
 ## Implementation notes
@@ -106,9 +109,11 @@ lemma two_mul_card_edgeFinset : 2 * #G.edgeFinset = #(univ.filter fun (x, y) ↦
   refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
     <;> simp
 
-/-- The degree-sum formula only counting over the vertices that form edges.
+/--
+The degree-sum formula only counting over the vertices that form edges.
 
-See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
+See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version.
+-/
 theorem sum_degrees_support_eq_twice_card_edges :
     ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
   classical

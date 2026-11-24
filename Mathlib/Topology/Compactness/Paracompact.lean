@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paracompact topological spaces
 
@@ -14,7 +17,7 @@ A topological space `X` is said to be paracompact if every open covering of `X` 
 finite refinement.
 
 The definition requires that each set of the new covering is a subset of one of the sets of the
-initial covering. However, one can ensure that each open covering `s : ι → Set X` admits a *precise*
+initial covering. However, one can ensure that each open covering `s : ι → Set X` admits a _precise_
 locally finite refinement, i.e., an open covering `t : ι → Set X` with the same index set such that
 `∀ i, t i ⊆ s i`, see lemma `precise_refinement`. We also provide a convenience lemma
 `precise_refinement_set` that deals with open coverings of a closed subset of `X` instead of the
@@ -23,16 +26,13 @@ whole space.
 We also prove the following facts.
 
 * Every compact space is paracompact, see instance `paracompact_of_compact`.
-
 * A locally compact sigma compact Hausdorff space is paracompact, see instance
   `paracompact_of_locallyCompact_sigmaCompact`. Moreover, we can choose a locally finite
   refinement with sets in a given collection of filter bases of `𝓝 x`, `x : X`, see
   `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis`. For example, in a proper metric space
   every open covering `⋃ i, s i` admits a refinement `⋃ i, Metric.ball (c i) (r i)`.
-
 * Every paracompact Hausdorff space is normal. This statement is not an instance to avoid loops in
   the instance graph.
-
 * Every `EMetricSpace` is a paracompact space, see instance `EMetric.instParacompactSpace` in
   `Topology/EMetricSpace/Paracompact`.
 
@@ -54,11 +54,13 @@ open Filter Topology
 
 universe u v w
 
-/-- A topological space is called paracompact, if every open covering of this space admits a locally
+/--
+A topological space is called paracompact, if every open covering of this space admits a locally
 finite refinement. We use the same universe for all types in the definition to avoid creating a
 class like `ParacompactSpace.{u v}`. Due to lemma `precise_refinement` below, every open covering
-`s : α → Set X` indexed on `α : Type v` has a *precise* locally finite refinement, i.e., a locally
-finite refinement `t : α → Set X` indexed on the same type such that each `∀ i, t i ⊆ s i`. -/
+`s : α → Set X` indexed on `α : Type v` has a _precise_ locally finite refinement, i.e., a locally
+finite refinement `t : α → Set X` indexed on the same type such that each `∀ i, t i ⊆ s i`.
+-/
 class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
   /-- Every open cover of a paracompact space assumes a locally finite refinement. -/
   locallyFinite_refinement :
@@ -68,8 +70,10 @@ class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
 
 variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [TopologicalSpace Y]
 
-/-- Any open cover of a paracompact space has a locally finite *precise* refinement, that is,
-one indexed on the same type with each open set contained in the corresponding original one. -/
+/--
+Any open cover of a paracompact space has a locally finite _precise_ refinement, that is,
+one indexed on the same type with each open set contained in the corresponding original one.
+-/
 theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, IsOpen (u a))
     (uc : ⋃ i, u i = univ) : ∃ v : ι → Set X, (∀ a, IsOpen (v a)) ∧ ⋃ i, v i = univ ∧
     LocallyFinite v ∧ ∀ a, v a ⊆ u a := by
@@ -139,12 +143,14 @@ theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X 
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
 
-/-- The product of a compact space and a paracompact space is a paracompact space. The formalization
+/--
+The product of a compact space and a paracompact space is a paracompact space. The formalization
 is based on https://dantopology.wordpress.com/2009/10/24/compact-x-paracompact-is-paracompact/
 with some minor modifications.
 
 This version assumes that `X` in `X × Y` is compact and `Y` is paracompact, see next lemma for the
-other case. -/
+other case.
+-/
 instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSpace (X × Y) where
   locallyFinite_refinement α s ho hu := by
     have : ∀ (x : X) (y : Y), ∃ (a : α) (U : Set X) (V : Set Y),
@@ -184,7 +190,8 @@ instance (priority := 100) paracompact_of_compact [CompactSpace X] : Paracompact
     fun t ↦ ⟨t, Subset.rfl⟩⟩
   simpa only [iUnion_coe_set, ← univ_subset_iff]
 
-/-- Let `X` be a locally compact sigma compact Hausdorff topological space, let `s` be a closed set
+/--
+Let `X` be a locally compact sigma compact Hausdorff topological space, let `s` be a closed set
 in `X`. Suppose that for each `x ∈ s` the sets `B x : ι x → Set X` with the predicate
 `p x : ι x → Prop` form a basis of the filter `𝓝 x`. Then there exists a locally finite covering
 `fun i ↦ B (c i) (r i)` of `s` such that all “centers” `c i` belong to `s` and each `r i` satisfies
@@ -196,14 +203,18 @@ the user should use a basis obtained by `Filter.HasBasis.restrict_subset` or a s
 the proof of `paracompact_of_locallyCompact_sigmaCompact` for an example.
 
 The formalization is based on two [ncatlab](https://ncatlab.org/) proofs:
-* [locally compact and sigma compact spaces are paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
-* [open cover of smooth manifold admits locally finite refinement by closed balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
+
+* [locally compact and sigma compact spaces are
+  paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
+* [open cover of smooth manifold admits locally finite refinement by closed
+  balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
 
 See also `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis` for a version of this lemma
 dealing with a covering of the whole space.
 
 In most cases (namely, if `B c r ∪ B c r'` is again a set of the form `B c r''`) it is possible
-to choose `α = X`. This fact is not yet formalized in `mathlib`. -/
+to choose `α = X`. This fact is not yet formalized in `mathlib`.
+-/
 theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] {ι : X → Type u} {p : ∀ x, ι x → Prop} {B : ∀ x, ι x → Set X}
     {s : Set X} (hs : IsClosed s) (hB : ∀ x ∈ s, (𝓝 x).HasBasis (p x) (B x)) :
@@ -251,7 +262,8 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     contrapose! this with hnk
     exact K.subset hnk (interior_subset hxK)
 
-/-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
+/--
+Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
 `x` the sets `B x : ι x → Set X` with the predicate `p x : ι x → Prop` form a basis of the filter
 `𝓝 x`. Then there exists a locally finite covering `fun i ↦ B (c i) (r i)` of `X` such that each
 `r i` satisfies `p (c i)`.
@@ -262,14 +274,18 @@ the user should use a basis obtained by `Filter.HasBasis.restrict_subset` or a s
 the proof of `paracompact_of_locallyCompact_sigmaCompact` for an example.
 
 The formalization is based on two [ncatlab](https://ncatlab.org/) proofs:
-* [locally compact and sigma compact spaces are paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
-* [open cover of smooth manifold admits locally finite refinement by closed balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
+
+* [locally compact and sigma compact spaces are
+  paracompact](https://ncatlab.org/nlab/show/locally+compact+and+sigma-compact+spaces+are+paracompact);
+* [open cover of smooth manifold admits locally finite refinement by closed
+  balls](https://ncatlab.org/nlab/show/partition+of+unity#ExistenceOnSmoothManifolds).
 
 See also `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set` for a version of this lemma
 dealing with a covering of a closed set.
 
 In most cases (namely, if `B c r ∪ B c r'` is again a set of the form `B c r''`) it is possible
-to choose `α = X`. This fact is not yet formalized in `mathlib`. -/
+to choose `α = X`. This fact is not yet formalized in `mathlib`.
+-/
 theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] {ι : X → Type u} {p : ∀ x, ι x → Prop} {B : ∀ x, ι x → Set X}
     (hB : ∀ x, (𝓝 x).HasBasis (p x) (B x)) :

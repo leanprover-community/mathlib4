@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 import Mathlib.Analysis.Convex.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exposed sets
 
@@ -34,7 +37,7 @@ on mathlib!).
 
 ## References
 
-See chapter 8 of [Barry Simon, *Convexity*][simon2011]
+See chapter 8 of \[Barry Simon, _Convexity_\]\[simon2011\]
 
 ## TODO
 
@@ -87,10 +90,12 @@ protected theorem refl (A : Set E) : IsExposed 𝕜 A A := fun ⟨_, _⟩ =>
 protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) : A = B :=
   hA.subset.antisymm hB.subset
 
-/-! `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
+/-!
+`IsExposed` is _not_ transitive: Consider a (topologically) open cube with vertices
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
-subset of the cube. -/
+subset of the cube.
+-/
 
 protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) : IsExposed 𝕜 B C := by
   rintro ⟨w, hw⟩
@@ -98,9 +103,11 @@ protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B)
   exact ⟨l, Subset.antisymm (fun x hx => ⟨hCB hx, fun y hy => hx.2 y (hBA hy)⟩) fun x hx =>
     ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
 
-/-- If `B` is a nonempty exposed subset of `A`, then `B` is the intersection of `A` with some closed
-half-space. The converse is *not* true. It would require that the corresponding open half-space
-doesn't intersect `A`. -/
+/--
+If `B` is a nonempty exposed subset of `A`, then `B` is the intersection of `A` with some closed
+half-space. The converse is _not_ true. It would require that the corresponding open half-space
+doesn't intersect `A`.
+-/
 theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Nonempty) :
     ∃ l : StrongDual 𝕜 E, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain ⟨l, rfl⟩ := hAB hB
@@ -108,9 +115,11 @@ theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
 
-/-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
-some closed half-space. The converse is *not* true. It would require that the corresponding open
-half-space doesn't intersect `A`. -/
+/--
+For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
+some closed half-space. The converse is _not_ true. It would require that the corresponding open
+half-space doesn't intersect `A`.
+-/
 theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
     ∃ l : StrongDual 𝕜 E, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty

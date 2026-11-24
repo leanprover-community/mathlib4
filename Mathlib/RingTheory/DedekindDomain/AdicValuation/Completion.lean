@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.Topology.Algebra.Valued.WithVal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completions of Dedekind domains with respect to adic valuations
 
@@ -16,12 +19,14 @@ the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCom
 ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
-- `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
+
+* `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
   to its `v`-adic valuation.
-- `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
+* `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation, completion
 -/
 

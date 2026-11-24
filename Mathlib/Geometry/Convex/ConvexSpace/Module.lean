@@ -13,6 +13,9 @@ public import Mathlib.Tactic.NormNum.Basic
 
 import Mathlib.LinearAlgebra.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules are convex spaces
 
@@ -36,12 +39,14 @@ section AddCommMonoid
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [SetLike F M]
   [AddSubmonoidClass F M] [SMulMemClass F R M] {f g : M → N}
 
-/-- Any semimodule over an ordered semiring is a convex space.
+/--
+Any semimodule over an ordered semiring is a convex space.
 
 This is not an instance because it creates a diamond with structural instances such as
 `ConvexSpace R X → ConvexSpace R Y → ConvexSpace R (X × Y)` because
 `(∑ i, f i).fst = ∑ i, (f i).fst` isn't defeq, ultimately because `Finset.sum` isn't a field of
-`AddCommMonoid` but derived from them through recursion. -/
+`AddCommMonoid` but derived from them through recursion.
+-/
 @[expose, implicit_reducible]
 def ConvexSpace.ofModule : ConvexSpace R M where
   sConvexComb w := w.weights.sum fun m r ↦ r • m
@@ -50,7 +55,8 @@ def ConvexSpace.ofModule : ConvexSpace R M where
     simp [Finsupp.sum_mapDomain_index, add_smul, Finsupp.sum_sum_index, Finsupp.sum_smul_index,
       mul_smul, Finsupp.smul_sum]
 
-/-- An ordered ring `R` is a convex space over itself with the convex combination operation being
+/--
+An ordered ring `R` is a convex space over itself with the convex combination operation being
 the weighted sum.
 
 Note that the convex hull of `0` and `1` will only be `[0, 1]` when `R` satisfies `ExistsAddOfLE`.

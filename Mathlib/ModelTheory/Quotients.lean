@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Quotient
 public import Mathlib.ModelTheory.Semantics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of First-Order Structures
 
@@ -15,9 +18,9 @@ This file defines prestructures and quotients of first-order structures.
 
 ## Main Definitions
 
-- If `s` is a setoid (equivalence relation) on `M`, a `FirstOrder.Language.Prestructure s` is the
+* If `s` is a setoid (equivalence relation) on `M`, a `FirstOrder.Language.Prestructure s` is the
   data for a first-order structure on `M` that will still be a structure when modded out by `s`.
-- The structure `FirstOrder.Language.quotientStructure s` is the resulting structure on
+* The structure `FirstOrder.Language.quotientStructure s` is the resulting structure on
   `Quotient s`.
 -/
 

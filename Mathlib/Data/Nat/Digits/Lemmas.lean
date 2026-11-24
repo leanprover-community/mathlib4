@@ -14,6 +14,9 @@ public import Mathlib.Tactic.IntervalCases
 
 import Mathlib.Data.List.Indexes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Digits of a natural number
 
@@ -53,7 +56,7 @@ theorem eq_mapIdx_digits_sum (b n : ℕ) :
   rw [← ofDigits_eq_sum_mapIdx b (digits b n), ofDigits_digits]
 
 /-!
-### Properties
+# Properties
 
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
@@ -211,7 +214,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
     cases n
     all_goals simp
 
-/-! ### Binary -/
+/-! # Binary -/
 
 
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
@@ -227,7 +230,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
       · simpa [Nat.bit, pos_iff_ne_zero]
     · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 
-/-! ### Modular Arithmetic -/
+/-! # Modular Arithmetic -/
 
 
 -- This is really a theorem about polynomials.
@@ -322,7 +325,7 @@ theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 
       simp
     · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
-/-! ### Bijection -/
+/-! # Bijection -/
 
 open List
 

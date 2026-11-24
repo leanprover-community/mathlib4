@@ -14,6 +14,9 @@ public import Mathlib.Order.Lattice.Nat
 
 import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graph cliques
 
@@ -36,7 +39,7 @@ namespace SimpleGraph
 
 variable {α β : Type*} (G H : SimpleGraph α)
 
-/-! ### Cliques -/
+/-! # Cliques -/
 
 
 section Clique
@@ -232,7 +235,7 @@ theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
 
 end Clique
 
-/-! ### `n`-cliques -/
+/-! # `n`-cliques -/
 
 
 section NClique
@@ -365,7 +368,7 @@ theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
 
 end NClique
 
-/-! ### Graphs without cliques -/
+/-! # Graphs without cliques -/
 
 
 section CliqueFree
@@ -654,7 +657,7 @@ theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
 
 end CliqueFreeOn
 
-/-! ### Set of cliques -/
+/-! # Set of cliques -/
 
 
 section CliqueSet
@@ -724,7 +727,7 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
 
 end CliqueSet
 
-/-! ### Clique number -/
+/-! # Clique number -/
 
 
 section CliqueNumber
@@ -851,7 +854,7 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
 
 end CliqueNumber
 
-/-! ### Finset of cliques -/
+/-! # Finset of cliques -/
 
 
 section CliqueFinset
@@ -904,7 +907,7 @@ theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFi
 
 end CliqueFinset
 
-/-! ### Independent Sets -/
+/-! # Independent Sets -/
 
 section IndepSet
 
@@ -964,7 +967,7 @@ theorem isIndepSet_induce {F : Set α} {s : Set F} :
 
 end IndepSet
 
-/-! ### N-Independent sets -/
+/-! # N-Independent sets -/
 
 
 section NIndepSet
@@ -1001,7 +1004,7 @@ theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} 
 
 end NIndepSet
 
-/-! ### Graphs without independent sets -/
+/-! # Graphs without independent sets -/
 
 
 section IndepSetFree
@@ -1026,7 +1029,7 @@ def IndepSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
 
 end IndepSetFree
 
-/-! ### Set of independent sets -/
+/-! # Set of independent sets -/
 
 
 section IndepSetSet
@@ -1045,7 +1048,7 @@ theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
 
 end IndepSetSet
 
-/-! ### Independence Number -/
+/-! # Independence Number -/
 
 
 section IndepNumber
@@ -1116,7 +1119,7 @@ lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndep
 
 end IndepNumber
 
-/-! ### Finset of independent sets -/
+/-! # Finset of independent sets -/
 
 
 section IndepSetFinset

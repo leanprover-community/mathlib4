@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Row and column matrices
 
@@ -196,7 +199,7 @@ theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v :
   ext
   simp [vecMulVec, Matrix.mul_apply]
 
-/-! ### Updating rows and columns -/
+/-! # Updating rows and columns -/
 
 /-- Update, i.e. replace the `i`th row of matrix `A` with the values in `b`. -/
 def updateRow [DecidableEq m] (M : Matrix m n α) (i : m) (b : n → α) : Matrix m n α :=

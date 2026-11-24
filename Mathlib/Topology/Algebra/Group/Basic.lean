@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Topology.Algebra.Group.ContinuousInv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on topological groups
 
@@ -42,7 +45,7 @@ lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace
 section ContinuousMulGroup
 
 /-!
-### Groups with continuous multiplication
+# Groups with continuous multiplication
 
 In this section we prove a few statements about groups with continuous `(*)`.
 -/
@@ -156,7 +159,7 @@ end ContinuousMulGroup
 section IsTopologicalGroup
 
 /-!
-### Topological groups
+# Topological groups
 
 A topological group is a group in which the multiplication and inversion operations are
 continuous. Topological additive groups are defined in the same way. Equivalently, we can require

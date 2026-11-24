@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.LSeries.ZMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Analytic continuation of Dirichlet L-functions
 
@@ -20,7 +23,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
 ## Main definitions
 
 * `LFunction χ s`: the L-function, defined as a linear combination of Hurwitz zeta functions.
-* `completedLFunction χ s`: the completed L-function, which for *almost* all `s` is equal to
+* `completedLFunction χ s`: the completed L-function, which for _almost_ all `s` is equal to
   `LFunction χ s * gammaFactor χ s` where `gammaFactor χ s` is the archimedean Gamma-factor.
 * `rootNumber`: the global root number of the L-series of `χ` (for `χ` primitive; junk otherwise).
 
@@ -34,7 +37,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   character modulo 1.
 * `differentiable_completedLFunction`: if `χ` is nontrivial then `completedLFunction χ s` is
   differentiable everywhere.
-* `IsPrimitive.completedLFunction_one_sub`: the **functional equation** for Dirichlet L-functions,
+* `IsPrimitive.completedLFunction_one_sub`: the *functional equation* for Dirichlet L-functions,
   showing that if `χ` is primitive modulo `N`, then
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
@@ -117,9 +120,7 @@ lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even
     LFunction χ (-(2 * n) - 1) = 0 :=
   ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
 
-/-!
-### Results on changing levels
--/
+/-! # Results on changing levels -/
 
 private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
     (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : s ≠ 1) :
@@ -160,9 +161,7 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
      (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s
   · exact LFunction_changeLevel_aux hMN χ h
 
-/-!
-### The `L`-function of the trivial character mod `N`
--/
+/-! # The `L`-function of the trivial character mod `N` -/
 
 /-- The `L`-function of the trivial character mod `N`. -/
 noncomputable abbrev LFunctionTrivChar (N : ℕ) [NeZero N] :=
@@ -193,9 +192,7 @@ lemma LFunctionTrivChar_residue_one :
     have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
     fun_prop
 
-/-!
-### Completed L-functions and the functional equation
--/
+/-! # Completed L-functions and the functional equation -/
 
 section gammaFactor
 
@@ -324,7 +321,7 @@ end IsPrimitive
 end DirichletCharacter
 
 /-!
-### The logarithmic derivative of the L-function of a Dirichlet character
+# The logarithmic derivative of the L-function of a Dirichlet character
 
 We show that `s ↦ -(L' χ s) / L χ s + 1 / (s - 1)` is continuous outside the zeros of `L χ`
 when `χ` is a trivial Dirichlet character and that `-L' χ / L χ` is continuous outside

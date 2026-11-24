@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Class group map induced by an extension of domains
 
@@ -18,19 +21,19 @@ forward along `f`. For an injective extension `A → B` (equivalently `Module.Is
 
 ## Main definitions
 
-- `ClassGroup.map f hf`: the map between class groups induced by an injective ring homomorphism.
-- `ClassGroup.mulEquiv g`: the isomorphism between class groups induced by a ring isomorphism.
-- `ClassGroup.extendedHom A B`: the induced map between the class groups.
-- `ClassGroup.extendedIdeal A B`: the extension of a nonzero integral ideal.
+* `ClassGroup.map f hf`: the map between class groups induced by an injective ring homomorphism.
+* `ClassGroup.mulEquiv g`: the isomorphism between class groups induced by a ring isomorphism.
+* `ClassGroup.extendedHom A B`: the induced map between the class groups.
+* `ClassGroup.extendedIdeal A B`: the extension of a nonzero integral ideal.
 
 ## Main results
 
-- `ClassGroup.map_mk0`: compatibility of `ClassGroup.map` with nonzero integral ideals.
-- `ClassGroup.map_id`, `ClassGroup.map_map`: functoriality of `ClassGroup.map`.
-- `ClassGroup.extendedHom_mk`: compatibility with representatives as fractional ideals.
-- `ClassGroup.extendedHom_mk0`: compatibility with representatives as nonzero integral ideals.
-- `ClassGroup.extendedHom_comp`: compatibility of extension in a tower `A → B → C`.
-- `ClassGroup.extendedHom_eq_one_of_forall_isPrincipal`: if the extension of every ideal is
+* `ClassGroup.map_mk0`: compatibility of `ClassGroup.map` with nonzero integral ideals.
+* `ClassGroup.map_id`, `ClassGroup.map_map`: functoriality of `ClassGroup.map`.
+* `ClassGroup.extendedHom_mk`: compatibility with representatives as fractional ideals.
+* `ClassGroup.extendedHom_mk0`: compatibility with representatives as nonzero integral ideals.
+* `ClassGroup.extendedHom_comp`: compatibility of extension in a tower `A → B → C`.
+* `ClassGroup.extendedHom_eq_one_of_forall_isPrincipal`: if the extension of every ideal is
   principal, then `ClassGroup.extendedHom A B` is trivial.
 -/
 

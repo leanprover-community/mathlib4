@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of conical limits
 
@@ -14,14 +17,14 @@ This file contains different statements about the (non-constructive) existence o
 
 The main constructions are the following.
 
-- `HasConicalLimit`: there exists a conical limit for `F : J ⥤ C`.
-- `HasConicalLimitsOfShape J`: All functors `F : J ⥤ C` have conical limits.
-- `HasConicalLimitsOfSize.{v₁, u₁}`: For all small `J` all functors `F : J ⥤ C` have conical limits.
-- `HasConicalLimits`: `C` has all (small) conical limits.
+* `HasConicalLimit`: there exists a conical limit for `F : J ⥤ C`.
+* `HasConicalLimitsOfShape J`: All functors `F : J ⥤ C` have conical limits.
+* `HasConicalLimitsOfSize.{v₁, u₁}`: For all small `J` all functors `F : J ⥤ C` have conical limits.
+* `HasConicalLimits`: `C` has all (small) conical limits.
 
 ## References
 
-* [Kelly G.M., *Basic concepts of enriched category theory*][kelly2005]:
+* ‍\[Kelly G.M., _Basic concepts of enriched category theory_\]\[kelly2005\]:
   See section 3.8 for a similar treatment, although the content of this file is not directly
   adapted from there.
 

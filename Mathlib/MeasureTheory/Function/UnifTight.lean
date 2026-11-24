@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform tightness
 
@@ -359,10 +362,12 @@ theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
   obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε ↦ (hfg ε hε).comp hns
   exact ⟨ms, tendsto_Lp_of_tendsto_ae hp hp' (fun _ ↦ hf _) hg (hui.comp _) (hut.comp _) hms'⟩
 
-/-- **Vitali's convergence theorem** (non-finite measure version).
+/--
+*Vitali's convergence theorem* (non-finite measure version).
 
 A sequence of functions `f` converges to `g` in Lp
-if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
+if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure.
+-/
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ ↔

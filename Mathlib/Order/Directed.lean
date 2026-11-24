@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Util.Delaborators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Directed indexed families and sets
 
@@ -27,7 +30,8 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 (co)directed orders are connected.
 
 ## References
-* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+
+* ‍\[Gierz et al, _A Compendium of Continuous Lattices_\]\[GierzEtAl1980\]
 -/
 
 @[expose] public section

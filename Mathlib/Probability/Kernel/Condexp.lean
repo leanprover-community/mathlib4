@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.CondDistrib
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernel associated with a conditional expectation
 
@@ -279,7 +282,7 @@ theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω
 
 section Cond
 
-/-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
+/-! # Relation between conditional expectation, conditional kernel and the conditional measure. -/
 
 open MeasurableSpace
 

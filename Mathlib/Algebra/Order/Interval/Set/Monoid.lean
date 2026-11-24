@@ -11,6 +11,9 @@ public import Mathlib.Order.Interval.Set.Basic
 
 import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images of intervals under `(+ d)`
 
@@ -56,9 +59,7 @@ theorem Ico_add_bij : BijOn (· + d) (Ico a b) (Ico (a + d) (b + d)) := by
   rw [← Ici_inter_Iio, ← Ici_inter_Iio]
   exact (Ici_add_bij a d).inter_mapsTo (by simp [MapsTo]) fun x hx => lt_of_add_lt_add_right hx.2
 
-/-!
-### Images under `x ↦ x + a`
--/
+/-! # Images under `x ↦ x + a` -/
 
 
 @[simp]
@@ -85,9 +86,7 @@ theorem image_add_const_Ioc : (fun x => x + a) '' Ioc b c = Ioc (b + a) (c + a) 
 theorem image_add_const_Ioo : (fun x => x + a) '' Ioo b c = Ioo (b + a) (c + a) :=
   (Ioo_add_bij _ _ _).image_eq
 
-/-!
-### Images under `x ↦ a + x`
--/
+/-! # Images under `x ↦ a + x` -/
 
 
 @[simp]

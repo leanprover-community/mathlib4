@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.Primality.Producers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `primality`
 
@@ -58,6 +61,8 @@ def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap ℕ Expr) := do
     known := known.insert p q(isNat.natElim (p := fun m ↦ Nat.Prime m → Nat.Prime $pQ) $pn id $h)
   return known
 
+
+set_option doc.verso false
 /-- `primality` proves a goal `Nat.Prime n`, where `norm_num` evaluates `n` to a numeral, from a
 Lucas certificate whose witnesses it searches for or takes from the user.
 
@@ -82,6 +87,8 @@ example : Nat.Prime 1000003 := by
 See `MathlibTest/Tactic/Primality.lean` for more examples. -/
 syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
     let mkCert : CertBuilder :=

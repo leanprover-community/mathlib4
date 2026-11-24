@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard subspaces of a Hilbert space
 
@@ -21,20 +24,17 @@ obtain unitary representations of various Lie groups.
 
 * `instance : InnerProductSpace ℝ H` for `InnerProductSpace ℂ H`, by restricting the scalar product
   to its real part
-
 * `StandardSubspace` as a structure with a `ClosedSubmodule` for `InnerProductSpace ℝ H` satisfying
   `IsCyclic` and `IsSeparating`. Actually the interesting cases need `CompleteSpace H`, but the
   definition is given for a general case.
-
 * `symplComp` as a `StandardSubspace` of the symplectic complement of a standard subspace with
   respect to `⟪⬝, ⬝⟫.im`
-
 * `symplComp_symplComp_eq` the double symplectic complement is equal to itself
 
 ## References
 
-* [Chap. 2 of Lecture notes by R. Longo](https://www.mat.uniroma2.it/longo/Lecture-Notes_files/LN-Part1.pdf)
-
+* [Chap. 2 of Lecture notes by R.
+  Longo](https://www.mat.uniroma2.it/longo/Lecture-Notes_files/LN-Part1.pdf)
 * [Oberwolfach report](https://ems.press/content/serial-article-files/48171)
 
 ## TODO
@@ -66,9 +66,11 @@ namespace ClosedSubmodule
 
 variable {H : Type*} [NormedAddCommGroup H] [ipc : InnerProductSpace ℂ H]
 
-/-- `H` as a real Hilbert space. This instance is declared inside `ClosedSubmodule` namespace. If
-one needs this structure (for example when considering standard subspaces), one should just `open
-ClosedSubmodule` and not declare another instance. -/
+/--
+`H` as a real Hilbert space. This instance is declared inside `ClosedSubmodule` namespace. If one
+needs this structure (for example when considering standard subspaces), one should just
+`open ClosedSubmodule` and not declare another instance.
+-/
 noncomputable scoped instance : InnerProductSpace ℝ H where
   inner x y := ⟪x, y⟫.re
   norm_sq_eq_re_inner := by simp [RCLike.re_to_real, ipc.norm_sq_eq_re_inner]

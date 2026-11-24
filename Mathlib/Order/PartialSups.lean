@@ -12,6 +12,9 @@ import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monotone sequence of partial supremums of a sequence
 
@@ -32,6 +35,7 @@ We show this construction gives a Galois insertion between functions `ι → α`
 ## Notes
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because:
+
 * Starting at `⊥` requires... having a bottom element.
 * `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
@@ -159,9 +163,7 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
   suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
 
-/-!
-### Functions out of `ℕ`
--/
+/-! # Functions out of `ℕ` -/
 
 @[simp]
 theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
@@ -180,7 +182,7 @@ end SemilatticeSup
 section DistribLattice
 
 /-!
-### Functions valued in a distributive lattice
+# Functions valued in a distributive lattice
 
 These lemmas require the target to be a distributive lattice, so they are not useful (or true) in
 situations such as submodules.
@@ -211,7 +213,7 @@ end DistribLattice
 section ConditionallyCompleteLattice
 
 /-!
-### Lemmas about the supremum over the whole domain
+# Lemmas about the supremum over the whole domain
 
 These lemmas require some completeness assumptions on the target space.
 -/
@@ -274,9 +276,7 @@ theorem iSup_eq_iSup_of_partialSups_eq_partialSups {f g : ι → α}
 end CompleteLattice
 
 section Set
-/-!
-### Functions into `Set α`
--/
+/-! # Functions into `Set α` -/
 
 lemma partialSups_eq_sUnion_image (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
@@ -289,9 +289,7 @@ lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
 end Set
 
 section LinearOrder
-/-!
-### Functions taking values on some `LinearOrder`.
--/
+/-! # Functions taking values on some `LinearOrder`. -/
 
 variable [Preorder ι] [LocallyFiniteOrderBot ι] [LinearOrder α]
 

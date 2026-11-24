@@ -12,22 +12,24 @@ public import Mathlib.RingTheory.Smooth.Field
 
 import Mathlib.AlgebraicGeometry.FunctionField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth morphisms
 
 In this file we define smooth morphisms. The main definitions are:
 
-- `AlgebraicGeometry.Smooth`: A morphism of schemes `f : X ⟶ Y` is smooth if for each affine `U ⊆ Y`
+* `AlgebraicGeometry.Smooth`: A morphism of schemes `f : X ⟶ Y` is smooth if for each affine `U ⊆ Y`
   and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is smooth.
-
-- `AlgebraicGeometry.SmoothOfRelativeDimension`: A morphism of schemes `f : X ⟶ Y` is smooth of
+* `AlgebraicGeometry.SmoothOfRelativeDimension`: A morphism of schemes `f : X ⟶ Y` is smooth of
   relative dimension `n` if for each `x : X` there exists an affine open neighborhood `V` of `x`
   and an affine open neighborhood `U` of `f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced
   map `Γ(Y, U) ⟶ Γ(X, V)` is standard smooth (of relative dimension `n`).
 
 ## Main results
 
-- `AlgebraicGeometry.Smooth.iff_forall_exists_isStandardSmooth`: A morphism of schemes is smooth
+* `AlgebraicGeometry.Smooth.iff_forall_exists_isStandardSmooth`: A morphism of schemes is smooth
   if and only if for each `x : X` there exists an affine open neighborhood `V` of `x`
   and an affine open neighborhood `U` of `f.base x` with `V ≤ f ⁻¹ᵁ U` such that the induced
   map `Γ(Y, U) ⟶ Γ(X, V)` is standard smooth.

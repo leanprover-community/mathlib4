@@ -10,13 +10,16 @@ public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.Profinite.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.EffectiveEpi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
 
 The forgetful functor from extremally disconnected spaces `Stonean` to compact
 Hausdorff spaces `CompHaus` has the marvellous property that it induces an equivalence of categories
 between sheaves on these two sites. With the terminology of nLab, `Stonean` is a
-*dense subsite* of `CompHaus`: see https://ncatlab.org/nlab/show/dense+sub-site
+_dense subsite_ of `CompHaus`: see https://ncatlab.org/nlab/show/dense+sub-site
 
 Since Stonean spaces are the projective objects in `CompHaus`, which has enough projectives,
 and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent

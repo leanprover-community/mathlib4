@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Circle Averages
 
@@ -42,9 +45,7 @@ variable
 
 namespace Real
 
-/-!
-### Definition
--/
+/-! # Definition -/
 
 variable (f c R) in
 /--
@@ -58,9 +59,7 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
-/--
-If 'f' is *not* circle integrable, then the circle average is zero by definition.
--/
+/-- If 'f' is _not_ circle integrable, then the circle average is zero by definition. -/
 theorem circleAverage.integral_undef (hf : ¬CircleIntegrable f c R) :
     circleAverage f c R = 0 := by
   simp_all [circleAverage, CircleIntegrable, intervalIntegral.integral_undef]
@@ -110,9 +109,7 @@ theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [Norm
     simp [deriv_circleMap, circleMap_sub_center, smul_smul]
     field_simp [circleMap_ne_center h]
 
-/-!
-## Congruence Lemmata
--/
+/-! # Congruence Lemmata -/
 
 /-- Circle averages do not change when shifting the angle. -/
 lemma circleAverage_eq_integral_add (η : ℝ) :
@@ -184,9 +181,7 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
       fun x ↦ by simp [periodic_circleMap 0 1 x]
     simpa using (t₀.intervalIntegral_add_eq (-(2 * π)) 0)
 
-/-!
-## Continuity
--/
+/-! # Continuity -/
 
 /--
 The circleMap for a fixed center is continuous as a function on `ℝ × ℝ`.
@@ -220,8 +215,8 @@ of the radius.
   fun_prop
 
 /--
-Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r
-R` and constant on `Ioo r R` is constant.
+Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r R` and constant on
+`Ioo r R` is constant.
 -/
 lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     (h₁f : ContinuousOn f (Ioc r R)) (hR : r < R)
@@ -235,9 +230,7 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
   refine tendsto_nhds_unique_of_eventuallyEq this tendsto_const_nhds ?_
   exact Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) h₂f
 
-/-!
-## Constant Functions
--/
+/-! # Constant Functions -/
 
 /--
 The circle average of a constant function equals the constant.
@@ -261,9 +254,7 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
     rw [hf (circleMap c R θ) (circleMap_mem_sphere' c R θ)]
   apply circleAverage_const a c R
 
-/-!
-## Inequalities
--/
+/-! # Inequalities -/
 
 /--
 Circle averages respect the `≤` relation.
@@ -316,9 +307,7 @@ theorem circleAverage_nonneg_of_nonneg {c : ℂ} {R : ℝ} {f : ℂ → ℝ}
       intervalIntegrable_const hf (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
   · rw [circleAverage.integral_undef hf]
 
-/-!
-## Commutativity with Linear Maps
--/
+/-! # Commutativity with Linear Maps -/
 
 /-- Circle averages commute with continuous linear maps. -/
 theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] (L : E →L[ℝ] F)
@@ -329,9 +318,7 @@ theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] (L 
   congr
   exact L.intervalIntegral_comp_comm hf
 
-/-!
-## Behaviour with Respect to Arithmetic Operations
--/
+/-! # Behaviour with Respect to Arithmetic Operations -/
 
 /-- Circle averages commute with scalar multiplication. -/
 theorem circleAverage_smul :

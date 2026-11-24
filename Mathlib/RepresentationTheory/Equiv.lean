@@ -7,8 +7,11 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Main purpose
+# Main purpose
 
 This file is a preliminary file for the `Iso`s in `Rep`, we build all the isomorphisms from
 representation level to avoid abusing defeq.

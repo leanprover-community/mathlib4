@@ -10,6 +10,9 @@ public import Mathlib.Data.PFun
 public import Mathlib.Data.Vector3
 public import Mathlib.NumberTheory.PellMatiyasevic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diophantine functions and Matiyasevic's theorem
 
@@ -38,8 +41,8 @@ there exists `t : ℕ^β` with `p (v, t) = 0`.
 
 ## References
 
-* [M. Carneiro, _A Lean formalization of Matiyasevic's theorem_][carneiro2018matiyasevic]
-* [M. Davis, _Hilbert's tenth problem is unsolvable_][MR317916]
+* ‍\[M. Carneiro, _A Lean formalization of Matiyasevic's theorem_\]\[carneiro2018matiyasevic\]
+* ‍\[M. Davis, _Hilbert's tenth problem is unsolvable_\]\[MR317916\]
 
 ## Tags
 
@@ -63,7 +66,7 @@ local infixr:65 " ⊗ " => Sum.elim
 universe u
 
 /-!
-### Multivariate integer polynomials
+# Multivariate integer polynomials
 
 Note that this duplicates `MvPolynomial`.
 -/
@@ -256,7 +259,7 @@ end Poly
 
 end Polynomials
 
-/-! ### Diophantine sets -/
+/-! # Diophantine sets -/
 
 
 /-- A set `S ⊆ ℕ^α` is Diophantine if there exists a polynomial on

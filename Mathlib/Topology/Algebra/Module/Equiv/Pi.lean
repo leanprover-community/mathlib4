@@ -10,10 +10,14 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear equivalences on (dependent) product types
 
 ## Main Definitions
+
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
 * `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
@@ -64,7 +68,8 @@ def piCongrLeft {ι ι' : Type*}
   __ := Homeomorph.piCongrLeft e
   __ := LinearEquiv.piCongrLeft R φ e
 
-/-- The product over `S ⊕ T` of a family of topological modules
+/--
+The product over `S ⊕ T` of a family of topological modules
 is isomorphic (topologically and algebraically) to the product of
 (the product over `S`) and (the product over `T`).
 
@@ -77,7 +82,8 @@ def sumPiEquivProdPi (S T : Type*)
   __ := LinearEquiv.sumPiEquivProdPi R S T A
   __ := Homeomorph.sumPiEquivProdPi S T A
 
-/-- The product `Π t : α, f t` of a family of topological modules is isomorphic
+/--
+The product `Π t : α, f t` of a family of topological modules is isomorphic
 (both topologically and algebraically) to the space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.

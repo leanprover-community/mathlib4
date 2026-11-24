@@ -12,6 +12,9 @@ import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bertrand's Postulate
 
@@ -25,15 +28,17 @@ coefficient, and if the postulate does not hold, this upper bound conflicts with
 bound for large enough `n`. This proves the result holds for large enough `n`, and for smaller `n`
 an explicit list of primes is provided which covers the remaining cases.
 
-As in the [Metamath implementation][carneiro2015arithmetic], we rely on some optimizations from
-[Shigenori Tochiori][tochiori_bertrand]. In particular we use the cleaner bound on the central
+As in the \[Metamath implementation\]\[carneiro2015arithmetic\], we rely on some optimizations from
+‍\[Shigenori Tochiori\]\[tochiori\_bertrand\]. In particular we use the cleaner bound on the central
 binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 ## References
 
-* [M. Aigner and G. M. Ziegler _Proofs from THE BOOK_][aigner1999proofs]
-* [S. Tochiori, _Considering the Proof of “There is a Prime between n and 2n”_][tochiori_bertrand]
-* [M. Carneiro, _Arithmetic in Metamath, Case Study: Bertrand's Postulate_][carneiro2015arithmetic]
+* ‍\[M. Aigner and G. M. Ziegler _Proofs from THE BOOK_\]\[aigner1999proofs\]
+* ‍\[S. Tochiori, _Considering the Proof of “There is a Prime between n and
+  2n”_\]\[tochiori\_bertrand\]
+* ‍\[M. Carneiro, _Arithmetic in Metamath, Case Study: Bertrand's
+  Postulate_\]\[carneiro2015arithmetic\]
 
 ## Tags
 
@@ -155,8 +160,10 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   · rw [factorization_eq_zero_of_not_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 
-/-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
+/--
+An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
 The bound splits the prime factors of `centralBinom n` into those
+
 1. At most `sqrt (2 * n)`, which contribute at most `2 * n` for each such prime.
 2. Between `sqrt (2 * n)` and `2 * n / 3`, which contribute at most `4^(2 * n / 3)` in total.
 3. Between `2 * n / 3` and `n`, which do not exist.

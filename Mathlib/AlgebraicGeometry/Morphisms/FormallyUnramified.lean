@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Unramified.LocalRing
 
 import Mathlib.RingTheory.Ideal.IdempotentFG
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formally unramified morphisms
 
@@ -45,11 +48,13 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-/-- A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U ⊆ Y` and
+/--
+A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U ⊆ Y` and
 `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
 
 See `FormallyUnramified.hom_ext` and `FormallyUnramified.of_hom_ext`
-for the infinitesimal lifting criterion. -/
+for the infinitesimal lifting criterion.
+-/
 @[mk_iff]
 class FormallyUnramified (f : X ⟶ Y) : Prop where
   formallyUnramified_appLE (f) :
@@ -177,12 +182,14 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
 set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given any commuting diagram
+
 ```
 Z' --→ X
 |      |
 ↓      ↓
 Z  --→ Y
 ```
+
 With `X ⟶ Y` formally unramified and `Z' ⟶ Z` an infinitesimal thickening, there exists at most
 one arrow `Z ⟶ X` making the diagram commute.
 -/
@@ -227,12 +234,14 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
 /--
 To show that `f : X ⟶ Y` is formally unramified,
 it suffices to check for that every following commuting diagram
+
 ```
 Spec R --→ X
   |        |
   ↓        ↓
 Spec S --→ Y
 ```
+
 with `S = R/I` for some `I² = 0`, there exists at most one arrow `Spec S ⟶ X` making
 the diagram commute.
 -/

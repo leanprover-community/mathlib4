@@ -10,9 +10,10 @@ public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
-/-!
-# Permutations of `Fin n`
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Permutations of `Fin n` -/
 
 @[expose] public section
 
@@ -72,7 +73,8 @@ theorem Finset.univ_perm_fin_succ {n : ℕ} :
 
 section CycleRange
 
-/-! ### `cycleRange` section
+/-!
+# `cycleRange` section
 
 Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 -/
@@ -316,7 +318,8 @@ end CycleRange
 
 section cycleIcc
 
-/-! ### The permutation `cycleIcc`
+/-!
+# The permutation `cycleIcc`
 
 In this section, we define the permutation `cycleIcc i j`, which is the cycle `(i i+1 .... j)`
 leaving `(0 ... i-1)` and `(j+1 ... n-1)` unchanged when `i ≤ j` and returning the dummy value `id`

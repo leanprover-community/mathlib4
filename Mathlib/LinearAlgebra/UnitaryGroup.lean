@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 import Mathlib.Data.Matrix.Reflection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Unitary Group
 
@@ -31,7 +34,7 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 
 ## References
 
-* https://en.wikipedia.org/wiki/Unitary_group
+* https://en.wikipedia.org/wiki/Unitary\_group
 
 ## Tags
 
@@ -47,7 +50,7 @@ namespace Matrix
 
 open LinearMap Matrix
 
-/-! ### Statements which hold over non-commutative rings. -/
+/-! # Statements which hold over non-commutative rings. -/
 section
 variable {m n R : Type*}
 variable [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Semiring R] [StarRing R]
@@ -153,7 +156,8 @@ instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
 
 instance coeFun : CoeFun (unitaryGroup n α) fun _ => n → n → α where coe A := A.val
 
-/-- `Matrix.UnitaryGroup.toLin' A` is matrix multiplication of vectors by `A`, as a linear map.
+/--
+`Matrix.UnitaryGroup.toLin' A` is matrix multiplication of vectors by `A`, as a linear map.
 
 After the group structure on `Matrix.unitaryGroup n` is defined, we show in
 `Matrix.UnitaryGroup.toLinearEquiv` that this gives a linear equivalence.

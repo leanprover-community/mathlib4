@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Ind-objects
 
@@ -26,9 +29,10 @@ it preserves finite limits and finite colimits.
 This file will mainly collect results about ind-objects (stated in terms of `IsIndObject`) and
 reinterpret them in terms of `Ind C`.
 
-Adopting the theorem numbering of [Kashiwara2006], we show the following properties:
+Adopting the theorem numbering of \[Kashiwara2006\], we show the following properties:
 
 Limits:
+
 * If `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
   `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17),
 * if `C` has equalizers, then `Ind C` has equalizers, and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v`
@@ -38,6 +42,7 @@ Limits:
 * the functor `C ⥤ Ind C` preserves small limits (6.1.17).
 
 Colimits:
+
 * `Ind C` has filtered colimits (6.1.8), and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` preserves filtered
   colimits,
 * if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `α`
@@ -48,12 +53,14 @@ Colimits:
 * `C ⥤ Ind C` preserves finite colimits (6.1.6),
 
 Note that:
+
 * the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` does not preserve any kind of colimit in general except for
   filtered colimits and
 * the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Chapter 6
 -/
 
 @[expose] public section
@@ -206,8 +213,10 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
   preservesFiniteColimits_of_coflat _
 
-/-- This is the functor `(I ⥤ C) ⥤ Ind C` that sends a functor `F` to `colim (Y ∘ F)`, where `Y`
-is the Yoneda embedding. It is known as "ind-lim" and denoted `“colim”` in [Kashiwara2006]. -/
+/--
+This is the functor `(I ⥤ C) ⥤ Ind C` that sends a functor `F` to `colim (Y ∘ F)`, where `Y`
+is the Yoneda embedding. It is known as "ind-lim" and denoted `“colim”` in \[Kashiwara2006\].
+-/
 protected noncomputable def Ind.lim (I : Type v) [SmallCategory I] [IsFiltered I] :
     (I ⥤ C) ⥤ Ind C :=
   (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim

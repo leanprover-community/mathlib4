@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.TypeTags.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `map` and `comap` for subgroups
 
@@ -20,21 +23,16 @@ Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and 
 
 Notation used here:
 
-- `G N` are `Group`s
-
-- `H` is a `Subgroup` of `G`
-
-- `x` is an element of type `G` or type `A`
-
-- `f g : N →* G` are group homomorphisms
-
-- `s k` are sets of elements of type `G`
+* `G N` are `Group`s
+* `H` is a `Subgroup` of `G`
+* `x` is an element of type `G` or type `A`
+* `f g : N →* G` are group homomorphisms
+* `s k` are sets of elements of type `G`
 
 Definitions in the file:
 
 * `Subgroup.comap H f` : the preimage of a subgroup `H` along the group homomorphism `f` is also a
   subgroup
-
 * `Subgroup.map f H` : the image of a subgroup `H` along the group homomorphism `f` is also a
   subgroup
 
@@ -44,6 +42,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -400,10 +399,12 @@ defined by sending subgroups to their inverse images.
 See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
 -/
 @[to_additive (attr := simps)
-/-- An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their inverse images.
 
-See also `AddEquiv.mapAddSubgroup` which maps subgroups to their forward images. -/]
+See also `AddEquiv.mapAddSubgroup` which maps subgroups to their forward images.
+-/]
 def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
   toFun := Subgroup.comap f
   invFun := Subgroup.comap f.symm
@@ -426,10 +427,12 @@ defined by sending subgroups to their forward images.
 See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
 -/
 @[to_additive (attr := simps)
-/-- An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.
 
-See also `AddEquiv.comapAddSubgroup` which maps subgroups to their inverse images. -/]
+See also `AddEquiv.comapAddSubgroup` which maps subgroups to their inverse images.
+-/]
 def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
   toFun := Subgroup.map f
   invFun := Subgroup.map f.symm

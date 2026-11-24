@@ -9,16 +9,21 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.AddSubMap
 public import Mathlib.GroupTheory.Descent
 public import Mathlib.NumberTheory.Height.MvPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The naïve height and the approximate parallelogram law
 
-This file defines the *naïve height* on an elliptic curve (over a field `F` with a theory of
+This file defines the _naïve height_ on an elliptic curve (over a field `F` with a theory of
 heights, i.e., satisfying `[Height.AdmissibleAbsValues F]`).
 
-We then prove the *approximate parallelogram law* for (affine) points on elliptic curves,
+We then prove the _approximate parallelogram law_ for (affine) points on elliptic curves,
+
 ```
   |h(P+Q) + h(P-Q) - 2*(h(P) + h(Q))| ≤ C
 ```
+
 where `h` is the naïve height, `P` and `Q` are affine points on a `WeierstrassCurve` and `C`
 is some real constant depending only on the Weierstrass model.
 -/
@@ -62,11 +67,13 @@ lemma abs_logHeight_sym2x_sub_le :
 
 variable [W.IsElliptic]
 
-/-- If `W` is a Weierstrass curve over `F`, then the map `Φ : ℙ² → ℙ²` given by `addSubMap W`
+/--
+If `W` is a Weierstrass curve over `F`, then the map `Φ : ℙ² → ℙ²` given by `addSubMap W`
 is a morphism.
 
 This implies that `|logHeight (Φ x) - 2 * logHeight x| ≤ C` for a constant `C`,
-where `x = ![s, t, u]` and `Φ` acts on the coordinate vector. -/
+where `x = ![s, t, u]` and `Φ` acts on the coordinate vector.
+-/
 theorem abs_logHeight_addSubMap_sub_two_mul_logHeight_le :
     ∃ C, ∀ x : Fin 3 → F,
       |logHeight (fun i ↦ (addSubMap W i).eval x) - 2 * logHeight x| ≤ C := by
@@ -106,8 +113,10 @@ instance [Northcott (logHeight₁ (K := F))] : Northcott (Point.naiveHeight (F :
 variable [Northcott (logHeight₁ (K := F))]
 
 variable (W) in
-/-- The set of `F`-points on `W` with naïve height bounded by `B` is finite.
-This is an important ingredient for the *Mordell-Weil Theorem*. -/
+/--
+The set of `F`-points on `W` with naïve height bounded by `B` is finite.
+This is an important ingredient for the _Mordell-Weil Theorem_.
+-/
 lemma finite_naiveHeight_le (B : ℝ) : {P : W.Point | P.naiveHeight ≤ B}.Finite :=
   Northcott.finite_le B
 

@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The natural monoidal structure on any category with finite (co)products.
 
-A category with a monoidal structure provided in this way
-is sometimes called a (co-)Cartesian category,
-although this is also sometimes used to mean a finitely complete category.
-(See <https://ncatlab.org/nlab/show/cartesian+category>.)
+A category with a monoidal structure provided in this way is sometimes called a (co-)Cartesian
+category, although this is also sometimes used to mean a finitely complete category. (See [
+https://ncatlab.org/nlab/show/cartesian+category](https://ncatlab.org/nlab/show/cartesian+category).)
 
 As this works with either products or coproducts,
 and sometimes we want to think of a different monoidal structure entirely,
@@ -41,8 +43,10 @@ open CategoryTheory.Limits
 
 section
 
-#adaptation_note /-- prior to nightly-2026-02-05
-the four fields starting from `id_tensorHom_id` were provided by the auto_param -/
+#adaptation_note /--
+                 prior to nightly-2026-02-05
+the four fields starting from `id_tensorHom_id` were provided by the auto\_param
+                 -/
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 @[instance_reducible]
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homogenize a univariate polynomial
 
@@ -33,10 +36,12 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R]
 
-/-- Given a polynomial `p` and a number `n ≥ natDegree p`,
+/--
+Given a polynomial `p` and a number `n ≥ natDegree p`,
 returns a homogeneous bivariate polynomial `q` of degree `n` such that `q(x, 1) = p(x)`.
 
-It is defined as `∑ k + l = n, a_k X_0^k X_1^l`, where `a_k` is the `k`th coefficient of `p`. -/
+It is defined as `∑ k + l = n, a_k X_0^k X_1^l`, where `a_k` is the `k`th coefficient of `p`.
+-/
 noncomputable def homogenize (p : R[X]) (n : ℕ) : MvPolynomial (Fin 2) R :=
   ∑ kl ∈ antidiagonal n, .monomial (fun₀ | 0 => kl.1 | 1 => kl.2) (p.coeff kl.1)
 

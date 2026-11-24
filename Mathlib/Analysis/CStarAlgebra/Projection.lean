@@ -9,6 +9,9 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projections in C⋆-algebras
 
@@ -16,7 +19,7 @@ Here we collect results about projections specific to C⋆-algebras.
 
 ## Main results
 
-+ `isStarProjection_iff_isIdempotentElem_and_isStarNormal`: star projections are precisely
+* `isStarProjection_iff_isIdempotentElem_and_isStarNormal`: star projections are precisely
   idempotent normal elements.
 -/
 

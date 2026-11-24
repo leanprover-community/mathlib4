@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.List.SignVariations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descartes' Rule of Signs
 
@@ -19,12 +22,12 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 ## Main Definitions
 
-- `Polynomial.signVariations`: The number of sign changes in a polynomial's coefficients,
+* `Polynomial.signVariations`: The number of sign changes in a polynomial's coefficients,
   where `0` coefficients are ignored.
 
 ## Main theorem
 
-- `Polynomial.roots_countP_pos_le_signVariations`. States that
+* `Polynomial.roots_countP_pos_le_signVariations`. States that
   `P.roots.countP (0 < ·) ≤ P.signVariations`, so that positive roots are counted with multiplicity.
   It's currently proved for any `CommRing` with `IsStrictOrderedRing`. There is likely some correct
   statement in terms of a (noncommutative) `Ring`, but `Polynomial.roots` is only defined for
@@ -237,11 +240,13 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
       grind [coeff_X_sub_C_mul, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
-/-- If a polynomial starts with two positive coefficients, then the sign changes in the product
+/--
+If a polynomial starts with two positive coefficients, then the sign changes in the product
 `(X - η) * P` is at least the sign changes of `(X - η) * P.eraseLead`. This lemma lets us do
 induction on the degree of P when P starts with matching coefficient signs. Of course this is
-also true when the first two coefficients of P are *negative*, but we just prove the case where
-they're positive since it's cleaner and sufficient for the later use. -/
+also true when the first two coefficients of P are _negative_, but we just prove the case where
+they're positive since it's cleaner and sufficient for the later use.
+-/
 lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
     signVariations ((X - C η) * P.eraseLead) ≤ signVariations ((X - C η) * P) := by
   obtain ⟨c₀, cs, ⟨hcs, hecs⟩⟩ := exists_cons_of_leadingCoeff_pos η h h₂.ne'

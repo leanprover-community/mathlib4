@@ -13,6 +13,9 @@ public import Mathlib.Order.SuccPred.Nat
 import Mathlib.Data.List.GetD
 import Mathlib.Order.Interval.Set.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `n`th Number Satisfying a Predicate
 
@@ -63,9 +66,7 @@ noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
 
 variable {p}
 
-/-!
-### Lemmas about `Nat.nth` on a finite set
--/
+/-! # Lemmas about `Nat.nth` on a finite set -/
 
 
 theorem nth_of_card_le (hf : (Set.ofPred p).Finite) {n : ℕ} (hn : #hf.toFinset ≤ n) :
@@ -127,9 +128,7 @@ theorem exists_lt_card_finite_nth_eq (hf : (Set.ofPred p).Finite) {x} (h : p x) 
     ∃ n, n < #hf.toFinset ∧ nth p n = x := by
   rwa [← @Set.mem_ofPred_eq _ _ p, ← image_nth_Iio_card hf] at h
 
-/-!
-### Lemmas about `Nat.nth` on an infinite set
--/
+/-! # Lemmas about `Nat.nth` on an infinite set -/
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_apply_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) (n : ℕ) :
@@ -166,9 +165,7 @@ theorem range_nth_of_infinite (hf : (Set.ofPred p).Infinite) :
 theorem nth_mem_of_infinite (hf : (Set.ofPred p).Infinite) (n : ℕ) : p (nth p n) :=
   Set.range_subset_iff.1 (range_nth_of_infinite hf).le n
 
-/-!
-### Lemmas that work for finite and infinite sets
--/
+/-! # Lemmas that work for finite and infinite sets -/
 
 theorem exists_lt_card_nth_eq {x} (h : p x) :
     ∃ n, (∀ hf : (Set.ofPred p).Finite, n < #hf.toFinset) ∧ nth p n = x := by

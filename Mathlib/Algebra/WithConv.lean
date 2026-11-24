@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Module.TransferInstance
 
-/-! # Type synonym for linear map convolutive ring and intrinsic star
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Type synonym for linear map convolutive ring and intrinsic star
 
 This files provides the type synonym `WithConv` which we will use in later files
 to put the convolutive product on linear maps instance and the intrinsic star instance.
@@ -20,11 +24,13 @@ This is given for any type `A` so that we can have `WithConv (A →ₗ[R] B)`,
 
 @[expose] public section
 
-/-- A type synonym for the convolutive product of linear maps and intrinsic star.
+/--
+A type synonym for the convolutive product of linear maps and intrinsic star.
 
 The instances for the convolutive product and intrinsic star are only available with this type.
 
-Use `WithConv.linearEquiv` to coerce into this type. -/
+Use `WithConv.linearEquiv` to coerce into this type.
+-/
 structure WithConv A where
   /-- Converts an element of `A` to `WithConv A`. -/ toConv ::
   /-- Converts an element of `WithConv A` back to `A`. -/ ofConv : A

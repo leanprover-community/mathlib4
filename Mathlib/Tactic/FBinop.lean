@@ -9,7 +9,11 @@ public meta import Lean.Elab.App
 public meta import Lean.Elab.BuiltinNotation
 public import Mathlib.Tactic.ToExpr
 
-/-! # Elaborator for functorial binary operators
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Elaborator for functorial binary operators
 
 `fbinop% f x y` elaborates `f x y` for `x : S α` and `y : S' β`, taking into account
 any coercions that the "functors" `S` and `S'` possess.
@@ -18,6 +22,7 @@ While `binop%` tries to solve for a single minimal type, `fbinop%` tries to solv
 the parameterized problem of solving for a single minimal "functor."
 
 The code is drawn from the Lean 4 core `binop%` elaborator. Two simplifications made were
+
 1. It is assumed that every `f` has a "homogeneous" instance
    (think `Set.prod : Set α → Set β → Set (α × β)`).
 2. It is assumed that there are no "non-homogeneous" default instances.

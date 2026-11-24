@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
-/-! # Adjoining top/bottom elements to ordered monoids.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Adjoining top/bottom elements to ordered monoids. -/
 
 public section
 

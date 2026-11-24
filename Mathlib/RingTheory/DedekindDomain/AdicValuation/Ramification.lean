@@ -10,14 +10,17 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification theory for valuations
 
-- `A` is a Dedekind domain with field of fractions `K`.
-- `B` is a Dedekind domain with field of fractions `L`.
-- `L` is a field extension of `K`.
-- `v` is a height one prime ideal of `A`.
-- `w` is a height one prime ideal of `B` lying over `v`.
+* `A` is a Dedekind domain with field of fractions `K`.
+* `B` is a Dedekind domain with field of fractions `L`.
+* `L` is a field extension of `K`.
+* `v` is a height one prime ideal of `A`.
+* `w` is a height one prime ideal of `B` lying over `v`.
 
 This file establishes the relationship between the adic valuation on `K` associated to `v` and the
 adic valuation on `L` associated to `w`, in terms of the ramification index.

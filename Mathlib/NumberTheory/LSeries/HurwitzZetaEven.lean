@@ -12,6 +12,9 @@ public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 
 import Mathlib.Analysis.Complex.RemovableSingularity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Even Hurwitz zeta functions
 
@@ -27,7 +30,7 @@ and
 Note that the term for `n = -a` in the first sum is omitted if `a` is an integer, and the term for
 `n = 0` is omitted in the second sum (always).
 
-Of course, we cannot *define* these functions by the above formulae (since existence of the
+Of course, we cannot _define_ these functions by the above formulae (since existence of the
 meromorphic continuation is not at all obvious); we in fact construct them as Mellin transforms of
 various versions of the Jacobi theta function.
 
@@ -37,6 +40,7 @@ modified versions with a subscript `0`, which are entire functions differing fro
 multiples of `1 / s` and `1 / (1 - s)`.
 
 ## Main definitions and theorems
+
 * `hurwitzZetaEven` and `cosZeta`: the zeta functions
 * `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
 * `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:
@@ -57,9 +61,7 @@ open scoped Topology
 namespace HurwitzZeta
 
 section kernel_defs
-/-!
-## Definitions and elementary properties of kernels
--/
+/-! # Definitions and elementary properties of kernels -/
 
 /-- Even Hurwitz zeta kernel (function whose Mellin transform will be the even part of the
 completed Hurwitz zeta function). See `evenKernel_def` for the defining formula, and
@@ -158,9 +160,7 @@ end kernel_defs
 
 section asymp
 
-/-!
-## Formulae for the kernels as sums
--/
+/-! # Formulae for the kernels as sums -/
 
 lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ rexp (-π * (n + a) ^ 2 * t)) (evenKernel a t) := by
@@ -216,9 +216,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   rw [Complex.cos, mul_div_cancel₀ _ two_ne_zero]
   congr 3 <;> ring
 
-/-!
-## Asymptotics of the kernels as `t → ∞`
--/
+/-! # Asymptotics of the kernels as `t → ∞` -/
 
 /-- The function `evenKernel a - L` has exponential decay at `+∞`, where `L = 1` if
 `a = 0` and `L = 0` otherwise. -/
@@ -248,9 +246,7 @@ lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
 end asymp
 
 section FEPair
-/-!
-## Construction of an FE-pair
--/
+/-! # Construction of an FE-pair -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
 def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
@@ -288,9 +284,7 @@ lemma hurwitzEvenFEPair_neg (a : UnitAddCircle) : hurwitzEvenFEPair (-a) = hurwi
   unfold hurwitzEvenFEPair
   congr 1 <;> simp [Function.comp_def]
 
-/-!
-## Definition of the completed even Hurwitz zeta function
--/
+/-! # Definition of the completed even Hurwitz zeta function -/
 
 /--
 The meromorphic function of `s` which agrees with
@@ -339,9 +333,7 @@ lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :
       mul_comm _ (if _ then _ else _), mul_div_assoc, div_div, ← sub_div,
       div_mul_cancel₀ _ (two_ne_zero' ℂ), mul_one_div]
 
-/-!
-## Parity and functional equations
--/
+/-! # Parity and functional equations -/
 
 @[simp]
 lemma completedHurwitzZetaEven_neg (a : UnitAddCircle) (s : ℂ) :
@@ -395,9 +387,7 @@ lemma completedCosZeta₀_one_sub (a : UnitAddCircle) (s : ℂ) :
 
 end FEPair
 
-/-!
-## Differentiability and residues
--/
+/-! # Differentiability and residues -/
 
 section FEPair
 
@@ -481,9 +471,7 @@ lemma completedCosZeta_residue_zero (a : UnitAddCircle) :
 
 end FEPair
 
-/-!
-## Relation to the Dirichlet series for `1 < re s`
--/
+/-! # Relation to the Dirichlet series for `1 < re s` -/
 
 /-- Formula for `completedCosZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
@@ -548,9 +536,7 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rwa [summable_one_div_int_add_rpow]
   · rw [mul_one_div, div_right_comm]
 
-/-!
-## The un-completed even Hurwitz zeta
--/
+/-! # The un-completed even Hurwitz zeta -/
 
 /-- Technical lemma which will give us differentiability of Hurwitz zeta at `s = 0`. -/
 lemma differentiableAt_update_of_residue
@@ -690,9 +676,7 @@ lemma hasSum_nat_hurwitzZetaEven_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : 
   rw [abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
   simp
 
-/-!
-## The un-completed cosine zeta
--/
+/-! # The un-completed cosine zeta -/
 
 /-- The cosine zeta function, i.e. the meromorphic function of `s` which agrees
 with `∑' (n : ℕ), cos (2 * π * a * n) / n ^ s` for `1 < re s`. -/
@@ -753,9 +737,7 @@ lemma LSeriesHasSum_cos (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     LSeriesHasSum (Real.cos <| 2 * π * a * ·) s (cosZeta a s) :=
   (hasSum_nat_cosZeta a hs).congr_fun (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
-/-!
-## Functional equations for the un-completed zetas
--/
+/-! # Functional equations for the un-completed zetas -/
 
 /-- If `s` is not in `-ℕ`, and either `a ≠ 0` or `s ≠ 1`, then
 `hurwitzZetaEven a (1 - s)` is an explicit multiple of `cosZeta s`. -/

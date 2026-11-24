@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric spaces
 
@@ -31,6 +34,7 @@ and uniform continuity.
   characterizations of equality via distance.
 
 ## Implementation notes
+
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
 for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
@@ -51,7 +55,8 @@ universe u v w
 variable {α : Type u} {β : Type v} {X : Type*}
 variable [PseudoMetricSpace α]
 
-/-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+/--
+A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 `dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
@@ -65,7 +70,8 @@ We make the uniformity/topology part of the data instead of deriving it from the
 This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See Note [forgetful inheritance]. -/
+See Note \[forgetful inheritance\].
+-/
 @[wikidata Q180953]
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
@@ -147,10 +153,11 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 
 end Metric
 
-/-- Build a new metric space from an old one where the bundled uniform structure is provably
+/--
+Build a new metric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionally) equal to some given uniform structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
@@ -161,10 +168,11 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : m.replaceUniformity H = m := by
   ext; rfl
 
-/-- Build a new metric space from an old one where the bundled topological structure is provably
+/--
+Build a new metric space from an old one where the bundled topological structure is provably
 (but typically non-definitionally) equal to some given topological structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
@@ -175,10 +183,11 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
     m.replaceTopology H = m := by
   ext; rfl
 
-/-- Build a new metric space from an old one where the bundled bornology structure is provably
+/--
+Build a new metric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=
@@ -212,7 +221,7 @@ instance : MetricSpace PUnit.{u + 1} where
     simp +contextual [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 /-!
-### `Additive`, `Multiplicative`
+# `Additive`, `Multiplicative`
 
 The distance on those type synonyms is inherited without change.
 -/
@@ -241,7 +250,7 @@ instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
 instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
 /-!
-### Order dual
+# Order dual
 
 The distance on this type synonym is inherited without change.
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.LinearAlgebra.Basis.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases and scalar multiplication
 
@@ -36,10 +39,12 @@ variable [Group G] [Group G']
 variable [DistribMulAction G M] [DistribMulAction G' M]
 variable [SMulCommClass G R M] [SMulCommClass G' R M]
 
-/-- The action on a `Basis` by acting on each element.
+/--
+The action on a `Basis` by acting on each element.
 
 See also `Basis.unitsSMul` and `Basis.groupSMul`, for the cases when a different action is applied
-to each basis element. -/
+to each basis element.
+-/
 instance : SMul G (Basis ι R M) where
   smul g b := b.map <| DistribMulAction.toLinearEquiv _ _ g
 

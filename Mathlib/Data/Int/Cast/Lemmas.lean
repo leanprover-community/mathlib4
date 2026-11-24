@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of integers (additional theorems)
 
-This file proves additional properties about the *canonical* homomorphism from
+This file proves additional properties about the _canonical_ homomorphism from
 the integers into an additive group with a one (`Int.cast`),
 particularly results involving algebraic homomorphisms or the order structure on `ℤ`
 which were not available in the import dependencies of `Data.Int.Cast.Basic`.

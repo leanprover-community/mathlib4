@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Order.Filter.TendstoCofinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Northcott Functions
 
-In number theory, the height function `h` satisfies the *Northcott property* that the sets
+In number theory, the height function `h` satisfies the _Northcott property_ that the sets
 `{a | h a ≤ b}` are finite. This file extracts this notion as a typeclass and provides some API.
 
 ## Main definitions
@@ -24,7 +27,8 @@ In number theory, the height function `h` satisfies the *Northcott property* tha
 
 ## References
 
-* [D. Northcott, *An inequality in the theory of arithmetic on algebraic varieties*][northcott1949]
+* ‍\[D. Northcott, _An inequality in the theory of arithmetic on algebraic
+  varieties_\]\[northcott1949\]
 -/
 
 public section

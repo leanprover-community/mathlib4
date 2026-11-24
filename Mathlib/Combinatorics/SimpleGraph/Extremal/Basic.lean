@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extremal graph theory
 
@@ -17,11 +20,10 @@ This file introduces basic definitions for extremal graph theory, including extr
 
 * `SimpleGraph.IsExtremal` is the predicate that `G` has the maximum number of edges of any simple
   graph, with fixed vertices, satisfying `p`.
-
 * `SimpleGraph.extremalNumber` is the maximum number of edges in a `H`-free simple graph on `n`
   vertices.
 
-  If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
+If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
 @[expose] public section
@@ -71,10 +73,12 @@ end IsExtremal
 section ExtremalNumber
 
 open scoped Classical in
-/-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
+/--
+The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
-If `H` is contained in all simple graphs on `n` vertices, then this is `0`. -/
+If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
+-/
 noncomputable def extremalNumber (n : ℕ) {W : Type*} (H : SimpleGraph W) : ℕ :=
   sup { G : SimpleGraph (Fin n) | H.Free G } (#·.edgeFinset)
 

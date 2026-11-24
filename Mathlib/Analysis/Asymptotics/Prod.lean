@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Normed.Group.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic relations and product types
 
@@ -31,7 +34,7 @@ variable {c c' : ℝ} {f : α → E} {g : α → F}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {l : Filter α}
 
-/-! ### Product of functions (right) -/
+/-! # Product of functions (right) -/
 
 theorem isBigOWith_fst_prod : IsBigOWith 1 l f' fun x => (f' x, g' x) :=
   isBigOWith_of_le l fun _x => le_max_left _ _

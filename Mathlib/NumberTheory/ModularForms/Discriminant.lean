@@ -13,6 +13,9 @@ import Mathlib.Analysis.Normed.Ring.InfiniteProd
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.DedekindEta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The modular discriminant Δ
 
@@ -33,7 +36,8 @@ function, and proves its key properties including invariance under the generator
 
 ## References
 
-* [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
+* ‍\[F. Diamond and J. Shurman, _A First Course in Modular Forms_\]\[diamondshurman2005\], section
+  1.2
 -/
 
 open Function Complex SlashInvariantForm Filter

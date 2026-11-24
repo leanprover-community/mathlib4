@@ -10,15 +10,18 @@ public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.GroupTheory.SemidirectProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions as functors and as categories
 
 From a multiplicative action M ↻ X, we can construct a functor from M to the category of
 types, mapping the single object of M to X and an element `m : M` to the map `X → X` given by
 multiplication by `m`.
-  This functor induces a category structure on X -- a special case of the category of elements.
+This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
-where M is a group, this category is a groupoid -- the *action groupoid*.
+where M is a group, this category is a groupoid -- the _action groupoid_.
 -/
 
 @[expose] public section

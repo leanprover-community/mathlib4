@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of power functions
 
@@ -22,9 +25,7 @@ open scoped Topology
 
 section CpowLimits
 
-/-!
-## Continuity for complex powers
--/
+/-! # Continuity for complex powers -/
 
 
 open Complex
@@ -143,9 +144,7 @@ end CpowLimits
 
 section RpowLimits
 
-/-!
-## Continuity for real powers
--/
+/-! # Continuity for real powers -/
 
 namespace Real
 
@@ -284,7 +283,8 @@ end
 
 end RpowLimits
 
-/-! ## Continuity results for `cpow`, part II
+/-!
+# Continuity results for `cpow`, part II
 
 These results involve relating real and complex powers, so cannot be done higher up.
 -/
@@ -372,7 +372,7 @@ end Complex
 
 end CpowLimits2
 
-/-! ## Limits and continuity for `ℝ≥0` powers -/
+/-! # Limits and continuity for `ℝ≥0` powers -/
 
 
 namespace NNReal
@@ -437,7 +437,7 @@ theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
 
 end NNReal
 
-/-! ## Continuity for `ℝ≥0∞` powers -/
+/-! # Continuity for `ℝ≥0∞` powers -/
 
 
 namespace ENNReal

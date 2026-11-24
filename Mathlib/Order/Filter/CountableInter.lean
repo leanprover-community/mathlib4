@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.Filter.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filters with countable intersection property
 
@@ -27,6 +30,7 @@ Note that there also exists a typeclass `CardinalInterFilter`, and thus an alter
 preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
+
 filter, countable
 -/
 

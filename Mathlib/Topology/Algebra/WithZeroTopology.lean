@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Topology.Algebra.GroupWithZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology on linearly ordered commutative groups with zero
 
@@ -52,9 +55,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ
   rw [nhds_nhdsAdjoint, sup_of_le_right]
   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 hγ.pos
 
-/-!
-### Neighbourhoods of zero
--/
+/-! # Neighbourhoods of zero -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
   rw [nhds_eq_update, update_self]
@@ -77,9 +78,7 @@ theorem nhds_zero_of_units (γ : Γ₀ˣ) : Iio ↑γ ∈ 𝓝 (0 : Γ₀) :=
 theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀ ≠ 0), ∀ᶠ x in l, f x < γ₀ := by
   simp [nhds_zero]
 
-/-!
-### Neighbourhoods of non-zero elements
--/
+/-! # Neighbourhoods of non-zero elements -/
 
 /-- The neighbourhood filter of a nonzero element consists of all sets containing that
 element. -/
@@ -118,9 +117,7 @@ theorem tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔
 theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
   rcases eq_or_ne γ₁ 0 with (rfl | h₀) <;> simp [*, h.ne', Iio_mem_nhds_zero]
 
-/-!
-### Open/closed sets
--/
+/-! # Open/closed sets -/
 
 theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
@@ -134,9 +131,7 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 
-/-!
-### Instances
--/
+/-! # Instances -/
 
 /-- The topology on a linearly ordered group with zero element adjoined is compatible with the order
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/

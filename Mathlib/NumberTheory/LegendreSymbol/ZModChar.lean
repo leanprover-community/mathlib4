@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.MulChar.Basic
 
 import Mathlib.Data.Int.Range
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic characters on ℤ/nℤ
 
@@ -26,7 +29,7 @@ quadratic character, zmod
 
 
 /-!
-### Quadratic characters mod 4 and 8
+# Quadratic characters mod 4 and 8
 
 We define the primitive quadratic characters `χ₄` on `ZMod 4`
 and `χ₈`, `χ₈'` on `ZMod 8`.

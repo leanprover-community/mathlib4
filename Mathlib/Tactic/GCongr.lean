@@ -8,10 +8,15 @@ module
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.Hint
 
-/-! # Setup for the `gcongr` tactic
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Setup for the `gcongr` tactic
 
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
-`Tactic.GCongr.Core`. -/
+`Tactic.GCongr.Core`.
+-/
 
 public section
 

@@ -16,6 +16,9 @@ public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 import Mathlib.MeasureTheory.Group.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fourier analysis on the additive circle
 
@@ -75,10 +78,12 @@ variable {T : ℝ}
 
 namespace AddCircle
 
-/-! ### Measure on `AddCircle T`
+/-!
+# Measure on `AddCircle T`
 
 In this file we use the Haar measure on `AddCircle T` normalised to have total measure 1 (which is
-**not** the same as the standard measure defined in `Topology.Instances.AddCircle`). -/
+*not* the same as the standard measure defined in `Topology.Instances.AddCircle`).
+-/
 
 variable [hT : Fact (0 < T)]
 

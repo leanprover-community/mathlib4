@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.MeasureTheory.Integral.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fourier transform of the Gaussian
 
@@ -28,9 +31,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 
 @[expose] public section
 
-/-!
-## Fourier integral of Gaussian functions
--/
+/-! # Fourier integral of Gaussian functions -/
 
 open Real Set MeasureTheory Filter intervalIntegral
 

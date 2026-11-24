@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 import Mathlib.Algebra.BigOperators.Ring.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Dedekind zeta function of a number field
 
@@ -20,9 +23,9 @@ In this file, we define and prove results about the Dedekind zeta function of a 
 * `NumberField.dedekindZeta`: the Dedekind zeta function.
 * `NumberField.dedekindZeta_residue`: the value of the residue at `s = 1` of the Dedekind
   zeta function.
-* `NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT`: **Dirichlet class number formula**
+* `NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT`: *Dirichlet class number formula*
   computation of the residue of the Dedekind zeta function at `s = 1`, see Chap. 7 of
-  [D. Marcus, *Number Fields*][marcus1977number]
+  ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
 
 ## TODO
 

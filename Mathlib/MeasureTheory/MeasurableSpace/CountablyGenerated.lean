@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.MemPartition
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Filter.CountableSeparatingOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countably generated measurable spaces
 
@@ -146,10 +149,12 @@ section CountablyGeneratedAtom
 variable {mα : MeasurableSpace α} [CountablyGenerated α]
 
 open scoped Classical in
-/-- The atoms in a countably generated measurable space.
+/--
+The atoms in a countably generated measurable space.
 
 Some of those sets may be empty, but the nonempty ones are the atoms of the measurable space.
-See `measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence`. -/
+See `measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence`.
+-/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable

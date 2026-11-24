@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intersecting families
 
@@ -25,7 +28,7 @@ This file defines intersecting families and proves their basic properties.
 
 ## References
 
-* [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
+* ‍\[D. J. Kleitman, _Families of non-disjoint subsets_\]\[kleitman1966\]
 -/
 
 @[expose] public section
@@ -196,7 +199,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
 end
 
 /-!
-### `L`-intersecting families
+# `L`-intersecting families
 
 This section defines `L`-intersecting families and establishes their basic properties.
 -/

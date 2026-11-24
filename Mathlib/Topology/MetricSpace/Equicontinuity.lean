@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equicontinuity in metric spaces
 
@@ -23,10 +26,10 @@ and we prove that functions sharing a common (local or global) continuity modulu
   between (pseudo) metric spaces.
 * `Metric.equicontinuousAt_of_continuity_modulus`: convenient way to prove equicontinuity at a
   point of a family of functions to a (pseudo) metric space by showing that they share a common
-  *local* continuity modulus.
+  _local_ continuity modulus.
 * `Metric.uniformEquicontinuous_of_continuity_modulus`: convenient way to prove uniform
   equicontinuity of a family of functions to a (pseudo) metric space by showing that they share a
-  common *global* continuity modulus.
+  common _global_ continuity modulus.
 
 ## Tags
 
@@ -83,9 +86,11 @@ theorem uniformEquicontinuous_iff {ι : Type*} [PseudoMetricSpace β] {F : ι �
       ∀ ε > 0, ∃ δ > 0, ∀ x y, dist x y < δ → ∀ i, dist (F i x) (F i y) < ε :=
   uniformity_basis_dist.uniformEquicontinuous_iff uniformity_basis_dist
 
-/-- For a family of functions to a (pseudo) metric spaces, a convenient way to prove
-equicontinuity at a point is to show that all of the functions share a common *local* continuity
-modulus. -/
+/--
+For a family of functions to a (pseudo) metric spaces, a convenient way to prove
+equicontinuity at a point is to show that all of the functions share a common _local_ continuity
+modulus.
+-/
 theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β] {x₀ : β}
     (b : β → ℝ) (b_lim : Tendsto b (𝓝 x₀) (𝓝 0)) (F : ι → β → α)
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
@@ -93,9 +98,11 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
   intro ε ε0
   filter_upwards [b_lim (Iio_mem_nhds ε0), H] using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 
-/-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
-uniform equicontinuity is to show that all of the functions share a common *global* continuity
-modulus. -/
+/--
+For a family of functions between (pseudo) metric spaces, a convenient way to prove
+uniform equicontinuity is to show that all of the functions share a common _global_ continuity
+modulus.
+-/
 theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : UniformEquicontinuous F := by
@@ -109,8 +116,10 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSp
     _ = dist (b (dist x y)) 0 := by simp [Real.dist_eq]
     _ < ε := hδ (by simpa only [Real.dist_eq, tsub_zero, abs_dist] using hxy)
 
-/-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
-equicontinuity is to show that all of the functions share a common *global* continuity modulus. -/
+/--
+For a family of functions between (pseudo) metric spaces, a convenient way to prove
+equicontinuity is to show that all of the functions share a common _global_ continuity modulus.
+-/
 theorem equicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : Equicontinuous F :=

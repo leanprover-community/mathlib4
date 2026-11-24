@@ -8,12 +8,15 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility sequences
 
-A sequence `f : ℕ → ℕ` is a *divisibility sequence* if it satisfies `f a ∣ f b` whenever `a ∣ b`.
+A sequence `f : ℕ → ℕ` is a _divisibility sequence_ if it satisfies `f a ∣ f b` whenever `a ∣ b`.
 
-A sequence `f : ℕ → ℕ` is a *strong divisibility sequence* if `gcd (f a) (f b) = f (gcd a b)`.
+A sequence `f : ℕ → ℕ` is a _strong divisibility sequence_ if `gcd (f a) (f b) = f (gcd a b)`.
 
 This file defines divisibility sequences and strong divisibility sequences, and provides some basic
 API for these definitions.

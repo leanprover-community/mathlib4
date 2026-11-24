@@ -12,8 +12,11 @@ public import Mathlib.Algebra.Ring.Nat
 
 import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## The `Result` type for `norm_num`
+# The `Result` type for `norm_num`
 
 We set up predicates `IsNat`, `IsInt`, and `IsRat`,
 stating that an element of a ring is equal to the "normal form" of a natural number, integer,

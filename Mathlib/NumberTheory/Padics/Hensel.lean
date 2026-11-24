@@ -12,22 +12,26 @@ import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hensel's lemma on `ℤ_p`
 
-This file proves Hensel's lemma on `ℤ_p`, roughly following Keith Conrad's writeup:
-<http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf>
+This file proves Hensel's lemma on `ℤ_p`, roughly following Keith Conrad's writeup: [
+http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf](http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf)
 
 Hensel's lemma gives a simple condition for the existence of a root of a polynomial.
 
 The proof and motivation are described in the paper
-[R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019].
+‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\].
 
 ## References
 
-* <http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf>
-* [R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019]
-* <https://en.wikipedia.org/wiki/Hensel%27s_lemma>
+* [
+  http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf](http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf)
+* ‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\]
+* [https://en.wikipedia.org/wiki/Hensel%27s\_lemma](https://en.wikipedia.org/wiki/Hensel%27s_lemma)
 
 ## Tags
 

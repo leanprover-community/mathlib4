@@ -8,9 +8,10 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.MeanValue
 
-/-!
-# Higher differentiability over `ℝ` or `ℂ`
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Higher differentiability over `ℝ` or `ℂ` -/
 
 public section
 
@@ -22,9 +23,10 @@ open scoped NNReal Topology
 section Real
 
 /-!
-### Results over `ℝ` or `ℂ`
-  The results in this section rely on the Mean Value Theorem, and therefore hold only over `ℝ` (and
-  its extension fields such as `ℂ`).
+# Results over `ℝ` or `ℂ`
+
+The results in this section rely on the Mean Value Theorem, and therefore hold only over `ℝ` (and
+its extension fields such as `ℂ`).
 -/
 
 variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedAddCommGroup E']

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Multiset.Dedup
 
-/-!
-# The fold operation for a commutative associative operation over a multiset.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # The fold operation for a commutative associative operation over a multiset. -/
 
 @[expose] public section
 
@@ -17,7 +18,7 @@ namespace Multiset
 
 variable {α β : Type*}
 
-/-! ### fold -/
+/-! # fold -/
 
 
 section Fold

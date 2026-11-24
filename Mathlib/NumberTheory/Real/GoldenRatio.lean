@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.NatFib
 public import Mathlib.Tactic.NormNum.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The golden ratio and its conjugate
 
@@ -110,9 +113,7 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
   rw [neg_lt, ← inv_goldenRatio]
   exact inv_lt_one_of_one_lt₀ one_lt_goldenRatio
 
-/-!
-## Irrationality
--/
+/-! # Irrationality -/
 
 
 /-- The golden ratio is irrational. -/
@@ -131,9 +132,7 @@ theorem goldenConj_irrational : Irrational ψ := by
   simp
   ring
 
-/-!
-## Links with Fibonacci sequence
--/
+/-! # Links with Fibonacci sequence -/
 
 section Fibrec
 

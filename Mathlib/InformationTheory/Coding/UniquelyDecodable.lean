@@ -11,6 +11,9 @@ public import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniquely Decodable Codes
 
@@ -45,10 +48,12 @@ def IsUniquelyDecodable (S : Set (List α)) : Prop :=
 
 variable {S : Set (List α)}
 
-/-- If a code is uniquely decodable, it does not contain the empty string.
+/--
+If a code is uniquely decodable, it does not contain the empty string.
 
 The empty string can be "decoded" as either zero or two copies of itself,
-violating unique decodability. -/
+violating unique decodability.
+-/
 lemma IsUniquelyDecodable.epsilon_notMem
     (h : IsUniquelyDecodable S) :
     [] ∉ S := by

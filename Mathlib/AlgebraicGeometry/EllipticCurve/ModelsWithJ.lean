@@ -7,12 +7,15 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Models of elliptic curves with prescribed j-invariant
 
 This file defines the Weierstrass equation over a field with prescribed j-invariant,
 proved that it is an elliptic curve, and that its j-invariant is equal to the given value.
-It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
+It is a modification of \[silverman2009\], Chapter III, Proposition 1.4 (c).
 
 ## Main definitions
 
@@ -27,7 +30,7 @@ It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
 
 ## References
 
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -66,9 +69,11 @@ lemma ofJ1728_Δ : (ofJ1728 R).Δ = -64 := by
 
 variable {R} (j : R)
 
-/-- The Weierstrass curve `Y² + (j - 1728)XY = X³ - 36(j - 1728)³X - (j - 1728)⁵`.
-It is a modification of the curve in [silverman2009], Chapter III, Proposition 1.4 (c) to avoid
-denominators. It is of j-invariant j if it is an elliptic curve. -/
+/--
+The Weierstrass curve `Y² + (j - 1728)XY = X³ - 36(j - 1728)³X - (j - 1728)⁵`.
+It is a modification of the curve in \[silverman2009\], Chapter III, Proposition 1.4 (c) to avoid
+denominators. It is of j-invariant j if it is an elliptic curve.
+-/
 def ofJNe0Or1728 : WeierstrassCurve R :=
   ⟨j - 1728, 0, 0, -36 * (j - 1728) ^ 3, -(j - 1728) ^ 5⟩
 

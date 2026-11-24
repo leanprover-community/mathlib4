@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Subring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring Perfection and Tilt
 
@@ -31,11 +34,13 @@ universe u₁ u₂ u₃ u₄
 
 open scoped NNReal
 
-/-- The perfection of a monoid `α`, defined to be the projective limit of `α` using the `p`-th
+/--
+The perfection of a monoid `α`, defined to be the projective limit of `α` using the `p`-th
 power maps `α → α` indexed by the natural numbers, implemented as
 `{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`.
 
-If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is also a ring. -/
+If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is also a ring.
+-/
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
   { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 
@@ -207,9 +212,11 @@ def coeff (n : ℕ) : Perfection R p →+* R where
   map_zero' := rfl
   map_add' _ _ := rfl
 
-/-- The `p`-th root of an element of the perfection.
+/--
+The `p`-th root of an element of the perfection.
 
-The preferred way to use this is `(frobeniusEquiv (Perfection R p) p).symm`. -/
+The preferred way to use this is `(frobeniusEquiv (Perfection R p) p).symm`.
+-/
 def pthRoot : Perfection R p →+* Perfection R p where
   __ := pthRootMonoidHom R p
   map_zero' := rfl
@@ -807,9 +814,11 @@ theorem isDomain : IsDomain (PreTilt O p) := by
 
 end PreTilt
 
-/-- The tilt of a field, as defined in Perfectoid Spaces by Peter Scholze, as in
-[scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
-this is implemented as the fraction field of the perfection of `O/(p)`. -/
+/--
+The tilt of a field, as defined in Perfectoid Spaces by Peter Scholze, as in
+‍\[scholze2011perfectoid\]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
+this is implemented as the fraction field of the perfection of `O/(p)`.
+-/
 def Tilt [Fact p.Prime] [hvp : Fact (v p ≠ 1)] :=
   have _ := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.out
   FractionRing (PreTilt O p)

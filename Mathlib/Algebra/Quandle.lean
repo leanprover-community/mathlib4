@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Racks and Quandles
 
@@ -16,9 +19,11 @@ This file defines racks and quandles, algebraic structures for sets
 that bijectively act on themselves with a self-distributivity
 property.  If `R` is a rack and `act : R → (R ≃ R)` is the self-action,
 then the self-distributivity is, equivalently, that
+
 ```
 act (act x y) = act x * act y * (act x)⁻¹
 ```
+
 where multiplication is composition in `R ≃ R` as a group.
 Quandles are racks such that `act x x = x` for all `x`.
 
@@ -27,12 +32,12 @@ algebra on itself, defined by `act x y = Ad (exp x) y`.
 
 Quandles and racks were independently developed by multiple
 mathematicians.  David Joyce introduced quandles in his thesis
-[Joyce1982] to define an algebraic invariant of knot and link
+‍\[Joyce1982\] to define an algebraic invariant of knot and link
 complements that is analogous to the fundamental group of the
 exterior, and he showed that the quandle associated to an oriented
 knot is invariant up to orientation-reversed mirror image.  Racks were
 used by Fenn and Rourke for framed codimension-2 knots and
-links in [FennRourke1992]. Unital shelves are discussed in [crans2017].
+links in \[FennRourke1992\]. Unital shelves are discussed in \[crans2017\].
 
 The name "rack" came from wordplay by Conway and Wraith for the "wrack
 and ruin" of forgetting everything but the conjugation operation for a
@@ -50,10 +55,12 @@ group.
 * `Rack.oppositeRack` gives the rack with the action replaced by its inverse.
 
 ## Main statements
+
 * `Rack.EnvelGroup` is left adjoint to `Quandle.Conj` (`toEnvelGroup.map`).
   The universality statements are `toEnvelGroup.univ` and `toEnvelGroup.univ_uniq`.
 
 ## Implementation notes
+
 "Unital racks" are uninteresting (see `Rack.assoc_iff_id`, `UnitalShelf.assoc`), so we do not
 define them.
 
@@ -76,8 +83,8 @@ Use `open quandles` to use these.
   of a module over `Z[t,t⁻¹]`.
 * If `G` is a group, `H` a subgroup, and `z` in `H`, then there is a quandle `(G/H;z)` defined by
   `yH ◃ xH = yzy⁻¹xH`.  Every homogeneous quandle (i.e., a quandle `Q` whose automorphism group acts
-  transitively on `Q` as a set) is isomorphic to such a quandle.
-  There is a generalization to this arbitrary quandles in [Joyce's paper (Theorem 7.2)][Joyce1982].
+  transitively on `Q` as a set) is isomorphic to such a quandle. There is a generalization to this
+  arbitrary quandles in \[Joyce's paper (Theorem 7.2)\]\[Joyce1982\].
 
 ## Tags
 
@@ -91,7 +98,8 @@ open MulOpposite
 
 universe u v
 
-/-- A *Shelf* is a structure with a self-distributive binary operation.
+/--
+A _Shelf_ is a structure with a self-distributive binary operation.
 The binary operation is regarded as a left action of the type on itself.
 -/
 class Shelf (α : Type u) where
@@ -101,7 +109,7 @@ class Shelf (α : Type u) where
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
 
 /--
-A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
+A _unital shelf_ is a shelf equipped with an element `1` such that, for all elements `x`,
 we have both `x ◃ 1` and `1 ◃ x` equal `x`.
 -/
 class UnitalShelf (α : Type u) extends Shelf α, One α where
@@ -120,7 +128,8 @@ structure ShelfHom (S₁ : Type*) (S₂ : Type*) [Shelf S₁] [Shelf S₂] where
   /-- The homomorphism property of a Shelf Homomorphism -/
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 
-/-- A *rack* is an automorphic set (a set with an action on itself by
+/--
+A _rack_ is an automorphic set (a set with an action on itself by
 bijections) that is self-distributive.  It is a shelf such that each
 element's action is invertible.
 
@@ -152,7 +161,7 @@ open Shelf
 variable {S : Type*} [UnitalShelf S]
 
 /--
-A monoid is *graphic* if, for all `x` and `y`, the *graphic identity*
+A monoid is _graphic_ if, for all `x` and `y`, the _graphic identity_
 `(x * y) * x = x * y` holds.  For a unital shelf, this graphic
 identity holds.
 -/
@@ -223,7 +232,8 @@ theorem self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) 
   rw [← left_cancel (x ◃⁻¹ y), right_inv, ← left_cancel x, right_inv, self_distrib]
   repeat' rw [right_inv]
 
-/-- The *adjoint action* of a rack on itself is `op'`, and the adjoint
+/--
+The _adjoint action_ of a rack on itself is `op'`, and the adjoint
 action of `x ◃ y` is the conjugate of the action of `y` by the action
 of `x`. It is another way to understand the self-distributivity axiom.
 
@@ -410,9 +420,11 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   toFun := f
   map_act' := by simp
 
-/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restricted to flips.
+/--
+The dihedral quandle. This is the conjugation quandle of the dihedral group restricted to flips.
 
-Used for Fox n-colorings of knots. -/
+Used for Fox n-colorings of knots.
+-/
 def Dihedral (n : ℕ) :=
   ZMod n
 
@@ -455,7 +467,7 @@ def toConj (R : Type*) [Rack R] : R →◃ Quandle.Conj (R ≃ R) where
 section EnvelGroup
 
 /-!
-### Universal enveloping group of a rack
+# Universal enveloping group of a rack
 
 The universal enveloping group `EnvelGroup R` of a rack `R` is the
 universal group such that every rack homomorphism `R →◃ conj G` is
@@ -700,7 +712,8 @@ theorem toEnvelGroup.univ_uniq (R : Type*) [Rack R] (G : Type*) [Group G]
     (h : f = (Quandle.Conj.map g).comp (toEnvelGroup R)) : g = toEnvelGroup.map f :=
   h.symm ▸ (toEnvelGroup.map.apply_symm_apply g).symm
 
-/-- The induced group homomorphism from the enveloping group into bijections of the rack,
+/--
+The induced group homomorphism from the enveloping group into bijections of the rack,
 using `Rack.toConj`. Satisfies the property `envelAction_prop`.
 
 This gives the rack `R` the structure of an augmented rack over `EnvelGroup R`.

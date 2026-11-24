@@ -9,13 +9,17 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.HomCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugate morphisms by isomorphisms
 
 An isomorphism `α : X ≅ Y` defines
-- a monoid isomorphism
+
+* a monoid isomorphism
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
-- a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
+* a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
   using
   `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`

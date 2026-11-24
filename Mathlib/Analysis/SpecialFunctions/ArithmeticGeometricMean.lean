@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Real.Sqrt
 
 import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The arithmetic-geometric mean
 
@@ -21,7 +24,7 @@ This file defines the AGM in the `NNReal` namespace and proves some of its basic
 
 ## References
 
-* https://en.wikipedia.org/wiki/Arithmetic–geometric_mean
+* https://en.wikipedia.org/wiki/Arithmetic–geometric\_mean
 -/
 
 @[expose] public section

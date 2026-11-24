@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 import Mathlib.Tactic.Positivity.Finset
 
-/-! # Hölder's inequality for `lp` spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Hölder's inequality for `lp` spaces
 
 This file proves Hölder's inequality for `lp` spaces. We follow the established pattern for
 Hölder's inequality for `MeasureTheory.Lp` of generalizing multiplication to any continuous bilinear
@@ -252,7 +256,8 @@ lemma norm_holderL_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] [CompleteSpace H]
 
 variable (p q) in
-/-- The natural pairing between `lp E p` and `lp F q` (for Hölder conjugate `p q : ℝ≥0∞`) with
+/--
+The natural pairing between `lp E p` and `lp F q` (for Hölder conjugate `p q : ℝ≥0∞`) with
 values in a space `H` induced by a family of bilinear maps `B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H`.
 
 This is given by `∑' i, B (e i) (f i)`.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Flow
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ω-limits
 
@@ -39,9 +42,7 @@ open Set Function Filter
 
 open scoped Topology
 
-/-!
-### Definition and notation
--/
+/-! # Definition and notation -/
 section omegaLimit
 
 variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
@@ -62,9 +63,7 @@ scoped[omegaLimit] notation "ω⁻" => omegaLimit Filter.atBot
 variable [TopologicalSpace β]
 variable (f : Filter τ) (ϕ : τ → α → β) (s s₁ s₂ : Set α)
 
-/-!
-### Elementary properties
--/
+/-! # Elementary properties -/
 open omegaLimit
 
 theorem omegaLimit_def : ω f ϕ s = ⋂ u ∈ f, closure (image2 ϕ u s) := rfl
@@ -109,7 +108,7 @@ theorem omegaLimit_preimage_subset {α' : Type*} (ϕ : τ → α' → β) (s : S
   mapsTo_omegaLimit _ (mapsTo_preimage _ _) (fun _t _x ↦ rfl) continuous_id
 
 /-!
-### Equivalent definitions of the omega limit
+# Equivalent definitions of the omega limit
 
 The next few lemmas are various versions of the property
 characterising ω-limits:
@@ -141,9 +140,7 @@ theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
 
-/-!
-### Set operations and omega limits
--/
+/-! # Set operations and omega limits -/
 
 theorem omegaLimit_inter : ω f ϕ (s₁ ∩ s₂) ⊆ ω f ϕ s₁ ∩ ω f ϕ s₂ :=
   subset_inter (omegaLimit_mono_right _ _ inter_subset_left)
@@ -199,9 +196,7 @@ theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem
 
-/-!
-### ω-limits and compactness
--/
+/-! # ω-limits and compactness -/
 
 /-- A set is eventually carried into any open neighbourhood of its ω-limit:
 if `c` is a compact set such that `closure {ϕ t x | t ∈ v, x ∈ s} ⊆ c` for some `v ∈ f`
@@ -295,9 +290,7 @@ theorem nonempty_omegaLimit [CompactSpace β] [NeBot f] (hs : s.Nonempty) : (ω 
 
 end omegaLimit
 
-/-!
-### ω-limits of flows by a monoid
--/
+/-! # ω-limits of flows by a monoid -/
 namespace Flow
 
 variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] {α : Type*}
@@ -318,9 +311,7 @@ theorem omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) :
 
 end Flow
 
-/-!
-### ω-limits of flows by a group
--/
+/-! # ω-limits of flows by a group -/
 namespace Flow
 
 variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] {α : Type*}

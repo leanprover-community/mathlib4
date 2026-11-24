@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Algebraic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials and adjoining transcendental elements
 
@@ -14,12 +17,14 @@ This file establishes some basic properties about `R[s]` when `s` is transcenden
 These are mostly just carried over from the polynomial ring `R[X]`.
 
 ## Main definitions:
+
 * `Polynomial.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
   `R`-algebra equivalence between `R[X]` and `R[s]` given by sending `X` to `s`.
 * `Algebra.adjoin.evalOfTranscendental`: If `s : S` is transcendental over `R`,
   we get an `R`-algebra homomorphism given by evaluation at some element `c`.
 
 ## Main results
+
 * `Transcendental.euclideanDomainAdjoin`: Given a transcendental element `s : S` over `F`, `F[s]`
   is a euclidean domain.
 * `Transcendental.uniqueFactorizationMonoid_adjoin`: Given a transcendental element `s : S` over
@@ -81,7 +86,8 @@ open Ideal Polynomial
 
 variable {T : Type*} [CommRing T] [Algebra R T] {p : R[X]}
 
-/-- If `s : S` is transcendental over `R`, we get an `R`-algebra homomorphism given by
+/--
+If `s : S` is transcendental over `R`, we get an `R`-algebra homomorphism given by
 evaluation at some element `c`.
 
 For the more general case where `s` is not nec. transcendental see `Algebra.adjoin.liftSingleton`.
@@ -101,7 +107,9 @@ theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R
 
 end Algebra
 
-/-! ### Instances
+/-!
+# Instances
+
 We can not directly get the instances on `R[s]` from `(h : Transcendental R s)` because
 it is an explicit argument.
 

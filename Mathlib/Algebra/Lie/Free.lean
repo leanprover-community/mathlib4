@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.UniversalEnveloping
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free Lie algebras
 
@@ -18,20 +21,20 @@ coefficients in `R` together with its universal property.
 
 ## Main definitions
 
-  * `FreeLieAlgebra`
-  * `FreeLieAlgebra.lift`
-  * `FreeLieAlgebra.of`
-  * `FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra`
+* `FreeLieAlgebra`
+* `FreeLieAlgebra.lift`
+* `FreeLieAlgebra.of`
+* `FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra`
 
 ## Implementation details
 
 ### Quotient of free non-unital, non-associative algebra
 
-We follow [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] and construct
-the free Lie algebra as a quotient of the free non-unital, non-associative algebra. Since we do not
-currently have definitions of ideals, lattices of ideals, and quotients for
-`NonUnitalNonAssocSemiring`, we construct our quotient using the low-level `Quot` function on
-an inductively-defined relation.
+We follow \[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 1--3_\]\[bourbaki1975\] and
+construct the free Lie algebra as a quotient of the free non-unital, non-associative algebra. Since
+we do not currently have definitions of ideals, lattices of ideals, and quotients for
+`NonUnitalNonAssocSemiring`, we construct our quotient using the low-level `Quot` function on an
+inductively-defined relation.
 
 ### Alternative construction (needs PBW)
 

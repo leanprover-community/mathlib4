@@ -8,6 +8,10 @@ module
 public import Mathlib.Order.CompleteLattice.Chain
 public import Mathlib.Order.Minimal
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Zorn's lemmas
 
@@ -70,9 +74,11 @@ variable {α : Type*} {r : α → α → Prop} {c : Set α}
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r
 
-/-- **Zorn's lemma**
+/--
+*Zorn's lemma*
 
-If every chain has an upper bound, then there exists a maximal element. -/
+If every chain has an upper bound, then there exists a maximal element.
+-/
 theorem exists_maximal_of_chains_bounded (h : ∀ c, IsChain r c → ∃ ub, ∀ a ∈ c, a ≺ ub)
     (trans : ∀ {a b c}, a ≺ b → b ≺ c → a ≺ c) : ∃ m, ∀ a, m ≺ a → a ≺ m :=
   have : ∃ ub, ∀ a ∈ maxChain r, a ≺ ub := h _ maxChain_spec.left

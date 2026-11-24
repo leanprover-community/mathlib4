@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homogeneous polynomials
 
@@ -300,9 +303,11 @@ theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 
 end CommRing
 
-/-- The homogeneous degree bounds the total degree.
+/--
+The homogeneous degree bounds the total degree.
 
-See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
+See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero.
+-/
 lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
   apply Finset.sup_le
   intro d hd

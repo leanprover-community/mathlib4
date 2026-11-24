@@ -8,20 +8,25 @@ module
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Topology.Sets.Compacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Contents
 
-In this file we work with *contents*. A content `λ` is a function from a certain class of subsets
+In this file we work with _contents_. A content `λ` is a function from a certain class of subsets
 (such as the compact subsets) to `ℝ≥0` that is
+
 * additive: If `K₁` and `K₂` are disjoint sets in the domain of `λ`,
   then `λ(K₁ ∪ K₂) = λ(K₁) + λ(K₂)`;
 * subadditive: If `K₁` and `K₂` are in the domain of `λ`, then `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)`;
 * monotone: If `K₁ ⊆ K₂` are in the domain of `λ`, then `λ(K₁) ≤ λ(K₂)`.
 
 We show that:
+
 * Given a content `λ` on compact sets, let us define a function `λ*` on open sets, by letting
   `λ* U` be the supremum of `λ K` for `K` included in `U`. This is a countably subadditive map that
-  vanishes at `∅`. In Halmos (1950) this is called the *inner content* `λ*` of `λ`, and formalized
+  vanishes at `∅`. In Halmos (1950) this is called the _inner content_ `λ*` of `λ`, and formalized
   as `innerContent`.
 * Given an inner content, we define an outer measure `μ*`, by letting `μ* E` be the infimum of
   `λ* U` over the open sets `U` containing `E`. This is indeed an outer measure. It is formalized
@@ -36,6 +41,7 @@ other choices can be made, and it is not a priori clear what the best interface 
 ## Main definitions
 
 For `μ : Content G`, we define
+
 * `μ.innerContent` : the inner content associated to `μ`.
 * `μ.outerMeasure` : the outer measure associated to `μ`.
 * `μ.measure`      : the Borel measure associated to `μ`.
@@ -46,8 +52,9 @@ When the space is locally compact, `μ.measure` is also regular.
 
 ## References
 
-* [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
-* <https://en.wikipedia.org/wiki/Content_(measure_theory)>
+* ‍\[P. R. Halmos, _Measure Theory_\]\[halmos1950measure\], §53
+* [
+  https://en.wikipedia.org/wiki/Content\_(measure\_theory)](https://en.wikipedia.org/wiki/Content_(measure_theory))
 -/
 
 open scoped Finset

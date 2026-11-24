@@ -10,10 +10,13 @@ public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functorial
 
 import Mathlib.FieldTheory.IsSepClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Tate–Shafarevich group of a Galois module
 
-This file defines a general notion of a *Tate–Shafarevich group* of a Galois module (i.e. an abelian
+This file defines a general notion of a _Tate–Shafarevich group_ of a Galois module (i.e. an abelian
 group `A` equipped with a continuous action of the absolute Galois group `G_K` of a field `K`), as
 the intersection of the kernels of the maps `Hⁿ(G_K, A) → Hⁿ(G_Kᵥ, A)`, induced by the map
 `G_Kᵥ → G_K`, where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing set `V`.
@@ -36,7 +39,7 @@ places of `K`, and `Kᵥ` is the completion of `K` at a place `v` in `V`.
 
 The first context is when `A` is finite. This is used, for example, in the statement of global
 Poitou-Tate duality. In this theorem, the Tate–Shafarevich group is defined exactly as in this file.
-It agrees with Definition 8.6.2 of [Neukirch–Schmidt–Wingberg].
+It agrees with Definition 8.6.2 of \[Neukirch–Schmidt–Wingberg\].
 
 The second context is when `A` is the `Kˢ`-valued points of a group scheme `J` such as an abelian
 variety. Then the Tate–Shafarevich group is usually defined as the intersection of the kernels of
@@ -44,16 +47,18 @@ the maps `H¹(G_K, J(Kˢ)) → H¹(G_Kᵥ, J(Kᵥˢ))`. Note that in particular 
 the group, so technically this is not quite what is happening in this definition. However the
 inclusion `H¹(G_Kᵥ, J(Kᵥˢ)) → H¹(G_Kᵥ, J(Kˢ))` is an isomorphism by the Greenberg approximation
 theorem, so the definition in this file is still mathematically correct.
-See Remark I.3.10 of [Milne].
+See Remark I.3.10 of \[Milne\].
 
 The third context is when `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant
-lattice, which is different from the definition in this PR. See Section 1 of [Flach].
+lattice, which is different from the definition in this PR. See Section 1 of \[Flach\].
 
 ## References
 
-* [Neukirch–Schmidt–Wingberg, *Cohomology of Number Fields*](https://link.springer.com/book/10.1007/978-3-540-37889-1)
-* [Milne, *Arithmetic Duality Theorems*](https://www.jmilne.org/math/Books/ADTnot.pdf)
-* [Flach, *A finiteness theorem for the symmetric square of an elliptic curve*](https://link.springer.com/article/10.1007/BF01232029)
+* [Neukirch–Schmidt–Wingberg, _Cohomology of Number
+  Fields_](https://link.springer.com/book/10.1007/978-3-540-37889-1)
+* [Milne, _Arithmetic Duality Theorems_](https://www.jmilne.org/math/Books/ADTnot.pdf)
+* [Flach, _A finiteness theorem for the symmetric square of an elliptic
+  curve_](https://link.springer.com/article/10.1007/BF01232029)
 -/
 
 @[expose] public section

@@ -8,7 +8,11 @@ module
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Util.PPOptions
 
-/-! # Pi type notation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pi type notation
 
 Provides the `Π x : α, β x` notation as an alternative to Lean 4's built-in
 `(x : α) → β x` notation. To get all non-`∀` pi types to pretty print this way

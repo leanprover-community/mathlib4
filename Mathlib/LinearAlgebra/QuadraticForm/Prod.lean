@@ -7,7 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
-/-! # Quadratic form on product and pi types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Quadratic form on product and pi types
 
 ## Main definitions
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Spectral.Prespectral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact open covered sets
 
@@ -21,7 +24,7 @@ morphisms such that every compact open is compact-open covered.
 
 ## Main results
 
-- `IsCompactOpenCovered.of_isOpenMap`: If all the `fᵢ` are open maps, then every compact open
+* `IsCompactOpenCovered.of_isOpenMap`: If all the `fᵢ` are open maps, then every compact open
   of `S` is compact-open covered.
 -/
 

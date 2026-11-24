@@ -7,26 +7,32 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linter for `attribute [...] in` declarations
 
 Linter for global attributes created via `attribute [...] in` declarations.
 
 The syntax `attribute [instance] instName in` can be used to accidentally create a global instance.
-This is **not** obvious from reading the code, and in fact happened twice during the port,
+This is *not* obvious from reading the code, and in fact happened twice during the port,
 hence, we lint against it.
 
-*Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
+_Example_: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
 contained the following code:
+
 ```
 attribute [instance] HasForget.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 ```
+
 Despite the `in`, this makes `HasForget.instFunLike` a global instance.
 
 This seems to apply to all attributes. For example:
-```lean
+
+```lean +warning
 theorem what : False := sorry
 
 attribute [simp] what in
@@ -43,9 +49,11 @@ attribute [ext] who in
 -- the `ext` attribute persists
 example {x y : Nat} : x = y := by ext
 ```
+
 Therefore, we lint against this pattern on all instances.
 
-For *removing* attributes, the `in` works as expected.
+For _removing_ attributes, the `in` works as expected.
+
 ```lean
 /--
 error: failed to synthesize

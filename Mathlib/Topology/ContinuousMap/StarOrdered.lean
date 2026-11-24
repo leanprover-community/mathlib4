@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Ordered
 
-/-! # Continuous functions as a star-ordered ring
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Continuous functions as a star-ordered ring
 
 The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(α, R)`
 and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
@@ -24,7 +28,7 @@ require that, for every `x y  : R` such that `x ≤ y`, there exist some `s` suc
 This is because we need this type class to work for `ℝ≥0` for the
 continuous functional calculus. We could instead assume `[OrderedSub R] [ContinuousSub R]`, but that
 would lead to a proliferation of type class assumptions in the general case of the continuous
-functional calculus, which we want to avoid because there is *already* a proliferation of type
+functional calculus, which we want to avoid because there is _already_ a proliferation of type
 classes there. At the moment, we only expect this class to be used in that context so this is a
 reasonable compromise.
 

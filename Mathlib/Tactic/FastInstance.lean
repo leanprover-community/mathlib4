@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Init
 
-/-!
-# The `fast_instance%` and `inferInstanceAs%` term elaborators
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # The `fast_instance%` and `inferInstanceAs%` term elaborators -/
 
 meta section
 
@@ -37,6 +38,7 @@ def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
 
 /--
 Core algorithm for normalizing instances.
+
 * Ideally, the term is replaced with a synthesized instance.
 * If not, it is reduced to a constructor
   and each instance implicit field is given the same treatment.
@@ -118,6 +120,8 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
           mkLambdaFVars xs (← whnfI (mkAppN arg xs))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
+
+set_option doc.verso false
 /--
 `fast_instance% inst` takes an expression for a typeclass instance `inst`, and unfolds it into
 constructor applications that leverage existing instances. It uses the expected type to fill in
@@ -135,6 +139,8 @@ rather than having to break it down into smaller pieces.
 -/
 syntax (name := fastInstance) "fast_instance% " term : term
 
+
+set_option doc.verso true
 @[term_elab fastInstance, inherit_doc fastInstance]
 public def elabFastInstance : TermElab
   | `(term| fast_instance% $arg), expectedType? => do

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Positive Part of the Logarithm
 
@@ -14,9 +17,8 @@ This file defines the function `Real.posLog = r ↦ max 0 (log r)` and introduce
 `log⁺`. For a finite length-`n` sequence `f i` of reals, it establishes the following standard
 estimates.
 
-- `theorem posLog_prod : log⁺ (∏ i, f i) ≤ ∑ i, log⁺ (f i)`
-
-- `theorem posLog_sum : log⁺ (∑ i, f i) ≤ log n + ∑ i, log⁺ (f i)`
+* `theorem posLog_prod : log⁺ (∏ i, f i) ≤ ∑ i, log⁺ (f i)`
+* `theorem posLog_sum : log⁺ (∑ i, f i) ≤ log n + ∑ i, log⁺ (f i)`
 
 See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
@@ -30,9 +32,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-!
-## Definition, Notation and Reformulations
--/
+/-! # Definition, Notation and Reformulations -/
 
 /-- Definition: the positive part of the logarithm. -/
 noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
@@ -46,9 +46,7 @@ theorem posLog_apply : log⁺ x = max 0 (log x) := rfl
 /-- Definition of the positive part of the logarithm, formulated as a theorem. -/
 theorem posLog_def : log⁺ = max 0 (log ·) := rfl
 
-/-!
-## Elementary Properties
--/
+/-! # Elementary Properties -/
 
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
@@ -77,7 +75,7 @@ theorem posLog_nonneg : 0 ≤ log⁺ x := by simp [posLog]
 /-- The function `log⁺` is even. -/
 @[simp] theorem posLog_abs (x : ℝ) : log⁺ |x| = log⁺ x := by simp [posLog]
 
-/-- The function `log⁺` is zero in the interval [-1,1]. -/
+/-- The function `log⁺` is zero in the interval \[-1,1\]. -/
 theorem posLog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
   rw [← posLog_abs, ← log_nonpos_iff (abs_nonneg x)]
   simp [posLog]
@@ -88,12 +86,12 @@ theorem posLog_eq_log (hx : 1 ≤ |x|) : log⁺ x = log x := by
   rw [← log_abs]
   apply log_nonneg hx
 
-/-- The function `log⁺` is monotone on the interval [-1,∞). -/
+/-- The function `log⁺` is monotone on the interval \[-1,∞). -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici (-1)) := by
   intro x hx y _ hxy
   grind [posLog_eq_zero_iff, posLog_nonneg, posLog_eq_log, log_le_log]
 
-/-- The function `log⁺` is antitone on the interval (-∞,1]. -/
+/-- The function `log⁺` is antitone on the interval (-∞,1\]. -/
 theorem antitoneOn_posLog : AntitoneOn log⁺ (Set.Iic 1) := by
   intro x hx y hy hxy
   rw [← posLog_neg x, ← posLog_neg y]
@@ -147,9 +145,7 @@ lemma posLog_le_posLog (hx : -1 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :
   rw [posLog_def]
   fun_prop
 
-/-!
-## Trivial Estimates
--/
+/-! # Trivial Estimates -/
 
 /-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
 lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) := by
@@ -177,9 +173,7 @@ lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
   · rw [← posLog_abs, posLog_eq_log (by rw [abs_abs]; exact h.le)]
     linarith [log_le_sub_one_of_pos (lt_trans one_pos h)]
 
-/-!
-## Estimates for Products
--/
+/-! # Estimates for Products -/
 
 /-- Estimate for `log⁺` of a product. See `Real.posLog_prod` for a variant involving
 multiple factors. -/
@@ -212,9 +206,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
     _ ≤ log⁺ (f a) + ∑ t ∈ s, log⁺ (f t) := add_le_add (by rfl) hs
     _ = ∑ t ∈ insert a s, log⁺ (f t) := by rw [Finset.sum_insert ha]
 
-/-!
-## Estimates for Sums
--/
+/-! # Estimates for Sums -/
 
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/

@@ -10,6 +10,9 @@ public import Mathlib.Order.UpperLower.Basic
 
 import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets closed under directed suprema
 
@@ -20,8 +23,8 @@ nonempty directed set `t` is contained in `s`, then `t` and `s` must have nonemp
 
 ## Main definitions
 
-- `DirSupClosed`: sets closed under directed suprema.
-- `DirSupInacc`: sets inaccessible by directed suprema.
+* `DirSupClosed`: sets closed under directed suprema.
+* `DirSupInacc`: sets inaccessible by directed suprema.
 -/
 
 @[expose] public section

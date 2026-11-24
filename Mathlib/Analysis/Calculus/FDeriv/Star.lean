@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star operations on derivatives
 
@@ -108,9 +111,7 @@ end TrivialStar
 
 section NontrivialStar
 
-/-!
-## Composing on the left and right with `star`
--/
+/-! # Composing on the left and right with `star` -/
 
 variable [StarAddMonoid E] [StarModule 𝕜 E] [ContinuousStar E] [NormedStarGroup 𝕜]
 

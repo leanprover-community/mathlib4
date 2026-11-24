@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.Group  -- shake: keep
 -- tactic dependency: `addCommutatorElement_def`, `_zsmul_trick` lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `add_group` tactic
 
@@ -40,8 +43,8 @@ tactic.
 
 ## TODO
 
-- Surface non-progress-related errors from `repeat`.
-- Allow `add_group`s `ifUnchanged` behavior to be configurable.
+* Surface non-progress-related errors from `repeat`.
+* Allow `add_group`s `ifUnchanged` behavior to be configurable.
 
 ## Tags
 
@@ -84,6 +87,8 @@ theorem _add_neg_neg_trick {G : Type*} [AddGroup G] (a b : G) :
     a + (-b) + (-b) = a + (-2 : ℤ) • b := by
   rw [add_assoc, _neg_neg_trick]
 
+
+set_option doc.verso false
 /--
 `add_group` normalizes expressions in additive groups without assuming commutativity. Unlike
 `abel`, which does take advantage of commutativity, `add_group` instead only uses the additive
@@ -106,6 +111,8 @@ example {G : Type} [AddGroup G] (a b c d : G) (h : c = (a + 2 • b) + (-(b + b)
 -/
 syntax (name := addGroup) "add_group" (location)? : tactic
 
+
+set_option doc.verso true
 macro_rules
 | `(tactic| add_group $[$loc]?) =>
   `(tactic| first

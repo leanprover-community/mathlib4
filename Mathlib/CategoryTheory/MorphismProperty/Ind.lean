@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.Comma.LocallySmall
 import Mathlib.CategoryTheory.Limits.Preserves.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ind and pro-properties
 
@@ -22,18 +25,18 @@ We show that `ind P` inherits stability properties from `P`.
 
 ## Main definitions
 
-- `CategoryTheory.MorphismProperty.ind`: `f` satisfies `ind P` if `f` is a filtered colimit of
+* `CategoryTheory.MorphismProperty.ind`: `f` satisfies `ind P` if `f` is a filtered colimit of
   morphisms in `P`.
 
 ## Main results:
 
-- `CategoryTheory.MorphismProperty.ind_ind`: If `P` implies finitely presentable, then
+* `CategoryTheory.MorphismProperty.ind_ind`: If `P` implies finitely presentable, then
   `P.ind.ind = P.ind`.
 
 ## TODOs:
 
-- Dualise to obtain `pro P`.
-- Show `ind P` is stable under composition if `P` spreads out (Christian).
+* Dualise to obtain `pro P`.
+* Show `ind P` is stable under composition if `P` spreads out (Christian).
 -/
 
 @[expose] public section
@@ -50,10 +53,11 @@ variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 Let `P` be a property of morphisms. `P.ind` is satisfied for `f : X ⟶ Y`
 if there exists a family of natural maps `tᵢ : X ⟶ Yᵢ` and `sᵢ : Yᵢ ⟶ Y` indexed by `J`
 such that
-- `J` is filtered
-- `Y ≅ colim Yᵢ` via `{sᵢ}ᵢ`
-- `tᵢ` satisfies `P` for all `i`
-- `f = tᵢ ≫ sᵢ` for all `i`.
+
+* `J` is filtered
+* `Y ≅ colim Yᵢ` via `{sᵢ}ᵢ`
+* `tᵢ` satisfies `P` for all `i`
+* `f = tᵢ ≫ sᵢ` for all `i`.
 
 See `CategoryTheory.MorphismProperty.ind_iff_ind_under_mk` for an equivalent characterization
 in terms of `Y` as an object of `Under X`.
@@ -160,7 +164,8 @@ A property of morphisms `P` is said to pre-ind-spread if `P`-morphisms out of fi
 descend to a finite level. More precisely, let `Dᵢ` be a filtered family of objects.
 Then:
 
-- If `f : colim Dᵢ ⟶ T` satisfies `P`, there exists an index `j` and a pushout square
+* If `f : colim Dᵢ ⟶ T` satisfies `P`, there exists an index `j` and a pushout square
+
   ```
     Dⱼ ----f'---> T'
     |             |
@@ -168,6 +173,7 @@ Then:
     v             v
   colim Dᵢ --f--> T
   ```
+
   such that `f'` satisfies `P`.
 -/
 class PreIndSpreads (P : MorphismProperty C) : Prop where

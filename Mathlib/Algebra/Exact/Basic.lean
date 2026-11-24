@@ -7,20 +7,20 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
-/-! # Exactness of a pair
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
   `Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
-
 * For two maps `f : M → N` and `g : N → P`, with `One P`,
   `Function.MulExact f g` says that `Set.range f = Set.preimage g {1}`
-
 * For additive maps `f : M →+ N`  and `g : N →+ P`,
   `Exact f g` says that `range f = ker g`
-
 * For multiplicative maps `f : M →* N`  and `g : N →* P`,
   `MulExact f g` says that `range f = ker g`
-
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
   `Exact f g` says that `range f = ker g`
 
@@ -75,16 +75,21 @@ lemma of_comp_eq_one_of_ker_in_range [One P] (hc : g.comp f = 1)
     MulExact f g :=
   fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congr($hc x)⟩
 
-/-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
+/--
+Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
 `Set.range f → N → Set.range g` are exact.
 
 Note that if you already have an instance `[One (Set.range g)]` (which is unlikely) this lemma
-may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`. -/
-@[to_additive /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
+may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`.
+-/
+@[to_additive /--
+              Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
 `Set.range f → N → Set.range g` are exact.
 
-Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
-may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/]
+              Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely)
+this lemma may not apply if the zero of `Set.range g` is not definitionally equal to
+`⟨0, hg⟩`.
+              -/]
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
@@ -92,16 +97,21 @@ lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
   have : ((1 : Set.range g) : P) = 1 := rfl
   simp [MulExact, Subtype.ext_iff, this]
 
-/-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
+/--
+If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
 
 Note that if you already have an instance `[One (Set.range g)]` (which is unlikely) this lemma
-may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`. -/
-@[to_additive /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
+may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`.
+-/
+@[to_additive /--
+              If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
 
-Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
-may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/]
+              Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely)
+this lemma may not apply if the zero of `Set.range g` is not definitionally equal to
+`⟨0, hg⟩`.
+              -/]
 lemma rangeFactorization [One P] (h : MulExact f g) (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=

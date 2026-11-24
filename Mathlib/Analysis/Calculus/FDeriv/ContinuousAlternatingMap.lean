@@ -9,14 +9,17 @@ public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
 
 import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of operations on continuous alternating maps
 
 In this file we prove formulas for the derivatives of
 
-- `ContinuousAlternatingMap.compContinuousLinearMap`, the pullback of a continuous alternating map
+* `ContinuousAlternatingMap.compContinuousLinearMap`, the pullback of a continuous alternating map
   along a continuous linear map;
-- application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
+* application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
 
 public section
@@ -37,7 +40,7 @@ variable
   {s : Set E} {x : E}
 
 /-!
-### Derivative of the pullback
+# Derivative of the pullback
 
 In this section we prove a formula for the derivative
 of the pullback of a continuous alternating map along a continuous linear map,
@@ -118,7 +121,7 @@ theorem fderiv_continuousAlternatingMapCompContinuousLinearMap
 end HasFDerivAt
 
 /-!
-### Differentiability of the pullback
+# Differentiability of the pullback
 
 In this section we prove that the pullback of a continuous alternating map
 along a continuous linear map is differentiable with respect to a parameter,
@@ -146,7 +149,7 @@ theorem DifferentiableAt.continuousAlternatingMapCompContinuousLinearMap
 end CompContinuousLinearMap
 
 /-!
-### Derivative of a continuous alternating map applied to a tuple of vectors
+# Derivative of a continuous alternating map applied to a tuple of vectors
 
 In this section we prove the formula for the derivative `D_xf(x; g_0(x), ..., g_n(x))`.
 -/

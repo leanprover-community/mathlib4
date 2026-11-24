@@ -12,7 +12,11 @@ public import Batteries.Tactic.Lint.Basic
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-/-! # The `tacticDocs` linter
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `tacticDocs` linter
 
 The `tacticDocs` environment linter checks that all tactics defined in a module come with
 a (nonempty) docstring.

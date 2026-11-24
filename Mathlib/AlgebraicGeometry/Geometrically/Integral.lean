@@ -8,21 +8,25 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically Integral Schemes
 
 ## Main results
-- `AlgebraicGeometry.GeometricallyIntegral`:
+
+* `AlgebraicGeometry.GeometricallyIntegral`:
   We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is integral.
   We also provide the fact that this is stable under base change (`by infer_instance`)
-- `GeometricallyIntegral.iff_geometricallyIntegral_fiber`:
+* `GeometricallyIntegral.iff_geometricallyIntegral_fiber`:
   A scheme is geometrically integral over `S` iff the fibers of all
   `s : S` are geometrically integral.
-- `AlgebraicGeometry.GeometricallyIntegral.isIntegral_of_isLocallyNoetherian`:
+* `AlgebraicGeometry.GeometricallyIntegral.isIntegral_of_isLocallyNoetherian`:
   If `X` is geometrically integral, flat, and universally open (e.g. when over a field),
   over an integral locally noetherian scheme, then `X` is also integral.
-- `AlgebraicGeometry.GeometricallyIntegral.isIntegral_of_subsingleton`:
+* `AlgebraicGeometry.GeometricallyIntegral.isIntegral_of_subsingleton`:
   If `X` is geometrically integral over a field, then it is integral.
 -/
 

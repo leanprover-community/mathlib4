@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Unoriented) bordism theory
 
@@ -17,16 +20,16 @@ the building blocks of unoriented bordism groups. Future pull requests will defi
 and the bordism groups of a topological space, and prove these are abelian groups.
 
 The basic notion of bordism theory is that of a bordism between smooth manifolds.
-Two compact smooth `n`-dimensional manifolds `M` and `N` are **bordant** if there exists a smooth
-**bordism** between them: this is a compact `n+1`-dimensional manifold `W` whose boundary is
+Two compact smooth `n`-dimensional manifolds `M` and `N` are *bordant* if there exists a smooth
+*bordism* between them: this is a compact `n+1`-dimensional manifold `W` whose boundary is
 (diffeomorphic to) the disjoint union `M ⊕ N`. Being bordant is an equivalence relation
 (transitivity follows from the collar neighbourhood theorem). The set of equivalence classes has an
 abelian group structure, with the group operation given as disjoint union of manifolds,
 and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
-Given a topological space `X`, a **singular manifold** on `X` is a closed smooth manifold `M`
-together with a continuous map `M → X`. (The word *singular* does not refer to singularities,
+Given a topological space `X`, a *singular manifold* on `X` is a closed smooth manifold `M`
+together with a continuous map `M → X`. (The word _singular_ does not refer to singularities,
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`
@@ -42,7 +45,7 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 
 ## Main definitions
 
-- **SingularManifold X k I**: a singular manifold on a topological space `X`, is a pair `(M, f)` of
+* *SingularManifold X k I*: a singular manifold on a topological space `X`, is a pair `(M, f)` of
   a closed `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
@@ -52,17 +55,17 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 
 ## Main results
 
-- `SingularManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
+* `SingularManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
   of singular manifolds. This will be used to define functoriality of bordism groups.
-- `SingularManifold.comap`: if `(N, f)` is a singular manifold on `X`
+* `SingularManifold.comap`: if `(N, f)` is a singular manifold on `X`
   and `φ : M → N` is continuous, the `comap` of `(N, f)` and `φ`
   is the induced singular manifold `(M, f ∘ φ)` on `X`.
-- `SingularManifold.empty`: the empty set `M`, viewed as a manifold,
+* `SingularManifold.empty`: the empty set `M`, viewed as a manifold,
   as a singular manifold over any space `X`.
-- `SingularManifold.toPUnit`: a smooth manifold induces a singular manifold on the one-point space.
-- `SingularManifold.prod`: the product of a singular `I`-manifold and a singular `J`-manifold
+* `SingularManifold.toPUnit`: a smooth manifold induces a singular manifold on the one-point space.
+* `SingularManifold.prod`: the product of a singular `I`-manifold and a singular `J`-manifold
   on the one-point space, is a singular `I.prod J`-manifold on the one-point space.
-- `SingularManifold.sum`: the disjoint union of two singular `I`-manifolds
+* `SingularManifold.sum`: the disjoint union of two singular `I`-manifolds
   is a singular `I`-manifold.
 
 ## Implementation notes
@@ -80,13 +83,14 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
   `SingularManifold.map` painful to state (as that would require `ULift`ing `M`).
 
 ## TODO
-- define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitivity)
+
+* define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitivity)
   and operations (e.g. disjoint union, sum with the empty set)
-- define the bordism relation and prove it is an equivalence relation
-- define the unoriented bordism group (the set of bordism classes) and prove it is an abelian group
-- for bordisms on a one-point space, define multiplication and prove the bordism ring structure
-- define relative bordism groups (generalising the previous three points)
-- prove that relative unoriented bordism groups define an extraordinary homology theory
+* define the bordism relation and prove it is an equivalence relation
+* define the unoriented bordism group (the set of bordism classes) and prove it is an abelian group
+* for bordisms on a one-point space, define multiplication and prove the bordism ring structure
+* define relative bordism groups (generalising the previous three points)
+* prove that relative unoriented bordism groups define an extraordinary homology theory
 
 ## Tags
 
@@ -100,14 +104,16 @@ open Module
 
 suppress_compilation
 
-/-- A **singular manifold** on a topological space `X` is a pair `(M, f)` of a closed
+/--
+A *singular manifold* on a topological space `X` is a pair `(M, f)` of a closed
 `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
 If we wish to emphasize the model, we will speak of a singular `I`-manifold.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.)
 
-This is parametrised on the universe `M` lives in; ensure `u` is the first universe argument. -/
+This is parametrised on the universe `M` lives in; ensure `u` is the first universe argument.
+-/
 structure SingularManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
     {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where

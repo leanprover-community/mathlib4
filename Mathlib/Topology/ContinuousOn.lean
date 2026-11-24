@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.NhdsWithin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods and continuity relative to a subset
 
@@ -28,9 +31,7 @@ open Set Filter Function Topology
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ] {f g : α → β} {s s' s₁ t : Set α} {x : α}
 
-/-!
-## `ContinuousWithinAt`
--/
+/-! # `ContinuousWithinAt` -/
 
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
@@ -94,9 +95,7 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 
-/-!
-## `ContinuousOn`
--/
+/-! # `ContinuousOn` -/
 
 theorem continuousOn_iff :
     ContinuousOn f s ↔
@@ -234,9 +233,7 @@ theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (
   continuousOn_to_generateFrom_iff.2 fun _x hx t ht hxt => mem_nhdsWithin.2
     ⟨_, h t ht, ⟨hx, hxt⟩, fun _y hy => hy.1.2⟩
 
-/-!
-## Congruence and monotonicity properties with respect to sets
--/
+/-! # Congruence and monotonicity properties with respect to sets -/
 
 theorem ContinuousWithinAt.mono (h : ContinuousWithinAt f t x)
     (hs : s ⊆ t) : ContinuousWithinAt f s x :=
@@ -328,9 +325,7 @@ theorem ContinuousOn.mono (hf : ContinuousOn f s) (h : t ⊆ s) :
 theorem antitone_continuousOn {f : α → β} : Antitone (ContinuousOn f) := fun _s _t hst hf =>
   hf.mono hst
 
-/-!
-## Relation between `ContinuousAt` and `ContinuousWithinAt`
--/
+/-! # Relation between `ContinuousAt` and `ContinuousWithinAt` -/
 
 @[fun_prop]
 theorem ContinuousAt.continuousWithinAt (h : ContinuousAt f x) :
@@ -367,9 +362,7 @@ theorem Continuous.continuousWithinAt (h : Continuous f) :
   h.continuousAt.continuousWithinAt
 
 
-/-!
-## Congruence properties with respect to functions
--/
+/-! # Congruence properties with respect to functions -/
 
 theorem ContinuousOn.congr_mono (h : ContinuousOn f s) (h' : EqOn g f s₁) (h₁ : s₁ ⊆ s) :
     ContinuousOn g s₁ := by
@@ -452,9 +445,7 @@ theorem ContinuousAt.congr_of_eventuallyEq (h : ContinuousAt f x) (hg : g =ᶠ[�
     ContinuousAt g x :=
   congr h (EventuallyEq.symm hg)
 
-/-!
-## Composition
--/
+/-! # Composition -/
 
 theorem ContinuousWithinAt.comp {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) (h : MapsTo f s t) :
@@ -557,9 +548,7 @@ theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g :
   rw [← e] at hf
   exact hf.comp₂_continuousWithinAt hg hh
 
-/-!
-## Image
--/
+/-! # Image -/
 
 theorem ContinuousWithinAt.mem_closure_image
     (h : ContinuousWithinAt f s x) (hx : x ∈ closure s) : f x ∈ closure (f '' s) :=
@@ -586,9 +575,7 @@ theorem ContinuousOn.image_closure (hf : ContinuousOn f (closure s)) :
     f '' closure s ⊆ closure (f '' s) :=
   ContinuousWithinAt.image_closure fun x hx => (hf x hx).mono subset_closure
 
-/-!
-## Product
--/
+/-! # Product -/
 
 theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {x : α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
@@ -705,9 +692,7 @@ theorem ContinuousOn.uncurry_right {f : α → β → γ} {sα : Set α} {sβ : 
   refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
   exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
 
-/-!
-## Pi
--/
+/-! # Pi -/
 
 theorem continuousWithinAt_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     {f : α → ∀ i, X i} {s : Set α} {x : α} :
@@ -730,9 +715,7 @@ theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSp
   Continuous.continuousOn (continuous_apply i)
 
 
-/-!
-## Specific functions
--/
+/-! # Specific functions -/
 
 @[fun_prop]
 theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=

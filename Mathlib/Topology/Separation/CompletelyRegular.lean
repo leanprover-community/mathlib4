@@ -12,6 +12,9 @@ import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completely regular topological spaces.
 
@@ -41,16 +44,16 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 ## Implementation notes
 
 The present definition `CompletelyRegularSpace` is a slight modification of the one given in
-[walker1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
-continuous *real*-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
+‍\[walker1974\]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by
+a continuous _real_-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
 converted to the present definition by replacing a real-valued `f` by `h ∘ g ∘ f`, with
-`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [walker1974]) also assume that a
+`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. \[walker1974\]) also assume that a
 completely regular space is T₁. Here a completely regular space that is also T₁ is called a T₃.₅
 space.
 
 ## References
 
-* [Russell C. Walker, *The Stone-Čech Compactification*][walker1974]
+* ‍\[Russell C. Walker, _The Stone-Čech Compactification_\]\[walker1974\]
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending intermediate fields to a larger extension
 
@@ -20,16 +23,16 @@ This is useful for instance when one needs `M/K` to be Galois.
 
 ## Main definitions
 
-- `IntermediateField.extendRight F M`: the intermediate field of `M/K` defined as the image of `F`
+* `IntermediateField.extendRight F M`: the intermediate field of `M/K` defined as the image of `F`
   under the map `L →ₐ[K] M`.
-- `IntermediateField.extendRightEquiv F M`: the `K`-algebra isomorphism `F ≃ₐ[K] extendRight F M`.
+* `IntermediateField.extendRightEquiv F M`: the `K`-algebra isomorphism `F ≃ₐ[K] extendRight F M`.
 
 ## Main instances
 
-- `IntermediateField.extendRight.algebra`: for `S` with `Algebra S F`, `S` acts
+* `IntermediateField.extendRight.algebra`: for `S` with `Algebra S F`, `S` acts
   on `extendRight F M`.
-- `IntermediateField.extendRight.isFractionRing`: transfers the `IsFractionRing S F` instance.
-- `IntermediateField.extendRight.isIntegralClosure`: transfers the
+* `IntermediateField.extendRight.isFractionRing`: transfers the `IsFractionRing S F` instance.
+* `IntermediateField.extendRight.isIntegralClosure`: transfers the
   `IsIntegralClosure S R F` instance.
 -/
 

@@ -10,18 +10,19 @@ public import Mathlib.Topology.Algebra.Order.Group
 
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on archimedean groups and fields
 
 In this file we prove the following theorems:
 
-- `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered archimedean field has dense
+* `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered archimedean field has dense
   range;
-
-- `AddSubgroup.dense_of_not_isolated_zero`, `AddSubgroup.dense_of_no_min`: two sufficient conditions
+* `AddSubgroup.dense_of_not_isolated_zero`, `AddSubgroup.dense_of_no_min`: two sufficient conditions
   for a subgroup of an archimedean linear ordered additive commutative group to be dense;
-
-- `AddSubgroup.dense_or_cyclic`: an additive subgroup of an archimedean linear ordered additive
+* `AddSubgroup.dense_or_cyclic`: an additive subgroup of an archimedean linear ordered additive
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
 

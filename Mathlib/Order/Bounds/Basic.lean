@@ -11,6 +11,9 @@ public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.SetNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper / lower bounds
 
@@ -194,9 +197,7 @@ theorem directedOn_or_directedOn_of_union'
     · aesop
     · exact .inr ⟨h, ht⟩
 
-/-!
-### Monotonicity
--/
+/-! # Monotonicity -/
 
 
 @[to_dual]
@@ -260,9 +261,7 @@ theorem subset_lowerBounds_upperBounds (s : Set α) : s ⊆ lowerBounds (upperBo
 theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBounds s) :=
   hs.mono (subset_upperBounds_lowerBounds s)
 
-/-!
-### Conversions
--/
+/-! # Conversions -/
 
 
 @[to_dual]
@@ -316,9 +315,7 @@ theorem IsGreatest.bddAbove (h : IsGreatest s a) : BddAbove s :=
 theorem IsLeast.nonempty (h : IsLeast s a) : s.Nonempty :=
   ⟨a, h.1⟩
 
-/-!
-### Union and intersection
--/
+/-! # Union and intersection -/
 
 @[to_dual (attr := simp)]
 theorem upperBounds_union : upperBounds (s ∪ t) = upperBounds s ∩ upperBounds t :=
@@ -431,9 +428,9 @@ theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x
   (bddAbove_iff_exists_ge x₀).mp hs
 
 /-!
-### Specific sets
+# Specific sets
 
-#### Unbounded intervals
+## Unbounded intervals
 -/
 
 
@@ -493,9 +490,7 @@ theorem upperBounds_Iio {a : γ} : upperBounds (Iio a) = Ici a :=
 
 end
 
-/-!
-#### Singleton
--/
+/-! # Singleton -/
 
 
 @[to_dual (attr := simp)]
@@ -513,9 +508,7 @@ lemma bddAbove_singleton : BddAbove ({a} : Set α) := isLUB_singleton.bddAbove
 theorem upperBounds_singleton : upperBounds {a} = Ici a :=
   isLUB_singleton.upperBounds_eq
 
-/-!
-#### Bounded intervals
--/
+/-! # Bounded intervals -/
 
 
 @[to_dual (attr := simp)]
@@ -588,9 +581,7 @@ theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b
   simp [Ici_inter_Iic.symm, bddBelow_iff_subset_Ici, bddAbove_iff_subset_Iic, exists_and_left,
     exists_and_right]
 
-/-!
-#### Univ
--/
+/-! # Univ -/
 
 @[to_dual (attr := simp)]
 theorem mem_upperBounds_univ : a ∈ upperBounds univ ↔ IsTop a := by
@@ -623,9 +614,7 @@ theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α
 @[to_dual (attr := simp)]
 theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
 
-/-!
-#### Empty set
--/
+/-! # Empty set -/
 
 
 @[to_dual (attr := simp)]
@@ -652,9 +641,7 @@ theorem IsLUB.nonempty [NoBotOrder α] (hs : IsLUB s a) : s.Nonempty :=
 theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonempty :=
   (Nonempty.elim ha) fun x => (not_bddAbove_iff'.1 h x).imp fun _ ha => ha.1
 
-/-!
-#### insert
--/
+/-! # insert -/
 
 
 /-- Adding a point to a set preserves its boundedness above. -/
@@ -699,9 +686,7 @@ macro "bddDefault" : tactic =>
     | apply OrderTop.bddAbove
     | apply OrderBot.bddBelow)
 
-/-!
-#### Pair
--/
+/-! # Pair -/
 
 
 @[to_dual]
@@ -712,9 +697,7 @@ theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
 theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b) :=
   isGreatest_singleton.insert _
 
-/-!
-#### Lower/upper bounds
--/
+/-! # Lower/upper bounds -/
 
 
 @[to_dual (attr := simp)]
@@ -760,19 +743,23 @@ noncomputable def OrderSupSet.choose (d : α) :
   sSup s := if h : ∃ x, IsLUB s x then h.choose else d
   isLUB_sSup_of_isLUB _ _ h := dite_eq_left (Exists.intro _ h) ▸ choose_spec _
 
-/-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
+/--
+Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
 such that it is the actual supremum of the set if one exists, the bottom element if the supremum
 doesn't exist but a bottom element does, and the default value `d` if neither exists.
 
 The junk value satisfies `sSup s = sSup ∅` for any set `s` without a supremum, which is the same
-as the convention of `ConditionallyCompleteLinearOrder`. -/
+as the convention of `ConditionallyCompleteLinearOrder`.
+-/
 @[to_dual (attr := instance_reducible)
-/-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
+/--
+Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
 such that it is the actual infimum of the set if one exists, the top element if the infimum
 doesn't exist but a top element does, and the default value `d` if neither exists.
 
 The junk value satisfies `sInf s = sInf ∅` for any set `s` without an infimum, which is the same
-as the convention of `ConditionallyCompleteLinearOrder`. -/]
+as the convention of `ConditionallyCompleteLinearOrder`.
+-/]
 noncomputable def OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
   .choose ((OrderSupSet.choose d).sSup ∅)
 
@@ -810,9 +797,7 @@ theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   (Std.Total.directedOn s).minimal_iff_isLeast
 
-/-!
-### (In)equalities with the least upper bound and the greatest lower bound
--/
+/-! # (In)equalities with the least upper bound and the greatest lower bound -/
 
 
 section Preorder

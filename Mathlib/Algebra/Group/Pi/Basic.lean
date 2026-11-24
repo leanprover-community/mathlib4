@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Spread
 
 import Mathlib.Data.Sum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances and theorems on pi types
 
@@ -23,7 +26,7 @@ instances are defined in `Algebra.Group.Pi.Lemmas` files elsewhere.
 This file relied on the `pi_instance` tactic, which was not available at the time of porting. The
 comment `--pi_instance` is inserted before all fields which were previously derived by
 `pi_instance`. See this Zulip discussion:
-[https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
+‍\[https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi\_instance\]
 -/
 
 @[expose] public section

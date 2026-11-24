@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The R-algebra structure on families of R-algebras
 
@@ -160,7 +163,8 @@ variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
 variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
 variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
 
-/-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
+/--
+A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
 multiplicative equivalence between `Π i, A₁ i` and `Π i, A₂ i`.
 
 This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent version of

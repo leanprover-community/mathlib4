@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angle between complex numbers
 
@@ -34,10 +37,12 @@ open scoped Real
 namespace Complex
 variable {a x y : ℂ}
 
-/-- The angle between two non-zero complex numbers is the absolute value of the argument of their
+/--
+The angle between two non-zero complex numbers is the absolute value of the argument of their
 quotient.
 
-Note that this does not hold when `x` or `y` is `0` as the LHS is `π / 2` while the RHS is `0`. -/
+Note that this does not hold when `x` or `y` is `0` as the LHS is `π / 2` while the RHS is `0`.
+-/
 lemma angle_eq_abs_arg (hx : x ≠ 0) (hy : y ≠ 0) : angle x y = |(x / y).arg| := by
   refine Real.arccos_eq_of_eq_cos (abs_nonneg _) (abs_arg_le_pi _) ?_
   rw [Real.cos_abs, Complex.cos_arg (div_ne_zero hx hy)]
@@ -71,7 +76,7 @@ lemma angle_exp_one (x : ℝ) : angle (exp (x * I)) 1 = |toIocMod Real.two_pi_po
   simpa using angle_exp_exp x 0
 
 /-!
-### Arc-length and chord-length are equivalent
+# Arc-length and chord-length are equivalent
 
 This section shows that the arc and chord distances between two unit complex numbers are equivalent
 up to a factor of `π / 2`.

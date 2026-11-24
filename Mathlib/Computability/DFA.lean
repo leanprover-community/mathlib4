@@ -12,6 +12,9 @@ import Mathlib.Basic.Countable.Small
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deterministic Finite Automata
 
@@ -27,14 +30,14 @@ a `Fintype` instance must be supplied for true DFAs.
 
 ## Main definitions
 
-- `DFA α σ`: automaton over alphabet `α` and set of states `σ`
-- `M.accepts`: the language accepted by the DFA `M`
-- `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
+* `DFA α σ`: automaton over alphabet `α` and set of states `σ`
+* `M.accepts`: the language accepted by the DFA `M`
+* `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
   a DFA that recognizes the language
 
 ## Main theorems
 
-- `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
+* `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
   be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
@@ -44,8 +47,8 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 
 ## TODO
 
-- Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
-- Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
+* Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
+* Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
 @[expose] public section

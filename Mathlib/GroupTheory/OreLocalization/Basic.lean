@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.OreLocalization.OreSet
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization over left Ore sets.
 
@@ -26,11 +29,11 @@ a denominator `s : S`.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/Ore+localization>
-* [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
-
+* [https://ncatlab.org/nlab/show/Ore+localization](https://ncatlab.org/nlab/show/Ore+localization)
+* ‍\[Zoran Škoda, _Noncommutative localization in noncommutative geometry_\]\[skoda2006\]
 
 ## Tags
+
 localization, Ore, non-commutative
 
 ## Implementation detail

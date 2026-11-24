@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Null measurable sets and complete measures
 
@@ -15,7 +18,7 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 ### Null measurable sets and functions
 
-A set `s : Set α` is called *null measurable* (`MeasureTheory.NullMeasurableSet`) if it satisfies
+A set `s : Set α` is called _null measurable_ (`MeasureTheory.NullMeasurableSet`) if it satisfies
 any of the following equivalent conditions:
 
 * there exists a measurable set `t` such that `s =ᵐ[μ] t` (this is used as a definition);
@@ -386,11 +389,13 @@ section NullMeasurable
 
 variable [m : MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
-/-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
+/--
+A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set.
 
 A similar notion is `AEMeasurable`. That notion is equivalent to `NullMeasurable` if
-the σ-algebra on the codomain is countably generated, but stronger in general. -/
+the σ-algebra on the codomain is countably generated, but stronger in general.
+-/
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 

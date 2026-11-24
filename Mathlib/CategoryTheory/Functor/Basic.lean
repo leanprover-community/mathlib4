@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors
 
@@ -30,12 +33,14 @@ namespace CategoryTheory
 -- declare the `v`'s first; see note [category theory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
-/-- `Functor C D` represents a functor between categories `C` and `D`.
+/--
+`Functor C D` represents a functor between categories `C` and `D`.
 
 To apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.
 
 The axiom `map_id` expresses preservation of identities, and
-`map_comp` expresses functoriality. -/
+`map_comp` expresses functoriality.
+-/
 @[stacks 001B, wikidata Q864475]
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] :
     Type max v₁ v₂ u₁ u₂ where

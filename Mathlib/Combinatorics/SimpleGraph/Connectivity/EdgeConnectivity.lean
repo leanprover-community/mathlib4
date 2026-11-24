@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Edge Connectivity
 
@@ -128,10 +131,12 @@ lemma isEdgeConnected_add_one (hk : k ≠ 0) :
 lemma IsBridge.not_isEdgeReachable_two (huv : G.IsBridge s(u, v)) : ¬ G.IsEdgeReachable 2 u v :=
   fun hc ↦ huv <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
 
-/-- An edge is a bridge iff its endpoints are not 2-edge-reachable.
+/--
+An edge is a bridge iff its endpoints are not 2-edge-reachable.
 
 The forward direction of this is true without assuming `u` and `v` are adjacent.
-See `IsBridge.not_isEdgeReachable_two`. -/
+See `IsBridge.not_isEdgeReachable_two`.
+-/
 lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
     G.IsBridge s(u, v) ↔ ¬G.IsEdgeReachable 2 u v := by
   refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
@@ -199,7 +204,7 @@ theorem isEdgeConnected_top_iff_forall_nat :
   exact ⟨fun h n u v ↦ h u v n, fun h u v n ↦ h n u v⟩
 
 /-!
-### 2-reachability
+# 2-reachability
 
 In this section, we prove results about 2-connected components of a graph, but without naming them.
 -/

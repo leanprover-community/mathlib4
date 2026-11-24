@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Changing the index type of a matrix
 
@@ -318,7 +321,8 @@ theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] 
     (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
   rfl
 
-/-- Reindexing both indices along the same equivalence preserves the determinant.
+/--
+Reindexing both indices along the same equivalence preserves the determinant.
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
@@ -326,7 +330,8 @@ theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fi
     [DecidableEq n] (e : m ≃ n) (M : Matrix m m R) : det (reindexLinearEquiv R R e e M) = det M :=
   det_reindex_self e M
 
-/-- Reindexing both indices along the same equivalence preserves the determinant.
+/--
+Reindexing both indices along the same equivalence preserves the determinant.
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/

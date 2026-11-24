@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.CategoryTheory.Linear.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing `Ext` groups using a projective resolution
 
@@ -36,7 +39,6 @@ see `ProjectiveResolution.extIsoHomologyLinearYonedaObj`.
 (Using this definition is not recommended though: it is advisable to use
 `ProjectiveResolution.extMk` and the related API from the file
 `Mathlib/CategoryTheory/Abelian/Projective/Ext.lean` instead)
-
 -/
 
 universe v

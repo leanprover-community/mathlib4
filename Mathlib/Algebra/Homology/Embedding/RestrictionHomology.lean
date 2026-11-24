@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
-/-! # The homology of a restriction
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The homology of a restriction
 
 Under favourable circumstances, we may relate the
 homology of `K : HomologicalComplex C c'` in degree `j'` and

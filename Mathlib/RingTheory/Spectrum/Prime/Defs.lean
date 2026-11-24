@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
 
@@ -25,11 +28,13 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 @[expose] public section
 
-/-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
+/--
+The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
 and a sheaf of commutative rings (see `Mathlib/AlgebraicGeometry/StructureSheaf.lean`).
-It is a fundamental building block in algebraic geometry. -/
+It is a fundamental building block in algebraic geometry.
+-/
 @[ext]
 structure PrimeSpectrum (R : Type*) [CommSemiring R] where
   asIdeal : Ideal R
@@ -40,7 +45,7 @@ attribute [instance] PrimeSpectrum.isPrime
 namespace PrimeSpectrum
 
 /-!
-## The specialization order
+# The specialization order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.

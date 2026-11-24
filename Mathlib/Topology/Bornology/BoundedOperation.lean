@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded operations
 
@@ -27,9 +30,7 @@ public section
 open scoped NNReal
 
 section bounded_sub
-/-!
-### Bounded subtraction
--/
+/-! # Bounded subtraction -/
 
 open scoped Pointwise
 
@@ -68,9 +69,7 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
 end bounded_sub
 
 section bounded_mul
-/-!
-### Bounded multiplication and addition
--/
+/-! # Bounded multiplication and addition -/
 
 open scoped Pointwise
 open Set
@@ -146,9 +145,7 @@ instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
 end bounded_mul
 
 section SeminormedAddCommGroup
-/-!
-### Bounded operations in seminormed additive commutative groups
--/
+/-! # Bounded operations in seminormed additive commutative groups -/
 
 variable {R : Type*} [SeminormedAddCommGroup R]
 
@@ -202,9 +199,7 @@ theorem tendsto_const_sub_cobounded (x : R) :
 end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
-/-!
-### Bounded operations in non-unital seminormed rings
--/
+/-! # Bounded operations in non-unital seminormed rings -/
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
@@ -233,9 +228,7 @@ instance : BoundedMul R where
 end NonUnitalSeminormedRing
 
 section NNReal
-/-!
-### Bounded operations in ℝ≥0
--/
+/-! # Bounded operations in ℝ≥0 -/
 
 instance : BoundedSub ℝ≥0 := boundedSub_of_lipschitzWith_sub NNReal.lipschitzWith_sub
 

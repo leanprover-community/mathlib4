@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Util.Notation3
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements
 
@@ -15,12 +18,14 @@ This file defines eight typeclasses expressing monotonicity (strict monotonicity
 of multiplication on the left or right by nonnegative (positive) elements in a preorder.
 
 For left multiplication (`a ↦ b * a`) we define the following typeclasses:
+
 * `PosMulMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → b * a₁ ≤ b * a₂`.
 * `PosMulStrictMono`: If `b > 0`, then `a₁ < a₂ → b * a₁ < b * a₂`.
 * `PosMulReflectLT`: If `b ≥ 0`, then `b * a₁ < b * a₂ → a₁ < a₂`.
 * `PosMulReflectLE`: If `b > 0`, then `b * a₁ ≤ b * a₂ → a₁ ≤ a₂`.
 
 For right multiplication (`a ↦ a * b`) we define the following typeclasses:
+
 * `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 * `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂ → a₁ * b < a₂ * b`.
 * `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b → a₁ < a₂`.
@@ -37,21 +42,26 @@ most purposes, and the system is set up so that they imply the correct granular 
 
 As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
 The commonly used implications are:
+
 * When `α` is a partial order (in `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`):
+
   * `PosMulStrictMono.toPosMulMono`
   * `MulPosStrictMono.toMulPosMono`
   * `PosMulReflectLE.toPosMulReflectLT`
   * `MulPosReflectLE.toMulPosReflectLT`
 * When `α` is a linear order:
+
   * `PosMulStrictMono.toPosMulReflectLE`
   * `MulPosStrictMono.toMulPosReflectLE`
 * When multiplication on `α` is commutative:
+
   * `posMulMono_iff_mulPosMono`
   * `posMulStrictMono_iff_mulPosStrictMono`
   * `posMulReflectLE_iff_mulPosReflectLE`
   * `posMulReflectLT_iff_mulPosReflectLT`
 
 Furthermore, the bundled non-granular typeclasses imply the granular ones like so:
+
 * `IsOrderedRing → PosMulMono`
 * `IsOrderedRing → MulPosMono`
 * `IsStrictOrderedRing → PosMulStrictMono`
@@ -64,10 +74,12 @@ by the current implications, please bring it up on Zulip!
 ## Notation
 
 The following is local notation in this file:
+
 * `α≥0`: `{x : α // 0 ≤ x}`
 * `α>0`: `{x : α // 0 < x}`
 
-See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
+See
+https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
@@ -90,68 +102,84 @@ section Abbreviations
 
 variable [Mul α] [Zero α] [Preorder α]
 
-/-- Typeclass for monotonicity of multiplication by nonnegative elements on the left,
+/--
+Typeclass for monotonicity of multiplication by nonnegative elements on the left,
 namely `a₁ ≤ a₂ → b * a₁ ≤ b * a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedRing`. -/
+`IsOrderedRing`.
+-/
 @[mk_iff] class PosMulMono : Prop where
   /-- Do not use this. Use `_root_.mul_le_mul_of_nonneg_left` instead. -/
   protected mul_le_mul_of_nonneg_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b c : α⦄ (hbc : b ≤ c) : a * b ≤ a * c
 
-/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
+/--
+Typeclass for strict monotonicity of multiplication by positive elements on the left,
 namely `a₁ < a₂ → b * a₁ < b * a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class PosMulStrictMono : Prop where
   /-- Do not use this. Use `_root_.mul_lt_mul_of_pos_left` instead. -/
   protected mul_lt_mul_of_pos_left ⦃a : α⦄ (ha : 0 < a) ⦃b c : α⦄ (hbc : b < c) : a * b < a * c
 
-/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
+/--
+Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the left, namely `b * a₁ < b * a₂ → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class PosMulReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 
-/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
+/--
+Typeclass for reverse monotonicity of multiplication by positive elements on the left,
 namely `b * a₁ ≤ b * a₂ → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class PosMulReflectLE : Prop extends ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 
-/-- Typeclass for monotonicity of multiplication by nonnegative elements on the right,
+/--
+Typeclass for monotonicity of multiplication by nonnegative elements on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedRing`. -/
+`IsOrderedRing`.
+-/
 @[mk_iff] class MulPosMono : Prop where
   /-- Do not use this. Use `_root_.mul_le_mul_of_nonneg_right` instead. -/
   protected mul_le_mul_of_nonneg_right ⦃c : α⦄ (hc : 0 ≤ c) ⦃a b : α⦄ (hab : a ≤ b) : a * c ≤ b * c
 
-/-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
+/--
+Typeclass for strict monotonicity of multiplication by positive elements on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class MulPosStrictMono : Prop where
   /-- Do not use this. Use `_root_.mul_lt_mul_of_pos_right` instead. -/
   protected mul_lt_mul_of_pos_right ⦃c : α⦄ (hc : 0 < c) ⦃a b : α⦄ (hab : a < b) : a * c < b * c
 
-/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
+/--
+Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class MulPosReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 
-/-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,
+/--
+Typeclass for reverse monotonicity of multiplication by positive elements on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedRing`. -/
+`IsStrictOrderedRing`.
+-/
 @[mk_iff] class MulPosReflectLE : Prop extends ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)
 
 end Abbreviations

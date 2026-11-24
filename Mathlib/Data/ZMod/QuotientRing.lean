@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.ZMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ZMod n` and quotient groups / rings
 
@@ -17,7 +20,7 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 ## Main definitions
 
-- `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
+* `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod  `:
   `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
   (where `n : ℕ` and `n : ℤ` respectively)
 

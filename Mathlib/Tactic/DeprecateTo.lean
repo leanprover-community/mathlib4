@@ -10,6 +10,10 @@ public meta import Std.Time.Format
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # `#deprecate to` -- a deprecation tool
 
@@ -82,6 +86,8 @@ def renameTheorem (newName : String) (stx : TSyntax `command) : CoreM (Name × S
     return (id.raw[0].getId, newCmd)
   | _ => throwError m!"Command is not a `theorem` or a `lemma`{indentD stx}"
 
+
+set_option doc.verso false
 open Meta.Tactic.TryThis in
 /--
 Writing
@@ -153,6 +159,8 @@ elab (name := deprecateTo) tk:"#deprecate " "to" id:ident+ date:(ppSpace str ppS
       addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
         suggestion
 
+
+set_option doc.verso true
 @[inherit_doc deprecateTo]
 macro (name := oldStx) "deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command :
     command =>

@@ -9,23 +9,23 @@ public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums in (semi)normed groups
 
 In a complete (semi)normed group,
 
-- `summable_iff_vanishing_norm`: a series `∑' i, f i` is summable if and only if for any `ε > 0`,
+* `summable_iff_vanishing_norm`: a series `∑' i, f i` is summable if and only if for any `ε > 0`,
   there exists a finite set `s` such that the sum `∑ i ∈ t, f i` over any finite set `t` disjoint
   with `s` has norm less than `ε`;
-
-- `Summable.of_norm_bounded`, `Summable.of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
+* `Summable.of_norm_bounded`, `Summable.of_norm_bounded_eventually`: if `‖f i‖` is bounded above by
   a summable series `∑' i, g i`, then `∑' i, f i` is summable as well; the same is true if the
   inequality hold only off some finite set.
-
-- `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
+* `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
-
-- versions of these lemmas for `nnNorm` and `eNorm`.
+* versions of these lemmas for `nnNorm` and `eNorm`.
 
 ## Tags
 

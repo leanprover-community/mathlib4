@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Pointed
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.Data.PFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of types with partial functions
 
@@ -25,7 +28,7 @@ constructive.
 
 ## References
 
-* [nLab, *The category of sets and partial functions*]
+* ‍\[nLab, _The category of sets and partial functions_\]
   (https://ncatlab.org/nlab/show/partial+function)
 -/
 

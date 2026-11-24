@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.PowerBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.
 
@@ -62,7 +65,8 @@ section PowerBasis
 
 open Algebra
 
-/-- The characteristic polynomial of the map `fun x => a * x` is the minimal polynomial of `a`.
+/--
+The characteristic polynomial of the map `fun x => a * x` is the minimal polynomial of `a`.
 
 In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff`
 and a bit of rewriting, this will allow us to conclude the

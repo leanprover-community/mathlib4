@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Freyd-Mitchell embedding theorem
 
@@ -72,7 +75,7 @@ small category, then this does not change anything.
 ## References
 
 * https://stacks.math.columbia.edu/tag/05PL
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 9.6
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Section 9.6
 -/
 
 @[expose] public section
@@ -91,10 +94,12 @@ open ZeroObject in
 instance : Nonempty (AsSmall.{max u v} C) := ⟨0⟩
 
 variable (C) in
-/-- Given an abelian category `C`, this is a ring such that there is a full, faithful and exact
+/--
+Given an abelian category `C`, this is a ring such that there is a full, faithful and exact
 embedding `C ⥤ ModuleCat (EmbeddingRing C)`.
 
-It is probably not a good idea to unfold this. -/
+It is probably not a good idea to unfold this.
+-/
 def EmbeddingRing : Type (max u v) :=
   IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
     (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
@@ -123,10 +128,12 @@ private noncomputable def H :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 variable (C) in
-/-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
+/--
+This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
 such a functor exists is called the Freyd-Mitchell embedding theorem.
 
-It is probably not a good idea to unfold this. -/
+It is probably not a good idea to unfold this.
+-/
 noncomputable def functor : C ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
   F C ⋙ G C ⋙ H C
 

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Dimension.Localization
 
 import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattices
 
@@ -24,15 +27,15 @@ We do not require a lattice to be full. See `Submodule.IsFullLattice` for full l
 
 ## Main definitions
 
-- `Submodule.IsLattice`: an `R`-submodule `M` of `V` that is finitely generated
+* `Submodule.IsLattice`: an `R`-submodule `M` of `V` that is finitely generated
   and such that every `R`-linearly independent subset of `M` is `A`-linearly independent.
 
 ## Main statements
 
-- `Submodule.IsLattice.of_fg`: over the fraction field `A = K` of a domain `R` the second axiom
+* `Submodule.IsLattice.of_fg`: over the fraction field `A = K` of a domain `R` the second axiom
   is automatic, so there lattices are exactly the finitely generated submodules.
-- `Submodule.IsLattice.free`: over a PID, every lattice is `R`-free.
-- `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
+* `Submodule.IsLattice.free`: over a PID, every lattice is `R`-free.
+* `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
   Noetherian ring, the intersection of a lattice with a submodule is a lattice.
 
 ## Future work
@@ -48,7 +51,7 @@ finite-dimensional, but API relating them is still missing.
 
 ## References
 
-* [S. Viguié, *Index-modules and applications*][viguie2011]
+* ‍\[S. Viguié, _Index-modules and applications_\]\[viguie2011\]
 -/
 @[expose] public section
 
@@ -59,13 +62,14 @@ variable {R : Type*} [CommRing R]
 
 namespace Submodule
 
-/-- An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
-`R`-linearly independent subset of `M` is `A`-linearly independent. If `A is a field, this is
-equivalent to the `R`-rank of `M` being equal to the `A`-rank of its `A`-span, see
-`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`.
+/--
+An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
+`R`-linearly independent subset of `M` is `A`-linearly independent. If
+`A is a field, this is equivalent to the  `R`-rank of  `M`being equal to the`A`-rank of its  `A`-span, see  `Submodule.IsLattice.iff\_fg\_and\_finrank\_span\_eq\_finrank\`.
 
 Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
-`Submodule.IsFullLattice` with discreteness in place of the two conditions here. -/
+`Submodule.IsFullLattice` with discreteness in place of the two conditions here.
+-/
 @[mk_iff]
 class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where

@@ -13,6 +13,9 @@ import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The adjunction between the nerve and the homotopy category functor
 

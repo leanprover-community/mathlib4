@@ -8,9 +8,10 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
-/-!
-# Inner products of strongly measurable functions are strongly measurable.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Inner products of strongly measurable functions are strongly measurable. -/
 
 public section
 
@@ -18,7 +19,7 @@ variable {α 𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductS
 
 namespace MeasureTheory
 
-/-! ## Strongly measurable functions -/
+/-! # Strongly measurable functions -/
 
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y

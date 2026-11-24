@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strong epimorphisms
 
@@ -19,6 +22,7 @@ with respect to epimorphisms.
 ## Main results
 
 Besides the definition, we show that
+
 * the composition of two strong epimorphisms is a strong epimorphism,
 * if `f ≫ g` is a strong epimorphism, then so is `g`,
 * if `f` is both a strong epimorphism and a monomorphism, then it is an isomorphism
@@ -32,7 +36,7 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 1_\]\[borceux-vol1\]
 -/
 
 public section

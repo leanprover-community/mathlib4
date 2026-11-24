@@ -12,6 +12,9 @@ import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.MeanValue
 import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First and second mean value theorems for interval integrals
 
@@ -20,32 +23,35 @@ We prove versions of the first and second mean value theorems for interval integ
 ## Main results
 
 First mean value theorem
+
 * `exists_eq_const_mul_intervalIntegral_of_ae_nonneg` (a.e. nonnegativity of `g` on `s`):
-    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+  `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
 * `exists_eq_const_mul_intervalIntegral_of_nonneg` (pointwise nonnegativity of `g` on `s`):
-    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+  `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
 
 Second mean value theorem
+
 * `exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn`
   For nonnegative and nonincreasing `f : ℝ → ℝ` and integrable `g : ℝ → ℝ` on `Icc a b`:
-    `∃ ξ ∈ Icc a b, ∫ x in a..b, f x * g x = f a * ∫ x in a..ξ, g x`
+  `∃ ξ ∈ Icc a b, ∫ x in a..b, f x * g x = f a * ∫ x in a..ξ, g x`
 * `exists_eq_const_mul_intervalIntegral_of_nonneg_of_monotoneOn` (nondecreasing variant)
 
 A vector-valued inequality variant of the second mean value theorem
+
 * `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn`
   Let `E` be a real Banach space. For nonnegative and nonincreasing
   `f : ℝ → ℝ` and integrable `g : ℝ → E` on `Icc a b`:
   `∃ ξ ∈ Icc a b, ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖`
 * `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_monotoneOn` (nondecreasing variant)
 
-
 ## References
 
-* [V. A. Zorich, *Mathematical Analysis I*][zorich2015],
-    Thm. 5 (First mean-value theorem for the integral).
-* <https://proofwiki.org/wiki/Mean_Value_Theorem_for_Integrals/Generalization>
-* [E. T. Whittaker, G. N. Watson, *A Course of Modern Analysis*, 5th edition][WW21]
-    p. 63
+* ‍\[V. A. Zorich, _Mathematical Analysis I_\]\[zorich2015\],
+  Thm. 5 (First mean-value theorem for the integral).
+* [
+  https://proofwiki.org/wiki/Mean\_Value\_Theorem\_for\_Integrals/Generalization](https://proofwiki.org/wiki/Mean_Value_Theorem_for_Integrals/Generalization)
+* ‍\[E. T. Whittaker, G. N. Watson, _A Course of Modern Analysis_, 5th edition\]\[WW21\]
+  p. 63
 
 ## Tags
 

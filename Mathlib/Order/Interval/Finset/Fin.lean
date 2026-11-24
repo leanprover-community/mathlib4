@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Fin
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.Interval.Set.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals in `Fin n`
 
@@ -26,9 +29,7 @@ namespace Fin
 
 variable (n : ℕ)
 
-/-!
-### Locally finite order etc. instances
--/
+/-! # Locally finite order etc. instances -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
   finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.isLt
@@ -95,9 +96,7 @@ theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a
 
 section val
 
-/-!
-### Images under `Fin.val`
--/
+/-! # Images under `Fin.val` -/
 
 @[simp]
 theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b :=
@@ -131,9 +130,7 @@ theorem finsetImage_val_Iic : (Iic a).image val = Iic (a : ℕ) := by simp [← 
 @[simp]
 theorem finsetImage_val_Iio : (Iio b).image val = Iio (b : ℕ) := by simp [← coe_inj]
 
-/-!
-### `Finset.map` along `Fin.valEmbedding`
--/
+/-! # `Finset.map` along `Fin.valEmbedding` -/
 
 @[simp]
 theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc (a : ℕ) b :=
@@ -175,9 +172,7 @@ end val
 
 section castLE
 
-/-!
-### Image under `Fin.castLE`
--/
+/-! # Image under `Fin.castLE` -/
 
 @[simp]
 theorem finsetImage_castLE_Icc (h : n ≤ m) :
@@ -207,9 +202,7 @@ theorem finsetImage_castLE_Iic (h : n ≤ m) :
 theorem finsetImage_castLE_Iio (h : n ≤ m) :
     (Iio a).image (castLE h) = Iio (castLE h a) := by simp [← coe_inj]
 
-/-!
-### `Finset.map` along `Fin.castLEEmb`
--/
+/-! # `Finset.map` along `Fin.castLEEmb` -/
 
 @[simp]
 theorem map_castLEEmb_Icc (h : n ≤ m) :
@@ -243,9 +236,7 @@ end castLE
 
 section castAdd
 
-/-!
-### Images under `Fin.castAdd`
--/
+/-! # Images under `Fin.castAdd` -/
 
 @[simp]
 theorem finsetImage_castAdd_Icc (m) (i j : Fin n) :
@@ -290,9 +281,7 @@ theorem finsetImage_castAdd_Iic (m) (i : Fin n) : (Iic i).image (castAdd m) = Ii
 theorem finsetImage_castAdd_Iio (m) (i : Fin n) : (Iio i).image (castAdd m) = Iio (castAdd m i) :=
   finsetImage_castLE_Iio ..
 
-/-!
-### `Finset.map` along `Fin.castAddEmb`
--/
+/-! # `Finset.map` along `Fin.castAddEmb` -/
 
 @[simp]
 theorem map_castAddEmb_Icc (m) (i j : Fin n) :
@@ -341,9 +330,7 @@ end castAdd
 
 section cast
 
-/-!
-### Images under `Fin.cast`
--/
+/-! # Images under `Fin.cast` -/
 
 @[simp]
 theorem finsetImage_cast_Icc (h : n = m) (i j : Fin n) :
@@ -390,9 +377,7 @@ theorem finsetImage_cast_Iio (h : n = m) (i : Fin n) :
     (Iio i).image (.cast h) = Iio (i.cast h) := by
   simp [← coe_inj]
 
-/-!
-### `Finset.map` along `finCongr`
--/
+/-! # `Finset.map` along `finCongr` -/
 
 @[simp]
 theorem map_finCongr_Icc (h : n = m) (i j : Fin n) :
@@ -443,9 +428,7 @@ end cast
 
 section castSucc
 
-/-!
-### Images under `Fin.castSucc`
--/
+/-! # Images under `Fin.castSucc` -/
 
 @[simp]
 theorem finsetImage_castSucc_Icc (i j : Fin n) :
@@ -488,9 +471,7 @@ theorem finsetImage_castSucc_Iic (i : Fin n) : (Iic i).image castSucc = Iic i.ca
 theorem finsetImage_castSucc_Iio (i : Fin n) : (Iio i).image castSucc = Iio i.castSucc :=
   finsetImage_castAdd_Iio ..
 
-/-!
-### `Finset.map` along `Fin.castSuccEmb`
--/
+/-! # `Finset.map` along `Fin.castSuccEmb` -/
 
 @[simp]
 theorem map_castSuccEmb_Icc (i j : Fin n) :
@@ -537,9 +518,7 @@ end castSucc
 
 section natAdd
 
-/-!
-### Images under `Fin.natAdd`
--/
+/-! # Images under `Fin.natAdd` -/
 
 @[simp]
 theorem finsetImage_natAdd_Icc (m) (i j : Fin n) :
@@ -574,9 +553,7 @@ theorem finsetImage_natAdd_Ici (m) (i : Fin n) : (Ici i).image (natAdd m) = Ici 
 theorem finsetImage_natAdd_Ioi (m) (i : Fin n) : (Ioi i).image (natAdd m) = Ioi (natAdd m i) := by
   simp [← coe_inj]
 
-/-!
-### `Finset.map` along `Fin.natAddEmb`
--/
+/-! # `Finset.map` along `Fin.natAddEmb` -/
 
 @[simp]
 theorem map_natAddEmb_Icc (m) (i j : Fin n) :
@@ -615,9 +592,7 @@ end natAdd
 
 section addNat
 
-/-!
-### Images under `Fin.addNat`
--/
+/-! # Images under `Fin.addNat` -/
 
 @[simp]
 theorem finsetImage_addNat_Icc (m) (i j : Fin n) :
@@ -652,9 +627,7 @@ theorem finsetImage_addNat_Ici (m) (i : Fin n) : (Ici i).image (addNat · m) = I
 theorem finsetImage_addNat_Ioi (m) (i : Fin n) : (Ioi i).image (addNat · m) = Ioi (i.addNat m) := by
   simp [← coe_inj]
 
-/-!
-### `Finset.map` along `Fin.addNatEmb`
--/
+/-! # `Finset.map` along `Fin.addNatEmb` -/
 
 @[simp]
 theorem map_addNatEmb_Icc (m) (i j : Fin n) :
@@ -693,9 +666,7 @@ end addNat
 
 section succ
 
-/-!
-### Images under `Fin.succ`
--/
+/-! # Images under `Fin.succ` -/
 
 @[simp]
 theorem finsetImage_succ_Icc (i j : Fin n) : (Icc i j).image succ = Icc i.succ j.succ :=
@@ -733,9 +704,7 @@ theorem finsetImage_succ_Iic (i : Fin n) : (Iic i).image succ = Ioc 0 i.succ := 
 theorem finsetImage_succ_Iio (i : Fin n) : (Iio i).image succ = Ioo 0 i.succ := by
   simp [← coe_inj]
 
-/-!
-### `Finset.map` along `Fin.succEmb`
--/
+/-! # `Finset.map` along `Fin.succEmb` -/
 
 @[simp]
 theorem map_succEmb_Icc (i j : Fin n) : (Icc i j).map (succEmb n) = Icc i.succ j.succ :=
@@ -777,9 +746,7 @@ end succ
 
 section rev
 
-/-!
-### Images under `Fin.rev`
--/
+/-! # Images under `Fin.rev` -/
 
 @[simp]
 theorem finsetImage_rev_Icc (i j : Fin n) : (Icc i j).image rev = Icc j.rev i.rev := by
@@ -813,9 +780,7 @@ theorem finsetImage_rev_Iic (i : Fin n) : (Iic i).image rev = Ici i.rev := by si
 @[simp]
 theorem finsetImage_rev_Iio (i : Fin n) : (Iio i).image rev = Ioi i.rev := by simp [← coe_inj]
 
-/-!
-### `Finset.map` along `revPerm`
--/
+/-! # `Finset.map` along `revPerm` -/
 
 @[simp]
 theorem map_revPerm_Icc (i j : Fin n) : (Icc i j).map revPerm.toEmbedding = Icc j.rev i.rev := by
@@ -855,9 +820,7 @@ theorem map_revPerm_Iio (i : Fin n) : (Iio i).map revPerm.toEmbedding = Ioi i.re
 
 end rev
 
-/-!
-### Cardinalities of the intervals
--/
+/-! # Cardinalities of the intervals -/
 
 section card
 
@@ -893,7 +856,7 @@ theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbeddi
 
 end card
 
-/-! ### Perturbations of endpoints by one -/
+/-! # Perturbations of endpoints by one -/
 
 /-
 Note: the `haveI`s in the statements below are needed for `0` and `1`

@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 
-/-! # Dini's Theorem
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Dini's Theorem
 
 This file proves Dini's theorem, which states that if `F n` is a monotone increasing sequence of
 continuous real-valued functions on a compact set `s` converging pointwise to a continuous function

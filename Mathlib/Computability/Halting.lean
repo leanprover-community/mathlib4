@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.RE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computability theory and the halting problem
 
@@ -14,7 +17,8 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 ## References
 
-* [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
+* ‍\[Mario Carneiro, _Formalizing computability theory via partial recursive
+  functions_\]\[carneiro2019\]
 -/
 
 public section

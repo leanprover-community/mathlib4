@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth base change commutes with integral closure
 
@@ -16,13 +19,14 @@ We define the map
 and show that it is bijective when `S` is `R`-smooth.
 
 ## Main results
-- `TensorProduct.toIntegralClosure_injective_of_flat`:
+
+* `TensorProduct.toIntegralClosure_injective_of_flat`:
   If `S` is `R`-flat, then `TensorProduct.toIntegralClosure` is injective.
-- `TensorProduct.toIntegralClosure_mvPolynomial_bijective`:
+* `TensorProduct.toIntegralClosure_mvPolynomial_bijective`:
   If `S = MvPolynomial σ R`, then `TensorProduct.toIntegralClosure` is bijective.
-- `TensorProduct.toIntegralClosure_bijective_of_isLocalization`:
+* `TensorProduct.toIntegralClosure_bijective_of_isLocalization`:
   If `S = Localization M`, then `TensorProduct.toIntegralClosure` is bijective.
-- `TensorProduct.toIntegralClosure_bijective_of_smooth`:
+* `TensorProduct.toIntegralClosure_bijective_of_smooth`:
   If `S` is `R`-smooth, then `TensorProduct.toIntegralClosure` is bijective.
 -/
 

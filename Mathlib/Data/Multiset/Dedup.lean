@@ -8,9 +8,10 @@ module
 public import Mathlib.Data.List.Dedup
 public import Mathlib.Data.Multiset.UnionInter
 
-/-!
-# Erasing duplicates in a multiset.
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Erasing duplicates in a multiset. -/
 
 @[expose] public section
 
@@ -22,7 +23,7 @@ open List
 
 variable {α β : Type*} [DecidableEq α]
 
-/-! ### dedup -/
+/-! # dedup -/
 
 
 /-- `dedup s` removes duplicates from `s`, yielding a `nodup` multiset. -/

@@ -12,6 +12,9 @@ import Mathlib.Algebra.MonoidAlgebra.Cardinal
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Multivariate Polynomial Ring
 
@@ -46,10 +49,12 @@ theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = lift.{u} #R := 
 theorem cardinalMk_eq_one [Subsingleton R] : #(MvPolynomial σ R) = 1 := mk_eq_one _
 
 
-/-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
+/--
+The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀`.
 
-See `cardinalMk_le_max` for the universe monomorphic version. -/
+See `cardinalMk_le_max` for the universe monomorphic version.
+-/
 theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [CommSemiring R] :
     #(MvPolynomial σ R) ≤ lift.{u} #R ⊔ lift.{v} #σ ⊔ ℵ₀ := by
   nontriviality R; cases isEmpty_or_nonempty σ <;> simp
@@ -63,10 +68,12 @@ theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] : #(MvPolynomial σ R) = 
 
 theorem cardinalMk_eq [IsEmpty σ] : #(MvPolynomial σ R) = #R := by simp
 
-/-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
+/--
+The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀`.
 
-See `cardinalMk_le_max_lift` for the universe polymorphic version. -/
+See `cardinalMk_le_max_lift` for the universe polymorphic version.
+-/
 theorem cardinalMk_le_max : #(MvPolynomial σ R) ≤ #R ⊔ #σ ⊔ ℵ₀ :=
   cardinalMk_le_max_lift.trans <| by rw [lift_id, lift_id]
 

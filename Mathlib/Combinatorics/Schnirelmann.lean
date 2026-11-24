@@ -13,11 +13,14 @@ public import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Tactic.Rify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schnirelmann density
 
 We define the Schnirelmann density of a set `A` of natural numbers as
-$inf_{n > 0} |A ∩ {1,...,n}| / n$. As this density is very sensitive to changes in small values,
+$`inf_{n > 0} |A ∩ {1,...,n}| / n`. As this density is very sensitive to changes in small values,
 we must exclude `0` from the infimum, and from the intersection.
 
 ## Main statements
@@ -35,6 +38,7 @@ Further, we use `Finset.Ioc` rather than a set intersection since the set is fin
 which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## TODO
+
 * Give other calculations of the density, for example powers and their sumsets.
 * Define other densities like the lower and upper asymptotic density, and the natural density,
   and show how these relate to the Schnirelmann density.
@@ -42,15 +46,17 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## References
 
-* [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
+* ‍\[Ruzsa, Imre, _Sumsets and structure_\]\[ruzsa2009\]
 -/
 
 @[expose] public section
 
 open Finset
 
-/-- The Schnirelmann density is defined as the infimum of $|A ∩ {1, ..., n}| / n$ as n ranges over
-the positive naturals. -/
+/--
+The Schnirelmann density is defined as the infimum of $`|A ∩ {1, ..., n}| / n` as n ranges over
+the positive naturals.
+-/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
   ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 public import Mathlib.Order.Copy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck topologies
 
@@ -18,6 +21,7 @@ certain closure conditions.
 
 Alternate versions of the axioms (in arrow form) are also described.
 Two explicit examples of Grothendieck topologies are given:
+
 * The dense topology
 * The atomic topology
 
@@ -34,14 +38,14 @@ Grothendieck topology, coverage, pretopology, site
 
 ## References
 
-* [nLab, *Grothendieck topology*](https://ncatlab.org/nlab/show/Grothendieck+topology)
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
+* [nLab, _Grothendieck topology_](https://ncatlab.org/nlab/show/Grothendieck+topology)
+* ‍\[S. MacLane, I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
 
 ## Implementation notes
 
-We use the definition of [nlab] and [MM92][] (Chapter III, Section 2), where Grothendieck topologies
-are saturated collections of morphisms, rather than the notions of the Stacks project (00VG) and
-the Elephant, in which topologies are allowed to be unsaturated, and are then completed.
+We use the definition of \[nlab\] and \[MM92\]\[\] (Chapter III, Section 2), where Grothendieck
+topologies are saturated collections of morphisms, rather than the notions of the Stacks project
+(00VG) and the Elephant, in which topologies are allowed to be unsaturated, and are then completed.
 TODO (BM): Add the definition from Stacks, as a pretopology, and complete to a topology.
 
 This is so that we can produce a bijective correspondence between Grothendieck topologies on a
@@ -58,8 +62,10 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
-/-- The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying
+/--
+The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying
 three axioms:
+
 1. For every object `X`, the maximal sieve is in `J X`.
 2. If `S ∈ J X` then its pullback along any `h : Y ⟶ X` is in `J Y`.
 3. If `S ∈ J X` and `R` is a sieve on `X`, then provided that the pullback of `R` along any arrow
@@ -67,7 +73,8 @@ three axioms:
 
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
-See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
+See also \[nlab\] or \[MM92\] Chapter III, Section 2, Definition 1.
+-/
 @[stacks 00Z4, wikidata Q1062242]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
@@ -154,9 +161,11 @@ theorem copy_eq {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h :
     J.copy s h = J :=
   GrothendieckTopology.ext h.symm
 
-/-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
+/--
+If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
-See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
+See also discussion after \[MM92\] Chapter III, Section 2, Definition 1.
+-/
 @[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
@@ -165,9 +174,11 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   rw [← top_le_iff, ← S.pullback_eq_top_of_mem hf]
   apply Sieve.pullback_monotone _ Hss
 
-/-- The intersection of two covering sieves is covering.
+/--
+The intersection of two covering sieves is covering.
 
-See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
+See also \[MM92\] Chapter III, Section 2, Definition 1 (iv).
+-/
 @[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
@@ -228,11 +239,12 @@ theorem arrow_intersect (f : Y ⟶ X) (S R : Sieve X) (hS : J.Covers S f) (hR : 
 
 variable (C)
 
-/-- The trivial Grothendieck topology, in which only the maximal sieve is covering. This topology is
+/--
+The trivial Grothendieck topology, in which only the maximal sieve is covering. This topology is
 also known as the indiscrete, coarse, or chaotic topology.
 
-See [MM92] Chapter III, Section 2, example (a), or
-https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies
+See \[MM92\] Chapter III, Section 2, example (a), or
+https://en.wikipedia.org/wiki/Grothendieck\_topology#The\_discrete\_and\_indiscrete\_topologies
 -/
 def trivial : GrothendieckTopology C where
   sieves _ := {⊤}
@@ -244,9 +256,10 @@ def trivial : GrothendieckTopology C where
     rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS
     simpa using hR hS
 
-/-- The discrete Grothendieck topology, in which every sieve is covering.
+/--
+The discrete Grothendieck topology, in which every sieve is covering.
 
-See https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies.
+See https://en.wikipedia.org/wiki/Grothendieck\_topology#The\_discrete\_and\_indiscrete\_topologies.
 -/
 def discrete : GrothendieckTopology C where
   sieves _ := Set.univ
@@ -366,9 +379,10 @@ lemma bot_lt_top_iff_nonempty : (⊥ : GrothendieckTopology C) < ⊤ ↔ Nonempt
   contrapose!
   simp
 
-/-- The dense Grothendieck topology.
+/--
+The dense Grothendieck topology.
 
-See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
+See https://ncatlab.org/nlab/show/dense+topology, or \[MM92\] Chapter III, Section 2, example (e).
 -/
 def dense : GrothendieckTopology C where
   sieves X := {S | ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)}
@@ -397,10 +411,11 @@ def RightOreCondition (C : Type u) [Category.{v} C] : Prop :=
 theorem right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ =>
   ⟨_, _, _, Limits.pullback.condition⟩
 
-/-- The atomic Grothendieck topology: a sieve is covering iff it is nonempty.
+/--
+The atomic Grothendieck topology: a sieve is covering iff it is nonempty.
 For the pullback stability condition, we need the right Ore condition to hold.
 
-See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
+See https://ncatlab.org/nlab/show/atomic+site, or \[MM92\] Chapter III, Section 2, example (f).
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
   sieves X := {S | ∃ (Y : _) (f : Y ⟶ X), S f}

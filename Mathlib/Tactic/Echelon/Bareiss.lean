@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Bareiss decomposition driver
 
@@ -17,11 +20,11 @@ and the certificate construction `certifyDecomposition` in `Mathlib.Tactic.Echel
 
 ## Main definitions
 
-- `mkBareissDecomposition`: selects a model, runs the elimination algorithm
+* `mkBareissDecomposition`: selects a model, runs the elimination algorithm
   and builds the certificate.
-- `BareissResult`: the elaborated certificate together with the model and the raw decomposition
+* `BareissResult`: the elaborated certificate together with the model and the raw decomposition
   data.
-- `modelFor`: selects the computation model for a given ring.
+* `modelFor`: selects the computation model for a given ring.
 -/
 
 public meta section

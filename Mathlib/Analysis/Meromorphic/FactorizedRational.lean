@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorized Rational Functions
 
@@ -47,9 +50,7 @@ The factorized rational function associated with `d : 𝕜 → ℤ`, defined as 
 
 namespace Function.FactorizedRational
 
-/-!
-## Elementary Properties of Factorized Rational Functions
--/
+/-! # Elementary Properties of Factorized Rational Functions -/
 
 /--
 Helper Lemma: Identify the support of `d` as the mulsupport of the product defining the factorized
@@ -176,9 +177,7 @@ Factorized rational functions are meromorphic.
 theorem meromorphic (d : 𝕜 → ℤ) :
     Meromorphic (factorizedRational d) := fun _ ↦ (meromorphicNFOn_univ d).meromorphicOn _ trivial
 
-/-!
-## Orders and Divisors of Factorized Rational Functions
--/
+/-! # Orders and Divisors of Factorized Rational Functions -/
 
 /--
 The order of the factorized rational function `factorizedRational d` at `z` equals `d z`.
@@ -301,9 +300,7 @@ theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d
   · simp [h]
   · rw [Function.update_of_ne (by tauto)]
 
-/-!
-## Logarithm of the Norm of Factorized Rational Functions
--/
+/-! # Logarithm of the Norm of Factorized Rational Functions -/
 
 /--
 Helper Lemma: Identify the support of `d` as the support of the sum `∑ᶠ u, (d u * log ‖· - u‖)`.
@@ -367,7 +364,7 @@ end Function.FactorizedRational
 open Function.FactorizedRational
 
 /-!
-## Elimination of Zeros and Poles
+# Elimination of Zeros and Poles
 
 This section shows that every meromorphic function with finitely many zeros and poles is equivalent,
 modulo equality on codiscrete sets, to the product of a factorized rational function and an analytic

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Degree.Monomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Erase the leading term of a univariate polynomial
 
@@ -258,8 +261,10 @@ theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoe
   by_contra h₂
   exact leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h₂ ▸ h₂) h
 
-/-- If we erase the leading coefficient of a `Polynomial.coeffList` like [+,0,...], and then
-multiply by a linear term, it's equivalent to erasing the first two coefficients of the product. -/
+/--
+If we erase the leading coefficient of a `Polynomial.coeffList` like \[+,0,...\], and then
+multiply by a linear term, it's equivalent to erasing the first two coefficients of the product.
+-/
 lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZeroDivisors R]
     [Nontrivial R] {x : R} {P : R[X]} (hx : x ≠ 0) (h : P.nextCoeff = 0) :
     ((X - C x) * P).eraseLead.eraseLead = (X - C x) * P.eraseLead := by
@@ -346,12 +351,15 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
       rw [Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, hf]
       exact Nat.succ_ne_zero _
 
-/-- Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a
+/--
+Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a
 "sufficiently monotone" map.  Assume also that
+
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
 
-Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
+Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`.
+-/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} (k : ℕ) (fu : ℕ → ℕ) (fu0 : ∀ {n}, n ≤ k → fu n = 0)

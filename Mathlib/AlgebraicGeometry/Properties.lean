@@ -10,12 +10,16 @@ public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of schemes
 
 We provide some basic properties of schemes
 
 ## Main definition
+
 * `AlgebraicGeometry.IsIntegral`: A scheme is integral if it is nontrivial and all nontrivial
   components of the structure sheaf are integral domains.
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
@@ -139,10 +143,12 @@ theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)
 theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i, IsReduced (𝒰.X i) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ of_openCover X 𝒰⟩
 
-/-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
+/--
+To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
+
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
 2. For an open immersion `f : X ⟶ Y`, if `P` holds for the entire space of `X`, then `P` holds for
-  the image of `f`.
+   the image of `f`.
 3. `P` holds for the entire space of an affine scheme.
 -/
 @[elab_as_elim]

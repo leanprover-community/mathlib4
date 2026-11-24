@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
 
 We introduce the bundled categories:
+
 * `SemiRingCat`
 * `RingCat`
 * `CommSemiRingCat`
@@ -303,7 +307,8 @@ lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
 
-/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
+/--
+This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
 An example where this is needed is in applying
 `PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective`.
@@ -633,7 +638,8 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
+/--
+This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
 An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.
 -/

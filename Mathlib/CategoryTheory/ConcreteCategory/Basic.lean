@@ -8,6 +8,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Concrete categories
 
@@ -31,7 +34,7 @@ or `RingHomClass` respectively.
 
 ## References
 
-See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
+See \[Ahrens and Lumsdaine, _Displayed Categories_\]\[ahrens2017\] for
 related work.
 -/
 
@@ -46,12 +49,14 @@ namespace CategoryTheory
 
 section ConcreteCategory
 
-/-- A concrete category is a category `C` where objects correspond to types and morphisms to
+/--
+A concrete category is a category `C` where objects correspond to types and morphisms to
 (bundled) functions between those types.
 
 In other words, it has a fixed faithful functor `forget : C ⥤ Type`.
 
 Note that `ConcreteCategory` potentially depends on three independent universe levels,
+
 * the universe level `w` appearing in `forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
@@ -76,14 +81,16 @@ attribute [simp] ConcreteCategory.hom_ofHom ConcreteCategory.ofHom_hom
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 
-/-- `ToType X` converts the object `X` of the concrete category `C` to a type.
+/--
+`ToType X` converts the object `X` of the concrete category `C` to a type.
 
 This is an `abbrev` so that instances on `X` (e.g. `Ring`) do not need to be redeclared.
 -/
 @[nolint unusedArguments] -- Need the instance to trigger unification that finds `CC`.
 abbrev ToType [ConcreteCategory C FC] := CC
 
-/-- `ToHom X Y` is the type of (bundled) functions between objects `X Y : C`.
+/--
+`ToHom X Y` is the type of (bundled) functions between objects `X Y : C`.
 
 This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be redeclared.
 -/

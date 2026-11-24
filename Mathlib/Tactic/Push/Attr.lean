@@ -8,6 +8,9 @@ module
 public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `@[push]` attribute for the `push` and `pull` tactics
 
@@ -83,6 +86,8 @@ initialize pullExt : SimpleScopedEnvExtension PullTheorem (DiscrTree PullTheorem
     addEntry := fun d e => d.insertKeyValue e.1.keys e
   }
 
+
+set_option doc.verso false
 /--
 The `push` attribute is used to tag lemmas that "push" a constant into an expression.
 
@@ -106,6 +111,8 @@ To tag the reverse direction of the lemma, use `@[push ←]`.
 -/
 syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)? : attr
 
+
+set_option doc.verso true
 @[inherit_doc pushAttr]
 initialize registerBuiltinAttribute {
   name := `pushAttr

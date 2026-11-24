@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coherence theorem for bicategories
 
@@ -31,8 +34,8 @@ theorem follows immediately from this fact.
 
 ## References
 
-* [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-  proof of normalization for monoids][beylin1996]
+* ‍\[Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
+  proof of normalization for monoids\]\[beylin1996\]
 -/
 
 @[expose] public section
