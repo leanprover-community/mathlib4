@@ -71,7 +71,7 @@ from a `CompositionAsSet` and called `compositionAsSetEquiv n`), we deduce that
 `CompositionAsSet n` and `Composition n` are both fintypes of cardinality `2^(n - 1)`
 (see `compositionAsSet_card` and `composition_card`).
 
-## Implementation details
+## Implementation notes
 
 The main motivation for this structure and its API is in the construction of the composition of
 formal multilinear series, and the proof that the composition of analytic functions is analytic.

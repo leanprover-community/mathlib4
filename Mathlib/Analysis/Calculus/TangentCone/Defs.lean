@@ -25,7 +25,7 @@ One should however think of this definition as an implementation detail: the onl
 introduce the predicates `UniqueDiffWithinAt` and `UniqueDiffOn` is to ensure the uniqueness
 of the derivative. This is why their names reflect their uses, and not how they are defined.
 
-## Implementation details
+## Implementation notes
 
 Note that this file is imported by `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. Hence, derivatives
 are not defined yet. The property of uniqueness of the derivative is therefore proved in

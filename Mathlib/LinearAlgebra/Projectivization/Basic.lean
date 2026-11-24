@@ -16,6 +16,7 @@ as well as the bijection between said projectivization and the collection of all
 dimensional subspaces of the vector space.
 
 ## Notation
+
 `ℙ K V` is localized notation for `Projectivization K V`, the projectivization of a `K`-vector
 space `V`.
 

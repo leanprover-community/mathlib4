@@ -26,6 +26,7 @@ is commonly assumed in number theory. To avoid potential confusion with other de
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
+
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
@@ -34,6 +35,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   uniformizer.
 
 ## Main Results
+
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
   uniformizer.
 * `Valuation.associated_of_isUniformizer`: If two elements are uniformizers, they are associated.
@@ -52,6 +54,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 
 
 ## TODO
+
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/

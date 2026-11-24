@@ -24,7 +24,7 @@ facts about the existing norm.
 * `isUltrametricDist_iff_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
   if and only if the norm of the image of a natural is less than or equal to one
 
-## Implementation details
+## Implementation notes
 
 The proof relies on a bounded-from-above argument. The main result has a longer proof
 to be able to be applied in noncommutative division rings.
