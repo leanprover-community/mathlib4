@@ -47,6 +47,7 @@ without first determining the normalizations once and for all.
 * <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
 
 ## Tags
+
 Valuation, Extension of Valuations
 -/
 

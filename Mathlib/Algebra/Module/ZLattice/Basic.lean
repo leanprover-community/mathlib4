@@ -47,7 +47,7 @@ There is also `Submodule.IsFullLattice` which has slightly different application
 topology is needed and discreteness is replaced by finite generation together with a linear
 independence condition.
 
-## Implementation Notes
+## Implementation notes
 
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
 aspect appears to be the more useful one (especially in computations involving basis) and is also

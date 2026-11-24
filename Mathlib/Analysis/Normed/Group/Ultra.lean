@@ -25,7 +25,7 @@ This file contains results on the behavior of norms in ultrametric groups.
   commutative group with a nonarchimedean seminorm is a nonarchimedean topological group (i.e.
   there is a neighbourhood basis of the identity consisting of open subgroups).
 
-## Implementation details
+## Implementation notes
 
 Some results are proved first about `nnNorm : X → ℝ≥0` because the bottom element
 in `NNReal` is 0, so easier to make statements about maxima of empty sets.

@@ -124,6 +124,7 @@ instance : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
 
+/-- Reinterpret a test function `f : 𝓓^{n}(Ω, F)` as a continuous bounded map `E →ᵇ F`. -/
 def toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) : E →ᵇ F := .ofClass f
 
 protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contDiff f
