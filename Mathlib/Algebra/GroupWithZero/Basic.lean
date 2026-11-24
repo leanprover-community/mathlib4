@@ -77,6 +77,10 @@ section Mul
 
 variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 
+-- `eq_zero_of_mul_self_eq_zero` needs a `MonoidWithZero` instance
+protected theorem NoZeroDivisors.eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
+  (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
+
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
   mt eq_zero_or_eq_zero_of_mul_eq_zero <| not_or.mpr ⟨ha, hb⟩
 
@@ -257,7 +261,7 @@ instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out�
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 
-lemma mul_self_eq_zero_iff : a * a = 0 ↔ a = 0 := (pow_two a) ▸ sq_eq_zero_iff
+@[simp] lemma mul_self_eq_zero_iff : a * a = 0 ↔ a = 0 := (pow_two a) ▸ sq_eq_zero_iff
 
 alias ⟨eq_zero_of_mul_self_eq_zero, _⟩ := mul_self_eq_zero_iff
 
