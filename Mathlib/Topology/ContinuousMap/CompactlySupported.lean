@@ -91,8 +91,7 @@ instance : FunLike C_c(α, β) α β where
     congr
 
 @[simp]
-protected lemma coe_ofClass [Zero β] [TopologicalSpace β] [FunLike F α β]
-    [CompactlySupportedContinuousMapClass F α β] (f : F) :
+protected lemma coe_ofClass [FunLike F α β] [CompactlySupportedContinuousMapClass F α β] (f : F) :
     ⇑(ofClass f) = f := rfl
 
 protected lemma hasCompactSupport (f : C_c(α, β)) : HasCompactSupport f := f.hasCompactSupport'
