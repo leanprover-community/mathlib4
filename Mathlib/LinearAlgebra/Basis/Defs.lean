@@ -381,7 +381,7 @@ See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap
 -/
 @[simps +simpRhs]
 def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
-  letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
+  letI : Module R' R := Module.compHom R f.symm.toRingHom
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
         change (f.symm x * y) • z = x • (y • z)

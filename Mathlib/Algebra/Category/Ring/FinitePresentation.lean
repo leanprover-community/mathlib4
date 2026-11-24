@@ -90,7 +90,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
   obtain ⟨π, rfl, hπ, s, hs⟩ :
       ∃ π : P ⟶ S, iP ≫ π = f ∧ Function.Surjective π ∧ (RingHom.ker π.hom).FG := by
     obtain ⟨π, h₁, h₂⟩ := hn
-    exact ⟨CommRingCat.ofHom π, by ext1; exact π.comp_algebraMap, h₁, h₂⟩
+    exact ⟨CommRingCat.ofHom π.toRingHom, by ext1; exact π.comp_algebraMap, h₁, h₂⟩
   obtain ⟨i, g', hg', hg''⟩ : ∃ (i : J) (g' : P ⟶ F.obj i),
       π ≫ g = g' ≫ c.ι.app i ∧ iP ≫ g' = α.app i := by
     choose j x h using fun i ↦ Types.jointly_surjective_of_isColimit hc' ((π ≫ g) (.X i))

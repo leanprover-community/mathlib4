@@ -126,8 +126,11 @@ theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 :=
 theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₗ[R] B) :=
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
+theorem toRingHom_toAlgHom_injective :
+    Function.Injective (fun (f : 𝒜 →ₐᵍ[R] ℬ) ↦ f.toAlgHom.toRingHom) :=
   AlgHom.toRingHom_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-11-23")] alias coe_ringHom_injective := toRingHom_toAlgHom_injective
 
 theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
   AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
@@ -259,7 +262,7 @@ end
 section restrictScalars
 
 /-- Restrict the base ring to a "smaller" ring. -/
-@[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+@[coe] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
   { f.toAlgHom.restrictScalars R₀, f with }
@@ -267,6 +270,9 @@ section restrictScalars
 variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ)
+
+@[simp]
+lemma restrictScalars_apply (a : A) : f.restrictScalars R₀ a = f a := rfl
 
 @[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 

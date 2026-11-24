@@ -97,7 +97,7 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
   rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]
   ext x
   · simp [auxInv]
-  · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+  · simp only [auxInv, AlgHom.toRingHom_eq_ofClass, RingHom.coe_comp, RingHom.coe_ofClass,
       Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
       lift_mk'_spec]
     simp only [map_one]

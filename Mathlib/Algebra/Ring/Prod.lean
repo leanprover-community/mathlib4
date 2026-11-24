@@ -279,12 +279,12 @@ theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodCom
 
 @[simp]
 theorem fst_comp_coe_prodComm :
-    (RingHom.fst S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.snd R S :=
+    (RingHom.fst S R).comp prodComm.toRingHom = RingHom.snd R S :=
   RingHom.ext fun _ => rfl
 
 @[simp]
 theorem snd_comp_coe_prodComm :
-    (RingHom.snd S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.fst R S :=
+    (RingHom.snd S R).comp prodComm.toRingHom = RingHom.fst R S :=
   RingHom.ext fun _ => rfl
 
 section

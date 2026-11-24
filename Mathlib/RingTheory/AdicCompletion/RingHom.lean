@@ -47,7 +47,7 @@ ring maps `f n : R →+* S ⧸ (I ^ n)`.
 -/
 noncomputable def liftRingHom :
     R →+* S :=
-  ((ofAlgEquiv I).symm : _ →+* _).comp (AdicCompletion.liftRingHom I f hf)
+  (ofAlgEquiv I).symm.toRingHom.comp (AdicCompletion.liftRingHom I f hf)
 
 @[simp]
 theorem of_liftRingHom (x : R) :
@@ -56,7 +56,7 @@ theorem of_liftRingHom (x : R) :
 
 @[simp]
 theorem ofAlgEquiv_comp_liftRingHom :
-    (ofAlgEquiv I : S →+* AdicCompletion I S).comp (liftRingHom I f hf) =
+    (ofAlgEquiv I).toRingHom.comp (liftRingHom I f hf) =
       AdicCompletion.liftRingHom I f hf := by
   ext; simp
 
@@ -67,7 +67,7 @@ projection `S →+* S ⧸ (I ^ n)` is `f n` .
 @[simp]
 theorem mk_liftRingHom (n : ℕ) (x : R) :
     Ideal.Quotient.mk (I ^ n) (liftRingHom I f hf x) = f n x := by
-  simp only [liftRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
+  simp only [liftRingHom, RingHom.coe_comp, Function.comp_apply]
   rw [← evalₐ_of I n]
   simp
 

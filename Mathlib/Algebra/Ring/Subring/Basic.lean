@@ -377,16 +377,16 @@ instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
 theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
-    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+    (hf : Function.Surjective f) : map (.ofClass f) (center R) ≤ center S :=
   Set.image_center_subset hf
 
 theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
-    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+    (hf : Function.Injective f) : comap (.ofClass f) (center S) ≤ center R :=
   Set.preimage_center_subset hf
 
 @[simp]
 theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
-    map f (center R) = center S :=
+    map (.ofClass f) (center R) = center S :=
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
@@ -796,15 +796,15 @@ instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsD
   Subring.isMulCommutative_iSup S.monotone.directed_le
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
-    x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
+    x ∈ K.map f.toRingHom ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set R) f.toEquiv x
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subring R) :
-    K.map (f : R →+* S) = K.comap f.symm :=
+    K.map f.toRingHom = K.comap f.symm.toRingHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subring S) :
-    K.comap (f : R →+* S) = K.map f.symm :=
+    K.comap f.toRingHom = K.map f.symm.toRingHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
 end Subring
@@ -986,8 +986,8 @@ def restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
     {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
     [SubsemiringClass σS S] (e : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ e x ∈ s) :
     s' ≃+* s where
-  __ := RingHom.restrict e _ _ fun _ ↦ (h _).1
-  invFun := RingHom.restrict e.symm _ _ fun y hy ↦ by
+  __ := RingHom.restrict e.toRingHom _ _ fun _ ↦ (h _).1
+  invFun := RingHom.restrict e.symm.toRingHom _ _ fun y hy ↦ by
     obtain ⟨x, rfl⟩ := e.surjective y; simp [(h _).2 hy]
   left_inv y := by simp [← Subtype.val_inj]
   right_inv x := by simp [← Subtype.val_inj]

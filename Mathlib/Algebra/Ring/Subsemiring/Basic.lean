@@ -305,16 +305,16 @@ instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
 theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
-    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+    (hf : Function.Surjective f) : map (.ofClass f) (center R) ≤ center S :=
   Set.image_center_subset hf
 
 theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
-    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+    (hf : Function.Injective f) : comap (.ofClass f) (center S) ≤ center R :=
   Set.preimage_center_subset hf
 
 @[simp]
 theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
-    map f (center R) = center S :=
+    map (.ofClass f) (center R) = center S :=
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
@@ -404,15 +404,15 @@ theorem closure_eq_of_le {s : Set R} {t : Subsemiring R} (h₁ : s ⊆ t) (h₂ 
   le_antisymm (closure_le.2 h₁) h₂
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subsemiring R} {x : S} :
-    x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K := by
+    x ∈ K.map f.toRingHom ↔ f.symm x ∈ K := by
   convert! @Set.mem_image_equiv _ _ (↑K) f.toEquiv x using 1
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subsemiring R) :
-    K.map (f : R →+* S) = K.comap f.symm :=
+    K.map f.toRingHom = K.comap f.symm.toRingHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subsemiring S) :
-    K.comap (f : R →+* S) = K.map f.symm :=
+    K.comap f.toRingHom = K.map f.symm.toRingHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
 end Subsemiring
@@ -754,7 +754,7 @@ theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
   SetLike.coe_injective <| Set.range_codRestrict h
 
 theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
-    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
+    Function.Surjective (codRestrict f s h) ↔ f.rangeS = .ofClass s :=
   (Set.surjective_codRestrict h).trans <| .symm SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
@@ -898,7 +898,7 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
 
 /-- Given an equivalence `e : R ≃+* S` of semirings and a subsemiring `s` of `R`,
 `subsemiringMap e s` is the induced equivalence between `s` and `s.map e` -/
-def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map (e : R →+* S) :=
+def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingHom :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 
 @[simp]

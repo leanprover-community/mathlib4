@@ -389,7 +389,7 @@ theorem evalₐ_liftRingHom (n : ℕ) (x : R) :
 
 @[simp]
 theorem evalₐ_comp_liftRingHom (n : ℕ) :
-    (evalₐ I n : _ →+* _).comp (liftRingHom I f hf) = f n := by
+    (evalₐ I n).toRingHom.comp (liftRingHom I f hf) = f n := by
   ext; simp
 
 section

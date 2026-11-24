@@ -456,7 +456,7 @@ variable (S)
     commutes' _ := by rfl }
 
 @[simp]
-theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := (rfl)
+theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s).toRingHom = mkRingHom s := (rfl)
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by

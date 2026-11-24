@@ -65,8 +65,7 @@ variable {R A B F : Type*} [CommSemiring R]
   [CoalgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
-`CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
-@[coe]
+`CoalgHom`. -/
 def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
@@ -74,8 +73,6 @@ def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
 @[deprecated (since := "2026-09-09")] alias toCoalgHom := CoalgHom.ofClass
-
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) := ⟨.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -149,7 +146,9 @@ theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
 theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
+@[simp]
+theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑f.toLinearMap = f :=
+  rfl
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=

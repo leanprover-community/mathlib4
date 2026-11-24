@@ -253,8 +253,8 @@ variable (n) (e : R ≃+* S) (g : S ≃+* T)
 
 /-- The equivalence between `SL n R` and `SL n S` given by `f : R ≃+* S`. -/
 def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
-  toFun := map e
-  invFun := map e.symm
+  toFun := map e.toRingHom
+  invFun := map e.symm.toRingHom
   left_inv A := by ext; simp
   right_inv A := by ext; simp
   map_mul' := map_mul _
@@ -271,7 +271,7 @@ def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
     .trans (mapEquiv n e) (mapEquiv n g) = mapEquiv n (e.trans g) := rfl
 
 @[simp] lemma toMonoidHom_mapEquiv :
-    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S) = map e := rfl
+    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S) = map e.toRingHom := rfl
 
 end Equiv
 

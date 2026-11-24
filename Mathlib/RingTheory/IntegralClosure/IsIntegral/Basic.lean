@@ -76,7 +76,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   rw [IsIntegral, ← ((AlgHom.ofClass f).restrictScalars R).comp_algebraMap]
-  exact .map hb (RingHomClass.toRingHom f)
+  exact .map hb (.ofClass f)
 
 section
 
@@ -84,7 +84,7 @@ variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
     IsIntegral R (f x) ↔ IsIntegral R x := by
-  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := (f : A →+* B)) hf]
+  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := f.toRingHom) hf]
 
 end
 
@@ -179,8 +179,8 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
-      have : RingHomInvPair (φ : R →+* T) φ.symm := RingHomInvPair.of_ringEquiv _
-      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
+      have : RingHomInvPair φ.toRingHom φ.symm.toRingHom := RingHomInvPair.of_ringEquiv _
+      simp only [← h, RingHom.comp_assoc, RingHomCompTriple.comp_eq]
     let : Algebra T R := φ.symm.toRingHom.toAlgebra
     let : IsScalarTower T R S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
@@ -189,7 +189,7 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
     [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
-  hb.map (f : B →+* C).toIntAlgHom
+  hb.map (RingHom.ofClass f).toIntAlgHom
 
 theorem IsIntegral.of_subring {x : B} (T : Subring R) (hx : IsIntegral T x) : IsIntegral R x :=
   hx.tower_top

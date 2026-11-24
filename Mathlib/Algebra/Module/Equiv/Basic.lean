@@ -177,9 +177,9 @@ namespace Module
 /-- `g : R ≃+* S` is `R`-linear when the module structure on `S` is `Module.compHom S g` . -/
 @[simps]
 def compHom.toLinearEquiv {R S : Type*} [Semiring R] [Semiring S] (g : R ≃+* S) :
-    haveI := compHom S (↑g : R →+* S)
+    haveI := compHom S g.toRingHom
     R ≃ₗ[R] S :=
-  letI := compHom S (↑g : R →+* S)
+  letI := compHom S g.toRingHom
   { g with
     toFun := (g : R → S)
     invFun := (g.symm : S → R)

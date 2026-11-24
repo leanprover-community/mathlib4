@@ -147,7 +147,7 @@ theorem rename_expand (f : σ → τ) (φ : MvPolynomial σ R) :
   congr($(rename_comp_expand p f) φ)
 
 lemma eval₂Hom_comp_expand (f : R →+* S) (g : σ → S) :
-    (eval₂Hom f g).comp (expand p (σ := σ) (R := R) : MvPolynomial σ R →+* MvPolynomial σ R) =
+    (eval₂Hom f g).comp (expand p (σ := σ) (R := R)).toRingHom =
       eval₂Hom f (g ^ p) := by
   ext <;> simp
 

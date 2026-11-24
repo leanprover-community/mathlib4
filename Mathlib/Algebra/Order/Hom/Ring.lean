@@ -86,7 +86,7 @@ variable [FunLike F α β]
 into an actual `OrderRingHom`. -/
 def OrderRingHom.ofClass [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
+  { RingHom.ofClass f with monotone' := OrderHomClass.monotone f }
 
 @[deprecated (since := "2026-11-22")] alias OrderRingHomClass.toOrderRingHom := OrderRingHom.ofClass
 
@@ -152,9 +152,10 @@ theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
 theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-@[simp]
-theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
+theorem toRingHom_eq_ofClass (f : α →+*o β) : f.toRingHom = .ofClass f :=
   RingHom.ext fun _ => rfl
+
+@[deprecated (since := "2026-11-22")] alias toRingHom_eq_coe := toRingHom_eq_ofClass
 
 @[simp]
 theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
@@ -165,7 +166,7 @@ theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWith
   rfl
 
 @[simp]
-theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
+theorem coe_toRingHom (f : α →+*o β) : ⇑f.toRingHom = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_coe_ringHom := coe_toRingHom
@@ -178,11 +179,11 @@ theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f 
 theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
   rfl
 
-@[norm_cast]
-theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
+@[deprecated coe_toRingHom +typeChanged (since := "2026-11-22")]
+theorem toRingHom_apply (f : α →+*o β) (a : α) : f.toRingHom a = f a :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := toRingHom_apply
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := coe_toRingHom
 
 @[norm_cast]
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
@@ -224,7 +225,7 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
   rfl
 
 @[simp]
-theorem toRingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+theorem toRingHom_id : (OrderRingHom.id α).toRingHom = RingHom.id α :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_id := toRingHom_id

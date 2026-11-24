@@ -225,7 +225,7 @@ def mapEquiv : GL n R ≃* GL n S :=
     .trans (mapEquiv n f) (mapEquiv n g) = mapEquiv n (f.trans g) := rfl
 
 @[simp] lemma toMonoidHom_mapEquiv :
-    (mapEquiv n f : GL n R →* GL n S) = map (f : R →+* S) := rfl
+    (mapEquiv n f : GL n R →* GL n S) = map f.toRingHom := rfl
 
 end Equiv
 

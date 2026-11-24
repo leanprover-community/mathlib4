@@ -392,11 +392,11 @@ theorem coe_val : (S.val : S → A) = ((↑) : S → A) := rfl
 theorem val_apply (x : S) : S.val x = (x : A) := rfl
 
 @[simp]
-theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) := rfl
+theorem toSubsemiring_subtype : S.toSubsemiring.subtype = S.val.toRingHom := rfl
 
 @[simp]
 theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
-    S.toSubring.subtype = (S.val : S →+* A) := rfl
+    S.toSubring.subtype = S.val.toRingHom := rfl
 
 @[simp]
 theorem toSubmodule_subtype : S.toSubmodule.subtype = (S.val : S →ₗ[R] A) := rfl
@@ -409,7 +409,7 @@ def toSubmoduleEquiv (S : Subalgebra R A) : toSubmodule S ≃ₗ[R] S :=
 /-- Transport a subalgebra via an algebra homomorphism. -/
 @[simps! coe toSubsemiring]
 def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
-  { S.toSubsemiring.map (f : A →+* B) with
+  { S.toSubsemiring.map f.toRingHom with
     algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
 
 @[gcongr]
@@ -439,7 +439,7 @@ theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
 /-- Preimage of a subalgebra under an algebra homomorphism. -/
 @[simps! coe toSubsemiring]
 def comap (f : A →ₐ[R] B) (S : Subalgebra R B) : Subalgebra R A :=
-  { S.toSubsemiring.comap (f : A →+* B) with
+  { S.toSubsemiring.comap f.toRingHom with
     algebraMap_mem' := fun r =>
       show f (algebraMap R A r) ∈ S from (f.commutes r).symm ▸ S.algebraMap_mem r }
 
@@ -560,7 +560,7 @@ theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f)
 
 /-- Restrict the codomain of an algebra homomorphism. -/
 def codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₐ[R] S :=
-  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r => Subtype.ext <| f.commutes r }
+  { RingHom.codRestrict f.toRingHom S hf with commutes' := fun r => Subtype.ext <| f.commutes r }
 
 @[simp]
 theorem val_comp_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
@@ -852,7 +852,7 @@ instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
   Algebra.ofSubsemiring S.toSubsemiring
 
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
-    [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
+    [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val.toRingHom :=
   rfl
 
 theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]

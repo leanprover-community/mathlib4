@@ -169,7 +169,7 @@ theorem Module.projective_of_localization_maximal'
   intro P hP
   set e := (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
   refine Module.Projective.of_equiv (M := Mₚ P) (R := Rₚ P)
-    (σ := e)
+    (σ := e.toRingHom)
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }

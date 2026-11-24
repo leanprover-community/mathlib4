@@ -296,7 +296,7 @@ end
 def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [Ring R] [Ring S] (e : R ≃+* S) :
     ModuleCat S ≌ ModuleCat R where
   functor := ModuleCat.restrictScalars e.toRingHom
-  inverse := ModuleCat.restrictScalars e.symm
+  inverse := ModuleCat.restrictScalars e.symm.toRingHom
   unitIso := (restrictScalarsId S).symm ≪≫
     restrictScalarsComp' _ _ _ e.toRingHom_comp_symm_toRingHom.symm
   counitIso := (restrictScalarsComp' _ _ _ e.symm_toRingHom_comp_toRingHom.symm).symm ≪≫

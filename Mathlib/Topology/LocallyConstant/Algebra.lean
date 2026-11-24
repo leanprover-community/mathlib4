@@ -407,7 +407,7 @@ def mapRingHom [Semiring Y] [Semiring Z] (f : Y →+* Z) :
 @[simps!]
 def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
     (f : Y →ₐ[R] Z) : LocallyConstant X Y →ₐ[R] LocallyConstant X Z where
-  toRingHom := mapRingHom f
+  toRingHom := mapRingHom f.toRingHom
   commutes' _ := by aesop
 
 /-- `LocallyConstant.congrRight` as a linear equivalence. -/

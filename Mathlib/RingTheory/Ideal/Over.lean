@@ -113,8 +113,8 @@ lemma under_smul [SMulCommClass G A B] : (g • P : Ideal B).under A = P.under A
 @[simp]
 theorem smul_under [MulSemiringAction G A] [SMulDistribClass G A B] :
     g • P.under A = (g • P).under A := by
-  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
-  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_ofClass, under_def, comap_comap]
+  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_ofClass, under_def, comap_comap]
   congr
   ext
   simp [algebraMap.smul']

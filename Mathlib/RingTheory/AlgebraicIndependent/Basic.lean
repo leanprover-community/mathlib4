@@ -193,23 +193,23 @@ variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClas
 
 theorem AlgebraicIndependent.of_ringHom_of_comp_eq (H : AlgebraicIndependent S (g ∘ x))
     (hf : Function.Injective f)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (.ofClass f) = RingHom.comp (.ofClass g) (algebraMap R A)) :
     AlgebraicIndependent R x := by
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
-  have := H (p.map f) <| by
-    have : (g : A →+* B) _ = _ := congr(g $hp)
+  have := H (p.map (.ofClass f)) <| by
+    have : (RingHom.ofClass g) _ = _ := congr(g $hp)
     rwa [map_zero, map_aeval, ← h, ← eval₂Hom_map_hom, ← aeval_eq_eval₂Hom] at this
-  exact map_injective (f : R →+* S) hf (by rwa [map_zero])
+  exact map_injective (.ofClass f) hf (by rwa [map_zero])
 
 theorem AlgebraicIndependent.ringHom_of_comp_eq (H : AlgebraicIndependent R x)
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (.ofClass f) = RingHom.comp (.ofClass g) (algebraMap R A)) :
     AlgebraicIndependent S (g ∘ x) := by
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
-  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
-  rw [H q (hg (by rwa [map_zero, ← RingHom.coe_coe g, map_aeval, ← h, ← eval₂Hom_map_hom,
+  obtain ⟨q, rfl⟩ := map_surjective (.ofClass f) hf p
+  rw [H q (hg (by rwa [map_zero, ← RingHom.coe_ofClass g, map_aeval, ← h, ← eval₂Hom_map_hom,
     ← aeval_eq_eval₂Hom])), map_zero]
 
 end
@@ -221,7 +221,7 @@ variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHom
 
 theorem algebraicIndependent_ringHom_iff_of_comp_eq
     (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (.ofClass f) = RingHom.comp (.ofClass g) (algebraMap R A)) :
     AlgebraicIndependent S (g ∘ x) ↔ AlgebraicIndependent R x :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.injective f) h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.surjective f) hg h⟩
@@ -424,7 +424,7 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
   exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
 
 theorem AlgebraicIndependent.repr_ker (hx : AlgebraicIndependent R x) :
-    RingHom.ker (hx.repr : adjoin R (range x) →+* MvPolynomial ι R) = ⊥ :=
+    RingHom.ker hx.repr.toRingHom = ⊥ :=
   (RingHom.injective_iff_ker_eq_bot _).1 (AlgEquiv.injective _)
 
 /-- The isomorphism between `MvPolynomial (Option ι) R` and the polynomial ring over
@@ -437,7 +437,7 @@ def AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin (hx : Algebraic
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
     (hx : AlgebraicIndependent R x) (y) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin y =
-      Polynomial.map (hx.aevalEquiv : MvPolynomial ι R →+* adjoin R (range x))
+      Polynomial.map hx.aevalEquiv.toRingHom
         (aeval (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
   rfl
 
@@ -466,7 +466,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =
       Polynomial.C (hx.aevalEquiv (X i)) := by
   rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_X, Option.elim,
-    Polynomial.map_C, RingHom.coe_coe]
+    Polynomial.map_C, RingEquiv.coe_toRingHom, AlgEquiv.coe_toRingEquiv]
 
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :

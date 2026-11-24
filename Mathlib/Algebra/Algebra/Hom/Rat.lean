@@ -28,7 +28,7 @@ def toRatAlgHom (f : R →+* S) : R →ₐ[ℚ] S :=
 
 @[simp]
 theorem toRatAlgHom_toRingHom (f : R →+* S) :
-    ↑f.toRatAlgHom = f :=
+    f.toRatAlgHom.toRingHom = f :=
   RingHom.ext fun _x => rfl
 
 @[simp]
@@ -39,7 +39,7 @@ theorem toRatAlgHom_apply (f : R →+* S) (x : R) :
 end RingHom
 
 @[simp]
-theorem AlgHom.toRingHom_toRatAlgHom (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
+theorem AlgHom.toRingHom_toRatAlgHom (f : R →ₐ[ℚ] S) : f.toRingHom.toRatAlgHom = f :=
   AlgHom.ext fun _x => rfl
 
 variable (R) (S) in
@@ -67,7 +67,7 @@ theorem toRingEquiv_toRatAlgEquiv (f : R ≃+* S) :
   rfl
 
 theorem toAlgHom_toRatAlgEquiv (f : R ≃+* S) :
-    f.toRatAlgEquiv.toAlgHom = (f : R →+* S).toRatAlgHom :=
+    f.toRatAlgEquiv.toAlgHom = f.toRingHom.toRatAlgHom :=
   rfl
 
 @[simp]

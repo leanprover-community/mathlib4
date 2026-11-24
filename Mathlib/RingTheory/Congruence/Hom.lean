@@ -339,7 +339,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- This version infers the surjectivity of the function from a RingEquiv function -/
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
-    (comapQuotientEquivOfSurj c (f : N →+* M) f.surjective hcd).symm ⟦f x⟧ = ↑x := by
+    (comapQuotientEquivOfSurj c f.toRingHom f.surjective hcd).symm ⟦f x⟧ = ↑x := by
   convert! RingEquiv.symm_apply_apply _ _
   rw [comapQuotientEquivOfSurj_mk, RingEquiv.coe_toRingHom]
   rfl
@@ -474,15 +474,15 @@ congruence relation `c` induced by an algebra homomorphism
 constant on the equivalence classes of `c`. -/
 def liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) :
     c.Quotient →ₐ[R] P :=
-  { c.lift f H with
+  { c.lift f.toRingHom H with
     commutes' r := AlgHomClass.commutes ↑f r }
 
 theorem liftₐ_coe_toRingHom (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) :
-    (c.liftₐ f H).toRingHom = c.lift f H :=
+    (c.liftₐ f H).toRingHom = c.lift f.toRingHom H :=
   rfl
 
 theorem coe_liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) :
-    ⇑(c.liftₐ f H) = c.lift f H :=
+    ⇑(c.liftₐ f H) = c.lift f.toRingHom H :=
   rfl
 
 @[simp] theorem liftₐ_mk (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) (x : M) :
@@ -508,7 +508,7 @@ theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
 /-- `liftₐ` as an equivalence. -/
 @[simps]
 def liftₐEquiv (c : RingCon M) :
-    { f : M →ₐ[R] P // c ≤ ker (f : M →+* P)} ≃ (c.Quotient →ₐ[R] P) where
+    { f : M →ₐ[R] P // c ≤ ker f.toRingHom} ≃ (c.Quotient →ₐ[R] P) where
   toFun f := liftₐ c f.val f.property
   invFun F := ⟨F.comp (c.mkₐ R), fun x y h => congr(F $(Quotient.sound h))⟩
 
@@ -565,7 +565,7 @@ variable (c)
 
 /-- The **first isomorphism theorem for algebra morphisms**. -/
 noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
-    (ker (f : M →+* P)).Quotient ≃ₐ[R] f.range where
+    (ker f.toRingHom).Quotient ≃ₐ[R] f.range where
   __ := AlgHom.codRestrict (kerLiftₐ f) _ _
   __ := quotientKerEquivRangeS f.toRingHom
 
@@ -579,7 +579,7 @@ theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
   rfl
 
 theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
-    ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker (φ : M →+* N)).mkₐ R)) = φ.rangeRestrict :=
+    ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker φ.toRingHom).mkₐ R)) = φ.rangeRestrict :=
   rfl
 
 /-- The **second isomorphism theorem for algebras**. -/
@@ -605,7 +605,7 @@ variable (R)
 
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
-    (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
+    (RingCon.ker (factorₐ R h).toRingHom).Quotient ≃ₐ[R] d.Quotient :=
   .ofCommutes (quotientQuotientEquivQuotient c d h) fun _ ↦ by rfl
 
 @[simp]

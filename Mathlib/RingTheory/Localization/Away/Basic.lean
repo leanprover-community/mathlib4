@@ -252,7 +252,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ where
   __ := map Aₚ Bₚ f.toRingHom a
   commutes' r := by
-    dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
+    dsimp only [AlgHom.toRingHom_eq_ofClass, map, RingHom.coe_ofClass, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
     simp
 
@@ -270,7 +270,7 @@ lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [A
 lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Surjective f) : Function.Surjective (mapₐ Aₚ Bₚ f a) :=
   have : IsLocalization (Submonoid.map f.toRingHom (Submonoid.powers a)) Bₚ := by
-    simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers, RingHom.coe_coe]
+    simp only [AlgHom.toRingHom_eq_ofClass, Submonoid.map_powers, RingHom.coe_ofClass]
     infer_instance
   IsLocalization.map_surjective_of_surjective _ _ _ hf
 

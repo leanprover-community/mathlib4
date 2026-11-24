@@ -139,7 +139,7 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
     (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).obj A = ↧A := rfl
 
 @[simp] lemma forget₂_commRingCat_map (f : A ⟶ B) :
-    (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).map f = CommRingCat.ofHom f.hom := rfl
+    (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).map f = CommRingCat.ofHom f.hom.toRingHom := rfl
 
 @[simp] lemma forget₂_algCat_obj (A : CommAlgCat.{v} R) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).obj A = ↧A := rfl
@@ -153,7 +153,7 @@ variable (A B) in
 @[simps]
 def homEquivCommRingCat :
     (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ ↧B // f.hom.comp (algebraMap R A) = algebraMap R B} where
-  toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
+  toFun f := ⟨CommRingCat.ofHom f.hom.toRingHom, congr($f.hom.comp_algebraMap)⟩
   invFun f := CommAlgCat.ofHom { f.val.hom with commutes' r := congr($f.prop r) }
   left_inv _ := rfl
   right_inv _ := rfl

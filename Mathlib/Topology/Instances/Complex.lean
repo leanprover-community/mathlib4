@@ -79,7 +79,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       ext1 x
       rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofRealHom.rangeRestrictField r = j (ι x)
       · have := congr($(ringHom_eq_ofReal_of_continuous hψ₁) r)
-        rw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
+        rw [RingHom.comp_apply, RingHom.comp_apply, hr] at this
         convert this using 1
         · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
         · rw [← ofRealHom.coe_rangeRestrictField, hr]

@@ -76,11 +76,11 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
   -- work out anymore. The issue seemed to be that it couldn't handle a term in which Ring
   -- homomorphisms were repeatedly casted to the bundled category and back. Here we resolve the
   -- problem by converting the goal to a more straightforward form.
-  let e := (e₂ : Localization.Away (f r) →+* S').comp
+  let e := e₂.toRingHom.comp
       (((IsLocalization.map (Localization.Away (f r)) f
             (by rintro x ⟨n, rfl⟩; use n; simp : Submonoid.powers r ≤ Submonoid.comap f
                 (Submonoid.powers (f r)))) : Localization.Away r →+* Localization.Away (f r)).comp
-                (e₁ : R' →+* Localization.Away r))
+                e₁.toRingHom)
   suffices e = IsLocalization.Away.map R' S' f r by
     convert! this
   apply IsLocalization.ringHom_ext (Submonoid.powers r) _
@@ -248,7 +248,7 @@ lemma CodescendsAlong.mk (h₁ : RespectsIso P)
     CodescendsAlong P Q := by
   introv R h hQ H
   let e := h.symm.equiv
-  have : (e.symm : _ →+* _).comp (algebraMap R' S') = algebraMap R' (R' ⊗[R] S) := by
+  have : e.symm.toRingHom.comp (algebraMap R' S') = algebraMap R' (R' ⊗[R] S) := by
     ext r
     simp [e]
   apply h₂ hQ

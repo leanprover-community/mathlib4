@@ -95,7 +95,7 @@ theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map (RingHom.snd R S) (prod I
 
 @[simp]
 theorem map_prodComm_prod :
-    map ((RingEquiv.prodComm : R × S ≃+* S × R) : R × S →+* S × R) (prod I J) = prod J I := by
+    map RingEquiv.prodComm.toRingHom (prod I J) = prod J I := by
   refine Trans.trans (ideal_prod_eq _) ?_
   simp [map_map]
 

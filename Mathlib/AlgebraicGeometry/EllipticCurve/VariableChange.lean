@@ -281,7 +281,7 @@ lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing 
 @[simp]
 lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
     [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
-    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C⁄A).map ψ = C⁄B :=
+    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C⁄A).map ψ.toRingHom = C⁄B :=
   congr(C.map $(ψ.comp_algebraMap_of_tower R))
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :

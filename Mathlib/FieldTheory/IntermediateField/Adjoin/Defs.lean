@@ -597,7 +597,8 @@ variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B 
 
 /-- Ring homomorphism between `A⟮b⟯` and `A⟮↑b⟯`. -/
 def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
-  RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)) _
+  RingHom.codRestrict
+    (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)).toRingHom _
     (fun x ↦ by
       rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
         ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]

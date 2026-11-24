@@ -501,7 +501,7 @@ lemma continuous_postcomp [RingHomSurjective σ₂₃] [RingHomIsometric σ₂�
   refine continuous_of_dual_apply_continuous fun x z ↦ ?_
   have σ_bij : Function.Bijective σ₂₃ := ⟨σ₂₃.injective, RingHomSurjective.is_surjective⟩
   let σ_equiv : 𝕜₂ ≃+* 𝕜₃ := RingEquiv.ofBijective σ₂₃ σ_bij
-  let invPair : RingHomInvPair σ₂₃ σ_equiv.symm := RingHomInvPair.of_ringEquiv σ_equiv
+  let invPair : RingHomInvPair σ₂₃ σ_equiv.symm.toRingHom := RingHomInvPair.of_ringEquiv σ_equiv
   let invPair_symm := invPair.symm
   let σ_li : 𝕜₂ ≃ₛₗᵢ[σ₂₃] 𝕜₃ :=
     { toLinearEquiv := .ofBijective σ₂₃.toSemilinearMap σ_bij

@@ -340,7 +340,7 @@ instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_
 
 instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
   have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=
-    RingHomSurjective.instToRingHomRingEquiv Subsemiring.topEquiv.symm
+    RingHomSurjective.instToRingHom Subsemiring.topEquiv.symm
   of_surjective (σ := (Subsemiring.topEquiv (R := R)).symm.toRingHom)
       ⟨⟨id, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ Function.surjective_id
 
@@ -375,7 +375,7 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
 lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
     [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
     (e₂ : B₁ ≃+* B₂)
-    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    (he : RingHom.comp (algebraMap A₂ B₂) e₁.toRingHom = e₂.toRingHom.comp (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
   let := e₁.toRingHom.toAlgebra
   let := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra

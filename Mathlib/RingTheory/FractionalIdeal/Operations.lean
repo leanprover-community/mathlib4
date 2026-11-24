@@ -955,7 +955,7 @@ variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsD
   [CommRing K] [CommRing L] [Algebra R K] [Algebra S L] [IsFractionRing R K] [IsFractionRing S L]
   (f : R ≃+* S)
 
-local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
+local instance (f : R ≃+* S) : RingHomInvPair f.toRingHom f.symm.toRingHom :=
   RingHomInvPair.of_ringEquiv f
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
@@ -1024,7 +1024,7 @@ lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type
     [Algebra T M] [IsFractionRing T M] (f : R ≃+* S) (g : S ≃+* T) :
     ringEquivOfRingEquiv K M (f.trans g) =
       (ringEquivOfRingEquiv K L f).trans (ringEquivOfRingEquiv L M g) := by
-  have : RingHomCompTriple f (g : S →+* T) (f.trans g : R →+* T) := ⟨rfl⟩
+  have : RingHomCompTriple f.toRingHom g.toRingHom (f.trans g).toRingHom := ⟨rfl⟩
   ext1 I
   simp only [ringEquivOfRingEquiv, Function.comp_apply,
     semilinearEquivOfRingEquiv_comp K L f M, LinearEquiv.coe_trans,
@@ -1062,8 +1062,7 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     exact .symm (map_smulₛₗ _ r x)
   · rintro ⟨s, rfl⟩
     use f.symm s
-    simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
-      IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
+    simp [Algebra.smul_def, semilinearEquivOfRingEquiv_apply]
 
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =

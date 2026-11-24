@@ -59,7 +59,7 @@ structure Algebra.Generators where
   but this causes a diamond if there is an existing instance. -/
   algebra : Algebra (MvPolynomial ι R) S := (aeval val).toAlgebra
   algebraMap_eq :
-    algebraMap (MvPolynomial ι R) S = aeval (R := R) val := by rfl
+    algebraMap (MvPolynomial ι R) S = (aeval (R := R) val).toRingHom := by rfl
 
 namespace Algebra.Generators
 
@@ -642,10 +642,9 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
 @[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
-  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_ofClass,
-    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
-    AlgHomClass.toRingHom_ofClass, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
-    ← ker_eq_ker_aeval_val]
+  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgEquiv.coe_toAlgHom,
+    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, AlgEquiv.ker_toAlgHom,
+    ← RingHom.ker_eq_comap_bot, ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
@@ -663,8 +662,8 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       Finsupp.sumFinsuppAddEquivProdFinsupp
     suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (x.coeff (e.symm v)) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
-      simpa only [AlgHom.toRingHom_eq_coe, Finset.sum_map, Equiv.coe_toEmbedding,
-        EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
+      simpa only [Finset.sum_map, Equiv.coe_toEmbedding, EquivLike.coe_coe,
+        AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
@@ -677,8 +676,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       have : (Q.toComp P).toAlgHom (monomial j (x.coeff (e.symm (i, j)))) =
           monomial (e.symm (0, j)) (x.coeff (e.symm (i, j))) :=
         toComp_toAlgHom_monomial ..
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-          this]
+      simp only [AlgHom.toRingHom_eq_ofClass, RingHom.coe_ofClass, this]
       rw [monomial_mul_monomial, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_

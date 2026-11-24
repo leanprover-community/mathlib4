@@ -197,30 +197,29 @@ to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (varChange f)).map (finSuccEquiv k n)) ≃ₐ[k]
     MvPolynomial (Fin (n + 1)) k ⧸ I.map (varChange f) := quotientEquivAlg
-  ((I.map (varChange f)).map (finSuccEquiv k n)) (I.map (varChange f)) (finSuccEquiv k n).symm <| by
-  set g := (finSuccEquiv k n)
-  have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
+  ((I.map (varChange f)).map (finSuccEquiv k n).toRingHom)
+    (I.map (varChange f)) (finSuccEquiv k n).symm <| by
+  set g := finSuccEquiv k n
+  have : g.symm.toRingHom.comp g.toRingHom = RingHom.id _ :=
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
-    _ = Ideal.map ((RingHom.id _).comp <| varChange f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (varChange f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
-    _ = (I.map (varChange f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
+    _ = Ideal.map ((RingHom.id _).comp <| .ofClass (varChange f)) I := by rw [id_comp, map_ofClass]
+    _ = (I.map (varChange f)).map (RingHom.id _) := by simp only [← Ideal.map_map, map_ofClass]
+    _ = (I.map (varChange f)).map (g.symm.toAlgHom.toRingHom.comp g.toAlgHom.toRingHom) :=
       congr(Ideal.map $(this.symm) (I.map (varChange f)))
-    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
+    _ = _ := by simp [← Ideal.map_map]
 
 /-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (varChange f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
-  quotientEquivAlg (R₁ := k) (I.map (varChange f)) I (varChange f).symm <| by
+  quotientEquivAlg (R₁ := k) (I.map (varChange f).toRingHom) I (varChange f).symm <| by
   calc
-    _ = I.map ((varChange f).symm.toRingEquiv.toRingHom.comp (varChange f)) := by
-      have : (varChange f).symm.toRingEquiv.toRingHom.comp (varChange f) = RingHom.id _ :=
+    _ = I.map ((varChange f).symm.toRingEquiv.toRingHom.comp (varChange f).toRingHom) := by
+      have : (varChange f).symm.toRingEquiv.toRingHom.comp (varChange f).toRingHom = RingHom.id _ :=
         RingEquiv.symm_toRingHom_comp_toRingHom _
       rw [this, Ideal.map_id]
-    _ = _ := by
-      rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
-      exact congrArg _ rfl
+    _ = _ := by rw [← Ideal.map_map]
 
 /-- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
@@ -282,8 +281,7 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
-  simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
-    AlgHom.toRingHom_eq_coe]
+  simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
 /-- For a finitely generated algebra `A` over a field `k`,

@@ -344,15 +344,11 @@ variable [FunLike F α β]
 -- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
-/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
-`RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
-@[coe]
-def RingHomClass.toRingHom (f : F) : α →+* β :=
+/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual `RingHom`. -/
+def RingHom.ofClass (f : F) : α →+* β :=
   { (f : α →* β), (f : α →+ β) with }
 
-/-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
-instance : CoeTC F (α →+* β) :=
-  ⟨RingHomClass.toRingHom⟩
+@[deprecated (since := "2026-11-22")] alias RingHomClass.toRingHom := RingHom.ofClass
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
@@ -396,9 +392,11 @@ theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* �
   rfl
 
 @[simp]
-theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
-    ((f : α →+* β) : α → β) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_coe := RingHom.coe_ofClass
 
 attribute [coe] RingHom.toMonoidWithZeroHom
 

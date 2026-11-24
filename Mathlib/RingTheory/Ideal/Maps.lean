@@ -57,9 +57,20 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
 @[simp]
 theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
-lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
+lemma comap_ofClass [RingHomClass F R S] (I : Ideal S) :
+    I.comap (RingHom.ofClass f) = I.comap f := rfl
 
-lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map f := rfl
+@[deprecated (since := "2026-11-22")] alias comap_coe := comap_ofClass
+
+lemma comap_toRingHom (f : R ≃+* S) (I : Ideal S) :
+    I.comap f.toRingHom = I.comap f := rfl
+
+lemma map_ofClass [RingHomClass F R S] (I : Ideal R) : I.map (RingHom.ofClass f) = I.map f := rfl
+
+@[deprecated (since := "2026-11-22")] alias map_coe := map_ofClass
+
+lemma map_toRingHom (f : R ≃+* S) (I : Ideal R) :
+    I.map f.toRingHom = I.map f := rfl
 
 variable {f}
 
@@ -472,20 +483,18 @@ end Injective
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm (map f I) = I`. -/
 @[simp]
 theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) :
-    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
+    (I.map f.toRingHom).map f.symm.toRingHom = I := by
+  rw [map_map, RingEquiv.symm_comp, map_id]
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
   then `comap f (comap f.symm I) = I`. -/
 @[simp]
 theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
-    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
+    (I.comap f.symm.toRingHom).comap f.toRingHom = I := by
+  rw [comap_comap, RingEquiv.symm_comp, comap_id]
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
-theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
+theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map f.toRingHom = I.comap f.symm :=
   le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
     (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
 
@@ -790,10 +799,14 @@ theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
 
 @[simp]
-theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
+theorem ker_toRingHom_equiv (f : R ≃+* S) : ker f.toRingHom = ⊥ := by
   ext; simp
 
-theorem ker_coe_toRingHom : ker (f : R →+* S) = ker f := rfl
+@[deprecated (since := "2026-11-22")] alias ker_coe_equiv := ker_toRingHom_equiv
+
+theorem ker_ringHomOfClass : ker (RingHom.ofClass f) = ker f := rfl
+
+@[deprecated (since := "2026-11-22")] alias ker_coe_toRingHom := ker_ringHomOfClass
 
 @[simp]
 theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') :
@@ -802,7 +815,7 @@ theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F
 
 lemma ker_equiv_comp (f : R →+* S) (e : S ≃+* T) :
     ker (e.toRingHom.comp f) = RingHom.ker f := by
-  rw [← RingHom.comap_ker, RingEquiv.toRingHom_eq_coe, RingHom.ker_coe_equiv, RingHom.ker]
+  rw [← RingHom.comap_ker, ker_toRingHom_equiv, RingHom.ker]
 
 end Semiring
 
@@ -822,10 +835,19 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
 /-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
-@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
+@[simp] theorem _root_.AlgEquiv.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
-    RingHom.ker (e : A →+* B) = ⊥ :=
-  RingHom.ker_coe_equiv (e.toRingEquiv)
+    RingHom.ker e.toRingHom = ⊥ :=
+  ker_toRingHom_equiv e.toRingEquiv
+
+@[deprecated (since := "2026-11-24")] alias _root_.AlgHom.ker_coe_equiv :=
+  AlgEquiv.ker_coe_equiv
+
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem _root_.AlgEquiv.ker_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker e.toAlgHom = ⊥ :=
+  ker_toRingHom_equiv e.toRingEquiv
 
 end Ring
 
@@ -1064,7 +1086,7 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
-  have h : I.map f = I.map (RingEquiv.ofClass f : R →+* S) := rfl
+  have h : I.map f = I.map (RingEquiv.ofClass f).toRingHom := rfl
   rw [h, map_comap_of_equiv (.ofClass f)]
   exact Ideal.IsPrime.comap (RingEquiv.ofClass f).symm
 
@@ -1286,10 +1308,10 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma ker_coe : RingHom.ker f = RingHom.ker f.toRingHom := rfl
 
 lemma coe_ideal_map (I : Ideal A) :
-    Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
+    Ideal.map f I = Ideal.map f.toRingHom I := rfl
 
 lemma comap_ker {C : Type*} [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (RingHom.ker f).comap g = RingHom.ker (f.comp g) :=
