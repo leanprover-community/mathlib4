@@ -85,6 +85,12 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals simp_all [measure_inter_eq_one]
 
+lemma restrict_eq_smul (s : Set α) : μ.restrict s = μ s • μ := by
+  ext t ht
+  rw [← Measure.restrict_toMeasurable (measure_ne_top μ s), Measure.restrict_apply ht,
+    measure_inter_eq_prod ht (measurableSet_toMeasurable ..)]
+  simp [mul_comm]
+
 end IsZeroOneMeasure
 
 end MeasureTheory

@@ -39,6 +39,10 @@ theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
   OuterMeasure.dirac_apply a s ▸ le_toMeasure_apply _ _ _
 
 @[simp]
+theorem dirac_apply₀ (a : α) (hs : NullMeasurableSet s (dirac a)) : dirac a s = s.indicator 1 a :=
+  toMeasure_apply₀ _ _ hs
+
+@[simp]
 theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 
@@ -80,6 +84,11 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   calc
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
+
+@[simp]
+theorem dirac_real_apply₀ (a : α) (hs : NullMeasurableSet s (dirac a)) :
+    (dirac a).real s = s.indicator 1 a := by
+  simp [measureReal_def, dirac_apply₀ _ hs, Set.indicator, apply_ite]
 
 @[simp]
 theorem dirac_real_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
