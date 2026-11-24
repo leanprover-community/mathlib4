@@ -183,22 +183,22 @@ theorem SameCycle.map_of_apply {g : Equiv.Perm β} {φ : α → β}
     SameCycle g (φ x) (φ y) := by
   obtain ⟨z, hz⟩ := h
   induction z using Int.induction_on generalizing x with
-  | zero => rw[← hz]; rfl
+  | zero => rw [← hz]; rfl
   | succ z ih =>
-    rw[zpow_add_one, coe_mul, comp_apply] at hz
+    rw [zpow_add_one, coe_mul, comp_apply] at hz
     exact trans (hφ _) (ih hz)
   | pred z ih =>
-    rw[zpow_sub_one, coe_mul, comp_apply] at hz
+    rw [zpow_sub_one, coe_mul, comp_apply] at hz
     specialize ih hz
     apply trans ?_ ih
     symm
     apply trans (hφ _)
-    rw[coe_inv, apply_symm_apply]
+    rw [coe_inv, apply_symm_apply]
 
 theorem SameCycle.map {g : Equiv.Perm β} {φ : α → β}
     (hφ : Semiconj φ f g) (h : SameCycle f x y) :
     SameCycle g (φ x) (φ y) :=
-    h.map_of_apply (hφ · ▸ apply_right_self _ _)
+  h.map_of_apply (hφ · ▸ apply_right_self _ _)
 
 theorem SameCycle.eq_of_invariant {φ : α → β}
     (hφ : ∀ x, φ (f x) = φ x) (h : SameCycle f x y) :
@@ -210,16 +210,16 @@ theorem sameCycle_iff_eqvGen :
   constructor
   · intro ⟨z, hz⟩
     induction z using Int.induction_on generalizing x with
-    | zero => rw[← hz]; apply Relation.EqvGen.refl
+    | zero => rw [← hz]; apply Relation.EqvGen.refl
     | succ z ih =>
-      rw[zpow_add_one, coe_mul, comp_apply] at hz
+      rw [zpow_add_one, coe_mul, comp_apply] at hz
       exact Relation.EqvGen.trans _ _ _ (Relation.EqvGen.rel _ _ rfl) (ih hz)
     | pred z ih =>
-      rw[zpow_sub_one, coe_mul, comp_apply] at hz
+      rw [zpow_sub_one, coe_mul, comp_apply] at hz
       apply Relation.EqvGen.trans _ _ _ ?_ (ih hz)
       apply Relation.EqvGen.symm
       apply Relation.EqvGen.rel
-      rw[coe_inv, apply_symm_apply]
+      rw [coe_inv, apply_symm_apply]
   · intro h
     induction h with
     | rel _ _ h => exact ⟨1, h⟩
