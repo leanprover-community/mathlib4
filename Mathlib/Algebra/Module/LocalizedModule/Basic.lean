@@ -557,14 +557,14 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
   map_units s := by
     rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
       by ext; simp, Module.End.isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
+      LinearEquiv.coe_toLinearMap, LinearEquiv.coe_toLinearMap, EquivLike.comp_bijective,
+      EquivLike.bijective_comp]
     exact (Module.End.isUnit_iff _).mp <| hf.map_units s
   surj x := by
     obtain ⟨p, h⟩ := hf.surj (e.symm x)
-    exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ← e.congr_arg h,
-      Submonoid.smul_def, Submonoid.smul_def, map_smul, LinearEquiv.apply_symm_apply]⟩
+    exact ⟨p, by simp [← e.congr_arg h, Submonoid.smul_def, LinearEquiv.apply_symm_apply]⟩
   exists_of_eq h := by
-    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
 
@@ -575,7 +575,7 @@ instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLo
     obtain ⟨⟨p, s⟩, h⟩ := hf.surj x
     exact ⟨⟨e.symm p, s⟩, by simpa using h⟩
   exists_of_eq h := by
-    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at h
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply] at h
     obtain ⟨c, hc⟩ := hf.exists_of_eq h
     exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
       using congr(e.symm $hc)⟩
@@ -732,14 +732,14 @@ lemma IsLocalizedModule.restrictScalars (S : Submonoid R) [Module A M]
     (f : M →ₗ[A] N) [h : IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f] :
     IsLocalizedModule S (f.restrictScalars R) where
   map_units s := by
-    have := h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
+    have := h.map_units ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
     simp only [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] at this ⊢
     exact this
   surj y := by
-    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
+    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.surj y
     exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
   exists_of_eq {x₁ x₂} e := by
-    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
+    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.exists_of_eq e
     exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
 
 lemma IsLocalizedModule.restrictScalars_powers [Module A M]
@@ -762,10 +762,10 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     exact this
   surj y := by
     obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S (f.restrictScalars R) y
-    exact ⟨⟨x, ⟨_, t, t.2, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩
+    exact ⟨⟨x, ⟨_, t, t.property, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩
   exists_of_eq {x₁ x₂} e := by
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
-    refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
+    refine ⟨⟨_, c, c.property, rfl⟩, by simpa [Submonoid.smul_def]⟩
 
 lemma IsLocalizedModule.restrictScalars_iff (S : Submonoid R)
     {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
@@ -785,10 +785,10 @@ lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommMonoid N] [Module 
     exact this.2
   surj y := by
     obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S f y
-    exact ⟨⟨x, ⟨t, h t.2⟩⟩, e⟩
+    exact ⟨⟨x, ⟨t, h t.property⟩⟩, e⟩
   exists_of_eq {x₁ x₂} e := by
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f) e
-    exact ⟨⟨c, h c.2⟩, hc⟩
+    exact ⟨⟨c, h c.property⟩, hc⟩
 
 namespace IsLocalizedModule
 
@@ -901,7 +901,8 @@ theorem iso_symm_apply' (m : M') (a : M) (b : S) (eq1 : b • m = f a) :
 
 theorem iso_symm_comp : (iso S f).symm.toLinearMap.comp f = LocalizedModule.mkLinearMap S M := by
   ext m
-  rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_coe, iso_symm_apply']
+  rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_toLinearMap,
+    iso_symm_apply']
   exact one_smul _ _
 
 @[simp]
@@ -1145,7 +1146,7 @@ variable [IsLocalizedModule S₁ f₁] [IsLocalizedModule S₂ f₂]
 /-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
 noncomputable
 def liftOfLE : M₁ →ₗ[R] M₂ :=
-  lift S₁ f₁ f₂ fun x ↦ map_units f₂ ⟨x.1, h x.2⟩
+  lift S₁ f₁ f₂ fun x ↦ map_units f₂ ⟨x.val, h x.property⟩
 
 /-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
 noncomputable
@@ -1160,11 +1161,11 @@ lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_
 /-- The image of `m/s` under `liftOfLE` is `m/s`. -/
 @[simp]
 lemma liftOfLE_mk' (m : M) (s : S₁) :
-    liftOfLE S₁ S₂ h f₁ f₂ (mk' f₁ m s) = mk' f₂ m ⟨s.1, h s.2⟩ := by
-  apply ((Module.End.isUnit_iff _).mp (map_units f₂ ⟨s, h s.2⟩)).1
+    liftOfLE S₁ S₂ h f₁ f₂ (mk' f₁ m s) = mk' f₂ m ⟨s.val, h s.property⟩ := by
+  apply ((Module.End.isUnit_iff _).mp (map_units f₂ ⟨s, h s.property⟩)).1
   simp only [Module.algebraMap_end_apply, ← map_smul, ← Submonoid.smul_def, mk'_cancel']
   rw [liftOfLE, lift_apply]
-  exact (mk'_cancel' (S := S₂) f₂ m ⟨s.1, h s.2⟩).symm
+  exact (mk'_cancel' (S := S₂) f₂ m ⟨s.val, h s.property⟩).symm
 
 instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
   map_units := map_units f₂
@@ -1178,7 +1179,7 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff,
       Submonoid.smul_def, ← mk'_smul] at e ⊢
     obtain ⟨c, e⟩ := e
-    exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
+    exact ⟨c, 1, by simpa [← smul_comm c.val]⟩
 
 end liftOfLE
 
@@ -1228,8 +1229,8 @@ lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
 @[simp]
 lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
     map S f g h (IsLocalizedModule.mk' f x s) = (IsLocalizedModule.mk' g (h x) s) := by
-  simp only [map, lift, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply]
+  simp only [map, lift, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [iso_symm_apply' S f (mk' f x s) x s (mk'_cancel' f x s), LocalizedModule.lift_mk]
   rfl
 
@@ -1287,8 +1288,8 @@ lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ (is
   ext x
   induction x using induction_on with | _ m s
   refine ((Module.End.isUnit_iff _).1 (map_units f₁ s)).1 ?_
-  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply,
-    ← CompatibleSMul.map_smul, ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul _ s.2, mk_cancel]
+  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply, ← CompatibleSMul.map_smul,
+    ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul _ s.property, mk_cancel]
   simp [map, lift, iso_localizedModule_eq_refl, lift_mk]
 
 end IsLocalizedModule
@@ -1326,9 +1327,9 @@ theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebr
     constructor
     · rintro a b (e : x • a = x • b)
       simp_rw [Submonoid.smul_def, Algebra.smul_def] at e
-      exact (h₁ x x.2).mul_left_cancel e
+      exact (h₁ x x.property).mul_left_cancel e
     · intro a
-      refine ⟨((h₁ x x.2).unit⁻¹ :) * a, ?_⟩
+      refine ⟨((h₁ x x.property).unit⁻¹ :) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
   · intro x y
@@ -1372,7 +1373,7 @@ lemma subsingleton_iff_ker_eq_top (S : Submonoid R) (g : M →ₗ[R] M')
 lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
     [IsLocalizedModule S g] :
     Subsingleton M' ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
-  simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, IsConcreteLE.le_iff,
+  simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, le_iff_mem_imp_mem,
     mem_ker_iff S, Submodule.mem_top, true_implies]
 
 lemma subsingleton_of_subsingleton (S : Submonoid R) (g : M →ₗ[R] M') [IsLocalizedModule S g]
@@ -1429,7 +1430,7 @@ lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s �
     obtain ⟨⟨m₂, t₂⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
     replace hS : ∀ s ∈ S, IsRegular s := fun s hs ↦ hS s hs <| ne_of_mem_of_not_mem hs hS₀
     rw [IsLocalization.isRegular_mk' hS] at hc
-    have (s : S) (x y : M) : s • x = s • y ↔ x = y := (hS _ s.2).isSMulRegular.eq_iff
+    have (s : S) (x y : M) : s • x = s • y ↔ x = y := (hS _ s.property).isSMulRegular.eq_iff
     simp only [Function.uncurry_apply_pair, mk'_smul_mk', mk'_eq_mk'_iff, mul_smul, this,
       exists_const] at hxy ⊢
     simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy

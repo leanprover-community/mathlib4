@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units of restricted products
 
@@ -45,7 +48,7 @@ theorem isUnit_of_eventually_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : ∀ i,
   rw [isUnit_iff_exists]
   use .mk (fun i ↦ (hx i).unit.inv) (by
     filter_upwards [hxr] with i ⟨h, hu⟩
-    have hu : (hx i).unit.1 * hu.unit.inv = 1 := Subtype.val_inj.2 hu.mul_val_inv
+    have hu : (hx i).unit.val * hu.unit.inv = 1 := Subtype.val_inj.2 hu.mul_val_inv
     simp [← Units.eq_inv_of_mul_eq_one_left hu])
   simp [RestrictedProduct.ext_iff]
 
@@ -54,7 +57,7 @@ theorem eventually_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit
   simp only [isUnit_iff_exists, RestrictedProduct.ext_iff, ← forall_and] at hx
   simp only [isUnit_iff_exists]
   choose b hb using hx
-  exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.2, b.2] using
+  exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.property, b.property] using
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
 
 theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
@@ -70,8 +73,8 @@ set_option backward.isDefEq.respectTransparency false in
 the usual product and the condition that `x` is eventually in the units of `B i` along `𝓕`. -/
 def mkUnit (x : Π i, (R i)ˣ) (hx : ∀ᶠ i in 𝓕, x i ∈ (Submonoid.ofClass (B i)).units) :
     Πʳ i, [R i, B i]_[𝓕]ˣ where
-  val := ⟨fun i ↦ (x i).1, by filter_upwards [hx] using fun i hi ↦ hi.1⟩
-  inv := ⟨fun i ↦ (x i)⁻¹.1, by filter_upwards [hx] using fun i hi ↦ hi.2⟩
+  val := ⟨fun i ↦ (x i).val, by filter_upwards [hx] using fun i hi ↦ hi.1⟩
+  inv := ⟨fun i ↦ (x i)⁻¹.val, by filter_upwards [hx] using fun i hi ↦ hi.2⟩
   val_inv := by ext; simp
   inv_val := by ext; simp
 
@@ -79,16 +82,17 @@ variable (R) in
 /-- The ring isomorphism between the units of a restricted product `Πʳ i, [R i, B i]_[𝓕]` and
 the restricted product of `(R i)ˣ` with respect to `(B i)ˣ`. -/
 def unitsEquiv : Πʳ i, [R i, B i]_[𝓕]ˣ ≃* Πʳ i, [(R i)ˣ, (Submonoid.ofClass (B i)).units]_[𝓕] where
-  toFun x := ⟨coeUnits x, by filter_upwards [x.val.2, x.inv.2] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
-  invFun y := mkUnit y.1 y.2
+  toFun x := ⟨coeUnits x, by
+    filter_upwards [x.val.property, x.inv.property] using fun i hi hi' ↦ ⟨hi, hi'⟩⟩
+  invFun y := mkUnit y.val y.property
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
 
 @[simp] lemma unitsEquiv_apply (i : ι) (x : Πʳ i, [R i, B i]_[𝓕]ˣ) :
-    (unitsEquiv R x i) = x.1 i := rfl
+    (unitsEquiv R x i) = x.val i := rfl
 
 @[simp] lemma coe_unitsEquiv_apply (x : Πʳ i, [R i, B i]_[𝓕]ˣ) (i : ι) :
-    (unitsEquiv R x).1 i = unitsEquiv R x i := rfl
+    (unitsEquiv R x).val i = unitsEquiv R x i := rfl
 
 end RestrictedProduct

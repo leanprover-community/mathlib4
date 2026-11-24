@@ -6,10 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Algebra.Category.Ring.Colimits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Module structure on stalks
@@ -19,7 +23,6 @@ an `R.stalk x`-module structure.
 
 The key characterizing lemma is `PresheafOfModules.germ_smul`, which describes the compatibility
 of the scalar action and `TopCat.Presheaf.germ`.
-
 -/
 
 @[expose] public section

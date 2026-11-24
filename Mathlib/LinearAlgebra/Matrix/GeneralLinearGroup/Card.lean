@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 
 import Mathlib.FieldTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal of the general linear group over finite rings
 
@@ -55,7 +58,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
           (q) ^ n - (q) ^ k := by
             rw [card_compl_set, Module.card_eq_pow_finrank (K := K)
             (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
-            simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
+            simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.property, card_fin]
             rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
         mul_comm, Fin.prod_univ_succAbove _ (Fin.last k), -Set.fintypeCard_eq_ncard]
@@ -106,15 +109,15 @@ variable (n : ℕ)
 by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
-  toFun M := ⟨M.1.col, by
+  toFun M := ⟨M.val.col, by
     apply linearIndependent_iff_card_eq_finrank_span.2
-    rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
-  invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
+    rw [Set.finrank, finrank_span_range_col, rank_unit]⟩
+  invFun M := GeneralLinearGroup.mk'' (transpose (M.val)) <| by
     classical
-    let b := basisOfPiSpaceOfLinearIndependent M.2
+    let b := basisOfPiSpaceOfLinearIndependent M.property
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfPiSpaceOfLinearIndependent M.2]
+      ← coe_basisOfPiSpaceOfLinearIndependent M.property]
     exact isUnit_det_of_invertible _
   right_inv := by exact congrFun rfl
 

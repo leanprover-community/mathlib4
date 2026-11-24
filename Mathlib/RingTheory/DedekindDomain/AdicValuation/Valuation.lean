@@ -214,7 +214,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
   by_cases hr : r = 0
   · simp [hr]
   · rw [v.intValuation_if_neg hr, ← exp_zero, exp_lt_exp,
-      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
+      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, pos_iff_ne_zero]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
       rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
@@ -266,7 +266,7 @@ theorem intValuation_exists_uniformizer :
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
     rw [← Ideal.dvdNotUnit_iff_lt]
     exact ⟨v.ne_bot, v.asIdeal, Ideal.isUnit_iff.not.mpr v.isPrime.ne_top, sq v.asIdeal⟩
-  obtain ⟨π, mem, notMem⟩ := IsConcreteLE.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := exists_mem_notMem_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
@@ -448,6 +448,18 @@ theorem valuationSubring_valuation_injective :
 
 variable {K}
 
+section IsTrivialOn
+
+variable (k : Type*) [Field k] [Algebra k R] [Algebra k K] [IsScalarTower k R K]
+
+/-- The `v`-adic valuation on `K` is trivial on any subfield of `R`. -/
+instance : (v.valuation K).IsTrivialOn k :=
+  .of_le_one _ fun a ↦ by
+    rw [IsScalarTower.algebraMap_apply k R K]
+    exact valuation_le_one v _
+
+end IsTrivialOn
+
 section Localization
 
 open Localization
@@ -537,7 +549,7 @@ theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.in
   -- If `a = 0`, then `b = 0`, so we can take `y = 0`.
   by_cases ha: a = 0
   · subst ha
-    rw [map_zero, le_zero_iff] at hv
+    rw [map_zero, nonpos_iff_eq_zero] at hv
     exact ⟨0, by simp [hv]⟩
   · have hvaz := intValuation_ne_zero v a ha
     have hγz : WithZero.coe γ ≠ 0 := WithZero.coe_ne_zero
@@ -553,8 +565,7 @@ theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.in
       grw [← exp_le_intValuation_iff_emultiplicity_le, hna]
     have hb : b ∈ v.asIdeal ^ multiplicity v.asIdeal (Ideal.span {a}) := by
       rwa [← intValuation_le_pow_iff_mem, ← v.intValuation_eq_exp_neg_multiplicity ha]
-    have hnz : Ideal.span {a} ≠ ⊥ := by rwa [ne_eq, Ideal.span_singleton_eq_bot]
-    simpa [← Ideal.irreducible_pow_sup_of_ge hnz v.irreducible n hvn, Submodule.mem_sup,
+    simpa [← Ideal.irreducible_pow_sup_of_ge v.irreducible n hvn, Submodule.mem_sup,
       ← eq_sub_iff_add_eq, ← intValuation_le_pow_iff_mem, Ideal.mem_span_singleton'] using hb
 
 /-- Given `x ∈ 𝒪[K]` we can find `a : A` such that `a` is close to `x` by the valuation `v`. -/

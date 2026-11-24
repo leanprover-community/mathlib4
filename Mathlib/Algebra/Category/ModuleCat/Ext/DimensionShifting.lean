@@ -9,14 +9,16 @@ public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Rat.Floor
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.Tactic.Continuity
 
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Dimension Shifting
-
 -/
 
 public section

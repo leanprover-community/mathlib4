@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise right derived functors
 
@@ -19,7 +22,6 @@ then it has a pointwise right derived functor.
 
 Note: the file `Mathlib/CategoryTheory/Functor/Derived/PointwiseLeftDerived.lean` was obtained
 by dualizing this file. These two files should be kept in sync.
-
 -/
 
 @[expose] public section

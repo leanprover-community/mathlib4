@@ -112,6 +112,16 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
     simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by grind
+  #adaptation_note /-- Since nightly-2026-11-18 (lean4#16525 changed which basis equation the
+  `grind` commutative-ring solver uses to simplify a monomial), `grind` no longer closes the sum
+  value on its own, so the identity is supplied explicitly. -/
+  have key : (1 - r)⁻¹ * r / 3 = (1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1)) := by
+    have h0 : (2 * ((n : ℝ) + 1) + 1) ≠ 0 := by positivity
+    have h1 : ((n : ℝ) + 1) ≠ 0 := by positivity
+    have h2 : ((n : ℝ) + 2) ≠ 0 := by positivity
+    have hsub : 1 - r = 4 * ((n : ℝ) + 1) * ((n : ℝ) + 2) / (2 * ((n : ℝ) + 1) + 1) ^ 2 := by
+      rw [hr]; field_simp; ring
+    rw [hsub, hr]; push_cast; field_simp; ring
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
@@ -172,9 +182,7 @@ https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 theorem tendsto_self_div_two_mul_self_add_one :
     Tendsto (fun n : ℕ => (n : ℝ) / (2 * n + 1)) atTop (𝓝 (1 / 2)) := by
   conv =>
-    congr
-    · skip
-    · skip
+    enter [3]
     rw [one_div, ← add_zero (2 : ℝ)]
   refine (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
     ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => ?_⟩)
@@ -212,7 +220,7 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) :
   obtain ⟨a, hapos, halimit⟩ := stirlingSeq_has_pos_limit_a
   have hπ : π / 2 = a ^ 2 / 2 :=
     tendsto_nhds_unique Wallis.tendsto_W_nhds_pi_div_two (second_wallis_limit a hapos.ne' halimit)
-  rwa [(div_left_inj' (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
+  rwa [(div_left_inj₀ (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
 
 /-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
 lemma factorial_isEquivalent_stirling :

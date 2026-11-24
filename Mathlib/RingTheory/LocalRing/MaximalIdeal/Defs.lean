@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.LocalRing.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Maximal ideal of local rings
 
 We define the maximal ideal of a local ring as the ideal of all nonunits.
@@ -17,7 +19,6 @@ We define the maximal ideal of a local ring as the ideal of all nonunits.
 
 * `IsLocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
   set of nonunits.
-
 -/
 
 @[expose] public section

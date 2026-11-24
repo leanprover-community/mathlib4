@@ -240,7 +240,7 @@ variable [DecidableEq α] {a b : α}
 /-- Any type with a distinguished element is equivalent to an `Option` type on the subtype excluding
 that element. -/
 @[simps!]
-def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.1
+def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.val
 
 lemma optionSubtypeNe_symm_self (a : α) : (optionSubtypeNe a).symm a = none := by simp
 lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = some ⟨b, hba⟩ := by
@@ -280,7 +280,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 /-- The set of `x : Option α` such that `isSome x` is equivalent to `α`. -/
 @[simps]
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
-  toFun o := Option.get _ o.2
+  toFun o := Option.get _ o.property
   invFun x := ⟨some x, rfl⟩
   left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _

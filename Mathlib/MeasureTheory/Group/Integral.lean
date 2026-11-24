@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bochner Integration on Groups
 
@@ -42,6 +45,7 @@ theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] 
   have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
   rw [← h.integral_map, map_inv_eq_self]
 
+open scoped Pointwise in
 @[to_additive]
 theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf : IntegrableOn f s μ) :
     IntegrableOn (fun x => f x⁻¹) s⁻¹ μ := by

@@ -6,13 +6,16 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Projection
-public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+
+import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Angle bisectors.
 
 This file proves lemmas relating to bisecting angles.
-
 -/
 
 public section
@@ -99,7 +102,7 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
     rw [Real.arcsin_inj (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity))
       ((div_le_one hpd).2 ?_)
       (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
-    · rwa [div_left_inj' hpd.ne'] at h
+    · rwa [div_left_inj₀ hpd.ne'] at h
     · rw [dist_orthogonalProjection_eq_infDist]
       exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₁)
     · rw [dist_orthogonalProjection_eq_infDist]

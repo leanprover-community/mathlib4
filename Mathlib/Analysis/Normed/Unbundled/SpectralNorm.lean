@@ -27,8 +27,8 @@ algebraic closure of `ℚ_[p]`, for example.
 ## Details
 
 We define the spectral value and the spectral norm. We prove the norm extension theorem
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Theorem 3.2.1/2)]
-[bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
+(Theorem 3.2.1/2)][bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
 extension `L/K`, the spectral norm is a power-multiplicative `K`-algebra norm on `L` extending
 the norm on `K`. All `K`-algebra automorphisms of `L` are isometries with respect to this norm.
 If `L/K` is finite, we get a formula relating the spectral norm on `L` with any other
@@ -232,8 +232,8 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
-[bosch-guntzer-remmert]. -/
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
+(Proposition 3.1.2/1(1))][bosch-guntzer-remmert]. -/
 theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
     f x ≤ spectralValue p := by
@@ -260,20 +260,13 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
       have hn' (n : ℕ) (hn : n < p.natDegree) : f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
-        by_cases hn0 : n = 0
-        · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (succ_le_iff.mpr h_deg),
-            ← Nat.sub_zero p.natDegree, ← hn0]
-          exact (mul_le_of_le_one_right (norm_nonneg _) hf_pm.map_one_le_one).trans_lt (hn_lt n hn)
-        · have : p.natDegree = p.natDegree - n + n := by rw [Nat.sub_add_cancel (le_of_lt hn)]
-          rw [map_smul_eq_mul, hf_pm _ (succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
-            hf_pm _ (succ_le_iff.mpr h_deg), this, pow_add]
-          gcongr
-          exact hn_lt n hn
+        grw [map_smul_eq_mul, hf_pm.map_pow, hf_pm.map_pow, hn_lt n hn, ← pow_add,
+          Nat.sub_add_cancel hn.le]
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
         obtain ⟨m, hm, h⟩ := hf_na.finset_image_add g (Finset.range p.natDegree) (map_zero_le f)
-        rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
+        rw [Finset.nonempty_range_iff, ← pos_iff_ne_zero, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
     have h0 : f 0 ≠ 0 := by
@@ -841,7 +834,7 @@ instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
   let := (normedAddCommGroup K L)
   let := (normedSpace K L)
-  exact FiniteDimensional.complete K L
+  exact FiniteDimensional.completeSpace K L
 
 omit [Algebra.IsAlgebraic K L] in
 lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E] [Algebra L E]

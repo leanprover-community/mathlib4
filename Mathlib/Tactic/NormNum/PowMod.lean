@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.
 
@@ -21,7 +24,6 @@ The approach taken here is identical to (and copied from) the development in
 
 * Adapt the `norm_num` extensions for `Nat.mod` and `Int.emod` to efficiently evaluate expressions
   of the form `a ^ b % m` using `evalNatPowMod`.
-
 -/
 
 public meta section

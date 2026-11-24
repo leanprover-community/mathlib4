@@ -8,9 +8,11 @@ module
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The center of an additive category
-
 -/
 
 public section
