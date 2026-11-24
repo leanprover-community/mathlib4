@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Reflection
 
 This file contains basic definitions for root systems and root data.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`

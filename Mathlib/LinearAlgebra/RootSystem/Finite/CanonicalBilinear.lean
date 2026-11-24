@@ -21,7 +21,7 @@ restricted to a small finite set of possibilities.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.
 
-## Main definitions:
+## Main definitions
 * `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
   space.
 * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.

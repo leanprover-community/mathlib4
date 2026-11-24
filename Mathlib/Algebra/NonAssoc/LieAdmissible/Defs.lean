@@ -19,7 +19,7 @@ associator x y z + associator z x y + associator y z x =
   associator y x z + associator z y x + associator x z y
 ```
 
-## Main definitions:
+## Main definitions
   * `LieAdmissibleRing`
   * `LieAdmissibleAlgebra`
 
