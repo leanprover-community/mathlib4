@@ -22,6 +22,7 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
   equation `catalanSeries = 1 + X * catalanSeries ^ 2`.
 
 ## TODO
+
 * Find and prove the closed formula for the Catalan generating function:
   `C(X) = (1 - √(1 - 4X)) / (2X)`
 -/

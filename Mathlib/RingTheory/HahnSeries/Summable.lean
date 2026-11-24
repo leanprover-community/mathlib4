@@ -39,6 +39,7 @@ commutative domain.
   sums is equal to the sum of pointwise products.
 
 ## TODO
+
 * Summable Pi families
 
 ## References

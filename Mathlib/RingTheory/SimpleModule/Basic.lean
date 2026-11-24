@@ -47,6 +47,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
+
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 -/

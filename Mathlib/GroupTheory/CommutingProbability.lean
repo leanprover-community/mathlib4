@@ -21,6 +21,7 @@ This file introduces the commuting probability of finite groups.
 * `commProb`: The commuting probability of a finite type with a multiplication operation.
 
 ## TODO
+
 * Neumann's theorem.
 -/
 

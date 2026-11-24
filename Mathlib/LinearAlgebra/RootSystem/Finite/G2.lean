@@ -36,6 +36,7 @@ stronger assumptions on the coefficients than here.
 * `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂` root pairing has twelve roots.
 
 ## TODO
+
 Once sufficient API for `RootPairing.Base` has been developed:
 * Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).

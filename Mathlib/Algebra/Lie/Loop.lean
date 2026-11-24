@@ -39,6 +39,7 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
   coefficients attached to a symmetric invariant bilinear form on the base Lie algebra.
 
 ## TODO
+
 * Evaluation representations
 * Construction of central extensions from invariant forms.
 * Positive energy representations induced from a fixed central character

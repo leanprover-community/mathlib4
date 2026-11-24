@@ -33,6 +33,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 - `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
+
 - Show properties of the different ideal
 -/
 

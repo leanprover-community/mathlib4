@@ -28,6 +28,7 @@ which are continuous with continuous inverse.
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
 
 ## TODO
+
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
   with multiplication corresponding to composition in `AffineEquiv.group`.
 -/

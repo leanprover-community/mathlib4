@@ -21,6 +21,7 @@ field `L`.
 nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
 
 ## TODO
+
 Show that
 1. if `K` is perfect, then `L` is perfect;
 2. if `L` is separably closed, then `K` is separably closed;

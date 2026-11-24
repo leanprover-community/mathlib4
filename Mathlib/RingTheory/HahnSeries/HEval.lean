@@ -22,6 +22,7 @@ given by substitution of the generating variable to an element of strictly posit
   takes `X` to a fixed positive-order Hahn Series and extends to formal infinite sums.
 
 ## TODO
+
 * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `R⟦Γ⟧`
   (for finite σ) taking each `X i` to a positive order Hahn Series.
 -/

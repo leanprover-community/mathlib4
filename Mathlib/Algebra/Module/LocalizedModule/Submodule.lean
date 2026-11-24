@@ -24,6 +24,7 @@ Results about localizations of submodules and quotient modules are provided in t
   The localization map of a quotient module `M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p`.
 
 ## TODO
+
 - Statements regarding the exactness of localization.
 -/
 

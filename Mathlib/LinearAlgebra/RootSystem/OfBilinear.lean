@@ -21,6 +21,7 @@ integral lattice with an arbitrary reflexive module equipped with a bilinear for
 * `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
+
 * properties
 -/
 

@@ -19,6 +19,7 @@ admits an additive valuation given by `orderTop`.
   ordered.
 
 ## TODO
+
 * Multiplicative valuations
 * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 

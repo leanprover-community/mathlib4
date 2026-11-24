@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Ring
 * `Associates.factors`: determine the `FactorSet` for a given element.
 
 ## TODO
+
 * set up the complete lattice structure on `FactorSet`.
 -/
 

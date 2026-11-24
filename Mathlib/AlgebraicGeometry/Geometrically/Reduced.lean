@@ -27,6 +27,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
   reduced and locally noetherian scheme is reduced (by `infer_instance`).
 
 ## TODO
+
 Get rid of the noetherian assumption.
 -/
 

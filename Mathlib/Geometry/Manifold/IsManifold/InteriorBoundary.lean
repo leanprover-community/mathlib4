@@ -62,6 +62,7 @@ Define the interior and boundary of a manifold.
 manifold, interior, boundary
 
 ## TODO
+
 - the interior of `M` is dense, the boundary nowhere dense
 - the interior of `M` is a boundaryless manifold
 - `boundary M` is a submanifold (possibly with boundary and corners):

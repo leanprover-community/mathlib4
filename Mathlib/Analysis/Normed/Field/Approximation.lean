@@ -26,6 +26,7 @@ dense subfield of a normed field `L`. Every monic polynomial in `L` can be appro
 a monic polynomial in `K` of the same degree.
 
 ## TODO
+
 Use the fact that `f.discr` is polynomial of the coefficients of `f` to show that
 every polynomial `f` can be approximated by a *separable* polynomial. This result can be used
 to show that the completion a separably closed field is algebraically closed, upgrading the

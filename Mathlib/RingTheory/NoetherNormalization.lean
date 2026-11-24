@@ -52,6 +52,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 * <https://stacks.math.columbia.edu/tag/00OW>
 
 ## TODO
+
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
 

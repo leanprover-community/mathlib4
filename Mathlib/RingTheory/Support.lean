@@ -27,6 +27,7 @@ Also see `Mathlib/RingTheory/Spectrum/Prime/Module.lean` for other results
 depending on the Zariski topology.
 
 ## TODO
+
 - Connect to associated primes once we have them in mathlib.
 - Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)

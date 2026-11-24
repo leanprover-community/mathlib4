@@ -20,6 +20,7 @@ shows basic properties of this notion.
 lifting property
 
 ## TODO
+
 1) direct/inverse images, adjunctions
 -/
 

@@ -26,6 +26,7 @@ commutative binomial ring `R`.
   `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
 ## TODO
+
 * When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
   `1 + XA[[X]]` into an `R`-module.
 -/

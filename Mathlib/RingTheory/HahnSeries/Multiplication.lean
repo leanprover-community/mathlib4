@@ -41,6 +41,7 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 
 ## TODO
+
 The following may be useful for composing vertex operators, but they seem to take time.
 * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`

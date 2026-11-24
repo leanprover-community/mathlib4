@@ -18,6 +18,7 @@ This is a particular case of the construction in the file
 for all `n : ℕ`.
 
 ## TODO
+
 * `DeltaGenerated` is Cartesian closed (@joelriou).
 
 ## References

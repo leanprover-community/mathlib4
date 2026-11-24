@@ -31,6 +31,7 @@ change of signs in the "action" part of the Lie bracket.
   of an extension.
 
 ## TODO
+
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
 

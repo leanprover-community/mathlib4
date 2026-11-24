@@ -22,6 +22,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
   then `M` being projective can be checked on stalks (of maximal ideals).
 
 ## TODO
+
 - Show that being projective is Zariski-local (very hard)
 -/
 

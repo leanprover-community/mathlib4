@@ -49,6 +49,7 @@ we chose the `limsup` definition as the default.
 net, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 

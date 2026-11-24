@@ -57,6 +57,7 @@ using only `coverEntropy`.
 cover, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 

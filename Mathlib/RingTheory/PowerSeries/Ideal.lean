@@ -43,6 +43,7 @@ generators, and it is used to prove that, for a domain `R`, we have
 `IsPrincipalIdealRing R → UniqueFactorizationMonoid R⟦X⟧`.
 
 ## TODO
+
 Prove noetherianity of `MvPowerSeries` in finitely many variables.
 -/
 

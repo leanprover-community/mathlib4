@@ -25,6 +25,7 @@ To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `
 such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
+
 Disprove `Irrational x` for rational `x`.
 -/
 
