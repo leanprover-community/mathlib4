@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral with respect to a sum of measures
 
@@ -69,7 +72,7 @@ lemma Integrable.summable_integral (hf : Integrable f (Measure.sum μ)) :
   convert! ENNReal.summable_toReal (f := fun i ↦ ∫⁻ x, ‖f x‖ₑ ∂μ i) ?_ with i
   · rw [← integral_toReal ?_ (by simp)]
     · simp
-    · exact (hf.aestronglyMeasurable.mono_measure (Measure.le_sum _ i)).enorm
+    · exact (hf.aestronglyMeasurable.mono_measure (Measure.le_sum _ i)).eNorm
   rw [← lintegral_sum_measure]
   exact hf.2.ne
 
@@ -187,10 +190,10 @@ theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf :
     ∫ x in s, f x ∂μ = ∑' x : s, μ.real {(x : X)} • f x := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) ↦ f x) (Measure.comap Subtype.val μ) := by
-    rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
+    rw [IntegrableOn, ← map_comap_subtypeVal, integrable_map_measure] at hf
     · apply hf
     · exact Integrable.aestronglyMeasurable hf
-    · exact Measurable.aemeasurable measurable_subtype_coe
+    · exact Measurable.aemeasurable measurable_subtypeVal
     · exact Countable.measurableSet hs
   rw [← integral_subtype_comap hs.measurableSet, integral_countable hf']
   congr 1 with a : 1

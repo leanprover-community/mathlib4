@@ -38,7 +38,6 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -69,13 +68,11 @@ variable [DecidableEq α] {s t u : Finset α} {a b : α}
 @[simp]
 theorem disjUnion_eq_union (s t h) : @disjUnion α s t h = s ∪ t := by grind
 
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_union, or_imp, forall_and]
+theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
+  disjoint_sup_left
 
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_union, or_imp, forall_and]
+theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
+  disjoint_sup_right
 
 /-! #### inter -/
 
@@ -175,6 +172,15 @@ theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := b
 
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.erase a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
+
+theorem insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t :=
+  ⟨fun h ↦ by rw [← erase_insert hs, h, erase_insert ht], congrArg _⟩
+
+theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
+  fun _s hs _t ht ↦ (insert_right_inj hs ht).1
+
+theorem sdiff_singleton_injOn_mem (a : α) : { s : Finset α | a ∈ s }.InjOn (· \ {a}) :=
+  fun _s hs _t ht ↦ superset_injOn_sdiff _ (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht)
 
 end Erase
 
@@ -475,7 +481,7 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 
 @[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
-  simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty
@@ -585,12 +591,12 @@ def Finset.union (s t : Finset α) (h : Disjoint s t) :
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.property⟩ :=
   rfl
 
 @[simp]
 theorem Finset.union_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.property⟩ :=
   rfl
 
 @[simp]
@@ -610,12 +616,14 @@ def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) =
+      ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.property⟩ :=
   rfl
 
 @[simp]
 theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) =
+      ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.property⟩ :=
   rfl
 
 @[simp]
@@ -655,8 +663,8 @@ lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finse
 
 /-- A finset is equivalent to its coercion as a set. -/
 def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
-  toFun a := ⟨a.1, mem_coe.2 a.2⟩
-  invFun a := ⟨a.1, mem_coe.1 a.2⟩
+  toFun a := ⟨a.val, mem_coe.2 a.property⟩
+  invFun a := ⟨a.val, mem_coe.1 a.property⟩
 
 end Equiv
 

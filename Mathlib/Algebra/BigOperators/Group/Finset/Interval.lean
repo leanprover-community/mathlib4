@@ -10,11 +10,13 @@ public import Mathlib.Data.Int.Interval
 
 import Mathlib.Algebra.CharP.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums/products over integer intervals
 
 This file contains some lemmas about sums and products over integer intervals `Ixx`.
-
 -/
 
 public section

@@ -25,6 +25,7 @@ under surjective homomorphism.
 * `IsFinitelyPresented.equiv`: finitely presented groups are closed under isomorphism.
 
 ## Tags
+
 finitely presented group, finitely generated normal closure
 -/
 

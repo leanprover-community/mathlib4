@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Logic.Small.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances and theorems for `Small`.
 

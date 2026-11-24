@@ -5,12 +5,19 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Biproducts
-public import Mathlib.Algebra.Category.Grp.FilteredColimits
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Homology.ShortComplex.Ab
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # AB axioms for the category of abelian groups

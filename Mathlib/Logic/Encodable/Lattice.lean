@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Logic.Encodable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice operations on encodable types
 
 Lemmas about lattice and set operations on encodable types
 
-## Implementation Notes
+## Implementation notes
 
 This is a separate file, to avoid unnecessary imports in basic files.
 

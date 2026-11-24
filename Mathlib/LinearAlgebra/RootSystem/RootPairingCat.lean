@@ -22,10 +22,9 @@ given in SGA III Exp. 21 Section 6.
 * Forgetful functors
 * Functions passing between module maps and root pairing homs
 
-## Implementation details
+## Implementation notes
 
 This is mostly copied from `ModuleCat`.
-
 -/
 
 public section

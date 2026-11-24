@@ -8,12 +8,13 @@ module
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.TopComparison
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The functor from topological spaces to light condensed sets
 
 We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
-
 -/
 
 public section

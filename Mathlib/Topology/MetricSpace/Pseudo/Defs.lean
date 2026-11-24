@@ -400,13 +400,13 @@ theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x �
   simpa [mem_ball] using exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
-  rfl
+    SetRel.ball {p | dist p.2 p.1 < ε} x = Metric.ball x ε := by
+  ext
+  simp [dist_comm, SetRel.ball]
 
 theorem ball_eq_ball' (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.1 p.2 < ε } = Metric.ball x ε := by
-  ext
-  simp [dist_comm, UniformSpace.ball]
+    SetRel.ball {p | dist p.1 p.2 < ε} x = Metric.ball x ε :=
+  rfl
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
@@ -553,6 +553,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
+@[gcongr strict]
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : dist y x ≤ ε₁) => lt_of_le_of_lt yh h
 
@@ -1011,6 +1012,13 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
   rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
+/-- Metric ball of radius `r` is a subset of the extended metric ball of radius `ENNReal.ofReal r`.
+
+For `r ≥ 0`, this inclusion is an equality, see `Metric.closedEBall_ofReal`. -/
+theorem Metric.closedBall_subset_closedEBall {x : α} {r : ℝ} :
+    closedBall x r ⊆ closedEBall x (.ofReal r) := by
+  simp +contextual [subset_def, edist_dist, ENNReal.ofReal_le_ofReal]
+
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
@@ -1079,6 +1087,15 @@ uniformity are defeq in the pseudometric space and the emetric space. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
+
+/-- The bounded component of an element forms a pseudometric space. -/
+abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
+    PseudoMetricSpace (boundedComponent a) :=
+  PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
+    refine ((edist_triangle p.val a q.val).trans_lt
+      (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
+    rw [edist_comm]
+    exact p.property.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.

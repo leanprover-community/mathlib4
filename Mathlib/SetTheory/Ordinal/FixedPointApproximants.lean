@@ -31,6 +31,7 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
+
 * [F. Echenique, *A short and constructive proof of Tarski’s fixed-point theorem*][Echenique2005]
 * [P. Cousot & R. Cousot, *Constructive Versions of Tarski's Fixed Point Theorems*][Cousot1979]
 
@@ -54,7 +55,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
       #(Iio (ord <| succ #α)) = lift.{u + 1} (succ #α) := by
-    simpa only [coe_ofPred, card_typein, card_ord] using mk_Iio_ordinal (ord <| succ #α)
+    simpa only [coe_ofPred, card_typein, card_ord] using cardinalMk_Iio (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_gt (Order.lt_succ #α) h
 
@@ -104,7 +105,7 @@ theorem lfpApprox_add_one (hx : x ≤ f x) (a : Ordinal) :
 
 theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
-  apply (iSup_le fun b => lfpApprox_mono_right f b.2.le).antisymm'
+  apply (iSup_le fun b => lfpApprox_mono_right f b.property.le).antisymm'
   rw [lfpApprox, sup_le_iff, iSup_le_iff]
   constructor
   · refine le_iSup_of_le ⟨0, ha.bot_lt⟩ (by simp [lfpApprox_zero])
@@ -212,7 +213,7 @@ theorem lfpApprox_ord_eq_lfp : lfpApprox f ⊥ (ord <| succ #α) = f.lfp := by
   apply le_antisymm
   · have h_lfp : ∃ y : fixedPoints f, f.lfp = y := by use ⊥; exact rfl
     let ⟨y, h_y⟩ := h_lfp; rw [h_y]
-    exact lfpApprox_le_of_mem_fixedPoints f y.2 bot_le (ord <| succ #α)
+    exact lfpApprox_le_of_mem_fixedPoints f y.property bot_le (ord <| succ #α)
   · have h_fix : ∃ y : fixedPoints f, lfpApprox f ⊥ (ord <| succ #α) = y := by
       simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
         lfpApprox_ord_mem_fixedPoint f bot_le
@@ -244,7 +245,7 @@ theorem nextFixed_eq_iSup_lfpApprox (hx : x ≤ f x) :
   rw [iSup_lfpApprox_eq_of_mem_fixedPoints f hfix]
   apply le_antisymm
   · exact f.nextFixed_le hx (y := ⟨lfpApprox f x o, hfix⟩) (le_lfpApprox f)
-  · exact lfpApprox_le_of_mem_fixedPoints f (f.nextFixed x hx).2 (f.le_nextFixed hx) o
+  · exact lfpApprox_le_of_mem_fixedPoints f (f.nextFixed x hx).property (f.le_nextFixed hx) o
 
 variable (x) in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
@@ -258,8 +259,8 @@ termination_by a
 -- by definitional equality
 unseal gfpApprox lfpApprox
 
-theorem gfpApprox_zero : gfpApprox f x 0 = x := by
-  exact lfpApprox_zero f.dual
+theorem gfpApprox_zero : gfpApprox f x 0 = x :=
+  lfpApprox_zero f.dual
 
 theorem gfpApprox_anti_right : Antitone (gfpApprox f x) :=
   lfpApprox_mono_right f.dual

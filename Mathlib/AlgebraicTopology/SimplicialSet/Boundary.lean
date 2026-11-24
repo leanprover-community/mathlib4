@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The boundary of the standard simplex
 
@@ -20,8 +23,6 @@ There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
 from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
-
-
 -/
 
 @[expose] public section

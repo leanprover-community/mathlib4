@@ -45,7 +45,6 @@ the codomain is not a field or even an integral domain.
 * [Kleiman, *Misconceptions about $K_X$*][kleiman1979]
 * https://freedommathdance.blogspot.com/2012/11/misconceptions-about-kx.html
 * https://stacks.math.columbia.edu/tag/01X1
-
 -/
 
 @[expose] public section
@@ -104,11 +103,11 @@ we construct a value of `P` for such elements of `K⟮X⟯` by setting
 When `[IsDomain K]`, one can use `RatFunc.liftOn'`, which has the stronger requirement
 of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q`.
 -/
-protected irreducible_def liftOn {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
+@[no_expose] protected def liftOn {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
   Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
-    H q.2 q'.2 (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
+    H q.property q'.property (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
       mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 
 theorem liftOn_ofFractionRing_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : K[X] → K[X] → P)
@@ -136,7 +135,7 @@ If `q = 0`, then `mk` returns 0.
 This is an auxiliary definition used to define an `Algebra` structure on `RatFunc`;
 the `simp` normal form of `mk p q` is `algebraMap _ _ p / algebraMap _ _ q`.
 -/
-protected irreducible_def mk (p q : K[X]) : K⟮X⟯ :=
+@[no_expose] protected def mk (p q : K[X]) : K⟮X⟯ :=
   ofFractionRing (algebraMap _ _ p / algebraMap _ _ q)
 
 theorem mk_eq_div' (p q : K[X]) :
@@ -192,11 +191,19 @@ for all elements of `K⟮X⟯` by setting `lift_on' (p / q) f _ = f p q`.
 The value of `f p 0` for any `p` is never used and in principle this may be anything,
 although many usages of `lift_on'` assume `f p 0 = f 0 1`.
 -/
-protected irreducible_def liftOn' {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
+@[no_expose] protected def liftOn' {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
   (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) : P :=
   x.liftOn f fun {_p _q _p' _q'} hq hq' =>
     liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
       (nonZeroDivisors.ne_zero hq')
+
+lemma liftOn'_def {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
+    (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) :
+    x.liftOn' f @H =
+    x.liftOn f fun {_p _q _p' _q'} hq hq' =>
+      liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
+        (nonZeroDivisors.ne_zero hq') :=
+  (rfl)
 
 theorem liftOn'_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) :
@@ -215,7 +222,7 @@ protected theorem induction_on' {P : K⟮X⟯ → Prop} :
   | ⟨x⟩, f =>
     Localization.induction_on x fun ⟨p, q⟩ => by
       simpa only [mk_coe_def, Localization.mk_eq_mk'] using
-        f p q (mem_nonZeroDivisors_iff_ne_zero.mp q.2)
+        f p q (mem_nonZeroDivisors_iff_ne_zero.mp q.property)
 
 end IsDomain
 

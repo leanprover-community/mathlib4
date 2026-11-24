@@ -406,7 +406,7 @@ instance ULift.isIsometricSMul : IsIsometricSMul (ULift M) X :=
 
 @[to_additive]
 instance ULift.isIsometricSMul' : IsIsometricSMul M (ULift X) :=
-  ⟨fun c x y => by simpa only using! edist_smul_left c x.1 y.1⟩
+  ⟨fun c x y => by simpa only using! edist_smul_left c x.down y.down⟩
 
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]

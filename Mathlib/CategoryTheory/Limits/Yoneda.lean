@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit properties relating to the (co)yoneda embedding.
 
@@ -210,10 +213,11 @@ instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := 
 
 instance [LocallySmall.{w'} C] :
     PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
-  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
-    have := preservesLimitsOfShape_of_natIso (J := J) (Functor.associator _ _ _ ≪≫
-      shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor.{w'} K).symm
-    exact preservesLimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}⟩)
+  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦
+    have := preservesLimitsOfShape_of_natIso (J := J)
+      (shrinkCoyonedaObjCompUliftFunctorIso.{w'} K).symm
+    preservesLimitsOfShape_of_reflects_of_preserves
+      (shrinkCoyoneda.{w'}.obj K) uliftFunctor.{v}⟩)
 
 namespace Functor
 

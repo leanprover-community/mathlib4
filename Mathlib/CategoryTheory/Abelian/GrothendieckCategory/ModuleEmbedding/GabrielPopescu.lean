@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 
 import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
@@ -90,9 +91,9 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   rw [Preadditive.comp_sum_assoc, Preadditive.comp_sum_assoc, Preadditive.sum_comp]
   simp only [Category.assoc, ι_d]
   let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (.of (h ≫ pullback.fst _ _ ≫ Sigma.π _ x))
-  suffices ∑ x ∈ F.attach, r x • f.hom x.1.as = 0 by simpa [End.smul_left, r] using this
+  suffices ∑ x ∈ F.attach, r x • f.hom x.val.as = 0 by simpa [End.smul_left, r] using this
   simp only [← map_smul, ← map_sum]
-  suffices ∑ x ∈ F.attach, r x • x.1.as = 0 by simp [this]
+  suffices ∑ x ∈ F.attach, r x • x.val.as = 0 by simp [this]
   simp only [← g.hom.map_eq_zero_iff ((ModuleCat.mono_iff_injective _).1 hg), map_sum, map_smul]
   simp only [← ι_d g, End.smul_left, MulOpposite.unop_op, Category.assoc, r]
   simp [← Preadditive.comp_sum, ← Preadditive.sum_comp', pullback.condition_assoc]
@@ -105,7 +106,7 @@ theorem exists_d_comp_eq_d {G : C} (hG : IsSeparator G) {A} (B : C) [Injective B
   let l₂ : A ⟶ B := Injective.factorThru l₁ (Limits.image.ι (d g))
   refine ⟨l₂, ?_⟩
   simp only [l₂, l₁]
-  conv_lhs => congr; rw [← Limits.image.fac (d g)]
+  conv_lhs => enter [1]; rw [← Limits.image.fac (d g)]
   simp [-Limits.image.fac]
 
 end GabrielPopescuAux
@@ -130,7 +131,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     rw [← Module.injective_iff_injective_object]
     refine Module.Baer.injective (fun M g => ?_)
     let φ : M →ₗ[(End G)ᵐᵒᵖ] G ⟶ G :=
-      { toFun i := i.1.unop.asHom
+      { toFun i := i.val.unop.asHom
         map_add' := by simp
         map_smul' := by cat_disch }
     have : Mono (ModuleCat.ofHom φ) :=

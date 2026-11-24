@@ -80,7 +80,7 @@ I would love to print `tac` with another colour, e.g. the keyword highlighting u
 but I have no idea how to do this.
 -/
 def tacticToHtml (tac : TSyntax `tactic) : MetaM ProofWidgets.Html := do
-  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.1.getKind
+  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.raw.getKind
 
 end
 
@@ -162,6 +162,8 @@ structure Context where
   cursorPos : Lsp.Position
   /-- Whether to use the `on_goal n =>` combinator. -/
   onGoal : Option Nat
+  /-- Whether to use the `·` combinator. -/
+  focus : Bool
   /-- The preceding piece of syntax, if available. It is not available if the cursor is
   at the start of the next tactic. This is used for merging consecutive `rw` tactics. -/
   stx : Option (TSyntax `tactic)
@@ -238,37 +240,33 @@ where
 section Meta
 
 /-- Determine whether the explicit parts of two expressions are equal,
-and the implicit parts are definitionally equal, up to `reducible_and_instances` transparency.
+and the implicit parts are definitionally equal, up to `implicit` transparency.
 This says whether two expressions are 'morally equal', and is used for deduplicating suggestions. -/
 partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let t := t.cleanupAnnotations; let s := s.cleanupAnnotations
   if t == s then
     return true
-  unless t.getAppNumArgs == s.getAppNumArgs && t.getAppFn == s.getAppFn do
+  -- Unify lambdas and foralls
+  if t.isLambda && s.isLambda || t.isForall && s.isForall then
+    unless ← withNewMCtxDepth <| isDefEqI t.bindingDomain! s.bindingDomain! do
+      return false
+    return ← withLocalDeclD `_ t.bindingDomain! fun x ↦
+      isExplicitEq (t.bindingBody!.instantiate1 x) (s.bindingBody!.instantiate1 x)
+  -- Unify applications of the same head function.
+  unless t.isApp && t.getAppNumArgs == s.getAppNumArgs do
+    return false
+  unless ← isExplicitEq t.getAppFn s.getAppFn do
     return false
   let tArgs := t.getAppArgs
   let sArgs := s.getAppArgs
-  -- TODO: let's just use `getFunInfo`.
-  let bis ← getBinderInfos t.getAppFn tArgs
-  t.getAppNumArgs.allM fun i _ =>
-    if bis[i]!.isExplicit then
+  let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
+  t.getAppNumArgs.allM fun i _ => do
+    -- `info.paramInfo[i]?` may be `none` due to over-application,
+    -- which we treat the same as an explicit application.
+    if info.paramInfo[i]?.all (·.isExplicit) then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| withReducibleAndInstances <| isDefEq tArgs[i]! sArgs[i]!
-where
-  /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
-  getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
-    let mut fnType ← inferType fn
-    let mut result := Array.mkEmpty args.size
-    let mut j := 0
-    for i in [:args.size] do
-      unless fnType.isForall do
-        fnType ← whnfD (fnType.instantiateRevRange j i args)
-        j := i
-      let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
-      fnType := b
-      result := result.push bi
-    return result
+      withNewMCtxDepth <| isDefEqI tArgs[i]! sArgs[i]!
 
 end Meta
 
@@ -338,6 +336,9 @@ def tacticPasteString (tac : TSyntax `tactic) : ClickSuggestionsM String := do
 /-- Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
 We return the range that should be replaced, and the new text that will replace it. -/
 def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String) := do
+  let tac ← match (← read).onGoal with
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
+    | none => pure tac
   if let some stx := (← read).stx then
     if let some tac ← mergeTactics? stx tac then
       if let some range := stx.raw.getRange? then
@@ -346,6 +347,7 @@ def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String
         let extraWhitespace := range.stop.extract text.source endPos
         let tactic ← tacticPasteString tac
         return (text.utf8RangeToLspRange ⟨range.start, endPos⟩, tactic ++ extraWhitespace)
+  let tac ← if (← read).focus then `(tactic| · $tac:tactic) else pure tac
   return (⟨(← read).cursorPos, (← read).cursorPos⟩,
     s!"{← tacticPasteString tac}\n{String.replicate (← read).cursorPos.character ' '}")
 
@@ -360,9 +362,6 @@ open Widget
 If `solves := true`, then a `🎉️` emoji is added. -/
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : ProofWidgets.Html)
     (solves : Bool) : ClickSuggestionsM ProofWidgets.Html := do
-  let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
-    | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=

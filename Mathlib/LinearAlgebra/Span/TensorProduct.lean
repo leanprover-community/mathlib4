@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.Positivity
 

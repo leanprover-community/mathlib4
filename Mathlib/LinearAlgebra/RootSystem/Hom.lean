@@ -44,7 +44,6 @@ given in SGA III Exp. 21 Section 6.
 ## TODO
 * Special types of morphisms: Isogenies, weight/coweight space embeddings
 * Weyl group reimplementation?
-
 -/
 
 @[expose] public section
@@ -245,8 +244,8 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
     set y := f.indexEquiv x with hy
-    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) := by
-      exact congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
+    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) :=
+      congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
     rw [coroot_coweightMap_apply, coroot_coweightMap_apply, Embedding.apply_eq_iff_eq, hy] at this
     rw [Equiv.symm_apply_apply] at this
     rw [this, Equiv.apply_symm_apply]
@@ -438,7 +437,7 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     exact Eq.symm (this (f.coweightEquiv.symm n) (f.weightEquiv.symm m))
   root_weightMap := by
     ext i
-    simp only [LinearEquiv.coe_coe, comp_apply]
+    simp only [LinearEquiv.coe_toLinearMap, comp_apply]
     have := f.root_weightMap
     rw [funext_iff] at this
     specialize this (f.indexEquiv.symm i)
@@ -446,17 +445,17 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     simp [← this]
   coroot_coweightMap := by
     ext i
-    simp only [LinearEquiv.coe_coe, comp_apply, Equiv.symm_symm]
+    simp only [LinearEquiv.coe_toLinearMap, comp_apply, Equiv.symm_symm]
     have := f.coroot_coweightMap
     rw [funext_iff] at this
     specialize this (f.indexEquiv i)
     simp only [comp_apply, Equiv.symm_apply_apply] at this
     simp [← this]
   bijective_weightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective f.weightEquiv.symm
   bijective_coweightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective f.coweightEquiv.symm
 
 @[simp]
@@ -508,7 +507,7 @@ def mk' [IsDomain R] [CharZero R] [Finite ι₂]
     let g : N ≃ₗ[R] N₂ := P.flip.toPerfPair.trans <| f.symm.dualMap.trans Q.flip.toPerfPair.symm
     suffices Q = P.map e f g by
       ext i
-      rw [LinearEquiv.coe_coe, comp_apply, ← LinearEquiv.eq_symm_apply]
+      rw [LinearEquiv.coe_toLinearMap, comp_apply, ← LinearEquiv.eq_symm_apply]
       conv_lhs => rw [this]
       rfl
     apply IsRootSystem.ext <;> ext
@@ -550,13 +549,13 @@ lemma coweightEquiv_coreflection :
 lemma weightEquiv_symm_conj_reflection :
     e.weightEquiv.symm.conj (Q.reflection (e.indexEquiv i)) = P.reflection i := by
   ext x
-  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.symm_symm, LinearEquiv.coe_coe,
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.symm_symm, LinearEquiv.coe_toLinearMap,
     ← e.weightEquiv_reflection, weightEquiv_apply, weightEquiv_symm_weightMap]
 
 lemma coweightEquiv_conj_coreflection :
     e.coweightEquiv.conj (Q.coreflection (e.indexEquiv i)) = P.coreflection i := by
   ext y
-  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.coe_coe, e.coweightEquiv_coreflection,
+  simp_rw [LinearEquiv.conj_apply_apply, LinearEquiv.coe_toLinearMap, e.coweightEquiv_coreflection,
     Equiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 end Equiv
@@ -691,10 +690,10 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective (P.reflection i)
   bijective_coweightMap := by
-    simp only [LinearEquiv.coe_coe]
+    simp only [LinearEquiv.coe_toLinearMap]
     exact LinearEquiv.bijective (P.coreflection i)
 
 @[simp]

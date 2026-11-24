@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Restricting adjunctions
 
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful

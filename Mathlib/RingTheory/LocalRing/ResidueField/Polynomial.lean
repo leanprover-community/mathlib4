@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 ## Main results
 - `Polynomial.residueFieldMapCAlgEquiv`: `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`
 - `Polynomial.fiberEquivQuotient`: `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I`
-
 -/
 
 @[expose] public section
@@ -41,13 +40,14 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
         RingHom.ker_comp_of_injective, C_injective,
         FaithfulSMul.algebraMap_injective I.ResidueField[X] (RatFunc I.ResidueField)]
     · rintro x (hx : x ∉ J)
-      suffices ∃ i, x.coeff i ∉ I by simpa [IsUnit.mem_submonoid_iff, Polynomial.ext_iff]
+      suffices ∃ i, x.coeff i ∉ I by
+        simpa [IsUnit.mem_submonoid_iff, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
       contrapose! hx
       rwa [hJ, Ideal.mem_map_C_iff]
   haveI hf : f.comp (algebraMap I.ResidueField _) = algebraMap _ _ := by
     ext
     simp [f, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R R[X] J.ResidueField]
-  refine .ofAlgHom ⟨f, fun r ↦ congr($hf r)⟩
+  refine .ofAlgHom { f with commutes' r := congr($hf r) }
       (RatFunc.liftAlgHom (aeval (algebraMap R[X] _ X)) fun x ↦ ?_) ?_ ?_
   · suffices Function.Injective (aeval (R := I.ResidueField) (algebraMap R[X] J.ResidueField X)) by
       simp [← this.eq_iff]
@@ -67,7 +67,7 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
     simp only [← algebraMap_eq, ← Algebra.smul_def]
     rw [algebraMap_smul]
     simp only [← hr]
-    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using! hJ.le hx
+    simpa [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, Ideal.mem_map_C_iff] using! hJ.le hx
   · apply AlgHom.toRingHom_injective
     apply IsFractionRing.injective_comp_algebraMap (A := I.ResidueField[X])
     dsimp [RatFunc.liftAlgHom]

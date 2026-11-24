@@ -5,13 +5,13 @@ Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+import Mathlib.Data.PNat.Prime
 import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -49,7 +49,8 @@ details section.
 * `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
   and `primitiveRoots n A` given by the choice of `ζ`.
 
-## Implementation details
+## Implementation notes
+
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
 `IsCyclotomicExtension`. It is not true in general that it is a root of `cyclotomic n B`,
 but this holds if `isDomain B` and `NeZero (n : B)`.
@@ -60,7 +61,6 @@ For example, in normal mathematics, we can demand that `(zeta p ℤ ℤ[ζₚ] :
 specify that our choices agree. This is not the case here, and it is indeed impossible to prove that
 these two are equal. Therefore, whenever possible, we prove our results for any primitive root,
 and only at the "final step", when we need to provide an "explicit" primitive root, we use `zeta`.
-
 -/
 
 @[expose] public section
@@ -146,7 +146,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
     { toFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
-        refine ⟨x.1, ?_⟩
+        refine ⟨x.val, ?_⟩
         cases x
         rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot.def,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
@@ -154,7 +154,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
-        refine ⟨x.1, ?_⟩
+        refine ⟨x.val, ?_⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
           hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
@@ -220,7 +220,7 @@ theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
   have hl : NeZero l := ⟨hl⟩
   have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
   have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot
-    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) (NeZero.pos n))
+    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.out) (NeZero.pos n))
   rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n))] at key
   rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
   have ineq := Nat.totient_super_multiplicative n r
@@ -253,7 +253,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
   have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
   rw [isRoot_cyclotomic_iff] at hlroot
-  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
+  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.out
   replace hlroot : x ^ (2 * n) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
   obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot
   exact ⟨s, hs.symm⟩
@@ -338,9 +338,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
   let := IsCyclotomicExtension.isGalois {n} K L
   rw [norm_eq_prod_embeddings]
   conv_lhs =>
-    congr
-    rfl
-    ext
+    enter [2, _]
     rw [← neg_sub, map_neg, map_sub, map_one, neg_eq_neg_one_mul]
   rw [prod_mul_distrib, prod_const, Finset.card_univ, AlgHom.card,
     IsCyclotomicExtension.finrank L hirr, (totient_even h).neg_one_pow, one_mul]
@@ -392,7 +390,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by lia) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.out (by lia) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by
@@ -422,11 +420,11 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
   have := IsCyclotomicExtension.isGalois {p ^ (k + 1)} K L
   rw [norm_eq_norm_adjoin K]
   have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
-  swap; · exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
+  swap; · exact hpri.out.isPrimePow.pow (Nat.succ_ne_zero _)
   rw [add_sub_cancel_right] at H
   rw [H]
   congr
-  · rw [Nat.pow_minFac, hpri.1.minFac_eq]
+  · rw [Nat.pow_minFac, hpri.out.minFac_eq]
     exact Nat.succ_ne_zero _
   have := Module.finrank_mul_finrank K K⟮η⟯ L
   rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,

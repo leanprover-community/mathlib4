@@ -525,7 +525,7 @@ theorem iInter_eq_univ : ⋂ i, s i = univ ↔ ∀ i, s i = univ :=
 
 @[simp]
 theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp

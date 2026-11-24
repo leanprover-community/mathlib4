@@ -134,7 +134,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   inverse := pointedToPartialFun
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
-        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
+        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.property)
         left_inv := fun _ => Option.get_some _ _
         right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
       fun f =>
