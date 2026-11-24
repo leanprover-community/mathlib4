@@ -28,7 +28,7 @@ This file defines the space of complete types over a first-order theory.
 - `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized
   in some model.
 
-## Implementation Notes
+## Implementation notes
 
 - Complete types are implemented as maximal consistent theories in an expanded language.
   More frequently they are described as maximal consistent sets of formulas, but this is equivalent.

@@ -29,6 +29,7 @@ to derive functors "in one variable" but also to derive functors in several
 variables (e.g. the tensor product as a bifunctor).
 
 ## References
+
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 * [Joël Riou, *Formalization of derived categories in {Lean}/mathlib*][riou-2025]
 -/

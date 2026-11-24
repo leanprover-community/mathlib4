@@ -40,6 +40,7 @@ a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably
    discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

@@ -21,7 +21,7 @@ normalization tactic.
 Over ordered algebraic objects (such as `LinearOrderedCommRing`), taking linear combinations of
 inequalities is also supported.
 
-## Implementation Notes
+## Implementation notes
 
 This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum

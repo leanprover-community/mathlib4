@@ -24,7 +24,7 @@ In this file we define typeclasses for measures invariant under (scalar) multipl
 For basic facts about the first two typeclasses, see `Mathlib/MeasureTheory/Group/Action`.
 For facts about left/right-invariant measures, see `Mathlib/MeasureTheory/Group/Measure`.
 
-## Implementation Notes
+## Implementation notes
 
 The `smul`/`vadd` typeclasses and the left/right multiplication typeclasses
 were defined by different people with different tastes,

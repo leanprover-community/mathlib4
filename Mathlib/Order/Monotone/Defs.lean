@@ -294,21 +294,27 @@ namespace Subsingleton
 
 variable [Preorder α] [Preorder β]
 
+@[nontriviality]
 protected theorem monotone [Subsingleton α] (f : α → β) : Monotone f :=
   fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
+@[nontriviality]
 protected theorem antitone [Subsingleton α] (f : α → β) : Antitone f :=
   fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
+@[nontriviality]
 theorem monotone' [Subsingleton β] (f : α → β) : Monotone f :=
   fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
+@[nontriviality]
 theorem antitone' [Subsingleton β] (f : α → β) : Antitone f :=
   fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
+@[nontriviality]
 protected theorem strictMono [Subsingleton α] (f : α → β) : StrictMono f :=
   fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 
+@[nontriviality]
 protected theorem strictAnti [Subsingleton α] (f : α → β) : StrictAnti f :=
   fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Localization.Predicate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization functors are preserved through equivalences
 

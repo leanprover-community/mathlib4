@@ -18,6 +18,7 @@ canonical map that sends a one by one matrix `!![a]` to `a`.
 - `Matrix.uniqueAlgEquiv`
 
 ## Tags
+
 Matrix, Unique, AlgEquiv
 -/
 

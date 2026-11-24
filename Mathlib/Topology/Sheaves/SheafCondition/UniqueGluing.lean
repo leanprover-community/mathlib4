@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheaf condition in terms of unique gluings
 

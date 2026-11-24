@@ -18,6 +18,7 @@ import Mathlib.Algebra.Group.Submonoid.Finite
 This file provides some result on multiplicative and additive subgroups in the finite context.
 
 ## Tags
+
 subgroup, subgroups
 -/
 

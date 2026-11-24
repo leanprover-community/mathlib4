@@ -29,6 +29,7 @@ their intersection belongs to `l` as well.
   `CardinalInterFilter l c` → `CardinalInterFilter l a` for all `a < c`.
 
 ## Tags
+
 filter, cardinal
 -/
 

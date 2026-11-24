@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Int.GCD
 public import Mathlib.RingTheory.Coprime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
 

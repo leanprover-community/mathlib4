@@ -11,6 +11,9 @@ public import Mathlib.Probability.Notation
 
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Taylor expansion of the characteristic function
 

@@ -241,7 +241,7 @@ lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R A} 
 lemma H1Cotangent.equivOfFormallySmooth_apply {P₁ P₂ : Extension R A} (f : P₁.Hom P₂)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] (x) :
     H1Cotangent.equivOfFormallySmooth P₁ P₂ x = map f x := by
-  rw [← equivOfFormallySmooth_toLinearMap, LinearEquiv.coe_coe]
+  rw [← equivOfFormallySmooth_toLinearMap, LinearEquiv.coe_toLinearMap]
 
 lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R A)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :

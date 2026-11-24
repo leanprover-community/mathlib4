@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.Diam
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Girth of a simple graph
 
