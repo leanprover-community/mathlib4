@@ -204,12 +204,13 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     I₁.Cotangent →ₗ[R] I₂.Cotangent := by
   refine Submodule.mapQ ((I₁ • ⊤ : Submodule A I₁).restrictScalars R)
     ((I₂ • ⊤ : Submodule B I₂).restrictScalars R) ?_ ?_
-  · exact f.toLinearMap.restrict (p := I₁.restrictScalars R) (q := I₂.restrictScalars R) h
+  · exact f.toLinearMap.restrict  (p := I₁.restrictScalars R) (q := I₂.restrictScalars R)
+      (Set.mapsTo_iff_subset_preimage.mpr h)
   · intro x hx
     rw [Submodule.restrictScalars_mem, Submodule.mem_smul_top_iff,
       Ideal.smul_eq_mul, ← pow_two] at hx
     rw [Submodule.mem_comap, Submodule.restrictScalars_mem,
-      Submodule.mem_smul_top_iff, f.toLinearMap.coe_restrict_apply h,
+      Submodule.mem_smul_top_iff, f.toLinearMap.coe_restrict_apply,
       AlgHom.toLinearMap_apply, Ideal.smul_eq_mul, ← pow_two, ← Ideal.mem_comap]
     exact Ideal.le_comap_pow f 2 (Ideal.pow_right_mono h 2 hx)
 

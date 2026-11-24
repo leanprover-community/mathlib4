@@ -107,7 +107,6 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   have h₃ := f.ker.finrank_quotient_add_finrank
   lia
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 @[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P]
     (g : N →ₗ[k] P) (f : M →ₗ[k] N)
@@ -117,13 +116,15 @@ open Submodule in
   -- `0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0`
   have aux : f.range ≤ comap g (g ∘ₗ f).range := by rw [← map_le_iff_le_comap, range_comp]
   let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := inclusion <| ker_le_ker_comp f g
-  let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
+  let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| Set.mapsTo_iff_subset_preimage.mpr fun _ h ↦ h
   let f₂ : g.ker →ₗ[k] N ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
   let f₃ : (N ⧸ f.range) →ₗ[k] P ⧸ (g ∘ₗ f).range := f.range.mapQ (g ∘ₗ f).range g aux
   let f₄ : (P ⧸ (g ∘ₗ f).range) →ₗ[k] P ⧸ g.range := factor <| range_comp_le_range f g
   have h₀ : Injective f₀ := inclusion_injective _
   have h₁ : Exact f₀ f₁ := by rw [exact_iff]; simp [f₀, f₁, ker_restrict, range_inclusion]
-  have h₂ : Exact f₁ f₂ := by rw [exact_iff]; simp [f₁, f₂, ker_comp, map_comap_eq]
+  have h₂ : Exact f₁ f₂ := by
+   simp only [exact_iff, f₁, range_restrict]
+   simp [f₂, ker_comp, map_comap_eq]
   have h₃ : Exact f₂ f₃ := by rw [exact_iff]; simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
   have h₄ : Exact f₃ f₄ := by rw [exact_iff]; simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _

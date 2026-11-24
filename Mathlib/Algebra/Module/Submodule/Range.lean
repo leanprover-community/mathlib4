@@ -144,10 +144,10 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
   toFun n := LinearMap.range (f ^ n)
   monotone' := monotone_nat_of_le_succ fun | n, _, ⟨x, rfl⟩ => ⟨f x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
     iterateRange f (n + 1) = (iterateRange f n).map f := by
   simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
+  rfl
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
@@ -483,7 +483,7 @@ open Submodule
 variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
 
 @[simp]
-theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
+theorem range_restrict (h : Set.MapsTo f p q) :
     range (f.restrict h) = comap q.subtype (map f p) := by
   rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
 

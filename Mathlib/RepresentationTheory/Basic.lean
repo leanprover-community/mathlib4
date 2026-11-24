@@ -312,7 +312,7 @@ restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
 @[simps]
 def subrepresentation (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
     Representation k G W where
-  toFun g := (ρ g).restrict <| le_comap g
+  toFun g := (ρ g).restrict <| (Module.End.mem_invtSubmodule_iff_mapsTo (ρ g)).mp (le_comap g)
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 

@@ -205,30 +205,35 @@ theorem comp_codLift :
 end
 
 /-- Restrict domain and codomain of a linear map. -/
-def restrict (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
+def restrict (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂} (hf : MapsTo f p q) :
     p →ₛₗ[σ₁₂] q :=
   (f.domRestrict p).codRestrict q <| SetLike.forall.2 hf
 
 @[simp]
 theorem coe_restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+    (hf : MapsTo f p q) (x : p) : ↑(f.restrict hf x) = f x :=
   rfl
 
 @[deprecated coe_restrict_apply (since := "2026-05-13")]
 theorem restrict_coe_apply (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+    (hf : MapsTo f p q) (x : p) : ↑(f.restrict hf x) = f x :=
   rfl
 
 theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.val x.property⟩ :=
+    (hf : MapsTo f p q) (x : p) : f.restrict hf x = ⟨f x, hf x.property⟩ :=
   rfl
+
+lemma mapsTo_sub {R R₂ M M₂ : Type*}
+    [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
+    [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
+    (hf : MapsTo f p q) (hg : MapsTo g p q) : MapsTo (f - g) p q :=
+  fun _ hx ↦ q.sub_mem (hf hx) (hg hx)
 
 lemma restrict_sub {R R₂ M M₂ : Type*}
     [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (hg : ∀ x ∈ p, g x ∈ q)
-    (hfg : ∀ x ∈ p, (f - g) x ∈ q := fun _ hx ↦ q.sub_mem (hf _ hx) (hg _ hx)) :
-    f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
+    (hf : MapsTo f p q) (hg : MapsTo g p q) :
+    f.restrict hf - g.restrict hg = (f - g).restrict (mapsTo_sub hf hg) := by
   ext; simp
 
 lemma restrict_comp {p : Submodule R M} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
@@ -237,11 +242,16 @@ lemma restrict_comp {p : Submodule R M} {p₂ : Submodule R₂ M₂} {p₃ : Sub
     (g ∘ₛₗ f).restrict hfg = (g.restrict hg) ∘ₛₗ (f.restrict hf) :=
   rfl
 
+lemma mapsTo_smul_one
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
+    (μ : R) : MapsTo (μ • (1 : Module.End R M)) p p :=
+  fun _ ↦ p.smul_mem μ
+
 -- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
 lemma restrict_smul_one
     {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
-    (μ : R) (h : ∀ x ∈ p, (μ • (1 : Module.End R M)) x ∈ p := fun _ ↦ p.smul_mem μ) :
-    (μ • 1 : Module.End R M).restrict h = μ • (1 : Module.End R p) :=
+    (μ : R) :
+    (μ • 1 : Module.End R M).restrict (mapsTo_smul_one μ) = μ • (1 : Module.End R p) :=
   rfl
 
 lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
@@ -251,12 +261,13 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
   congr 1
 
 theorem subtype_comp_restrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
+    (hf : MapsTo f p q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
   rfl
 
 theorem restrict_eq_codRestrict_domRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
-    {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.val x.property :=
+    {q : Submodule R₂ M₂} (hf : MapsTo f p q) :
+    f.restrict hf = (f.domRestrict p).codRestrict q
+      fun x ↦ (domRestrict_apply f p x).symm ▸ hf x.property :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
@@ -296,9 +307,12 @@ theorem _root_.Module.End.pow_apply_mem_of_forall_mem {p : Submodule R M} (n : �
   | succ n ih =>
     simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using! ih _ (h _ hx)
 
-theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
-    (h' := Module.End.pow_apply_mem_of_forall_mem n h) :
-    (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
+theorem _root_.Module.End.mapsTo_pow {p : Submodule R M} (h : MapsTo f' p p) (n : ℕ) :
+    MapsTo (f' ^ n) p p :=
+  fun _ ↦ Module.End.pow_apply_mem_of_forall_mem n h _
+
+theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : MapsTo f' p p) :
+    (f'.restrict h) ^ n = (f' ^ n).restrict (Module.End.mapsTo_pow h n) := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
   simp [pow_apply_eq_iterate, this.iterate_right _ _]

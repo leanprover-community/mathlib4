@@ -58,9 +58,14 @@ theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubs
   rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
   exact AffineSubspace.direction_le hEF
 
+theorem AffineMap.restrict.mapsTo_linear {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
+    {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) :
+    Set.MapsTo φ.linear E.direction F.direction :=
+  Set.mapsTo_iff_subset_preimage.mpr (AffineMap.restrict.linear_aux hEF)
+
 theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
-    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=
+    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.mapsTo_linear hEF) :=
   rfl
 
 theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Injective φ)

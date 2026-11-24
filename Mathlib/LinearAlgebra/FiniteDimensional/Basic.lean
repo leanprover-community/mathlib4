@@ -315,7 +315,7 @@ theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
         this).injective⟩
 
 lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
-    {f : V →ₗ[K] V} (h : ∀ x ∈ p, f x ∈ p) :
+    {f : V →ₗ[K] V} (h : Set.MapsTo f p p) :
     Set.InjOn f p ↔ Set.SurjOn f p p := by
   rw [Set.injOn_iff_injective, ← Set.MapsTo.restrict_surjective_iff h]
   change Injective (f.domRestrict p) ↔ Surjective (f.restrict h)
@@ -366,7 +366,7 @@ theorem comp_eq_id_comm {f g : M →ₗ[R] M} : f ∘ₗ g = id ↔ g ∘ₗ f =
 end Semiring
 
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
-    (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
+    (h : Set.MapsTo f p p) (h' : Disjoint p (ker f)) :
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=

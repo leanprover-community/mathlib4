@@ -436,8 +436,9 @@ that preserves `N`, the diagonal of the matrix of the restriction `f` to `N` doe
 which of the two bases for `N` is used. -/
 @[simp]
 lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
-    (f : M →ₗ[R] M) (hf : ∀ x, f x ∈ N) (hf' : ∀ x ∈ N, f x ∈ N := fun x _ ↦ hf x) {i : Fin n} :
-    LinearMap.toMatrix snf.bN snf.bN (LinearMap.restrict f hf') i i =
+    (f : M →ₗ[R] M) (hf : ∀ x, f x ∈ N) {i : Fin n} :
+    LinearMap.toMatrix snf.bN snf.bN
+      (LinearMap.restrict f ((mapsTo_univ_iff.mpr hf).mono_left (subset_univ _))) i i =
     LinearMap.toMatrix snf.bM snf.bM f (snf.f i) (snf.f i) := by
   rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply,
     snf.repr_apply_embedding_eq_repr_smul ⟨_, (hf _)⟩]

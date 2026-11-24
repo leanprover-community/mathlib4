@@ -396,14 +396,9 @@ lemma isNilpotent_restrict_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
       (f.genEigenspace μ k) (f.genEigenspace μ k) :=
       mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
     IsNilpotent ((f - μ • 1).restrict h) := by
-  have : ∀ x ∈ (f.genEigenspace μ k), (f - μ • (1 : End R M)) x ∈ (f.genEigenspace μ k) := h
   use k
   ext ⟨x, hx⟩
-  rw [mem_genEigenspace_nat] at hx
-  rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero,
-    Module.End.pow_restrict k this, LinearMap.restrict_apply]
-  ext
-  simpa
+  simpa [Module.End.pow_restrict, mem_genEigenspace_nat] using hx
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (μ : R)
@@ -654,12 +649,10 @@ lemma disjoint_genEigenspace [IsDomain R] [IsTorsionFree R M]
   set p := f.genEigenspace μ₁ k ⊓ f.genEigenspace μ₂ l
   by_contra hp
   replace hp : Nontrivial p := Submodule.nontrivial_iff_ne_bot.mpr hp
-  let f₁ : End R p := (f - algebraMap R (End R M) μ₁).restrict <|
-    fun _ hp ↦ hp |> MapsTo.inter_inter
+  let f₁ : End R p := (f - algebraMap R (End R M) μ₁).restrict <| MapsTo.inter_inter
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₁ k)
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₂ l)
-  let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <|
-    fun _ hp ↦ hp |> MapsTo.inter_inter
+  let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <| MapsTo.inter_inter
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
@@ -759,8 +752,7 @@ theorem eigenvectors_linearIndependent [IsDomain R] [IsTorsionFree R M]
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
 of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
 theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (μ : R)
-    (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
-    genEigenspace (LinearMap.restrict f hfp) μ k =
+    (hfp : MapsTo f p p) : genEigenspace (LinearMap.restrict f hfp) μ k =
       Submodule.comap p.subtype (f.genEigenspace μ k) := by
   ext x
   suffices ∀ l : ℕ, genEigenspace (LinearMap.restrict f hfp) μ l =
@@ -769,7 +761,7 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
   rw [genEigenspace_nat, genEigenspace_nat, ← LinearMap.restrict_smul_one μ,
-    LinearMap.restrict_sub, End.pow_restrict _,
+    LinearMap.restrict_sub hfp, End.pow_restrict _,
     ← LinearMap.ker_comp_of_ker_eq_bot _ (Submodule.ker_subtype p),
     LinearMap.subtype_comp_restrict, LinearMap.domRestrict, ← LinearMap.ker_comp]
 
@@ -780,23 +772,23 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
   rw [f.genEigenspace_restrict _ _ _ hf, Submodule.map_comap_eq, Submodule.range_subtype]
 
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
-    {p : Submodule R M} (f g : End R M) (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule)
+    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p)
     {μ₁ μ₂ : R} (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
     MapsTo (f.restrict hf)
       (maxGenEigenspace (g.restrict hg) μ₁)
       (maxGenEigenspace (g.restrict hg) μ₂) := by
   intro x hx
-  simp_rw [SetLike.mem_coe, mem_maxGenEigenspace, ← LinearMap.restrict_smul_one _,
-    LinearMap.restrict_sub hg, Module.End.pow_restrict _, LinearMap.restrict_apply,
+  simp_rw [SetLike.mem_coe, mem_maxGenEigenspace, ← LinearMap.restrict_smul_one,
+    LinearMap.restrict_sub, Module.End.pow_restrict _, LinearMap.restrict_apply,
     Submodule.mk_eq_zero, ← mem_maxGenEigenspace] at hx ⊢
   exact h hx
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
-theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
+theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : MapsTo f p p)
     (μ : R) : (eigenspace (f.restrict hfp) μ).map p.subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
-  simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
+  simp only [SetLike.mem_coe, mem_eigenspace_iff] at hx ⊢
   congrm $(hx).val
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
@@ -820,7 +812,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
 
 /-- If an invariant subspace `p` of an endomorphism `f` is disjoint from the `μ`-eigenspace of `f`,
 then the restriction of `f` to `p` has trivial `μ`-eigenspace. -/
-theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
+theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : MapsTo f p p)
     {μ : R} (hμp : Disjoint (f.eigenspace μ) p) : eigenspace (f.restrict hfp) μ = ⊥ := by
   rw [eq_bot_iff]
   intro x hx

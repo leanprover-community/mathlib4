@@ -136,16 +136,17 @@ defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.de
 noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
     (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
-    (LinearEquiv.ofBijective ((DistribSMul.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
+    (LinearEquiv.ofBijective ((DistribSMul.toLinearMap R P I.den).restrict ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
       (FaithfulSMul.algebraMap_injective R P) (num I)).symm
-  · rw [← den_mul_self_eq_num]
+  · refine Set.mapsTo_iff_subset_preimage.mpr fun _ hx ↦ ?_
+    rw [← den_mul_self_eq_num, ]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
-  · simpa [LinearMap.restrict_apply, reg.eq_iff] using hxy
+  · simpa [reg.eq_iff,  LinearMap.restrict_apply] using hxy
   · rw [← den_mul_self_eq_num] at hy
     obtain ⟨x, hx, hxy⟩ := hy
-    exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+    exact ⟨⟨x, hx⟩, by simp [← hxy]; rfl⟩
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
 defined by mapping `x` to `I.den • x`. -/
