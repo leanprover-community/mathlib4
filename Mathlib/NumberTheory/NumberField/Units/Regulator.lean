@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 
 /-!

@@ -342,15 +342,7 @@ theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
   rw [fundamentalDomain, parallelepiped_basis_eq, Set.ofPred_subset_ofPred]
   exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
 
-instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
-  have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
-    intro _ hx
-    rw [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
-    assumption
-  convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
-  · exact discreteTopology_pi_basisFun
-  · refine Subtype.map_injective _ (Basis.equivFun b).injective
-
+@[deprecated "no replacement" (since := "2026-11-23")]
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
@@ -523,7 +515,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   .of_fg (ZLattice.FG K L)
 
-@[deprecated Submodule.finite_of_discreteTopology_int +typeChanged (since := "2026-11-23")]
+@[deprecated Submodule.IsLattice.finite_int +typeChanged (since := "2026-11-23")]
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Finite ℤ L := by
@@ -552,7 +544,7 @@ theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : HasUniqueDiv E := .of_module_rat _
   infer_instance
 
-@[deprecated Submodule.free_of_discreteTopology_int +typeChanged (since := "2026-11-23")]
+@[deprecated Submodule.IsLattice.free_int +typeChanged (since := "2026-11-23")]
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
@@ -694,7 +686,7 @@ theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
   convert! ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
   all_goals exact (b.ofZLatticeBasis_span ℝ).symm
 
-@[deprecated Submodule.countable_of_discreteTopology_int +typeChanged (since := "2026-11-23")]
+@[deprecated Submodule.IsLattice.countable_int +typeChanged (since := "2026-11-23")]
 instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] :
     Countable L := by
