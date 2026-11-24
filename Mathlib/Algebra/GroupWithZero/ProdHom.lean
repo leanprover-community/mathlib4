@@ -11,6 +11,9 @@ public import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms for products of groups with zero
 
@@ -22,7 +25,6 @@ group with zero itself with natural inclusions.
 
 TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproducts`,
 as well as a terminal object.
-
 -/
 
 @[expose] public section

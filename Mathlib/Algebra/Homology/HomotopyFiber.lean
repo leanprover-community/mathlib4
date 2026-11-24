@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy fiber of a morphism of homological complexes
 
@@ -15,7 +18,6 @@ In this file, we construct the homotopy fiber of a morphism `φ : F ⟶ G`
 between homological complexes. Moreover, we dualise the definition
 of the cylinder (which is a particular case of a homotopy cofiber)
 in order to define the path object of a homological complex.
-
 -/
 
 @[expose] public section

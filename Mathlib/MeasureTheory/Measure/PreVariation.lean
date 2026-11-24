@@ -23,8 +23,7 @@ measure.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
-
+* [Walter Rudin, Real and Complex Analysis.][rudin1987]
 -/
 
 @[expose] public section
@@ -134,8 +133,8 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
     use P
     calc preVariationFun f s
       _ = a + ε' := (tsub_add_cancel_of_le hε').symm
-      _ ≤ ∑ p ∈ P.parts, f p + ε' := by
-        exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP)
+      _ ≤ ∑ p ∈ P.parts, f p + ε' :=
+        (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP)
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
@@ -218,7 +217,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
           apply Finset.sum_le_sum fun q hq => ?_
           have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
             rw [← Set.inter_iUnion]; exact (Set.inter_eq_left.mpr (Q.le hq)).symm
-          let t (i : ℕ) : Subtype MeasurableSet := ⟨q.val ∩ s i, q.2.inter (hs i)⟩
+          let t (i : ℕ) : Subtype MeasurableSet := ⟨q.val ∩ s i, q.property.inter (hs i)⟩
           have ht_disj : Pairwise (Disjoint on (Subtype.val ∘ t)) :=
             fun i j hij => (hs' hij).mono Set.inter_subset_right Set.inter_subset_right
           calc f q

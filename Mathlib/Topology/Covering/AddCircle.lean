@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Instances.AddCircle.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering maps involving `AddCircle`
-
 -/
 
 public section

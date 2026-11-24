@@ -23,7 +23,6 @@ We provide various results concerning the minimal primes above an ideal.
 
 Further results that need the theory of localizations can be found in
 `Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`.
-
 -/
 
 @[expose] public section

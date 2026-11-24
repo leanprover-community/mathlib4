@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degenerate simplices
 
@@ -18,7 +21,6 @@ Any simplex `x : X _⦋n⦌` can be written in a unique way as `X.map f.op y`
 for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y`
 (see lemmas `exists_nonDegenerate`, `unique_nonDegenerate_dim`,
 `unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
-
 -/
 
 @[expose] public section

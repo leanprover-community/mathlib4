@@ -61,7 +61,6 @@ map `M ≃ p × q`.
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
-
 -/
 
 @[expose] public section
@@ -191,7 +190,7 @@ alias ⟨_, projectionOntoL_apply_eq_zero_of_mem_right⟩ :=
 
 theorem projectionOntoL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionOntoL q h x = 0 :=
-  projectionOntoL_apply_eq_zero_of_mem_right h x.2
+  projectionOntoL_apply_eq_zero_of_mem_right h x.property
 
 theorem ker_projectionOntoL (h : IsTopCompl p q) :
     (p.projectionOntoL q h).ker = q := by
@@ -199,7 +198,7 @@ theorem ker_projectionOntoL (h : IsTopCompl p q) :
 
 theorem isQuotientMap_projectionOnto (h : IsTopCompl p q) :
     IsQuotientMap (p.projectionOnto q h.isCompl) :=
-  .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
+  .of_inverse continuous_subtypeVal (p.projectionOntoL q h).continuous
     (projectionOntoL_apply_left h)
 
 theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
@@ -259,7 +258,7 @@ alias ⟨_, projectionL_apply_eq_zero_of_mem_right⟩ :=
 
 theorem projectionL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionL q h x = 0 :=
-  projectionL_apply_eq_zero_of_mem_right h x.2
+  projectionL_apply_eq_zero_of_mem_right h x.property
 
 theorem ker_projectionL (h : IsTopCompl p q) :
     (p.projectionL q h).ker = q := by
@@ -416,12 +415,12 @@ theorem IsCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl (h : IsCompl p
     IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
   ⟨fun hTop ↦ ((p.projectionOntoL q hTop).prod (q.projectionOntoL p hTop.symm)).continuous.congr
     fun x ↦ (prodEquivOfIsCompl_symm_apply h x).symm,
-  fun hCont ↦ ⟨h, continuous_subtype_val.comp <| continuous_fst.comp hCont⟩⟩
+  fun hCont ↦ ⟨h, continuous_subtypeVal.comp <| continuous_fst.comp hCont⟩⟩
 
 /-- The linear equivalence `Submodule.prodEquivOfIsCompl` from a pair of complementary submodules is
 always continuous. -/
 theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEquivOfIsCompl q h) :=
-  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+  (continuous_subtypeVal.comp continuous_fst).add (continuous_subtypeVal.comp continuous_snd)
 
 /-- Two complementary submodules are topological complements if and only if the linear equivalence
 `Submodule.prodEquivOfIsCompl` is a homeomorphism. -/

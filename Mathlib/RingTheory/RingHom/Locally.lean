@@ -6,7 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.Away.Lemmas
+
+import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
 # Target local closure of ring homomorphism properties
@@ -38,7 +39,6 @@ composition, base change, etc., so is `Locally P`.
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
-
 -/
 
 @[expose] public section
@@ -326,7 +326,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
       Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
   · rw [algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_comp_map]
-    exact hPl ((algebraMap _ (Localization.Away a.val)).comp f) r R' (Sₐ a) (hs _ a.2)
+    exact hPl ((algebraMap _ (Localization.Away a.val)).comp f) r R' (Sₐ a) (hs _ a.property)
 
 /-- If `P` is preserved by localizations, then so is `Locally P`. -/
 lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :

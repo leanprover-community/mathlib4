@@ -24,7 +24,6 @@ map induced on morphisms by a functor `F`.
 
 See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a functor is an
 equivalence if and only if it is fully faithful and essentially surjective.
-
 -/
 
 @[expose] public section

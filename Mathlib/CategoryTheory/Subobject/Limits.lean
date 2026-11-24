@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific subobjects
 
@@ -15,7 +18,6 @@ represented by the equalizer, kernel and image of (a pair of) morphism(s) and pr
 for `P.factors f`, where `P` is one of these special subobjects.
 
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
-
 -/
 
 @[expose] public section
@@ -200,12 +202,12 @@ theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f''
 
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
+    kernel.map f f' sq.left sq.right sq.w.symm ≫ (kernelSubobjectIso _).inv =
       (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.1 sq.2 sq.3.symm =
+    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.left sq.right sq.w.symm =
       kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom := by
   simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
 

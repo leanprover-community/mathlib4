@@ -61,7 +61,7 @@ theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹'
 theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f := by
   rw [pi_def, biInter_eq_iInter]
   refine mem_iInf_of_iInter hI (fun i => ?_) Subset.rfl
-  exact preimage_mem_comap (h i i.2)
+  exact preimage_mem_comap (h i i.property)
 
 theorem mem_pi {s : Set (∀ i, α i)} :
     s ∈ pi f ↔ ∃ I : Set ι, I.Finite ∧ ∃ t : ∀ i, Set (α i), (∀ i, t i ∈ f i) ∧ I.pi t ⊆ s := by

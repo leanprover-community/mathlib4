@@ -6,9 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Logic.Encodable.Basic
+
+import Mathlib.Data.List.MinMax
 
 /-!
 # Denumerable types
@@ -209,7 +210,7 @@ def succ (x : s) : s :=
 theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
-  have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
+  have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.property)
   show (y : ℕ) + Nat.find hx + 1 ≤ x by lia
 
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=

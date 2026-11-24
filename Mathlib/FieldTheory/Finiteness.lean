@@ -8,9 +8,11 @@ module
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A module over a division ring is Noetherian if and only if it is finite.
-
 -/
 
 @[expose] public section

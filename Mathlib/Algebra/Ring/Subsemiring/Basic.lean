@@ -759,7 +759,7 @@ theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} 
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=
-  (f.domRestrict s').codRestrict s fun x => h x x.2
+  (f.domRestrict s').codRestrict s fun x => h x x.property
 
 @[simp]
 theorem coe_restrict_apply (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) (x : s') :
@@ -835,7 +835,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subsemirings. -/
 def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 theorem inclusion_injective {S T : Subsemiring R} (h : S ≤ T) :
     Function.Injective (inclusion h) := Set.inclusion_injective h

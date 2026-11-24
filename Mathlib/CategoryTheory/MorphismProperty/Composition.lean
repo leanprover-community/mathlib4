@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibilities of properties of morphisms with respect to composition
 
 Given `P : MorphismProperty C`, we define the predicate `P.IsStableUnderComposition`
 which means that `P f → P g → P (f ≫ g)`. We also introduce the type classes
 `W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
-
 -/
 
 @[expose] public section

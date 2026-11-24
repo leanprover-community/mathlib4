@@ -71,7 +71,7 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 *
   obtain ⟨x, hx⟩ := Fintype.exists_ne_of_one_lt_card ((Fact.out : p.Prime).one_lt.trans_le <|
     Nat.le_of_dvd hN₀ hpN) zero_sol
   -- This common root gives us the required subsequence, namely the `i ∈ s` such that `x i ≠ 0`.
-  refine ⟨({a | x.1 a ≠ 0} : Finset _).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
+  refine ⟨({a | x.val a ≠ 0} : Finset _).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
   · simp +contextual [subset_iff]
   -- From `f₁ x = 0`, we get that `p` divides the number of `a` such that `x a ≠ 0`.
   · rw [card_map]
@@ -81,12 +81,12 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 *
     · rw [← Subtype.coe_ne_coe, Function.ne_iff] at hx
       exact hx.imp (fun a ha ↦ mem_filter.2 ⟨Finset.mem_attach _ _, ha⟩)
     · rw [← CharP.cast_eq_zero_iff (ZMod p), ← Finset.sum_boole]
-      simpa only [f₁, map_sum, ZMod.pow_card_sub_one, map_pow, eval_X] using x.2.1
+      simpa only [f₁, map_sum, ZMod.pow_card_sub_one, map_pow, eval_X] using x.property.1
     -- And it is at most `2 * p - 1`, so it must be `p`.
     · rw [univ_eq_attach, card_attach, hs]
       exact tsub_lt_self (mul_pos zero_lt_two (Fact.out : p.Prime).pos) zero_lt_one
   -- From `f₂ x = 0`, we get that `p` divides the sum of the `a ∈ s` such that `x a ≠ 0`.
-  · simpa [f₂, ZMod.pow_card_sub_one, Finset.sum_filter] using x.2.2
+  · simpa [f₂, ZMod.pow_card_sub_one, Finset.sum_filter] using x.property.2
 
 /-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ`.
 
@@ -190,7 +190,7 @@ sum is divisible by `n`. -/
 theorem Int.erdos_ginzburg_ziv_multiset (s : Multiset ℤ) (hs : 2 * n - 1 ≤ Multiset.card s) :
     ∃ t ≤ s, Multiset.card t = n ∧ ↑n ∣ t.sum := by
   obtain ⟨t, hts, ht⟩ := Int.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
-  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
+  exact ⟨t.val.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
 /-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ/nℤ` for multiset.
 
@@ -199,6 +199,6 @@ sum is divisible by `n`. -/
 theorem ZMod.erdos_ginzburg_ziv_multiset (s : Multiset (ZMod n))
     (hs : 2 * n - 1 ≤ Multiset.card s) : ∃ t ≤ s, Multiset.card t = n ∧ t.sum = 0 := by
   obtain ⟨t, hts, ht⟩ := ZMod.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
-  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
+  exact ⟨t.val.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
 end composite

@@ -20,7 +20,6 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedAdd R`: a class guaranteeing boundedness of addition.
 * `BoundedSub R`: a class guaranteeing boundedness of subtraction.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
-
 -/
 
 public section
@@ -106,7 +105,7 @@ lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set
   | zero =>
     by_cases s_empty : s = ∅
     · simp [s_empty]
-    simp_rw [← nonempty_iff_ne_empty] at s_empty
+    simp_rw [ne_empty_iff_nonempty] at s_empty
     simp [s_empty]
   | succ n hn =>
     have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by

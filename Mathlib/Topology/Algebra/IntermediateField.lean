@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.Topology.Algebra.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous actions related to intermediate fields
 

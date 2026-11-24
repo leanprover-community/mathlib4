@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining elements to form subalgebras
 
@@ -24,7 +27,6 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Tags
 
 adjoin, algebra, finitely-generated algebra
-
 -/
 
 @[expose] public section
@@ -69,8 +71,8 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     rw [this, Finsupp.sum]
     refine sum_mem ?_
     intro z hz
-    change (l z).1 * _ ∈ _
-    have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
+    change (l z).val * _ ∈ _
+    have : (l z).val ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).property
     rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_linearCombination R] at this
     rcases this with ⟨l2, hlp, hl⟩
     have := @Finsupp.linearCombination_apply A A R

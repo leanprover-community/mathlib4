@@ -199,7 +199,7 @@ theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ
 
 theorem comap_le_comap_iff {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) {p p'} :
     comap f p ≤ comap f p' ↔ p ≤ p' :=
-  ⟨fun H ↦ by rwa [IsConcreteLE.le_iff, (range_eq_top.1 hf).forall], comap_mono⟩
+  ⟨fun H ↦ by rwa [le_iff_mem_imp_mem, (range_eq_top.1 hf).forall], comap_mono⟩
 
 theorem comap_injective {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
@@ -248,7 +248,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     rw [← SetLike.mem_coe, coe_range]
     exact ⟨⟨0, map_zero f⟩, h⟩
   · rintro ⟨y, h₁, h₂⟩
-    rw [IsConcreteLE.le_iff]
+    rw [le_iff_mem_imp_mem]
     intro z hz
     simp only [mem_ker] at hz
     rw [← SetLike.mem_coe, coe_range, Set.mem_range] at h₁
@@ -486,6 +486,16 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Subm
 theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
     range (f.restrict h) = comap q.subtype (map f p) := by
   rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+variable (q) in
+@[simp]
+theorem range_submoduleComap : range (submoduleComap f q) = (range f).submoduleOf q := by
+  simp [submoduleComap, Submodule.map_comap_eq, Submodule.submoduleOf]
+
+variable (p) in
+@[simp]
+theorem range_submoduleMap : range (submoduleMap f p) = ⊤ := by
+  simp [submoduleMap]
 
 end restrict
 

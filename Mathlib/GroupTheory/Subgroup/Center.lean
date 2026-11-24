@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.Submonoid.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of subgroups
-
 -/
 
 @[expose] public section
@@ -40,7 +42,7 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
 instance center.isMulCommutative : IsMulCommutative (center G) :=
-  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+  ⟨⟨fun a b => Subtype.ext (b.property.comm a).symm⟩⟩
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/

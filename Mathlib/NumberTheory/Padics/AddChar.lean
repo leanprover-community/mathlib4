@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Padics.MahlerBasis
 
 import Mathlib.Topology.Algebra.Monoid.AddChar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive characters of `ℤ_[p]`
 

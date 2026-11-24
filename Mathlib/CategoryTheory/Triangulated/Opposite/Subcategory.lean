@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a triangulated subcategory
 
 In this file, we show that if `P : ObjectProperty C` is a triangulated
 subcategory of a pretriangulated category `C`, then `P.op` is a
 triangulated subcategory of `Cᵒᵖ`.
-
 -/
 
 public section

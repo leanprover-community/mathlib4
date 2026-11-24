@@ -23,7 +23,6 @@ public import Mathlib.Order.Interval.Set.Defs
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ def range (n : ℕ) : Finset ℕ :=
   ⟨_, nodup_range n⟩
 
 @[simp]
-theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
+theorem range_val (n : ℕ) : (range n).val = Multiset.range n :=
   rfl
 
 @[simp] lemma _root_.Multiset.toFinset_range (n : ℕ) : (Multiset.range n).toFinset = .range n :=
@@ -131,7 +130,7 @@ open Finset
 
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
 def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
-  toFun i := i.1 - k
+  toFun i := i.val - k
   invFun j := ⟨j + k, by simp⟩
   left_inv := by grind
   right_inv := by grind

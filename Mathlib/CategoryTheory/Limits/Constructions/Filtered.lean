@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqu
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing colimits from finite colimits and filtered colimits
 
@@ -45,7 +48,7 @@ variable [HasFiniteCoproducts C]
 def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
   map {_ Y} h := Sigma.desc fun y =>
-    Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
+    Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.property⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -110,7 +113,7 @@ def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset 
     convert!
       IsColimit.comp_coconePointUniqueUpToIso_hom
         (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
-    · simp [← colimit.w (liftToFinsetObj _) (homOfLE (x := {j.1}) (y := S) (by simp))]
+    · simp [← colimit.w (liftToFinsetObj _) (homOfLE (x := {j.val}) (y := S) (by simp))]
     · simp))
 
 end CoproductsFromFiniteFiltered
@@ -118,7 +121,7 @@ end CoproductsFromFiniteFiltered
 open CoproductsFromFiniteFiltered
 
 theorem hasCoproducts_of_finite_and_filtered [HasFiniteCoproducts C]
-    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α => by
+    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := .mk fun α => by
   exact ⟨fun F => HasColimit.mk (liftToFinsetColimitCocone F)⟩
 
 theorem has_colimits_of_finite_and_filtered [HasFiniteColimits C]
@@ -189,7 +192,7 @@ variable [HasFiniteProducts C]
 def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
   obj s := ∏ᶜ (fun x : s.unop => F.obj x)
   map {Y _} h := Pi.lift fun y =>
-    Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.2⟩
+    Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.property⟩
 
 
 set_option backward.defeqAttrib.useBackward true in
@@ -244,7 +247,7 @@ def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discr
       limit.conePointUniqueUpToIso_hom_comp, liftToFinsetLimitCone_cone_pt, Discrete.mk_as,
       liftToFinsetLimitCone_cone_π_app]
     simp [← limit.w (liftToFinsetObj _)
-      (Quiver.Hom.op (homOfLE (x := {j.1}) (y := S.unop) (by simp)))]))
+      (Quiver.Hom.op (homOfLE (x := {j.val}) (y := S.unop) (by simp)))]))
 
 variable (C) (α)
 

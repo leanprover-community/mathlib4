@@ -8,9 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite colimits of finite simplicial sets are finite
-
 -/
 
 public section
