@@ -162,7 +162,7 @@ theorem mem_ae_dirac_iff₀ {a : α} (hs : NullMeasurableSet s (dirac a)) :
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s :=
   mem_ae_dirac_iff₀ hs.nullMeasurableSet
 
-@[simp] theorem ae_dirac_iff₀ {a : α} {p : α → Prop}
+theorem ae_dirac_iff₀ {a : α} {p : α → Prop}
     (hp : NullMeasurableSet { x | p x } (dirac a)) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff₀ hp
@@ -171,14 +171,13 @@ theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) �
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff hp
 
-@[simp]
 theorem ae_dirac_eq₀ (ha : MeasurableSet {a}) : ae (dirac a) = pure a := by
   rw [Filter.NeBot.eq_pure_iff (by simp)]
   simp [mem_ae_dirac_iff ha]
 
 @[simp]
-theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : ae (dirac a) = pure a := by
-  simp
+theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : ae (dirac a) = pure a :=
+  ae_dirac_eq₀ (measurableSet_singleton a)
 
 theorem ae_eq_dirac₀ {f : α → β} (hf : AEMeasurable f (dirac a)) (hfa : MeasurableSet {f a}) :
     f =ᵐ[dirac a] const α (f a) :=
