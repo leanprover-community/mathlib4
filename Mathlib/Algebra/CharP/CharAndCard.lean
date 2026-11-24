@@ -79,11 +79,14 @@ theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] {p : �
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))
 
+/-- The characteristic of a finite commutative domain `R` of cardinality `p` is `p`. -/
 lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] {p : ℕ} [hp : Fact p.Prime]
     (hR : Fintype.card R = p) : CharP R p :=
   have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.out.one_lt)
   (CharP.charP_iff_prime_eq_zero hp.out).2 (hR ▸ Nat.cast_card_eq_zero R)
 
+/-- The characteristic of a finite commutative domain `R` whose cardinality is `p`-power order
+is `p`. -/
 lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype R] {p f : ℕ}
     [hp : Fact p.Prime] (hR : Fintype.card R = p ^ f) : CharP R p :=
   have hf : f ≠ 0 := fun h0 ↦ not_subsingleton R <|
@@ -91,6 +94,8 @@ lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype 
   (CharP.charP_iff_prime_eq_zero hp.out).mpr
     (by simpa [hf, hR] using Nat.cast_card_eq_zero R)
 
+/-- The characteristic of a finite commutative domain `R` whose cardinality is divisible by `p`
+is `p`. -/
 lemma charP_of_card_div_by_prime {R : Type*} [CommRing R] [IsDomain R] [Fintype R]
 {p : ℕ} [Fact (Nat.Prime p)] (hp : p ∣ Fintype.card R) :
   CharP R p := by
