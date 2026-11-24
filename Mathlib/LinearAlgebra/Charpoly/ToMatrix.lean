@@ -79,6 +79,8 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   ext i j : 1
   simp [LinearMap.toMatrix]
 
+/-- The characteristic polynomial of an endomorphism preserving a pair of complementary submodules
+is the product of the characteristic polynomials of its restrictions. -/
 lemma LinearMap.charpoly_eq_charpoly_restrict_mul_of_isCompl
     {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
