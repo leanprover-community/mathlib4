@@ -71,7 +71,6 @@ universe u
 variable {L : Type u} [CommRing L] [IsDomain L]
 
 /-
-
 ## The mod n theory
 -/
 

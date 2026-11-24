@@ -30,7 +30,6 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.galActionHom_bijective_of_prime_degree`:
   An irreducible polynomial of prime degree with two non-real roots has full Galois group.
 
-## Other results
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
   equals the number of real roots plus the number of roots not fixed by complex conjugation
   (i.e. with some imaginary component).
