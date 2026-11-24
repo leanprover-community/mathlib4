@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
@@ -230,10 +231,11 @@ theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
 
-theorem IsClique.image {G' : SimpleGraph β} (f : G →g G') (h : G.IsClique s) :
+protected theorem IsClique.image {G' : SimpleGraph β} {F : Type*} [FunLike F α β]
+    [HomClass F G G'] (f : F) (h : G.IsClique s) :
     G'.IsClique (f '' s) := by
   rintro _ ⟨u, hu, rfl⟩ _ ⟨v, hv, rfl⟩ hne
-  exact f.map_adj <| h hu hv (mt (congrArg f) hne)
+  exact map_rel f <| h hu hv (mt (congrArg f) hne)
 
 theorem Embedding.isClique_image {G' : SimpleGraph β} {f : G ↪g G'} :
     G'.IsClique (f '' s) ↔ G.IsClique s :=
@@ -677,8 +679,8 @@ theorem Embedding.cliqueFreeOn_image {G' : SimpleGraph β} {f : G ↪g G'} {s : 
   have hf : s.BijOn f (f '' s) := f.injective.bijOn_image
   simp_rw [← cliqueFree_induce_iff, (f.induceIso hf).cliqueFree_iff]
 
-theorem Hom.cliqueFreeOn_image {G' : SimpleGraph β} {f : G →g G'} {s : Set α}
-    (hfs : s.InjOn f) {n : ℕ} (hG' : G'.CliqueFreeOn (f '' s) n) :
+theorem CliqueFreeOn.of_image {G' : SimpleGraph β} (F) [FunLike F α β] [HomClass F G G']
+    {f : F} {s : Set α} (hfs : s.InjOn f) {n : ℕ} (hG' : G'.CliqueFreeOn (f '' s) n) :
      G.CliqueFreeOn s n := by
   classical
   unfold CliqueFreeOn at hG' ⊢
@@ -765,7 +767,7 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
   · simpa using cliqueSet_map hn G e.toEmbedding
 
 theorem Iso.image_map_cliqueSet {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ) :
-    (.map f) '' G.cliqueSet n = G'.cliqueSet n := by
+    .map f '' G.cliqueSet n = G'.cliqueSet n := by
   refine Set.ext fun s ↦ ⟨?_, fun h ↦ ⟨s.map f.symm, ?_, by simp [Finset.map_map]⟩⟩
   · rintro ⟨s, h, rfl⟩
     exact ⟨by simpa using h.isClique.image f.toHom, by simpa using h.card_eq⟩
@@ -905,11 +907,11 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
-theorem Iso.cliqueNum_eq {G' : SimpleGraph β} (f : G ≃g G') :
+theorem cliqueNum_congr {G' : SimpleGraph β} (e : G ≃g G') :
     G.cliqueNum = G'.cliqueNum := by
   refine congr(sSup $(Set.ext fun _ ↦ ⟨?_, ?_⟩))
-  · exact fun ⟨_, h⟩ ↦ ⟨_, f.toEmbedding.isNClique_map.mpr h⟩
-  · exact fun ⟨_, h⟩ ↦ ⟨_, f.symm.toEmbedding.isNClique_map.mpr h⟩
+  · exact fun ⟨_, h⟩ ↦ ⟨_, e.toEmbedding.isNClique_map.mpr h⟩
+  · exact fun ⟨_, h⟩ ↦ ⟨_, e.symm.toEmbedding.isNClique_map.mpr h⟩
 
 end CliqueNumber
 
