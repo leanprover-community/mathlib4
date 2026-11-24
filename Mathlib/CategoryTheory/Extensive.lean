@@ -426,7 +426,8 @@ end Functor
 
 section FiniteCoproducts
 
-private theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin [FinitaryPreExtensive C] {n : ℕ}
+private theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin
+    [FinitaryPreExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
@@ -442,9 +443,10 @@ private theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin [FinitaryP
     dsimp
     infer_instance
 
-@[deprecated (since := "2026-10-27")]
-alias FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin :=
-  FinitaryPreExtensive.isUniversal_finiteCoproducts_fin
+@[deprecated "FinitaryPreExtensive.isUniversal_finiteCoproducts_fin" (since := "2026-11-24")]
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtensive C] {n : ℕ}
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c :=
+  FinitaryPreExtensive.isUniversal_finiteCoproducts_fin hc
 
 theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
@@ -473,9 +475,10 @@ private theorem FinitaryExtensive.isVanKampen_finiteCoproducts_fin [FinitaryExte
     · dsimp
       infer_instance
 
-@[deprecated (since := "2026-10-27")]
-alias FinitaryExtensive.isVanKampen_finiteCoproducts_Fin :=
-  FinitaryExtensive.isVanKampen_finiteCoproducts_fin
+@[deprecated "FinitaryExtensive.isVanKampen_finiteCoproducts_fin" (since := "2026-10-27")]
+theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c :=
+  FinitaryExtensive.isVanKampen_finiteCoproducts_fin hc
 
 theorem FinitaryExtensive.isVanKampen_finiteCoproducts [FinitaryExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
