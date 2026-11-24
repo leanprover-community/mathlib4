@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 import Mathlib.Analysis.RCLike.BoundedContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality of finite measures
 
@@ -41,7 +44,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
   --consider the real subalgebra of the purely real-valued elements of A
   let A_toReal := (A.restrictScalars ℝ).comap
-    (ofRealAm.compLeftContinuousBounded ℝ lipschitzWith_ofReal)
+    (ofRealAm.compLeftContinuousBounded ℝ lipschitzWith_one_ofReal)
   --the real subalgebra separates points
   have hA_toReal : (A_toReal.map (toContinuousMapₐ ℝ)).SeparatesPoints := by
     rw [RCLike.restrict_toContinuousMap_eq_toContinuousMapStar_restrict]

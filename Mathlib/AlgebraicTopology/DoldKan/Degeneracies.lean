@@ -8,8 +8,10 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.Linarith
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Behaviour of `P_infty` with respect to degeneracies
 
 For any `X : SimplicialObject C` where `C` is an abelian category,
@@ -24,7 +26,6 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section
@@ -97,7 +98,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         dsimp only [AlternatingFaceMapComplex.obj_X, Nat.succ_eq_add_one, HomologicalComplex.comp_f,
           HomologicalComplex.add_f_apply, HomologicalComplex.id_f]
         rw [← assoc, v.comp_P_eq_self, Preadditive.comp_add,
-          comp_id, v.comp_Hσ_eq hi, assoc, ← Fin.succ_mk _ _ i.2,
+          comp_id, v.comp_Hσ_eq hi, assoc, ← Fin.succ_mk _ _ i.isLt,
           SimplicialObject.δ_comp_σ_succ_assoc,
           Fin.eta, decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero,
           add_neg_eq_zero]

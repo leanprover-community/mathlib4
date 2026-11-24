@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.CompMap
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product and composition of kernels
 
@@ -28,7 +31,6 @@ a kernel from `α` to `β × γ`.
 ## Notation
 
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
-
 -/
 
 @[expose] public section

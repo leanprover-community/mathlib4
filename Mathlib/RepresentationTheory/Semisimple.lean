@@ -12,11 +12,13 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semisimple representations
 
 This file defines the typeclass `IsSemisimpleRepresentation` for semisimple monoid representations.
-
 -/
 
 namespace Representation

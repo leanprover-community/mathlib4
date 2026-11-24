@@ -41,7 +41,6 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 ## Main theorems
 
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
-
 -/
 
 @[expose] public section
@@ -142,6 +141,7 @@ lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →�
 lemma cfcₙHom_injective : Function.Injective (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
+@[simp]
 lemma cfcₙHom_id : cfcₙHom ha (.id (σₙ R a)) = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1
 
@@ -209,10 +209,21 @@ junk value `0`.
 This is the primary declaration intended for widespread use of the continuous functional calculus
 for non-unital algebras, and all the API applies to this declaration. For more information, see the
 module documentation for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
-noncomputable irreducible_def cfcₙ (f : R → R) (a : A) : A :=
+@[no_expose]
+noncomputable def cfcₙ (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
     then cfcₙHom h.1 ⟨⟨_, h.2.1.domRestrict⟩, h.2.2⟩
     else 0
+
+open scoped Classical in
+@[deprecated "use any of `cfcₙ_apply`, `cfcₙ_apply_of_not_and_and`, `cfcₙ_apply_of_not_predicate` \n
+  or `cfcₙ_apply_of_not_continuousOn`" (since := "2026-10-22")]
+lemma cfcₙ_def (f : R → R) (a : A) :
+    cfcₙ f a =
+    if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
+      then cfcₙHom h.1 ⟨⟨_, h.2.1.domRestrict⟩, h.2.2⟩
+      else 0 :=
+  (rfl)
 
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -221,7 +232,7 @@ variable (ha : p a := by cfc_tac)
 
 set_option backward.privateInPublic true in
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.domRestrict⟩, hf0⟩ := by
-  rw [cfcₙ_def, dite_eq_left ⟨ha, hf, hf0⟩]
+  rw [cfcₙ, dite_eq_left ⟨ha, hf, hf0⟩]
 
 lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
@@ -232,26 +243,26 @@ lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_ta
 
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
-    cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dite_eq_right ha]
+    cfcₙ f a = 0 :=
+  dite_eq_right ha
 
 lemma cfcₙ_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
-    cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dite_eq_right (not_and_of_not_left _ ha)]
+    cfcₙ f a = 0 :=
+  dite_eq_right (not_and_of_not_left _ ha)
 
 grind_pattern cfcₙ_apply_of_not_predicate => cfcₙ f a where
   guard ¬ p a
 
 lemma cfcₙ_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (σₙ R a)) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dite_eq_right (not_and_of_not_right _ (not_and_of_not_left _ hf))]
+  rw [cfcₙ, dite_eq_right (not_and_of_not_right _ (not_and_of_not_left _ hf))]
 
 grind_pattern cfcₙ_apply_of_not_continuousOn => cfcₙ f a where
   guard ¬ ContinuousOn f (σₙ R a)
 
 lemma cfcₙ_apply_of_not_map_zero {f : R → R} (a : A) (hf : ¬ f 0 = 0) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dite_eq_right (not_and_of_not_right _ (not_and_of_not_right _ hf))]
+  rw [cfcₙ, dite_eq_right (not_and_of_not_right _ (not_and_of_not_right _ hf))]
 
 grind_pattern cfcₙ_apply_of_not_map_zero => cfcₙ f a where
   guard ¬ f 0 = 0
@@ -272,7 +283,7 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
 
 lemma cfcₙ_eq_cfcₙL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (σₙ R a)) (hf0 : f 0 = 0) :
     cfcₙ f a = cfcₙL ha ⟨⟨_, hf.domRestrict⟩, hf0⟩ := by
-  rw [cfcₙ_def, dite_eq_left ⟨ha, hf, hf0⟩, cfcₙL_apply]
+  rw [cfcₙ, dite_eq_left ⟨ha, hf, hf0⟩, cfcₙL_apply]
 
 set_option backward.privateInPublic true in
 /-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
@@ -481,7 +492,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
-  · exact ⟨.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp,
+  · exact ⟨.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.val; simp,
       Subtype.ext hf0⟩
   · congr
   · exact fun _ ↦ rfl
@@ -641,7 +652,7 @@ lemma cfcₙ_mono {f g : R → R} {a : A} (h : ∀ x ∈ σₙ R a, f x ≤ g x)
     cfcₙ f a ≤ cfcₙ g a := by
   by_cases ha : p a
   · rw [cfcₙ_apply f a, cfcₙ_apply g a]
-    exact cfcₙHom_mono ha fun x ↦ h x.1 x.2
+    exact cfcₙHom_mono ha fun x ↦ h x.val x.property
   · grind
 
 lemma cfcₙ_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
@@ -816,13 +827,13 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
   ext x
   constructor
   · rintro (⟨x, rfl⟩ | rfl)
-    · exact ⟨⟨x.1, spectrum_subset_quasispectrum R a x.2⟩, rfl⟩
+    · exact ⟨⟨x.val, spectrum_subset_quasispectrum R a x.property⟩, rfl⟩
     · exact ⟨0, map_zero f⟩
   · rintro ⟨x, rfl⟩
-    have hx := x.2
+    have hx := x.property
     simp_rw [quasispectrum_eq_spectrum_union_zero R a] at hx
     obtain (hx | hx) := hx
-    · exact Or.inl ⟨⟨x.1, hx⟩, rfl⟩
+    · exact Or.inl ⟨⟨x.val, hx⟩, rfl⟩
     · apply Or.inr
       push _ ∈ _ at hx ⊢
       rw [show x = 0 from Subtype.val_injective hx, map_zero]

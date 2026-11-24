@@ -9,13 +9,11 @@ public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
-
 # Extending valuations to a localization
 
 We show that, given a valuation `v` taking values in a linearly ordered commutative *group*
 with zero `Γ`, and a submonoid `S` of `v.supp.primeCompl`, the valuation `v` can be naturally
 extended to the localization `S⁻¹A`.
-
 -/
 
 @[expose] public section
@@ -29,7 +27,8 @@ variable {A : Type*} [CommRing A] {Γ : Type*} [LinearOrderedCommGroupWithZero �
 the complement of `v.supp`. -/
 noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
   let f := IsLocalization.toLocalizationMap S B
-  let h : ∀ s : S, IsUnit (v.1.toMonoidHom s) := fun s => isUnit_iff_ne_zero.2 (hS s.2)
+  let h : ∀ s : S, IsUnit (v.toMonoidWithZeroHom.toMonoidHom s) := fun s =>
+    isUnit_iff_ne_zero.2 (hS s.property)
   { f.lift h with
     map_zero' := by convert! f.lift_eq (P := Γ) _ 0 <;> simp [f]
     map_add_le_max' := fun x y => by
@@ -55,7 +54,7 @@ theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :
     (v.extendToLocalization hS B) (IsLocalization.mk' _ x y) = v x * (v y)⁻¹ :=
   (Submonoid.LocalizationMap.lift_mk' _ _ _ _).trans (by
     simp [IsUnit.coe_liftRight (v.toMonoidWithZeroHom.domRestrict S)
-      (fun y ↦ isUnit_iff_ne_zero.2 (hS y.2)) y])
+      (fun y ↦ isUnit_iff_ne_zero.2 (hS y.property)) y])
 
 @[simp]
 theorem Valuation.extendToLocalization_apply_map_apply (a : A) :

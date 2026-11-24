@@ -64,7 +64,6 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 ## References
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
-
 -/
 
 open UpperHalfPlane hiding I
@@ -158,7 +157,7 @@ lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z)
       ring
     · simpa using! linear_left_summable (ne_zero z) N le_rfl
     · simpa [add_assoc] using! summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
-  · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (S • z))
+  · apply HasSum.summable (a := (z.coe ^ 2)⁻¹ * G2 (S • z))
     rw [hasSum_symmetricIco_int_iff]
     apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
@@ -184,7 +183,6 @@ lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
     exact H.prod_factor
 
-
 public section
 
 section transform
@@ -194,11 +192,10 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
   rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
-  simp_rw [SL_slash_def, modular_T_smul z]
-  simp [G2_eq_tsum_cexp, T, denom_apply, ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply,
+    ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by

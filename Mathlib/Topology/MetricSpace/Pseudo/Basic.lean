@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Topology.Metrizable.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
-
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` bundled maps
 
@@ -105,7 +108,7 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prodMk g.2⟩
+  ⟨fun x => (f x, g x), f.property.prodMk g.property⟩
 
 end ContMDiffMap
 

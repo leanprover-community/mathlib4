@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of injective objects in terms of lifting properties
 
 An object `I` is injective iff the morphism `I ⟶ 0` has the
 right lifting property with respect to monomorphisms,
 `injective_iff_rlp_monomorphisms_zero`.
-
 -/
 
 public section

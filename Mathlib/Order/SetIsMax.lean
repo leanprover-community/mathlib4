@@ -8,12 +8,14 @@ module
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Order.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal elements of subsets
 
 Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
-
 -/
 
 public section
@@ -25,11 +27,11 @@ namespace Set
 variable {J : Type u} [Preorder J] {S : Set J} (m : S)
 
 lemma not_isMax_coe (hm : ¬ IsMax m) :
-    ¬ IsMax m.1 :=
+    ¬ IsMax m.val :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
 lemma not_isMin_coe (hm : ¬ IsMin m) :
-    ¬ IsMin m.1 :=
+    ¬ IsMin m.val :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
 end Set

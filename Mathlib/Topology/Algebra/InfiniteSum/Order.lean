@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Quantale
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Order.MonotoneConvergence
 
+import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Order.Field
 
 /-!
@@ -310,7 +310,7 @@ variable [AddCommMonoid α] [CompleteLattice α] [CanonicallyOrderedAdd α] [Top
 theorem CompleteLattice.hasSum : HasSum f (⨆ s : Finset ι, ∑ a ∈ s, f a) :=
   tendsto_atTop_iSup fun _ _ ↦ Finset.sum_le_sum_of_subset
 
-theorem CompleteLattice.summable : Summable f := ⟨_, CompleteLattice.hasSum⟩
+@[simp] theorem CompleteLattice.summable : Summable f := ⟨_, CompleteLattice.hasSum⟩
 
 open CompleteLattice Set
 
@@ -566,8 +566,8 @@ theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid �
     [UniformSpace α] [IsUniformGroup α]
     [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
   let s := { x | 1 ≤ f x }
-  have h1 : ∀ x : s, mabs (f x) = f x := fun x ↦ mabs_of_one_le x.2
-  have h2 : ∀ x : ↑sᶜ, mabs (f x) = (f x)⁻¹ := fun x ↦ mabs_of_lt_one (not_le.1 x.2)
+  have h1 : ∀ x : s, mabs (f x) = f x := fun x ↦ mabs_of_one_le x.property
+  have h2 : ∀ x : ↑sᶜ, mabs (f x) = (f x)⁻¹ := fun x ↦ mabs_of_lt_one (not_le.1 x.property)
   calc (Multipliable fun x ↦ mabs (f x)) ↔
       (Multipliable fun x : s ↦ mabs (f x)) ∧ Multipliable fun x : ↑sᶜ ↦ mabs (f x) :=
         multipliable_subtype_and_compl.symm

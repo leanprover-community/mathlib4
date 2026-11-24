@@ -5,10 +5,14 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Order.Hom.CompleteLattice
+
+import Mathlib.Data.Set.Lattice.Order
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # liminfs and limsups of functions and filters
@@ -590,9 +594,9 @@ theorem exists_forall_mem_of_hasBasis_mem_blimsup {l : Filter β} {b : ι → Se
   rw [blimsup_eq_iInf_biSup] at hx
   simp only [iSup_eq_iUnion, iInf_eq_iInter, mem_iInter, mem_iUnion, exists_prop] at hx
   choose g hg hg' using hx
-  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i => ⟨?_, ?_⟩⟩
-  · exact hg' (b i) (hl.mem_of_mem i.2)
-  · exact hg (b i) (hl.mem_of_mem i.2)
+  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.property), fun i => ⟨?_, ?_⟩⟩
+  · exact hg' (b i) (hl.mem_of_mem i.property)
+  · exact hg (b i) (hl.mem_of_mem i.property)
 
 theorem exists_forall_mem_of_hasBasis_mem_blimsup' {l : Filter β} {b : ι → Set β}
     (hl : l.HasBasis (fun _ => True) b) {u : β → Set α} {p : β → Prop} {x : α}
@@ -742,14 +746,11 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
--- The linter erroneously claims that I'm not referring to `c`
-set_option linter.unusedVariables false in
 @[to_dual gt_mem_sets_of_limsInf_gt]
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ :=
-    exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
-  mem_of_superset h fun _a => hcb.trans_le'
+    ∀ᶠ a in f, a < b := by
+  obtain ⟨_, h, hcb⟩ := exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
+  exact mem_of_superset h fun _a => hcb.trans_le'
 
 section Classical
 
@@ -842,7 +843,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   by_cases H : ∃ (j : Subtype p), s j = ∅
   · rw [ite_eq_left H]
     rcases H with ⟨j, hj⟩
-    simp [hv.liminf_eq_sSup_univ_of_empty j j.2 hj]
+    simp [hv.liminf_eq_sSup_univ_of_empty j j.property hj]
   rw [ite_eq_right H]
   by_cases H' : ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))
   · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
@@ -852,7 +853,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
-    simpa only [nonempty_iff_ne_empty] using H
+    exact H
   · push Not at H'
     exact H'
 

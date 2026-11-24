@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Data.Matrix.Diagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices in prime characteristic
 
@@ -29,7 +32,7 @@ instance instCharP (p : ℕ) [CharP R p] : CharP (Matrix n n R) p where
 instance instCharZero [CharZero R] : CharZero (Matrix n n R) where
   cast_injective _ _ h := by
     inhabit n
-    simpa [natCast_apply] using congr($h default default)
+    simpa [Matrix.natCast_apply] using congr($h default default)
 
 instance instExpChar : ∀ {p} [ExpChar R p], ExpChar (Matrix n n R) p
   | _, @ExpChar.zero _ _ _ => .zero

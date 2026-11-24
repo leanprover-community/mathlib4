@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.OreLocalization.Cardinality
 
 import Mathlib.GroupTheory.MonoidLocalization.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of localizations
 
@@ -23,7 +26,6 @@ submonoid, then your localization is trivial (see `IsLocalization.uniqueOfZeroMe
 * `IsLocalization.cardinalMk_le`: A localization has cardinality no larger than the base ring.
 * `IsLocalization.cardinalMk`: If you don't localize at zero-divisors, the localization of a ring
   has cardinality equal to its base ring.
-
 -/
 
 public section

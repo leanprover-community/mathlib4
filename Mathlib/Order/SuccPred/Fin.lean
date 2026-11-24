@@ -8,13 +8,15 @@ module
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.SuccPred.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SuccOrder` and `PredOrder` of `Fin n`
 
 In this file, we show that `Fin n` is both a `SuccOrder` and a `PredOrder`. Note that they are
 also archimedean, but this is derived from the general instance for well-orderings as opposed
 to a specific `Fin` instance.
-
 -/
 
 public section

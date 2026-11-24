@@ -13,6 +13,9 @@ public import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.SuccAboveOrderIso
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard simplex
 
@@ -20,7 +23,6 @@ We define the standard simplices `Δ[n]` as simplicial sets.
 See files `SimplicialSet.Boundary` and `SimplicialSet.Horn`
 for their boundaries `∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
-
 -/
 
 @[expose] public section
@@ -293,7 +295,7 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
 lemma face_empty (n : ℕ) :
     face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
   ext
-  simpa using Finset.univ_neq_empty _
+  simp
 
 @[simp]
 lemma face_univ (n : ℕ) :
@@ -344,6 +346,11 @@ lemma stdSimplex.yonedaEquiv_σ_comp
     yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   (yonedaEquiv_naturality ..).symm
 
+lemma σ_zero_eq_yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
+    X.σ 0 x = yonedaEquiv (const x) :=
+  yonedaEquiv.symm.injective
+    (by simp [← stdSimplex.σ_comp_yonedaEquiv_symm, yonedaEquiv_symm_zero])
+
 namespace Subcomplex
 
 variable {X : SSet.{u}}
@@ -390,7 +397,6 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
     simpa only [Subtype.ext_iff] using! e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
@@ -480,7 +486,7 @@ identify to order embeddings `Fin (d + 1) ↪o Fin (n + 1)`. -/
 @[simps! apply_apply symm_apply_coe]
 def nonDegenerateEquiv {n d : ℕ} :
     (Δ[n] : SSet.{u}).nonDegenerate d ≃ (Fin (d + 1) ↪o Fin (n + 1)) where
-  toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.2)
+  toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.property)
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using! s.strictMono⟩
   left_inv _ := by aesop
@@ -653,7 +659,6 @@ lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate 
   simp
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
 @[no_expose] noncomputable def orderIsoOfNonDegenerate
@@ -687,7 +692,6 @@ lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate
     face (nonDegenerateEquiv' x) = Subcomplex.ofSimplex x.val :=
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma nonDegenerateEquiv'_symm_apply_mem {n d : ℕ}
     (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 }) (i : Fin (d + 1)) :
       (nonDegenerateEquiv'.{u}.symm S).val i ∈ S.val := by
@@ -756,7 +760,7 @@ lemma nonDegenerate_top_dim (n : ℕ) :
 lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_instance) :
     False :=
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
-    (nonDegenerateEquiv.2 (.refl _)) n)
+    (nonDegenerateEquiv.invFun (.refl _)) n)
 
 /-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
 `n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/
@@ -772,7 +776,6 @@ lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : F
     SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
     dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
       g (f i.rev).rev := rfl
@@ -816,7 +819,6 @@ end Examples
 
 namespace Augmented
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]

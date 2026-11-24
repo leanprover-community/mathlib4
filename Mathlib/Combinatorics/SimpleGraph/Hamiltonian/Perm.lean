@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hamiltonian graphs from cyclic permutations
 
@@ -30,16 +33,16 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
     (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
   obtain rfl | ⟨v, hv⟩ := s.eq_empty_or_nonempty
   · simp
-  refine ⟨⟨fun i ↦ (σ ^ i.1) v, fun {i j} h ↦ ?_⟩,
-    fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 hij⟩
+  refine ⟨⟨fun i ↦ (σ ^ i.val) v, fun {i j} h ↦ ?_⟩,
+    fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.isLt j.isLt hij⟩
   wlog hij : i < j
   · grind [Adj.symm]
   rcases cycleGraph_adj'.mp h with h | h
-  · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by lia [Fin.coe_sub_iff_lt]
+  · obtain ⟨hi, hj⟩ : i.val = 0 ∧ j.val = #s - 1 := by lia [Fin.coe_sub_iff_lt]
     rw [hi, hj, adj_comm]
     have := hadj ((σ ^ (#s - 1)) v)
     rwa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (by lia), hσ.pow_card_apply hv] at this
-  · rw [show j.1 = i.1 + 1 by lia [Fin.sub_val_of_le], pow_succ', mul_apply]
+  · rw [show j.val = i.val + 1 by lia [Fin.sub_val_of_le], pow_succ', mul_apply]
     exact hadj _
 
 /-- If a cyclic permutation `σ` of a type with at least 3 elements is such that each vertex is

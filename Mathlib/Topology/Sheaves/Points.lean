@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.Spaces
 
 import Mathlib.Topology.Sheaves.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard conservative family of points for the site attached to a topological space
 
@@ -20,7 +23,6 @@ attached to `X`.
 
 * Redefine the stalks functors in `Mathlib/Topology/Sheaves/Stalks.lean`
   using `GrothendieckTopology.Point.presheafFiber`.
-
 -/
 
 @[expose] public section
@@ -87,7 +89,7 @@ def pointGrothendieckTopologyHomEquiv {x y : X} :
     (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
   toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
   invFun s := { hom.app U := ↾fun hU ↦
-    ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
+    ⟨⟨specializes_iff_forall_open.1 s _ U.is_open' hU.down.down⟩⟩ }
   left_inv _ := by subsingleton
   right_inv _ := rfl
 

@@ -39,7 +39,6 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 - Show that the functors `pullback f` are monoidal with respect to
   the cartesian monoidal structures on slices.
-
 -/
 
 @[expose] public section
@@ -67,7 +66,6 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -81,7 +79,6 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
@@ -275,7 +272,6 @@ open ChosenPullbacksAlong CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor which maps an object `A` in `C` to the projection `A ⊗ X ⟶ X` in `Over X`.
 This is the computable analogue of the functor `Over.star`. -/
 @[simps! obj_left obj_hom]
@@ -321,7 +317,6 @@ def toOverUnitPullback (X : C) :
   NatIso.ofComponents fun X => Iso.refl _
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where

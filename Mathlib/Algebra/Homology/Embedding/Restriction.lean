@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The restriction functor of an embedding of complex shapes
 
 Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`
 (satisfying `[e.IsRelIff]`), we define the restriction functor
 `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`.
-
 -/
 
 @[expose] public section
@@ -31,7 +33,7 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- Given `K : HomologicalComplex C c'` and `e : c.Embedding c'` (satisfying `[e.IsRelIff]`),
 this is the homological complex in `HomologicalComplex C c` obtained by restriction. -/
-@[simps]
+@[simps, implicit_reducible]
 def restriction : HomologicalComplex C c where
   X i := K.X (e.f i)
   d _ _ := K.d _ _
@@ -42,8 +44,6 @@ def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
     (K.restriction e).X i ≅ K.X i' :=
   eqToIso (h ▸ rfl)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = j') :
     (K.restriction e).d i j = (K.restrictionXIso e hi).hom ≫ K.d i' j' ≫
@@ -53,14 +53,11 @@ lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = 
 
 variable {K L}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `K.restriction e ⟶ L.restriction e` induced by a morphism `φ : K ⟶ L`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictionMap : K.restriction e ⟶ L.restriction e where
   f i := φ.f (e.f i)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma restrictionMap_f' {i : ι} {i' : ι'} (hi : e.f i = i') :
     (restrictionMap φ e).f i = (K.restrictionXIso e hi).hom ≫
@@ -85,7 +82,7 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C] [e.IsR
 
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e

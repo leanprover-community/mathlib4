@@ -199,7 +199,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
     [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
-    exact comap_mono h.1⟩
+    exact comap_mono h.borel_le⟩
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
@@ -322,9 +322,9 @@ theorem measurable_of_isClosed' {f : δ → γ}
   exact hf s hs h1 h2
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
-  rw [nhds, iInf_subtype']
+  rw [nhds_def, iInf_subtype']
   refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
-  exact i.2.2.measurableSet.principal_isMeasurablyGenerated
+  exact i.property.2.measurableSet.principal_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
 each `a`. This cannot be an `instance` because it depends on a non-instance `hs : MeasurableSet s`.
@@ -454,7 +454,7 @@ variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
 theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     interior s =ᵐ[μ] s :=
-  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_le_set.2 h)
+  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_subset.2 h)
 
 theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (interior s) = μ s :=
@@ -466,7 +466,7 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
-  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm
+  ((ae_subset.2 h).trans interior_subset.eventuallySubset).antisymm
     subset_closure.eventuallySubset
 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
@@ -670,6 +670,17 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Additive α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Multiplicative α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+
+instance : BorelSpace (Additive α) :=
+  (MeasurableEquiv.additive (α := α)).symm.measurableEmbedding.borelSpace Topology.IsInducing.id
+instance : BorelSpace (Multiplicative α) :=
+  (MeasurableEquiv.multiplicative (α := α)).symm.measurableEmbedding.borelSpace
+    Topology.IsInducing.id
+
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
@@ -678,7 +689,7 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
-    (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
+    (MeasurableEmbedding.subtypeVal h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=

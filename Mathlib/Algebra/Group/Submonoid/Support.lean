@@ -17,12 +17,14 @@ A submonoid `C` is *spanning* if `M ∪ -M = G`.
 
 The names for these concepts are taken from the theory of convex cones.
 
+The equivalence with ordered groups and rings can be found in
+`Mathlib/Algebra/Order/Group/Cone.lean` and `Mathlib/Algebra/Order/Ring/Cone.lean`, respectively.
+
 ## Main definitions
 
 * `AddSubmonoid.support`: the support of a submonoid.
 * `AddSubmonoid.IsPointed`: a submonoid with zero support.
 * `AddSubmonoid.IsSpanning`: a submonoid satisfying `M ∪ -M = G`.
-
 -/
 
 @[expose] public section
@@ -114,12 +116,12 @@ theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M
 
 @[to_additive]
 theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) : N.IsMulSpanning := by
-  grind [IsMulSpanning, IsConcreteLE.le_iff]
+  grind [IsMulSpanning, le_iff_mem_imp_mem]
 
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M := by
-  grind [Maximal, IsConcreteLE.le_iff, IsMulPointed, IsMulSpanning, one_mem, inv_one]
+  grind [Maximal, le_iff_mem_imp_mem, IsMulPointed, IsMulSpanning, one_mem, inv_one]
 
 end IsMulSpanning
 

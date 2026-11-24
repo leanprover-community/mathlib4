@@ -24,7 +24,6 @@ root pairings.
 * `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
   crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
   a root.
-
 -/
 
 public section
@@ -289,7 +288,8 @@ lemma exists_pos_pairingIn {s : Finset ι} (h₀ : LinearIndepOn ℤ P.root s)
   obtain ⟨j, hj, hij⟩ := B.posForm.exists_pos_and_pos_apply_sum_smul
     (v := fun k : s ↦ P.rootSpanMem ℤ k) (fun _ ↦ P.posRootForm_posForm_pos_of_ne_zero ℤ)
     (.of_comp (P.rootSpan ℤ).subtype h₀.linearIndependent)
-    (fun k l hkl ↦ (B.posForm_apply_root_root_le_zero_iff k l).mpr <| h₁ k.2 l.2 (by simpa)) hc₀
+    (fun k l hkl ↦ (B.posForm_apply_root_root_le_zero_iff k l).mpr <|
+      h₁ k.property l.property (by simpa)) hc₀
   rw [show ∑ k, c k • P.rootSpanMem ℤ k = P.rootSpanMem ℤ i by aesop] at hij
   exact ⟨j, hj, (B.zero_lt_apply_root_root_iff i j).mp hij⟩
 

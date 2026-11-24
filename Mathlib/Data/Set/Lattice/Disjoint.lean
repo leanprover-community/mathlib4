@@ -87,7 +87,7 @@ variable (t : α → Set β)
 /-- If `t` is an indexed family of sets, then there is a natural map from `Σ i, t i` to `⋃ i, t i`
 sending `⟨i, x⟩` to `x`. -/
 def sigmaToiUnion (x : Σ i, t i) : ⋃ i, t i :=
-  ⟨x.2, mem_iUnion.2 ⟨x.1, x.2.2⟩⟩
+  ⟨x.2, mem_iUnion.2 ⟨x.1, x.2.property⟩⟩
 
 theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
   | ⟨b, hb⟩ =>

@@ -34,7 +34,6 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 ## Tags
 
 multivariate Gaussian distribution
-
 -/
 
 @[expose] public section
@@ -242,7 +241,8 @@ lemma measurePreserving_restrict₂_multivariateGaussian {ι : Type*} [Decidable
     {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} (hS : S.PosSemidef) (hJI : J ⊆ I) :
     MeasurePreserving (EuclideanSpace.restrict₂ hJI) (multivariateGaussian μ S)
       (multivariateGaussian (μ.restrict₂ hJI)
-        (S.submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩))) where
+        (S.submatrix (fun i : J ↦ ⟨i.val, hJI i.property⟩)
+          (fun i : J ↦ ⟨i.val, hJI i.property⟩))) where
   measurable := by fun_prop
   map_eq := by
     apply IsGaussian.ext
@@ -254,7 +254,8 @@ lemma measurePreserving_restrict₂_multivariateGaussian {ι : Type*} [Decidable
     rw [ContinuousLinearMap.toBilinForm_apply, ContinuousLinearMap.toBilinForm_apply,
       covarianceBilin_apply_eq_cov, covariance_map]
     · have (i : J) : (fun u ↦ ⟪(EuclideanSpace.basisFun J ℝ).toBasis i, u⟫) ∘
-          EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.1, hJI i.2⟩ := by ext; simp [PiLp.inner_apply]
+          EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.val, hJI i.property⟩ := by
+        ext; simp [PiLp.inner_apply]
       simp_rw [this, covariance_eval_multivariateGaussian hS,
         covarianceBilin_multivariateGaussian (hS.submatrix _)]
       simp
