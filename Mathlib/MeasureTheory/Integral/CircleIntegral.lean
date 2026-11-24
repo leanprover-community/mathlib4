@@ -326,6 +326,17 @@ theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
 
 /--
+Circle integrability can be checked after shifting the angle: a function `f` is circle integrable if
+and only if `θ ↦ f (circleMap c R (θ + η))` is interval integrable over one period, for any angle
+`η`. See `Real.circleAverage_eq_integral_add` for the analogous statement about circle averages.
+-/
+theorem circleIntegrable_iff_intervalIntegrable_add {f : ℂ → E} {c : ℂ} {R : ℝ} (η : ℝ) :
+    CircleIntegrable f c R ↔
+      IntervalIntegrable (fun θ ↦ f (circleMap c R (θ + η))) volume 0 (2 * π) := by
+  rw [IntervalIntegrable.comp_add_right_iff (f := fun θ ↦ f (circleMap c R θ)), zero_add, add_comm]
+  simpa using! ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₁ := 0) (t₂ := η)
+
+/--
 Circle integrability is invariant when taking negative radius.
 -/
 @[simp] theorem circleIntegrable_neg_radius {c : ℂ} {R : ℝ} {f : ℂ → E} :
