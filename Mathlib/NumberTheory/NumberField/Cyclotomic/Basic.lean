@@ -875,12 +875,12 @@ theorem dvd_sub_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p
   -- Since `ζ ^ n = -(1 + ζ + ⋯ + ζ ^ (n - 1))`, the sum `∑ j, f j • ζ ^ j` has coordinates
   -- `f j - f (Fin.last n)` in the integral power basis `1, ζ, …, ζ ^ (n - 1)`.
   have hsum : (∑ j, f j • hζ.toInteger ^ (j : ℕ)) = b.basis.equivFun.symm
-      fun i ↦ f ⟨i, (i.2.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) := by
+      fun i ↦ f ⟨i, (i.isLt.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) := by
     rw [Module.Basis.equivFun_symm_apply, Fintype.sum_equiv (finCongr hdim)
       (fun i : Fin b.dim ↦
-        (f ⟨i, (i.2.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n)) • b.basis i)
+        (f ⟨i, (i.isLt.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n)) • b.basis i)
       (fun i : Fin n ↦
-        (f ⟨i, i.2.trans n.lt_succ_self⟩ - f (Fin.last n)) • hζ.toInteger ^ (i : ℕ))
+        (f ⟨i, i.isLt.trans n.lt_succ_self⟩ - f (Fin.last n)) • hζ.toInteger ^ (i : ℕ))
       fun i ↦ by rw [hbasis]; rfl]
     simp only [sub_smul, Finset.sum_sub_distrib, ← Finset.smul_sum, hgeom, smul_neg,
       sub_neg_eq_add]
@@ -888,13 +888,13 @@ theorem dvd_sub_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p
   obtain ⟨y, hy⟩ := hdiv
   rw [hsum, ← zsmul_eq_mul] at hy
   have key (i : Fin b.dim) :
-      m ∣ f ⟨i, (i.2.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) := by
-    have h1 : f ⟨i, (i.2.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) =
+      m ∣ f ⟨i, (i.isLt.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) := by
+    have h1 : f ⟨i, (i.isLt.trans_le hdim.le).trans n.lt_succ_self⟩ - f (Fin.last n) =
         b.basis.coord i (m • y) := by rw [← hy, b.basis.coord_equivFun_symm]
     rw [h1]
     exact b.basis.dvd_coord_smul i y m
   have hlast (i : Fin (n + 1)) : m ∣ f i - f (Fin.last n) := by
-    rcases (Nat.lt_succ_iff.mp i.2).eq_or_lt with h | h
+    rcases (Nat.lt_succ_iff.mp i.isLt).eq_or_lt with h | h
     · simp [show i = Fin.last n from Fin.ext h]
     · simpa using key ⟨i, hdim.symm ▸ h⟩
   simpa using (hlast i).sub (hlast j)

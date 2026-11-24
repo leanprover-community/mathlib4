@@ -834,7 +834,7 @@ theorem exists_notMem_and_notMem_and_spanSingleton_div_eq {P : Ideal R} [P.IsPri
       spanSingleton R⁰ (algebraMap R K a / algebraMap R K b) = I / J := by
   obtain ⟨r, hr⟩ := (isPrincipal_iff _).1 h
   -- Pick `b ∈ J` with `b ∉ P` and set `a := r * b`, so that `a ∈ r * J = I`.
-  obtain ⟨b, hbJ, hbP⟩ := IsConcreteLE.not_le_iff_exists.mp (mt Ideal.dvd_iff_le.mpr hJ)
+  obtain ⟨b, hbJ, hbP⟩ := not_le_iff_exists_mem_notMem.mp (mt Ideal.dvd_iff_le.mpr hJ)
   have hJ' : (J : FractionalIdeal R⁰ K) ≠ 0 := by
     rw [← coeIdeal_bot, Ne, coeIdeal_inj]
     rintro rfl
