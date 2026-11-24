@@ -211,7 +211,7 @@ theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSq T := by
   apply_fun toNonUnitalSubsemiring using toNonUnitalSubsemiring_injective
-  simp [← Submonoid.subsemiringClosure_square]
+  simp [← Submonoid.square_subsemiringClosure]
 
 end Subsemiring
 
