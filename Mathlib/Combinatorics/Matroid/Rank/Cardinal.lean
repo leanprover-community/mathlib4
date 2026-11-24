@@ -45,7 +45,7 @@ The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
 which have a more unconditionally strong API,
 are developed in `Mathlib/Combinatorics/Matroid/Rank/ENat.lean`.
 
-## Implementation Details
+## Implementation notes
 
 Since the functions `cRank` and `cRk` are defined as suprema,
 independently of the `Matroid.InvariantCardinalRank` typeclass,

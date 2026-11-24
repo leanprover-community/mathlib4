@@ -22,6 +22,7 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 
 ## References
+
 * [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]
 
 ## TODOs/Projects

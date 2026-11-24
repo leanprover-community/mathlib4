@@ -31,11 +31,13 @@ associator x y z + associator z x y + associator y z x =
   * `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
   * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
-## Implementation Notes
+## Implementation notes
+
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
 documentation of `Algebra`.
 
 ## References
+
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/

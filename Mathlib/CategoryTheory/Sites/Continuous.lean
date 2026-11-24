@@ -42,6 +42,7 @@ category).
   This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/00WU
 -/
 

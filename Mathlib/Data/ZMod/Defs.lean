@@ -18,7 +18,7 @@ import Mathlib.Algebra.Ring.Nat
 
 This file provides the basic details of `ZMod n`, including its commutative ring structure.
 
-## Implementation details
+## Implementation notes
 
 This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Lemmas`, which is an
 issue; all `CharP` instances create an `Algebra (ZMod p) R` instance; however, this instance may

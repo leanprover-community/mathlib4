@@ -84,7 +84,7 @@ The simplifier is not set up to compute the Fréchet derivative of maps (as thes
 complicated multidimensional linear maps), but it will compute one-dimensional derivatives,
 see `Deriv.lean`.
 
-## Implementation details
+## Implementation notes
 
 For a discussion of the definitions and their rationale, see the file docstring of
 `Mathlib.Analysis.Calculus.FDeriv.Defs`.

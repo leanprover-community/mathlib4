@@ -32,7 +32,7 @@ prove the same equality for the Bochner integral.
 * `ProbabilityTheory.integral_comp`: the integral against the composition is
   `∫⁻ z, f z ∂((η ∘ₖ κ) a) = ∫⁻ x, ∫⁻ y, f y ∂(η x) ∂(κ a)`.
 
-## Implementation details
+## Implementation notes
 
 This file is to a large extent a copy of part of `Mathlib/MeasureTheory/Integral/Prod.lean`.
 The product of two measures is a particular case of composition-product of kernels and

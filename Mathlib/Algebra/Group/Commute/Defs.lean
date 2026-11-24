@@ -24,7 +24,7 @@ Lean does not immediately recognise these terms as equations, so for rewriting w
 This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other operations
 (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 
-## Implementation details
+## Implementation notes
 
 Most of the proofs come from the properties of `SemiconjBy`.
 -/

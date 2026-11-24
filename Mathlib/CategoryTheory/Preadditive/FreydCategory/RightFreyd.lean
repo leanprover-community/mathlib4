@@ -25,6 +25,7 @@ This allows us to define a cokernel cofork for `(quotient V).map f` (see
 a cokernel cofork.
 
 ## References
+
 * [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
 -/
 
