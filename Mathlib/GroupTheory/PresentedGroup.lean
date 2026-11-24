@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining a group given by generators and relations
 

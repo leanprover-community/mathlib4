@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fibrant and cofibrant objects in a model category
 

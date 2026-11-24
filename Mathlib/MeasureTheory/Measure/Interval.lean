@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.Order.Interval.Set.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures of intervals
 

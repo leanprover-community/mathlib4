@@ -15,6 +15,7 @@ We treat the special case of localizing away from an element in the sections
 `AwayMap` and `Away`.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Linear.Basic
 
 import Mathlib.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The total complex of a bicomplex
 

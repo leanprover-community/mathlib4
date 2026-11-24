@@ -14,6 +14,9 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.Tactic.NormNum.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein series q-expansions
 

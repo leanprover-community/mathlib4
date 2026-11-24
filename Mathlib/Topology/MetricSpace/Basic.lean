@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of metric spaces, and instances.
 -/

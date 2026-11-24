@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
 
 import Mathlib.CategoryTheory.IsoCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental groupoid of a simplicial set
 

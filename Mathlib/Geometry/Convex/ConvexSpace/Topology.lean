@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Topology.Algebra.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology on the standard simplex
 

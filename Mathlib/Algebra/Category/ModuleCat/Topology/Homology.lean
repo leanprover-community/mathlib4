@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `TopModuleCat` is a `CategoryWithHomology`
 

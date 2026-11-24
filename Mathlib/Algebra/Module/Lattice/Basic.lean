@@ -72,6 +72,11 @@ variable (A : Type*) [CommRing A] [Algebra R A]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
 variable (M : Submodule R V)
 
+@[nontriviality]
+theorem of_subsingleton [Nontrivial A] [Subsingleton R] : IsLattice A M :=
+  have : Nontrivial R := (algebraMap R A).domain_nontrivial
+  (not_subsingleton R inferInstance).elim
+
 /-- Any `R`-independent family of vectors in a lattice is `A`-linearly independent. -/
 theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
     (hv : ∀ i, v i ∈ M) (h : LinearIndependent R v) : LinearIndependent A v := by
@@ -199,7 +204,7 @@ theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V))
   congr(Cardinal.toNat $(rank_span_eq_rank K M))
 
 /-- If the `R`-span of `s` is a lattice, then the `K`-rank of `s` equals its `R`-rank. -/
-theorem _root_.Set.finrank_eq_of_isLattice (s : Set V) [IsLattice K (span R s)] :
+theorem _root_.Set.finrank_eq_of_isLattice (s : Set V) (hs : IsLattice K (span R s)) :
     Set.finrank K s = Set.finrank R s := by
   rw [Set.finrank, Set.finrank, ← span_span_of_tower R K s]
   exact finrank_span_eq_finrank K _
@@ -214,13 +219,13 @@ theorem iff_fg_and_finrank_span_eq_finrank :
 /-- The `R`-span of a finite `K`-linearly independent family is a lattice. -/
 theorem span_of_linearIndependent {ι : Type*} [Finite ι] {v : ι → V}
     (hv : LinearIndependent K v) : IsLattice K (span R (Set.range v)) := by
-  have : Nontrivial R := (algebraMap R K).domain_nontrivial
+  nontriviality R
   have := Fintype.ofFinite ι
   refine (iff_fg_and_finrank_span_eq_finrank _ _).mpr ⟨fg_span (Set.finite_range v), ?_⟩
   rw [span_span_of_tower, finrank_span_eq_card hv, finrank_span_eq_card (hv.restrict_scalars' R)]
 
 /-- Any lattice is contained in the `R`-span of a finite `K`-linearly independent set with the
-same `K`-span. In other words, every lattice is contained in a free one.
+same `K`-span. In particular, every lattice is contained in a free lattice with the same `K`-span.
 
 Note that if `R` is a PID, every lattice is free (`IsLattice.free`), so this holds trivially. -/
 theorem exists_finite_linearIndepOn_le_span [IsLattice K M] :

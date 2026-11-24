@@ -15,7 +15,7 @@ public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 We define continuous cohomology as the homology of the homogeneous cochain complex.
 
-## Implementation details
+## Implementation notes
 
 We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact

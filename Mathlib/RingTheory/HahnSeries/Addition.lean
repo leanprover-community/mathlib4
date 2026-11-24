@@ -21,6 +21,7 @@ coefficients.
 * If `R` is a (commutative) additive monoid or group, then so is `R⟦Γ⟧`.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associated sheaf of a presheaf of modules
 

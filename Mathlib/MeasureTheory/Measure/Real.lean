@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures as real-valued functions
 

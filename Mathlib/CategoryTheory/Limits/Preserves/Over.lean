@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Forgetful functor from `Over X` preserves cofiltered limits
 

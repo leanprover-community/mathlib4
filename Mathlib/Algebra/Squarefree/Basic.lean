@@ -29,6 +29,7 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
   factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
 ## Tags
+
 squarefree, multiplicity
 -/
 

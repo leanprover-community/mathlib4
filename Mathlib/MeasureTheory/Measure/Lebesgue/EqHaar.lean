@@ -242,9 +242,9 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   rw [← gdet] at hf ⊢
   have fg : f = (e.symm : (ι → ℝ) →ₗ[ℝ] E).comp (g.comp (e : E →ₗ[ℝ] ι → ℝ)) := by
     ext x
-    simp only [LinearEquiv.coe_coe, Function.comp_apply, LinearMap.coe_comp,
+    simp only [LinearEquiv.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
       LinearEquiv.symm_apply_apply, hg]
-  simp only [fg, LinearEquiv.coe_coe, LinearMap.coe_comp]
+  simp only [fg, LinearEquiv.coe_toLinearMap, LinearMap.coe_comp]
   have Ce : Continuous e := (e : E →ₗ[ℝ] ι → ℝ).continuous_of_finiteDimensional
   have Cg : Continuous g := LinearMap.continuous_of_finiteDimensional g
   have Cesymm : Continuous e.symm := (e.symm : (ι → ℝ) →ₗ[ℝ] E).continuous_of_finiteDimensional
@@ -648,7 +648,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
-    simp [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne]
+    simp [h'u, measure_closedBall_lt_top.ne]
   simp only [zero_mul] at C
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]

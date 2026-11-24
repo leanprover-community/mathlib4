@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SchurZassenhaus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Z-Groups
 

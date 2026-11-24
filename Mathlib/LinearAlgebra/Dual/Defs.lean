@@ -287,7 +287,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
       ext m f
       congrm f $((e.apply_symm_apply m).symm)
     simp only [this,
-      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+      coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
 instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=

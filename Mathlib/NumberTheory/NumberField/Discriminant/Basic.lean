@@ -28,6 +28,7 @@ This file defines the discriminant of a number field.
   finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
+
 number field, discriminant
 -/
 
