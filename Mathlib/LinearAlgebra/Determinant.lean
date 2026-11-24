@@ -381,8 +381,8 @@ theorem det_eq_det_restrict_mul_of_isCompl {p q : Submodule R M} (h : IsCompl p 
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     {f : Module.End R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     f.det = (f.restrict hp).det * (f.restrict hq).det := by
-  rw [← det_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl h hp hq, LinearEquiv.conj_apply,
-    comp_assoc, LinearMap.det_conj]
+  rw [← det_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl_eq_prodMap_restrict h hp hq,
+    LinearEquiv.conj_apply, comp_assoc, LinearMap.det_conj]
 
 omit [DecidableEq ι] in
 theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) :

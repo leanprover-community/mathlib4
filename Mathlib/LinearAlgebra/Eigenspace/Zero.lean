@@ -162,7 +162,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
-  rw [φ.charpoly_eq_of_isCompl hVW hφV hφW,
+  rw [φ.charpoly_eq_charpoly_restrict_mul_of_isCompl hVW hφV hφW,
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero

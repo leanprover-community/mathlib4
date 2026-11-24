@@ -84,7 +84,7 @@ lemma LinearMap.charpoly_eq_charpoly_restrict_mul_of_isCompl
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     (f : M →ₗ[R] M) (hp : p ∈ Module.End.invtSubmodule f) (hq : q ∈ Module.End.invtSubmodule f) :
     f.charpoly = (f.restrict hp).charpoly * (f.restrict hq).charpoly := by
-  rw [← charpoly_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl h hp hq,
+  rw [← charpoly_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl_eq_prodMap_restrict h hp hq,
     LinearEquiv.charpoly_conj]
 
 namespace Matrix
