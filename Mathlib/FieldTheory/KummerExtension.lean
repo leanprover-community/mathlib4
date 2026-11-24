@@ -268,7 +268,7 @@ theorem irreducible_X_pow_sub_C_iff_forall_prime {n : ℕ} (hn : n ≠ 0) {a : K
         · rw [← map_pow, ← map_ofNat C (nat_lit 2), ← map_mul,
             ← map_mul, ← pow_mul, mul_two, isUnit_iff] at hu
           obtain ⟨r, -, hr⟩ := hu
-          apply_fun (coeff · (n + n)) at hr
+          apply_fun (·.coeff (n + n)) at hr
           simp only [coeff_add, coeff_sub, coeff_X_pow_self, coeff_C_mul_X_pow, coeff_C] at hr
           simp [(Nat.mul_ne_zero_iff.1 hn).2] at hr
   · intro h
