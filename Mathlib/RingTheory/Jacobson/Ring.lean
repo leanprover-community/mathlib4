@@ -40,6 +40,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   over a Jacobson ring are Jacobson.
 
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 

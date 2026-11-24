@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Order.Interval.Finset.Box
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summability of Eisenstein series
 

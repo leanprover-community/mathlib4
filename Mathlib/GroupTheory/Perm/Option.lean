@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.GroupTheory.Perm.Sign
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permutations of `Option α`
 -/

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equivalence between `Monad C` and `Mon (C ⥤ C)`.
 

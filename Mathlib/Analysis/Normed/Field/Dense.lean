@@ -34,6 +34,7 @@ approximated by a *separable* polynomial.
 [Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
 
 ## Tags
+
 Normed field, algebraically closedness
 -/
 

@@ -25,6 +25,7 @@ This file defines the topological abelianization of a topological group.
   `G` is a normal subgroup.
 
 ## Tags
+
 group, topological abelianization
 -/
 

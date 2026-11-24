@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
 

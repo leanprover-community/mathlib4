@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Probability.Kernel.Composition.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas relating different ways to compose kernels
 

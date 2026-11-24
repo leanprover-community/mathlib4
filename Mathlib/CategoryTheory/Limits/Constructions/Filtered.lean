@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqu
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing colimits from finite colimits and filtered colimits
 

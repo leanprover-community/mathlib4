@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 
