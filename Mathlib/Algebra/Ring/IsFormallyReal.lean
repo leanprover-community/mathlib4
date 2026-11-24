@@ -155,11 +155,11 @@ theorem eq_zero_of_isSumSq_of_neg_isSumSq [NonUnitalNonAssocRing R] [IsFormallyR
 end IsFormallyReal
 
 variable (R) in
-protected theorem AddSubmonoid.IsPointed.sumSq [CommRing R] [IsFormallyReal R] :
+protected theorem AddSubmonoid.IsPointed.sumSq [NonUnitalNonAssocRing R] [IsFormallyReal R] :
     (AddSubmonoid.sumSq R).IsPointed := fun _ ↦ by
   simpa using IsFormallyReal.eq_zero_of_isSumSq_of_neg_isSumSq
 
 variable (R) in
-protected theorem Subsemiring.IsPointed.sumSq [CommRing R] [IsFormallyReal R] :
+protected theorem Subsemiring.isPointed_sumSq [CommRing R] [IsFormallyReal R] :
     (Subsemiring.sumSq R).IsPointed := by
   simpa using AddSubmonoid.IsPointed.sumSq R

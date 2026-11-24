@@ -154,7 +154,7 @@ the (possibly non-unital) subsemiring of sums of squares in `R`.
 -/
 def sumSq : NonUnitalSubsemiring T := (Subsemigroup.square T).nonUnitalSubsemiringClosure
 
-@[simp] theorem sumSq_toAddSubmonoid : (sumSq T).toAddSubmonoid = .sumSq T := by
+@[simp] theorem toAddSubmonoid_sumSq : (sumSq T).toAddSubmonoid = .sumSq T := by
   simp [sumSq, ← AddSubmonoid.closure_isSquare,
     Subsemigroup.nonUnitalSubsemiringClosure_toAddSubmonoid]
 
