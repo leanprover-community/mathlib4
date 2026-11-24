@@ -160,6 +160,13 @@ protected theorem AddSubmonoid.IsPointed.sumSq [NonUnitalNonAssocRing R] [IsForm
   simpa using IsFormallyReal.eq_zero_of_isSumSq_of_neg_isSumSq
 
 variable (R) in
-protected theorem Subsemiring.isPointed_sumSq [CommRing R] [IsFormallyReal R] :
+theorem Subsemiring.isPointed_sumSq [CommRing R] [IsFormallyReal R] :
     (Subsemiring.sumSq R).IsPointed := by
   simpa using AddSubmonoid.IsPointed.sumSq R
+
+lemma isFormallyReal_iff_isReduced_and_isPointed_sumSq [Ring R] :
+    IsFormallyReal R ↔ IsReduced R ∧ (AddSubmonoid.sumSq R).IsPointed where
+  mp _ := ⟨inferInstance, .sumSq R⟩
+  mpr := fun ⟨_, h⟩ ↦ .of_eq_zero_of_mul_self_of_eq_zero_of_add
+    eq_zero_of_mul_self_eq_zero
+    fun {x y} hx _ _ ↦ h.eq_zero_of_mem_of_neg_mem hx (by simp_all [show y = -x by grind])
