@@ -27,13 +27,13 @@ composition of the reduction map to `ResidueField R` and the quadratic character
 * `IsLocalRing.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a unit `a` is 1 or -1.
 
 * `IsLocalRing.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `a` is not
-a unit.
+  a unit.
 
 * `IsLocalRing.legendreSym.eq_one_iff` shows that if `a` is a unit, then the Legendre symbol is 1
   if and only if `a` is a square in `ResidueField R`.
 
 * `IsLocalRing.legendreSym.eq_pow` shows that if `ringChar R` is odd, then `legendreSym a` can
-be computed in terms of `a ^ (Fintype.card (ResidueField R) / 2)`.
+  be computed in terms of `a ^ (Fintype.card (ResidueField R) / 2)`.
 
 ## Tags
 
@@ -140,7 +140,7 @@ theorem eq_pow (hR : ringChar (ResidueField R) ≠ 2) :
   · rw [h0, zero_pow (by simp [Fintype.one_lt_card])]
     simp
   · simp only [open scoped Classical in quadraticChar_eq_pow_of_char_ne_two hR h0,
-    Int.reduceNeg, Int.cast_ite, Int.cast_one, Int.cast_neg]
+      Int.reduceNeg, Int.cast_ite, Int.cast_one, Int.cast_neg]
     split_ifs with h
     · rw [h]
     · grind [FiniteField.pow_dichotomy hR h0]
