@@ -107,7 +107,7 @@ attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
 -/
-@[simps!, instance_reducible]
+@[simps!, implicit_reducible]
 def trivial : Comon C := mk (𝟙_ C)
 
 instance : Inhabited (Comon C) :=
@@ -372,8 +372,7 @@ theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _
-}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 

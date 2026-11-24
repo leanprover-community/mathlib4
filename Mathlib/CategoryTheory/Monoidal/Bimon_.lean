@@ -196,55 +196,6 @@ def toTrivial (A : Bimon C) : A ⟶ trivial C :=
 
 -- TODO: `trivial C` is a zero object
 
-end Bimon
-
-/-! ### Functoriality -/
-
-namespace Functor
-
-variable {D : Type*} [Category D] [MonoidalCategory D] [BraidedCategory D]
-
-open MonObj ComonObj BimonObj IsComonHom
-
-/-- The image of a bimonoid object under an braided functor is a bimonoid object. -/
-abbrev obj.instBimonObj (A : C) [BimonObj A] (F : C ⥤ D) [F.Braided] : BimonObj (F.obj A) where
-  __ := obj.instComonObj A F
-  __ := monObjObj A
-  mul_comul := by
-    simp only [μ_def, Δ_def, Category.assoc, ← F.map_comp_assoc, mul_comul,
-      ← (cancel_mono (LaxMonoidal.μ F A A))]
-    simp [← tensorHom_comp_tensorHom, tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc]
-  one_comul := by
-    simp only [η_def, Δ_def, Category.assoc, ← F.map_comp_assoc, one_comul, tensorObj.one_def]
-    simp [← tensorHom_comp_tensorHom, leftUnitor_inv_comp_tensorHom_assoc]
-  mul_counit := by
-    simp only [μ_def, ε_def, Category.assoc, ← F.map_comp_assoc]
-    simp [tensorHom_def]
-  one_counit := by
-    simp [← F.map_comp_assoc]
-
-attribute [local instance] obj.instBimonObj
-
-instance map.instIsBimon_Hom (F : C ⥤ D) [F.Braided] {X Y : C} [BimonObj X] [BimonObj Y]
-    (f : X ⟶ Y) [IsBimonHom f] : IsBimonHom (F.map f) where
-
-/-- A monoidal functor takes bimonoid objects to bimonoid objects.
-
-That is, a monoidal functor `F : C ⥤ D` induces a functor `Bimon C ⥤ Bimon D`.
--/
-@[implicit_reducible, simps]
-def mapBimon (F : C ⥤ D) [F.Braided] : Bimon C ⥤ Bimon D where
-  obj A := .mk (F.obj A.X)
-  map f := .mk (F.map f.hom)
-  map_id A := by ext; simp
-  map_comp f g := by ext; simp
-
--- TODO We haven't yet set up the category structure on `BraidedFunctor C D`
--- and so can't state `mapBimonFunctor : BraidedFunctor C D ⥤ Bimon C ⥤ Bimon D`.
-
-end Functor
-
-
 /-! ### Lemmas on `Comon (Mon C)` and equivalence with `Mon (Comon C)` -/
 
 namespace ComonMon
@@ -307,7 +258,7 @@ attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensor�
 @[simps, implicit_reducible]
 def ofMonComonObj (M : Mon (Comon C)) : Comon (Mon C) where
   X := ofMonComonObjX M
-  comon.counit := .mk' ε[M.X.X] (by simp)
+  comon.counit := .mk' ε[M.X.X]
   comon.comul := .mk' Δ[M.X.X]
 
 variable (C) in
@@ -436,13 +387,13 @@ end ComonMon
 
 /-- The functor from `Comon (Mon C)` to `Bimon C`. -/
 @[simps, implicit_reducible]
-def ComonMon.toBimon : Comon (Mon C) ⥤ Bimon C where
+def ofComonMon : Comon (Mon C) ⥤ Bimon C where
   obj M := .mk M.X.X
   map f := .mk f.hom.hom
 
 /-- The functor from `Bimon C` to `Comon (Mon C)`. -/
 @[simps, implicit_reducible]
-def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
+def toComonMon : Bimon C ⥤ Comon (Mon C) where
   obj M := ComonMon.mk' M.X
   map f := {
     hom := .mk f.hom
@@ -454,10 +405,12 @@ def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
 
 /-- The equivalence of categories between `Bimon C` and `Comon (Mon C)`. -/
 @[simps, implicit_reducible]
-def ComonMon.equivBimon : Comon (Mon C) ≌ Bimon C where
-  functor := ComonMon.toBimon
-  inverse := Bimon.toComonMon
-  unitIso := NatIso.ofComponents (fun _ ↦ Comon.mkIso (Iso.refl _))
-  counitIso := NatIso.ofComponents .refl
+def equivComonMon : Bimon C ≌ Comon (Mon C) where
+  functor := toComonMon
+  inverse := ofComonMon
+  unitIso := NatIso.ofComponents .refl
+  counitIso := NatIso.ofComponents (fun _ ↦ Comon.mkIso (Iso.refl _))
+
+end Bimon
 
 end CategoryTheory
