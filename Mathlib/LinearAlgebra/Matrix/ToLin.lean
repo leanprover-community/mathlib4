@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Basis.SMul
@@ -915,9 +916,20 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
-variable [DecidableEq m] {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁']
-  [AddCommMonoid M₂'] [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
+variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+  [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
 
+/-- This statement is about `LinearMap.prod`. For the statement about maps between product modules
+see `LinearMap.toMatrix_prod_eq_fromBlocks`. -/
+lemma LinearMap.toMatrix_prod_eq_fromCols (φ : M₁ →ₗ[R] M₁') (φ' : M₁ →ₗ[R] M₂') :
+    toMatrix v₁ (v₁'.prod v₂') (LinearMap.prod φ φ') =
+      .fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ') := by
+  ext (i | i) j <;> simp [toMatrix_apply]
+
+variable [DecidableEq m]
+
+/-- This statement is about maps between product modules. For the statement about `LinearMap.prod`
+see `LinearMap.toMatrix_prod_eq_fromCols`. -/
 lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
       .fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
