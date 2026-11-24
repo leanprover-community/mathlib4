@@ -15,6 +15,9 @@ import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Data processing inequality for the Kullback-Leibler divergence
 

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of linear categories
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplication by a positive element as an order isomorphism
 -/

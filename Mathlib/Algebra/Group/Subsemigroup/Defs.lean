@@ -45,6 +45,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers.
 
 ## Tags
+
 subsemigroup, subsemigroups
 -/
 

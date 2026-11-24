@@ -11,6 +11,9 @@ public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A stochastic process with independent increments and Gaussian marginals is Gaussian
 

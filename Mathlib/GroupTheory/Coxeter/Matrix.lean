@@ -23,7 +23,7 @@ We also define the Coxeter matrices `CoxeterMatrix.Aₙ` (`n : ℕ`), `CoxeterMa
 Coxeter group (`CoxeterMatrix.coxeterGroup`) is finite and irreducible, although we do not prove
 that in this file.
 
-## Implementation details
+## Implementation notes
 
 In some texts on Coxeter groups, each entry $M_{i,i'}$ of a Coxeter matrix can be either a
 positive integer or $\infty$. In our treatment of Coxeter matrices, we use the value $0$ instead of

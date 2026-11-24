@@ -65,7 +65,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 * `LaurentSeries.powerSeriesAlgEquiv` is the `K`-algebra isomorphism between `K⟦X⟧`
   and the unit ball inside the `X`-adic completion of `K⟮X⟯`.
 
-## Implementation details
+## Implementation notes
 
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ`, the definition of the
   coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go

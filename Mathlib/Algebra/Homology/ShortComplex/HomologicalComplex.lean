@@ -11,6 +11,9 @@ public import Mathlib.Tactic.NormNum
 
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The short complexes attached to homological complexes
 

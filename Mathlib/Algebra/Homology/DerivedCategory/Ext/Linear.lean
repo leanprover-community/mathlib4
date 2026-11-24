@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ext-modules in linear categories
 

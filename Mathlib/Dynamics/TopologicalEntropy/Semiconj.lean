@@ -39,6 +39,7 @@ definition of the topological entropy of a subset, so as to avoid working with s
 `coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
+
 We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
@@ -51,6 +52,7 @@ We use only the definition of the topological entropy using covers; the simplest
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 

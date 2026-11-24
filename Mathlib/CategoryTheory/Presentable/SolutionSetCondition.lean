@@ -16,6 +16,7 @@ then `F` satisfies the solution set condition (this is corollary 2.45 in
 the book by Adámek and Rosický).
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 

@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 import Mathlib.RingTheory.Finiteness.Bilinear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of the tensor product of (sub)modules
 

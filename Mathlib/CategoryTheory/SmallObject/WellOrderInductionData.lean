@@ -14,6 +14,9 @@ import Mathlib.Order.Interval.Set.Final
 import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.LatticeIntervals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of inverse systems indexed by well-ordered types
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # An exact functor induces a functor on derived categories
 

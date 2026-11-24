@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Homotopy.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy between paths
 

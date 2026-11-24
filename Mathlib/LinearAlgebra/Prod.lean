@@ -969,7 +969,7 @@ lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ 
   have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
     simp only [SetLike.ext_iff, LinearMap.mem_graph_iff] at he₁ he₂
     rw [Eq.comm, ← he₁ (h, i), Eq.comm, ← he₂ (i, h)]
-    simp only [mem_range, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    simp only [mem_range, coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       LinearEquiv.prodComm_apply, Prod.swap_eq_iff_eq_swap, Prod.swap_prod_mk]
   exact ⟨
   { toFun := e₁

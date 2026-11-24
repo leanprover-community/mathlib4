@@ -20,6 +20,7 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 * `eq_of_powMul_faithful` : the proof of [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

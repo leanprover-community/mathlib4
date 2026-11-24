@@ -32,6 +32,7 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 * `IsUltrametricDist.invariantExtension_extends` : `invariantExtension` extends the norm on `K`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

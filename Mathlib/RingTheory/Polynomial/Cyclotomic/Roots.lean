@@ -25,7 +25,7 @@ root of unity.
   `n`-th root of unity `μ`.
 * `Polynomial.cyclotomic.irreducible` : `cyclotomic n ℤ` is irreducible.
 
-## Implementation details
+## Implementation notes
 
 To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic n ℤ`, we show in
 `Polynomial.cyclotomic_eq_minpoly` that `cyclotomic n ℤ` is the minimal polynomial of any `n`-th
