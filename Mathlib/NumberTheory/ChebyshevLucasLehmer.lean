@@ -3,7 +3,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Chebyshev Recurrence and Invariants for Lucas-Lehmer Primality
 
-This file formalizes the algebraic equivalence between the classical Lucas-Lehmer 
+This file formalizes the algebraic equivalence between the classical Lucas-Lehmer
 recurrence `s_{k+1} = s_k^2 - 2` and the Chebyshev dynamical step `X_{k+1} = 2 X_k^2 - 1`
 via the modulo-6 Diophantine reduction `s_k = 6m_k + 2`.
 
