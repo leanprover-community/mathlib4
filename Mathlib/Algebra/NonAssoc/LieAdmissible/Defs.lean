@@ -32,6 +32,7 @@ associator x y z + associator z x y + associator y z x =
   * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
 ## Implementation Notes
+
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
 documentation of `Algebra`.
 
