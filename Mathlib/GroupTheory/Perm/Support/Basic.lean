@@ -20,7 +20,7 @@ finiteness assumptions.
 In the following, `f : Equiv.Perm α`.
 
 * `Equiv.Perm.support` is the set `{x | f x ≠ x}`, the set of all elements that are not fixed
-by the permutation.
+  by the permutation.
 
 See `Mathlib/GroupTheory/Perm/Support/Finset/Basic.lean` for `Equiv.Perm.supportFinset`, the
 `Finset` of points moved by a permutation of a `Fintype`.
