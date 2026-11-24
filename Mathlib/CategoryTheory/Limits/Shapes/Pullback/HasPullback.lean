@@ -50,6 +50,7 @@ pullbacks.
   ```
 
 ## Main results & API
+
 * The following API is available for using the universal property of `pullback f g`:
   `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 

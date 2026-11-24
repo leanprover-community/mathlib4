@@ -21,6 +21,7 @@ With this convention, this transformation is also equivalent to `AffineSubspace.
 when `r` is a unit.
 
 ## Main declarations
+
 * `AffineSubspace.shift` defines the shift transformation.
 * `AffineSubspace.shift_eq` shows the shift transformation is equivalent to translation.
 * `AffineSubspace.shift_eq_map_homothety` shows the shift transformation is equivalent to homothety.

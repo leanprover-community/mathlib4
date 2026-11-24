@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.BilinearForm.Properties
 # Dual submodule with respect to a bilinear form.
 
 ## Main definitions and results
+
 - `BilinForm.dualSubmodule`: The dual submodule with respect to a bilinear form.
 - `BilinForm.dualSubmodule_span_of_basis`: The dual of a lattice is spanned by the dual basis.
 

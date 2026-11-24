@@ -13,7 +13,8 @@ public import Mathlib.AlgebraicGeometry.Properties
 
 We define ideal sheaves of schemes and provide various constructors for it.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.IdealSheafData`: A structure that contains the data to uniquely define
   an ideal sheaf, consisting of
   1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
