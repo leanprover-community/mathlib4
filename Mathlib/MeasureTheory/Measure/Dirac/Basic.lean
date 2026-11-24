@@ -201,8 +201,8 @@ lemma nullMeasurableSet_dirac [MeasurableSingletonClass α] :
 
 @[fun_prop]
 lemma aemeasurable_dirac₀ {a : α} (ha : MeasurableSet {a}) {f : α → β} :
-    AEMeasurable f (dirac a) := by
-  refine ⟨fun _ ↦ f a, measurable_const, by simp [Filter.EventuallyEq, ae_dirac_eq₀ ha]⟩
+    AEMeasurable f (dirac a) :=
+  ⟨fun _ ↦ f a, measurable_const, by simp [Filter.EventuallyEq, ae_dirac_eq₀ ha]⟩
 
 @[fun_prop]
 lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
