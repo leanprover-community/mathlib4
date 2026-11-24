@@ -6,8 +6,8 @@ Authors: Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.Probability.Martingale.Order.Discrete
 public import Mathlib.Probability.Martingale.Order.Dual
-public import Mathlib.Probability.Martingale.Order.Equality
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
 
@@ -141,7 +141,7 @@ theorem supermartingale_iff_submartingale_orderDual [LE E] :
 
 /-- A process is a martingale iff it is a submartingale for the equality order on its values. -/
 theorem martingale_iff_submartingale_eqOrder [CompleteSpace E] :
-    Martingale f ℱ μ ↔ (letI := PartialOrder.eqOrder E; Submartingale f ℱ μ) :=
+    Martingale f ℱ μ ↔ (letI : PartialOrder E := ⊥; Submartingale f ℱ μ) :=
   ⟨fun h ↦ ⟨h.1, fun i j hij ↦ (h.2 i j hij).symm, h.integrable⟩,
     fun h ↦ ⟨h.1, fun i j hij ↦ Filter.EventuallyEq.symm (h.2.1 i j hij)⟩⟩
 
@@ -491,10 +491,7 @@ theorem martingale_nat [CompleteSpace E] [IsFiniteMeasure μ]
     {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i =ᵐ[μ] μ[f (i + 1) | 𝒢 i]) :
     Martingale f 𝒢 μ :=
-  letI := PartialOrder.eqOrder E
-  letI := PartialOrder.eqOrder.isOrderedAddMonoid E
-  letI := PartialOrder.eqOrder.posSMulMono E ℝ
-  letI := PartialOrder.eqOrder.closedIciTopology E
+  letI : PartialOrder E := ⊥
   martingale_iff_submartingale_eqOrder.mpr (submartingale_nat hadp hint hf)
 
 theorem martingale_of_setIntegral_eq_succ [CompleteSpace E] [IsFiniteMeasure μ] {f : ℕ → Ω → E}

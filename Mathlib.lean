@@ -6331,6 +6331,7 @@ public import Mathlib.Order.Cover
 public import Mathlib.Order.Defs.Lattice
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Order.Defs.PartialOrders
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Order.DirSupClosed
@@ -6697,8 +6698,8 @@ public import Mathlib.Probability.Martingale.Centering
 public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
+public import Mathlib.Probability.Martingale.Order.Discrete
 public import Mathlib.Probability.Martingale.Order.Dual
-public import Mathlib.Probability.Martingale.Order.Equality
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.ComplexMGF
