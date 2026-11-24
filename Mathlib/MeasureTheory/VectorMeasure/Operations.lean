@@ -8,8 +8,10 @@ module
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Operations on vector measures
 
 This file defines conversions between ordinary measures and vector measures, together with

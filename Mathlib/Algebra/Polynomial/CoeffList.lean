@@ -5,8 +5,9 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.Reverse
+
+import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # A list of coefficients of a polynomial
@@ -228,12 +229,7 @@ theorem map_ofCoeffList {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
     (ofCoeffList l).map f = ofCoeffList (l.map f) := by
   induction l with
   | nil => simp
-  | cons c p ih =>
-    simp only [ofCoeffList_cons, Polynomial.map_add, map_C, Polynomial.map_mul, map_X,
-      List.map_cons]
-    exact
-      toFinsupp_inj.mp
-        (congrArg toFinsupp (congrArg (HAdd.hAdd (C (f c))) (congrArg (HMul.hMul X) ih)))
+  | cons c p ih => simpa [ofCoeffList_cons] using congr(C (f c) + X * $ih)
 
 @[simp]
 theorem ofCoeffList_map_mul (a : R) (l : List R) :

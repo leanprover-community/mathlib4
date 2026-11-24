@@ -23,7 +23,6 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 ## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section
@@ -215,8 +214,8 @@ theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
   DFunLike.ext _ _ H
 
 @[ext high]
-theorem ext_of_ring {f g : R →ₐc[R] A} (h : f 1 = g 1) : f = g :=
-  coe_linearMap_injective (by ext; assumption)
+theorem ext_of_ring {f g : R →ₐc[R] A} : f = g :=
+  coe_linearMap_injective (by ext; exact (map_one f).trans (map_one g).symm)
 
 @[simp]
 theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :

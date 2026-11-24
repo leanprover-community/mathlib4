@@ -53,7 +53,6 @@ formalization of theorems such as the Hahn embedding theorem.
 To naturally derive this order, we first define it on the underlying group via the type
 synonym (`Mul`-)`ArchimedeanOrder`, and define (`Mul`-)`ArchimedeanClass` as `Antisymmetrization` of
 the order.
-
 -/
 
 @[expose] public section

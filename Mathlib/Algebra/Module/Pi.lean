@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Ring.Pi
+
+import Mathlib.Algebra.Regular.SMul
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pi instances for modules

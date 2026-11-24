@@ -32,7 +32,6 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 - define a structure `LocallyConvexFilterBasis`, extending `ModuleFilterBasis`, for filter
   bases generating a locally convex topology
-
 -/
 
 public section
@@ -112,11 +111,11 @@ theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [
     {S : Set E} (hS : Convex ℝ S) : LocallyPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
-  let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
+  let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.val).mem_iff.mp ht.1
   refine ⟨(↑) ⁻¹' t', ⟨?_, ?_⟩, (preimage_mono ht'.2).trans ht.2⟩
-  · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
+  · exact continuousAt_subtypeVal.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
-    exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
+    exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.property, mem_of_mem_nhds ht'.1.1⟩
 
 @[deprecated (since := "2026-06-21")]
 alias Convex.locPathConnectedSpace := Convex.locallyPathConnectedSpace
@@ -180,7 +179,7 @@ protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
       (fun x => ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
-  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
+  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.property) x
 
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :

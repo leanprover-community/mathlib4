@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 2-commutative squares of functors
 
@@ -18,7 +21,6 @@ then `[CatCommSq T L R B]` contains the datum of an isomorphism `T ⋙ R ≅ L �
 
 Future work: using this notion in the development of the localization of categories
 (e.g. localization of adjunctions).
-
 -/
 
 @[expose] public section

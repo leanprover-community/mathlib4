@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construct ordered groups from groups with a specified positive cone.
 
@@ -41,9 +44,13 @@ def PartialOrder.ofSubmonoid : PartialOrder G where
     simpa [div_eq_one, eq_comm] using hM.eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
 variable {hM} in
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem PartialOrder.ofSubmonoid_le_iff {a b : G} :
     (ofSubmonoid hM).le a b ↔ b / a ∈ M := .rfl
+
+/- this is not marked `@[simp]` globally so that downstream users of
+`PartialOrder.ofSubmonoid` don't have it forced upon them. -/
+attribute [local simp] PartialOrder.ofSubmonoid_le_iff
 
 @[to_additive]
 theorem IsOrderedMonoid.ofSubmonoid :

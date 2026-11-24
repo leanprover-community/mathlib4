@@ -61,15 +61,15 @@ theorem image_domRestrict (f : α → β) (s t : Set α) :
 @[simp]
 theorem domRestrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
-  funext fun a => dite_eq_left a.2
+    (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.property) :=
+  funext fun a => dite_eq_left a.property
 
 @[simp]
 theorem domRestrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
     (sᶜ.domRestrict fun a => if h : a ∈ s then f a h else g a h) =
-      (fun a : (sᶜ : Set α) => g a a.2) :=
-  funext fun a => dite_eq_right a.2
+      (fun a : (sᶜ : Set α) => g a a.property) :=
+  funext fun a => dite_eq_right a.property
 
 @[simp]
 theorem domRestrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
@@ -102,10 +102,10 @@ theorem domRestrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β 
 /-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
 @[simp]
 def domRestrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
-  fun x => f ⟨x.1, hst x.2⟩
+  fun x => f ⟨x.val, hst x.property⟩
 
 theorem domRestrict₂_def {s t : Set α} (hst : s ⊆ t) :
-    domRestrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+    domRestrict₂ (π := π) hst = fun f x ↦ f ⟨x.val, hst x.property⟩ := rfl
 
 theorem domRestrict₂_comp_domRestrict {s t : Set α} (hst : s ⊆ t) :
     (domRestrict₂ (π := π) hst) ∘ t.domRestrict = s.domRestrict := rfl
@@ -257,7 +257,7 @@ theorem codRestrict_domRestrict (h : ∀ x : s, f x ∈ t) :
 
 /-- Reverse of `Set.codRestrict_domRestrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
-    h.restrict f s t = codRestrict (s.domRestrict f) t fun x => h x.2 :=
+    h.restrict f s t = codRestrict (s.domRestrict f) t fun x => h x.property :=
   rfl
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
@@ -312,7 +312,7 @@ lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreim
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
 
 lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
-  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.property : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
 
 lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
@@ -327,7 +327,7 @@ end
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.domRestrict f) :=
-  ⟨fun H a b h => Subtype.ext <| H a.2 b.2 h, fun H a as b bs h =>
+  ⟨fun H a b h => Subtype.ext <| H a.property b.property h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective

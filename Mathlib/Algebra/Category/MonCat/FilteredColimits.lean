@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
 
@@ -19,7 +22,6 @@ In this file, we start with a small filtered category `J` and a functor `F : J �
 We then construct a monoid structure on the colimit of `F ⋙ forget MonCat` (in `Type`), thereby
 showing that the forgetful functor `forget MonCat` preserves filtered colimits. Similarly for
 `AddMonCat`, `CommMonCat` and `AddCommMonCat`.
-
 -/
 
 @[expose] public section
@@ -231,7 +233,6 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
 The only thing left to see is that it is a monoid homomorphism.

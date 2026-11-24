@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
@@ -245,6 +248,14 @@ variable [MulLeftMono M] [MulRightMono M]
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
   (pow_left_mono _).reflect_lt
+
+@[to_additive nsmul_max]
+theorem max_pow (a b : M) (n : ℕ) : max a b ^ n = max (a ^ n) (b ^ n) :=
+  (pow_left_mono n).map_max
+
+@[to_additive nsmul_min]
+theorem min_pow (a b : M) (n : ℕ) : min a b ^ n = min (a ^ n) (b ^ n) :=
+  (pow_left_mono n).map_min
 
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by

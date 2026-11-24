@@ -77,7 +77,6 @@ For a **pivot** `p : Fin (n + 1)`,
   hypothesis that `h : ∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
-
 -/
 
 @[expose] public section
@@ -1140,17 +1139,17 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
   given that it is satisfied for some `k`. -/
 @[no_expose]
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
-  (Fin.findX p h).1
+  (Fin.findX p h).val
 
 /-- `Fin.find p h` satisfies `p`. -/
-protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
+protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).property.1
 
 grind_pattern Fin.find_spec => Fin.find p h
 
 /-- For `m : Fin n`, if `m < Fin.find p h` then `m` does not satisfy `p`. -/
 @[grind →]
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
-  @(Fin.findX p h).2.2
+  @(Fin.findX p h).property.2
 
 /-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :

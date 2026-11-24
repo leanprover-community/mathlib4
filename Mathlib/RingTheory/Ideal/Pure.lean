@@ -122,7 +122,7 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     ext p
     rw [RingHom.pi_apply, Pi.zero_apply]
     exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
-      (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
+      (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.property hx
 
 @[stacks 04PT]
 lemma Ideal.zeroLocus_inj_of_pure {I J : Ideal R} [I.Pure] [J.Pure] :

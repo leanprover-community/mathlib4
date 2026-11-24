@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal of a property of objects
 
@@ -15,7 +18,6 @@ We define `P.rightOrthogonal` as the property of objects `Y` such that
 any map `f : X ⟶ Y` vanishes when `P X` holds. Similarly, we define
 `P.leftOrthogonal` as the property of objects `X` such that
 any map `f : X ⟶ Y` vanishes when `P Y` holds.
-
 -/
 
 @[expose] public section

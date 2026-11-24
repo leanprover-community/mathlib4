@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conformal Groupoid
 

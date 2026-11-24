@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presieves
 
@@ -223,8 +226,8 @@ theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C}
 lemma exists_eq_ofArrows (R : Presieve X) :
     ∃ (ι : Type (max u₁ v₁)) (Y : ι → C) (f : ∀ i, Y i ⟶ X), R = .ofArrows Y f := by
   let ι := { x : Σ Z, (Z ⟶ X) // R x.2 }
-  use ι, fun x ↦ x.1.1, fun x ↦ x.1.2
-  exact le_antisymm (fun Z g hg ↦ .mk (⟨⟨_, _⟩, hg⟩ : ι)) fun Z g ⟨x⟩ ↦ x.2
+  use ι, fun x ↦ x.val.1, fun x ↦ x.val.2
+  exact le_antisymm (fun Z g hg ↦ .mk (⟨⟨_, _⟩, hg⟩ : ι)) fun Z g ⟨x⟩ ↦ x.property
 
 lemma ofArrows_category {S : C} (R : Presieve S) :
     Presieve.ofArrows _ (fun (f : R.category) ↦ f.obj.hom) = R := by
@@ -438,7 +441,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ofArrows_eq_ofArrows_uncurry {ι : Type*} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) :
-    ofArrows X f = ofArrows _ (fun i : (Presieve.ofArrows X f).uncurry ↦ f i.2.idx) := by
+    ofArrows X f = ofArrows _ (fun i : (Presieve.ofArrows X f).uncurry ↦ f i.property.idx) := by
   refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ .mk _
   exact .mk' ⟨⟨_, _⟩, hg⟩ (by simp [ofArrows.obj_idx]) (by simp [ofArrows.hom_idx])
 

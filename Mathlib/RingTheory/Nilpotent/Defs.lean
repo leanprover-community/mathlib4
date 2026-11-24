@@ -23,7 +23,6 @@ and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
   * `Commute.isNilpotent_mul_left`
   * `Commute.isNilpotent_mul_right`
   * `nilpotencyClass`
-
 -/
 
 @[expose] public section

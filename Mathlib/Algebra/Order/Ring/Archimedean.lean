@@ -6,11 +6,14 @@ Authors: Weiyi Wang, Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Class
-public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.RingTheory.Valuation.Basic
 
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.DenselyOrdered
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Archimedean classes of a linearly ordered ring
