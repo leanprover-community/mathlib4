@@ -6,7 +6,7 @@ Authors: Tjeerd Jan Heeringa
 module
 
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.InnerProductSpace.Reproducing
+public import Mathlib.Analysis.InnerProductSpace.Reproducing.Basic
 
 /-!
 # Operations on RKHS
