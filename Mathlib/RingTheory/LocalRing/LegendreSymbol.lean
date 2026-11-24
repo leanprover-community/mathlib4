@@ -141,9 +141,8 @@ theorem eq_pow (hR : ringChar (ResidueField R) ≠ 2) :
   by_cases h0 : (residue R) a = 0
   · rw [h0, zero_pow (by simp [Fintype.one_lt_card])]
     simp
-  · simp only [open scoped Classical in quadraticChar_eq_pow_of_char_ne_two hR h0]
-    simp only [Int.reduceNeg, Int.cast_ite,
-      Int.cast_one, Int.cast_neg]
+  · simp only [open scoped Classical in quadraticChar_eq_pow_of_char_ne_two hR h0,
+    Int.reduceNeg, Int.cast_ite, Int.cast_one, Int.cast_neg]
     split_ifs with h
     · rw [h]
     · grind [FiniteField.pow_dichotomy hR h0]
