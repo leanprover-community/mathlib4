@@ -39,10 +39,8 @@ variable {m n R : Type*}
 namespace Matrix
 
 theorem SeparatingLeft.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition R]
-    {N : Matrix m n R} (hN : N.SeparatingLeft) : Fintype.card m ≤ Fintype.card n := by
-  refine card_le_of_injective R (vecMulLinear N) ?_
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  exact fun v hv ↦ hN.eq_zero_of_vecMul_eq_zero hv
+    {N : Matrix m n R} (hN : N.SeparatingLeft) : Fintype.card m ≤ Fintype.card n :=
+  card_le_of_injective R (vecMulLinear N) hN.vecMul_injective
 
 theorem SeparatingRight.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition Rᵐᵒᵖ]
     {N : Matrix m n R} (hN : N.SeparatingRight) : Fintype.card n ≤ Fintype.card m :=
@@ -51,9 +49,9 @@ theorem SeparatingRight.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCond
 /-- Nondegenerate matrices are square. -/
 theorem Nondegenerate.nonempty_equiv [Finite m] [Finite n] [Ring R]
     [StrongRankCondition R] [StrongRankCondition Rᵐᵒᵖ]
-    {N : Matrix m n R} (hN : N.Nondegenerate) : Nonempty (m ≃ n) := by
+    {N : Matrix m n R} (hN : N.Nondegenerate) : Nonempty (m ≃ n) :=
   have := Fintype.ofFinite m; have := Fintype.ofFinite n
-  exact ⟨Fintype.equivOfCardEq (le_antisymm
+  ⟨Fintype.equivOfCardEq (le_antisymm
     (SeparatingLeft.card_le hN.separatingLeft) (SeparatingRight.card_le hN.separatingRight))⟩
 
 variable [Fintype n]
@@ -223,9 +221,9 @@ omit [Fintype n] in
 theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite n]
     {M : Matrix l m A} {N : Matrix m n A} (h : N.Nondegenerate) :
     (M * N).Nondegenerate ↔ M.Nondegenerate := by
+  obtain ⟨e₂⟩ := h.nonempty_equiv
   by_cases hlm : Nonempty (l ≃ m)
   · obtain ⟨e₁⟩ := hlm
-    obtain ⟨e₂⟩ := h.nonempty_equiv
     have := Fintype.ofFinite l
     have := Fintype.ofFinite n
     classical
@@ -237,7 +235,6 @@ theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite
     exact mul_ne_zero_iff_right hN'
   · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm (hM.nonempty_equiv))
     obtain ⟨e₁⟩ := hMN.nonempty_equiv
-    obtain ⟨e₂⟩ := h.nonempty_equiv
     exact ⟨e₁.trans e₂.symm⟩
 
 omit [Fintype n] in

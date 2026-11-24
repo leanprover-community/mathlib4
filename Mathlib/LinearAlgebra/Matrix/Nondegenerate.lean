@@ -242,6 +242,19 @@ theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype 
 
 end Semiring
 
+section NonUnitalRing
+variable {m n R : Type*} [NonUnitalRing R] {M : Matrix m n R}
+
+theorem SeparatingLeft.vecMul_injective [Fintype m] [Finite n] (hM : M.SeparatingLeft) :
+    Function.Injective M.vecMul := fun _ _ h ↦
+  sub_eq_zero.1 <| hM.eq_zero_of_vecMul_eq_zero <| (sub_vecMul ..).trans (sub_eq_zero.2 h)
+
+theorem SeparatingRight.mulVec_injective [Finite m] [Fintype n] (hM : M.SeparatingRight) :
+    Function.Injective M.mulVec := fun _ _ h ↦
+  sub_eq_zero.1 <| hM.eq_zero_of_mulVec_eq_zero <| (mulVec_sub ..).trans (sub_eq_zero.2 h)
+
+end NonUnitalRing
+
 section NonUnitalCommSemiring
 variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
 
@@ -312,8 +325,7 @@ theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
 /-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
 theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
     Function.Injective M.mulVec :=
-  fun _ _ hxy => sub_eq_zero.mp
-    (eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero hM (by rw [mulVec_sub, hxy, sub_self]))
+  (Nondegenerate.of_det_mem_nonZeroDivisors hM).separatingRight.mulVec_injective
 
 theorem mulVec_injective_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) :
     Function.Injective M.mulVec :=
