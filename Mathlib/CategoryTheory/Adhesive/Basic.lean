@@ -20,6 +20,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms, and such pushouts are van Kampen.
 
 ## Main Results
+
 - `CategoryTheory.Type.adhesive`: The category of `Type` is adhesive.
 - `CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left`: In adhesive categories,
   pushouts along monomorphisms are pullbacks.

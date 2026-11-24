@@ -20,6 +20,7 @@ commutative binomial ring `R`.
   of a commutative binomial ring `R`.
 
 ## Main Results
+
 * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
 * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
 * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map

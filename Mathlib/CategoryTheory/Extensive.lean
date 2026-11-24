@@ -22,6 +22,7 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
   coproducts, and binary coproducts are van Kampen.
 
 ## Main Results
+
 - `CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive`: The initial object
   in extensive categories is strict.
 - `CategoryTheory.FinitaryExtensive.mono_inr_of_isColimit`: Coproduct injections are monic in

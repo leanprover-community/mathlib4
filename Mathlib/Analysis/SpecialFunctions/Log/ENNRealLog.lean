@@ -18,6 +18,7 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 - `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
 
 ## Main Results
+
 - `ENNReal.log_strictMono`: `log` is increasing;
 - `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;

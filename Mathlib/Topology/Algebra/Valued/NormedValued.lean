@@ -20,6 +20,7 @@ Nontrivial nonarchimedean norms correspond to rank one valuations.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
+
 * The valuation of a normed field has rank at most one.
 
 ## Tags

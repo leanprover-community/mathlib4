@@ -24,6 +24,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
   coefficients with respect to the `K`-basis `B` of `L`.
 
 ## Main Results
+
 * `norm_mul_le_const_mul_norm` : For any `K`-basis of `L`, `B.norm` is bounded with respect to
   multiplication. That is, `∃ (c : ℝ), c > 0` such that
   ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.

@@ -28,6 +28,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofIsHomeomorph`: a linear equivalence that is a homeomorphism is a continuous linear equivalence.
 
 ## Main Results
+
 * `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
   homeomorphism if and only if it is continuous in both directions.
 -/

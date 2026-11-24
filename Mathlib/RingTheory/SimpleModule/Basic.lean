@@ -30,6 +30,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * A `DivisionRing` structure on the endomorphism ring of a simple module.
 
 ## Main Results
+
 * Schur's Lemma: `bijective_or_eq_zero` shows that a linear map between simple modules
   is either bijective or 0, leading to a `DivisionRing` structure on the endomorphism ring.
 * `isSimpleModule_iff_quot_maximal`:

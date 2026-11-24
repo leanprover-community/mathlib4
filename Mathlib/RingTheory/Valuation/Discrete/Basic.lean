@@ -34,6 +34,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   uniformizer.
 
 ## Main Results
+
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
   uniformizer.
 * `Valuation.associated_of_isUniformizer`: If two elements are uniformizers, they are associated.

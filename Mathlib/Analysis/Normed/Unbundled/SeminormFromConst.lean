@@ -21,6 +21,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
   as the limit of `f (x * c ^ n) / (f c) ^ n`.
 
 ## Main Results
+
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst c f`
   is nonarchimedean when `f` is nonarchimedean.
 * `seminormFromConst_isPowMul` : the function `seminormFromConst c f`

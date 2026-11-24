@@ -18,6 +18,7 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
 * `PowerSeries.catalanSeries`: The Catalan generating function as a power series.
 
 ## Main Results
+
 * `PowerSeries.catalanSeries_one_add_X_mul_self_sq`: The Catalan generating function satisfies the
   equation `catalanSeries = 1 + X * catalanSeries ^ 2`.
 
