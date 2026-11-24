@@ -39,17 +39,16 @@ inductive IsSumNonzeroSq [Mul R] [Add R] [Zero R] : R → Prop
   | sq {a : R} (ha : a ≠ 0) : IsSumNonzeroSq (a * a)
   | sq_add {a s : R} (ha : a ≠ 0) (hs : IsSumNonzeroSq s) : IsSumNonzeroSq (a * a + s)
 
-attribute [aesop 90%] IsSumNonzeroSq.sq
-
-@[aesop 90%]
 theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [sq_add, add_assoc]
 
+@[grind →]
 theorem IsSumNonzeroSq.isSumSq [AddMonoid R] [Mul R] {s : R}
     (h : IsSumNonzeroSq s) : IsSumSq s := by
-  induction h <;> aesop
+  induction h <;> grind
 
+@[grind =]
 theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
     IsSumNonzeroSq s ↔ IsSumSq s where
   mp := IsSumNonzeroSq.isSumSq
@@ -82,8 +81,9 @@ attribute [norm_cast] coe_sumNonzeroSq
 
 @[simp]
 theorem closure_mul_self : closure {x * x | x ≠ (0 : R)} = sumNonzeroSq R := by
-  refine closure_eq_of_le (fun x hx ↦ by aesop) (fun x hx ↦ ?_)
-  induction hx <;> aesop
+  refine closure_eq_of_le (fun x hx ↦ ?_) (fun x hx ↦ ?_)
+  · grind [coe_sumNonzeroSq, IsSumNonzeroSq.sq]
+  · induction hx <;> grind [membership]
 
 end AddSubsemigroup
 
@@ -103,10 +103,10 @@ theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
   not_isSumNonzeroSq_zero := by
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
-    intro x hx
+    intro _ hx
     induction hx with
-    | sq ha => grind
-    | @sq_add b s hb hs ih => grind [ha (.mul_self b) hs.isSumSq]
+    | sq => grind
+    | @sq_add b => grind [ha (s₁ := b * b)]
 
 theorem of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
@@ -115,7 +115,7 @@ theorem of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     intro x hx
     induction hx with
     | sq ha => exact fun hc ↦ ha (h .zero (by simpa using hc))
-    | sq_add ha hs ih => grind [hs.isSumSq]
+    | sq_add ha hs ih => grind
 
 @[deprecated (since := "2026-11-24")]
 alias of_eq_zero_of_eq_zero_of_mul_self_add := of_eq_zero_of_mul_self_add
