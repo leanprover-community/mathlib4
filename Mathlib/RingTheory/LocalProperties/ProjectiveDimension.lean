@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 
 import Mathlib.Algebra.Category.ModuleCat.Projective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Projective Dimension Equal to Supremum over Localizations
 

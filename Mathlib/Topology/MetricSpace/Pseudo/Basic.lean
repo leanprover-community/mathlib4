@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.Topology.Metrizable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudo-metric spaces
 

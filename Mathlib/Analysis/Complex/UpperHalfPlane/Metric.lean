@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SpecialFunctions.Arsinh
 
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric on the upper half-plane
 

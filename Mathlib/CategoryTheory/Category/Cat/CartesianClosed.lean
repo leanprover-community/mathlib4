@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian closed structure on `Cat`
 

@@ -12,6 +12,9 @@ public import Mathlib.Tactic.ApplyFun
 
 import Mathlib.Algebra.Group.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turing machine tapes
 

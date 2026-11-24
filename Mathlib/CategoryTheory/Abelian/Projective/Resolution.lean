@@ -50,7 +50,6 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFZero {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 0 ⟶ Q.complex.X 0 :=
@@ -66,7 +65,6 @@ lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ P.isColimitCokernelCofork
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 1 ⟶ Q.complex.X 1 :=
@@ -94,7 +92,6 @@ def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveRes
   ChainComplex.mkHom _ _ (liftFZero f _ _) (liftFOne f _ _) (liftFOne_zero_comm f P Q)
     fun n ⟨g, g', w⟩ => ⟨(liftFSucc P Q n g g' w).1, (liftFSucc P Q n g g' w).2⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the lift of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
 theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
@@ -299,7 +296,6 @@ lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
   simp [ofComplex]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]

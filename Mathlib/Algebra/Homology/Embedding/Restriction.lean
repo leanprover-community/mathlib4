@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The restriction functor of an embedding of complex shapes
 

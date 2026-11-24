@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Topology.Defs.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit of an ultrafilter.
 

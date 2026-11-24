@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frobenius Number
 
@@ -22,7 +25,7 @@ largest positive integer that cannot be expressed as a sum of nonnegative multip
 integers. Here we show the Frobenius number of two relatively prime integers `m` and `n` greater
 than 1 is `m * n - m - n`. This result is also known as the Chicken McNugget Theorem.
 
-## Implementation Notes
+## Implementation notes
 
 First we define Frobenius numbers in general using `IsGreatest` and `AddSubmonoid.closure`. Then
 we proceed to compute the Frobenius number of `m` and `n`.

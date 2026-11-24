@@ -49,7 +49,7 @@ If `β` is a `NormedLinearOrderedField` :
 - If `u ~[l] v`, we have `Tendsto u l atTop ↔ Tendsto v l atTop`
   (see `IsEquivalent.tendsto_atTop_iff`)
 
-## Implementation Notes
+## Implementation notes
 
 Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)` in that order.
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.

@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 import Mathlib.Algebra.CharP.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic of intermediate fields
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushout-tensor-products and the braiding
 

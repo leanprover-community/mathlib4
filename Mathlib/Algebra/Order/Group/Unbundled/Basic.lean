@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 
 This file develops the basics of unbundled ordered groups.
 
-## Implementation details
+## Implementation notes
 
 Unfortunately, the number of `'` appended to lemmas in this file
 may differ between the multiplicative and the additive version of a lemma.

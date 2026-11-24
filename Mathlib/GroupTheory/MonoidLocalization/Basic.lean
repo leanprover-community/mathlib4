@@ -67,6 +67,7 @@ the `LocalizationMap.mk'` induced by any localization map.
   embedding.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/

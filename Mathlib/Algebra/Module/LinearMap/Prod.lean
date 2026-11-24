@@ -16,6 +16,7 @@ import Mathlib.Tactic.Abel
 Note that these results use `IsLinearMap`, which is mostly discouraged.
 
 ## Tags
+
 linear algebra, vector space, module
 -/
 

@@ -32,6 +32,7 @@ The indicator function is implemented non-computably, to avoid having to pass ar
 arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`.
 
 ## Tags
+
 indicator, characteristic
 -/
 

@@ -96,6 +96,7 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
   topology.
 
 ## References
+
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
 
