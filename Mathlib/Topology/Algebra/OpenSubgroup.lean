@@ -490,23 +490,26 @@ attribute [to_additive] OpenNormalSubgroup
 
 namespace OpenNormalSubgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G]
+variable {G : Type u} [Group G] [TopologicalSpace G] {H K : OpenNormalSubgroup G}
 
 @[to_additive]
 instance (H : OpenNormalSubgroup G) : H.toSubgroup.Normal := H.isNormal'
 
 @[to_additive]
-theorem toSubgroup_injective : Function.Injective
-    (fun H ↦ H.toOpenSubgroup.toSubgroup : OpenNormalSubgroup G → Subgroup G) :=
-  fun A B h ↦ by
-  ext
-  dsimp at h
-  rw [h]
+lemma toOpenSubgroup_injective : Injective (toOpenSubgroup : OpenNormalSubgroup G → OpenSubgroup G)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
--- Not `@[simp]` since its LHS simplifies via `OpenSubgroup.toSubgroup_inj`.
+@[to_additive (attr := simp)]
+lemma toOpenSubgroup_inj : H.toOpenSubgroup = K.toOpenSubgroup ↔ H = K :=
+  toOpenSubgroup_injective.eq_iff
+
 @[to_additive]
-theorem toSubgroup_inj {H K : OpenNormalSubgroup G} : H.toSubgroup = K.toSubgroup ↔ H = K :=
-  toSubgroup_injective.eq_iff
+lemma toSubgroup_injective : (fun H ↦ H.toSubgroup : OpenNormalSubgroup G → Subgroup G).Injective :=
+  OpenSubgroup.toSubgroup_injective.comp toOpenSubgroup_injective
+
+-- Not `@[simp]` since `simp` already proves it.
+@[to_additive]
+theorem toSubgroup_inj : H.toSubgroup = K.toSubgroup ↔ H = K := by simp
 
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where

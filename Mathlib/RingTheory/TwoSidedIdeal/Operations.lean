@@ -387,10 +387,10 @@ lemma asIdealOpposite_injective :
     asIdealOpposite I ≤ asIdealOpposite J ↔ I ≤ J := by
   simp only [le_iff_mem_imp_mem, mem_asIdealOpposite, MulOpposite.forall, MulOpposite.unop_op]
 
-@[simp] lemma bot_asIdealOpposite : (⊥ : TwoSidedIdeal R).asIdealOpposite = ⊥ := by
+@[simp] lemma asIdealOpposite_bot : (⊥ : TwoSidedIdeal R).asIdealOpposite = ⊥ := by
   ext; simp [mem_asIdealOpposite]
 
-@[simp] lemma top_asIdealOpposite : (⊤ : TwoSidedIdeal R).asIdealOpposite = ⊤ := by
+@[simp] lemma asIdealOpposite_top : (⊤ : TwoSidedIdeal R).asIdealOpposite = ⊤ := by
   ext; simp [mem_asIdealOpposite]
 
 @[simp] lemma asIdealOpposite_eq_top {I : TwoSidedIdeal R} : asIdealOpposite I = ⊤ ↔ I = ⊤ := by
