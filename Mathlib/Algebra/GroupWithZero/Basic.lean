@@ -5,11 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
+public import Batteries.Tactic.SeqFocus
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Conv
-public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element
@@ -30,11 +30,10 @@ Various lemmas about `GroupWithZero` and `CommGroupWithZero`.
 To reduce import dependencies, the type-classes themselves are in
 `Algebra.GroupWithZero.Defs`.
 
-## Implementation details
+## Implementation notes
 
 As is usual in mathlib, we extend the inverse function to the zero element,
 and require `0⁻¹ = 0`.
-
 -/
 
 @[expose] public section

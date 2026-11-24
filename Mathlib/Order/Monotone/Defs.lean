@@ -110,6 +110,12 @@ to_dual_insert_cast StrictAntiOn := by grind only
 
 end MonotoneDef
 
+/-- `σ` is *stable* for `f` if it breaks ties by increasing index: among elements with equal
+`f`-value, `σ` preserves their order. This property does not use the order on the codomain of `f`,
+only its equality, so it is unchanged by reversing that order. -/
+def IsStable {α γ : Type*} [Preorder α] (f : α → γ) (σ : α → α) : Prop :=
+  ∀ ⦃i j⦄, i ≤ j → f (σ i) = f (σ j) → σ i ≤ σ j
+
 section Decidable
 
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
@@ -257,13 +263,13 @@ theorem antitone_iff_forall_lt : Antitone f ↔ ∀ ⦃a b⦄, a < b → f b ≤
 theorem monotoneOn_iff_forall_lt :
     MonotoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a ≤ f b :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
-   fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) (hf ha hb)⟩
+   fun hf _ ha _ hb ↦ map_le_of_lt_imp_le_of_le (hf ha hb)⟩
 
 @[to_dual none]
 theorem antitoneOn_iff_forall_lt :
     AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
-   fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).ge) (hf ha hb)⟩
+   fun hf _ ha _ hb ↦ map_le_of_gt_imp_le_of_ge (hf ha hb)⟩
 
 -- `Preorder α` isn't strong enough: if the preorder on `α` is an equivalence relation,
 -- then `StrictMono f` is vacuously true.
@@ -288,21 +294,27 @@ namespace Subsingleton
 
 variable [Preorder α] [Preorder β]
 
+@[nontriviality]
 protected theorem monotone [Subsingleton α] (f : α → β) : Monotone f :=
   fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
+@[nontriviality]
 protected theorem antitone [Subsingleton α] (f : α → β) : Antitone f :=
   fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
+@[nontriviality]
 theorem monotone' [Subsingleton β] (f : α → β) : Monotone f :=
   fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
+@[nontriviality]
 theorem antitone' [Subsingleton β] (f : α → β) : Antitone f :=
   fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
+@[nontriviality]
 protected theorem strictMono [Subsingleton α] (f : α → β) : StrictMono f :=
   fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 
+@[nontriviality]
 protected theorem strictAnti [Subsingleton α] (f : α → β) : StrictAnti f :=
   fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 

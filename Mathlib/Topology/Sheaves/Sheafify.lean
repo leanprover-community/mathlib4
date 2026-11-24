@@ -51,8 +51,9 @@ namespace Sheafify
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
 def isGerm : PrelocalPredicate fun x => F.stalk x where
-  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.1 x.2 g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
+  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.val x.property g
+  res := fun i _ ⟨g, p⟩ =>
+    ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.property g).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
@@ -72,8 +73,8 @@ def sheafify : Sheaf (Type v) X :=
 sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
-def toSheafify : F ⟶ F.sheafify.1 where
-  app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
+def toSheafify : F ⟶ F.sheafify.obj where
+  app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.property f, PrelocalPredicate.sheafifyOf
     ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
@@ -93,14 +94,14 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   obtain ⟨U, m, s, rfl⟩ := F.exists_germ_eq t
   use ⟨U, m⟩
   fconstructor
-  · exact fun y => F.germ _ _ y.2 s
+  · exact fun y => F.germ _ _ y.property s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
   intro U V fU hU fV hV e
-  rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
-  rcases hV ⟨x, V.2⟩ with ⟨V', mV, iV, gV, wV⟩
+  rcases hU ⟨x, U.property⟩ with ⟨U', mU, iU, gU, wU⟩
+  rcases hV ⟨x, V.property⟩ with ⟨V', mV, iV, gV, wV⟩
   have wUx := wU ⟨x, mU⟩
   dsimp at wUx; rw [wUx] at e; clear wUx
   have wVx := wV ⟨x, mV⟩
@@ -113,10 +114,10 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   · change W ⊓ (U' ⊓ V') ⟶ V.val
     exact Opens.infLERight _ _ ≫ Opens.infLERight _ _ ≫ iV
   · intro w
-    specialize wU ⟨w.1, w.2.2.1⟩
-    specialize wV ⟨w.1, w.2.2.2⟩
+    specialize wU ⟨w.val, w.property.2.1⟩
+    specialize wV ⟨w.val, w.property.2.2⟩
     refine wU.trans <| .trans ?_ wV.symm
-    rw [← F.germ_res iU' w w.2.1, ← F.germ_res iV' w w.2.1,
+    rw [← F.germ_res iU' w w.property.1, ← F.germ_res iV' w w.property.1,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 
 /-- The isomorphism between a stalk of the sheafification and the original stalk.

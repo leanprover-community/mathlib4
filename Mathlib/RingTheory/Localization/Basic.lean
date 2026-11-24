@@ -64,6 +64,7 @@ is a field" is a `def` rather than an `instance`, so if you want to reason about
 fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -96,12 +97,13 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
-    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    refine ⟨⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩, funext fun j ↦ ?_⟩
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
     · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := exists_mk'_eq S x
-    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+    exact ⟨mk' (M := T) _ (update 0 i r)
+        ⟨update 0 i s, by apply update_self i s.val 0 ▸ s.property⟩,
       by simp [map_mk']⟩
 
 end Localization
@@ -167,8 +169,8 @@ variable (M S Q)
 there is an isomorphism of localizations `S ≃ₐ[R] Q`. -/
 @[simps!]
 noncomputable def algEquiv : S ≃ₐ[R] Q :=
-  { ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id with
-    commutes' := ringEquivOfRingEquiv_eq _ }
+  .ofCommutes (ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id)
+    (ringEquivOfRingEquiv_eq _)
 
 end
 
@@ -227,10 +229,10 @@ set_option backward.isDefEq.respectTransparency false in
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
 @[simps!]
-noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
-  __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
-  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
+  .ofCommutes (ringEquivOfRingEquiv S Q h.toRingEquiv H) fun _ ↦ by
+    dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
@@ -248,7 +250,7 @@ set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
 theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
-      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
+      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.property⟩ := by
   simp [map_mk']
 
 theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
@@ -290,9 +292,6 @@ lemma of_le_isUnit_of_bijective {M : Submonoid R}
 
 lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
   of_le_isUnit_of_bijective (by simpa) Function.bijective_id
-
-@[deprecated (since := "2026-04-15")]
-alias at_units := of_le_isUnit
 
 instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
 
@@ -352,7 +351,7 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
     IsLocalization M S ↔
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
-  isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+  isLocalization_iff_of_algEquiv M (.ofCommutes h fun _ => rfl)
 
 variable (S) in
 /-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra
@@ -695,7 +694,7 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 /-- For an algebra homomorphism `f : A →ₐ[R] B`, if `A` and `B` are algebras over a localization
 `S` of `R`, then `f` is automatically an `S`-algebra homomorphism. -/
 def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
-  __ := f
+  __ := f.toRingHom
   commutes' := by
     let f := f.comp (IsScalarTower.toAlgHom R S A)
     let g := IsScalarTower.toAlgHom R S B

@@ -5,8 +5,11 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Join.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pseudofunctoriality of categorical joins
@@ -14,7 +17,6 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 In this file, we promote the join construction to two pseudofunctors
 `Join.pseudofunctorLeft` and `Join.pseudofunctorRight`, expressing its pseudofunctoriality in
 each variable.
-
 -/
 
 @[expose] public section

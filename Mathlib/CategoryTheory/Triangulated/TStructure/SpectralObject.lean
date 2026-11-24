@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral objects attached to t-structures
 
@@ -18,7 +21,7 @@ a map `a ⟶ b` in `EInt` (i.e. `a ≤ b`) to the functor
 `t`-homology only in degree `n` such that `a ≤ n < b`.)
 When we have two composable morphisms `f : a ⟶ b` and `g : b ⟶ c` in `EInt`,
 we define a connecting homomorphism
-`ω₁δ : t.ω₁.obj (mk₁ g) ⟶ t.ω₁.obj (mk₁ f) ⋙ shiftFunctor C (1 : ℤ)`, and
+`ω₁δ : t.ω₁.obj (mk₁ g) ⟶ t.ω₁.obj (mk₁ f) ⋙ shiftFunctor C 1`, and
 this gives distinguished triangles that are functorial both in `X : C`
 and `a ⟶ b ⟶ c` in `ComposableArrows EInt 2`.
 
@@ -26,7 +29,6 @@ In other words, for each `X : C`, we define a spectral
 object `t.spectralObject X : SpectralObject C EInt` in the
 triangulated category `C`, and this extends to a functor
 `t.spectralObjectFunctor : C ⥤ SpectralObject C EInt`.
-
 -/
 
 @[expose] public section
@@ -44,11 +46,10 @@ namespace TStructure
 
 variable (t : TStructure C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
 to the functor `t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ω₁ : ComposableArrows EInt 1 ⥤ C ⥤ C where
   obj D := t.eTruncLT.obj (D.obj 1) ⋙ t.eTruncGE.obj (D.obj 0)
   map φ := t.eTruncLT.map (φ.app 1) ◫ t.eTruncGE.map (φ.app 0)
@@ -64,15 +65,13 @@ open CategoryTheory.Functor in
 objects attached to the objects of a triangulated equipped with a t-structure. -/
 @[simps!]
 noncomputable def ω₁δ :
-    t.ω₁.obj (mk₁ (homOfLE hbc)) ⟶ t.ω₁.obj (mk₁ (homOfLE hab)) ⋙ shiftFunctor C (1 : ℤ) :=
+    t.ω₁.obj (mk₁ (homOfLE hbc)) ⟶ t.ω₁.obj (mk₁ (homOfLE hab)) ⋙ shiftFunctor C 1 :=
   whiskerLeft _ (t.eTruncGEToGEGE a b) ≫ (associator _ _ _).inv ≫
     (t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).whiskerLeft (t.eTruncGEδLT.app b) ≫
       (associator _ _ _).inv ≫
         whiskerRight ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoGELT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
@@ -93,12 +92,11 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
 
 /-- The functorial (distinguished) triangles that are part of the spectral
 object attached to objects in a triangulated category equipped with a t-structure. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def triangleω₁δ : C ⥤ Triangle C :=
   Triangle.functorMk (t.ω₁.map (twoδ₂Toδ₁' a b c hab hbc))
     (t.ω₁.map (twoδ₁Toδ₀' a b c hab hbc)) (t.ω₁δ a b c hab hbc)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The triangle `(t.triangleω₁δ a b c hab hbc).obj X` is isomorphic to
 the (distinguished) triangle obtained by applying the functor `t.eTriangleLTGE.obj b`
 to the object `(t.eTruncGE.obj a).obj ((t.eTruncLT.obj c).obj X)`. -/
@@ -116,8 +114,8 @@ noncomputable def triangleω₁δObjIso (X : C) :
       ← Functor.map_comp, eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app]
     simp
   · dsimp
-    simp only [triangleω₁δ_obj_mor₂, eTruncGEToGEGE_app, Category.id_comp,
-      ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
+    simp only [triangleω₁δ_obj_mor₂, homOfLE_leOfHom, eTruncGEIsoGEGE_hom, eTruncGEToGEGE_app,
+      Category.id_comp, ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
       eTruncGE_obj_map_eTruncGEπ_app]
   · simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
@@ -129,7 +127,7 @@ end
 
 /-- The spectral object attached to an object `X : C` in a category
 equipped with a t-structure. It consists of all truncations of `X`. -/
-@[simps ω₁]
+@[simps ω₁, implicit_reducible]
 noncomputable def spectralObject (X : C) : SpectralObject C EInt where
   ω₁ := t.ω₁ ⋙ (evaluation _ _).obj X
   δ'.app D := (t.ω₁δ (D.obj 0) (D.obj 1) (D.obj 2)
@@ -149,7 +147,7 @@ lemma spectralObject_δ (X : C) {a b c : EInt} (f : a ⟶ b) (g : b ⟶ c) :
 
 /-- The spectral object attached to an object `X : C` in a category
 equipped with a t-structure, as a functor `C ⥤ SpectralObject C EInt`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def spectralObjectFunctor : C ⥤ SpectralObject C EInt where
   obj := t.spectralObject
   map φ :=

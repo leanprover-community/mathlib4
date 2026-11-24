@@ -256,7 +256,21 @@ theorem MulAction.continuousSMul_compHom
 
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
-  IsInducing.id.continuousSMul continuous_subtype_val rfl
+  IsInducing.id.continuousSMul continuous_subtypeVal rfl
+
+/-- A `SubMulAction` inherits the continuity of the action of each element. -/
+@[to_additive /-- A `SubAddAction` inherits the continuity of the action of each element. -/]
+instance SubMulAction.continuousConstSMul {M X : Type*} [TopologicalSpace X] [Monoid M]
+    [MulAction M X] [ContinuousConstSMul M X] (p : SubMulAction M X) :
+    ContinuousConstSMul M p :=
+  ⟨fun c ↦ ((continuous_const_smul c).comp continuous_subtypeVal).subtype_mk _⟩
+
+/-- The units of `R` act continuously on the nonzero elements of `M` when they act continuously
+on `M`. -/
+instance Units.continuousConstSMul_nonZero {R M : Type*} [TopologicalSpace M] [Monoid R]
+    [AddCommMonoid M] [DistribMulAction R M] [ContinuousConstSMul Rˣ M] :
+    ContinuousConstSMul Rˣ {x : M // x ≠ 0} :=
+  inferInstanceAs (ContinuousConstSMul Rˣ (Units.nonZeroSubMul R M))
 
 end Monoid
 
@@ -291,11 +305,10 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
   intro x
   let U := {m' : M | m' • y = x}
   have hU : IsOpen U := by
-    by_cases hU' : U ≠ ∅
-    · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
-      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
-      ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
-    simp_all
+    obtain hU | ⟨m, (hm : m • y = x)⟩ := U.eq_empty_or_nonempty
+    · simp [hU]
+    convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+    ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
   simpa using! hU
 
 end IsTopologicalGroup

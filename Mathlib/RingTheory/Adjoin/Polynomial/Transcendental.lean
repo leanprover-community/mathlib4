@@ -13,13 +13,15 @@ public import Mathlib.RingTheory.Algebraic.Basic
 This file establishes some basic properties about `R[s]` when `s` is transcendental over `R`.
 These are mostly just carried over from the polynomial ring `R[X]`.
 
-## Main definitions:
+## Main definitions
+
 * `Polynomial.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
   `R`-algebra equivalence between `R[X]` and `R[s]` given by sending `X` to `s`.
 * `Algebra.adjoin.evalOfTranscendental`: If `s : S` is transcendental over `R`,
   we get an `R`-algebra homomorphism given by evaluation at some element `c`.
 
 ## Main results
+
 * `Transcendental.euclideanDomainAdjoin`: Given a transcendental element `s : S` over `F`, `F[s]`
   is a euclidean domain.
 * `Transcendental.uniqueFactorizationMonoid_adjoin`: Given a transcendental element `s : S` over

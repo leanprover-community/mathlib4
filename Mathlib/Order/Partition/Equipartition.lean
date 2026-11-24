@@ -102,7 +102,7 @@ theorem IsEquipartition.card_small_parts_eq_mod (hP : P.IsEquipartition) :
 /-- There exists an enumeration of an equipartition's parts where
 larger parts map to smaller numbers and vice versa. -/
 theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
-    ∃ f : P.parts ≃ Fin #P.parts, ∀ t, #t.1 = #s / #P.parts + 1 ↔ f t < #s % #P.parts := by
+    ∃ f : P.parts ≃ Fin #P.parts, ∀ t, #t.val = #s / #P.parts + 1 ↔ f t < #s % #P.parts := by
   let el := {p ∈ P.parts | #p = #s / #P.parts + 1}.equivFin
   let es := {p ∈ P.parts | #p = #s / #P.parts}.equivFin
   simp_rw [mem_filter, hP.card_large_parts_eq_mod] at el
@@ -112,9 +112,9 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
     apply (Equiv.refl _).subtypeEquiv
     simp only [Equiv.refl_apply, and_congr_right_iff]
     exact fun _ ha ↦ by rw [hP.card_part_eq_average_iff ha, ne_eq]
-  replace el : { x : P.parts // #x.1 = #s / #P.parts + 1 } ≃
+  replace el : { x : P.parts // #x.val = #s / #P.parts + 1 } ≃
       Fin (#s % #P.parts) := (Equiv.Set.sep ..).symm.trans el
-  replace es : { x : P.parts // ¬#x.1 = #s / #P.parts + 1 } ≃
+  replace es : { x : P.parts // ¬#x.val = #s / #P.parts + 1 } ≃
       Fin (#P.parts - #s % #P.parts) := (Equiv.Set.sep ..).symm.trans (sneg.trans es)
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
@@ -129,12 +129,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   obtain ⟨f, hf⟩ := P.exists_enumeration
   obtain ⟨g, hg⟩ := hP.exists_partsEquiv
   let z := fun a ↦ #P.parts * (f a).2 + g (f a).1
-  have gl := fun a ↦ (g (f a).1).2
+  have gl := fun a ↦ (g (f a).1).isLt
   have less : ∀ a, z a < #s := fun a ↦ by
-    rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
+    rcases hP.card_parts_eq_average (f a).1.property with (c | c)
     · calc
         _ < #P.parts * ((f a).2 + 1) := by simp only [z, mul_add_one]; gcongr; exact gl a
-        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.2
+        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.isLt
         _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
         _ = _ := Nat.div_add_mod ..
     · rw [← Nat.div_add_mod #s #P.parts]

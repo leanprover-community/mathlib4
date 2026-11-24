@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Convex.NNReal
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Hölder continuous functions
@@ -31,7 +31,6 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 ## Tags
 
 Hölder continuity, Lipschitz continuity
-
 -/
 
 @[expose] public section

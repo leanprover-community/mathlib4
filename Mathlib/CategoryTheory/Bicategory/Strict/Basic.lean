@@ -5,8 +5,11 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.EqToHom
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Strict bicategories

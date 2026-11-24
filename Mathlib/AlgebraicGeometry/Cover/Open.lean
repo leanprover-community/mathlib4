@@ -12,7 +12,8 @@ public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 
 This file provides the basic API for open covers of schemes.
 
-## Main definition
+## Main definitions
+
 - `AlgebraicGeometry.Scheme.OpenCover`: The type of open covers of a scheme `X`,
   consisting of a family of open immersions into `X`,
   and for each `x : X` an open immersion (indexed by `f x`) that covers `x`.
@@ -59,7 +60,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X := by
     f x := ⟨(e x).inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
     mem₀ := by
       rw [presieve₀_mem_precoverage_iff]
-      refine ⟨fun x ↦ ⟨x, ⟨(e x).hom.base ⟨x, (U x).2⟩, ?_⟩⟩, inferInstance⟩
+      refine ⟨fun x ↦ ⟨x, ⟨(e x).hom.base ⟨x, (U x).property⟩, ?_⟩⟩, inferInstance⟩
       change ((((e x).hom ≫ (e x).inv).base ≫ (X.ofRestrict _).base)) ⟨x, _⟩ = x
       cat_disch }
 
@@ -92,8 +93,8 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : Comp
     exact ⟨⟨y, hy⟩, hy'⟩
   exact
     { I₀ := t
-      X := fun x => 𝒰.X (𝒰.idx x.1)
-      f := fun x => 𝒰.f (𝒰.idx x.1)
+      X := fun x => 𝒰.X (𝒰.idx x.val)
+      f := fun x => 𝒰.f (𝒰.idx x.val)
       mem₀ := by
         rw [presieve₀_mem_precoverage_iff]
         exact ⟨h, inferInstance⟩ }
@@ -210,7 +211,8 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
   f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
   idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by
-      by_contra! h; apply x.2.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
+      by_contra! h; apply x.isPrime.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le,
+        Set.range_subset_iff]
     exact this.choose
   covers x := by
     generalize_proofs H
@@ -294,7 +296,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.f ⟨x, r⟩) =
-      (X.affineCover.f x) '' (PrimeSpectrum.basicOpen r).1 := by
+      (X.affineCover.f x) '' (PrimeSpectrum.basicOpen r).carrier := by
   simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, Set.range_comp,
     PreZeroHypercover.bind_f, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp]
   congr

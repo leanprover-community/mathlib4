@@ -5,10 +5,10 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 import Mathlib.Order.Monotone.Odd
 

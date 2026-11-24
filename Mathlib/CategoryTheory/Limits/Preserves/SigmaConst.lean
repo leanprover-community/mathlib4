@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `sigmaConst.obj` preserves colimits
 
@@ -15,7 +18,6 @@ Given an object `R` in a category `C` with coproducts of size `w`,
 the functor `sigmaConst.obj R : Type w ⥤ C` which sends
 a type `T` to the coproduct of copies of `R` indexed by `T`
 preserves all colimits.
-
 -/
 
 @[expose] public section
@@ -26,7 +28,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
@@ -71,7 +72,6 @@ noncomputable def sigmaConstCokernelCofork :
       if hb : b ∈ (Set.range f)ᶜ then Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ else 0))
     (by ext; simp)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
     dsimp% Sigma.ι (fun _ ↦ R) b ≫ (sigmaConstCokernelCofork R f).π =
@@ -80,7 +80,6 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
   rw [Sigma.ι_comp_desc]
   apply dite_eq_left
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
@@ -88,7 +87,6 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
   rw [Sigma.ι_comp_desc]
   exact dite_eq_right (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
 by a map `f : α → β` identifies to the coproduct of copies of `R`
 indexed by the complement of the range of `f`. -/
@@ -113,7 +111,6 @@ instance :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroMorphisms C] (R : C) [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
     HasCokernel ((sigmaConst.obj R).map f) := by
   dsimp; infer_instance
@@ -123,7 +120,7 @@ section
 variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
   (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
 
-/-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
+/-- The isomorphism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
 preserves coproducts. -/
 noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
   NatIso.ofComponents (fun _ ↦ PreservesCoproduct.iso _ _) (fun {T₁ T₂} f ↦ by
@@ -131,7 +128,7 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
     rw [← cancel_epi (PreservesCoproduct.iso F (fun (_ : T₁) ↦ X)).inv,
       ← cancel_mono (PreservesCoproduct.iso F (fun (_ : T₂) ↦ X)).inv,
       Iso.inv_hom_id_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      PreservesCoproduct.inv_hom, PreservesCoproduct.inv_hom, sigmaComparison_map_desc]
+      PreservesCoproduct.iso_inv, PreservesCoproduct.iso_inv, sigmaComparison_map_desc]
     cat_disch)
 
 @[reassoc (attr := simp)]

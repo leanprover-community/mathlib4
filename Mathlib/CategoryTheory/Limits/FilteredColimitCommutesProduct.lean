@@ -8,7 +8,8 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Types.Products
+
+import Mathlib.CategoryTheory.Limits.Types.Products
 
 /-!
 # The IPC property
@@ -40,6 +41,7 @@ These results will be used to show that if a category `C` has products indexed b
 does the category of Ind-objects of `C`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
 
@@ -73,7 +75,6 @@ def Pi.equivalenceOfEquivCompPointwiseProduct {β : Type*} (f : β ≃ α) [HasP
   (NatIso.ofComponents
     (fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm)).symm
 
-set_option backward.defeqAttrib.useBackward true in
 variable {F} in
 /-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
 cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
@@ -103,7 +104,6 @@ noncomputable def colimitPointwiseProductToProductColimit [∀ i, HasColimit (F 
 
 variable [∀ i, HasColimit (F i)] [HasColimit (pointwiseProduct F)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) :
@@ -145,7 +145,6 @@ noncomputable def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem colimitPointwiseProductToProductColimit_app (d : D) :
     (colimitPointwiseProductToProductColimit F).app d =

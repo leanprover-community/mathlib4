@@ -6,9 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
+
+import Mathlib.Algebra.Order.Module.Synonym
 
 /-!
 # Ordered modules as affine spaces
@@ -261,7 +262,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
   rw [sub_add_eq_sub_sub_swap, sub_self, zero_sub, neg_mul_eq_mul_neg, neg_sub,
     le_inv_smul_iff_of_pos h, smul_smul, mul_inv_cancel_right₀, le_sub_comm, ← neg_sub (f b),
     smul_neg, neg_add_eq_sub]
-  · exact right_ne_zero_of_mul h.ne'
+  exact right_ne_zero_of_mul h.ne'
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/

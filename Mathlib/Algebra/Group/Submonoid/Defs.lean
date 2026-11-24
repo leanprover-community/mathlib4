@@ -43,6 +43,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_mem'`.
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -72,7 +73,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike]), membership .] one_mem zero_mem
 
 /-- The underlying set of a term of a `OneMemClass` is nonempty. -/
 @[to_additive (attr := simp)
@@ -119,7 +120,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -346,6 +347,10 @@ instance one : One S' :=
 theorem coe_one : ((1 : S') : M₁) = 1 :=
   rfl
 
+@[to_additive]
+instance {M : Type*} [MulOneClass M] : Unique (⊥ : Submonoid M) :=
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.property⟩
+
 variable {S'}
 
 @[to_additive (attr := simp, norm_cast)]
@@ -367,7 +372,7 @@ namespace SubmonoidClass
 /-- A submonoid of a monoid inherits a power operator. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/]
 instance instPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
-  ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.val ^ n, pow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
@@ -388,7 +393,7 @@ instance toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
 instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
-  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.val) eq)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
@@ -432,7 +437,7 @@ variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 /-- A submonoid of a monoid inherits a multiplication. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an addition. -/]
 instance mul : Mul S :=
-  ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a.val * b.val, S.mul_mem a.property b.property⟩⟩
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
@@ -456,7 +461,7 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
   rfl
 
 @[to_additive]
-theorem mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.2 y.2⟩ :=
+theorem mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.property y.property⟩ :=
   rfl
 
 @[to_additive]

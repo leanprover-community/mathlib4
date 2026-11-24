@@ -96,6 +96,33 @@ theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [Comp
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
 
+section OrderClosed
+
+variable [TopologicalSpace α] [Preorder α] [OrderClosedTopology α] [CompactIccSpace α]
+
+@[compactness .]
+lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioc_subset_Icc_self isClosed_Icc
+
+@[compactness .]
+lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ico_subset_Icc_self isClosed_Icc
+
+@[compactness .]
+lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioo_subset_Icc_self isClosed_Icc
+
+end OrderClosed
+
+@[compactness .]
+lemma isCompact_closure_uIoc [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
+    [CompactIccSpace α] {a b : α} : IsCompact (closure (uIoc a b)) :=
+  isCompact_uIcc.of_isClosed_subset isClosed_closure <|
+    closure_minimal uIoc_subset_uIcc isClosed_Icc
+
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 
@@ -153,7 +180,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   rw [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
-  exact disjoint_left.mp hx x.2 le_rfl
+  exact disjoint_left.mp hx x.property le_rfl
 
 theorem IsCompact.exists_isGreatest [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsGreatest s x :=

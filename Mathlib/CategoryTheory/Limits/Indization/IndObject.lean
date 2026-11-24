@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 
 import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
@@ -37,6 +38,7 @@ as a property of presheaves `C ⥤ Type max v w`. This comes with significant te
 The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` instead.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
@@ -113,7 +115,6 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
 instance : P.toCostructuredArrow.Final :=
   Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
@@ -169,18 +170,15 @@ open IsFiltered.SmallFilteredIntermediate
 theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
-  have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
+  have : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
       inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
-  have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
+  have : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (Presheaf.tautologicalCocone A).whisker
-    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
-  let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (Presheaf.isColimitTautologicalCocone A)
-  have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
+  have : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, _,
+    (Functor.Final.isColimitWhiskerEquiv _ _).symm (denseAtYoneda A)⟩
 
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.

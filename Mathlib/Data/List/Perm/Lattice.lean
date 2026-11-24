@@ -5,11 +5,14 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
 
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.TakeDrop
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # List Permutations and list lattice operations.

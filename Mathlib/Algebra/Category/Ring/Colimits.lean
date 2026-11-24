@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative rings has all colimits.
 
@@ -204,7 +207,6 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit ring. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -221,7 +223,6 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | add x y => descFunLift s x + descFunLift s y
   | mul x y => descFunLift s x * descFunLift s y
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The function from the colimit ring to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
@@ -504,7 +505,6 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit commutative ring. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -521,7 +521,6 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | add x y => descFunLift s x + descFunLift s y
   | mul x y => descFunLift s x * descFunLift s y
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The function from the colimit commutative ring to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift

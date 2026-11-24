@@ -59,7 +59,7 @@ In the `Distributions` scope, we introduce the following notations:
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 
-## Implementation details
+## Implementation notes
 
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
@@ -197,7 +197,7 @@ section AddCommGroup
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsZeroApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -206,7 +206,7 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsAddApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -215,7 +215,7 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsNegApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -224,7 +224,7 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsSubApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
@@ -235,7 +235,7 @@ instance instSMul {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConst
     exact f.zero_on_compl.comp_left
 
 instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
+    IsSMulApply R 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
@@ -918,8 +918,8 @@ variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f :=
+  f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :

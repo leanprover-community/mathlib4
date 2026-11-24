@@ -13,7 +13,6 @@ public import Mathlib.Basic.Opposite
 This module defines quivers. A quiver on a type `V` of vertices assigns to every
 pair `a b : V` of vertices a type `a ⟶ b` of arrows from `a` to `b`. This
 is a generalization of `Digraph V`, which can be thought of as "a proposition `a ⟶ b` of arrows".
-
 -/
 
 @[expose] public section
@@ -62,10 +61,10 @@ def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
 /-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
-@[simps, to_dual self]
+@[implicit_reducible, simps, to_dual self]
 def Hom.opEquiv {V} [Quiver V] {X Y : V} : (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
-  toFun := Opposite.op
-  invFun := Opposite.unop
+  toFun := Hom.op
+  invFun := Hom.unop
 
 /-- To show that two Homs from the opposite category agree, it suffices to show they agree
 in the original category. -/

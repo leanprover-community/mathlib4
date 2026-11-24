@@ -18,9 +18,9 @@ developed only for vector spaces may be generalised to any module with coefficie
 This file is a location for such results and exists to avoid making large parts of the linear
 algebra import hierarchy have to depend on the theory of PIDs.
 
-## Main results:
-* `LinearMap.trace_restrict_eq_of_forall_mem`
+## Main results
 
+* `LinearMap.trace_restrict_eq_of_forall_mem`
 -/
 
 public section

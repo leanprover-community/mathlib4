@@ -16,6 +16,7 @@ for the given data for a pullback (resp. pushout) diagram. Convenience methods `
 and `span f g` construct functors from the walking (co)span, hitting the given morphisms.
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
@@ -33,104 +34,64 @@ namespace CategoryTheory.Limits
 -- Porting note: `aesop cases` does not work on type synonyms like `WidePullbackShape`
 -- attribute [local aesop safe cases] WidePullbackShape WalkingPair
 
+to_dual_name_hint One Zero, Fst Inl, Snd Inr
+
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
 `WidePullbackShape`. -/
+@[to_dual
+/-- The type of objects for the diagram indexing a pushout, defined as a special case of
+`WidePushoutShape`.
+-/]
 abbrev WalkingCospan : Type :=
   WidePullbackShape WalkingPair
 
 /-- The left point of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The left point of the walking span. -/]
 abbrev WalkingCospan.left : WalkingCospan :=
   some WalkingPair.left
 
 /-- The right point of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The right point of the walking span. -/]
 abbrev WalkingCospan.right : WalkingCospan :=
   some WalkingPair.right
 
 /-- The central point of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The central point of the walking span. -/]
 abbrev WalkingCospan.one : WalkingCospan :=
-  none
-
-/-- The type of objects for the diagram indexing a pushout, defined as a special case of
-`WidePushoutShape`.
--/
-abbrev WalkingSpan : Type :=
-  WidePushoutShape WalkingPair
-
-/-- The left point of the walking span. -/
-@[match_pattern]
-abbrev WalkingSpan.left : WalkingSpan :=
-  some WalkingPair.left
-
-/-- The right point of the walking span. -/
-@[match_pattern]
-abbrev WalkingSpan.right : WalkingSpan :=
-  some WalkingPair.right
-
-/-- The central point of the walking span. -/
-@[match_pattern]
-abbrev WalkingSpan.zero : WalkingSpan :=
   none
 
 namespace WalkingCospan
 
 /-- The type of arrows for the diagram indexing a pullback. -/
-abbrev Hom : WalkingCospan → WalkingCospan → Type :=
-  WidePullbackShape.Hom
+@[to_dual (reorder := 1 2) /-- The type of arrows for the diagram indexing a pushout. -/]
+abbrev Hom (X Y : WalkingCospan) : Type :=
+  WidePullbackShape.Hom X Y
 
 /-- The left arrow of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The left arrow of the walking span. -/]
 abbrev Hom.inl : left ⟶ one :=
   WidePullbackShape.Hom.term _
 
 /-- The right arrow of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The right arrow of the walking span. -/]
 abbrev Hom.inr : right ⟶ one :=
   WidePullbackShape.Hom.term _
 
 /-- The identity arrows of the walking cospan. -/
-@[match_pattern]
+@[to_dual (attr := match_pattern) /-- The identity arrows of the walking span. -/]
 abbrev Hom.id (X : WalkingCospan) : X ⟶ X :=
   WidePullbackShape.Hom.id X
 
+@[to_dual]
 instance (X Y : WalkingCospan) : Subsingleton (X ⟶ Y) := by
   constructor; intros; simp [eq_iff_true_of_subsingleton]
 
 end WalkingCospan
 
-namespace WalkingSpan
-
-/-- The type of arrows for the diagram indexing a pushout. -/
-abbrev Hom : WalkingSpan → WalkingSpan → Type :=
-  WidePushoutShape.Hom
-
-/-- The left arrow of the walking span. -/
-@[match_pattern]
-abbrev Hom.fst : zero ⟶ left :=
-  WidePushoutShape.Hom.init _
-
-/-- The right arrow of the walking span. -/
-@[match_pattern]
-abbrev Hom.snd : zero ⟶ right :=
-  WidePushoutShape.Hom.init _
-
-/-- The identity arrows of the walking span. -/
-@[match_pattern]
-abbrev Hom.id (X : WalkingSpan) : X ⟶ X :=
-  WidePushoutShape.Hom.id X
-
-instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := by
-  constructor; intro a b; simp [eq_iff_true_of_subsingleton]
-
-end WalkingSpan
-
 open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of cones over the walking cospan,
 it suffices to construct an isomorphism
 of the cone points and check it commutes with the legs to `left` and `right`. -/
@@ -149,7 +110,6 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₁
   · exact w₂
 
-set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
@@ -169,81 +129,48 @@ def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
   · exact w₂
 
 /-- `cospan f g` is the functor from the walking cospan hitting `f` and `g`. -/
-@[implicit_reducible]
+@[to_dual (attr := implicit_reducible)
+/-- `span f g` is the functor from the walking span hitting `f` and `g`. -/]
 def cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : WalkingCospan ⥤ C :=
   WidePullbackShape.wideCospan Z (fun j => WalkingPair.casesOn j X Y) fun j =>
     WalkingPair.casesOn j f g
 
-/-- `span f g` is the functor from the walking span hitting `f` and `g`. -/
-@[implicit_reducible]
-def span {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : WalkingSpan ⥤ C :=
-  WidePushoutShape.wideSpan X (fun j => WalkingPair.casesOn j Y Z) fun j =>
-    WalkingPair.casesOn j f g
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospan_left {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : (cospan f g).obj WalkingCospan.left = X :=
   rfl
 
-@[simp]
-theorem span_left {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : (span f g).obj WalkingSpan.left = Y :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospan_right {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).obj WalkingCospan.right = Y := rfl
 
-@[simp]
-theorem span_right {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : (span f g).obj WalkingSpan.right = Z :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospan_one {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : (cospan f g).obj WalkingCospan.one = Z :=
   rfl
 
-@[simp]
-theorem span_zero {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : (span f g).obj WalkingSpan.zero = X :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospan_map_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).map WalkingCospan.Hom.inl = f := rfl
 
-@[simp]
-theorem span_map_fst {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : (span f g).map WalkingSpan.Hom.fst = f :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospan_map_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).map WalkingCospan.Hom.inr = g := rfl
 
-@[simp]
-theorem span_map_snd {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : (span f g).map WalkingSpan.Hom.snd = g :=
-  rfl
-
+@[to_dual]
 theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan) :
     (cospan f g).map (WalkingCospan.Hom.id w) = 𝟙 _ := rfl
 
-theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
-    (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
-
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
-@[simps (rhsMd := default)]
+@[to_dual (attr := simps (rhsMd := default))
+/-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
-  NatIso.ofComponents
-  (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
-  (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
-
-/-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
-@[simps (rhsMd := default)]
-def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
   NatIso.ofComponents
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor applied to a cospan is a cospan. -/
+@[to_dual /-- A functor applied to a span is a span. -/]
 def cospanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     cospan f g ⋙ F ≅ cospan (F.map f) (F.map g) :=
   NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _)
@@ -253,77 +180,37 @@ section
 
 variable (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_app_left : (cospanCompIso F f g).app WalkingCospan.left = Iso.refl _ := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_app_right : (cospanCompIso F f g).app WalkingCospan.right = Iso.refl _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_app_one : (cospanCompIso F f g).app WalkingCospan.one = Iso.refl _ := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_hom_app_left : (cospanCompIso F f g).hom.app WalkingCospan.left = 𝟙 _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_hom_app_right : (cospanCompIso F f g).hom.app WalkingCospan.right = 𝟙 _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_hom_app_one : (cospanCompIso F f g).hom.app WalkingCospan.one = 𝟙 _ := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_inv_app_left : (cospanCompIso F f g).inv.app WalkingCospan.left = 𝟙 _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_inv_app_right : (cospanCompIso F f g).inv.app WalkingCospan.right = 𝟙 _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cospanCompIso_inv_app_one : (cospanCompIso F f g).inv.app WalkingCospan.one = 𝟙 _ := rfl
-
-end
-
-set_option backward.defeqAttrib.useBackward true in
-/-- A functor applied to a span is a span. -/
-def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
-    span f g ⋙ F ≅ span (F.map f) (F.map g) :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _)
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
-
-section
-
-variable (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
-
-@[simp]
-theorem spanCompIso_app_left : (spanCompIso F f g).app WalkingSpan.left = Iso.refl _ := rfl
-
-@[simp]
-theorem spanCompIso_app_right : (spanCompIso F f g).app WalkingSpan.right = Iso.refl _ := rfl
-
-@[simp]
-theorem spanCompIso_app_zero : (spanCompIso F f g).app WalkingSpan.zero = Iso.refl _ := rfl
-
-@[simp]
-theorem spanCompIso_hom_app_left : (spanCompIso F f g).hom.app WalkingSpan.left = 𝟙 _ := rfl
-
-@[simp]
-theorem spanCompIso_hom_app_right : (spanCompIso F f g).hom.app WalkingSpan.right = 𝟙 _ := rfl
-
-@[simp]
-theorem spanCompIso_hom_app_zero : (spanCompIso F f g).hom.app WalkingSpan.zero = 𝟙 _ := rfl
-
-@[simp]
-theorem spanCompIso_inv_app_left : (spanCompIso F f g).inv.app WalkingSpan.left = 𝟙 _ := rfl
-
-@[simp]
-theorem spanCompIso_inv_app_right : (spanCompIso F f g).inv.app WalkingSpan.right = 𝟙 _ := rfl
-
-@[simp]
-theorem spanCompIso_inv_app_zero : (spanCompIso F f g).inv.app WalkingSpan.zero = 𝟙 _ := rfl
 
 end
 

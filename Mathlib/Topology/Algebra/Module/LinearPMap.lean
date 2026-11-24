@@ -144,7 +144,7 @@ structure HasCore (f : E →ₗ.[R] F) (S : Submodule R E) : Prop where
 
 theorem hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
     (f.domRestrict S).closure = f :=
-  h.2
+  h.closure_eq
 
 /-- For every unbounded operator `f` the submodule `f.domain` is a core of its closure.
 
@@ -183,7 +183,7 @@ theorem closure_inverse_graph (hf : f.ker = ⊥) (hf' : f.IsClosable) (hcf : f.c
     f.closure.inverse.graph = f.inverse.graph.topologicalClosure := by
   rw [inverse_graph hf, inverse_graph hcf, ← hf'.graph_closure_eq_closure_graph]
   apply SetLike.ext'
-  simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.coe_coe,
+  simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.coe_toLinearMap,
     LinearEquiv.prodComm_apply]
   apply (image_closure_subset_closure_image continuous_swap).antisymm
   have h1 := (LinearEquiv.prodComm R E F).toEquiv.image_eq_preimage_symm f.graph

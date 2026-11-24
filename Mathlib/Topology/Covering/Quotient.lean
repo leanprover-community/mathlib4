@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Covering.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering maps to quotients by free and properly discontinuous group actions
 -/
@@ -95,9 +98,10 @@ omit hf in
 @[to_additive /-- Fibers of a quotient covering map by an additive group G is a G-torsor. -/]
 noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ G :=
   have := hf.isCancelSMul
-  .symm <| .ofBijective (fun g ↦ ⟨g • e, (hf.map_smul g).trans e.2⟩)
-    ⟨fun _ _ eq ↦ IsCancelSMul.right_cancel _ _ e.1 congr($eq), fun e' ↦
-      have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm); ⟨g, Subtype.ext eq⟩⟩
+  .symm <| .ofBijective (fun g ↦ ⟨g • e, (hf.map_smul g).trans e.property⟩)
+    ⟨fun _ _ eq ↦ IsCancelSMul.right_cancel _ _ e.val congr($eq), fun e' ↦
+      have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.property.trans e.property.symm)
+      ⟨g, Subtype.ext eq⟩⟩
 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
   (Equiv.eq_symm_apply _).mp <| Subtype.ext (one_smul ..).symm
@@ -126,7 +130,7 @@ lemma mulActionFiber_isPretransitive (x : X) :
   let := hf.mulActionFiber x
   constructor
   intro e e'
-  obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
+  obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.property.trans e.property.symm)
   exact ⟨g, Subtype.ext hg⟩
 
 /-- A quotient covering map `f` induces a permutation action on each fiber. -/
@@ -136,7 +140,7 @@ lemma mulActionFiber_isPretransitive (x : X) :
 theorem toPermFiber_ext (x : X) (e : f ⁻¹' {x}) {g g' : G}
     (eq : hf.toPermFiber x g e = hf.toPermFiber x g' e) : g = g' :=
   have := hf.isCancelSMul
-  IsCancelSMul.right_cancel _ _ e.1 congr($eq)
+  IsCancelSMul.right_cancel _ _ e.val congr($eq)
 
 theorem toPermFiber_injective (x : X) : Function.Injective (hf.toPermFiber x) :=
   have ⟨e, he⟩ := hf.surjective x
@@ -205,7 +209,7 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
   let : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
   suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
-    choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.2
+    choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.property
   rintro x ⟨e, he, rfl⟩
   have ⟨U, heU, hU⟩ := disjoint e
   refine ⟨hf.trivializationOfSMulDisjoint hfG (interior U) isOpen_interior
@@ -296,7 +300,7 @@ end ProperlyDiscontinuousSMul
   __ := hf
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.rightRel_apply.symm
   disjoint e := have ⟨U, hU, _, disj⟩ := hG.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
-    ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.2 <| by
+    ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.property <| by
       obtain ⟨_, ⟨_, ⟨x, hx, _, rfl, rfl⟩, rfl⟩, y, hy, g, rfl, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_right_cancel ((mul_assoc ..).trans he.symm)⟩, hy⟩⟩
 
@@ -340,11 +344,11 @@ end Topology.IsQuotientMap
     ⟨h.isCoveringMap, h.surjective, this, h.isCancelSMul, h.apply_eq_iff_mem_orbit⟩
   mpr h := (isQuotientCoveringMap_iff ..).mpr ⟨h.1.isQuotientMap h.2.1, h.2.2.1, h.2.2.2.2, fun e ↦
     have ⟨_, U, heU, hU, hfU, H, hH⟩ := h.1 (f e)
-    ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtype_val _ <|
+    ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtypeVal _ <|
         (isOpen_discrete _).preimage <| by fun_prop).mem_nhds ⟨⟨e, heU⟩, rfl, rfl⟩, fun g ↦ by
       rintro ⟨_, ⟨_, ⟨x, hx, rfl⟩, rfl⟩, y, hy, eq⟩
       have := h.2.2.2.1
-      apply IsCancelSMul.right_cancel _ _ x.1
+      apply IsCancelSMul.right_cancel _ _ x.val
       simp_rw [← eq, one_smul]
       congrm $(H.injective <| Prod.ext (Subtype.ext ?_) <| hy.trans hx.symm)
       simp_rw [hH]

@@ -195,7 +195,7 @@ end IsSetAlgebra
 union of finite intersections of sets which are in `𝒜` or have their complement in `𝒜`. -/
 theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
     ∃ A : Set (Set (Set α)), A.Finite ∧ (∀ a ∈ A, a.Finite) ∧
-    (∀ᵉ (a ∈ A) (t ∈ a), t ∈ 𝒜 ∨ tᶜ ∈ 𝒜) ∧ s = ⋃ a ∈ A, ⋂ t ∈ a, t := by
+    (∀ a ∈ A, ∀ t ∈ a, t ∈ 𝒜 ∨ tᶜ ∈ 𝒜) ∧ s = ⋃ a ∈ A, ⋂ t ∈ a, t := by
   induction s_mem using generateSetAlgebra_induction with
   | base u u_mem =>
     refine ⟨{{u}}, finite_singleton {u},
@@ -208,13 +208,13 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
   | compl u _ u_ind =>
     rcases u_ind with ⟨A, A_fin, mem_A, hA, u_eq⟩
     have := finite_coe_iff.2 A_fin
-    have := fun a : A ↦ finite_coe_iff.2 <| mem_A a.1 a.2
-    refine ⟨{{(f a).1ᶜ | a : A} | f : (Π a : A, ↑a)}, finite_coe_iff.1 inferInstance,
+    have := fun a : A ↦ finite_coe_iff.2 <| mem_A a.val a.property
+    refine ⟨{{(f a).valᶜ | a : A} | f : (Π a : A, ↑a)}, finite_coe_iff.1 inferInstance,
       fun a ⟨f, hf⟩ ↦ hf ▸ finite_coe_iff.1 inferInstance, fun a ha t ht ↦ ?_, ?_⟩
     · rcases ha with ⟨f, rfl⟩
       rcases ht with ⟨a, rfl⟩
       rw [compl_compl, or_comm]
-      exact hA a.1 a.2 (f a).1 (f a).2
+      exact hA a.val a.property (f a).val (f a).property
     · ext x
       simp only [u_eq, compl_iUnion, compl_iInter, mem_iInter, mem_iUnion, mem_compl_iff,
         exists_prop, Subtype.exists, mem_ofPred_eq, iUnion_exists, iUnion_iUnion_eq',
@@ -223,7 +223,7 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
       · choose f hf using hx
         exact ⟨fun ⟨a, ha⟩ ↦ ⟨f a ha, (hf a ha).1⟩, fun _ a ha h ↦ by rw [← h]; exact (hf a ha).2⟩
       · rcases hx with ⟨f, hf⟩
-        exact fun a ha ↦ ⟨f ⟨a, ha⟩, (f ⟨a, ha⟩).2, hf (f ⟨a, ha⟩)ᶜ a ha rfl⟩
+        exact fun a ha ↦ ⟨f ⟨a, ha⟩, (f ⟨a, ha⟩).property, hf (f ⟨a, ha⟩)ᶜ a ha rfl⟩
   | union u v _ _ u_ind v_ind =>
     rcases u_ind with ⟨Au, Au_fin, mem_Au, hAu, u_eq⟩
     rcases v_ind with ⟨Av, Av_fin, mem_Av, hAv, v_eq⟩

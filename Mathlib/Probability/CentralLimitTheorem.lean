@@ -5,12 +5,15 @@ Authors: Thomas Zhu, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.Probability.Distributions.Gaussian.Real
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 import Mathlib.Probability.Independence.CharacteristicFunction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Central limit theorem
@@ -30,8 +33,6 @@ central limit theorem
 -/
 
 public section
-
-noncomputable section
 
 open MeasureTheory ProbabilityTheory Complex Filter
 open scoped Real Topology

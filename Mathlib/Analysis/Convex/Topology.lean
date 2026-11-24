@@ -5,10 +5,11 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
-public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
+public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Topology.Algebra.Affine
+
+import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 
 /-!
 # Topological properties of convex sets

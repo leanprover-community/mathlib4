@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+
 /-!
 # Base change for the dual of a module
 
@@ -20,7 +21,6 @@ If `f : Module.Dual R V` and `Algebra R A`, then
   given by `Module.Dual.baseChange`.
 
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
-
 -/
 
 @[expose] public section
@@ -115,7 +115,7 @@ noncomputable def toDualBaseChange :
     this ▸ LinearEquiv.bijective _
   ext f w
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply]
+    LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]

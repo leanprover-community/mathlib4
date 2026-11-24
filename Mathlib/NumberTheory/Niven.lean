@@ -6,13 +6,13 @@ Authors: Alex Meiburg, Snir Broshi
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Rify
 
 /-! # Niven's Theorem
 
@@ -24,23 +24,6 @@ values `{-1, -1/2, 0, 1/2, 1}`.
 
 public section
 
-namespace IsIntegral
-
-variable {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
-
-@[simp]
-theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
-  isIntegral_algebraMap_iff (A := ℚ)
-
-theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by
-  refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
-  rintro ⟨q, rfl⟩
-  rw [ratCast_iff] at h₁
-  gconvert IsIntegrallyClosed.algebraMap_eq_of_integral h₁
-  simp [← this]
-
-end IsIntegral
-
 variable {θ : ℝ}
 
 open Real
@@ -50,7 +33,7 @@ section IsIntegral
 namespace Complex
 
 lemma exp_rat_mul_pi_mul_I_pow_two_mul_den (q : ℚ) : exp (q * π * I) ^ (2 * q.den) = 1 := by
-  nth_rw 1 [← q.num_div_den, ← exp_nat_mul]
+  nth_rw 1 [← q.num_div_den, ← exp_natCast_mul]
   push_cast
   rw [show 2 * q.den * (q.num / q.den * π * I) = q.num * (2 * π * I) by field,
     exp_int_mul_two_pi_mul_I]
@@ -126,8 +109,8 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Since `2 cos θ ` is an algebraic integer and rational, it must be an integer.
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨r, rfl⟩ := hθ
-  obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos (r * π) = k := by
-    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
+  obtain ⟨k, hk⟩ : 2 * cos (r * π) ∈ Set.range Int.cast := by
+    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).mem_range_ratCast_iff]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by

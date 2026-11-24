@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring structures on the multiplicative opposite
 -/

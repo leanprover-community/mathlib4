@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
-## Basic properties of `C^n` functions between manifolds
+# Basic properties of `C^n` functions between manifolds
 
 In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
@@ -19,8 +19,8 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
   embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
-chain rule, manifolds, higher derivative
 
+chain rule, manifolds, higher derivative
 -/
 
 public section
@@ -61,8 +61,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
-  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
-  rw [this] at hg
+  rw [← writtenInExtChartAt_apply_extChartAt (I := I) (mem_extChartAt_source x)] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
     simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
@@ -74,14 +73,13 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
-      true_and]
-    exact mem_range_self _
+    simp only [e', mem_preimage, mem_inter_iff, extChartAt_symm_writtenInExtChartAt hfx']
+    exact ⟨ht, mem_range_self _⟩
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [*, e, e', (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
-      e.left_inv, e'.left_inv]
+    simp only [e, e', comp_apply, extChartAt_symm_writtenInExtChartAt hfx']
+  · simp only [e, e', comp_apply, extChartAt_to_inv,
+      writtenInExtChartAt_apply_extChartAt (mem_extChartAt_source x)]
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}
@@ -364,11 +362,13 @@ open TopologicalSpace
 
 theorem contMDiffAt_subtype_iff {n : ℕ∞ω} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
-  ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
+  ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtypeVal _ _).symm
 
-theorem contMDiff_subtype_val {n : ℕ∞ω} {U : Opens M} :
+theorem contMDiff_subtypeVal {n : ℕ∞ω} {U : Opens M} :
     ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMDiffAt_subtype_iff.mpr contMDiffAt_id
+
+@[deprecated (since := "2026-11-10")] alias contMDiff_subtype_val := contMDiff_subtypeVal
 
 @[to_additive]
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞ω} {U : Opens M} {f : U → M'}
@@ -376,7 +376,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞ω} {U : Opens M} {
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
   lift x to U using Subtype.coe_image_subset _ _
-    (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
+    (supp.mulTSupport_extend_one_subset continuous_subtypeVal h)
   rw [← contMDiffAt_subtype_iff]
   simp_rw [← comp_def]
   rw [extend_comp Subtype.val_injective]

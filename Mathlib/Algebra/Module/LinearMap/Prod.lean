@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Prod
 
 import Mathlib.Tactic.Abel
 
@@ -16,8 +16,8 @@ import Mathlib.Tactic.Abel
 Note that these results use `IsLinearMap`, which is mostly discouraged.
 
 ## Tags
-linear algebra, vector space, module
 
+linear algebra, vector space, module
 -/
 
 public section

@@ -97,7 +97,7 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
 theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
-  ⟨congr(Int.negOfNat $(h.1))⟩
+  ⟨congr(Int.negOfNat $(h.out))⟩
 
 /-- `norm_num` extension for `Int.negOfNat`.
 

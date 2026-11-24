@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 public import Mathlib.Topology.Algebra.Module.Alternating.Basic
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Topology on continuous alternating maps
@@ -81,9 +81,9 @@ instance instUniformContinuousConstSMul {M : Type*}
 theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G]
     [IsUniformAddGroup G] [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
     IsUniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
-  rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
+  rw [← isUniformEmbedding_toContinuousMultilinearMap.toIsUniformInducing.of_comp_iff]
   exact (ContinuousMultilinearMap.isUniformInducing_postcomp g hg).comp
-    isUniformEmbedding_toContinuousMultilinearMap.1
+    isUniformEmbedding_toContinuousMultilinearMap.toIsUniformInducing
 
 section CompleteSpace
 

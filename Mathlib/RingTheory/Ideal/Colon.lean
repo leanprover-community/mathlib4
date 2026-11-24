@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The colon ideal
 
 This file defines `Submodule.colon N P` as the ideal of all elements `r : R` such that `r • P ⊆ N`.
 The normal notation for this would be `N : P` which has already been taken by type theory.
-
 -/
 
 @[expose] public section
@@ -78,8 +80,11 @@ lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).c
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
+lemma colon_eq_top_iff_subset : N.colon S = ⊤ ↔ S ⊆ N := by
   aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
+
+lemma colon_eq_top_iff_le : N₁.colon ↑N₂ = ⊤ ↔ N₂ ≤ N₁ := by
+  simp
 
 @[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by

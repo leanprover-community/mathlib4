@@ -40,7 +40,6 @@ with the respective topology instances on it.
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section

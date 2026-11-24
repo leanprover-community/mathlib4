@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Tensor power of a semimodule over a commutative semiring
@@ -17,7 +17,7 @@ We define the `n`th tensor power of `M` as the n-ary tensor product indexed by `
 This file introduces the notation `⨂[R]^n M` for `TensorPower R n M`, which in turn is an
 abbreviation for `⨂[R] i : Fin n, M`.
 
-## Main definitions:
+## Main definitions
 
 * `TensorPower.gsemiring`: the tensor powers form a graded semiring.
 * `TensorPower.galgebra`: the tensor powers form a graded algebra.

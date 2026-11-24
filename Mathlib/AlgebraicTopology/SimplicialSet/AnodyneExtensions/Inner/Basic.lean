@@ -22,7 +22,6 @@ transfinite compositions and retracts. Equivalently, using the small
 object argument, inner anodyne extensions can be defined (and are defined here)
 as the class of morphisms that satisfy the left lifting property with respect
 to the class of inner fibrations.
-
 -/
 
 public section
@@ -66,8 +65,7 @@ lemma innerAnodyneExtensions_le : innerAnodyneExtensions ≤ anodyneExtensions.{
     rlp_llp_rlp]
   exact antitone_rlp innerHornInclusions_le_J
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0
-  Cardinal.orderBotAleph0OrdToType
+attribute [local instance] Cardinal.orderBotAleph0OrdToType
 
 instance : MorphismProperty.IsSmall.{u} innerHornInclusions.{u} := by
   rw [innerHornInclusions_eq_iSup]

@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Matroid.Rank.ENat
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal-valued rank
 
@@ -42,7 +45,7 @@ The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
 which have a more unconditionally strong API,
 are developed in `Mathlib/Combinatorics/Matroid/Rank/ENat.lean`.
 
-## Implementation Details
+## Implementation notes
 
 Since the functions `cRank` and `cRk` are defined as suprema,
 independently of the `Matroid.InvariantCardinalRank` typeclass,
@@ -51,13 +54,12 @@ However, for matroids that do not satisfy `InvariantCardinalRank`, they are badl
 For instance, in general `cRk` is not submodular,
 and its value may differ on a set `X` and the closure of `X`.
 We state and prove theorems without `InvariantCardinalRank` whenever possible,
-which sometime makes their proofs longer than they would be with the instance.
+which sometimes makes their proofs longer than they would be with the instance.
 
 ## TODO
 
 * Higgs' theorem : if the generalized continuum hypothesis holds,
   then every matroid is `InvariantCardinalRank`.
-
 -/
 
 @[expose] public section
@@ -83,16 +85,16 @@ as a `Cardinal`. See `Matroid.eRk` for a better-behaved `ℕ∞`-valued version.
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem IsBase.cardinalMk_le_cRank (hB : M.IsBase B) : #B ≤ M.cRank :=
-  le_ciSup (f := fun B : {B // M.IsBase B} ↦ #B.1) bddAbove_of_small ⟨B, hB⟩
+  le_ciSup (f := fun B : {B // M.IsBase B} ↦ #B.val) bddAbove_of_small ⟨B, hB⟩
 
 theorem Indep.cardinalMk_le_cRank (ind : M.Indep I) : #I ≤ M.cRank :=
   have ⟨B, isBase, hIB⟩ := ind.exists_isBase_superset
   le_ciSup_of_le bddAbove_of_small ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
 
 theorem cRank_eq_iSup_cardinalMk_indep : M.cRank = ⨆ I : {I // M.Indep I}, #I :=
-  (ciSup_le' fun B ↦ le_ciSup_of_le bddAbove_of_small ⟨B, B.2.indep⟩ <| by rfl).antisymm <|
+  (ciSup_le' fun B ↦ le_ciSup_of_le bddAbove_of_small ⟨B, B.property.indep⟩ <| by rfl).antisymm <|
     ciSup_le' fun I ↦
-      have ⟨B, isBase, hIB⟩ := I.2.exists_isBase_superset
+      have ⟨B, isBase, hIB⟩ := I.property.exists_isBase_superset
       le_ciSup_of_le bddAbove_of_small ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
 
 theorem IsBasis'.cardinalMk_le_cRk (hIX : M.IsBasis' I X) : #I ≤ M.cRk X :=
@@ -251,7 +253,7 @@ theorem Indep.cardinalMk_le_isBasis (hI : M.Indep I) (hJ : M.IsBasis J X) (hIX :
   hI.cardinalMk_le_isBasis' hJ.isBasis' hIX
 
 theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
-  have hrw : ∀ B' : {B : Set α // M.IsBase B}, #B' = #B := fun B' ↦ B'.2.cardinalMk_eq hB
+  have hrw : ∀ B' : {B : Set α // M.IsBase B}, #B' = #B := fun B' ↦ B'.property.cardinalMk_eq hB
   simp [cRank, hrw]
 
 /-- Restrictions of matroids with cardinal rank functions have cardinal rank functions. -/
@@ -325,7 +327,7 @@ instance invariantCardinalRank_of_finitary [Finitary M] : InvariantCardinalRank 
     exact Finitary.indep_of_forall_finite _ fun J hJ fin ↦ (this (J \ {a}) fin.sdiff.to_subtype <|
       sdiff_singleton_subset_iff.mpr hJ).subset (subset_insert_sdiff_singleton ..)
   choose S S_fin hSB dep using this
-  let U := ⋃ a : ↥(B' \ B), S a a.2
+  let U := ⋃ a : ↥(B' \ B), S a a.property
   suffices B \ B' ⊆ U by
     refine (mk_le_mk_of_subset this).trans <| (mk_iUnion_le ..).trans
       <| (mul_le_max_of_aleph0_le_left (by simp)).trans ?_
@@ -333,7 +335,7 @@ instance invariantCardinalRank_of_finitary [Finitary M] : InvariantCardinalRank 
     exact ciSup_le' fun e ↦ (lt_aleph0_of_finite _).le.trans <| by simp
   rw [← sdiff_inter_self_eq_sdiff, sdiff_subset_iff, inter_comm]
   have hUB : (B ∩ B') ∪ U ⊆ B :=
-    union_subset inter_subset_left (iUnion_subset fun e ↦ (hSB e.1 e.2))
+    union_subset inter_subset_left (iUnion_subset fun e ↦ (hSB e.val e.property))
   by_contra hBU
   have ⟨a, ha, ind⟩ := hB.exists_insert_of_ssubset ⟨hUB, hBU⟩ hB'
   have : a ∈ B' \ B := ⟨ha.1, fun haB ↦ ha.2 (.inl ⟨haB, ha.1⟩)⟩

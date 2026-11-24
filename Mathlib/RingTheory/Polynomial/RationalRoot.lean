@@ -88,9 +88,8 @@ then the denominator of `r` divides the leading coefficient -/
 theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     (den A r : A) ∣ p.leadingCoeff := by
   suffices (den A r : A) ∣ p.leadingCoeff * num A r ^ p.natDegree by
-    refine
-      dvd_of_dvd_mul_left_of_no_prime_factors (mem_nonZeroDivisors_iff_ne_zero.mp (den A r).2) ?_
-        this
+    refine dvd_of_dvd_mul_left_of_no_prime_factors
+      (mem_nonZeroDivisors_iff_ne_zero.mp (den A r).property) ?_ this
     intro q dvd_den dvd_num_pow hq
     apply hq.not_isUnit
     exact num_den_reduced A r (hq.dvd_of_dvd_pow dvd_num_pow) dvd_den
@@ -141,3 +140,10 @@ instance (priority := 100) instIsIntegrallyClosed : IsIntegrallyClosed A :=
 end UniqueFactorizationMonoid
 
 end RationalRootTheorem
+
+theorem IsIntegral.mem_range_ratCast_iff {α : Type*} [DivisionRing α] [CharZero α]
+    {x : α} (h : IsIntegral ℤ x) : x ∈ Set.range Rat.cast ↔ x ∈ Set.range Int.cast :=
+  IsIntegralClosure.mem_range_algebraMap ℤ h
+
+@[deprecated (since := "2026-07-17")]
+alias IsIntegral.exists_int_iff_exists_rat := IsIntegral.mem_range_ratCast_iff
