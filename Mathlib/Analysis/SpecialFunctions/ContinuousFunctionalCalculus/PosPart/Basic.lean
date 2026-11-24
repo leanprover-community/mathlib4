@@ -167,10 +167,9 @@ lemma neg_negPart_le {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : -a⁻ ≤ a 
     using le_add_of_nonneg_left (a := -a⁻) (posPart_nonneg a)
 
 /-- In a star-ordered `ℝ`-algebra with a (non-unital) continuous functional calculus,
-nonnegative elements have nonnegative quasispectrum.
-
-This is not an instance to avoid suboptimal type class searches. -/
-theorem _root_.NonnegSpectrumClass.of_starOrderedRing : NonnegSpectrumClass ℝ A where
+nonnegative elements have nonnegative quasispectrum. -/
+instance (priority := 100) _root_.NonnegSpectrumClass.of_starOrderedRing :
+    NonnegSpectrumClass ℝ A where
   quasispectrum_nonneg_of_nonneg a ha := by
     suffices Set.EqOn (fun x ↦ x⁻ * x * x⁻) 0 (quasispectrum ℝ a) from fun x hx ↦ by
       grind [mul_eq_zero, negPart_eq_zero, show x⁻ * x * x⁻ = 0 from this hx]
