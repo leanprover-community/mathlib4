@@ -48,6 +48,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
+
 Since we are only interested in the factorization of nonzero fractional ideals, we define
 `val_v(0) = 0` so that every `val_v` is in `ℤ` and we can avoid having to use `WithTop ℤ`.
 

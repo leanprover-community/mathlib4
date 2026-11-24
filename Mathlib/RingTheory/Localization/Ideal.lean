@@ -17,6 +17,7 @@ import Mathlib.RingTheory.Localization.Defs
 # Ideals in localizations of commutative rings
 
 ## Implementation notes
+
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags

@@ -27,6 +27,7 @@ This file defines a function field and the ring of integers corresponding to it.
   as the integral closure of `F[X]` in the function field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice. We also omit assumptions like
 `IsScalarTower F[X] (FractionRing F[X]) K` in definitions,

@@ -34,6 +34,7 @@ together.
   open cells of a lower dimension.
 
 ## Implementation notes
+
 * We use the historical definition of CW complexes, due to Whitehead: a CW complex is a collection
   of cells with attaching maps - all cells are subspaces of one ambient topological space.
   This way, we avoid having to work with a lot of different topological spaces.

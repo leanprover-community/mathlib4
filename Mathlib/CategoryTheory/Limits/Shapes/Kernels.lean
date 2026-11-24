@@ -38,6 +38,7 @@ and the corresponding dual statements.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
