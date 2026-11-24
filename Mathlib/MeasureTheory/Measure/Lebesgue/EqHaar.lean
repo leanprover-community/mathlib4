@@ -648,7 +648,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
-    simp [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne]
+    simp [h'u, measure_closedBall_lt_top.ne]
   simp only [zero_mul] at C
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]
