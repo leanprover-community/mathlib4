@@ -195,8 +195,7 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 @[simp] theorem mem_mk {n f step} : x ∈ RelSeries.mk (r := r) n f step ↔ x ∈ Set.range f := by
   simp [mem_def]
 
--- It is for confluence of `x ∈ Set.range s` (which can be simplified to `∃ y, s y = x`) with
--- `simp` rule `range_toFun_eq_coe_toFinset : Set.range s = (s.toFinset : Set α)`.
+-- To simplified `x ∈ Set.range s` (which is simplified to `∃ y, s y = x` firstly) into `x ∈ s`.
 @[simp] theorem exists_apply_eq_iff : (∃ y, s y = x) ↔ x ∈ s := by simp [mem_def]
 
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
@@ -212,9 +211,9 @@ theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.un
 
 @[simp] theorem mem_toFinset_iff_mem : x ∈ s.toFinset ↔ x ∈ s := by classical simp [toFinset_def]
 
-@[simp] theorem ofPred_mem_eq_coe_toFinset : {l | l ∈ s} = (s.toFinset : Set α) := by ext; simp
+@[simp] theorem ofPred_mem_eq_range : {l | l ∈ s} = Set.range s := by ext; simp
 
-@[simp] theorem range_toFun_eq_coe_toFinset : Set.range s = (s.toFinset : Set α) := by ext; simp
+@[simp] theorem coe_toFinset_eq_range : (s.toFinset : Set α) = Set.range s := by ext; simp
 
 @[simp] theorem apply_mem {i} : s i ∈ s := Set.mem_range_self _
 
@@ -222,6 +221,9 @@ theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsi
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
   exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
+
+theorem subsingleton_range_of_length_eq_zero (hs : s.length = 0) : (Set.range s).Subsingleton :=
+  subsingleton_ofPred_mem_of_length_eq_zero hs
 
 theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
   fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
