@@ -99,7 +99,7 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.finiteIndex_iff, ← Subgroup.relIndex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
   rw [Subgroup.relIndex_sup_left]
-  exact Subgroup.FiniteIndex.index_ne_zero
+  exact Subgroup.index_ne_zero
 
 set_option backward.isDefEq.respectTransparency false in
 open Subgroup in
@@ -117,7 +117,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     have := index_map (closure (Set.range u)) (QuotientGroup.mk' (torsion K))
     rw [QuotientGroup.ker_mk', QuotientGroup.range_mk', index_top, mul_one] at this
     rw [← this, ← index_toAddSubgroup, ← AddSubgroup.index_map_equiv
-        _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← LinearEquiv.coe_coe,
+        _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← LinearEquiv.coe_toLinearMap,
       ← map_span (logEmbeddingEquiv K).toLinearMap,
       map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,

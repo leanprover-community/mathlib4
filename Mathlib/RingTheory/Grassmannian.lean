@@ -117,7 +117,7 @@ variable {B} (f : A →ₐ[R] B)
 
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
-B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
+`B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
 def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
@@ -172,11 +172,12 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     induction z using TensorProduct.inductionOn with
     | tmul c m =>
       simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
-         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_coe,
-         LinearEquiv.coe_baseChange, LinearMap.quotKerEquivOfSurjective_apply_mk]
+         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans,
+         LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
+         LinearMap.quotKerEquivOfSurjective_apply_mk]
       simp [fAB, baseChangeMkQ]
     | add x y hx hy =>
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_add] at *
       rw [hx, hy]
   rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
 

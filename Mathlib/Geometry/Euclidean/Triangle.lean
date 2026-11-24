@@ -5,9 +5,11 @@ Authors: Joseph Myers, Manuel Candales
 -/
 module
 
+public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
 /-!
 # Triangles
@@ -33,7 +35,6 @@ unnecessarily.
 * https://en.wikipedia.org/wiki/Pons_asinorum
 * https://en.wikipedia.org/wiki/Sum_of_angles_of_a_triangle
 * https://en.wikipedia.org/wiki/Law_of_sines
-
 -/
 
 public section
@@ -432,17 +433,17 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     simp [angle_nonneg, angle_le_pi]
   intro h1
   by_cases! h2 : ∠ a b c ≤ π / 2
-  · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
-      exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
+  · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) :=
+      Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
     by_contra! w
-    have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
-      exact mul_lt_mul h3 w hac hsinabc
+    have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b :=
+      mul_lt_mul h3 w hac hsinabc
     linarith
   · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
-      have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
-        exact mul_lt_mul w1 w hac hsinabc
+      have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b :=
+        mul_lt_mul w1 w hac hsinabc
       linarith
     rw [← Real.sin_pi_sub (∠ a b c)] at h3
     have h5 : π - ∠ a b c < π / 2 := by linarith
@@ -531,3 +532,24 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
       linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
 end EuclideanGeometry
+
+namespace Affine.Triangle
+open Simplex EuclideanGeometry
+
+variable {V P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+
+/-- The height of a triangle is equal to the sine of a side angle times the same side. -/
+theorem height_eq_sin_mul_dist (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    t.height i₁ = Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) *
+      dist (t.points i₁) (t.points i₂) := by
+  refine dist_orthogonalProjection_eq_sin_mul_dist_of_collinear (t.points i₁) ?_ ?_ ?_ ?_
+  · simp [h₁₂.symm]
+  · simp [h₁₃.symm]
+  · apply collinear_insert_of_mem_affineSpan_pair
+    convert! t.altitudeFoot_mem_affineSpan_image_compl i₁
+    grind
+  · exact t.independent.injective.ne h₂₃
+
+end Affine.Triangle

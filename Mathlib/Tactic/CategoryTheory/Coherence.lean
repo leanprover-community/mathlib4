@@ -5,9 +5,9 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
-public import Lean.Meta.Tactic.Congr
+public meta import Lean.Meta.Tactic.Congr
+public meta import Mathlib.Lean.Meta
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
-public import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
@@ -23,7 +23,6 @@ A simpler version of this tactic is `pure_coherence`,
 which proves that any two morphisms (with the same source and target)
 in a monoidal category which are built out of associators and unitors
 are equal.
-
 -/
 
 public section

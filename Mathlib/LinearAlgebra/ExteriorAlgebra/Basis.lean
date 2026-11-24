@@ -8,9 +8,14 @@ module
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis for `ExteriorAlgebra`
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -33,10 +38,10 @@ noncomputable def _root_.Module.Basis.ExteriorAlgebra : Basis (Finset I) R (Exte
     Set.powersetCard.prodEquiv
 
 lemma basis_apply (s : Finset I) :
-    b.ExteriorAlgebra s = ιMulti_family R s.card b (prodEquiv.symm s).2 := by
+    b.ExteriorAlgebra s = ιMulti_family R #s b (prodEquiv.symm s).2 := by
   simp [Basis.ExteriorAlgebra]
 
-lemma basis_apply_ofCard {s : Finset I} (s_card : s.card = n) :
+lemma basis_apply_ofCard {s : Finset I} (s_card : #s = n) :
     b.ExteriorAlgebra s = ιMulti_family R n b (ofCard s_card) := by
   subst s_card
   simp [basis_apply]

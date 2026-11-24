@@ -46,12 +46,12 @@ Here we construct its `Units` structure. -/
 @[simps! val]
 def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy -- to make `add_val` true definitionally, for convenience
-    (x * Units.oneSub (-((x⁻¹).1 * t)) (by
+    (x * Units.oneSub (-((x⁻¹).val * t)) (by
       nontriviality R using zero_lt_one
       have hpos : 0 < ‖(↑x⁻¹ : R)‖ := Units.norm_pos x⁻¹
       calc
         ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
-        _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).1 _
+        _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).val _
         _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
         _ = 1 := mul_inv_cancel₀ (ne_of_gt hpos)))
     (x + t) (by simp [mul_add]) _ rfl
@@ -137,7 +137,7 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
   rw [ht]
 
 theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
-  simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
+  simp only [isBigO_iff, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by simp, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by linarith

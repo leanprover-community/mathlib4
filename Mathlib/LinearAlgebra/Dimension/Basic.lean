@@ -32,7 +32,7 @@ inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
 and `M₁`, `M₂`, ... all live in the same universe.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -65,11 +65,13 @@ See also `Module.finrank` for a `ℕ`-valued function which returns the correct 
 for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
 -/
 @[stacks 09G3 "first part"]
-protected irreducible_def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
+protected def Module.rank : Cardinal :=
+  ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.val)
+
+alias Module.rank_def := Module.rank.eq_def
 
 theorem rank_le_card : Module.rank R M ≤ #M :=
-  (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
+  ciSup_le' fun _ ↦ mk_set_le _
 
 instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
@@ -114,7 +116,7 @@ theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
     (h : Cardinal.lift.{v} c < Cardinal.lift.{w} (Module.rank R M)) :
     ∃ s : Set M, Cardinal.lift.{w} #s = Cardinal.lift.{v} c ∧ LinearIndepOn R id s := by
   rcases Cardinal.lt_lift_iff.mp h with ⟨c', hc', hcc'⟩
-  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
+  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank] using h) with ⟨⟨s, hs⟩, h⟩
   rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
   exact ⟨t, by simp [ht, hcc'], hs.mono hst⟩
 
@@ -138,7 +140,7 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
     contrapose! le
     rw [← natCast_add_one_le_iff, ← Nat.cast_add_one] at le
     have ⟨t, ht⟩ := exists_finset_eq_card le
-    exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
+    exact ⟨t.map (.subtype _), by simpa using ht.symm, s.property.mono <| by simp⟩
   mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
 
 theorem le_rank_iff {n : ℕ} : n ≤ Module.rank R M ↔ ∃ v : Fin n → M, LinearIndependent R v := by
@@ -164,7 +166,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R']
 variable (R M) in
 @[nontriviality, simp]
 theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
+  rw [Module.rank, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
   · have := Module.subsingleton R M
     simp [Set.subsingleton_of_subsingleton]
   · intro w hw
@@ -377,7 +379,7 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 -- source, by arbitrarily lifting a basis.
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
-  simp only [Module.rank_def]
+  simp only [Module.rank]
   rw [Cardinal.lift_iSup Cardinal.bddAbove_of_small]
   apply ciSup_le'
   rintro ⟨s, li⟩

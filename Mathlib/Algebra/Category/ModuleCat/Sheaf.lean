@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves of modules over a sheaf of rings
 
 In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCat`
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
-
 -/
 
 @[expose] public section
@@ -96,13 +98,12 @@ when `X` is initial.
 @[simps]
 noncomputable def forgetToSheafModuleCat
       (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
-    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
-  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
+    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.obj.obj X)) where
+  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.val,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
-  map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
+      (forget₂ (ModuleCat.{w} (R.obj.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
+  map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.val }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
 noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
     (hY : Limits.IsInitial Y) (φ : X ≅ Y) :

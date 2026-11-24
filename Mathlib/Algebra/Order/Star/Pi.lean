@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Star.Pi
 
 import Mathlib.Algebra.Group.Submonoid.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi-types of star-ordered rings
 -/
@@ -28,13 +31,13 @@ instance Pi.instStarOrderedRing : StarOrderedRing (Π i, A i) where
       rw [← closure_pi fun _ => Set.mem_range.mpr ⟨0, by simp⟩]
       congr
       ext x
-      simp only [Set.mem_range, funext_iff, mul_apply, star_apply, Set.mem_pi,
+      simp only [Set.mem_range, funext_iff, Pi.mul_apply, star_apply, Set.mem_pi,
         Set.mem_univ, forall_const]
       exact ⟨fun ⟨y, hy⟩ i => ⟨y i, hy i⟩, fun h => ⟨fun i => h i |>.choose,
         fun i => h i |>.choose_spec⟩⟩
     simp only [this, Pi.le_def, StarOrderedRing.le_iff, mem_pi, Set.mem_univ, forall_const]
     refine ⟨fun h => ?_, ?_⟩
-    · simp only [funext_iff, add_apply]
+    · simp only [funext_iff, Pi.add_apply]
       exact ⟨fun i => h i |>.choose, fun i => h i |>.choose_spec.1, fun i => h i |>.choose_spec.2⟩
     · simp only [forall_exists_index, and_imp]
       intro x h rfl i

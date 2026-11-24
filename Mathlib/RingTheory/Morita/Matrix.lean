@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.Morita.Basic
+
 /-!
 # Morita Equivalence between `R` and `Mₙ(R)`
 
@@ -22,7 +23,6 @@ public import Mathlib.RingTheory.Morita.Basic
 
 ## Main results
 - `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -53,7 +53,6 @@ open Matrix
 variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
@@ -120,7 +119,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
 @[simps]
 def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
     MatrixModCat.toModuleCatObj R (ι → M) i ≃ₗ[R] M where
-  toFun x := ∑ i : ι, x.1 i
+  toFun x := ∑ i : ι, x.val i
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
   invFun x := ⟨Pi.single i x, Function.const ι x, by simp⟩
@@ -155,7 +154,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
-    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
+    simp only [Matrix.mul_apply, smul_single, smul_eq_mul, mul_one, Matrix.sum_apply]
     rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
     simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
     split_ifs with h <;> simp [h]
@@ -167,7 +166,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     simp only [Finset.smul_sum]
     rw [Finset.sum_eq_single i (fun b _ hb ↦ by
       simp [← mul_smul, single_mul_single_of_ne _ _ _ _ hb.symm]) (by simp)]
-    obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
+    obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).property
     simp [← mul_smul, ← hy]
 
 set_option backward.isDefEq.respectTransparency false in

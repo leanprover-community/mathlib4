@@ -76,16 +76,15 @@ def headIsAncestorOfMaster : IO.CacheM Bool := do
   catch _ =>
     pure false
 
-/-- URL of the per-SHA marker of `sha` in `container` on the container's read
-base (`getBaseURL`), or `none` for a flat container. Marker writes
-use the upload location (`uploadLocation`). -/
+/-- URL of the per-SHA marker of `sha` in `container` on the read base
+(`getBaseURL`), or `none` for a flat container. -/
 def markerProbeURL (container : Container) (repo sha : String) : IO (Option String) := do
-  return (container.location (← getBaseURL container) repo (some sha)).markerURL?
+  return (container.location (← getBaseURL) repo (some sha)).markerURL?
 
 /-- Resolve the read location of a container at `sha` and check its marker. -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  checkMarker (container.location (← getBaseURL container) repo (some sha))
+  checkMarker (container.location (← getBaseURL) repo (some sha))
 
 /-- Default number of marked fork commits `cache get --unsafe` will try as SHA
 scopes: 1, namely just the latest cached SHA. Overridden by
@@ -118,6 +117,16 @@ accepts, or none if none are found.
 def findMostRecentSHAWithCache (shas : List String) (repo : String) :
     IO (Option String) :=
   return (← findRecentSHAsWithCache shas repo 1).head?
+
+/--
+The `--repo=` argument that a suggested `cache` command must repeat: the repo the
+user passed explicitly, or nothing. Without it, the suggested command would read
+the cache of the checkout's git remote instead.
+-/
+def repoFlag (repoExplicit? : Option String) : String :=
+  match repoExplicit? with
+  | some r => s!" --repo={r}"
+  | none => ""
 
 /--
 Resolve the repo to use for a `cache query` invocation.
@@ -164,7 +173,8 @@ SHA-scoped namespace to find the most recent commit that has cache entries.
 This is a diagnostic-only command: it prints the SHA to stdout but does not
 auto-apply it. The user manually passes the result to `cache get` if desired.
 -/
-def cacheQuery (repo : String) (cap : Nat := 50) : IO.CacheM Unit := do
+def cacheQuery (repo : String) (cap : Nat := 50) (repoExplicit? : Option String := none) :
+    IO.CacheM Unit := do
   if isCanonicalRepo repo then
     IO.println s!"`cache query` locates a fork PR's per-commit cache. {repo} reads \
       its own cache container directly, so there is nothing to query for it."
@@ -186,14 +196,14 @@ def cacheQuery (repo : String) (cap : Nat := 50) : IO.CacheM Unit := do
     IO.println s!"Most recent cached commit on this branch for fork {repo}: {sha}"
     IO.println s!""
     IO.println s!"To use this cache, run:"
-    IO.println s!"  lake exe cache get --scope={sha}"
+    IO.println s!"  lake exe cache get{repoFlag repoExplicit?} --scope={sha}"
     IO.println s!""
     IO.println s!"Note: this means trusting the artifacts built at that commit;"
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
     IO.println s!"No commit-specific cache found for fork {repo} within the last {cap} commits on this branch."
     IO.println "Simply call:"
-    IO.println "  lake exe cache get"
+    IO.println s!"  lake exe cache get{repoFlag repoExplicit?}"
     IO.println "If CI is still building your latest commit, call it again after CI finishes."
 
 /--

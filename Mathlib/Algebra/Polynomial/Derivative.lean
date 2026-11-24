@@ -5,11 +5,12 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
 
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # The derivative map on polynomials
@@ -17,7 +18,6 @@ import Mathlib.Algebra.Polynomial.Degree.Domain
 ## Main definitions
 * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
-
 -/
 
 @[expose] public section
@@ -25,7 +25,7 @@ import Mathlib.Algebra.Polynomial.Degree.Domain
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -135,7 +135,7 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 
 theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
-  simp_rw [← Module.End.pow_apply, map_sum]
+  simp_rw [← pow_apply_eq_iterate, map_sum]
 
 theorem derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
@@ -434,7 +434,7 @@ lemma natDegree_derivative (p : R[X]) : p.derivative.natDegree = p.natDegree - 1
     let m := p.natDegree - 1
     have hm : m + 1 = p.natDegree := tsub_add_cancel_of_le (by lia)
     have h2 := coeff_derivative p m
-    rw [Polynomial.ext_iff] at hp
+    rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff] at hp
     rw [hp m, coeff_zero, ← Nat.cast_add_one, ← nsmul_eq_mul', eq_comm, smul_eq_zero] at h2
     replace h2 := h2.resolve_left m.succ_ne_zero
     rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
@@ -450,6 +450,27 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative]
   norm_cast
   congr <;> lia
+
+lemma natTrailingDegree_derivative' (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree + 1 = p.natTrailingDegree := by
+  obtain ⟨n, hn⟩ := Nat.exists_eq_add_one_of_ne_zero hp
+  have hmem : n ∈ (derivative p).support := by
+    rw [mem_support_derivative, ← hn]
+    exact natTrailingDegree_mem_support_of_ne_zero (by aesop)
+  rw [hn, add_left_inj]
+  refine le_antisymm (natTrailingDegree_le_of_mem_supp _ hmem)
+    (le_natTrailingDegree (fun h ↦ by aesop) fun j hj ↦ ?_)
+  rw [coeff_derivative, coeff_eq_zero_of_lt_natTrailingDegree (by lia), zero_mul]
+
+lemma natTrailingDegree_derivative (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree = p.natTrailingDegree - 1 := by
+  rw [← natTrailingDegree_derivative' hp]
+  lia
+
+lemma trailingCoeff_derivative (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).trailingCoeff = p.trailingCoeff * p.natTrailingDegree := by
+  simp only [trailingCoeff, ← natTrailingDegree_derivative' hp, coeff_derivative]
+  norm_cast
 
 @[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
@@ -717,7 +738,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
 
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
-    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
+    ↑(k.factorial) * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
   classical
   induction k
   case zero => simp

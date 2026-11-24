@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Linear Functors
@@ -20,7 +21,6 @@ if the induced map on hom types is a morphism of `R`-modules.
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
-
 -/
 
 @[expose] public section
@@ -136,7 +136,6 @@ end Functor
 
 namespace Equivalence
 
-set_option backward.defeqAttrib.useBackward true in
 instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
   map_smul r f := by
     apply e.functor.map_injective

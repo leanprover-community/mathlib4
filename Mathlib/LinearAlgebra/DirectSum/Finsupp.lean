@@ -29,7 +29,6 @@ public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 * `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N`
   is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
-
 -/
 
 @[expose] public section

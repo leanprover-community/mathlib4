@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by `Submonoid`s
 
@@ -36,7 +39,7 @@ instance (priority := low) [SMul M' α] : SMul s α where
 
 @[to_additive]
 instance (priority := low) [SMul M' α] [IsLeftCancelSMul M' α] : IsLeftCancelSMul s α where
-  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.1 _ _
+  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.val _ _
 
 @[to_additive]
 instance (priority := low) [SMul M' α] [IsCancelSMul M' α] : IsCancelSMul s α where

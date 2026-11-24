@@ -75,7 +75,7 @@ lemma denom_cocycle (g h : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     denom (g * h) z = denom g (num h z / denom h z) * denom h z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero_of_im h hz]
-  simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
+  simp only [denom, Units.val_mul, Matrix.mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
   ring
@@ -84,7 +84,7 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     (num g z / denom g z).im = g.det.val * z.im / Complex.normSq (denom g z) := by
   simp only [num, denom, Complex.div_im, Complex.add_im, Complex.mul_im, Complex.ofReal_re,
     Complex.ofReal_im, zero_mul, add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div,
-    GeneralLinearGroup.val_det_apply, g.1.det_fin_two]
+    GeneralLinearGroup.val_det_apply, g.val.det_fin_two]
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
@@ -171,7 +171,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
   conv_rhs => rw [num]
   rw [mul_div, div_add' _ _ _ (denom_ne_zero_of_im _ hu), div_mul_eq_mul_div]
   congr 1
-  simp only [num, denom, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+  simp only [num, denom, Units.val_mul, Matrix.mul_apply, Fin.sum_univ_succ,
     Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
     Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -301,28 +301,22 @@ instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [specialLinearGroup_apply]
-  simp [ModularGroup.S, neg_div, inv_neg]
+  simp [specialLinearGroup_apply, neg_div]
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
-    zero_mul, zero_add, div_one]
+  simp [UpperHalfPlane.ext_iff, add_comm, coe_specialLinearGroup_apply, ModularGroup.coe_T_zpow]
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
-  ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
-  ring
+  ext
+  simp [specialLinearGroup_apply]
+  grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
@@ -403,58 +397,6 @@ end UpperHalfPlane
 namespace ModularGroup -- results specific to `SL(2, ℤ)`
 -- TODO: Move these elsewhere, maybe somewhere in the algebra or number theory hierarchies?
 
-section ModularScalarTowers
-
-/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
-  refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
-  simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
-  simpa [coe] using h i j
-
-/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
-    (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
-  rfl
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
-  simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-lemma coe_one : coe 1 = 1 := by
-  simp only [coe, map_one]
-
-/-- Multiplication action of `SL(2, ℤ)` on `GL(2, ℝ)⁺`. -/
-@[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨fun s g => s * g⟩
-
-attribute [local instance] SLOnGLPos
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
-  rfl
-
-@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-lemma SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
-  smul_assoc s g z := by
-    simp only [SLOnGLPos_smul_apply]
-    apply mul_smul'
-
-end ModularScalarTowers
-
 section SLModularAction
 
 variable (g : SL(2, ℤ)) (z : ℍ)
@@ -473,7 +415,6 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
 
 end SLModularAction

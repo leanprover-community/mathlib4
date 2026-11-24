@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The quotient category is preadditive
 
 If an equivalence relation `r : HomRel C` on the morphisms of a preadditive category
 is compatible with the addition, then the quotient category `Quotient r` is also
 preadditive.
-
 -/
 
 @[expose] public section

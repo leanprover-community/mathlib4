@@ -7,9 +7,13 @@ module
 
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal
+/-!
+# Radicals of homogeneous ideals
+
+This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal.
 
 ## Main statements
 

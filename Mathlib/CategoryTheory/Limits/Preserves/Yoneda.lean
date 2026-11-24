@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda preserves certain colimits
 
@@ -26,7 +29,6 @@ pointwise.
 
 There is also a relative version of this statement where `F : J ⥤ Over A` for some presheaf
 `A`, see `Mathlib/CategoryTheory/Comma/Presheaf/Colimit.lean`.
-
 -/
 
 @[expose] public section
@@ -57,7 +59,6 @@ noncomputable def yonedaYonedaColimit :
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫
       (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by

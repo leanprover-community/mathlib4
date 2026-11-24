@@ -8,6 +8,8 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
+import Mathlib.Algebra.Group.IsApply
+
 /-!
 # (Semi)linear equivalences
 
@@ -201,17 +203,14 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
-  rfl
-
 @[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
-theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
-  rfl
+@[simp, norm_cast]
+theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
+
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 
@@ -619,7 +618,8 @@ instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
     left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
     right_inv _ := by simp [smul_smul] }
 
-@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+@[simp]
+protected theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
 theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
     (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl

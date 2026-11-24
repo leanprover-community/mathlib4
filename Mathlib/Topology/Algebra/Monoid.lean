@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
+
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -376,7 +377,7 @@ end PointwiseLimits
 theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
-  ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
+  ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).continuous_smul⟩
 
 @[to_additive]
 theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
@@ -399,10 +400,10 @@ open MulOpposite in
 theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [SeparatelyContinuousMul N]
     (f : F) (hf : IsInducing f) : SeparatelyContinuousMul M where
-  continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).1 _
+  continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).continuous_const_smul _
   continuous_mul_const {m} :=
     have := ((opHomeomorph.isInducing.comp hf).comp (opHomeomorph.symm.isInducing)
-      |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).1 (op m)
+      |>.continuousConstSMul (fun x ↦ op (f (unop x))) (by simp)).continuous_const_smul (op m)
     continuous_unop.comp <| this.comp continuous_op
 
 @[to_additive]
@@ -943,11 +944,6 @@ theorem tendsto_finsetProd {f : ι → α → M} {x : Filter α} {a : ι → M} 
       Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias tendsto_finset_sum := tendsto_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod := tendsto_finsetProd
-
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
@@ -965,20 +961,10 @@ theorem continuous_finsetProd {f : ι → X → M} (s : Finset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias continuous_finset_sum := continuous_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias continuous_finset_prod := continuous_finsetProd
-
 @[to_additive]
 theorem continuousOn_finsetProd {f : ι → X → M} (s : Finset ι) {t : Set X} :
     (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
-
-@[deprecated (since := "2026-04-08")] alias continuousOn_finset_sum := continuousOn_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias continuousOn_finset_prod := continuousOn_finsetProd
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
@@ -1018,7 +1004,7 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact continuous_finprod (fun i => hc i i.property) (hf.comp_injective Subtype.coe_injective)
 
 end
 

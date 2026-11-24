@@ -8,10 +8,11 @@ module
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Localization.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # The meta properties of integral ring homomorphisms.
-
 -/
 
 public section

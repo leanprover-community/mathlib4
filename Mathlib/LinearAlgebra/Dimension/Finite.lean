@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 # Conditions for rank to be finite
 
 Also contains characterization for when rank equals zero or rank equals one.
-
 -/
 
 @[expose] public section
@@ -126,21 +125,29 @@ section
 variable [StrongRankCondition R]
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
+    (h : Module.rank R M < ℵ₀) : Finite ι := by
+  rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
+    Cardinal.lt_aleph0_iff_finite] at h
+
+/-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+@[deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Nonempty (Fintype ι) := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-@[instance_reducible]
+@[instance_reducible,
+deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 
 /-- If a module has a finite dimension, all bases are indexed by a finite set. -/
-theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
+theorem Module.Basis.setFinite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
     (h : Module.rank R M < ℵ₀) : s.Finite :=
-  Set.finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
+  Set.finite_coe_iff.1 (b.finite_index_of_rank_lt_aleph0 h)
 
 end
 
@@ -195,9 +202,6 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
-@[deprecated (since := "2026-04-13")]
-alias exists_set_linearIndependent_of_lt_rank := Module.exists_set_linearIndependent_of_lt_rank
-
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_rank hn
@@ -216,7 +220,7 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
-  · rw [le_zero_iff.mp (hn.trans_eq h)]
+  · rw [(hn.trans_eq h).eq_zero]
     exact ⟨∅, rfl, by convert! linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
     ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
@@ -294,7 +298,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
     (h : finrank R M < t.card) : ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_ge)
-  refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
+  refine ⟨Subtype.val.extend g 0, ?_, z, z.property, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert! sum; apply Subtype.val_injective.extend_apply
 
 /-- If a finset has cardinality larger than `finrank + 1`,

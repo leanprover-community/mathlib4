@@ -45,7 +45,6 @@ and `q` is notation for the cardinality of `K`.
 While `Fintype Kˣ` can be inferred from `Fintype K` in the presence of `DecidableEq K`,
 in this file we take the `Fintype Kˣ` argument directly to reduce the chance of typeclass
 diamonds, as `Fintype` carries data.
-
 -/
 
 @[expose] public section
@@ -218,7 +217,7 @@ variable [GroupWithZero K] [Fintype K]
 
 theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
   calc
-    a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).1 := by
+    a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).val := by
       rw [Units.val_pow_eq_pow_val, Units.val_mk0]
     _ = 1 := by
       classical
@@ -256,7 +255,7 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
   let : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
   obtain ⟨n, h⟩ := VectorSpace.card_fintype (ZMod p) K
   rw [ZMod.card] at h
-  refine ⟨⟨n, ?_⟩, hp.1, h⟩
+  refine ⟨⟨n, ?_⟩, hp.out, h⟩
   apply Or.resolve_left (Nat.eq_zero_or_pos n)
   rintro rfl
   rw [pow_zero] at h
@@ -385,7 +384,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       have := congr($eq x)
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr(coeff $h 1)
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr($(h).coeff 1)
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -395,14 +394,15 @@ theorem orderOf_frobeniusAlgEquivOfAlgebraic :
   simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using! orderOf_frobeniusAlgHom K L
 
 theorem bijective_frobeniusAlgHom_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.val :=
   let e := (finCongr <| orderOf_frobeniusAlgHom K L).symm.trans <|
     finEquivPowers (orderOf_pos_iff.mp <| orderOf_frobeniusAlgHom K L ▸ Module.finrank_pos)
   (Subtype.val_injective.comp e.injective).bijective_of_nat_card_le
     ((card_algHom_le_finrank K L L).trans_eq <| by simp)
 
 theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
-    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.1 :=
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦
+      frobeniusAlgEquivOfAlgebraic K L ^ n.val :=
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using! bijective_frobeniusAlgHom_pow K L
 
@@ -418,7 +418,7 @@ theorem minpoly_frobeniusAlgHom :
     minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
   minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
     (LinearMap.ext fun x ↦ by
-      simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using!
+      simpa [sub_eq_zero, FunLike.coe_pow_eq_iterate, orderOf_frobeniusAlgHom] using!
         congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
     (degree_X_pow_sub_C Module.finrank_pos _) <| by
       simpa [← AlgHom.toEnd_apply, ← map_pow] using! (linearIndependent_algHom_toLinearMap K L L
@@ -428,34 +428,9 @@ end frobenius
 
 open Polynomial
 
-section
-
-variable [Fintype K] (K' : Type*) [Field K'] {p n : ℕ}
-
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
-  have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
-    rw [degree_X_pow, degree_X]
-    exact mod_cast hp
-  rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
-
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
-    (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
-
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
-  ne_zero_of_natDegree_gt <|
-    calc
-      1 < _ := hp
-      _ = _ := (X_pow_card_sub_X_natDegree_eq K' hp).symm
-
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
-
-end
-
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_sub_X_ne_zero Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
@@ -498,21 +473,14 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
-  rcases hp.1.eq_two_or_odd with rfl | hp_odd
-  · change Fin 2 at x
+  rcases hp.out.eq_two_or_odd with rfl | hp_odd
+  · unfold ZMod
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
-  let f : (ZMod p)[X] := X ^ 2
-  let g : (ZMod p)[X] := X ^ 2 - C x
-  obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
-  refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [hp_odd, sub_eq_zero, ← add_sub_assoc] using
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x)
 
 end ZMod
 
@@ -729,32 +697,77 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
   rw [← fieldRange_castHom_eq_bot p,
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
+/-- The prime subfield `⊥ : Subfield F` as a `Finset F`. -/
+def Polynomial.primeSubfieldFinset : Finset F :=
+  univ.map ⟨_, (ZMod.castHom dvd_rfl F).injective⟩
+
+@[simp]
+theorem Polynomial.mem_primeSubfieldFinset {x : F} :
+    x ∈ primeSubfieldFinset F p ↔ x ∈ (⊥ : Subfield F) := by
+  simp [primeSubfieldFinset, ← fieldRange_castHom_eq_bot p]
+
+/-- `primeSubfieldFinset`, coerced to a `Set`, equals the `⊥` subfield coerced to a `Set`. -/
+@[simp]
+theorem Polynomial.coe_primeSubfieldFinset :
+    (primeSubfieldFinset F p : Set F) = (⊥ : Subfield F) := by
+  ext; simp
+
+@[simp]
+theorem Polynomial.card_primeSubfieldFinset : (primeSubfieldFinset F p).card = p := by
+  simp [primeSubfieldFinset]
+
 /-- The prime subfield is finite. -/
 @[instance_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
-  Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
-    fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+  Fintype.ofFinset _ fun _ ↦ Polynomial.mem_primeSubfieldFinset ..
+
+theorem Subfield.natCard_bot : Nat.card (⊥ : Subfield F) = p := by
+  let := Subfield.fintypeBot F p
+  rw [Nat.card_eq_fintype_card]
+  exact (Fintype.card_ofFinset ..).trans (Polynomial.card_primeSubfieldFinset ..)
+
+theorem Subfield.fintypeCard_bot [Fintype (⊥ : Subfield F)] :
+    Fintype.card (⊥ : Subfield F) = p := by
+  rw [← Nat.card_eq_fintype_card, natCard_bot]
+
+@[simp]
+theorem Polynomial.primeSubfieldFinset_eq_univ [Subsingleton (Subfield F)] [Fintype F] :
+    primeSubfieldFinset F p = .univ := by
+  have : (⊥ : Subfield F) = ⊤ := by subsingleton
+  ext
+  simp [this]
 
 open Polynomial
 
-theorem Subfield.roots_X_pow_char_sub_X_bot :
-    letI := Subfield.fintypeBot F p
+theorem Subfield.roots_X_pow_char_sub_X_bot [Fintype (⊥ : Subfield F)] :
     (X ^ p - X : (⊥ : Subfield F)[X]).roots = Finset.univ.val := by
-  let _ := Subfield.fintypeBot F p
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
-theorem Subfield.splits_bot :
-    Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
+theorem Polynomial.splits_X_pow_char_sub_X : Splits ((X : F[X]) ^ p - X) := by
+  suffices (X ^ p - X : (⊥ : Subfield F)[X]).Splits by simpa using this.map (⊥ : Subfield F).subtype
   let _ := Subfield.fintypeBot F p
-  rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
-    FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
-    Fintype.card_eq_nat_card, card_bot F p]
+  rw [splits_iff_card_roots, Subfield.roots_X_pow_char_sub_X_bot, Finset.card_val, Finset.card_univ,
+    Fintype.card_eq_nat_card, Subfield.card_bot F p,
+    natDegree_X_pow_sub_X (Nat.Prime.one_lt Fact.out)]
+
+theorem Polynomial.roots_X_pow_char_sub_X :
+    (X ^ p - X : F[X]).roots = (primeSubfieldFinset F p).val := by
+  classical
+  have := Subfield.fintypeBot F p
+  have : (univ : Finset (⊥ : Subfield F)).image Subtype.val = primeSubfieldFinset F p := by
+    ext; simp
+  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtypeVal, this]
+    using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
+
+@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
+theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
+  Polynomial.splits_X_pow_char_sub_X _ p
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
-  have := roots_X_pow_char_sub_X_bot F p ▸
-      (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
-  simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+  rw [← Polynomial.mem_primeSubfieldFinset, ← mem_val, ← roots_X_pow_char_sub_X, mem_roots]
+  · simp [sub_eq_zero]
+  · exact X_pow_sub_X_ne_zero (Nat.Prime.one_lt Fact.out)
 
 end prime_subfield
 

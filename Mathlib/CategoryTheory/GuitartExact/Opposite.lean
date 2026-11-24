@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a Guitart exact square
 
 A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
-
 -/
 
 @[expose] public section
@@ -69,7 +71,6 @@ def inverse :
 
 end structuredArrowRightwardsOpEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w : TwoSquare T L R B`, and `g : B.op.obj X₃ ⟶ R.op.obj X₂`, this is
 the obvious equivalence of categories between
 `(w.op.StructuredArrowRightwards g)ᵒᵖ` and `w.CostructuredArrowDownwards g.unop`. -/

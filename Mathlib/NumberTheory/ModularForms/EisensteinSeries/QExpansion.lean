@@ -14,6 +14,9 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.Tactic.NormNum.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein series q-expansions
 
@@ -35,7 +38,6 @@ are defined as sums over coprime integer pairs, we also need to relate these to 
 of integers, which is done in `tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
 gives the q-expansion with a Riemann zeta factor, which we simplify using the formula for
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
-
 -/
 
 public section
@@ -128,7 +130,7 @@ lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : 
 lemma iteratedDerivWithin_tsum_cexp_eq (k : ℕ) (z : ℍ) :
     iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
-  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
+  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.coe_im_pos)]
   · exact fun x hx ↦ summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
   · exact fun n _ _ ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cexp n
@@ -151,9 +153,10 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     (2 * π * I) * ∑' n : ℕ, cexp (2 * π * I * z) ^ n)) ℍₒ z =
     -(2 * π * I) * ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
     rw [iteratedDerivWithin_const_sub hk, iteratedDerivWithin_fun_neg,
-      iteratedDerivWithin_const_mul (by simpa using z.2) (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
+      iteratedDerivWithin_const_mul (by simpa using z.coe_im_pos)
+        (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
     · simp only [iteratedDerivWithin_tsum_cexp_eq, neg_mul]
-    · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.2)
+    · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.coe_im_pos)
   have h : -(2 * π * I * (2 * π * I) ^ k) * ∑' (n : ℕ), n ^ k * cexp (2 * π * I * z) ^ n =
         -(2 * π * I) * ∑' n : ℕ, (2 * π * I * n) ^ k * cexp (2 * π * I * z) ^ n := by
     simp_rw [← tsum_mul_left]
@@ -167,7 +170,7 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
   have := exp_nsmul' (p := 1) (a := 2 * π * I) (n := n)
   simp_rw [div_one] at this
   simpa [this, UpperHalfPlane.coe] using
-    iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.2
+    iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.coe_im_pos
 
 /-- This is one key identity relating infinite series to q-expansions which shows that
 `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n, n ^ k q ^n` where
@@ -178,9 +181,9 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
   have : (-1) ^ k * k ! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
     -(2 * π * I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
     rw [← iteratedDerivWithin_tsum_exp_aux_eq hk z,
-      ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2)]
+      ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.coe_im_pos)]
     exact iteratedDerivWithin_congr (fun x hx ↦ by (simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩))
-      (by simpa using z.2)
+      (by simpa using z.coe_im_pos)
   simp_rw [(eq_inv_mul_iff_mul_eq₀ (by simp [Nat.factorial_ne_zero])).mpr this, ← tsum_mul_left]
   congr
   ext n
@@ -192,7 +195,7 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
 lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     Summable fun c : ℕ ↦ (c : ℂ) ^ k * cexp (2 * π * I * e * z) ^ c := by
   have he : 0 < (e * (z : ℂ)).im := by
-    simpa using z.2
+    simpa using z.coe_im_pos
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
     (f := fun n ↦ (n ^ k : ℂ)) (by simp)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
@@ -228,7 +231,8 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
   case h₁ =>
     nth_rewrite 1 [← tsum_comp_neg]
     exact tsum_congr fun y ↦ by simp [eisSummand, ← neg_add _ (y : ℂ), -neg_add_rev, hk2.neg_pow]
-  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.2⟩
+  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind)
+    ⟨b * z, by simpa using z.coe_im_pos⟩
   simp_rw [show k - 1 + 1 = k by grind, one_div] at H
   simp only [neg_mul] at H
   rw [nsmul_eq_mul, mul_assoc]
@@ -238,13 +242,13 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
         ∑' (m : ℕ+) (n : ℕ+), (n : ℕ) ^ (k - 1) * cexp (2 * π * I * z) ^ (m * n : ℕ) by
       simp [eisSummand, H, tsum_mul_left,
         ← tsum_prod_pow_eq_tsum_sigma (k - 1) (norm_exp_two_pi_I_lt_one z), this]
-    simp_rw [← Complex.exp_nat_mul]
+    simp_rw [← Complex.exp_natCast_mul]
     exact tsum_congr₂ (fun m n ↦ by push_cast; ring_nf)
 
 lemma eisSummand_of_gammaSet_eq_divIntMap (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
     eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
   simp_rw [eisSummand]
-  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.2]
+  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.property]
   simp [← mul_inv, ← mul_zpow, mul_add, mul_assoc]
 
 lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
@@ -316,7 +320,7 @@ lemma EisensteinSeries.summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z :
   intro n
   simp only [norm_mul, Complex.norm_natCast, norm_pow]
   gcongr
-  exact_mod_cast (ArithmeticFunction.sigma_le_pow_succ (k - 1) n).trans_eq (by congr 1; omega)
+  exact mod_cast (ArithmeticFunction.sigma_le_pow_succ (k - 1) n).trans_eq (by congr 1; omega)
 
 /-- The q-expansion coefficients of the normalised Eisenstein series `E k`: the constant term is
 `1` and for `m ≥ 1` the `m`-th coefficient is `-(2k / B_k) * σ_{k-1}(m)` where `B_k` is the

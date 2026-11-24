@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.RepresentationTheory.Homological.Resolution
 
 /-!
@@ -135,7 +136,6 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
   simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
@@ -172,8 +172,8 @@ abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :
 
 variable {A} in
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
-    iCocycles A n (cocyclesMk f h) = f := by
-  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
+    iCocycles A n (cocyclesMk f h) = f :=
+  (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
 
 end groupCohomology
 
@@ -181,6 +181,7 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
+@[implicit_reducible]
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
@@ -190,7 +191,6 @@ abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)
@@ -201,9 +201,10 @@ theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
-    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
+    groupCohomology A n ≅ ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) A n) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
-    (Rep.barResolution.extIso k G A n).symm
+    ChainComplex.linearYonedaObjHomologyIso .. ≪≫
+    (Rep.barResolution k G).extLinearEquivCohomologyClass.{u}.symm.toModuleIso
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
@@ -211,9 +212,17 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
 def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
-  groupCohomologyIsoExt A n ≪≫ P.isoExt _ _
+  groupCohomologyIsoExt A n ≪≫ P.extIsoHomologyLinearYonedaObj _ _
 
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
-    Limits.IsZero (groupCohomology A (n + 1)) :=
-  (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
+    Limits.IsZero (groupCohomology A (n + 1)) := by
+  refine Limits.IsZero.of_iso ?_ (groupCohomologyIsoExt A (n + 1))
+  rw [ModuleCat.isZero_iff_subsingleton]
+  apply Abelian.Ext.subsingleton_of_projective
+
+lemma isZero_groupCohomology_of_neZero_of_subsingleton
+    [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) [NeZero n] :
+    Limits.IsZero (groupCohomology A n) := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  apply isZero_groupCohomology_succ_of_subsingleton

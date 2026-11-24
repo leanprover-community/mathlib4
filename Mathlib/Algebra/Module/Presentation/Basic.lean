@@ -33,7 +33,6 @@ generators and relations.
 ## TODO
 * Relate this to `Module.FinitePresentation`
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
-
 -/
 
 @[expose] public noncomputable section
@@ -46,7 +45,6 @@ namespace Module
 
 variable (A : Type u) [Ring A]
 
-set_option linter.checkUnivs false in
 /-- Given a ring `A`, this structure involves a family of elements (indexed by a type `R`)
 in a free module `G →₀ A`. This allows to define an `A`-module by generators and relations,
 see `Relations.Quotient`. -/
@@ -389,7 +387,7 @@ lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsP
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
-    rw [this, LinearMap.coe_comp, LinearEquiv.coe_coe]
+    rw [this, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap]
     exact Function.Bijective.comp e.bijective h.bijective
 
 end IsPresentation
@@ -486,7 +484,6 @@ end Relations
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
-set_option linter.checkUnivs false in
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
 generators and relations. -/
 structure Presentation extends Relations.{w₀, w₁} A,

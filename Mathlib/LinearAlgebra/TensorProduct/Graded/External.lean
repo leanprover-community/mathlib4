@@ -41,7 +41,6 @@ multiplication follows trivially from this after some point-free nonsense.
 
 * https://math.stackexchange.com/q/202718/1896
 * [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
-
 -/
 
 @[expose] public section
@@ -175,7 +174,7 @@ variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 open TensorProduct (assoc map) in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/
-noncomputable irreducible_def gradedMul :
+@[no_expose] noncomputable def gradedMul :
     letI AB := DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
@@ -190,8 +189,8 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
       (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
-  dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
-    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
+  dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    assoc_tmul, map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
     LinearMap.lTensor_tmul]
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
@@ -238,14 +237,11 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
 set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
-  let mA := gradedMul R 𝒜 ℬ
-    -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
-    congrm $this x y z
+  apply (gradedMul R 𝒜 ℬ).assoc_iff.mpr
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
-  dsimp [mA]
+  dsimp only [LinearMap.coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply,
+    LinearMap.restrictScalars_self, curry_apply, LinearMap.llcomp_apply, LinearMap.flip_apply,
+    LinearEquiv.coe_toLinearMap, LinearMap.lflip_apply]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
     LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,

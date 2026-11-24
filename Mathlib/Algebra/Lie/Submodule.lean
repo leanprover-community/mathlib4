@@ -582,7 +582,7 @@ def inclusion : N →ₗ⁅R,L⁆ N' where
 theorem coe_inclusion (m : N) : (inclusion h m : M) = m :=
   rfl
 
-theorem inclusion_apply (m : N) : inclusion h m = ⟨m.1, h m.2⟩ :=
+theorem inclusion_apply (m : N) : inclusion h m = ⟨m.val, h m.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
@@ -649,7 +649,7 @@ theorem span_empty : lieSpan R L (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_lieSpan
+  eq_top_iff.2 fun _ _ ↦ subset_lieSpan (Set.mem_univ _)
 
 theorem lieSpan_eq_bot_iff : lieSpan R L s = ⊥ ↔ ∀ m ∈ s, m = (0 : M) := by
   rw [_root_.eq_bot_iff, lieSpan_le, bot_coe, subset_singleton_iff]

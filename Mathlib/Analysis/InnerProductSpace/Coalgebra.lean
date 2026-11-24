@@ -44,8 +44,8 @@ theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
         map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
-  simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
-  simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
+  simp [comp_apply, ← toLinearMap_congr, ← LinearEquiv.symm_apply_eq,
+    TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
 
 open EuclideanSpace in
 /-- The counit on `n → 𝕜` corresponds to the Euclidean space adjoint of the algebra linear map. -/
@@ -121,7 +121,7 @@ noncomputable abbrev ringOfCoalgebra :
     simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
       ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
+    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_toLinearMap, assoc_tmul,
       lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
@@ -154,7 +154,7 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
           adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
           adjoint_toLinearMap_eq_symm]
         simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
-          coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
+          coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, lTensor_tmul, lid_tmul]
         rw [← smul_eq_mul, ← _root_.map_smul]
       map_zero' := map_zero _
       map_add' := map_add _ }

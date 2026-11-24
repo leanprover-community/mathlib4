@@ -192,6 +192,11 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
   contrapose h
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
+/-- The extremal number on `n` vertices is at most `n.choose 2`. -/
+theorem extremalNumber_le_choose_two : extremalNumber n H ≤ n.choose 2 := by
+  rw [← Fintype.card_fin n, extremalNumber_le_iff]
+  exact fun _ _ _ ↦ card_edgeFinset_le_card_choose_two
+
 end ExtremalNumber
 
 end SimpleGraph

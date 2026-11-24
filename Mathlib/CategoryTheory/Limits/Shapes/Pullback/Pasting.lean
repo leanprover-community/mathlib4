@@ -28,7 +28,6 @@ pullback.
   `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 * `pullbackLeftPullbackSndIso` shows, using the `pullback` API, that
   `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
-
 -/
 
 @[expose] public section
@@ -76,7 +75,6 @@ local notation "f₁" => t₁.snd
 
 variable {t₁} {t₂}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -105,7 +103,6 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
 
 variable (t₁)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -159,7 +156,6 @@ Y₁ - i₁ -> X₁
 ```
 Let `t₁` denote the cone corresponding to the bottom square, and `t₂` denote the cone corresponding
 to the top square.
-
 -/
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
 
@@ -179,7 +175,6 @@ local notation "Y₃" => t₂.pt
 local notation "g₂" => t₂.fst
 local notation "i₃" => t₂.snd
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Pasting two pullback cones vertically is isomorphic to the pullback cone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/
 def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
@@ -267,7 +262,6 @@ local notation "i₃" => t₂.inr
 
 variable {t₁} {t₂}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -297,7 +291,6 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
 
 variable (t₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given
 
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -372,7 +365,6 @@ local notation "X₁" => t₂.pt
 local notation "f₁" => t₂.inr
 local notation "i₁" => t₂.inl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Pasting two pushout cocones vertically is isomorphic to the pushout cocone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/
 def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=

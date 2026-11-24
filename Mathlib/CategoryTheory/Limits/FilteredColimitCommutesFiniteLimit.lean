@@ -9,9 +9,9 @@ public import Mathlib.Basic.Countable.Small
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Products.Bifunctor
 
 import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -26,8 +26,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

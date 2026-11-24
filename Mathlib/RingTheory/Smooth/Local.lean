@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.LocalRing.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formally smooth local algebras
 -/
@@ -89,7 +92,8 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
     ext
     #adaptation_note /-- Prior to nightly-2026-04-06, this was just `simp`. -/
     simp_rw [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
-      LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_toLinearMap,
+      Function.comp_apply,
       AlgebraTensorModule.cancelBaseChange_symm_tmul, LinearMap.baseChange_tmul,
       cotangentComplexBaseChange_tmul, kerToTensor_apply, one_smul,
       AlgebraTensorModule.cancelBaseChange_tmul]

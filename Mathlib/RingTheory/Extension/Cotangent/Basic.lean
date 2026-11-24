@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
-
 # Naive cotangent complex associated to a presentation.
 
 Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`
@@ -34,7 +33,6 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 ## Implementation detail
 We actually develop these material for general extensions (i.e. surjection `P → S`) so that we can
 apply them to infinitesimal smooth (or versal) extensions later.
-
 -/
 
 @[expose] public noncomputable section
@@ -92,7 +90,7 @@ lemma _root_.KaehlerDifferential.cotangentComplexBaseChange_tmul
     {P A : Type*} [CommRing P] [CommRing A] [Algebra P S]
     [Algebra P A] [Algebra R P] [Algebra S A] [IsScalarTower P S A] (a b) :
   cotangentComplexBaseChange R S P A (a ⊗ₜ b) =
-    a • kerToTensor R P A ⟨b.1, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
+    a • kerToTensor R P A ⟨b.val, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
 
 variable (A) in
 lemma cotangentComplexBaseChange_eq_lTensor_cotangentComplex :
@@ -337,10 +335,10 @@ variable {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
   [IsScalarTower R₀ S P.Cotangent] in
 deriving instance SMul R₀, AddCommGroup, Module R₀ for (P).H1Cotangent
 
-@[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).1 = x.1 + y.1 := rfl
-@[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).1 = 0 := rfl
+@[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).val = x.val + y.val := rfl
+@[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).val = 0 := rfl
 @[simp] lemma H1Cotangent.val_smul {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
-    [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).1 = r • x.1 := rfl
+    [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).val = r • x.val := rfl
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
     [Algebra R₁ S] [Algebra R₂ S]
@@ -361,7 +359,7 @@ lemma subsingleton_h1Cotangent (P : Extension R S) :
 
 lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
 
-@[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.1 = y.1) : x = y := Subtype.ext e
+@[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.val = y.val) : x = y := Subtype.ext e
 
 /-- The sequence `H¹(L_{S/R}) → P.Cotangent → P.CotangentSpace` is exact. -/
 lemma exact_hCotangentι_cotangentComplex : Function.Exact h1Cotangentι P.cotangentComplex := by
@@ -471,8 +469,9 @@ lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
       fun j ↦ (aeval P.val) <| pderiv (u j) x.val := by
   ext j
-  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply, Extension.cotangentComplex_mk]
+  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    Function.comp_apply, Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply,
+    Extension.cotangentComplex_mk]
   simp only [toExtension_Ring, P.cotangentSpaceBasis_repr_tmul, one_mul]
 
 universe w' u' v'
@@ -524,7 +523,7 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R
     simp only [Generators.toExtension_Ring]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
-  exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
+  exact (Extension.Cotangent.finite P.fg_ker).fg_top.map P.toExtension.cotangentComplex
 
 variable {ι : Type w} {ι' : Type*} {P : Generators R S ι}
 

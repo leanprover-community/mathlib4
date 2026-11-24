@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intermediate Fields of Rational Function Fields
 
@@ -175,7 +178,7 @@ theorem finrank_eq_max_natDegree :
 
 theorem IntermediateField.isAlgebraic_X {E : IntermediateField K K⟮X⟯} (hE : E ≠ ⊥) :
     IsAlgebraic E (X : K⟮X⟯) := by
-  rw [ne_eq, ← le_bot_iff, IsConcreteLE.not_le_iff_exists] at hE
+  rw [ne_eq, ← le_bot_iff, not_le_iff_exists_mem_notMem] at hE
   obtain ⟨f, hf₁, hf₂⟩ := hE
   exact IsAlgebraic.tower_top_of_subalgebra_le (adjoin_simple_le_iff.mpr hf₁) <|
     f.isAlgebraic_adjoin_simple_X (by rintro ⟨c, rfl⟩; exact hf₂ ⟨c, rfl⟩)

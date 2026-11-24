@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.LinearAlgebra.Matrix.RowCol
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permanent of a matrix
 
@@ -15,7 +19,6 @@ This file defines the permanent of a matrix, `Matrix.permanent`, and some of its
 ## Main definitions
 
 * `Matrix.permanent`: the permanent of a square matrix, as a sum over permutations
-
 -/
 
 @[expose] public section
@@ -89,7 +92,7 @@ theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
 @[simp]
 theorem permanent_smul (M : Matrix n n R) (c : R) :
     permanent (c • M) = c ^ Fintype.card n * permanent M := by
-  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  simp only [permanent, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   congr
   ext
   rw [mul_comm]

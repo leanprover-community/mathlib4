@@ -213,7 +213,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
   rw [Finset.prod_sigma']
   exact Fintype.prod_equiv c.equivSigma _ _ (fun p ↦ rfl)
 
-lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
+lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).isLt
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
   ⟨(c.length_pos pos').ne'⟩
@@ -270,7 +270,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
     convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
-    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
+    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono (Fin.pos_iff_ne_zero.mpr h))).ne
 
 /-!
 ### Extending and shrinking ordered finpartitions
@@ -787,7 +787,7 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
           ContinuousMultilinearMap.map_update_add])
       (fun v i c x ↦ by
         simp only [applyOrderedFinpartition_update_right,
-          ContinuousMultilinearMap.map_update_smul])
+          ContinuousMultilinearMap.map_update_smul, RingHom.id_apply])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -810,7 +810,7 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
+      (Π i : Fin c.length, E [×c.partSize i]→L[𝕜] F) →ₘₗ[𝕜] E [×n]→L[𝕜] G where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by
@@ -1071,8 +1071,8 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
         (∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
       have cm : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
-      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m :=
+        mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
         hf.fderivWithin (c.partSize i) ((cp i).trans_lt hm) x hx
@@ -1106,6 +1106,6 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
-      have : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+      have : (c.partSize i : WithTop ℕ∞) ≤ m :=
+        mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)

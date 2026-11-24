@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous affine maps.
 
@@ -109,7 +112,7 @@ theorem mk_coe (f : P →ᴬ[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →�
   rfl
 
 @[continuity]
-protected theorem continuous (f : P →ᴬ[R] Q) : Continuous f := f.2
+protected theorem continuous (f : P →ᴬ[R] Q) : Continuous f := f.cont
 
 variable (R P)
 

@@ -56,7 +56,7 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
+  hf.measurable.aemeasurable
 
 protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
     (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
@@ -93,11 +93,12 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
+  ⟨hf.measurable.aemeasurable, hf.map_eq.absolutelyContinuous⟩
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
+  ⟨hg.measurable.comp hf.measurable, by
+    rw [← map_map hg.measurable hf.measurable, hf.map_eq, hg.map_eq]⟩
 
 protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
     (hg : Measurable g) (hf : Measurable f) :
@@ -142,7 +143,7 @@ protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SF
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
+  rw [map_apply₀ hf.measurable.aemeasurable hs]
 
 theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
@@ -236,10 +237,13 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
 
 end MeasurePreserving
 
-lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+lemma measurePreserving_subtypeVal {s : Set α} (hs : MeasurableSet s) :
     MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
-  measurable := measurable_subtype_coe
-  map_eq := map_comap_subtype_coe hs _
+  measurable := measurable_subtypeVal
+  map_eq := map_comap_subtypeVal hs _
+
+@[deprecated (since := "2026-11-10")]
+alias measurePreserving_subtype_coe := measurePreserving_subtypeVal
 
 namespace MeasurableEquiv
 

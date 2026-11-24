@@ -5,11 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Rep.Basic
+
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
@@ -42,7 +43,6 @@ and this is reflected in the documentation.
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
 * `FdRep k G ≌ FGModuleCat k[G]`.
-
 -/
 
 @[expose] public section
@@ -106,7 +106,6 @@ lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).asHom.hom.hom 
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj,
@@ -166,7 +165,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom f.hom.toLinearMap), fun g ↦ by
     ext1
     simp only [FGModuleCat.obj_carrier]
-    exact f.hom.2 g⟩
+    exact f.hom.isIntertwining' g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by

@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric equivalences with respect to bilinear forms
 
@@ -127,7 +130,7 @@ def isometryEquivOfCompLinearEquiv (B : LinearMap.BilinForm R M) (f : M₁ ≃�
   { f.symm with
     map_app' := by
       intro _ _
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
+      simp only [comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.toFun_eq_coe,
         f.apply_symm_apply] }
 
 end LinearMap.BilinForm

@@ -16,7 +16,6 @@ This file proves various versions of Ceva's theorem in a `NormedAddTorsor`.
 ## References
 
 * https://en.wikipedia.org/wiki/Ceva%27s_theorem
-
 -/
 
 public section

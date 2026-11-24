@@ -7,13 +7,15 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The semi-simplex category
 
 We define a category `SemiSimplexCategory` so that semi-simplicial objects
 can be defined (TODO) as functors from `SemiSimplexCategoryᵒᵖ` similarly
 as simplicial objects are functors from `SimplexCategory`.
-
 -/
 
 @[expose] public section

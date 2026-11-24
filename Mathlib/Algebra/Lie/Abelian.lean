@@ -87,12 +87,9 @@ theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
   have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
   simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
-@[deprecated (since := "2026-04-01")]
-alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
-
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
-    IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
+    IsLieAbelian (lieSpan R L s) ↔ ∀ x ∈ s, ∀ y ∈ s, ⁅x, y⁆ = 0 := by
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
   · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
     let y' : lieSpan R L s := ⟨y, subset_lieSpan hy⟩
@@ -195,7 +192,7 @@ theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
 theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
   ⟨fun h m hm x => IsTrivial.casesOn h fun h => Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h =>
-    { trivial := fun x m => Subtype.ext (h m.2 x) }⟩
+    { trivial := fun x m => Subtype.ext (h m.property x) }⟩
 
 theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M = ⊤ := by
   constructor
