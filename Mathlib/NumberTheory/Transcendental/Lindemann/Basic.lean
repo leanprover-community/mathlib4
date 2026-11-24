@@ -15,6 +15,7 @@ import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -47,7 +48,7 @@ theorem linearIndependent_exp (u : ι → ℂ) (hu : ∀ i, IsAlgebraic ℚ (u i
   obtain ⟨w, w0, w'', p0, h⟩ :=
     LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero (ι := s)
       expMonoidHom (u ·) (hu · |>.isIntegral) (u_inj.comp Subtype.val_injective)
-      (v ·) (v · |>.2) (by simpa [funext_iff] using v0) (by simpa [Algebra.smul_def] using h)
+      (v ·) (v · |>.prop) (by simpa [funext_iff] using v0) (by simpa [Algebra.smul_def] using h)
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
   let p : w''.support → ℤ[X] := Subtype.val
   let w' := w'' ∘ p

@@ -11,6 +11,7 @@ import Mathlib.Algebra.Group.UniqueProds.VectorSpace
 import Mathlib.Data.Finsupp.Quotient
 import Mathlib.FieldTheory.Minpoly.ConjRootClass
 import Mathlib.FieldTheory.Normal.Closure
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Invariant.Basic
 
 /-!
@@ -192,10 +193,8 @@ theorem exists_sum_conjRootClass_eq_add_sum_map_aroots (A : Type*) {R F K S : Ty
         c.aroots_minpoly_eq_carrier_val]
       simp
 
-public theorem exists_add_sum_map_aroots_eq_zero {S : Type*}
-    [Field S] [Algebra ℚ S] [IsAlgClosed S]
-    (φ : Multiplicative S →* S)
-    (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))
+public theorem exists_add_sum_map_aroots_eq_zero {S : Type*} [Field S] [CharZero S] [IsAlgClosed S]
+    (φ : Multiplicative S →* S) (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → S) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * φ (.ofAdd <| u i) = 0) :
     ∃ (w : ℤ), w ≠ 0 ∧ ∃ (w' : ℤ[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
