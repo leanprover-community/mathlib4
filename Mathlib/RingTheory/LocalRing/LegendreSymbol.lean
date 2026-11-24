@@ -97,7 +97,7 @@ theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a
 /-- `legendreSym a = -1` iff `a` is a nonsquare in `ResidueField R`. -/
 theorem eq_neg_one_iff :
     legendreSym a = -1 ↔ ¬ IsSquare (residue R a) := by
- classical exact quadraticChar_neg_one_iff_not_isSquare
+  classical exact quadraticChar_neg_one_iff_not_isSquare
 
 /-- If `ringChar R` is odd, then `legendreSym a` can be computed in terms of
 `(residue R a) ^ (Fintype.card (ResidueField R) / 2)`. -/
