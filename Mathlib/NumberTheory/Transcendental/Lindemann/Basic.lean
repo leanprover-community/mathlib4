@@ -20,6 +20,54 @@ import Mathlib.Topology.Algebra.Order.Floor
 /-!
 # The Lindemann-Weierstrass theorem
 
+The Lindemann-Weierstrass theorem has two classical formulations:
+
+* if `α₁, …, αₙ` are algebraic numbers that are linearly independent over `ℚ`, then
+  `exp α₁, …, exp αₙ` are algebraically independent over `ℚ` (equivalently, over the field of
+  algebraic numbers);
+* if `α₁, …, αₙ` are pairwise distinct algebraic numbers, then
+  `exp α₁, …, exp αₙ` are linearly independent over the field of algebraic numbers
+  (Baker's formulation).
+
+We prove the second formulation and deduce the first from it, along with
+classical consequences such as the transcendence of `e` and `π`.
+
+## Main results
+
+* `Complex.linearIndependent_exp`: the exponentials of pairwise distinct algebraic numbers are
+  linearly independent over the field of algebraic numbers.
+* `Complex.algebraicIndependent_exp`: the exponentials of `ℚ`-linearly independent algebraic
+  numbers are algebraically independent over the field of algebraic numbers.
+* `Complex.transcendental_exp`: `exp a` is transcendental for every nonzero algebraic number `a`.
+* `Complex.transcendental_log`: `log u` is transcendental for every algebraic number `u`,
+  unless `log u = 0`.
+* `Complex.transcendental_e`: `e` is transcendental.
+* `Real.transcendental_pi`: `π` is transcendental.
+
+## Proof outline
+
+The proof of `Complex.linearIndependent_exp` is based on
+[Jacobson, *Basic Algebra I, 4.12*][jacobson1974]. Suppose by contradiction that
+`∑ i, v i * exp (u i) = 0`, where the `u i` are pairwise distinct algebraic numbers and the `v i`
+are algebraic numbers that are not all zero.
+
+1. *Algebraic reduction* (`LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero`, in
+   `Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart`). Using Galois invariance in a
+   group algebra, one obtains a relation with integer coefficients, a nonzero constant term `w`,
+   and `exp` appearing only summed over all complex roots of polynomials `p : ℤ[X]` with nonzero
+   constant coefficient.
+2. *Analytic estimate* (`LindemannWeierstrass.exp_polynomial_approx`, in
+   `Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart`). Let `P` be the product of
+   these `p`. There is a constant `c` such that for every sufficiently large prime `q` there exist
+   an integer `n` not divisible by `q` and a polynomial `g : ℤ[X]` with
+   `‖n * exp r - q * g.aeval r‖ ≤ c ^ q / (q - 1)!` for all complex roots `r` of `P`.
+3. *Conclusion*. Scale the relation from step 1 by `n` and a suitable power of the leading
+   coefficient `k` of `P`, and replace each `n * exp x` with `q * g.aeval x`. By the fundamental
+   theorem of symmetric polynomials, this produces an integer, which is congruent to a power of `k`
+   times `n * w` modulo `q`, hence not divisible by `q` once `q` exceeds `|k|` and `|w|`. On the
+   other hand, since the scaled relation is `0`, this integer is a combination of the errors bounded
+   in step 2, so its absolute value is less than `1` for large `q`, a contradiction.
+
 ## References
 
 * [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]

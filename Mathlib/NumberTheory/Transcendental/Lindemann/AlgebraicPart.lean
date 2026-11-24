@@ -56,8 +56,7 @@ theorem mem_fixedPoints_iff_forall_isConjRoot {x : R[K]} :
   exact ⟨by rintro h _ b g rfl; simpa using (h g (g b)).symm, fun h g m ↦ h _ _ g⁻¹ rfl⟩
 
 /-- Auxiliary definition for `classSumBasis`. -/
-def classSumReprAux :
-    FixedPoints.subalgebra R R[K] Gal(K/F) ≃ (ConjRootClass F K →₀ R) :=
+def classSumReprAux : FixedPoints.subalgebra R R[K] Gal(K/F) ≃ (ConjRootClass F K →₀ R) :=
   (AddMonoidAlgebra.coeffEquiv.subtypeEquiv
     (q := fun f : K →₀ R ↦ ∀ a b, IsConjRoot F a b → f a = f b)
     fun _ ↦ mem_fixedPoints_iff_forall_isConjRoot).trans <|
@@ -67,7 +66,7 @@ def classSumReprAux :
       ConjRootClass.mem_carrier.mpr (ConjRootClass.mk_eq_mk.mpr hb)
 
 @[simp]
-private theorem classSumReprAux_apply_mk (x : FixedPoints.subalgebra R R[K] Gal(K/F)) (i : K) :
+theorem classSumReprAux_apply_mk (x : FixedPoints.subalgebra R R[K] Gal(K/F)) (i : K) :
     classSumReprAux x (ConjRootClass.mk F i) = x.val.coeff i :=
   rfl
 
@@ -193,9 +192,16 @@ theorem exists_sum_conjRootClass_eq_add_sum_map_aroots (A : Type*) {R F K S : Ty
         c.aroots_minpoly_eq_carrier_val]
       simp
 
+/-- The algebraic part of the proof of the Lindemann-Weierstrass theorem: a nontrivial relation
+`∑ i, v i * φ (u i) = 0` (e.g. `φ = exp`) with `ℚ`-algebraic `v i` and pairwise distinct
+`ℚ`-algebraic `u i` yields a relation with integer coefficients and a nonzero constant term, in
+which `φ` only appears summed over all roots of integer polynomials not vanishing at `0`.
+This is the form in which replacing `φ` by an integer polynomial gives integers (up to a power of
+the leading coefficient), by the theory of symmetric polynomials. -/
 public theorem exists_add_sum_map_aroots_eq_zero {S : Type*} [Field S] [CharZero S] [IsAlgClosed S]
-    (φ : Multiplicative S →* S) (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → S) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
+    (φ : Multiplicative S →* S)
+    (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i)) (u_inj : Function.Injective u)
+    (v : ι → S) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * φ (.ofAdd <| u i) = 0) :
     ∃ (w : ℤ), w ≠ 0 ∧ ∃ (w' : ℤ[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
       w + w'.sum (fun p c ↦ c • ((p.aroots S).map (φ <| .ofAdd ·)).sum) = 0 := by
