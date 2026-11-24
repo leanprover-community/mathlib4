@@ -15,6 +15,7 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
   `catalanSeries = ∑_{n ≥ 0} catalan n * X^n`
 
 ## Main Definitions
+
 * `PowerSeries.catalanSeries`: The Catalan generating function as a power series.
 
 ## Main Results

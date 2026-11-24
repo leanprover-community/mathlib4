@@ -17,6 +17,7 @@ function. This theory is applied to characterize invertible Hahn series whose co
 commutative domain.
 
 ## Main Definitions
+
 * `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
   is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
   this is different from `Summable` in the valuation topology, because there are topologically

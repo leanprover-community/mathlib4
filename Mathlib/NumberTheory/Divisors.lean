@@ -24,6 +24,7 @@ This file defines sets of divisors of a natural number. This is particularly use
 for defining Dirichlet convolution.
 
 ## Main Definitions
+
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 * `divisors n` is the `Finset` of natural numbers that divide `n`.
 * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.

@@ -15,6 +15,7 @@ We describe a class of ring homomorphisms from formal power series to Hahn serie
 given by substitution of the generating variable to an element of strictly positive order.
 
 ## Main Definitions
+
 * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
   are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
   formal power series.

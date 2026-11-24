@@ -11,6 +11,7 @@ public import Mathlib.ModelTheory.Satisfiability
 # Equivalence of Formulas
 
 ## Main Definitions
+
 - `FirstOrder.Language.Theory.Imp`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
 - `FirstOrder.Language.Theory.Iff`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are equivalent formulas or
   sentences in models of `T`.

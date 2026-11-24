@@ -25,6 +25,7 @@ multiplication from `R⟦Γ⟧`. The scalar action of `R` on `R⟦Γ⟧` is comp
 with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 
 ## Main Definitions
+
 * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `R⟦Γ⟧` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential

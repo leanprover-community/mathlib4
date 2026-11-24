@@ -15,6 +15,7 @@ to the extended reals `EReal`. The function takes values
 in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ = ⊤`.
 
 ## Main Definitions
+
 - `EReal.exp`: The extension of the real exponential to `EReal`.
 
 ## Main Results

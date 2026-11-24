@@ -20,6 +20,7 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
+
 * `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
 * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 

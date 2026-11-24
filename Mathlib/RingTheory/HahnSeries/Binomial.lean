@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.PowerSeries.Binomial
 We introduce binomial expansions using `embDomain`.
 
 ## Main Definitions
+
   * `HahnSeries.binomialFamily`
 
 ## Main results

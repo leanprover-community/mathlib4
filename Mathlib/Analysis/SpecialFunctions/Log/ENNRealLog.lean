@@ -15,6 +15,7 @@ to the extended nonnegative reals `ℝ≥0∞`. The function takes values
 in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main Definitions
+
 - `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
 
 ## Main Results

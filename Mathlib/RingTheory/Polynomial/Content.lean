@@ -15,6 +15,7 @@ Definitions and basic results about polynomials over GCD domains, particularly t
 and primitive polynomials.
 
 ## Main Definitions
+
 Let `p : R[X]`.
 - `p.content` is the `gcd` of the coefficients of `p`.
 - `p.IsPrimitive` indicates that `p.content = 1`.

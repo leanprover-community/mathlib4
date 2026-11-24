@@ -16,6 +16,7 @@ We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an elem
 commutative binomial ring `R`.
 
 ## Main Definitions
+
 * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
   of a commutative binomial ring `R`.
 

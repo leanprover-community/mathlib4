@@ -20,6 +20,7 @@ with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension,
 at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
+
 * `Basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
   coefficients with respect to the `K`-basis `B` of `L`.
 

@@ -20,6 +20,7 @@ except the squares of units.
 Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Main Definitions
+
 - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
 
 ## Main Results

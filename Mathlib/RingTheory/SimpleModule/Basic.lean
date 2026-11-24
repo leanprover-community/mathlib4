@@ -23,6 +23,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 # Simple Modules
 
 ## Main Definitions
+
 * `IsSimpleModule` indicates that a module has no proper submodules
   (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
