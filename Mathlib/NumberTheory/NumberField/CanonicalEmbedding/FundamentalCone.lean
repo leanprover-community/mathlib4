@@ -7,7 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.RingTheory.ClassGroup.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipal
+
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Fundamental Cone

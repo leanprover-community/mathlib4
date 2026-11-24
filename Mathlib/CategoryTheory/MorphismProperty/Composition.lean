@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibilities of properties of morphisms with respect to composition
 

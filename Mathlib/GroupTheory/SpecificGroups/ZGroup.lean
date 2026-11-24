@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SchurZassenhaus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Z-Groups
 
@@ -164,7 +167,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
-      simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+      simpa [le_iff_mem_imp_mem, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
     have h := Group.Abelianization.commutator_le_ker

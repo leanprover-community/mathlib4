@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The cone of an affine map from the standard simplex
 

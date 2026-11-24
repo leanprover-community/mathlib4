@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.GroupTheory.Subgroup.Center
 public import Mathlib.GroupTheory.Submonoid.Centralizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizers of subgroups
 -/

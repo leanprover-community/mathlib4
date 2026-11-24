@@ -120,7 +120,7 @@ lemma wedgePairing_eq_apply_topVector_smul :
         (powersetCard.sign I • b.topVector : ⋀[R]^(finrank R M) M) := by
       rw [wedge_apply_of_disjoint b hkl' hdisjoint, hIJ, SetLike.val_smul_of_tower, b.coe_topVector]
     simp_rw [wedgePairing, LinearMap.compr₂_apply, apply_eqRec hkl _ this, map_zsmul_unit,
-      LinearEquiv.coe_coe, hdisjoint, reduceIte, smul_eq_mul, mul_one]
+      LinearEquiv.coe_toLinearMap, hdisjoint, reduceIte, smul_eq_mul, mul_one]
   · rw [wedgePairing, LinearMap.compr₂_apply, wedge_apply_of_not_disjoint b hdisjoint, map_zero]
     simp [hdisjoint]
 

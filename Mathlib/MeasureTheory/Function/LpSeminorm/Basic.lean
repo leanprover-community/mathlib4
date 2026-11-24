@@ -14,6 +14,9 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic theorems about ℒp space
 -/

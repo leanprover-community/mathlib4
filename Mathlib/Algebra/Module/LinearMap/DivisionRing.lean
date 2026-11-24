@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Submodule.Range
 public import Mathlib.LinearAlgebra.Span.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas about linear functionals on division rings
 

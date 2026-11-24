@@ -192,7 +192,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
   simp only [smul_def, aeval_monomial, mul_apply_eq_comp, pow_apply_eq_iterate, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, Module.algebraMap_end_apply]
+    LinearEquiv.coe_toLinearMap, Module.algebraMap_end_apply]
   induction i generalizing r j m with
   | zero =>
     rw [Function.iterate_zero, zero_add]

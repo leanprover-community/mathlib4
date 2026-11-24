@@ -5,11 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.NilpotentKer
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.Submodule
@@ -183,14 +183,14 @@ lemma trans [QuasiFinite R S] [QuasiFinite S T] : QuasiFinite R T := by
   have : Module.Finite P.ResidueField ((P.Fiber S) ⊗[S] T) :=
     .trans (P.Fiber S) _
   let e : P.Fiber S ≃ₐ[S] S ⊗[R] P.ResidueField :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
   let e' : (P.Fiber S) ⊗[S] T ≃ₐ[R] P.Fiber T :=
     ((Algebra.TensorProduct.congr e .refl).restrictScalars R).trans <|
     ((Algebra.TensorProduct.comm _ _ _).restrictScalars R).trans <|
     ((Algebra.TensorProduct.cancelBaseChange _ _ T _ _).restrictScalars R).trans
     (Algebra.TensorProduct.comm _ _ _)
   let e'' : (P.Fiber S) ⊗[S] T ≃ₐ[P.ResidueField] P.Fiber T :=
-    { __ := e', commutes' _ := by simp [e', e] }
+    .ofCommutes e'.toRingEquiv fun _ ↦ by simp [e', e]
   exact .of_surjective e''.toLinearMap e''.surjective
 
 omit [Algebra S T] in
@@ -373,9 +373,12 @@ lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
     (hq : p = q.comap Algebra.TensorProduct.includeRight.toRingHom) :
     QuasiFiniteAt A q := by
   let f : A ⊗[R] Localization.AtPrime p →ₐ[A] Localization.AtPrime q :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨Localization.localRingHom _ _ _ hq, by
-      simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
-        IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)]⟩ fun _ _ ↦ .all _ _
+    Algebra.TensorProduct.lift (Algebra.ofId _ _)
+      { Localization.localRingHom _ _ _ hq with
+        commutes' _ := by
+          simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime p),
+            IsScalarTower.algebraMap_apply R (A ⊗[R] S) (Localization.AtPrime q)] }
+      fun _ _ ↦ .all _ _
   let g : A ⊗[R] S →ₐ[A] A ⊗[R] Localization.AtPrime p :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   have : f.comp g = IsScalarTower.toAlgHom _ _ _ := by ext; simp [f, g]
@@ -393,7 +396,9 @@ lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFinite
     (hq : p = q.comap f.toRingHom) :
     QuasiFiniteAt R q := by
   subst hq
-  refine .of_surjective_algHom ⟨Localization.localRingHom _ q f.toRingHom rfl, ?_⟩ (hf q ‹_›)
+  refine .of_surjective_algHom
+    { Localization.localRingHom _ q f.toRingHom rfl with commutes' := ?_ }
+    (hf q ‹_›)
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]
 

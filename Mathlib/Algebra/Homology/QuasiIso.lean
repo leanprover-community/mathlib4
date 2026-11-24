@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.ShortComplex.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasi-isomorphisms
 

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.Spaces
 
 import Mathlib.Topology.Sheaves.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard conservative family of points for the site attached to a topological space
 

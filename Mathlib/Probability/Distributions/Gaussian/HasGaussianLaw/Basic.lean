@@ -9,6 +9,9 @@ public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian random variables
 

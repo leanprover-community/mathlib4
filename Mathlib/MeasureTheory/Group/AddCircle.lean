@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure-theoretic results about the additive circle
 

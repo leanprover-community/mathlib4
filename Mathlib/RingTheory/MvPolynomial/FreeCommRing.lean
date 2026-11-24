@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.FreeCommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing Ring terms from MvPolynomial
 

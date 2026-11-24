@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.Topology.Algebra.Group.Torsor
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsors of additive normed group actions.
 

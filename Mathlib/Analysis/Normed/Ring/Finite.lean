@@ -6,10 +6,14 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 
+import Mathlib.Algebra.Group.TypeTags.Finite
+
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite order elements in normed rings.

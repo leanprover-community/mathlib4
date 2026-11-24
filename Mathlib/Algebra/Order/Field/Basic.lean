@@ -6,12 +6,13 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Tactic.Positivity.Core
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Lemmas about (linear) ordered (semi)fields

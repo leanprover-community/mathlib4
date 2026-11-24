@@ -137,7 +137,7 @@ lemma finite_localization {K : Type*} [Field K] [Algebra K S] [WeaklyQuasiFinite
   have H : Algebra.WeaklyQuasiFiniteAt K q := ‹_›
   rw [Algebra.weaklyQuasiFiniteAt_iff, ← Ideal.over_def q ⊥, Ideal.map_bot] at H
   have : QuasiFinite K (Localization.AtPrime q) := .of_surjective_algHom
-    (AlgEquiv.quotientBot K _).toAlgHom (AlgEquiv.quotientBot K _).surjective
+    (AlgEquiv.quotientBot K (Localization.AtPrime q)).toAlgHom (AlgEquiv.quotientBot K _).surjective
   exact .of_quasiFinite
 
 @[deprecated (since := "2026-10-08")] alias finite_locoalization := finite_localization
