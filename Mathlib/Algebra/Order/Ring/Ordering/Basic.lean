@@ -81,7 +81,7 @@ theorem IsPreordering.of_sumSq_le_of_isPointed [Nontrivial R]
 
 theorem IsPreordering.of_isPointed_of_isSpanning [Nontrivial R]
     (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsPreordering :=
-  .of_sumSq_le_of_isPointed hP₂sumSq_le hP₁
+  .of_sumSq_le_of_isPointed hP₂.sumSq_le hP₁
 
 theorem IsOrdering.of_isPointed_of_isSpanning [IsDomain R]
     (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsOrdering where
