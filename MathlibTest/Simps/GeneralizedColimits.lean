@@ -23,21 +23,8 @@ section Pushout
 
 variable {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
 
-/-! ### Registration -/
-
-attribute [local simps_proj] PushoutCocone.inl PushoutCocone.inr
-
-initialize_simps_projections!! PushoutCocone (ι → inl inr)
-
-attribute [local simps_proj precomp (attr := reassoc (attr := simp))] pushout.inl pushout.inr
-
-attribute [local simps_proj comp noRecurse (attr := reassoc (attr := simp))] pushout.desc
-
-@[simps_eta]
-theorem pushout_eta [HasPushout f g] {W : C} (h : pushout f g ⟶ W) :
-    h = pushout.desc (pushout.inl f g ≫ h) (pushout.inr f g ≫ h)
-      (by rw [← Category.assoc, ← Category.assoc, pushout.condition]) := by
-  ext <;> simp
+/-! The generalized projections used here are registered in Mathlib, as the `to_dual`
+translations of those for limits; see `Mathlib.Tactic.Simps.Generalized`. -/
 
 /-! ### Definitions -/
 
@@ -121,26 +108,6 @@ section Coequalizer
 
 variable {X Y : C} {f g : X ⟶ Y}
 
-attribute [local simps_proj] Cofork.π
-
-initialize_simps_projections!! Cofork (ι → π)
-
-attribute [local simps_proj precomp (rules := coequalizer.π_desc)
-  (attr := reassoc (attr := simp))] coequalizer.π
-
-attribute [local simps_proj comp noRecurse (rules := coequalizer.π_desc)
-  (attr := reassoc (attr := simp))] coequalizer.desc
-
-@[simps_eta]
-theorem coequalizer_eta [HasCoequalizer f g] {W : C} (h : coequalizer f g ⟶ W) :
-    h = coequalizer.desc (coequalizer.π f g ≫ h)
-      (by rw [← Category.assoc, ← Category.assoc, coequalizer.condition]) := by
-  ext; simp
-
-attribute [local simps_proj] Cofork.IsColimit.desc
-
-initialize_simps_projections!! Cofork.IsColimit (desc → desc)
-
 @[simps!!]
 def cofork {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : Cofork f g := Cofork.ofπ π w
 
@@ -184,15 +151,6 @@ end Coequalizer
 section Coprod
 
 variable {X Y : C}
-
-attribute [local simps_proj precomp (attr := reassoc (attr := simp))] coprod.inl coprod.inr
-
-attribute [local simps_proj comp noRecurse (attr := reassoc (attr := simp))] coprod.desc
-
-@[simps_eta]
-theorem coprod_eta [HasBinaryCoproduct X Y] {W : C} (h : X ⨿ Y ⟶ W) :
-    h = coprod.desc (coprod.inl ≫ h) (coprod.inr ≫ h) := by
-  ext <;> simp
 
 /-- A Mathlib isomorphism, which already has `simps` lemmas for `hom` and `inv`; `simps!!` gives
 the lemmas about its composites instead. -/

@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.Tactic.Simps.Generalized
 
 /-!
 # Binary fans and cofans
@@ -37,14 +38,18 @@ abbrev BinaryFan (X Y : C) :=
   Cone (pair X Y)
 
 /-- The first projection of a binary fan. -/
-@[to_dual inl /-- The first inclusion of a binary cofan. -/]
+@[to_dual (attr := simps_proj) inl /-- The first inclusion of a binary cofan. -/]
 abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ X :=
   s.π.app ⟨WalkingPair.left⟩
 
 /-- The second projection of a binary fan. -/
-@[to_dual inr /-- The second inclusion of a binary cofan. -/]
+@[to_dual (attr := simps_proj) inr /-- The second inclusion of a binary cofan. -/]
 abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ Y :=
   s.π.app ⟨WalkingPair.right⟩
+
+/- `simps!!` generates lemmas about `fst` and `snd` (resp. `inl` and `inr`) instead of `π`
+(resp. `ι`). -/
+initialize_simps_projections!! BinaryFan (π → fst snd)
 
 -- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
 @[to_dual ι_app_left]
@@ -152,13 +157,17 @@ def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : 
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
 -/
-@[to_dual IsColimit.desc
+@[to_dual (attr := simps_proj (self := h)) IsColimit.desc
 /-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
 -/]
 def BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) (g : W ⟶ Y) :
     W ⟶ s.pt :=
   h.lift (BinaryFan.mk f g)
+
+/- `simps!!` generates lemmas about `BinaryFan.IsLimit.lift` (resp. `BinaryCofan.IsColimit.desc`)
+instead of `IsLimit.lift` (resp. `IsColimit.desc`). -/
+initialize_simps_projections!! BinaryFan.IsLimit (lift → lift)
 
 @[to_dual (attr := reassoc (attr := simp)) IsColimit.inl_desc]
 lemma BinaryFan.IsLimit.lift_fst {W : C} {s : BinaryFan X Y} (h : IsLimit s)

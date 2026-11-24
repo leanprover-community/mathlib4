@@ -132,6 +132,18 @@ specific ones are used (those whose discrimination tree keys have the fewest `*`
 most specific η-rule: once kernels have their own registrations, morphisms into kernels get
 lemmas about `kernel.ι` and `kernel.lift` only.
 
+## Registrations in Mathlib
+
+Generalized projections are registered on the declarations themselves, in their `to_dual`
+attributes where they have one, so that the duals are registered too:
+* for pullbacks (`pullback.fst`, `pullback.snd`, `pullback.lift`, `pullback.Simps.eta`),
+  equalizers (`equalizer.ι`, …), kernels (`kernel.ι`, …), binary products (`prod.fst`, …) and
+  products (`Pi.π`, `Pi.lift`, `Pi.Simps.eta`), and dually for colimits;
+* `fst` and `snd` instead of `π` for pullback cones and binary fans, `ι` for forks, and the `lift`
+  specific to each shape for proofs that these are limits (`PullbackCone.IsLimit.lift`, …), and
+  dually for colimits;
+* the cells of CW complexes (`RelCWComplex.openCell`, …).
+
 ## Limitations
 
 * Only fully applied lemmas are generated (`-fullyApplied` is ignored for generalized

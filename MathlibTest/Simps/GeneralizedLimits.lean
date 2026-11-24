@@ -11,21 +11,8 @@ namespace SimpsGenTest
 
 variable {C : Type*} [Category* C] {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}
 
-/-! ### Registration -/
-
-attribute [local simps_proj] PullbackCone.fst PullbackCone.snd
-
-initialize_simps_projections!! PullbackCone (π → fst snd)
-
-attribute [local simps_proj comp (attr := reassoc (attr := simp))] pullback.fst pullback.snd
-
-attribute [local simps_proj precomp noRecurse (attr := reassoc (attr := simp))] pullback.lift
-
-@[simps_eta]
-theorem pullback_eta [HasPullback f g] {W : C} (h : W ⟶ pullback f g) :
-    h = pullback.lift (h ≫ pullback.fst f g) (h ≫ pullback.snd f g)
-      (by simp [pullback.condition]) := by
-  ext <;> simp
+/-! The generalized projections used here are registered in Mathlib, next to `PullbackCone.fst`,
+`pullback.fst`, `Fork.ι`, …; see `Mathlib.Tactic.Simps.Generalized`. -/
 
 /-! ### Pullback cones -/
 
@@ -63,16 +50,10 @@ noncomputable def idPb [HasPullback (𝟙 Z) g] : pullback (𝟙 Z) g ≅ Y wher
 
 variable {f' g' : X ⟶ Y}
 
-attribute [local simps_proj] Fork.ι
-
-initialize_simps_projections!! Fork (π → ι)
 
 @[simps!!]
 def fork {P : C} (ι : P ⟶ X) (w : ι ≫ f' = ι ≫ g') : Fork f' g' := Fork.ofι ι w
 
-attribute [local simps_proj] Fork.IsLimit.lift
-
-initialize_simps_projections!! Fork.IsLimit (lift → lift)
 
 @[simps!!]
 def forkIsLimit {P : C} (ι : P ⟶ X) (w : ι ≫ f' = ι ≫ g') [Mono ι]
@@ -147,10 +128,6 @@ end
 In `BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) (g : W ⟶ Y)`,
 `W` comes before the self argument `h`, but its type doesn't determine it: `W` is moved after `h`,
 with `f` and `g`. -/
-
-attribute [local simps_proj (self := h)] BinaryFan.IsLimit.lift
-
-initialize_simps_projections!! BinaryFan.IsLimit (lift → lift)
 
 section
 variable [HasBinaryProduct X Y]

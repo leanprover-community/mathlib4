@@ -8,31 +8,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 `@[to_dual (attr := simps!!)]` generates the lemmas of a declaration and of its dual, as
 translations of each other.
 
-The registrations below use `to_dual existing` on Mathlib declarations that already have a
-`to_dual` translation; in Mathlib, `(attr := simps_proj …)` goes in the `to_dual` attribute of the
-declaration itself.
+The registrations used here are those in Mathlib, in the `to_dual` attributes of
+`PullbackCone.fst`, `pullback.fst`, `pullback.lift`, `pullback.Simps.eta`, ….
 -/
 
 open CategoryTheory Limits
 
 namespace SimpsGenToDualTest
-
-set_option linter.translate.overwrite false
-
-/-! ### Registration -/
-
-attribute [to_dual existing (attr := simps_proj) PushoutCocone.inl] PullbackCone.fst
-attribute [to_dual existing (attr := simps_proj) PushoutCocone.inr] PullbackCone.snd
-
--- this also declares that `PushoutCocone.inl` and `PushoutCocone.inr` replace `Cocone.ι`
-initialize_simps_projections!! PullbackCone (π → fst snd)
-
-attribute [to_dual existing (attr := simps_proj comp (attr := reassoc (attr := simp))) pushout.inl]
-  pullback.fst
-attribute [to_dual existing (attr := simps_proj comp (attr := reassoc (attr := simp))) pushout.inr]
-  pullback.snd
-attribute [to_dual existing (attr := simps_proj precomp noRecurse (attr := reassoc (attr := simp)))
-  pushout.desc] pullback.lift
 
 -- registering a declaration again is an error
 /-- error: `simps_proj`: pullback.fst is already registered -/
@@ -42,19 +24,11 @@ attribute [local simps_proj comp (attr := reassoc (attr := simp))] pullback.fst
 -- but stating the replacements again (here, their duals) is harmless
 initialize_simps_projections!! PushoutCocone (ι → inl inr)
 
-variable {C : Type*} [Category* C]
-
-/-- The η-rule for morphisms into a pullback. -/
-@[to_dual (attr := simps_eta) /-- The η-rule for morphisms out of a pushout. -/]
-theorem pullback_eta {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
-    (h : W ⟶ pullback f g) :
-    h = pullback.lift (h ≫ pullback.fst f g) (h ≫ pullback.snd f g)
-      (by simp [pullback.condition]) := by
-  ext <;> simp
-
-/-- error: `simps_eta`: pullback_eta is already registered -/
+/-- error: `simps_eta`: pullback.Simps.eta is already registered -/
 #guard_msgs in
-attribute [simps_eta] pullback_eta
+attribute [simps_eta] pullback.Simps.eta
+
+variable {C : Type*} [Category* C]
 
 -- the dual registrations have the dual kinds
 open Lean in

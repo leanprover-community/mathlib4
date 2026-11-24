@@ -13,9 +13,6 @@ open Topology Metric Set RelCWComplex
 
 variable {X : Type*} [TopologicalSpace X] {C D : Set X}
 
--- the self argument is the instance `[RelCWComplex C D]`, the fifth argument
-attribute [local simps_proj (self := 5)] openCell closedCell cellFrontier
-
 @[simps!! -isSimp, instance_reducible]
 noncomputable def subcx [T2Space X] [RelCWComplex C D] (E : Subcomplex C) : RelCWComplex E D :=
   RelCWComplex.Subcomplex.instRelCWComplex E
