@@ -67,6 +67,7 @@ the `LocalizationMap.mk'` induced by any localization map.
   embedding.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
@@ -197,7 +198,8 @@ theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M)
     smul_eq_mul, Submonoid.mk_smul]
   constructor
   · rintro ⟨u, hu, e⟩
-    exact ⟨_, mul_mem hu x.2.2, u * y.2, by rw [mul_assoc, mul_assoc, ← e], mul_right_comm _ _ _⟩
+    exact ⟨_, mul_mem hu x.2.property, u * y.2, by rw [mul_assoc, mul_assoc, ← e],
+      mul_right_comm _ _ _⟩
   · rintro ⟨u, hu, v, e₁, e₂⟩
     exact ⟨u, hu, by rw [← mul_assoc, e₂, mul_right_comm, ← e₁, mul_assoc, mul_comm y.1]⟩
 

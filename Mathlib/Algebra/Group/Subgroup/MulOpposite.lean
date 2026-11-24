@@ -5,14 +5,16 @@ Authors: Alex Kontorovich, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+
+import Mathlib.Algebra.Group.Equiv.Opposite
 
 /-!
 # Mul-opposite subgroups
 
 ## Tags
+
 subgroup, subgroups
 -/
 

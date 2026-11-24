@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `LiesOver` instances for completions of number fields
 
@@ -34,21 +37,21 @@ variable [w.LiesOver v]
   AbsoluteValue.Completion.continuous_map
 
 @[deprecated AbsoluteValue.Completion.map_coe +typeChanged (since := "2026-10-30")]
-theorem completionMap_coe (x : WithAbs v.1) :
-    AbsoluteValue.Completion.map v.1 w.1 (x : v.Completion) =
-      ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
-  AbsoluteValue.Completion.map_coe v.1 w.1 x
+theorem completionMap_coe (x : WithAbs v.val) :
+    AbsoluteValue.Completion.map v.val w.val (x : v.Completion) =
+      ((algebraMap (WithAbs v.val) (WithAbs w.val) x : WithAbs w.val) : w.Completion) :=
+  AbsoluteValue.Completion.map_coe v.val w.val x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion :=
-  AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
+  AbsoluteValue.Completion.algebraOfLiesOver v.val w.val
 
 scoped instance : IsScalarTower K v.Completion w.Completion :=
-  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
+  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.val w.val
     IsScalarTower K v.Completion w.Completion
 
 scoped instance : ContinuousSMul v.Completion w.Completion :=
-  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1
+  inferInstanceAs <| letI := AbsoluteValue.Completion.algebraOfLiesOver v.val w.val
     ContinuousSMul v.Completion w.Completion
 
 end NumberField.LiesOver

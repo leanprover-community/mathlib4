@@ -189,8 +189,8 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
       (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
-  dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
-    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
+  dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    assoc_tmul, map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
     LinearMap.lTensor_tmul]
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
@@ -241,7 +241,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp only [LinearMap.coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply,
     LinearMap.restrictScalars_self, curry_apply, LinearMap.llcomp_apply, LinearMap.flip_apply,
-    LinearEquiv.coe_coe, LinearMap.lflip_apply]
+    LinearEquiv.coe_toLinearMap, LinearMap.lflip_apply]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
     LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,

@@ -64,7 +64,7 @@ theorem of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pu
       IsPullback fst snd f g :=
   of_isLimit' h
     (Limits.IsLimit.ofIsoLimit (limit.isLimit _)
-      (@PullbackCone.ext _ _ _ _ _ _ _ (PullbackCone.mk _ _ _) _ i w₁.symm w₂.symm).symm)
+      (PullbackCone.ext i w₁.symm w₂.symm).symm)
 
 theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     IsPullback fst snd f g :=
@@ -453,7 +453,7 @@ theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ push
       IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
-      (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)
+      (PushoutCocone.ext i w₁ w₂).symm)
 
 lemma of_iso (h : IsPushout f g inl inr)
     {Z' X' Y' P' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'} {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'}

@@ -6,8 +6,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 module
 
 public import Mathlib.Algebra.Notation.Bracket
-public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
+
+import Mathlib.Algebra.Ring.Semiconj
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Semirings and rings

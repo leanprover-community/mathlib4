@@ -227,7 +227,7 @@ theorem Projective.iff_split' [Small.{w} R] [Small.{w} P] : Module.Projective R 
     e.symm.toLinearMap ∘ₗ i, (linearCombination R id) ∘ₗ e.toLinearMap, ?_⟩,
       fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
   apply LinearMap.ext
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, e.apply_symm_apply]
+  simp only [coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, e.apply_symm_apply]
   exact hi
 
 /-- A module is projective iff it is the direct summand of a free module. -/

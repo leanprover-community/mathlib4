@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covariant instances on `WithZero`
 

@@ -1012,6 +1012,13 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
   rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
+/-- Metric ball of radius `r` is a subset of the extended metric ball of radius `ENNReal.ofReal r`.
+
+For `r ≥ 0`, this inclusion is an equality, see `Metric.closedEBall_ofReal`. -/
+theorem Metric.closedBall_subset_closedEBall {x : α} {r : ℝ} :
+    closedBall x r ⊆ closedEBall x (.ofReal r) := by
+  simp +contextual [subset_def, edist_dist, ENNReal.ofReal_le_ofReal]
+
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
@@ -1085,9 +1092,10 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
     PseudoMetricSpace (boundedComponent a) :=
   PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
-    refine ((edist_triangle p.1 a q.1).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.2.lt_top⟩)).ne
+    refine ((edist_triangle p.val a q.val).trans_lt
+      (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
     rw [edist_comm]
-    exact p.2.lt_top
+    exact p.property.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.

@@ -5,13 +5,13 @@ Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+import Mathlib.Data.PNat.Prime
 import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -49,7 +49,8 @@ details section.
 * `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
   and `primitiveRoots n A` given by the choice of `ζ`.
 
-## Implementation details
+## Implementation notes
+
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
 `IsCyclotomicExtension`. It is not true in general that it is a root of `cyclotomic n B`,
 but this holds if `isDomain B` and `NeZero (n : B)`.
@@ -145,7 +146,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
     { toFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
-        refine ⟨x.1, ?_⟩
+        refine ⟨x.val, ?_⟩
         cases x
         rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot.def,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
@@ -153,7 +154,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
-        refine ⟨x.1, ?_⟩
+        refine ⟨x.val, ?_⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
           hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,

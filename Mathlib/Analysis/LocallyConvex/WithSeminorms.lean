@@ -307,7 +307,7 @@ seminorm.
 
 If `𝕜` is `RCLike`, this is equivalent to `LocallyConvexSpace 𝕜 E`. -/
 class PolynormableSpace [topology : TopologicalSpace E] where
-  withSeminorms' : WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.1)
+  withSeminorms' : WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.val)
 
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) : t = p.moduleFilterBasis.topology :=
@@ -318,7 +318,7 @@ variable {p : SeminormFamily 𝕜 E ι}
 
 variable (𝕜 E) in
 theorem PolynormableSpace.withSeminorms [PolynormableSpace 𝕜 E] :
-    WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.1) :=
+    WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.val) :=
   PolynormableSpace.withSeminorms'
 
 theorem WithSeminorms.isTopologicalAddGroup (hp : WithSeminorms p) : IsTopologicalAddGroup E := by
@@ -367,7 +367,7 @@ theorem PolynormableSpace.hasBasis_zero_ball [PolynormableSpace 𝕜 E] :
     use r⁻¹.toNNReal • (s.sup (↑))
     constructor
     · have := PolynormableSpace.isTopologicalAddGroup
-      exact (Seminorm.continuous_finsetSup fun t ht ↦ t.2).const_smul _
+      exact (Seminorm.continuous_finsetSup fun t ht ↦ t.property).const_smul _
     · rw [ball_smul, Real.coe_toNNReal, one_div, inv_inv] <;>
       positivity
   · intro p p_cont
@@ -1238,7 +1238,7 @@ theorem Seminorm.exists_le_comp_of_isInducing {p : Seminorm 𝕜 E} (hp : Contin
   obtain ⟨s, C, -, hqC⟩ := Seminorm.bound_comp_of_isInducing hp
     (PolynormableSpace.withSeminorms 𝕜₂ F) hf
   have := (PolynormableSpace.withSeminorms 𝕜₂ F).isTopologicalAddGroup
-  exact ⟨_, Continuous.const_smul (continuous_finsetSup fun i _ => i.2) C, hqC⟩
+  exact ⟨_, Continuous.const_smul (continuous_finsetSup fun i _ => i.property) C, hqC⟩
 
 end NontriviallyNormedField
 
@@ -1268,7 +1268,7 @@ theorem PolynormableSpace.sInf {ts : Set (TopologicalSpace E)}
     (hts : ∀ t ∈ ts, PolynormableSpace 𝕜 E (topology := t)) :
     PolynormableSpace 𝕜 E (topology := sInf ts) := by
   rw [sInf_eq_iInf']
-  exact .iInf fun t ↦ hts t.1 t.2
+  exact .iInf fun t ↦ hts t.val t.property
 
 theorem PolynormableSpace.inf {t₁ t₂ : TopologicalSpace E}
     (ht₁ : PolynormableSpace 𝕜 E (topology := t₁))

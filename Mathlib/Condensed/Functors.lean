@@ -9,6 +9,9 @@ public import Mathlib.Condensed.Explicit
 
 import Mathlib.CategoryTheory.Sites.PreservesLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from categories of topological spaces to condensed sets
 

@@ -23,6 +23,7 @@ admits an additive valuation given by `orderTop`.
 * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

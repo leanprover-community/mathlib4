@@ -20,6 +20,7 @@ This file proves results on the localization of rings (monoids with zeros) over 
 
 
 ## Tags
+
 localization, Ore, non-commutative
 -/
 
@@ -113,10 +114,10 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     rcases oreCondition rb sc with ⟨rd, sd, hd⟩
     -- s#, r#
     dsimp at *
-    rw [add''_char _ _ _ _ rc sc hc (sc * s₁').2]
+    rw [add''_char _ _ _ _ rc sc hc (sc * s₁').property]
     have : sd * sb * s₁ = rd * rc * s₂ := by
       rw [mul_assoc, hb', ← mul_assoc, hd, mul_assoc, hc, ← mul_assoc]
-    rw [add''_char _ _ _ _ (rd * rc : R) (sd * sb) this (sd * sb * s₁).2]
+    rw [add''_char _ _ _ _ (rd * rc : R) (sd * sb) this (sd * sb * s₁).property]
     rw [mul_smul, ← Submonoid.smul_def sb, hb, smul_smul, hd, oreDiv_eq_iff]
     use 1
     use rd
@@ -136,8 +137,8 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       rcases oreCondition rc sb with ⟨rd, sd, hd⟩
       have : rd * rb * s₁ = sd * sc * s₃ := by
         rw [mul_assoc, ← hb', ← mul_assoc, ← hd, mul_assoc, ← hc, mul_assoc]
-      rw [add''_char _ _ _ _ rc sc hc (sc * s₃).2]
-      rw [add''_char _ _ _ _ _ _ this.symm (sd * sc * s₃).2]
+      rw [add''_char _ _ _ _ rc sc hc (sc * s₃).property]
+      rw [add''_char _ _ _ _ _ _ this.symm (sd * sc * s₃).property]
       refine oreDiv_eq_iff.mpr ?_
       simp only [smul_add]
       use sd, 1
@@ -162,7 +163,7 @@ theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
 numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
-  oreDiv_add_char' s s' rb sb h (sb * s).2
+  oreDiv_add_char' s s' rb sb h (sb * s).property
 
 /-- Another characterization of the addition on the Ore localization, bundling up all witnesses
 and conditions into a sigma type. -/
@@ -184,8 +185,8 @@ protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
   simp only [smul_add, add_assoc]
   simp_rw [← add_oreDiv, ← OreLocalization.expand']
   congr 2
-  · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).2)]; congr; ext; exact ha
-  · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).2)]; congr; ext; exact hc
+  · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).property)]; congr; ext; exact ha
+  · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).property)]; congr; ext; exact hc
 
 @[simp]
 theorem zero_oreDiv (s : S) : (0 : X) /ₒ s = 0 := by
@@ -249,7 +250,7 @@ protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   induction x with | _ r s
   induction y with | _ r' s'
   rcases oreDivAddChar' r r' s s' with ⟨ra, sa, ha, ha'⟩
-  rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
+  rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).property), add_comm]
   congr; ext; exact ha
 
 instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] where

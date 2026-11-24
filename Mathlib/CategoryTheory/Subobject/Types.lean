@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Type u` is well-powered
 
@@ -30,10 +33,12 @@ open CategoryTheory ConcreteCategory
 
 open CategoryTheory.Subobject
 
-theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
+theorem subtypeVal_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 
-attribute [local instance] subtype_val_mono
+@[deprecated (since := "2026-11-10")] alias subtype_val_mono := subtypeVal_mono
+
+attribute [local instance] subtypeVal_mono
 
 /-- The category of `MonoOver α`, for `α : Type u`, is equivalent to the partial order `Set α`.
 -/
@@ -49,7 +54,7 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
   inverse :=
     { obj := fun s => MonoOver.mk <| ↾(Subtype.val : s → α)
       map := fun {s t} b => MonoOver.homMk (↾
-        fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
+        fun w => ⟨w.val, Set.mem_of_mem_of_subset w.property b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.obj.hom ((mono_iff_injective _).mp f.property)).toIso

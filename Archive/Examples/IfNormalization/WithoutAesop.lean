@@ -121,7 +121,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
   termination_by e' => e'.normSize'
 
 example : IfNormalization :=
-  ⟨fun e => (normalize' ∅ e).1,
-   fun e => ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
+  ⟨fun e => (normalize' ∅ e).val,
+   fun e => ⟨(normalize' ∅ e).property.2.1, by simp [(normalize' ∅ e).property.1]⟩⟩
 
 end IfExpr

@@ -69,7 +69,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.obj} (hc : IsLimit c) {X : A} {f g : X ⟶
   simpa using h i =≫ F.obj.map b.op
 
 lemma sections_ext (F : Sheaf J Type*) {x y : F.obj.sections}
-    (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
+    (h : ∀ (i : I), x.val (Opposite.op (Y i)) = y.val (Opposite.op (Y i))) :
     x = y := by
   ext W
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 F.property).isSeparated _ (hY W.unop)).ext
@@ -124,7 +124,7 @@ lemma familyOfElements_isCompatible (hx : x.IsCompatible) (X : C) :
 variable {J}
 
 lemma existsUnique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F) :
-    ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
+    ∃! (s : F.sections), ∀ (i : I), s.val (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
   apply existsUnique_of_exists_of_unique
   · let s := fun (X : C) => (H _ (hY X)).amalgamate _
@@ -156,7 +156,7 @@ by objects which cover the terminal object. -/
 noncomputable def section_ : F.sections := (hx.existsUnique_section hY hF).choose
 
 @[simp]
-lemma section_apply (i : I) : (hx.section_ hY hF).1 (Opposite.op (Y i)) = x i :=
+lemma section_apply (i : I) : (hx.section_ hY hF).val (Opposite.op (Y i)) = x i :=
   (hx.existsUnique_section hY hF).choose_spec.1 i
 
 end IsCompatible

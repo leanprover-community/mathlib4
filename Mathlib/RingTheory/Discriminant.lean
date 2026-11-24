@@ -41,7 +41,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
   `(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`.
 
-## Implementation details
+## Implementation notes
 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
