@@ -26,7 +26,7 @@ would be the degree `i+n`-th term of `C`.
   a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
-## Implementation Notes
+## Implementation notes
 
 `[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of

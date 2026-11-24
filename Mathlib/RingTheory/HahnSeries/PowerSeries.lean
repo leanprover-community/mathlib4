@@ -35,6 +35,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

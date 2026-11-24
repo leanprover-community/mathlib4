@@ -32,6 +32,7 @@ We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and
 - `EReal` is a Polish space.
 
 ## Tags
+
 ENNReal, EReal, logarithm, exponential
 -/
 

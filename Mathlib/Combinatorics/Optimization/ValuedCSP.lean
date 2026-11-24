@@ -27,6 +27,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
   symmetric fractional polymorphism for given VCSP template?
 
 ## References
+
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 -/

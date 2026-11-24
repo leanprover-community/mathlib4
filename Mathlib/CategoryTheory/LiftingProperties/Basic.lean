@@ -18,6 +18,7 @@ shows basic properties of this notion.
 - `HasLiftingProperty`: the definition of the lifting property
 
 ## Tags
+
 lifting property
 
 ## TODO

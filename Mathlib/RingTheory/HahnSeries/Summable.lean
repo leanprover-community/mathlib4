@@ -45,6 +45,7 @@ commutative domain.
 * Summable Pi families
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

@@ -23,6 +23,7 @@ ring of integers, denoted `v.adicCompletionIntegers`.
   `v.adicCompletion`.
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation, completion
 -/
 

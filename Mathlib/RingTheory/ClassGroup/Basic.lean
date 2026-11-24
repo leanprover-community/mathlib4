@@ -27,7 +27,7 @@ inside its field of fractions.
 - `ClassGroup.mk0_eq_quotientMk` identifies `ClassGroup.mk0` with the canonical quotient
   projection on `(FractionalIdeal R⁰ (FractionRing R))ˣ`
 
-## Implementation details
+## Implementation notes
 
 The definition of `ClassGroup R` involves `FractionRing R`. However, the API should be completely
 identical no matter the choice of field of fractions for `R`.

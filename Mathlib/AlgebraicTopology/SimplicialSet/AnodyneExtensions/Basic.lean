@@ -48,6 +48,7 @@ we show that a strong anodyne extension is an anodyne extension.
 * show that anodyne extensions are stable under the subdivision functor (@joelriou)
 
 ## References
+
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*, IV.2][gabriel-zisman-1967]
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/

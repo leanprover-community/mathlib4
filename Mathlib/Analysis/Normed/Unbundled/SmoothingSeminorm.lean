@@ -38,6 +38,7 @@ seminorm on `R`.
   `smoothingFun μ` is power-multiplicative.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

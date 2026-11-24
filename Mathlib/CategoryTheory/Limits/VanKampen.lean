@@ -24,6 +24,7 @@ import Mathlib.CategoryTheory.Adjunction.Limits
   `c'` is colimiting iff `c'` is the pullback of `c`.
 
 ## References
+
 - https://ncatlab.org/nlab/show/van+Kampen+colimit
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 -/

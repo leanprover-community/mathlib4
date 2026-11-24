@@ -22,6 +22,7 @@ public import Mathlib.Topology.Separation.CompletelyRegular
   `X ↪ ProbabilityMeasure X`.
 
 ## Tags
+
 probability measure, Dirac delta, embedding
 -/
 

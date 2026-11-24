@@ -40,6 +40,7 @@ the literature while the compact coherentification is often called the k-ificati
   `CompactCoherentification X` to `CompactCoherentification Y`.
 
 ## References
+
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/

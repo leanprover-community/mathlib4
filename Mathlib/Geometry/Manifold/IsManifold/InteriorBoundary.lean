@@ -61,6 +61,7 @@ Define the interior and boundary of a manifold.
   so is their disjoint union `M ⊔ M'`
 
 ## Tags
+
 manifold, interior, boundary
 
 ## TODO

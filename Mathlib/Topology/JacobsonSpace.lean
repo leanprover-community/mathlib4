@@ -20,6 +20,7 @@ public import Mathlib.Topology.LocalAtTarget
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
 ## References
+
 - https://stacks.math.columbia.edu/tag/005T
 -/
 

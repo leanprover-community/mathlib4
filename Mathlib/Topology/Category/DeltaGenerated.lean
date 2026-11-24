@@ -22,6 +22,7 @@ for all `n : ℕ`.
 * `DeltaGenerated` is Cartesian closed (@joelriou).
 
 ## References
+
 * https://ncatlab.org/nlab/show/Delta-generated+topological+space
 -/
 

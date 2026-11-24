@@ -36,6 +36,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   has all pullbacks and all pushouts and is adhesive
 
 ## References
+
 - https://ncatlab.org/nlab/show/adhesive+category
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 -/

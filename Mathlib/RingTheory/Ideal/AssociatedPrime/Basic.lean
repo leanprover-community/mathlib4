@@ -29,7 +29,7 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
-## Implementation details
+## Implementation notes
 
 The presence of the radical in the definition of `IsAssociatedPrime` is slightly nonstandard but
 gives the correct characterization of the prime ideals of any minimal primary decomposition in the

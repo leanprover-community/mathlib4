@@ -38,6 +38,7 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 `Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiag 0` are all `∅`.
 
 ## Tags
+
 divisors, perfect numbers
 -/
 

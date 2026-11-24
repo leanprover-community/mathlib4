@@ -48,6 +48,7 @@ This file introduces:
   are nonempty and bounded in a metric space, they are at finite Hausdorff edistance.
 
 ## Tags
+
 metric space, Hausdorff distance
 -/
 

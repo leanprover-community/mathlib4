@@ -27,6 +27,7 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
   commutator of `absoluteGaloisGroup` is a normal subgroup.
 
 ## Tags
+
 field, algebraic closure, galois group, abelianization
 -/
 

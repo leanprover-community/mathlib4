@@ -29,9 +29,11 @@ finite product of completions over its infinite places.
   locally compact space.
 
 ## References
+
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
+
 infinite adele ring, number field
 -/
 

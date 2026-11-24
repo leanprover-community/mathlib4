@@ -22,8 +22,7 @@ We define continuous cohomology as the homology of the homogeneous cochain compl
 - `continuousCohomology`:
   The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
 
-
-## Implementation details
+## Implementation notes
 
 We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact

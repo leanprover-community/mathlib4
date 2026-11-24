@@ -49,6 +49,7 @@ We also show well-founded lattices are compactly generated
 (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
+
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
 
 ## Tags

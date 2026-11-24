@@ -28,6 +28,7 @@ locally representable.
   Then `F` is representable.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/01JJ
 -/
 

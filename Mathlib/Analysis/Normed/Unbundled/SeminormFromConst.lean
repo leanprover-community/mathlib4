@@ -30,6 +30,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
   `seminormFromConst c f (c * x) = seminormFromConst c f c * seminormFromConst c f x`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

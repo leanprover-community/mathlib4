@@ -22,6 +22,7 @@ A number is squarefree when it is not divisible by any squares except the square
   the list `factors x` has no duplicate factors.
 
 ## Tags
+
 squarefree, multiplicity
 -/
 
