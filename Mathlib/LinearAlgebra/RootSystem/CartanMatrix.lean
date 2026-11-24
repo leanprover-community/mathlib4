@@ -258,7 +258,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply]
     apply q.sub_mem hx
     by_cases hk : P.root k ∈ q
     · exact q.smul_mem _ hk

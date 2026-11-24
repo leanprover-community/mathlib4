@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The image of a subfunctor
 

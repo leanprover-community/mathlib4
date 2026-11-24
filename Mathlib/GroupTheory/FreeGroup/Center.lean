@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 
 import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Center and centralizers of free groups
 

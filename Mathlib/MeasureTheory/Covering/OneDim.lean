@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering theorems for Lebesgue measure in one dimension
 

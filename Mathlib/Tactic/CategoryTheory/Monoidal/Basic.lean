@@ -9,6 +9,9 @@ public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `monoidal` tactic
 

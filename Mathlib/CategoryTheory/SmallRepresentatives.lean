@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representatives of small categories
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Module.DedekindDomain
 public import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structure of finitely generated modules over a PID
 

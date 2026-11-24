@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 import Mathlib.RingTheory.RingHom.EssFiniteType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of finite type
 

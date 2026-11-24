@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.SmallRepresentatives
 
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
 

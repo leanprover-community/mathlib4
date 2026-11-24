@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of types is a (symmetric) monoidal category
 -/

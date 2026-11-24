@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Purely inseparable ring homomorphisms
 

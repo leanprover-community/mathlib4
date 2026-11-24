@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects in a category
 
