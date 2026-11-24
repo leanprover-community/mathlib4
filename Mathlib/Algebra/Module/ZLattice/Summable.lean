@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Module.Lattice.Summable
-public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Module.ZLattice.Basic -- deprecated_module: ignore
 
 import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Dual.Lemmas

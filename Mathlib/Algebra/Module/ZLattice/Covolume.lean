@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Module.Lattice.Covolume
-public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Module.ZLattice.Basic -- deprecated_module: ignore
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
@@ -82,18 +82,18 @@ section Basic
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable [MeasurableSpace E] [BorelSpace E]
-variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
+variable (L : Submodule ℤ E) [DiscreteTopology L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 
 set_option backward.privateInPublic true in
 @[deprecated Submodule.covolume_eq_measure_fundamentalDomain +typeChanged (since := "2026-11-23")]
-theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
-    covolume L μ = μ.real F := by
+theorem covolume_eq_measure_fundamentalDomain [IsZLattice ℝ L] {F : Set E}
+    (h : IsAddFundamentalDomain L F μ) : covolume L μ = μ.real F := by
   congrm $(h.covolume_eq_volume μ).toReal
 
 set_option backward.privateInPublic true in
 @[deprecated Submodule.covolume_ne_zero +typeChanged (since := "2026-11-23")]
-theorem covolume_ne_zero : covolume L μ ≠ 0 := by
+theorem covolume_ne_zero [IsZLattice ℝ L] : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     measureReal_ne_zero_iff (ne_of_lt _)]
   · exact measure_fundamentalDomain_ne_zero _
@@ -101,14 +101,14 @@ theorem covolume_ne_zero : covolume L μ ≠ 0 := by
 
 set_option backward.privateInPublic true in
 @[deprecated Submodule.covolume_pos +typeChanged (since := "2026-11-23")]
-theorem covolume_pos : 0 < covolume L μ :=
+theorem covolume_pos [IsZLattice ℝ L] : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
 set_option backward.privateInPublic true in
 @[deprecated Submodule.covolume_comap +typeChanged (since := "2026-11-23")]
-theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
-    [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
-    {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
+theorem covolume_comap [IsZLattice ℝ L] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac)
+    [Measure.IsAddHaarMeasure ν] {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
     covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
   rw [covolume_eq_measure_fundamentalDomain _ _ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     covolume_eq_measure_fundamentalDomain _ _ ((isAddFundamentalDomain
@@ -120,8 +120,8 @@ theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [F
 
 set_option backward.privateInPublic true in
 @[deprecated Submodule.covolume_eq_det_mul_measureReal +typeChanged (since := "2026-11-23")]
-theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
-    (b₀ : Basis ι ℝ E) :
+theorem covolume_eq_det_mul_measureReal [IsZLattice ℝ L] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (b : Basis ι ℤ L) (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * μ.real (fundamentalDomain b₀) := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain b μ),
     measureReal_fundamentalDomain _ _ b₀,
@@ -235,15 +235,15 @@ open Filter Fintype Pointwise BoxIntegral Bornology
 open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
+variable {L : Submodule ℤ E} [DiscreteTopology L]
 variable {ι : Type*} [Fintype ι] (b : Basis ι ℤ L)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A version of `ZLattice.covolume.tendsto_card_div_pow` for the general case;
 see the `Naming convention` section in the introduction. -/
 @[deprecated Submodule.tendsto_card_div_pow +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
-    {s : Set E} (hs₁ : IsBounded s) (hs₂ : MeasurableSet s)
+theorem tendsto_card_div_pow'' [IsZLattice ℝ L] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [BorelSpace E] {s : Set E} (hs₁ : IsBounded s) (hs₂ : MeasurableSet s)
     (hs₃ : volume (frontier ((b.ofZLatticeBasis ℝ).equivFun '' s)) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume.real ((b.ofZLatticeBasis ℝ).equivFun '' s))) := by
@@ -273,8 +273,8 @@ private theorem tendsto_card_le_div''_aux
 /-- A version of `ZLattice.covolume.tendsto_card_le_div` for the general case;
 see the `Naming conventions` section in the introduction. -/
 @[deprecated Submodule.tendsto_card_le_div +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
-    [Nonempty ι] {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
+theorem tendsto_card_le_div'' [IsZLattice ℝ L] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [BorelSpace E] [Nonempty ι] {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
     {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier ((b.ofZLatticeBasis ℝ L).equivFun '' {x | x ∈ X ∧ F x ≤ 1})) = 0) :
@@ -328,11 +328,11 @@ private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {�
   exact (b.equivFunL.symm.preimage_frontier s).symm
 
 variable {ι : Type*} [Fintype ι]
-variable (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
+variable (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L]
 
 @[deprecated Submodule.tendsto_card_div_pow +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ : IsBounded s)
-    (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
+theorem tendsto_card_div_pow [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)}
+    (hs₁ : IsBounded s) (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set (ι → ℝ)) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume.real s / covolume L)) := by
   convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
@@ -342,8 +342,9 @@ theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ 
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume, hs₃, ENNReal.zero_div]
 
 @[deprecated Submodule.tendsto_card_le_div +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
+theorem tendsto_card_le_div [IsZLattice ℝ L] {X : Set (ι → ℝ)}
+    (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X) {F : (ι → ℝ) → ℝ}
+    (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier {x | x ∈ X ∧ F x ≤ 1}) = 0) [Nonempty ι] :
     Tendsto (fun c : ℝ ↦
@@ -369,13 +370,13 @@ open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
-variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
+variable (L : Submodule ℤ E) [DiscreteTopology L]
 
 /-- A version of `ZLattice.covolume.tendsto_card_div_pow` for the `InnerProductSpace` case;
 see the `Naming convention` section in the introduction. -/
 @[deprecated Submodule.tendsto_card_div_pow +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : MeasurableSet s)
-    (hs₃ : volume (frontier s) = 0) :
+theorem tendsto_card_div_pow' [IsZLattice ℝ L] {s : Set E} (hs₁ : IsBounded s)
+    (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ finrank ℝ E)
       atTop (𝓝 (volume.real s / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
@@ -390,7 +391,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
 /-- A version of `ZLattice.covolume.tendsto_card_le_div` for the `InnerProductSpace` case;
 see the `Naming convention` section in the introduction. -/
 @[deprecated Submodule.tendsto_card_le_div +typeChanged (since := "2026-11-23")]
-theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
+theorem tendsto_card_le_div' [IsZLattice ℝ L] [Nontrivial E] {X : Set E} {F : E → ℝ}
     (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
     (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ finrank ℝ E * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
