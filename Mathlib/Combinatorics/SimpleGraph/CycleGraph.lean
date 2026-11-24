@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of cycle graphs
 

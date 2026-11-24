@@ -42,6 +42,7 @@ and similarly the colimit of those `g.right` for `g ⟶ f` in `J κ f`
 identify to `f.right`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 

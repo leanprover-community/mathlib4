@@ -354,9 +354,9 @@ isometric equivalence. -/
 def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    rw [← LinearEquiv.coe_coe] at hf
+    rw [← coe_toLinearMap] at hf
     rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
-      ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
+      ← coe_toLinearMap f, Finsupp.apply_linearCombination,
       Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
 @[simp]

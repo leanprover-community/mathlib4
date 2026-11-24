@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.PEquiv
 public import Mathlib.Data.Matrix.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # partial equivalences for matrices
 

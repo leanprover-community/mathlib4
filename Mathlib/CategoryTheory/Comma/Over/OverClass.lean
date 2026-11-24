@@ -18,7 +18,8 @@ This is analogous to how we view ringhoms as structures via the `Algebra` typecl
 
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 
-## Main definition
+## Main definitions
+
 - `CategoryTheory.OverClass`: `OverClass X S` equips `X` with a morphism into `S`.
   `X ↘ S : X ⟶ S` is the structure morphism.
 - `CategoryTheory.HomIsOver`:

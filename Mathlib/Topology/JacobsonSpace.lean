@@ -11,6 +11,7 @@ public import Mathlib.Topology.LocalAtTarget
 # Jacobson spaces
 
 ## Main results
+
 - `JacobsonSpace`: The class of Jacobson spaces, i.e.
   spaces such that the set of closed points are dense in every closed subspace.
 - `jacobsonSpace_iff_locallyClosed`:
@@ -19,6 +20,7 @@ public import Mathlib.Topology.LocalAtTarget
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
 ## References
+
 - https://stacks.math.columbia.edu/tag/005T
 -/
 
@@ -56,7 +58,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 lemma Set.Finite.isDiscrete_of_subset_closedPoints
     {s : Set X} (hs : s.Finite) (hs' : s ⊆ closedPoints X) : IsDiscrete s := by
-  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.2).preimage continuous_subtypeVal; aesop⟩
+  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.property).preimage continuous_subtypeVal; aesop⟩
   have : Finite s := hs
   exact ⟨inferInstance⟩
 
@@ -186,8 +188,8 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     simp [← Subtype.coe_inj]
   · convert isClosed_empty
     rw [Set.eq_empty_iff_forall_notMem]
-    intro z (hz : z.1 = y.1)
-    exact h (hz ▸ z.2)
+    intro z (hz : z.val = y.val)
+    exact h (hz ▸ z.property)
 
 theorem subsingleton_image_closure_of_finite_of_isPreirreducible [JacobsonSpace X]
     {S : Set X} (hS : IsLocallyClosed S) (hS' : IsPreirreducible S)

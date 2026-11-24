@@ -34,7 +34,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 * `Function.Injective.unique`: if the codomain of an injective function is `Subsingleton` and its
   domain is `Inhabited`, then its domain is `Unique`.
 
-## Implementation details
+## Implementation notes
 
 The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,
@@ -63,7 +63,7 @@ theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ 
 
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
-  ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
+  ⟨fun ⟨u⟩ ↦ ⟨u.default.val, u.default.property, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩

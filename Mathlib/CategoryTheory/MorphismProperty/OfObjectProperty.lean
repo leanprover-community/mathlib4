@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 import Mathlib.Tactic.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphism properties from object properties
 

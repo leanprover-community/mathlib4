@@ -52,7 +52,7 @@ change to something less misleading.
 * `Submodule.IsTopCompl.isClosed`: if `p` and `q` are topological complements in a Hausdorff space,
   they are closed.
 
-## Implementation details
+## Implementation notes
 
 In the definition of `Submodule.IsTopCompl`, we choose to ask for the continuity of the projection
 on the left submodule along the right one, because it is a simpler map to work with than the
@@ -190,7 +190,7 @@ alias ⟨_, projectionOntoL_apply_eq_zero_of_mem_right⟩ :=
 
 theorem projectionOntoL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionOntoL q h x = 0 :=
-  projectionOntoL_apply_eq_zero_of_mem_right h x.2
+  projectionOntoL_apply_eq_zero_of_mem_right h x.property
 
 theorem ker_projectionOntoL (h : IsTopCompl p q) :
     (p.projectionOntoL q h).ker = q := by
@@ -258,7 +258,7 @@ alias ⟨_, projectionL_apply_eq_zero_of_mem_right⟩ :=
 
 theorem projectionL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionL q h x = 0 :=
-  projectionL_apply_eq_zero_of_mem_right h x.2
+  projectionL_apply_eq_zero_of_mem_right h x.property
 
 theorem ker_projectionL (h : IsTopCompl p q) :
     (p.projectionL q h).ker = q := by

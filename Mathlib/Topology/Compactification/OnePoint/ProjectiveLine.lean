@@ -65,7 +65,7 @@ def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
   toFun p := p.elim (mk K ![1, 0] (by simp)) (fun t ↦ mk K ![t, 1] (by simp))
   invFun p := by
     refine Projectivization.lift
-      (fun u : {v : Fin 2 → K // v ≠ 0} ↦ if u.1 1 = 0 then ∞ else ((u.1 1)⁻¹ * u.1 0)) ?_ p
+      (fun u : {v : Fin 2 → K // v ≠ 0} ↦ if u.val 1 = 0 then ∞ else ((u.val 1)⁻¹ * u.val 0)) ?_ p
     rintro ⟨-, hv⟩ ⟨w, hw⟩ t rfl
     have ht : t ≠ 0 := by rintro rfl; simp at hv
     by_cases h₀ : w 1 = 0 <;> simp [h₀, ht, mul_assoc]

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N-ary images of sets
 
@@ -177,8 +180,14 @@ theorem image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪
 theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
   rw [insert_eq, image2_union_right, image2_singleton_right]
 
+theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s t := by
+  grind
+
 @[congr]
-theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
+theorem image2_congr'' {s' : Set α} {t' : Set β}
+    (hs : s = s') (ht : t = t') (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s' t' := by
   grind
 
 /-- A common special case of `image2_congr` -/

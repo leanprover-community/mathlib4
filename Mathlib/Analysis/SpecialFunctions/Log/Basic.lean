@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Factorization.Defs
 
 import Mathlib.Analysis.Normed.Module.RCLike.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real logarithm
 
@@ -362,7 +365,7 @@ lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp +unfoldPartialApp only [continuousOn_iff_continuous_domRestrict,
     domRestrict]
-  conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
+  conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.property)]
   exact expOrderIso.symm.continuous.comp (continuous_subtypeVal.norm.subtype_mk _)
 
 /-- The real logarithm is continuous as a function from nonzero reals. -/

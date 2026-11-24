@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opens and Over categories
 
@@ -50,7 +53,7 @@ def overEquivalence : Over U ≌ Opens ↥U where
 
 variable {U} in
 @[simp] lemma mem_overEquivalence_functor_obj {V : Over U} {x : U} :
-  x ∈ U.overEquivalence.functor.obj V ↔ x.1 ∈ V.left := .rfl
+  x ∈ U.overEquivalence.functor.obj V ↔ x.val ∈ V.left := .rfl
 
 section grothendieckTopology
 

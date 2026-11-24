@@ -11,6 +11,9 @@ public import Mathlib.Data.PFun
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # State Transition Systems
 

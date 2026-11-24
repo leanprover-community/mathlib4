@@ -84,9 +84,11 @@ is the almost everywhere limit of a sequence of measurable functions (which are 
 pieces of the good discretization), and is therefore almost everywhere measurable.
 
 ## Tags
+
 Change of variables in integrals
 
 ## References
+
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
@@ -229,7 +231,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   -- these sets `t q = K n z p` will do
   refine
     ⟨fun q => K (F q).1 (F q).2.1 (F q).2.2, fun q => f' (F q).2.1, fun n => K_closed _ _ _,
-      fun x xs => ?_, fun q => K_approx _ _ _, fun _ q => ⟨(F q).2.1, (F q).2.1.1.2, rfl⟩⟩
+      fun x xs => ?_, fun q => K_approx _ _ _, fun _ q => ⟨(F q).2.1, (F q).2.1.val.property, rfl⟩⟩
   -- the only fact that needs further checking is that they cover `s`.
   -- we already know that any point `x ∈ s` belongs to a set `M n z`.
   obtain ⟨n, z, hnz⟩ : ∃ (n : ℕ) (z : T), x ∈ M n z := s_subset x xs
@@ -375,7 +377,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         exact Set.image_mono (subset_inter (Subset.refl _) st)
       _ ≤ ∑' x : t, μ (f '' (s ∩ closedBall x (r x))) := measure_iUnion_le _
       _ ≤ ∑' x : t, m * μ (closedBall x (r x)) :=
-        (tsum_le_tsum fun x => I x (r x) (ts x.2) (rpos x x.2).le)
+        (tsum_le_tsum fun x => I x (r x) (ts x.property) (rpos x x.property).le)
       _ ≤ m * (μ s + a) := by rw [ENNReal.tsum_mul_left]; gcongr
   -- taking the limit in `a`, one obtains the conclusion
   have L : Tendsto (fun a => (m : ℝ≥0∞) * (μ s + a)) (𝓝[>] 0) (𝓝 (m * (μ s + 0))) := by
@@ -471,7 +473,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   -- start from a Lebesgue density point `x`, belonging to `s`.
   intro x hx xs
   -- consider an arbitrary vector `z`.
-  apply ContinuousLinearMap.opNorm_le_bound _ δ.2 fun z => ?_
+  apply ContinuousLinearMap.opNorm_le_bound _ δ.property fun z => ?_
   -- to show that `‖(f' x - A) z‖ ≤ δ ‖z‖`, it suffices to do it up to some error that vanishes
   -- asymptotically in terms of `ε > 0`.
   suffices H : ∀ ε, 0 < ε → ‖(f' x - A) z‖ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε by
@@ -1171,7 +1173,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
   rw [uf.image_eq] at A
   have : F = s.domRestrict f := by
     ext x
-    exact uf x.2
+    exact uf x.property
   rwa [this] at A
 
 /-! ### Change of variable formulas in integrals -/

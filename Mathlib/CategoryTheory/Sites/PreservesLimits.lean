@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of (co)limits by the sheaf Yoneda functor
 -/

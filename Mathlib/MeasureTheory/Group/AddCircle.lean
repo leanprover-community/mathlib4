@@ -9,12 +9,15 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure-theoretic results about the additive circle
 
 The file is a place to collect measure-theoretic results about the additive circle.
 
-## Main definitions:
+## Main definitions
 
 * `AddCircle.closedBall_ae_eq_ball`: open and closed balls in the additive circle are almost
   equal

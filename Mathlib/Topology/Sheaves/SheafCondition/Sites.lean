@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.Topology.Sheaves.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
@@ -55,7 +58,7 @@ theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendiec
   apply le_antisymm
   · refine iSup_le ?_
     intro f
-    exact f.2.1.le
+    exact f.2.val.le
   intro x hxU
   rw [Opens.mem_iSup]
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
@@ -106,11 +109,11 @@ def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
 def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
-  f.2.2.choose
+  f.2.property.choose
 
 theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
-  f.2.2.choose_spec
+  f.2.property.choose_spec
 
 end presieveOfCovering
 

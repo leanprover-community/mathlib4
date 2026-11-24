@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 import Mathlib.Tactic.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multicoequalizer diagrams in complete lattices
 

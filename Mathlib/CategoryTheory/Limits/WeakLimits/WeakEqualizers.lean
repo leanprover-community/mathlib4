@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak equalizers
 
@@ -120,6 +123,6 @@ same `s` for all parts. -/
 def Fork.IsWeakLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι}) :
     IsWeakLimit t :=
-  Fork.IsWeakLimit.mk t (fun s => (create s).1) (fun s => (create s).2)
+  Fork.IsWeakLimit.mk t (fun s => (create s).val) (fun s => (create s).property)
 
 end CategoryTheory.Limits

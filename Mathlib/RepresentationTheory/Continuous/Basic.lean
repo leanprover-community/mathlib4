@@ -50,6 +50,7 @@ related basic results.
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 
@@ -658,8 +659,8 @@ linearly equivalent to `C(G, V)`, via the twist `f ↦ fun g ↦ π g (f g⁻¹)
 @[simps]
 def coindLEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     (trivial R Unit V).coindV (1 : Unit →ₜ* G) ≃L[R] C(G, V) where
-  toFun f := ⟨fun g ↦ π g (f.1 g⁻¹),
-      hπ.comp <| continuous_id.prodMk <| f.1.continuous.comp continuous_inv⟩
+  toFun f := ⟨fun g ↦ π g (f.val g⁻¹),
+      hπ.comp <| continuous_id.prodMk <| f.val.continuous.comp continuous_inv⟩
   invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
       hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩, by simp⟩
   left_inv _ := by ext; simp

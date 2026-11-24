@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of continuous cohomology
 
@@ -122,7 +125,7 @@ lemma cochainsMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y
     cochainsMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsMap φ f ≫ cochainsMap ψ g := by
   ext i v x
-  congrm $(resolutionMap_comp φ ψ f g (i + 1)).hom v.1 x
+  congrm $(resolutionMap_comp φ ψ f g (i + 1)).hom v.val x
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/

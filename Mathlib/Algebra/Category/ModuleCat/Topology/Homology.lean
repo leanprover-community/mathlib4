@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `TopModuleCat` is a `CategoryWithHomology`
 
@@ -43,7 +46,7 @@ instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) Subt
 
 @[simp] lemma kerι_comp : kerι φ ≫ φ = 0 := by ext ⟨_, hm⟩; exact hm
 
-@[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
+@[simp] lemma kerι_apply (x) : kerι φ x = x.val := rfl
 
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
