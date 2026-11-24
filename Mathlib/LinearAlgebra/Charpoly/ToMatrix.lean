@@ -79,7 +79,8 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   ext i j : 1
   simp [LinearMap.toMatrix]
 
-lemma LinearMap.charpoly_eq_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
+lemma LinearMap.charpoly_eq_charpoly_restrict_mul_of_isCompl
+    {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
     (f : M →ₗ[R] M) (hp : p ∈ Module.End.invtSubmodule f) (hq : q ∈ Module.End.invtSubmodule f) :
     f.charpoly = (f.restrict hp).charpoly * (f.restrict hq).charpoly := by
