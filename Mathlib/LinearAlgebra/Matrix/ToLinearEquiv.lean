@@ -232,7 +232,7 @@ theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite
       ← nondegenerate_submatrix_iff e₁.symm.bijective Function.bijective_id (M := M)]
     simp [submatrix_mul (e₂ := id), nondegenerate_iff_nonsingular, nonsingular_mul_iff,
       (h.submatrix _ e₂.bijective).nonsingular]
-  · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm (hM.nonempty_equiv))
+  · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm hM.nonempty_equiv)
     obtain ⟨e₁⟩ := hMN.nonempty_equiv
     exact ⟨e₁.trans e₂.symm⟩
 
