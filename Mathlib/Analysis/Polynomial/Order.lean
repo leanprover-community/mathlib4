@@ -32,6 +32,9 @@ This file proves that a polynomial has a fixed sign beyond its largest or smalle
   `negOnePow_mul_eval_lt_zero_of_lt_roots_of_leadingCoeff_nonpos`,
   `negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos`:
   Analogous results for `x` which is smaller than (or at least as small as) all roots.
+* `sign_eval_eq_of_forall_ne_zero`:
+  A polynomial with no root between `a` and `b`, endpoints included, has the same sign at `a`
+  and `b`.
 
 ## TODO
 
@@ -133,6 +136,23 @@ theorem negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos
   refine zero_le_negOnePow_mul_eval_of_le_roots_of_leadingCoeff_nonneg (fun y hy => hroots y ?_) ?_
   · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
   · rwa [leadingCoeff_neg, neg_nonneg]
+
+/-- A polynomial with no root between `a` and `b`, endpoints included, has the same sign at `a`
+and `b`. -/
+theorem sign_eval_eq_of_forall_ne_zero {a b : ℝ} (h : ∀ x ∈ Set.uIcc a b, ¬ P.IsRoot x) :
+    SignType.sign (P.eval a) = SignType.sign (P.eval b) := by
+  wlog hab : a ≤ b generalizing a b
+  · exact (this (by rwa [Set.uIcc_comm]) (le_of_not_ge hab)).symm
+  rw [Set.uIcc_of_le hab] at h
+  have ha : ¬ P.IsRoot a := h a (Set.left_mem_Icc.mpr hab)
+  have hb : ¬ P.IsRoot b := h b (Set.right_mem_Icc.mpr hab)
+  rcases lt_or_gt_of_ne ha with ha | ha <;> rcases lt_or_gt_of_ne hb with hb | hb
+  · rw [sign_neg ha, sign_neg hb]
+  · obtain ⟨x, hx, hx0⟩ := intermediate_value_Ioo hab P.continuousOn ⟨ha, hb⟩
+    exact absurd hx0 (h x (Set.mem_Icc_of_Ioo hx))
+  · obtain ⟨x, hx, hx0⟩ := intermediate_value_Ioo' hab P.continuousOn ⟨hb, ha⟩
+    exact absurd hx0 (h x (Set.mem_Icc_of_Ioo hx))
+  · rw [sign_pos ha, sign_pos hb]
 
 end PolynomialSign
 
