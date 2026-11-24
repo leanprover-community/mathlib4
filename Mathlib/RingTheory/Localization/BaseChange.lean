@@ -59,7 +59,7 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
   convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
   ext
-  rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
 

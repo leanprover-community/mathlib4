@@ -203,17 +203,14 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
-  rfl
-
 @[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
-theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
-  rfl
+@[simp, norm_cast]
+theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
+
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 
