@@ -81,7 +81,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   by_cases h : a ∈ s; · rw [dirac_apply_of_mem h, indicator_of_mem h, Pi.one_apply]
   rw [indicator_of_notMem h, ← nonpos_iff_eq_zero]
   calc
-    dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.mp <| singleton_subset_iff.mpr h)
+    dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
 
 @[simp]
