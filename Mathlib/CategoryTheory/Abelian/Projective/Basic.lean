@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective objects in abelian categories
 

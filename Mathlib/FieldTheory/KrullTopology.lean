@@ -48,7 +48,7 @@ We provide an instance of `UniformSpace Gal(L/K)`, which induces the Krull topol
   every element of `E`. In particular, we distinguish between `Gal(L/E)` and `Gal(L/E)`, since the
   former is defined to be a subgroup of `Gal(L/K)`, while the latter is a group in its own right.
 
-## Implementation Notes
+## Implementation notes
 
 We first define a `UniformGroup` structure on `Gal(L/K)`,
 and use this to construct the Krull topology.

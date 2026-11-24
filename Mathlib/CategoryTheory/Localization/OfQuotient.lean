@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Certain quotient categories are localizations
 

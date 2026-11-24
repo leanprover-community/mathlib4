@@ -5,10 +5,14 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+import Mathlib.GroupTheory.GroupAction.Ring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bases and matrices

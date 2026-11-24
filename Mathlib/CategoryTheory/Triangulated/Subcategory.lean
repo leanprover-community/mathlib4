@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
+
+import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 /-! # Triangulated subcategories
 
@@ -33,6 +34,7 @@ for example, the subcategory of bounded below complexes in the homotopy category
 of an additive category is not closed under isomorphisms.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 

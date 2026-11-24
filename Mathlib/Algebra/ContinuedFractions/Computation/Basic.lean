@@ -35,7 +35,7 @@ For an example, refer to `IntFractPair.stream`.
 - `GenContFract.of`: computes the generalised continued fraction of a value `v`.
   In fact, it computes a regular continued fraction that terminates if and only if `v` is rational.
 
-## Implementation Notes
+## Implementation notes
 
 There is an intermediate definition `GenContFract.IntFractPair.seq1` between
 `GenContFract.IntFractPair.stream` and `GenContFract.of` to wire up things. Users should not

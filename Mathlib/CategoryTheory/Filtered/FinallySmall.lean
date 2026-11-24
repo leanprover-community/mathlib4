@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finally small filtered categories
 

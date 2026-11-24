@@ -62,6 +62,7 @@ The implementation strategy is identical to the one for immersions. See the impl
 * `small` and `smallEquiv` constructions.
 
 ## TODO
+
 * The converse to `IsSubmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the kernel of the differential `mfderiv I J f x`.
 * If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right

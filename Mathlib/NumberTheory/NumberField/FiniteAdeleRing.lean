@@ -23,6 +23,7 @@ Later, these results are applied to the case where `K` is a number field and `R`
 - `NumberField.FiniteAdeleRing.instNormFiniteAdeleRing` : the norm on the finite adele ring.
 
 ## Tags
+
 adele ring, number field
 -/
 

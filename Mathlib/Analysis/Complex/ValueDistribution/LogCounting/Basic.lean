@@ -22,7 +22,7 @@ See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 
-## Implementation Notes
+## Implementation notes
 
 - This file defines the logarithmic counting function first for functions with locally finite
   support on `𝕜` and then specializes to the setting where the function with locally finite support

@@ -917,7 +917,7 @@ Grothendieck's question for commutative group schemes. -/
 theorem not_isCocomm : ¬Coalgebra.IsCocomm R A := by
   intro h
   have hU := congr($h.comm_comp_comul U)
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
     ← Bialgebra.comulAlgHom_apply (R := R), bialgebra_comulAlgHom] at hU
   rw [comul_U_formula] at hU
   simp only [map_add, Algebra.TensorProduct.includeLeft_apply,

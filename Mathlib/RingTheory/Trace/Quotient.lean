@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.LocalRing.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The trace map on quotients and localizations
 

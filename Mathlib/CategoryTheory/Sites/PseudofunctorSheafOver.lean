@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Sites.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves on Over categories, as a pseudofunctor
 

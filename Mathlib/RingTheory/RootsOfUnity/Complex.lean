@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Rify
 
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex roots of unity
 

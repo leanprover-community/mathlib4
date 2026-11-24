@@ -30,7 +30,7 @@ We show:
   then `γ` is an epimorphism,
 - the five lemma: if `α`, `β`, `δ` and `ε` are isomorphisms, then `γ` is an isomorphism.
 
-## Implementation details
+## Implementation notes
 
 The diagram of the five lemma is given by a morphism in the category `ComposableArrows C 4`
 between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
@@ -335,13 +335,11 @@ variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] ComposableArrows.Precomp.map
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
     (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
   Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
     (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
     (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
   Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)

@@ -32,7 +32,7 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 * `Equiv.Perm.IsCycle.existsUnique_cycle`: there is only one nontrivial `Cycle α`
   corresponding to each cyclic `f : Perm α`
 
-## Implementation details
+## Implementation notes
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.

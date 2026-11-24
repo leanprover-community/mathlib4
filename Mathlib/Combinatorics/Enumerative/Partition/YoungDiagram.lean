@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Young.YoungDiagram
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Young diagram of a partition
 
