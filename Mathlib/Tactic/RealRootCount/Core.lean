@@ -85,9 +85,11 @@ def sturmSteps (p : List ℤ) : List SturmStep := Id.run do
     q := s.r
   return steps.toList
 
-/-- Compute `k > 0` such that the elements of `k • p` are integers, and the `SturmCertificate` for
-the polynomial with the coefficient list `k • p`. -/
+/-- For the coefficient list `p` of a nonzero polynomial, compute `k > 0` such that the elements of
+`k • p` are integers, and the `SturmCertificate` for the polynomial with the coefficient list
+`k • p`. -/
 public def SturmCertificate.fromCoeffList (p : List ℚ) : ℕ × SturmCertificate :=
+  let p := trim p
   let k := lcmDen p
   -- by definition of `k`, `k • p` is a list of integers
   let p := p.map fun x : ℚ => (k * x).num
