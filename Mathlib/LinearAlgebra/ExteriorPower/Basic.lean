@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 We study the exterior powers of a module `M` over a commutative ring `R`.
 
-## Definitions
+## Main definitions
 
 * `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
 

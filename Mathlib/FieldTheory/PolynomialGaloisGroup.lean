@@ -20,7 +20,7 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.restrict p E`: the restriction homomorphism `Gal(E/F) → gal p`.
 - `Polynomial.Gal.galAction p E`: the action of `gal p` on the roots of `p` in `E`.
 
-## Main results
+## Main statements
 
 - `Polynomial.Gal.restrict_smul`: `restrict p E` is compatible with `gal_action p E`.
 - `Polynomial.Gal.galActionHom_injective`: `gal p` acting on the roots of `p` in `E` is faithful.
