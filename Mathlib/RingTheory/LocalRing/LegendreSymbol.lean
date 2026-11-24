@@ -47,12 +47,11 @@ quadratic residue, quadratic nonresidue, Legendre symbol
 namespace IsLocalRing
 
 variable {R : Type*} [CommRing R] [IsLocalRing R] [Fintype (ResidueField R)]
-  [DecidableEq (ResidueField R)]
 
 -- TODO: Switch over to Finite and Nat.card once the rest of the finite field material has been
 -- switched over
 /-- We define the `legendreSym` for a local ring with finite residue field. -/
-noncomputable def legendreSym : MulChar R ℤ :=
+noncomputable def legendreSym : MulChar R ℤ := open scoped Classical in
   (quadraticChar (ResidueField R)).compLocalHom (residue R)
 
 namespace legendreSym
@@ -61,7 +60,8 @@ variable {a b : R}
 
 /-- If `a` is a unit, then `legendreSym a` is `1` or `-1`. -/
 theorem eq_one_or_neg_one (ha : IsUnit a) : legendreSym a = 1 ∨ legendreSym a = -1 :=
-  Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ResidueField R)).compLocalHom (residue R)) ha)
+  Int.isUnit_eq_one_or (IsUnit.map (open scoped Classical in
+  (quadraticChar (ResidueField R)).compLocalHom (residue R)) ha)
 
 /-- If `a` is a unit, then `legendreSym a = -1` iff `legendreSym a ≠ 1`. -/
 theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
@@ -81,28 +81,15 @@ noncomputable abbrev hom : R →*₀ ℤ := legendreSym.toMonoidWithZeroHom
 /-- The square of the symbol is 1 if `a` is a unit. -/
 theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := MonoidWithZeroHom.sq_one hom ha
 
--- TODO: move (wrong file)
-omit [DecidableEq (ResidueField R)] in
 /-- The residue of an element is `0` in `ResidueField R` if and only if its reduction in
 `ZMod p` is `0`. -/
 lemma residue_eq_zero_iff_zmod {p : ℕ} [Fact (Nat.Prime p)]
     (hp : p ∣ Fintype.card (ResidueField R)) {z : ℤ} :
     residue R z = 0 ↔ (z : ZMod p) = 0 := by
-  have hchar : CharP (ResidueField R) p := by
-    rw [← prime_dvd_char_iff_dvd_card] at hp
-    refine ringChar.of_eq ?_
-    have : (ringChar (ResidueField R)).Prime := by apply (CharP.prime_ringChar)
-    have hp2 : Prime p := by
-      rw [← @Nat.prime_iff]
-      rw [Nat.prime_iff_card_units]
-      exact ZMod.card_units p
-    rw [Nat.Prime.dvd_iff_eq this (Prime.ne_one hp2)] at hp
-    exact hp
+  have : CharP (ResidueField R) p := by apply (charP_of_card_div_by_prime hp)
   rw [show residue R z = (z : ResidueField R) by rfl, CharP.intCast_eq_zero_iff,
     ZMod.intCast_zmod_eq_zero_iff_dvd]
 
--- TODO: move (wrong file)
-omit [DecidableEq (ResidueField R)] in
 /-- The residue of an element is a square in `ResidueField R` if and only if its reduction in
 `ZMod p` is a square. -/
 lemma isSquare_residue_iff {p : ℕ} [Fact (Nat.Prime p)]
@@ -137,7 +124,8 @@ lemma intCast {p : ℕ} [Fact (Nat.Prime p)]
 
 /-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square in `ResidueField R`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (residue R a) := by
-  rw [legendreSym, MulChar.compLocalHom_apply, quadraticChar_one_iff_isSquare]
+  open scoped Classical in rw [legendreSym, MulChar.compLocalHom_apply,
+  quadraticChar_one_iff_isSquare]
   simpa using ha
 
 /-- `legendreSym a = -1` iff `a` is a nonsquare in `ResidueField R`. -/
@@ -153,7 +141,8 @@ theorem eq_pow (hR : ringChar (ResidueField R) ≠ 2) :
   by_cases h0 : (residue R) a = 0
   · rw [h0, zero_pow (by simp [Fintype.one_lt_card])]
     simp
-  · simp only [quadraticChar_eq_pow_of_char_ne_two hR h0, Int.reduceNeg, Int.cast_ite,
+  · simp only [open scoped Classical in quadraticChar_eq_pow_of_char_ne_two hR h0]
+    simp only [Int.reduceNeg, Int.cast_ite,
       Int.cast_one, Int.cast_neg]
     split_ifs with h
     · rw [h]
