@@ -590,7 +590,7 @@ namespace AlgHom
 
 /-- The equalizer of two field homomorphisms both fixing `K`. -/
 @[simps toSubalgebra]
-def fieldEqualizer {R : Type*} [Semiring R] [Algebra K R] (ϕ ψ : L →ₐ[K] R) : IntermediateField K L where
+def fieldEqualizer {R : Type*} [Ring R] [Algebra K R] (ϕ ψ : L →ₐ[K] R) : IntermediateField K L where
   toSubalgebra := ϕ.equalizer ψ
   inv_mem' _ := eq_on_inv₀ _ _
 
