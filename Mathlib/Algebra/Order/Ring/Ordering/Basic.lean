@@ -79,15 +79,15 @@ theorem IsPreordering.of_sumSq_le_of_isPointed [Nontrivial R]
     (h : .sumSq R ≤ P) (hP : P.IsPointed) : P.IsPreordering :=
   .of_sumSq_le h <| by grind [membership, isPointed_def, one_ne_zero]
 
-theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
-    (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_sumSq_le_of_isPointed hP₁.sumSq_le hP₂
+theorem IsPreordering.of_isPointed_of_isSpanning [Nontrivial R]
+    (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsPreordering :=
+  .of_sumSq_le_of_isPointed hP₂sumSq_le hP₁
 
-theorem IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
-    (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsOrdering where
-  isSpanning := hP₁
-  support_ne_top := by simp [hP₂]
-  mem_support_or_mem_support := by simp [hP₂]
+theorem IsOrdering.of_isPointed_of_isSpanning [IsDomain R]
+    (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsOrdering where
+  isSpanning := hP₂
+  support_ne_top := by simp [hP₁]
+  mem_support_or_mem_support := by simp [hP₁]
 
 end CommRing
 
