@@ -52,7 +52,7 @@ namespace lp.tendstoZero
 
 /-- Constructor for a term of `c₀ E` which doesn't force the user to pass through `lp E ∞`. -/
 def mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite (𝓝 0)) : c₀ E :=
-  ⟨⟨f, memℓp_infty h.bddAbove_range_of_cofinite⟩, h⟩
+  ⟨lp.mk f (memℓp_infty h.bddAbove_range_of_cofinite), h⟩
 
 @[simp]
 lemma coe_mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite (𝓝 0)) :
@@ -137,11 +137,16 @@ namespace lp
 
 variable {p : ℝ≥0∞}
 
+@[simp]
+lemma coeFn_inclusion {q : ℝ≥0∞} (h : lp E p ≤ lp E q) (f : lp E p) :
+    ⇑(AddSubgroup.inclusion h f) = ⇑f :=
+  rfl
+
 variable (E) in
 lemma range_inclusion_le_tendstoZero (hp : p < ∞) :
     (AddSubgroup.inclusion (lp.monotone hp.le)).range ≤ c₀ E := by
   rintro - ⟨x, rfl⟩
-  simp only [mem_tendstoZero_iff, AddSubgroup.coe_inclusion]
+  simp only [mem_tendstoZero_iff, lp.coeFn_inclusion]
   obtain (rfl | hp') := eq_zero_or_pos p
   · exact tendsto_nhds_of_eventually_eq <| by simpa using memℓp_zero_iff.mp <| lp.memℓp x
   have hp'' := ENNReal.toReal_pos_iff.mpr ⟨hp', hp⟩
@@ -178,11 +183,11 @@ lemma topologicalClosure_range_inclusion_eq_tendstoZero (hp : p < ∞) :
   rw [Filter.eventually_cofinite] at hx
   classical
   let y : lp E 0 :=
-    ⟨fun i ↦ if ε < ‖x i‖ then x i else 0, memℓp_zero_iff.mpr <| hx.subset <| by aesop⟩
+    lp.mk (fun i ↦ if ε < ‖x i‖ then x i else 0) <| memℓp_zero_iff.mpr <| hx.subset <| by aesop
   refine ⟨y, ?_⟩
   rw [dist_eq_norm]
   refine lp.norm_le_of_forall_le hε.le fun i ↦ ?_
-  rw [lp.coeFn_sub, Pi.sub_apply, AddSubgroup.coe_inclusion]
+  rw [FunLike.coe_sub, Pi.sub_apply, lp.coeFn_inclusion]
   by_cases! hi : ‖x i‖ ≤ ε
   · simpa [y, hi.not_gt]
   · simpa [y, hi] using hε.le
@@ -221,8 +226,8 @@ lemma hasSum_single (x : c₀ E) :
   filter_upwards [Filter.atTop_basis.mem_of_mem (i := hx.toFinset) trivial] with s hs
   simp only [Metric.mem_closedBall, dist_eq_norm]
   refine lp.norm_le_of_forall_le hε.le fun i ↦ ?_
-  rw [AddSubgroup.subtype_apply, AddSubgroupClass.coe_sub, lp.coeFn_sub, Pi.sub_apply,
-    AddSubgroup.val_finsetSum, lp.coeFn_sum, Finset.sum_apply]
+  rw [AddSubgroup.subtype_apply, AddSubgroupClass.coe_sub, FunLike.coe_sub, Pi.sub_apply,
+    AddSubgroup.val_finsetSum, FunLike.coe_sum, Finset.sum_apply]
   simp only [coe_single, lp.coeFn_single, Finset.sum_pi_single]
   split_ifs with hi
   · simpa using hε.le
