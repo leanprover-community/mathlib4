@@ -587,21 +587,22 @@ end AlgHom
 section fieldEqualizer
 
 namespace AlgHom
+variable {R : Type*} [Ring R] [Algebra K R]
 
 /-- The equalizer of two field homomorphisms both fixing `K`. -/
 @[simps toSubalgebra]
-def fieldEqualizer {R : Type*} [Ring R] [Algebra K R] (ϕ ψ : L →ₐ[K] R) : IntermediateField K L where
+def fieldEqualizer (ϕ ψ : L →ₐ[K] R) : IntermediateField K L where
   toSubalgebra := ϕ.equalizer ψ
   inv_mem' _ := eq_on_inv₀ _ _
 
 @[simp]
-theorem coe_fieldEqualizer (ϕ ψ : L →ₐ[K] L') : ϕ.fieldEqualizer ψ = {x | ϕ x = ψ x} := rfl
+theorem coe_fieldEqualizer (ϕ ψ : L →ₐ[K] R) : ϕ.fieldEqualizer ψ = {x | ϕ x = ψ x} := rfl
 
 @[simp]
-theorem mem_fieldEqualizer (φ ψ : L →ₐ[K] L') (x : L) : x ∈ fieldEqualizer φ ψ ↔ φ x = ψ x :=
+theorem mem_fieldEqualizer (φ ψ : L →ₐ[K] R) (x : L) : x ∈ fieldEqualizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
-theorem le_fieldEqualizer {φ ψ : L →ₐ[K] L'} {S : IntermediateField K L} :
+theorem le_fieldEqualizer {φ ψ : L →ₐ[K] R} {S : IntermediateField K L} :
     S ≤ fieldEqualizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
 
 end AlgHom
