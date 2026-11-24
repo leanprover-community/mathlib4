@@ -30,7 +30,7 @@ class HasEdgeMonoAtFrom (E : SpectralSequence C c r₀) (pq : ι) (r : ℤ) : Pr
 
 export HasEdgeMonoAtFrom (hasEdgeMonoAt)
 
-variable (E : SpectralSequence C c r₀) (pq : ι) (r : ℤ)
+variable (E E' : SpectralSequence C c r₀) (f : E ⟶ E') (pq : ι) (r : ℤ)
 
 section
 
@@ -152,6 +152,24 @@ lemma edgeMonoSteps_comp_edgeMonoStep
     E.edgeMonoSteps pq r r'' (by lia) := by
   rw [← E.edgeMonoSteps_eq_edgeMonoStep ..]
   simp
+
+variable {E E'} in
+@[reassoc]
+lemma edgeMonoSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
+    [E'.HasEdgeMonoAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    (f.hom r').f pq ≫ E'.edgeMonoSteps pq r r' h =
+      E.edgeMonoSteps pq r r' h ≫ (f.hom r).f pq := by
+  have := E.le₀_of_hasEdgeMonoAt pq r
+  obtain ⟨k, hk⟩ := Int.le.dest h
+  induction k generalizing r' with
+  | zero =>
+    obtain rfl : r = r' := by lia
+    simp
+  | succ k hk' =>
+    simp only [← edgeMonoStep_comp_edgeMonoSteps _ pq r (r + k) r',
+      edgeMonoStep_naturality_assoc f pq (r + k) r',
+      Category.assoc, hk' (r + k) (by lia) rfl]
 
 end
 
@@ -282,6 +300,24 @@ lemma edgeEpiStep_comp_edgeEpiSteps
     E.edgeEpiSteps pq r r'' (by lia) := by
   rw [← E.edgeEpiSteps_eq_edgeEpiStep ..]
   simp
+
+variable {E E'} in
+@[reassoc]
+lemma edgeEpiSteps_naturality (r' : ℤ) (h : r ≤ r' := by lia)
+    [E'.HasEdgeEpiAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeEpiAt pq r
+    (f.hom r).f pq ≫ E'.edgeEpiSteps pq r r' h =
+      E.edgeEpiSteps pq r r' h ≫ (f.hom r').f pq := by
+  have := E.le₀_of_hasEdgeEpiAt pq r
+  obtain ⟨k, hk⟩ := Int.le.dest h
+  induction k generalizing r with
+  | zero =>
+    obtain rfl : r = r' := by lia
+    simp
+  | succ k hk' =>
+    simp only [← edgeEpiStep_comp_edgeEpiSteps _ pq r (r + 1) r',
+      Category.assoc, edgeEpiStep_naturality_assoc f pq r (r + 1),
+      hk' (r + 1) (by lia) (by lia) (by lia)]
 
 end
 

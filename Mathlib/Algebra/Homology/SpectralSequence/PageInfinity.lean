@@ -30,7 +30,7 @@ class HasPageInfinityAt (E : SpectralSequence C c r₀) (pq : ι) : Prop where
   exists_hasEdgeMonoAtFrom (E pq) : ∃ (r : ℤ), E.HasEdgeMonoAtFrom pq r
   exists_hasEdgeEpiAtFrom (E pq) : ∃ (r : ℤ), E.HasEdgeEpiAtFrom pq r
 
-variable (E : SpectralSequence C c r₀) (pq : ι)
+variable (E E' : SpectralSequence C c r₀) (f : E ⟶ E') (pq : ι)
 
 lemma HasPageInfinityAt.mk' (r : ℤ)
     (_ : E.HasEdgeMonoAtFrom pq r := by infer_instance)
@@ -123,14 +123,14 @@ instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma edgeMono_edgeMonoSteps (r r' : ℤ) [E.HasEdgeMonoAtFrom pq r] (hr' : r ≤ r') :
+lemma edgeMono_edgeMonoSteps (r r' : ℤ) [E.HasEdgeMonoAtFrom pq r] (hr' : r ≤ r' := by lia) :
     haveI := E.hasEdgeMonoAtFrom_of_le pq r r'
     E.edgeMono pq r' ≫ E.edgeMonoSteps pq r r' hr' = E.edgeMono pq r := by
   simp [edgeMono, E.congr_edgeEpiSteps_comp_edgeMonoSteps pq
     (E.rMin pq) r (max (E.rMin pq) r) (max (E.rMin pq) r')]
 
 @[reassoc (attr := simp)]
-lemma edgeMonoSteps_edgeEpi (r r' : ℤ) [E.HasEdgeEpiAtFrom pq r] (hr' : r ≤ r') :
+lemma edgeEpiSteps_edgeEpi (r r' : ℤ) [E.HasEdgeEpiAtFrom pq r] (hr' : r ≤ r' := by lia) :
     haveI := E.hasEdgeEpiAtFrom_of_le pq r r'
     E.edgeEpiSteps pq r r' hr' ≫ E.edgeEpi pq r' = E.edgeEpi pq r := by
   simp [edgeEpi, E.congr_edgeEpiSteps_comp_edgeMonoSteps pq r (E.rMin pq)
@@ -173,6 +173,50 @@ instance :
   (E.pageInfinityIso pq r).isIso_hom
 
 end
+
+variable {E E'} in
+/-- The morphism `E.pageInfinity pq ⟶ E'.pageInfinity pq` that is induced by
+a morphism `E ⟶ E'` of spectral sequences. -/
+noncomputable def Hom.mapPageInfinity
+    [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq] :
+    E.pageInfinity pq ⟶ E'.pageInfinity pq :=
+  haveI := E.le₀_rMin pq
+  (E.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).inv ≫ (f.hom _).f pq ≫
+    (E'.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).hom
+
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma edgeMono_naturality (r : ℤ)
+    [E.HasPageInfinityAt pq] [E.HasEdgeMonoAtFrom pq r]
+    [E'.HasPageInfinityAt pq] [E'.HasEdgeMonoAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    f.mapPageInfinity pq ≫ E'.edgeMono pq r =
+    E.edgeMono pq r ≫ (f.hom r).f pq := by
+  have := E.le₀_rMin pq
+  let r' := max (E.rMin pq) (E'.rMin pq)
+  have : f.mapPageInfinity pq ≫ E'.edgeMono pq r' = E.edgeMono pq r' ≫ (f.hom r').f pq := by
+    simp [Hom.mapPageInfinity, r']
+  by_cases r ≤ r'
+  · simp only [← edgeMono_edgeMonoSteps _ pq r r', reassoc_of% this, Category.assoc,
+      edgeMonoSteps_naturality f pq r r']
+  · simp [← cancel_mono (E'.edgeMonoSteps pq r' r), this, edgeMonoSteps_naturality]
+
+variable {E E'} in
+@[reassoc (attr := simp)]
+lemma edgeEpi_naturality (r : ℤ)
+    [E.HasPageInfinityAt pq] [E.HasEdgeEpiAtFrom pq r]
+    [E'.HasPageInfinityAt pq] [E'.HasEdgeEpiAtFrom pq r] :
+    haveI := E.le₀_of_hasEdgeEpiAt pq r
+    E.edgeEpi pq r ≫ f.mapPageInfinity pq =
+      (f.hom r).f pq ≫ E'.edgeEpi pq r := by
+  have := E.le₀_rMin pq
+  let r' := max (E.rMin pq) (E'.rMin pq)
+  have : E.edgeEpi pq r' ≫ f.mapPageInfinity pq = (f.hom r').f pq ≫ E'.edgeEpi pq r' := by
+    simp [Hom.mapPageInfinity, r']
+  by_cases r ≤ r'
+  · simp only [← edgeEpiSteps_edgeEpi _ pq r r', Category.assoc,
+      edgeEpiSteps_naturality_assoc, this]
+  · simp [← cancel_epi (E.edgeEpiSteps pq r' r), this, ← edgeEpiSteps_naturality_assoc f pq r' r]
 
 end SpectralSequence
 

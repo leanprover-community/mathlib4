@@ -72,7 +72,7 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeMonoAt pq r] :
   infer_instance
 
 variable {E E'} in
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
     [E'.HasEdgeMonoAt pq r]
     (hrr' : r + 1 = r' := by lia) :
@@ -153,7 +153,7 @@ instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeEpiAt pq r] :
   infer_instance
 
 variable {E E'} in
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma edgeEpiStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
     [E'.HasEdgeEpiAt pq r]
     (hrr' : r + 1 = r' := by lia) :
