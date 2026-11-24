@@ -164,8 +164,8 @@ theorem isInvariant_of_support_subset {c : Perm α} {s : Set α} (hcs : c.suppor
   · simp only [hcs hx', hcs (apply_mem_support.mpr hx')]
   · rw [apply_eq_of_notMem_support hx']
 
-theorem ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Set α} [DecidablePred (· ∈ s)]
-    (hg : ∀ x, g x ∈ s ↔ x ∈ s) :
+theorem ofSubtype_subtypePerm_eq_iff_support_subset {g c : Equiv.Perm α} {s : Set α}
+    [DecidablePred (· ∈ s)] (hg : ∀ x, g x ∈ s ↔ x ∈ s) :
     ofSubtype (g.subtypePerm hg) = c ↔ c.support ⊆ s ∧
       ∀ (hc' : ∀ x, c x ∈ s ↔ x ∈ s), c.subtypePerm hc' = g.subtypePerm hg := by
   simp only [Equiv.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall, Set.subset_def]
