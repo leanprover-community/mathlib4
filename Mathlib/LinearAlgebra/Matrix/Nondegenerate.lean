@@ -216,24 +216,28 @@ theorem nondegenerate_submatrix_iff (hr : Function.Bijective r) (hc : Function.B
 
 end Finite
 
-end NonUnitalSemiring
-
-section Semiring
-variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
-
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
+  classical
   have := Fintype.ofFinite n
-  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun w hw ↦ h w ?_⟩
-  ext i
-  classical simpa using! hw <| Pi.single i 1
+  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun v hv ↦ ?_⟩
+  simp_rw [dotProduct_mulVec] at hv
+  refine funext fun i₀ ↦ congr($(h v ?_) i₀)
+  ext j
+  refine Pi.single_eq_zero_iff.1 (h (Pi.single i₀ _) ?_)
+  ext k
+  simpa using hv (Pi.single j (M i₀ k))
 
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
+  classical
   have := Fintype.ofFinite m
-  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ h w ?_⟩
+  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ ?_⟩
+  refine funext fun j₀ ↦ congr($(h w ?_) j₀)
   ext i
-  classical simpa using hw <| Pi.single i 1
+  refine Pi.single_eq_zero_iff.1 (h (Pi.single j₀ _) ?_)
+  ext k
+  simpa using hw (Pi.single i (M k j₀))
 
 theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype n] :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
@@ -241,16 +245,14 @@ theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype 
     separatingRight_iff_forall_mulVec_eq_zero]
 
 theorem SeparatingLeft.of_vecMul_injective [Fintype m] [Finite n]
-    (hM : Function.Injective M.vecMul) :
-    M.SeparatingLeft :=
+    (hM : Function.Injective M.vecMul) : M.SeparatingLeft :=
   separatingLeft_iff_forall_vecMul_eq_zero.2 fun v hv ↦ hM <| by simpa using hv
 
 theorem SeparatingRight.of_mulVec_injective [Finite m] [Fintype n]
-    (hM : Function.Injective M.mulVec) :
-    M.SeparatingRight :=
+    (hM : Function.Injective M.mulVec) : M.SeparatingRight :=
   separatingRight_iff_forall_mulVec_eq_zero.2 fun v hv ↦ hM <| by simpa using hv
 
-end Semiring
+end NonUnitalSemiring
 
 section NonUnitalRing
 variable {m n R : Type*} [NonUnitalRing R] {M : Matrix m n R}
@@ -263,11 +265,6 @@ theorem SeparatingRight.mulVec_injective [Finite m] [Fintype n] (hM : M.Separati
     Function.Injective M.mulVec := fun _ _ h ↦
   sub_eq_zero.1 <| hM.eq_zero_of_mulVec_eq_zero <| (mulVec_sub ..).trans (sub_eq_zero.2 h)
 
-end NonUnitalRing
-
-section Ring
-variable {m n R : Type*} [Ring R] {M : Matrix m n R}
-
 theorem separatingLeft_iff_vecMul_injective [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ Function.Injective M.vecMul :=
   ⟨(·.vecMul_injective), .of_vecMul_injective⟩
@@ -276,7 +273,7 @@ theorem separatingRight_iff_mulVec_injective [Finite m] [Fintype n] :
     M.SeparatingRight ↔ Function.Injective M.mulVec :=
   ⟨(·.mulVec_injective), .of_mulVec_injective⟩
 
-end Ring
+end NonUnitalRing
 
 section NonUnitalCommSemiring
 variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
