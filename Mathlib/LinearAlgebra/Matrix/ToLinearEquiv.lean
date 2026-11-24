@@ -50,7 +50,8 @@ theorem SeparatingRight.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCond
 theorem Nondegenerate.nonempty_equiv [Finite m] [Finite n] [Ring R]
     [StrongRankCondition R] [StrongRankCondition Rᵐᵒᵖ]
     {N : Matrix m n R} (hN : N.Nondegenerate) : Nonempty (m ≃ n) :=
-  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
   ⟨Fintype.equivOfCardEq (le_antisymm
     (SeparatingLeft.card_le hN.separatingLeft) (SeparatingRight.card_le hN.separatingRight))⟩
 
