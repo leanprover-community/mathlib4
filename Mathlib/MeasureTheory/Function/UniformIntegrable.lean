@@ -254,6 +254,17 @@ theorem unifLpTail_of_isEmpty [IsEmpty ι] : UnifLpTail f p μ := by simp [UnifL
 @[simp]
 theorem unifLpTail_zero_meas : UnifLpTail f p (0 : Measure α) := by simp [UnifLpTail]
 
+theorem unifLpTail_iff_tendsto_iSup_eLpNorm_zero (h : p ≠ 0) :
+    UnifLpTail f p μ ↔ Tendsto
+      (fun M ↦ ⨆ (i : ι), eLpNorm (f i) p (μ.restrict { x | M ≤ ‖f i x‖ₑ })) (𝓝 ∞) (𝓝 0) := by
+  by_cases hp : 1 ≤ p
+  · simp [UnifLpTail, inhmgELpNorm_eq_eLpNorm hp]
+  rw [not_le] at hp
+  have h₀ : 0 < p.toReal := toReal_pos h (hp.trans_le le_top).ne
+  simp only [UnifLpTail, inhmgELpNorm_eq_eLpNorm_pow hp.le h, ← iSup_rpow_of_pos h₀]
+  nth_rw 1 [← zero_rpow_of_pos h₀]
+  exact (ENNReal.tendsto_rpow_const_iff_tendsto h₀.ne').symm
+
 theorem unifLpTail_zero_exponent_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     UnifLpTail f 0 μ ↔ Tendsto (fun M ↦ ⨆ (i : ι), μ { x | M ≤ ‖f i x‖ₑ }) (𝓝 ∞) (𝓝 0) := by
   rw [UnifLpTail]
