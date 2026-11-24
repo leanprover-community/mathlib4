@@ -5925,6 +5925,7 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.MeasureTheory.Measure.WithDensityFinite
 public import Mathlib.MeasureTheory.Order.Group.Lattice
 public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.MeasureTheory.Order.MinClosedFamily
 public import Mathlib.MeasureTheory.Order.UpperLower
 public import Mathlib.MeasureTheory.OuterMeasure.AE
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
@@ -6728,6 +6729,7 @@ public import Mathlib.Probability.Process.LocalProperty
 public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.Stopping.MinClosedSelection
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
