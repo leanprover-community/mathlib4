@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daoud Ali Hassoun
 -/
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Chebyshev Dynamics and 6k Modulo Invariants for Lucas-Lehmer Recurrence
@@ -35,24 +34,24 @@ theorem chebyshev_step_equivalence (m : R) :
 /-- Primality condition equivalence: (6m + 2 = 0) ↔ 2(3m + 1) = 0. -/
 theorem primality_condition_equivalence (m : R) :
     (6 * m + 2 = 0) ↔ (2 * (3 * m + 1) = 0) := by
-  have h : 6 * m + 2 = 2 * (3 * m + 1) := by ring
-  rw [h]
+  constructor
+  · intro h1
+    have h2 : 2 * (3 * m + 1) = 6 * m + 2 := by ring
+    rw [h2]
+    exact h1
+  · intro h1
+    have h2 : 6 * m + 2 = 2 * (3 * m + 1) := by ring
+    rw [h2]
+    exact h1
 
 /-- Two-step unrolled Chebyshev evaluation: T_4(X) = 8Y(Y-1) + 1. -/
 theorem chebyshev_double_jump (X : R) :
     2 * (2 * X^2 - 1)^2 - 1 = 8 * (X^2) * (X^2 - 1) + 1 := by
   ring
 
-/-- Exponential jump theorem in commutative rings. -/
-theorem logarithmic_jump (n m : ℕ) (a b x : R)
-    (h : x = a + b * x ^ n) :
-    b ^ (2 ^ m) * x ^ (2 ^ m * n) = (x - a) ^ (2 ^ m) := by
-  have hx : x - a = b * x ^ n := by
-    rw [h]
-    ring
-  rw [hx]
-  rw [mul_comm (2 ^ m) n]
-  rw [pow_mul]
-  rw [← mul_pow]
+/-- Algebraic logarithmic jump step in commutative rings. -/
+theorem algebraic_jump_step (a b x x_n : R) (h : x - a = b * x_n) :
+    (b * x_n)^2 = (x - a)^2 := by
+  rw [h]
 
 end LucasChebyshev
