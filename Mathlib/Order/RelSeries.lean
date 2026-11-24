@@ -219,21 +219,24 @@ theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.un
 
 @[simp] theorem toList_toFinset [DecidableEq α] : s.toList.toFinset = s.toFinset := by ext; simp
 
-theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
+theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : (Set.range s).Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
   exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
-theorem subsingleton_range_of_length_eq_zero (hs : s.length = 0) : (Set.range s).Subsingleton :=
-  subsingleton_ofPred_mem_of_length_eq_zero hs
-
-theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
+theorem length_ne_zero_of_nontrivial (h : (Set.range s).Nontrivial) : s.length ≠ 0 :=
   fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
 
-theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
+theorem length_ne_zero_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : s.length ≠ 0 :=
+  length_ne_zero_of_nontrivial <| by simpa [← coe_toFinset_eq_range] using h
+
+theorem length_pos_of_nontrivial (h : (Set.range s).Nontrivial) : 0 < s.length :=
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
-theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
+theorem length_pos_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : 0 < s.length :=
+  length_pos_of_nontrivial <| by simpa [← coe_toFinset_eq_range] using h
+
+theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivial := by
   refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp,
     fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
@@ -241,10 +244,16 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivia
   ext
   simpa [Nat.pos_iff_ne_zero]
 
-theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
+theorem length_ne_zero' [r.IsIrrefl] : s.length ≠ 0 ↔ s.toFinset.Nontrivial := by
+  simp [length_ne_zero, ← coe_toFinset_eq_range]
+
+theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ (Set.range s).Nontrivial :=
   Nat.pos_iff_ne_zero.trans length_ne_zero
 
-lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
+theorem length_pos' [r.IsIrrefl] : 0 < s.length ↔ s.toFinset.Nontrivial := by
+  simp [length_pos, ← coe_toFinset_eq_range]
+
+lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ (Set.range s).Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
