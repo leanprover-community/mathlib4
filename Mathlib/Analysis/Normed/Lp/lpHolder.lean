@@ -46,8 +46,8 @@ noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
     lp E p →L[𝕜] lp F p :=
   haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := (T i).le_of_opNorm_le (hTK i) _
   LinearMap.mkContinuous
-    { toFun x := ⟨.ofFun fun i ↦ T i (⇑x i), lp.memℓp x |>.norm.const_mul K |>.mono
-        (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm⟩
+    { toFun x := lp.mk (fun i ↦ T i (x i)) <| lp.memℓp x |>.norm.const_mul K |>.mono
+        (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
     K

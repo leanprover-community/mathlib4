@@ -55,7 +55,7 @@ variable [Finite α]
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
   toFun f := toLp p ⇑f
-  invFun f := ⟨.ofFun (ofLp f), Memℓp.all f⟩
+  invFun f := lp.mk (ofLp f) (Memℓp.all f)
 
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
@@ -128,7 +128,7 @@ section NormedAddCommGroup
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
-  invFun f := ⟨.ofFun ⇑f, f.bddAbove_range_norm_comp⟩
+  invFun f := lp.mk ⇑f f.bddAbove_range_norm_comp
   map_add' _f _g := rfl
 
 

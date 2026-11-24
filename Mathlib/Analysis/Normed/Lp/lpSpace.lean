@@ -476,8 +476,16 @@ instance instDFunLike : DFunLike (lp E p) α E where
 theorem coeFn_coe (f : lp E p) : ⇑(f : PreLp E) = ⇑f :=
   rfl
 
+/-- The element of `lp E p` given by a function `f : ∀ i, E i` satisfying `Memℓp f p`. -/
+def mk (f : ∀ i, E i) (hf : Memℓp f p) : lp E p :=
+  ⟨.ofFun f, hf⟩
+
 @[simp]
-theorem coeFn_mk (f : PreLp E) (hf : f ∈ lp E p) : ⇑(⟨f, hf⟩ : lp E p) = ⇑f :=
+theorem coeFn_mk (f : ∀ i, E i) (hf : Memℓp f p) : ⇑(lp.mk f hf) = f :=
+  rfl
+
+@[simp]
+theorem coeFn_subtype_mk (f : PreLp E) (hf : f ∈ lp E p) : ⇑(⟨f, hf⟩ : lp E p) = ⇑f :=
   rfl
 
 @[ext]
@@ -560,7 +568,7 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
 /-- The sequence of norms of `x : lp E p` as a term of `ℓ^p(α, ℝ)`. Here `E : α → Type*`
 is a dependent type and `ℓ^p(α, ℝ)` is the non-dependent `ℝ`-valued `lp` space. -/
 def toNorm {p : ℝ≥0∞} (x : lp E p) : ℓ^p(α, ℝ) :=
-  ⟨.ofFun fun i ↦ ‖x i‖, lp.memℓp x |>.norm⟩
+  lp.mk (fun i ↦ ‖x i‖) (lp.memℓp x).norm
 
 @[simp] lemma toNorm_apply {p : ℝ≥0∞} (x : lp E p) (i : α) : toNorm x i = ‖x i‖ := rfl
 
@@ -880,7 +888,7 @@ theorem _root_.Memℓp.star_iff {f : ∀ i, E i} : Memℓp (star f) p ↔ Memℓ
   ⟨fun h => star_star f ▸ Memℓp.star_mem h, Memℓp.star_mem⟩
 
 instance : Star (lp E p) where
-  star f := ⟨.ofFun (star ⇑f), f.property.star_mem⟩
+  star f := lp.mk (star ⇑f) f.property.star_mem
 
 @[simp]
 theorem coeFn_star (f : lp E p) : ⇑(star f) = star (⇑f) :=
@@ -930,7 +938,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨.ofFun (⇑f * ⇑g), f.property.infty_mul g.property⟩
+  mul f g := lp.mk (⇑f * ⇑g) (f.property.infty_mul g.property)
 
 instance : IsMulApply (lp B ∞) where
 
@@ -1084,15 +1092,14 @@ variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
-  ⟨.ofFun (Pi.single i a), by
+  lp.mk (Pi.single i a) <| by
     refine (memℓp_zero ?_).of_exponent_ge zero_le
     refine (Set.finite_singleton i).subset ?_
     intro j
-    simp only [Set.mem_singleton_iff, Ne,
-      Set.mem_ofPred_eq]
+    simp only [Set.mem_singleton_iff, Ne, Set.mem_ofPred_eq]
     rw [not_imp_comm]
     intro h
-    exact Pi.single_eq_of_ne h _⟩
+    exact Pi.single_eq_of_ne h _
 
 @[norm_cast]
 protected theorem coeFn_single (p) (i : α) (a : E i) :
@@ -1153,7 +1160,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.property
-      invFun x := ⟨.ofFun ⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩
+      invFun x := lp.mk ⇑x (memℓp_zero_iff.mpr x.hasFiniteSupport)
       map_add' _ _ := Finsupp.ext fun _ ↦ rfl
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
       left_inv _ := rfl
@@ -1316,7 +1323,6 @@ lemma coe_linearMapOfLE_apply (h : p ≤ q) (f : lp E p) :
     ⇑(linearMapOfLE 𝕜 E h f) = f := by
   ext; rfl
 
-
 @[simp]
 lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
     (linearMapOfLE 𝕜 E h).toAddMonoidHom = AddSubgroup.inclusion (lp.monotone h) := by
@@ -1442,7 +1448,7 @@ instance completeSpace : CompleteSpace (lp E p) :=
     -- Since the Cauchy sequence is bounded, its pointwise limit `f` is in `lp E p`.
     have hf' : Memℓp f p := memℓp_of_tendsto hF.isBounded_range hf
     -- And therefore `f` is its limit in the `lp E p` topology as well as pointwise.
-    exact ⟨⟨.ofFun f, hf'⟩, tendsto_lp_of_tendsto_pi hF hf⟩)
+    exact ⟨lp.mk f hf', tendsto_lp_of_tendsto_pi hF hf⟩)
 
 end Topology
 
