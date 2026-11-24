@@ -32,6 +32,7 @@ to show that the completion a separably closed field is algebraically closed, up
 current theorem `IsAlgClosed.of_denseRange`.
 
 ## Tags
+
 Approximation, polynomial, normed field, continuity of roots
 -/
 

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness of short complexes in concrete abelian categories
 
@@ -141,7 +144,6 @@ namespace SnakeInput
 
 variable (D : SnakeInput C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁ : ToType (D.L₂.X₁))

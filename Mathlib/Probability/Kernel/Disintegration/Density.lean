@@ -303,7 +303,7 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
   obtain h₀ | h₀ := eq_or_ne (ν a (countablePartitionSet n x)) 0
   · simp [h₀]
   · gcongr
-    simp only [ne_eq, ENNReal.div_eq_top, h₀, and_false, false_or, not_and, not_not]
+    simp only [ne_eq, ENNReal.div_eq_top_iff, h₀, and_false, false_or, not_and, not_not]
     exact eq_top_mono (meas_countablePartitionSet_le_of_fst_le hκν n a x s')
 
 lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ ≤ κ')
@@ -316,7 +316,7 @@ lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ 
   have h_le : κ' a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
   gcongr
-  · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
+  · simp only [ne_eq, div_eq_top_iff, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
   · apply hκκ'
 
@@ -329,7 +329,7 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   by_cases h0 : ν a (countablePartitionSet n x) = 0
   · simp [nonpos_iff_eq_zero.1 (h_le.trans h0.le), h0]
   gcongr
-  · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
+  · simp only [ne_eq, div_eq_top_iff, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
   · apply hνν'
 
@@ -349,7 +349,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : Kernel α (γ × β))
   · simp_rw [h0, toReal_div]
     simp
   refine (tendsto_toReal ?_).comp ?_
-  · rw [ne_eq, div_eq_top]
+  · rw [ne_eq, div_eq_top_iff]
     simp
   refine ENNReal.Tendsto.div_const ?_ (.inr h0)
   have : Tendsto (fun m ↦ κ a (countablePartitionSet n x ×ˢ seq m)) atTop
@@ -681,7 +681,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
       (𝓝 (densityProcess κ (fst κ) n a x univ)) := by
   simp_rw [densityProcess]
   refine (tendsto_toReal ?_).comp ?_
-  · rw [ne_eq, div_eq_top]
+  · rw [ne_eq, div_eq_top_iff]
     push Not
     simp_rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     constructor

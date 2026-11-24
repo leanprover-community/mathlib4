@@ -84,7 +84,7 @@ theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : Measu
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
+  ⟨hf.aemeasurable, hf.map_eq.absolutelyContinuous⟩
 
 theorem restrict_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
@@ -261,10 +261,13 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
 
 end MeasurePreserving
 
-lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+lemma measurePreserving_subtypeVal {s : Set α} (hs : MeasurableSet s) :
     MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
-  aemeasurable := measurable_subtype_coe.aemeasurable
-  map_eq := map_comap_subtype_coe hs _
+  aemeasurable := measurable_subtypeVal.aemeasurable
+  map_eq := map_comap_subtypeVal hs _
+
+@[deprecated (since := "2026-11-10")]
+alias measurePreserving_subtype_coe := measurePreserving_subtypeVal
 
 namespace MeasurableEquiv
 

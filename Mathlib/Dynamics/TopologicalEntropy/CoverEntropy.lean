@@ -38,6 +38,7 @@ reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and 
   versions of the topological entropy with covers. Take values in `EReal`.
 
 ## Implementation notes
+
 There are two competing definitions of topological entropy in this file: one uses a `liminf`,
 the other a `limsup`. These two topological entropies are equal as soon as they are applied to an
 invariant subset by theorem `coverEntropyInf_eq_coverEntropy`. We choose the default definition
@@ -54,6 +55,7 @@ using only `coverEntropy`.
   with a `liminf` and a `limsup`.
 
 ## Tags
+
 cover, entropy
 
 ## TODO
@@ -255,8 +257,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
-  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
-  exact coverMincard_eq_zero_iff T F U n
+  simp [Order.one_le_iff_ne_zero, coverMincard_eq_zero_iff]
 
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by

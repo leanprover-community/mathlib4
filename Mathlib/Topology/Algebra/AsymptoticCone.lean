@@ -14,7 +14,7 @@ import Mathlib.Analysis.Convex.Between
 
 This file defines the asymptotic cone of a set in a topological affine space.
 
-## Implementation details
+## Implementation notes
 
 The asymptotic cone of a set $A$ is usually defined as the set of points $v$ for which there exist
 sequences $t_n > 0$ and $x_n \in A$ such that $t_n \to 0$ and $t_n x_n \to v$. We take a different

@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
@@ -13,6 +12,11 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.HierarchyDesign
+import Mathlib.GroupTheory.Complement
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measures on Groups
@@ -119,7 +123,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_left_eq_self⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is right invariant under addition. -/]
@@ -130,7 +134,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   · simp_rw [Measure.ext_iff]
     refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.map_mul_right_eq_self⟩
 
 @[to_additive]
 instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
@@ -292,7 +296,8 @@ lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : Measurab
     _ = μ univ := by
       rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
       · simp [hs.mul_eq]
-      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+      · exact fun a b hab ↦
+          hs.pairwiseDisjoint_smul a.property b.property (Subtype.val_injective.ne hab)
 
 end Group
 
@@ -632,7 +637,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}
     (hs : IsOpen s) : μ s ≠ 0 ↔ s.Nonempty := by
-  simpa [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ] using nonempty_iff_ne_empty.symm
+  simp [null_iff_of_isMulLeftInvariant (μ := μ) hs, hμ]
 
 @[to_additive]
 theorem measure_pos_iff_nonempty_of_isMulLeftInvariant [Regular μ] (h3μ : μ ≠ 0) {s : Set G}
@@ -762,26 +767,30 @@ section Haar
 
 namespace Measure
 
-/-- A measure on an additive group is an additive Haar measure if it is left-invariant, and
+/--
+A measure on an additive group is an additive Haar measure if it is left-invariant, and
 gives finite mass to compact sets and positive mass to open sets.
 
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
 `[IsAddHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition. -/
+checked just below this definition.
+-/
 class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
     (μ : Measure G) : Prop
     extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ
 
-/-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
+/--
+A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
 compact sets and positive mass to open sets.
 
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition. -/
+checked just below this definition.
+-/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
     (μ : Measure G) : Prop
@@ -911,13 +920,17 @@ instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     IsAddHaarMeasure (μ.map L) :=
   AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
-/-- A Haar measure on a σ-compact space is σ-finite.
+/--
+A Haar measure on a σ-compact space is σ-finite.
 
-See Note [lower instance priority] -/
+See {library_note}`lower instance priority`.
+-/
 @[to_additive
-/-- A Haar measure on a σ-compact space is σ-finite.
+/--
+A Haar measure on a σ-compact space is σ-finite.
 
-See Note [lower instance priority] -/]
+See {library_note}`lower instance priority`.
+-/]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _
@@ -930,17 +943,21 @@ instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : 
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
-/-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
+/--
+If the neutral element of a group is not isolated, then a Haar measure on this group has value
 zero on singletons.
 
 The additive version of this instance applies in particular to show that an additive Haar
-measure on a nontrivial finite-dimensional real vector space has no atom. -/
+measure on a nontrivial finite-dimensional real vector space has no atom.
+-/
 @[to_additive
-/-- If the zero element of an additive group is not isolated, then an additive Haar measure on this
+/--
+If the zero element of an additive group is not isolated, then an additive Haar measure on this
 group has value zero on singletons.
 
 This applies in particular to show that an additive Haar measure on a nontrivial
-finite-dimensional real vector space has no atom. -/]
+finite-dimensional real vector space has no atom.
+-/]
 instance (priority := 100) IsHaarMeasure.nullSingletonClass [IsTopologicalGroup G] [BorelSpace G]
     [T1Space G] [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G)
     [μ.IsHaarMeasure] : NullSingletonClass μ := by

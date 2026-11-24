@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Noetherian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal primes over a colon ideal
 
@@ -63,10 +66,10 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   -- so it suffices to find a single `y ∈ K` with `colon N {y • x} ≤ I`
   suffices step2 : ∃ y : K, colon N {y • x} ≤ I by
     obtain ⟨y, hyI⟩ := step2
-    exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
+    exact ⟨y • x, le_antisymm (step1 y y.property) hyI⟩
   -- if not, then for every `y ∈ K`, there exists an `f y ∈ colon N {y • x}` with `f y ∉ I`
   by_contra! h'
-  simp only [IsConcreteLE.not_le_iff_exists] at h'
+  simp only [not_le_iff_exists_mem_notMem] at h'
   choose f g h using h'
   -- let `s` be a finite generating set for `K`
   obtain ⟨s, hs⟩ : (⊤ : Submodule R K).FG := Module.Finite.fg_top

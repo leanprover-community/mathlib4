@@ -30,6 +30,7 @@ which turn out to be equal:
 $$\prod_{i=1,i\nmid m}^\infty\frac{1}{1-X^i}=\prod_{i=0}^\infty (1+X^{i+1}+\cdots+X^{(m-1)(i+1)})$$
 
 ## References
+
 https://en.wikipedia.org/wiki/Glaisher%27s_theorem
 -/
 

@@ -6,8 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.NumberTheory.Padics.Measure.Basic
+
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Distributions on a topological monoid

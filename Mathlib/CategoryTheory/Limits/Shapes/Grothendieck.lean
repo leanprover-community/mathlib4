@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
 

@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.TensorProduct.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in `Under R` for a commutative ring `R`
 

@@ -80,7 +80,7 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     obtain ⟨_, hy, _, rfl⟩ := hy
     exact f.strictMono (hx.trans hy))
   refine ⟨OrderEmbedding.ofStrictMono
-    (fun (x : (insert a S : Finset α)) => if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
+    (fun (x : (insert a S : Finset α)) => if hx : x.val ∈ S then f ⟨x.val, hx⟩ else b) ?_, ?_⟩
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     if hxS : x ∈ S
     then if hyS : y ∈ S

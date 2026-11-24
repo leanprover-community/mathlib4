@@ -66,7 +66,7 @@ variable [BorelSpace E]
 theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
     μ.toSphere s = dim E * μ (Ioo (0 : ℝ) 1 • ((↑) '' s)) := by
   rw [toSphere, smul_apply, fst_apply hs, restrict_apply (measurable_fst hs),
-    ((MeasurableEmbedding.subtype_coe (measurableSet_singleton _).compl).comp
+    ((MeasurableEmbedding.subtypeVal (measurableSet_singleton _).compl).comp
       (Homeomorph.measurableEmbedding _)).comap_apply,
     image_comp, Homeomorph.image_symm, univ_prod, ← Set.prod_eq, nsmul_eq_mul, toSphere_apply_aux]
 
@@ -112,11 +112,11 @@ instance : IsFiniteMeasure μ.toSphere where
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
-  .withDensity (.comap Subtype.val volume) fun r ↦ .ofReal (r.1 ^ n)
+  .withDensity (.comap Subtype.val volume) fun r ↦ .ofReal (r.val ^ n)
 
 lemma volumeIoiPow_apply_Iio (n : ℕ) (x : Ioi (0 : ℝ)) :
-    volumeIoiPow n (Iio x) = ENNReal.ofReal (x.1 ^ (n + 1) / (n + 1)) := by
-  have hr₀ : 0 ≤ x.1 := le_of_lt x.2
+    volumeIoiPow n (Iio x) = ENNReal.ofReal (x.val ^ (n + 1) / (n + 1)) := by
+  have hr₀ : 0 ≤ x.val := le_of_lt x.property
   rw [volumeIoiPow, withDensity_apply _ measurableSet_Iio,
     setLIntegral_subtype measurableSet_Ioi _ fun a : ℝ ↦ .ofReal (a ^ n),
     image_subtype_val_Ioi_Iio, restrict_congr_set Ioo_ae_eq_Ioc,
@@ -132,7 +132,7 @@ def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
   set k := Iio ⟨k + 1, mem_Ioi.2 k.cast_add_one_pos⟩
   set_mem _ := mem_range_self _
   finite k := by simp [volumeIoiPow_apply_Iio]
-  spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
+  spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.val⌋₊, Nat.lt_floor_add_one x.val⟩
 
 instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
   (finiteSpanningSetsIn_volumeIoiPow_range_Iio n).sigmaFinite
@@ -150,12 +150,14 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
     fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
-  have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by simp [LinearOrderedField.smul_Ioo r.2.out]
+  have : Ioo (0 : ℝ) r = r.val • Ioo (0 : ℝ) 1 := by
+    simp [LinearOrderedField.smul_Ioo r.property.out]
   have hpos : 0 < dim E := Module.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
-    comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
-    smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
-    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast, ← ENNReal.ofReal_mul, mul_div_cancel₀]
+    comap_subtypeVal_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
+    smul_assoc, μ.addHaar_smul_of_nonneg r.property.out.le, Nat.sub_add_cancel hpos,
+    Nat.cast_pred hpos, sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast,
+    ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 /-- An auxiliary lemma for `toSphereBallBound_mul_measure_unitBall_le_toSphere_ball`.
@@ -297,7 +299,7 @@ lemma integrableOn_fun_norm_addHaar {f : ℝ → F} {r : ℝ} :
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
   calc
-    ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
+    ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.val‖) ∂(μ.comap (↑)) := by
       rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
         restrict_compl_singleton]
     _ = ∫ x, f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) := by
@@ -312,6 +314,6 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
         setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
-      · exact (measurable_subtype_coe.pow_const _).real_toNNReal
+      · exact (measurable_subtypeVal.pow_const _).real_toNNReal
 
 end MeasureTheory

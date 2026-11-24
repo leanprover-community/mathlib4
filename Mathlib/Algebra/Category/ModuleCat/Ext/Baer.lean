@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Baer's criterion for injective dimension
 

@@ -26,7 +26,7 @@ To apply Fubini's theorem or Tonelli's theorem along some subset, we recommend u
 construction `MeasureTheory.lmarginal` and (todo) `MeasureTheory.marginal`. This allows you to
 apply these theorems without any bookkeeping with measurable equivalences.
 
-## Implementation Notes
+## Implementation notes
 
 We define `MeasureTheory.OuterMeasure.pi`, the product of finitely many outer measures, as the
 maximal outer measure `n` with the property that `n (pi univ s) ≤ ∏ i, m i (s i)`,

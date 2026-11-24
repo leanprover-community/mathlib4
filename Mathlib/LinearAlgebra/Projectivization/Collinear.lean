@@ -23,6 +23,7 @@ the uniqueness of the line through two distinct points.
   line (submodule of dimension 2) containing both points.
 
 ## Tags
+
 Projective space, collinearity, projective geometry
 -/
 

@@ -29,6 +29,7 @@ their intersection belongs to `l` as well.
   `CardinalInterFilter l c` → `CardinalInterFilter l a` for all `a < c`.
 
 ## Tags
+
 filter, cardinal
 -/
 
@@ -130,7 +131,7 @@ theorem EventuallySubset.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  exact EventuallySubset.cardinal_iUnion hS fun i => h i i.2
+  exact EventuallySubset.cardinal_iUnion hS fun i => h i i.property
 
 theorem EventuallyEqSet.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -152,7 +153,7 @@ theorem EventuallySubset.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  exact EventuallySubset.cardinal_iInter hS fun i => h i i.2
+  exact EventuallySubset.cardinal_iInter hS fun i => h i i.property
 
 theorem EventuallyEqSet.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :

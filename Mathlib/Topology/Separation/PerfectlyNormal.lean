@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Separation.GDelta
 public import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perfectly normal topological spaces.
 

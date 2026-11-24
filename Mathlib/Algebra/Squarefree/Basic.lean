@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Squarefree elements of monoids
@@ -28,6 +29,7 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
   factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
 ## Tags
+
 squarefree, multiplicity
 -/
 

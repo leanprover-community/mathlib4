@@ -130,7 +130,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).property
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -214,7 +214,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.property.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -323,7 +323,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ]
 return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
 `[g ∘ f] : α →ₘ γ`. -/
 def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
-  Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.2))
+  Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.property))
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]
@@ -365,7 +365,8 @@ return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal fun
 `[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
 def compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
   Quotient.liftOn' f
-    (fun f' => mk (g ∘ (f' : α → β)) (hg.comp_aemeasurable f'.2.aemeasurable).aestronglyMeasurable)
+    (fun f' => mk (g ∘ (f' : α → β))
+      (hg.comp_aemeasurable f'.property.aemeasurable).aestronglyMeasurable)
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]
@@ -389,7 +390,7 @@ end CompMeasurable
 
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
-  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prodMk g.2))
+  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.val x, g.val x)) (f.property.prodMk g.property))
     fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prodMk Hg
 
 @[simp]

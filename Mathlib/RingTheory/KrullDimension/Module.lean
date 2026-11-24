@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Spectrum.Prime.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Krull Dimension of Module
 
@@ -66,12 +69,12 @@ lemma supportDim_quotient_eq_ringKrullDim (I : Ideal R) :
 
 lemma supportDim_le_of_injective (f : M →ₗ[R] N) (h : Function.Injective f) :
     supportDim R M ≤ supportDim R N :=
-  krullDim_le_of_strictMono (fun a ↦ ⟨a.1, Module.support_subset_of_injective f h a.2⟩)
+  krullDim_le_of_strictMono (fun a ↦ ⟨a.val, Module.support_subset_of_injective f h a.property⟩)
     (fun {_ _} lt ↦ lt)
 
 lemma supportDim_le_of_surjective (f : M →ₗ[R] N) (h : Function.Surjective f) :
     supportDim R N ≤ supportDim R M :=
-  krullDim_le_of_strictMono (fun a ↦ ⟨a.1, Module.support_subset_of_surjective f h a.2⟩)
+  krullDim_le_of_strictMono (fun a ↦ ⟨a.val, Module.support_subset_of_surjective f h a.property⟩)
     (fun {_ _} lt ↦ lt)
 
 lemma supportDim_eq_of_equiv (e : M ≃ₗ[R] N) :

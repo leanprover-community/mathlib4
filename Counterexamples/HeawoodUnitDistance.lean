@@ -36,23 +36,23 @@ open Finset
 /-- The Heawood graph, a notable simple graph on 14 vertices. The numbering corresponds to a
 typical [Hamiltonian cycle-and-arcs drawing](https://commons.wikimedia.org/wiki/File:Heawood_Graph.svg). -/
 def heawoodGraph : SimpleGraph (Fin 14) where
-  Adj i j := (i - j).1 = 1            ∨ (j - i).1 = 1 ∨
-             (i - j).1 = 5 ∧ Even j.1 ∨ (j - i).1 = 5 ∧ Even i.1
+  Adj i j := (i - j).val = 1            ∨ (j - i).val = 1 ∨
+             (i - j).val = 5 ∧ Even j.val ∨ (j - i).val = 5 ∧ Even i.val
 
 instance : DecidableRel heawoodGraph.Adj :=
   inferInstanceAs <| DecidableRel fun (i j : Fin 14) ↦
-    (i - j).1 = 1 ∨ (j - i).1 = 1 ∨ (i - j).1 = 5 ∧ Even j.1 ∨ (j - i).1 = 5 ∧ Even i.1
+    (i - j).val = 1 ∨ (j - i).val = 1 ∨ (i - j).val = 5 ∧ Even j.val ∨ (j - i).val = 5 ∧ Even i.val
 
 lemma heawoodGraph_edgeFinset :
     heawoodGraph.edgeFinset = (univ.image fun i ↦ s(i, i + 1)) ∪
-      (univ.filter (Even ·.1)).image fun i ↦ s(i, i + 5) := by
+      (univ.filter (Even ·.val)).image fun i ↦ s(i, i + 5) := by
   decide +kernel
 
 lemma card_heawoodGraph_edgeFinset : #heawoodGraph.edgeFinset = 21 := by
   rw [heawoodGraph_edgeFinset]; decide
 
 lemma heawoodGraph_neighborFinset (i : Fin 14) :
-    heawoodGraph.neighborFinset i = {i + 1, i - 1, if Even i.1 then i + 5 else i - 5} := by
+    heawoodGraph.neighborFinset i = {i + 1, i - 1, if Even i.val then i + 5 else i - 5} := by
   revert i; decide +kernel
 
 /-- The Heawood graph is 3-regular. -/

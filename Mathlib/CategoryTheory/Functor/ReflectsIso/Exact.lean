@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness properties of functors which jointly reflect isomorphisms
 

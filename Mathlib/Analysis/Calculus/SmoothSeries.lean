@@ -92,7 +92,7 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
   convert! hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
-  · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
+  · exact (StrongDual.smulRightL 𝕜 𝕜 F 1).map_tsum <|
       .of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
 
@@ -112,8 +112,8 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series converges everywhere. -/
 theorem summable_of_summable_hasDerivAt (hu : Summable u)
     (hg : ∀ n y, HasDerivAt (g n) (g' n y) y) (hg' : ∀ n y, ‖g' n y‖ ≤ u n)
-    (hg0 : Summable fun n => g n y₀) (y : 𝕜) : Summable fun n => g n y := by
-  exact summable_of_summable_hasDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
+    (hg0 : Summable fun n => g n y₀) (y : 𝕜) : Summable fun n => g n y :=
+  summable_of_summable_hasDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hg n x) (fun n x _ => hg' n x) (mem_univ _) hg0 (mem_univ _)
 
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
@@ -132,8 +132,8 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasDerivAt_tsum (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (g' n y) y)
     (hg' : ∀ n y, ‖g' n y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
-    HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
-  exact hasDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
+    HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y :=
+  hasDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n y _ => hg n y) (fun n y _ => hg' n y) (mem_univ _) hg0 (mem_univ _)
 
 /-- Consider a series of functions `∑' n, f n x`. If all functions in the series are differentiable

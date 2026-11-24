@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -18,6 +19,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -98,7 +100,7 @@ lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=
 theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by
   obtain ⟨d, hd⟩ := h
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).property
   use ↑d⁻¹ * num A x
   refine _root_.trans ?_ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]

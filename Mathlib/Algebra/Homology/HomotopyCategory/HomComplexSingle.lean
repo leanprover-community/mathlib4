@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cochains from or to single complexes
 
@@ -289,7 +292,7 @@ lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n =
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cocycle ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) (q' : ℤ) (hq' : q + 1 = q') :
     ∃ (f : X ⟶ K.X q) (hf : f ≫ K.d q q' = 0), fromSingleMk f h q' hq' hf = α := by
-  obtain ⟨f, hf⟩ := Cochain.fromSingleMk_surjective α.1 q h
+  obtain ⟨f, hf⟩ := Cochain.fromSingleMk_surjective α.val q h
   have hα := α.δ_eq_zero (n + 1)
   rw [← hf, Cochain.δ_fromSingleMk _ _ _ q' (by lia)] at hα
   replace hα := Cochain.congr_v hα p q' (by lia)
@@ -369,7 +372,7 @@ lemma toSingleMk_precomp
 lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) (p' : ℤ) (hp' : p' + 1 = p) :
     ∃ (f : K.X p ⟶ X) (hf : K.d p' p ≫ f = 0), toSingleMk f h p' hp' hf = α := by
-  obtain ⟨f, hf⟩ := Cochain.toSingleMk_surjective α.1 p h
+  obtain ⟨f, hf⟩ := Cochain.toSingleMk_surjective α.val p h
   have hα := ((n + 1).negOnePow • α).δ_eq_zero (n + 1)
   rw [coe_units_smul, δ_units_smul, ← hf, Cochain.δ_toSingleMk _ _ _ p' (by lia),
     smul_smul, Int.units_mul_self, one_smul] at hα

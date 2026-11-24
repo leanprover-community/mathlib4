@@ -33,6 +33,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -202,9 +203,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
-      ext n
-      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
+    map_smul' _ _ := by ext; simp }
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 

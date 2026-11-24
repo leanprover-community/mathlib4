@@ -10,9 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
-public import Mathlib.CategoryTheory.Products.Associator
 
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Sifted categories
@@ -32,6 +32,7 @@ preserves finite products. We achieve this characterization in this file.
   category is itself sifted.
 
 ## References
+
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
