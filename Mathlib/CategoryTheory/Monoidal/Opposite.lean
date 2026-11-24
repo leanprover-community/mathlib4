@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.CancelIso
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal opposites
 

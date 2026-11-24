@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Galois.Basic
 
 import Mathlib.GroupTheory.Sylow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of prime-power-index intermediate fields
 

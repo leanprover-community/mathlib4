@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.SmallHom
 public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking morphisms in localized categories equipped with shifts
 

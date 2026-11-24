@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Prime.Defs
 
 import Mathlib.Algebra.GroupWithZero.Associated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime numbers
 

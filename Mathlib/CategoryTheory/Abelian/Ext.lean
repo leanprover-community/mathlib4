@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.LinearYonedaObj
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Linear.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ext
 

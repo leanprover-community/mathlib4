@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
 

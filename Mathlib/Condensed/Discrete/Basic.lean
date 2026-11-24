@@ -10,6 +10,9 @@ public import Mathlib.Condensed.Basic
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete-underlying adjunction
 

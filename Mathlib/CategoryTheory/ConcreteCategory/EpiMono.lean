@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epi and mono in concrete categories
 

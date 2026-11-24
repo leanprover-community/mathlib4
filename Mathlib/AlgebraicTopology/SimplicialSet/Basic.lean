@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial sets
 

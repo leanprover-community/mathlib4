@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.CategoryTheory.Sites.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen finite products on sheaves
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes of a simplicial set
 

@@ -356,7 +356,8 @@ lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
     (s.map f.toLinearMap).closure = s.closure.mapEquiv f := by
   ext x
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, Submodule.coe_closure, Submodule.map_coe,
-    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply, Set.mem_image]
+    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply,
+    Set.mem_image]
   rw [← ContinuousLinearEquiv.image_closure]
   simp
 
@@ -365,7 +366,7 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     (s ⊔ t).mapEquiv f = s.mapEquiv f ⊔ t.mapEquiv f := by
   ext x
   simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
-    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
+    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
     Submodule.coe_closure, Set.mem_image]
   have : f = f.toLinearEquiv.toLinearMap :=
     LinearMap.ext (congrFun rfl)

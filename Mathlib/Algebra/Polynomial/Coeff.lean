@@ -12,6 +12,9 @@ public import Mathlib.Data.Nat.Choose.Sum
 
 import Mathlib.Algebra.MonoidAlgebra.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 

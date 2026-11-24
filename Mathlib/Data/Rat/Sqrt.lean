@@ -11,6 +11,9 @@ public import Mathlib.Data.Int.Sqrt
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Rat.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Square root on rational numbers
 

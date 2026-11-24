@@ -306,7 +306,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
       nontriviality E
       simp only [ofScalars_eq_zero] at a ⊢
       contrapose! hti
-      exact ⟨n, hzi.trans hmn, ENNReal.div_eq_top.mpr (by simp [a, hti])⟩
+      exact ⟨n, hzi.trans hmn, ENNReal.div_eq_top_iff.mpr (by simp [a, hti])⟩
   · simp_rw [hr, inv_top] at hc' ⊢
     apply ofScalars_radius_eq_zero_of_tendsto E c ((tendsto_add_atTop_iff_nat 1).mp ?_)
     refine tendsto_ofReal_nhds_top.mp (Tendsto.congr' ?_ ((tendsto_add_atTop_iff_nat 1).mpr hc'))

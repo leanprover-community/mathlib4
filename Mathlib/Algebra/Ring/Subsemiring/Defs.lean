@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled subsemirings
 

@@ -13,6 +13,9 @@ public import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.SuccAboveOrderIso
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard simplex
 

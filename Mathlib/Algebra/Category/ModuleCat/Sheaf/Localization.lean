@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of sheaves of modules as a localization of presheaves of modules
 

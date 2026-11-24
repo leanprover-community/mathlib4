@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pointwise monoidal structure on the product of families of monoidal categories
 

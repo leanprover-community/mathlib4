@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Algebra.FiveLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `IsBaseChange` under exact sequences
 

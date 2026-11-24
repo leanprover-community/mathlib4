@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations on cochain complexes indexed by the integers.
 

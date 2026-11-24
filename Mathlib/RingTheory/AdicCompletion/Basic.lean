@@ -751,7 +751,7 @@ projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
 theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
     Submodule.Quotient.mk (lift I f h x) = f n x := by
-  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp
 
@@ -851,8 +851,8 @@ theorem of_comp_lift :
 @[simp]
 theorem mk_lift {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply]
+  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp [extend_eq ha f hf]
 

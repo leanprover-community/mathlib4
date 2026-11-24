@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Open immersions of structured spaces
 

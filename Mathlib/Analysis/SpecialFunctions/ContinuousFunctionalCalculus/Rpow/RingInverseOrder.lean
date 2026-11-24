@@ -15,6 +15,9 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjS
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras
 

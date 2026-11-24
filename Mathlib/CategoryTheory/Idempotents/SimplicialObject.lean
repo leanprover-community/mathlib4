@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent completeness of categories of simplicial objects
 

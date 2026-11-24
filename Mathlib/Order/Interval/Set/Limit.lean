@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit elements in Set.Ici
 

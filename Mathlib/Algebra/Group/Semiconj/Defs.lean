@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Order.Defs.Unbundled
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiconjugate elements of a semigroup
 

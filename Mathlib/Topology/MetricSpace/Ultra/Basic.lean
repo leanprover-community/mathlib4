@@ -9,6 +9,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 import Mathlib.Topology.Clopen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric spaces
 

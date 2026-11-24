@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness of short complexes in concrete abelian categories
 
