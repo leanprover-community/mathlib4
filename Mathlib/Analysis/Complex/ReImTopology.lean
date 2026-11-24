@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure, interior, and frontier of preimages under `re` and `im`
 

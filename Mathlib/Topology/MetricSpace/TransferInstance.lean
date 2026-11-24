@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer metric space structures across `Equiv`s
 

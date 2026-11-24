@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The triangulated subcategory of acyclic complex in the homotopy category
 

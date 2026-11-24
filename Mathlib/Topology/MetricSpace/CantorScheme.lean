@@ -23,7 +23,7 @@ This file develops the basic, abstract theory of these schemes and the functions
   implemented here as an object of type `Σ s : Set (ℕ → β), s → α`.
   That is, `(inducedMap A).1` is the domain and `(inducedMap A).2` is the function.
 
-## Implementation Notes
+## Implementation notes
 
 We consider end-appending to be the fundamental way to build lists (say on `β`) inductively,
 as this interacts better with the topology on `ℕ → β`.

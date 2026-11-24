@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for HasEnoughRootsOfUnity
 

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Volume forms and measures on inner product spaces
 

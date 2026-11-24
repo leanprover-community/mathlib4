@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending cones in `LightProfinite`
 

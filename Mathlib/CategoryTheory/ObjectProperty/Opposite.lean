@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Order.CompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a property of objects
 -/

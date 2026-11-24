@@ -64,13 +64,10 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
   map_one := map_one
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-@[coe]
-def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
+def _root_.BialgEquiv.ofClass (f : F) : A ≃ₐc[R] B :=
   { (f : A ≃ₗc[R] B), (f : A →ₐc[R] B) with }
 
-/-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
-  coe f := toBialgEquiv f
+@[deprecated (since := "2026-11-22")] alias toBialgEquiv := BialgEquiv.ofClass
 
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
@@ -142,6 +139,10 @@ theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B)
   toBialgHom_injective.eq_iff
 
 @[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
+
+@[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
+    ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
 
 end
 

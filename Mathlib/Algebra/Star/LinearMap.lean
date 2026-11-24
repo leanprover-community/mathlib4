@@ -198,7 +198,7 @@ theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
   ext i x
   have := by simpa using congr($(h i) x)
   simp only [coe_comp, coe_single, Function.comp_apply, intrinsicStar_apply, Pi.star_single,
-    Pi.comul_single, LinearEquiv.coe_coe]
+    Pi.comul_single, LinearEquiv.coe_toLinearMap]
   rw [star_map_apply_eq_map_intrinsicStar, this, map_comm]
   simp
 

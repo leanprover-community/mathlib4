@@ -59,7 +59,7 @@ In the `Distributions` scope, we introduce the following notations:
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 
-## Implementation details
+## Implementation notes
 
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.

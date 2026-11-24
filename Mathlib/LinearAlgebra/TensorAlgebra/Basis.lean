@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.FreeAlgebra
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A basis for `TensorAlgebra R M`
 

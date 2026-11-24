@@ -12,6 +12,9 @@ public import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # An assumption for constructions by transfinite induction
 

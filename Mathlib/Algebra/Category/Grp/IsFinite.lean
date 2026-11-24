@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 
 import Mathlib.Algebra.Category.Grp.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Serre class of finite abelian groups
 

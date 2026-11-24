@@ -50,6 +50,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
   when `v` is real.
 
 ## Tags
+
 number field, embeddings, infinite places, completion, absolute value
 -/
 
