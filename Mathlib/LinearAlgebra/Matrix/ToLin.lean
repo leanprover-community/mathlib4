@@ -928,6 +928,11 @@ lemma LinearMap.toMatrix_prod_eq_fromRows (φ : M₁ →ₗ[R] M₁') (φ₂ : M
 
 variable [DecidableEq m]
 
+lemma Matrix.toLin_fromRows (A : Matrix n' n R) (B : Matrix m' n R) :
+    toLin v₁ (v₁'.prod v₂') (A.fromRows B) = (toLin v₁ v₁' A).prod (toLin v₁ v₂' B) := by
+  apply (toMatrix v₁ (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromRows]
+
 lemma LinearMap.toMatrix_coprod_eq_fromCols (φ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₁') :
     toMatrix (v₁.prod v₂) v₁' (φ.coprod φ₂) =
       .fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
