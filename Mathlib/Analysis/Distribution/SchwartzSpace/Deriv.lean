@@ -266,7 +266,7 @@ Version for a Schwartz function with values in continuous linear maps. -/
 theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)) (g : 𝓢(ℝ, F)) :
     ∫ (x : ℝ), f x (deriv g x) = -∫ (x : ℝ), deriv f x (g x) :=
   integral_bilinear_deriv_right_eq_neg_left f g
-    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ ℝ)
 
 end one_dim
 
@@ -311,7 +311,7 @@ Version for a Schwartz function with values in continuous linear maps. -/
 theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜] V)) (g : 𝓢(D, F))
     (v : D) : ∫ (x : D), f x (∂_{v} g x) ∂μ = -∫ (x : D), ∂_{v} f x (g x) ∂μ :=
   integral_bilinear_lineDerivOp_right_eq_neg_left f g
-    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ) v
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ ℝ) v
 
 end integration_by_parts
 
@@ -365,7 +365,7 @@ Version for a Schwartz function with values in continuous linear maps. -/
 theorem integral_clm_comp_laplacian_right_eq_left (f : 𝓢(E, F₁ →L[𝕜] F₂)) (g : 𝓢(E, F₁)) :
     ∫ x, f x (Δ g x) ∂μ = ∫ x, Δ f x (g x) ∂μ :=
   integral_bilinear_laplacian_right_eq_left f g
-    ((ContinuousLinearMap.id 𝕜 (F₁ →L[𝕜] F₂)).bilinearRestrictScalars ℝ)
+    ((ContinuousLinearMap.id 𝕜 (F₁ →L[𝕜] F₂)).bilinearRestrictScalars ℝ ℝ)
 
 end laplacian_integration_by_parts
 
