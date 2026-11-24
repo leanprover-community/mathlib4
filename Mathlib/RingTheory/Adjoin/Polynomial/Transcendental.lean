@@ -14,6 +14,7 @@ This file establishes some basic properties about `R[s]` when `s` is transcenden
 These are mostly just carried over from the polynomial ring `R[X]`.
 
 ## Main definitions
+
 * `Polynomial.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
   `R`-algebra equivalence between `R[X]` and `R[s]` given by sending `X` to `s`.
 * `Algebra.adjoin.evalOfTranscendental`: If `s : S` is transcendental over `R`,
