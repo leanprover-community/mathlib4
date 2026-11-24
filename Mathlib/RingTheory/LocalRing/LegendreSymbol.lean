@@ -24,8 +24,6 @@ composition of the reduction map to `ResidueField R` and the quadratic character
 
 ## Main results
 
-The main results are
-
 * `IsLocalRing.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a unit `a` is 1 or -1.
 
 * `IsLocalRing.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `a` is not
