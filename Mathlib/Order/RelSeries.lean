@@ -217,6 +217,8 @@ theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.un
 
 @[simp] theorem apply_mem {i} : s i ∈ s := Set.mem_range_self _
 
+@[simp] theorem toList_toFinset [DecidableEq α] : s.toList.toFinset = s.toFinset := by ext; simp
+
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
