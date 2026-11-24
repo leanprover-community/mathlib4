@@ -515,7 +515,6 @@ variable (p E) in
 def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) :=
   FunLike.coeAddMonoidHom (lp E p) α E
 
-set_option linter.deprecated false in
 @[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-11-20")]
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
