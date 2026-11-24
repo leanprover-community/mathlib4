@@ -918,7 +918,7 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
 variable [DecidableEq m] {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁']
   [AddCommMonoid M₂'] [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
 
-lemma LinearMap.toMatrix_prod (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
+lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
       .fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
         (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
