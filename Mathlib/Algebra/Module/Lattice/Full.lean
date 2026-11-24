@@ -86,8 +86,8 @@ instance [IsFullLattice A M] (e : W ≃ₗ[A] V) :
     IsFullLattice A (M.comap (e.restrictScalars R).toLinearMap) where
   span_eq_top := by
     rw [comap_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars,
-      LinearEquiv.coe_coe, ← e.image_symm_eq_preimage, ← LinearEquiv.coe_coe, span_image,
-      span_eq_top, map_top, LinearEquiv.range]
+      LinearEquiv.coe_toLinearMap, ← e.image_symm_eq_preimage, ← LinearEquiv.coe_toLinearMap,
+      span_image, span_eq_top, map_top, LinearEquiv.range]
 
 /-- A lattice is a full lattice in its own `A`-span. -/
 instance _root_.Submodule.IsLattice.isFullLattice_span_self [IsLattice A M] :
