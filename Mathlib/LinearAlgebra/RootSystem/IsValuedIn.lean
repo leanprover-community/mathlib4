@@ -5,12 +5,11 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
 
@@ -29,7 +28,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
   between a root and coroot is always an integer.
 * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
-
 -/
 
 @[expose] public section
@@ -199,7 +197,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     Dual S (P.corootSpan S) :=
   LinearMap.restrictScalarsRange (P.corootSpan S).subtype (Algebra.linearMap S R)
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
-    (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
+    (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.property i)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -247,7 +245,7 @@ lemma rootSpan_mem_invtSubmodule_reflection (i : ι) :
   induction hx using Submodule.span_induction with
   | mem y hy =>
     obtain ⟨j, rfl⟩ := hy
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply_root]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply_root]
     apply Submodule.sub_mem
     · exact Submodule.subset_span <| mem_range_self j
     · exact Submodule.smul_mem _ _ <| Submodule.subset_span <| mem_range_self i
@@ -289,8 +287,8 @@ lemma iInf_ker_coroot'_eq :
 
 @[simp] lemma rootSpan_map_toPerfPair :
     (P.rootSpan R).map (P.toPerfPair : M →ₗ[R] Dual R N) = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, LinearEquiv.coe_coe,
-    toPerfPair_comp_root]
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ,
+    LinearEquiv.coe_toLinearMap, toPerfPair_comp_root]
 
 @[simp] lemma corootSpan_map_flip_toPerfPair :
     (P.corootSpan R).map (P.toLinearMap.flip.toPerfPair : N →ₗ[R] Dual R M) =
@@ -363,7 +361,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
     finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
-  have _i : IsAddTorsionFree M := .of_isTorsionFree L M
+  have _i : HasUniqueDiv M := .of_isTorsionFree L M
   rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
 
 @[simp]

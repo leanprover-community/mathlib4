@@ -7,12 +7,14 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.RingTheory.Nakayama
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Lemmas about square of maximal ideal of local ring
-
 -/
 
 public section

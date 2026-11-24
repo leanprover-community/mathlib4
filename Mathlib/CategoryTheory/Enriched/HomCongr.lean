@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence of enriched homs
 

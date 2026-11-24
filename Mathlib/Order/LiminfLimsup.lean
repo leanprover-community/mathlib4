@@ -5,10 +5,14 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Order.Hom.CompleteLattice
+
+import Mathlib.Data.Set.Lattice.Order
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # liminfs and limsups of functions and filters
@@ -58,6 +62,11 @@ variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 def limsSup (f : Filter α) : α :=
   sInf { a | ∀ᶠ n in f, n ≤ a }
 
+@[to_dual (attr := simp)]
+lemma limsSup_pure (a : α) : limsSup (pure a) = a := by
+  simp only [limsSup, eventually_pure]
+  exact csInf_Ici
+
 /-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that
 the inequality `u x ≤ a` eventually holds for `f`. -/
 @[to_dual
@@ -77,6 +86,10 @@ def blimsup (u : β → α) (f : Filter β) (p : β → Prop) :=
 section
 
 variable {f : Filter β} {u : β → α} {p : β → Prop}
+
+@[to_dual (attr := simp)]
+lemma limsup_pure (b : β) : limsup u (pure b) = u b := by
+  simp [limsup]
 
 @[to_dual]
 theorem limsup_eq : limsup u f = sInf { a | ∀ᶠ n in f, u n ≤ a } :=
@@ -557,7 +570,7 @@ theorem cofinite.blimsup_set_eq :
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
   · simp only [mem_sInter, mem_ofPred_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
-  · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
+  · exact hx.mono (s := {n | p n ∧ x ∈ s n}) fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
 
 theorem cofinite.bliminf_set_eq : bliminf s cofinite p = { x | { n | p n ∧ x ∉ s n }.Finite } := by
   rw [← compl_inj_iff]
@@ -581,9 +594,9 @@ theorem exists_forall_mem_of_hasBasis_mem_blimsup {l : Filter β} {b : ι → Se
   rw [blimsup_eq_iInf_biSup] at hx
   simp only [iSup_eq_iUnion, iInf_eq_iInter, mem_iInter, mem_iUnion, exists_prop] at hx
   choose g hg hg' using hx
-  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i => ⟨?_, ?_⟩⟩
-  · exact hg' (b i) (hl.mem_of_mem i.2)
-  · exact hg (b i) (hl.mem_of_mem i.2)
+  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.property), fun i => ⟨?_, ?_⟩⟩
+  · exact hg' (b i) (hl.mem_of_mem i.property)
+  · exact hg (b i) (hl.mem_of_mem i.property)
 
 theorem exists_forall_mem_of_hasBasis_mem_blimsup' {l : Filter β} {b : ι → Set β}
     (hl : l.HasBasis (fun _ => True) b) {u : β → Set α} {p : β → Prop} {x : α}
@@ -733,13 +746,11 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
--- The linter erroneously claims that I'm not referring to `c`
-set_option linter.unusedVariables false in
 @[to_dual gt_mem_sets_of_limsInf_gt]
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
-  mem_of_superset h fun _a => hcb.trans_le'
+    ∀ᶠ a in f, a < b := by
+  obtain ⟨_, h, hcb⟩ := exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
+  exact mem_of_superset h fun _a => hcb.trans_le'
 
 section Classical
 
@@ -832,7 +843,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   by_cases H : ∃ (j : Subtype p), s j = ∅
   · rw [ite_eq_left H]
     rcases H with ⟨j, hj⟩
-    simp [hv.liminf_eq_sSup_univ_of_empty j j.2 hj]
+    simp [hv.liminf_eq_sSup_univ_of_empty j j.property hj]
   rw [ite_eq_right H]
   by_cases H' : ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))
   · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
@@ -842,7 +853,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
-    simpa only [nonempty_iff_ne_empty] using H
+    exact H
   · push Not at H'
     exact H'
 

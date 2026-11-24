@@ -16,7 +16,6 @@ Show that `C ⥤ Type max w v u` is monoidal closed for `C` a category in `Type 
 
 ## TODO
 It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
-
 -/
 
 @[expose] public section
@@ -37,7 +36,6 @@ variable (F : C ⥤ Type (max w v u))
 def functorHomEquiv (G H : C ⥤ Type (max w v u)) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps! obj_obj obj_map map_app]
 def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
@@ -49,15 +47,13 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
       change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
       aesop  }}
 
-@[deprecated "Use `(rightAdj F).map instead" (since := "2026-04-08")] alias rightAdj_map := rightAdj
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] types_tensorObj_def in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj : tensorLeft F ⊣ rightAdj F where
   unit := {
-    app := fun G ↦ (functorHomEquiv F G _).2 (𝟙 _)
+    app := fun G ↦ (functorHomEquiv F G _).invFun (𝟙 _)
     naturality := fun G H f ↦ by
       ext
       dsimp

@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms of sheaves factor as a locally surjective followed by a locally injective morphism
@@ -18,7 +20,6 @@ a locally injective morphism (which is mono).
 
 Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 (see `Sites.LeftExact`), then epimorphisms are exactly locally surjective morphisms.
-
 -/
 
 @[expose] public section
@@ -50,8 +51,6 @@ section
 variable {A}
 variable (data : FunctorialSurjectiveInjectiveFactorizationData A) [HasWeakSheafify J A]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functorial surjective/injective factorizations of morphisms in a concrete
 category `A`, this is the induced functorial locally surjective/locally injective
 factorization of morphisms in the category `Sheaf J A`. -/

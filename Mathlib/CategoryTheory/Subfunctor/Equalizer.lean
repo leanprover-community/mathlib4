@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Image
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The equalizer of two morphisms of functors, as a subfunctor
@@ -15,7 +17,6 @@ If `F₁` and `F₂` are type-valued functors, `A : Subfunctor F₁`, and
 `f` and `g` are two morphisms `A.toFunctor ⟶ F₂`, we introduce
 `Subcomplex.equalizer f g`, which is the subfunctor of `F₁` contained in `A`
 where `f` and `g` coincide.
-
 -/
 
 @[expose] public section
@@ -48,12 +49,10 @@ lemma equalizer_le : Subfunctor.equalizer f g ≤ A :=
 @[simp]
 lemma equalizer_self : Subfunctor.equalizer f f = A := by aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
-    x.1 ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
+    x.val ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]

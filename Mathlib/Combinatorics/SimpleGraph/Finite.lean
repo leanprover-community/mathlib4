@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.Data.Set.Card
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -119,7 +119,7 @@ lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
 
 @[simp]
 lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
-  rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
@@ -231,7 +231,7 @@ theorem neighborFinset_sup_of_disjoint {G₁ G₂ : SimpleGraph V}
   simp [neighborFinset, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborFinset_nonempty : (G.neighborFinset v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborFinset_eq_empty, IsIsolated.neighborFinset_eq_empty⟩
     := neighborFinset_eq_empty
@@ -302,15 +302,39 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     rw [← card_neighborSet_union_compl_neighborSet G v, Set.toFinset_union]
     simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
 
-instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
-  Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
+instance incidenceSetFintype : Fintype (G.incidenceSet v) :=
+  .ofBijective (α := G.neighborSet v) (⟨_, G.mem_incidence_iff_neighbor.mpr ·.prop⟩) <| by
+    classical exact G.incidenceSetEquivNeighborSet v |>.symm.bijective
 
 /-- This is the `Finset` version of `incidenceSet`. -/
-def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
+def incidenceFinset [Fintype (G.incidenceSet v)] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
-theorem card_incidenceSet_eq_degree [DecidableEq V] :
-    Fintype.card (G.incidenceSet v) = G.degree v := by
+section
+omit [Fintype (G.neighborSet v)]
+variable [Fintype (G.incidenceSet v)]
+
+@[simp, norm_cast]
+theorem coe_incidenceFinset : (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
+  simp [incidenceFinset]
+
+variable {G v} in
+@[simp]
+theorem mem_incidenceFinset {e : Sym2 V} : e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
+  Set.mem_toFinset
+
+theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
+    G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
+  ext ⟨⟨⟩⟩
+  simp [mk'_mem_incidenceSet_iff]
+
+theorem incidenceFinset_subset [Fintype G.edgeSet] : G.incidenceFinset v ⊆ G.edgeFinset :=
+  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
+end
+
+theorem card_incidenceSet_eq_degree : Fintype.card (G.incidenceSet v) = G.degree v := by
+  classical
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
 
 @[simp]
@@ -323,32 +347,13 @@ theorem encard_incidenceSet : (G.incidenceSet v).encard = G.degree v := by
   classical
   simp [← Set.coe_fintypeCard]
 
-@[simp, norm_cast]
-theorem coe_incidenceFinset [DecidableEq V] :
-    (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
-  simp [incidenceFinset]
-
 @[simp]
-theorem card_incidenceFinset_eq_degree [DecidableEq V] : #(G.incidenceFinset v) = G.degree v := by
+theorem card_incidenceFinset_eq_degree : #(G.incidenceFinset v) = G.degree v := by
   rw [← G.card_incidenceSet_eq_degree]
   apply Set.toFinset_card
 
-@[simp]
-theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
-    e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
-  Set.mem_toFinset
-
-theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
-  ext ⟨⟨⟩⟩
-  simp [mk'_mem_incidenceSet_iff]
-
-theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v ⊆ G.edgeFinset :=
-  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
-
-theorem disjoint_incidenceFinset_of_disjoint [DecidableEq V] [Fintype <| H.neighborSet v]
-    (h : Disjoint G H) : Disjoint (G.incidenceFinset v) (H.incidenceFinset v) := by
+theorem disjoint_incidenceFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
+    Disjoint (G.incidenceFinset v) (H.incidenceFinset v) := by
   simp [← Finset.disjoint_coe, disjoint_incidenceSet.mpr h v]
 
 /-- The degree of a vertex is at most the number of edges. -/
@@ -405,11 +410,6 @@ end LocallyFinite
 section Finite
 
 variable [Fintype V]
-
-/-- `Fintype` for `neighborSet` -/
-@[deprecated inferInstance (since := "2026-04-29")]
-abbrev neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  inferInstance
 
 theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
     G.neighborFinset v = ({w | G.Adj v w} : Finset _) := by ext; simp
@@ -615,7 +615,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 omit [Fintype V] in
 theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
     (commonNeighbors ⊤ u v).encard = ENat.card V - 2 := by
-  simp [commonNeighbors_top_eq, Set.encard_sdiff, Set.encard_pair h]
+  simp [commonNeighbors_top_eq, Set.encard_pair h]
 
 @[simp] lemma insert_neighborFinset_eq_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     insert v (G.neighborFinset v) = univ ↔ G.IsUniversal v := by

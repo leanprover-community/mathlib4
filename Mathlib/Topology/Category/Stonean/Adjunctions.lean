@@ -6,8 +6,9 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.Stonean.Basic
-public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.Topology.Compactification.StoneCech
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Adjunctions involving the category of Stonean spaces

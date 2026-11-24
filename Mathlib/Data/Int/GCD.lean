@@ -5,14 +5,15 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Bounds.Defs
+
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -45,7 +46,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ 
   | 0 => (r', s', t')
   | succ k =>
     let q := r' / succ k
-    ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
+    ih (r' % succ k) (mod_lt _ (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by

@@ -23,6 +23,12 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
+
+It also provides:
+- `HopfAlgebra.ofAntipodeOfAdjoin`, which upgrades a bialgebra `A` to a Hopf algebra
+given an algebra hom `S : A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities on a generating set.
+ `HopfAlgebra.ofSurjective`, which transfers the Hopf algebra axioms along a
+surjective bialgebra homomorphism intertwining the antipodes.
 -/
 
 public section
@@ -55,7 +61,7 @@ lemma antipode_comp_mul_comp_comm :
       ← (Algebra.commute_algebraMap_left (ε a) (_ : A)).eq]
 
 lemma antipode_mul_antidistrib (a b : A) : antipode R (a * b) = antipode R b * antipode R a := by
-  exact congr($antipode_comp_mul_comp_comm (b ⊗ₜ a))
+  congrm $antipode_comp_mul_comp_comm (b ⊗ₜ a)
 
 @[deprecated (since := "2026-06-05")] alias antipode_mul := antipode_mul_antidistrib
 
@@ -96,7 +102,10 @@ variable [Semiring C] [HopfAlgebra R C]
 end LinearMap
 
 namespace HopfAlgebra
-variable [Semiring A] [HopfAlgebra R A] {f : A →ₗ[R] A}
+variable [Semiring A] [HopfAlgebra R A]
+
+section
+variable {f : A →ₗ[R] A}
 
 /-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `f`
 with `f * id = 1` in the convolution monoid equals the antipode. -/
@@ -109,6 +118,20 @@ with `id * f = 1` in the convolution monoid equals the antipode. -/
 theorem eq_antipode_of_id_convMul_eq_one (h : toConv LinearMap.id * toConv f = 1) :
     f = antipode R :=
   toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
+
+end
+
+variable {B : Type*} [Semiring B] [HopfAlgebraStruct R B]
+
+/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism
+intertwining the antipodes. -/
+noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+    (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
+  refine .ofConvInverse (antipode R) ?_ ?_ <;>
+    refine f.toCoalgHom.convPrecomp_injective hf ?_ <;>
+    rw [map_mul, f.convPrecomp_eq_convPostcomp map_antipode,
+      f.convPrecomp_eq_convPostcomp (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
+    simp only [LinearMap.antipode_mul_id, LinearMap.id_mul_antipode, map_one]
 
 end HopfAlgebra
 
@@ -163,14 +186,91 @@ instance [IsCocomm R A] : CommGroup (WithConv <| A →ₐ[R] C) where
 
 lemma antipode_id_cancel :
     toConv (HopfAlgebra.antipodeAlgHom R A) * toConv (AlgHom.id R A) = 1 := by
-  apply WithConv.ofConv_injective
-  apply AlgHom.toLinearMap_injective
-  apply WithConv.toConv_injective
-  rw [AlgHom.toLinearMap_convMul, AlgHom.toLinearMap_convOne]
-  simp [LinearMap.antipode_mul_id]
+  simp [convMul_def, convOne_def, toConv.injEq, ← toLinearMap_injective.eq_iff, lmul'_toLinearMap,
+    AlgebraTensorModule.map_eq, ← LinearMap.rTensor_def, mul_antipode_rTensor_comul]
+
+lemma id_antipode_cancel :
+    toConv (AlgHom.id R A) * toConv (HopfAlgebra.antipodeAlgHom R A) = 1 := by
+  simp [convMul_def, convOne_def, toConv.injEq, ← toLinearMap_injective.eq_iff, lmul'_toLinearMap,
+    AlgebraTensorModule.map_eq, ← LinearMap.lTensor_def, mul_antipode_lTensor_comul]
+
 
 lemma counitAlgHom_comp_antipodeAlgHom :
     (counitAlgHom R A).comp (HopfAlgebra.antipodeAlgHom R A) = counitAlgHom R A :=
   AlgHom.toLinearMap_injective <| by simp
 
 end AlgHom
+
+namespace HopfAlgebra
+
+section OfAntipodeOfAdjoin
+
+open LinearMap
+
+variable [Semiring A] [Bialgebra R A] {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
+
+/-- `𝑺` denotes the candidate antipode `A →ₗ[R] A` induced by the algebra hom
+`S : A →ₐ[R] Aᵐᵒᵖ`. -/
+local notation "𝑺" =>
+  LinearEquiv.toLinearMap (LinearEquiv.symm (MulOpposite.opLinearEquiv R (M := A))) ∘ₗ
+    AlgHom.toLinearMap S
+
+theorem convMul_id_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
+    (h : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x)) :
+    toConv 𝑺 * toConv .id = 1 := by
+  ext t
+  induction (hX.ge ⟨⟩ : t ∈ adjoin R X) using adjoin_induction with
+  | mem x hx => exact h x hx
+  | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
+  | add x y _ _ hx hy => simp [map_add, hx, hy]
+  | mul x y _ _ hx hy =>
+    simp only [id_coe, id_eq, convOne_apply, (ℛ R x).convMul_apply, (ℛ R y).convMul_apply] at hx hy
+    calc
+      _ = ∑ j ∈ (ℛ R y).index, 𝑺 ((ℛ R y).left j) *
+          (∑ i ∈ (ℛ R x).index, 𝑺 ((ℛ R x).left i) * (ℛ R x).right i) * (ℛ R y).right j := by
+        rw [((ℛ R x).mul (ℛ R y)).convMul_apply]
+        simp only [id_coe, id_eq, Coalgebra.Repr.mul_index, Coalgebra.Repr.mul_left,
+          Coalgebra.Repr.mul_right, Finset.sum_product]
+        rw [Finset.sum_comm]
+        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
+      _ = algebraMap R A (ε x) *
+          ∑ j ∈ (ℛ R y).index, 𝑺 ((ℛ R y).left j) * (ℛ R y).right j := by
+        rw [hx, Finset.mul_sum]
+        exact Finset.sum_congr rfl fun j _ ↦ by rw [← mul_assoc, Algebra.commutes, mul_assoc]
+      _ = algebraMap R A (ε (x * y)) := by rw [hy, counit_mul, map_mul]
+
+theorem id_convMul_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
+    (h : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) :
+    toConv .id * toConv 𝑺 = 1 := by
+  ext t
+  induction (hX.ge ⟨⟩ : t ∈ adjoin R X) using adjoin_induction with
+  | mem x hx => exact h x hx
+  | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
+  | add x y _ _ hx hy => simp [map_add, hx, hy]
+  | mul x y _ _ hx hy =>
+    simp only [id_coe, id_eq, convOne_apply, (ℛ R x).convMul_apply, (ℛ R y).convMul_apply] at hx hy
+    calc
+      _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
+          (∑ j ∈ (ℛ R y).index, (ℛ R y).left j * 𝑺 ((ℛ R y).right j)) * 𝑺 ((ℛ R x).right i) := by
+        rw [((ℛ R x).mul (ℛ R y)).convMul_apply]
+        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc, id_coe, id_eq, Coalgebra.Repr.mul_index,
+          Coalgebra.Repr.mul_left, Coalgebra.Repr.mul_right, Finset.sum_product]
+      _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i * 𝑺 ((ℛ R x).right i)) *
+          algebraMap R A (ε y) := by
+        rw [hy, Finset.sum_mul]
+        exact Finset.sum_congr rfl fun i _ ↦ by rw [mul_assoc, Algebra.commutes, mul_assoc]
+      _ = algebraMap R A (ε (x * y)) := by rw [hx, counit_mul, map_mul]
+
+/--
+If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
+antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
+-/
+noncomputable abbrev ofAntipodeOfAdjoin (hX : adjoin R X = ⊤)
+    (hxr : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x))
+    (hxl : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) : HopfAlgebra R A :=
+  ofConvInverse 𝑺 (convMul_id_eq_one_of_adjoin_eq_top S hX hxr)
+    (id_convMul_eq_one_of_adjoin_eq_top S hX hxl)
+
+end OfAntipodeOfAdjoin
+
+end HopfAlgebra

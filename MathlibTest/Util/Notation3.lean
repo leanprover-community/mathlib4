@@ -1,5 +1,7 @@
-import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Util.Notation3
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -25,7 +27,7 @@ Test that `pp.tagAppFns` causes tokens to be tagged with head constant.
 -/
 
 open Lean in
-def findWithTag (tag : Nat) (f : Format) : List Format :=
+meta def findWithTag (tag : Nat) (f : Format) : List Format :=
   match f with
   | .nil => []
   | .line => []
@@ -37,7 +39,7 @@ def findWithTag (tag : Nat) (f : Format) : List Format :=
   | .tag t f' => (if t = tag then [f'] else []) ++ findWithTag tag f'
 
 open Lean Elab Term in
-def testTagAppFns (n : Name) : TermElabM Unit := do
+meta def testTagAppFns (n : Name) : TermElabM Unit := do
   let stx ← `(∀ᶠ x in Filter.atTop, x < 3)
   let e ← elabTermAndSynthesize stx none
   let f ← Meta.ppExprWithInfos e
@@ -111,9 +113,10 @@ notation3 "MyUnit'0" => (0 : MyUnit')
 /-- info: 0 : ℕ -/
 #guard_msgs in #check 0
 
-notation3 "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
-/-- info: %[1, 2, 3] : List ℕ -/
-#guard_msgs in #check %[1, 2, 3]
+-- `%[...]` is core's auxiliary syntax for long list literals, so pick a free token here.
+notation3 "%%[" (x", "* => foldr (a b => a :: b) []) "]" => x
+/-- info: %%[1, 2, 3] : List ℕ -/
+#guard_msgs in #check %%[1, 2, 3]
 
 def foo (a : Nat) (f : Nat → Nat) := a + f a
 def bar (a b : Nat) := a * b

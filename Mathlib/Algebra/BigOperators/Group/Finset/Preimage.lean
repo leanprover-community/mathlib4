@@ -5,8 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Preimage
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sums and products over preimages of finite sets.

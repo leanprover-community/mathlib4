@@ -56,7 +56,7 @@ instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective s1 s2 h := by cases s1; congr
 
-instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X)
 
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 
@@ -88,7 +88,7 @@ instance carrier.instSemilatticeInf : SemilatticeInf S := Subtype.semilatticeInf
 
 instance carrier.instOrderTop : OrderTop S := Subtype.orderTop top_mem
 
-instance carrier.instHImp : HImp S where himp a b := ⟨a ⇨ b, S.himp_mem b.2⟩
+instance carrier.instHImp : HImp S where himp a b := ⟨a ⇨ b, S.himp_mem b.property⟩
 
 instance carrier.instInfSet : InfSet S where
   sInf x := ⟨sInf (Subtype.val '' x), S.sInf_mem' _

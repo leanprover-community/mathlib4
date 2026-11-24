@@ -6,7 +6,6 @@ Authors: Kenny Lau, Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.RingTheory.FreeRing
 
 /-!
@@ -71,7 +70,7 @@ For example if `x` and `y` are terms of type `α` then `3 * x * x * y - 2 * x * 
 "typical" element of `FreeCommRing α`. In particular if `α` is empty
 then `FreeCommRing α` is isomorphic to `ℤ`, and if `α` has one term `t`
 then `FreeCommRing α` is isomorphic to the polynomial ring `ℤ[t]`.
-One can think of `FreeRing α` as the free polynomial ring
+One can think of `FreeCommRing α` as the free polynomial ring
 with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeCommRing (α : Type u) : Type u :=
@@ -152,7 +151,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       rw [← Function.comp_def (fun x => F' x) (fun x => {x}), ← Multiset.map_map,
         ← AddMonoidHom.map_multiset_sum]
-      exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
+      congrm F $(Multiset.sum_map_singleton x')
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -269,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   rwa [Polynomial.coeff_C, ite_eq_right (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X,
     ite_eq_left rfl] at this
 
-theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
+theorem map_subtypeVal_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
   refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [← RingHom.comp_apply, map_one]
@@ -278,6 +277,9 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     rw [map_mul, restriction_of, dite_eq_left hps, map_mul, map_of, ih]
   · intro x y ihx ihy
     rw [map_add, map_add, ihx, ihy]
+
+@[deprecated (since := "2026-11-10")]
+alias map_subtype_val_restriction := map_subtypeVal_restriction
 
 theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite s ∧ IsSupported x s :=
   FreeCommRing.induction_on x ⟨∅, Set.finite_empty, isSupported_neg isSupported_one⟩
@@ -382,7 +384,7 @@ end FreeRing
 /-- The free commutative ring on `α` is isomorphic to the polynomial ring over ℤ with
 variables in `α` -/
 def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ :=
-  RingEquiv.ofRingHom (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
+  RingEquiv.ofRingHom (FreeCommRing.lift (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
     (MvPolynomial.eval₂Hom (Int.castRingHom (FreeCommRing α)) FreeCommRing.of)
     (by ext <;> simp) (by ext; simp)
 
