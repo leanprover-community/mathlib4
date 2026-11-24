@@ -161,6 +161,11 @@ abbrev EnvelopingModule : Type _ := (envelopingCon K X).Quotient
 
 namespace EnvelopingModule
 
+/-- Shortcut instance. Without it, typeclass inference fails to find `AddCommGroup` on
+`EnvelopingModule K X` when it has to unify through instance arguments, for example when looking
+for `AddCommGroup` on a submodule of `EnvelopingModule K X`. -/
+instance : AddCommGroup (EnvelopingModule K X) := ModuleCon.instAddCommGroupQuotient ..
+
 instance : ConvexSpace K (EnvelopingModule K X) := .ofModule
 
 instance : IsModuleConvexSpace K (EnvelopingModule K X) where sConvexComb_eq_sum _ := rfl
@@ -191,7 +196,7 @@ lemma mkQ_single_sConvexComb (w : StdSimplex K X) :
     mkQ K X (single w.sConvexComb 1) = mkQ K X w.weights :=
   mkQ_eq_mkQ.2 <| .inr ⟨1, .single w.sConvexComb, w, zero_le_one, by simp, by simp [add_comm]⟩
 
-private lemma mkQ_eq_sum (f : X →₀ K) : mkQ K X f = f.sum fun x r ↦ r • of K x := by
+lemma mkQ_eq_sum (f : X →₀ K) : mkQ K X f = f.sum fun x r ↦ r • of K x := by
   conv_lhs => rw [← Finsupp.sum_single f]
   rw [map_finsuppSum]
   exact Finsupp.sum_congr fun x _ ↦ by
