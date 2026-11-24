@@ -45,7 +45,7 @@ instance : LE (Π₀ i, α i) :=
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
+@[simp, norm_cast, to_dual self] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where

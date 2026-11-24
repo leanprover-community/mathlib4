@@ -41,20 +41,24 @@ lemma sSup_apply {S : Set (ι →₀ M)} (hS : BddAbove S) (hS₀ : S.Nonempty) 
     sSup S i = ⨆ f : S, f.val i := by simp [sSup, sSup_image', *]
 
 @[to_dual]
+lemma coe_sSup {S : Set (ι →₀ M)} (hS : BddAbove S) (hS₀ : S.Nonempty) :
+    ⇑(sSup S) = sSup ((⇑) '' S) := by ext; rw [sSup_apply hS hS₀, sSup_image', iSup_apply]
+
+@[to_dual]
 lemma iSup_apply {κ : Type*} [Nonempty κ] {f : κ → ι →₀ M} (hf : BddAbove (.range f)) (i : ι) :
     (⨆ j, f j) i = ⨆ j, f j i := by
   rw [iSup, sSup_apply hf (Set.range_nonempty _), iSup_range' (· i) f]
 
 @[to_dual]
+lemma coe_iSup {κ : Type*} [Nonempty κ] {f : κ → ι →₀ M} (hf : BddAbove (.range f)) :
+    ⇑(⨆ j, f j) = ⨆ j, ⇑(f j) := by ext; rw [iSup_apply hf, _root_.iSup_apply]
+
+@[to_dual]
 private lemma isLUB_sSup {S : Set (ι →₀ M)} (hS₀ : S.Nonempty) (hS : BddAbove S) :
     IsLUB S (sSup S) := by
-  refine ⟨fun f hf i ↦ ?_, fun g hg i ↦ ?_⟩
-  · rw [sSup_apply hS hS₀]
-    refine le_ciSup (f := fun f : S ↦ f.val i) ?_ ⟨f, hf⟩
-    simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS
-  · rw [sSup_apply hS hS₀]
-    have := hS₀.to_subtype
-    exact ciSup_le (hg ·.property i)
+  refine .of_image (f := (⇑)) coe_le_coe ?_
+  rw [coe_sSup hS hS₀]
+  exact isLUB_csSup (hS₀.image _) (orderEmbeddingToFun.monotone.map_bddAbove hS)
 
 noncomputable instance : ConditionallyCompleteLattice (ι →₀ M) where
   isLUB_csSup _ := private isLUB_sSup
@@ -87,20 +91,24 @@ lemma sSup_apply {S : Set (Π₀ i, M i)} (hS : BddAbove S) (hS₀ : S.Nonempty)
     · exact ciSup_le fun f ↦ (hS.some_mem f.property i).trans_eq hi.1
 
 @[to_dual]
+lemma coe_sSup {S : Set (Π₀ i, M i)} (hS : BddAbove S) (hS₀ : S.Nonempty) :
+    ⇑(sSup S) = sSup ((⇑) '' S) := by ext; rw [sSup_apply hS hS₀, sSup_image', iSup_apply]
+
+@[to_dual]
 lemma iSup_apply {κ : Type*} [Nonempty κ] {f : κ → Π₀ i, M i} (hf : BddAbove (.range f)) (i : ι) :
     (⨆ j, f j) i = ⨆ j, f j i := by
   rw [iSup, sSup_apply hf (Set.range_nonempty _), iSup_range' (· i) f]
 
 @[to_dual]
+lemma coe_iSup {κ : Type*} [Nonempty κ] {f : κ → Π₀ i, M i} (hf : BddAbove (.range f)) :
+    ⇑(⨆ j, f j) = ⨆ j, ⇑(f j) := by ext; rw [iSup_apply hf, _root_.iSup_apply]
+
+@[to_dual]
 private lemma isLUB_sSup {S : Set (Π₀ i, M i)} (hS₀ : S.Nonempty) (hS : BddAbove S) :
     IsLUB S (sSup S) := by
-  refine ⟨fun f hf i ↦ ?_, fun g hg i ↦ ?_⟩
-  · rw [sSup_apply hS hS₀]
-    refine le_ciSup (f := fun f : S ↦ f.val i) ?_ ⟨f, hf⟩
-    simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS
-  · rw [sSup_apply hS hS₀]
-    have := hS₀.to_subtype
-    exact ciSup_le fun f ↦ hg f.property i
+  refine .of_image (f := (⇑)) coe_le_coe ?_
+  rw [coe_sSup hS hS₀]
+  exact isLUB_csSup (hS₀.image _) (orderEmbeddingToFun.monotone.map_bddAbove hS)
 
 noncomputable instance : ConditionallyCompleteLattice (Π₀ i, M i) where
   isLUB_csSup _ := private isLUB_sSup
