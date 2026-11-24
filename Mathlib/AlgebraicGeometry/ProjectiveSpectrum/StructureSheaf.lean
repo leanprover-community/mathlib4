@@ -17,6 +17,7 @@ In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a
 `ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
+
 - `A` is a commutative ring;
 - `σ` is a class of additive subgroups of `A`;
 - `𝒜 : ℕ → σ` is the grading of `A`;

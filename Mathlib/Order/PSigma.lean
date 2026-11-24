@@ -19,6 +19,7 @@ strictly less than the summand of `b` or they are in the same summand and `a` is
 there.
 
 ## Notation
+
 * `Σₗ' i, α i`: Sigma type equipped with the lexicographic order. A type synonym of `Σ' i, α i`.
 
 ## See also

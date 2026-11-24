@@ -42,6 +42,7 @@ Other:
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 
 ## Notation
+
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
