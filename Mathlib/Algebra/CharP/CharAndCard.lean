@@ -93,12 +93,3 @@ lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype 
     Fintype.card_le_one_iff_subsingleton.mp <| by simpa [h0] using hR.le
   (CharP.charP_iff_prime_eq_zero hp.out).mpr
     (by simpa [hf, hR] using Nat.cast_card_eq_zero R)
-
-/-- The characteristic of a finite commutative domain `R` whose cardinality is divisible by `p`
-is `p`. -/
-lemma charP_of_card_div_by_prime {R : Type*} [CommRing R] [IsDomain R] [Fintype R]
-{p : ℕ} [Fact (Nat.Prime p)] (hp : p ∣ Fintype.card R) :
-  CharP R p := by
-    refine ringChar.of_eq ?_
-    rwa [← prime_dvd_char_iff_dvd_card, (CharP.prime_ringChar _).dvd_iff_eq
-    (Nat.Prime.ne_one Fact.out)] at hp
