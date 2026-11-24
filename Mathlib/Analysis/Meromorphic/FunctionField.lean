@@ -128,6 +128,24 @@ theorem coe_div (a b : functionRing 𝕜 𝕜' U) :
 protected theorem inv_zero : (0 : functionRing 𝕜 𝕜' U)⁻¹ = 0 :=
   Subtype.ext (congrArg Germ.ofFun (funext fun _ ↦ inv_zero))
 
+/--
+The ring of meromorphic functions modulo equality along `codiscreteWithin U` is a `DivInvMonoid`,
+without any hypotheses on `U`. Integer powers are defined pointwise on representatives, so that they
+agree definitionally with integer powers of germs.
+-/
+noncomputable instance instDivInvMonoid : DivInvMonoid (functionRing 𝕜 𝕜' U) where
+  zpow n a := ⟨(a : Germ (codiscreteWithin U) 𝕜') ^ n, by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    exact mem_functionRing_iff.2 ⟨f ^ n, hf.zpow n, by rw [← hfa]; rfl⟩⟩
+  zpow_zero' a := Subtype.ext (DivInvMonoid.zpow_zero' (a : Germ (codiscreteWithin U) 𝕜'))
+  zpow_succ' n a := Subtype.ext (DivInvMonoid.zpow_succ' n (a : Germ (codiscreteWithin U) 𝕜'))
+  zpow_neg' n a := Subtype.ext (DivInvMonoid.zpow_neg' n (a : Germ (codiscreteWithin U) 𝕜'))
+
+@[simp, norm_cast]
+theorem coe_zpow (a : functionRing 𝕜 𝕜' U) (n : ℤ) :
+    ((a ^ n : functionRing 𝕜 𝕜' U) : Germ (codiscreteWithin U) 𝕜') =
+      (a : Germ (codiscreteWithin U) 𝕜') ^ n := rfl
+
 /-!
 ### Nontriviality and the Field Structure
 -/
@@ -172,8 +190,6 @@ representatives. This ensures that they agree definitionally with the structures
 -/
 noncomputable instance instField [h₁U : Fact (IsPreconnected U)] [h₂U : Fact U.Nontrivial] :
     Field (functionRing 𝕜 𝕜' U) where
-  div_eq_mul_inv _ _ := rfl
-  exists_pair_ne := exists_pair_ne _
   mul_inv_cancel _ ha := FunctionRing.mul_inv_cancel h₁U.out ha
   inv_zero := FunctionRing.inv_zero
   nnratCast q := ⟨((fun _ ↦ (q : 𝕜') : 𝕜 → 𝕜') : Germ (codiscreteWithin U) 𝕜'),
