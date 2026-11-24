@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degreewise split exact sequences of cochain complexes
 

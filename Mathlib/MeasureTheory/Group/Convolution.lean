@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The multiplicative and additive convolution of measures
 

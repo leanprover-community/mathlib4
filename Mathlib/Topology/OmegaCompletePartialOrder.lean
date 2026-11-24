@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scott Topological Spaces
 

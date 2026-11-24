@@ -99,7 +99,8 @@ lemma rootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   intro β
   rw [Module.End.mem_invtSubmodule, rootSpan, Submodule.span_le]
   rintro - ⟨α, hα, rfl⟩
-  rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_coe, ← RootPairing.root_reflectionPerm]
+  rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_toLinearMap,
+    ← RootPairing.root_reflectionPerm]
   exact Submodule.subset_span ⟨_, (I.reflectionPerm_mem_rootSet_iff α β).mpr hα, rfl⟩
 
 /-- The invariant root submodule corresponding to a Lie ideal.

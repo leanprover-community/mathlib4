@@ -234,7 +234,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   rw [compl_compl, first_vote_pos _ _ h] at this
   rw [ENNReal.eq_sub_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
     ENNReal.mul_div_cancel, ENNReal.add_sub_cancel_left]
-  all_goals simp_all [ENNReal.div_eq_top]
+  all_goals simp_all
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
   rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
@@ -341,7 +341,7 @@ theorem ballot_problem' :
         linarith
       simp [field, h₄, h₅, h₆] at *
       ring
-    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne, ENNReal.div_eq_top])
+    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -357,7 +357,7 @@ theorem ballot_problem :
       ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal_iff' (measure_lt_top _ _).ne] at this
-  simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
+  simp only [Ne, ENNReal.div_eq_top_iff, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
   push Not

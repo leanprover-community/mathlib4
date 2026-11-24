@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Linear
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of the linearity of the shift functors
 

@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The étale site
 

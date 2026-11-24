@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact submodules
 -/

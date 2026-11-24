@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Left) Ore sets and rings
 
