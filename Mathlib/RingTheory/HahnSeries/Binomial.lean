@@ -17,6 +17,7 @@ We introduce binomial expansions using `embDomain`.
   * `HahnSeries.binomialFamily`
 
 ## Main results
+
   * coefficients of powers of binomials
 -/
 

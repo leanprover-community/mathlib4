@@ -28,6 +28,7 @@ invariant submodule.
   invariant root submodules.
 
 ## Main results
+
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only

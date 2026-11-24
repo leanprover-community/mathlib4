@@ -18,6 +18,7 @@ import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
+
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 

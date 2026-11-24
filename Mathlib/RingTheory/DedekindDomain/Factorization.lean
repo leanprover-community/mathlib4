@@ -27,6 +27,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   set `val_v(I) = 0`.
 
 ## Main results
+
 - `Ideal.finite_factors` : Only finitely many maximal ideals of `R` divide a given nonzero ideal.
 - `Ideal.finprod_heightOneSpectrum_factorization` : The ideal `I` equals the finprod
   `∏_v v^(val_v(I))`, where `val_v(I)` denotes the multiplicity of `v` in the factorization of `I`

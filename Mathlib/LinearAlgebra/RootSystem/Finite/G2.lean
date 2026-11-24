@@ -19,6 +19,7 @@ corollary of the fact that no node can have degree greater than three) and moreo
 stronger assumptions on the coefficients than here.
 
 ## Main results
+
 * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
   pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient
   condition for the span of this pair of roots to be a `𝔤₂` root system.

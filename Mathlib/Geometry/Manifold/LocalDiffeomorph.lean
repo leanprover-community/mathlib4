@@ -24,6 +24,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism
 
 ## Main results
+
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
   implies the next condition.
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,

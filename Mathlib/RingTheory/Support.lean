@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 # Support of a module
 
 ## Main results
+
 - `Module.support`: The support of an `R`-module as a subset of `Spec R`.
 - `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
 - `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`

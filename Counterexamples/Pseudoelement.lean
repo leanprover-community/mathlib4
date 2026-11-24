@@ -23,6 +23,7 @@ pullback over the terminal object). We consider the pseudoelements associated to
 given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)`.
 
 ## Main results
+
 * `Counterexample.exist_ne_and_fst_eq_fst_and_snd_eq_snd` : there are two
   pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
   `biprod.snd x = biprod.snd y`.

@@ -20,6 +20,7 @@ We used the contents of this file to describe the dual basis of a power basis un
 See `traceForm_dualBasis_powerBasis_eq`.
 
 ## Main results
+
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` span `R<x>`.
 -/
 

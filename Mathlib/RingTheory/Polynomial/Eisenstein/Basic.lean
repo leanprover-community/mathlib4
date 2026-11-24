@@ -21,6 +21,7 @@ Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f
 * `Polynomial.IsEisensteinAt f 𝓟`: the property of being Eisenstein at `𝓟`.
 
 ## Main results
+
 * `Polynomial.IsEisensteinAt.irreducible`: if a primitive `f` satisfies `f.IsEisensteinAt 𝓟`,
   where `𝓟.IsPrime`, then `f` is irreducible.
 

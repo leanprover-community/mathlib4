@@ -22,6 +22,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 - `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## Main results
+
 - `conductor_mul_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
     with `f` being the minimal polynomial of `x`.

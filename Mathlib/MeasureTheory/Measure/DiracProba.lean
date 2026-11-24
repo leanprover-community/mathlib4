@@ -15,6 +15,7 @@ public import Mathlib.Topology.Separation.CompletelyRegular
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results
+
 * `isEmbedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
   then the mapping that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
   `X ↪ ProbabilityMeasure X`.

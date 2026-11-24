@@ -27,6 +27,7 @@ We prove several properties of this valuation, including the existence of unifor
   `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
+
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of

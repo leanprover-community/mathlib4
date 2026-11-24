@@ -31,6 +31,7 @@ details section.
   and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
 * `IsCyclotomicExtension.finrank`: if `Irreducible (cyclotomic n K)` (in particular for
   `K = ℚ`), then the `finrank` of a cyclotomic extension is `n.totient`.

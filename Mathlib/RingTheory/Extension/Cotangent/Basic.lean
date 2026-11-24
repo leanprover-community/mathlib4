@@ -16,6 +16,7 @@ Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently
 defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R] → 0`.
 
 ## Main results
+
 - `Algebra.Extension.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
 - `Algebra.Extension.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
 - `Algebra.Generators.cotangentSpaceBasis`: The canonical basis on `⨁ᵢ S dxᵢ`.

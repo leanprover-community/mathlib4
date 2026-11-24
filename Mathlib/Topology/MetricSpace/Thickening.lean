@@ -16,6 +16,7 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   space.
 
 ## Main results
+
 * `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
 * `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
 * `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,

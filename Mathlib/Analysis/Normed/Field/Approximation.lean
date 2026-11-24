@@ -16,6 +16,7 @@ import Mathlib.RingTheory.LocalRing.Basic
 In this file, we prove several approximation lemmas on a normed field.
 
 ## Main results
+
 - `Polynomial.exists_roots_norm_sub_lt_of_norm_coeff_sub_lt` :  **Continuity of Roots.**
 Let `f` and `g` be two monic polynomials such that `g` splits. If the coefficients of two
 polynomials `f` and `g` are sufficiently close, then every root of `f` has a corresponding root

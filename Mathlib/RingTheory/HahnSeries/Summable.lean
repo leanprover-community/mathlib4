@@ -32,6 +32,7 @@ commutative domain.
   the summable family takes the junk value of zero.
 
 ## Main results
+
 * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
   commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
 * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.

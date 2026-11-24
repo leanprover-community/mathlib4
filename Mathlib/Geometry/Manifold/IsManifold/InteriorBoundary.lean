@@ -23,6 +23,7 @@ Define the interior and boundary of a manifold.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
+
 - `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point

@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Localization.Module
 Results about localizations of submodules and quotient modules are provided in this file.
 
 ## Main results
+
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
   A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.

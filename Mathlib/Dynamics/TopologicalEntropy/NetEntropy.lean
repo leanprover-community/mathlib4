@@ -42,6 +42,7 @@ As when using covers, there are two competing definitions `netEntropyInfEntourag
 we chose the `limsup` definition as the default.
 
 ## Main results
+
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 

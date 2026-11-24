@@ -31,6 +31,7 @@ proofs that they are indeed equivalent to well-foundedness.
 * `IsCompactlyGenerated`
 
 ## Main results
+
 The main result is that the following four conditions are equivalent for a complete lattice:
 * `well_founded (>)`
 * `CompleteLattice.IsSupClosedCompact`

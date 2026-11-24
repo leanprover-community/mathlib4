@@ -29,6 +29,7 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
   * `RightPreLieAlgebra`
 
 ## Main results
+
   * Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
 
 ## Implementation notes

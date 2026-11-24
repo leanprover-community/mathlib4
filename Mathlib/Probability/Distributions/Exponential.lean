@@ -20,6 +20,7 @@ Define the Exponential measure over the reals.
 * `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
 
 ## Main results
+
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/

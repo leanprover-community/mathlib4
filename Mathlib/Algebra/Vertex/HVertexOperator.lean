@@ -20,6 +20,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 
 ## Main results
+
 * Ext
 
 ## TODO

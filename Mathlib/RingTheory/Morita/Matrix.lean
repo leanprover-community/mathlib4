@@ -22,6 +22,7 @@ public import Mathlib.RingTheory.Morita.Basic
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
 ## Main results
+
 - `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
 -/
 

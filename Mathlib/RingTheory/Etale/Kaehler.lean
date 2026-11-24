@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 # The differential module and étale algebras
 
 ## Main results
+
 - `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
   The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 - `Algebra.tensorH1CotangentOfIsLocalization`:

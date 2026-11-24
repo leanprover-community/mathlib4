@@ -39,6 +39,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
   `extensionEmbedding`.
 
 ## Main results
+
 - `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
 - `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is

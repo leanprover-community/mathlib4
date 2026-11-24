@@ -21,6 +21,7 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
   topological closure of its commutator subgroup.
 
 ## Main results
+
 - `Field.absoluteGaloisGroup.commutator_closure_isNormal` : the topological closure of the
   commutator of `absoluteGaloisGroup` is a normal subgroup.
 

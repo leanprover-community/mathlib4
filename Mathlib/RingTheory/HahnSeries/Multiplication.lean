@@ -37,6 +37,7 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
   series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
+
 * If `R` is a (commutative) (semi-)ring, then so is `R⟦Γ⟧`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 

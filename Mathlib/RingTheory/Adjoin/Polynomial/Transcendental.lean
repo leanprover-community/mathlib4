@@ -20,6 +20,7 @@ These are mostly just carried over from the polynomial ring `R[X]`.
   we get an `R`-algebra homomorphism given by evaluation at some element `c`.
 
 ## Main results
+
 * `Transcendental.euclideanDomainAdjoin`: Given a transcendental element `s : S` over `F`, `F[s]`
   is a euclidean domain.
 * `Transcendental.uniqueFactorizationMonoid_adjoin`: Given a transcendental element `s : S` over

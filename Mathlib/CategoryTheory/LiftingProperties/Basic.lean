@@ -14,6 +14,7 @@ This file defines the lifting property of two morphisms in a category and
 shows basic properties of this notion.
 
 ## Main results
+
 - `HasLiftingProperty`: the definition of the lifting property
 
 ## Tags

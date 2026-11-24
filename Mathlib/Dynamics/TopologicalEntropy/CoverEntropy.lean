@@ -46,6 +46,7 @@ to be the definition using a `limsup`, and give it the simpler name `coverEntrop
 using only `coverEntropy`.
 
 ## Main results
+
 - `IsDynCoverOf.iterate_le_pow`: given a dynamical cover at time `n`, creates dynamical covers
   at all iterates `n * m` with controlled cardinality.
 - `IsDynCoverOf.coverEntropyEntourage_le_log_card_div`: upper bound on `coverEntropyEntourage`

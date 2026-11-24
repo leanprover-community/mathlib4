@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 # Geometrically Reduced Schemes
 
 ## Main results
+
 - `AlgebraicGeometry.GeometricallyReduced`:
   We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is reduced.

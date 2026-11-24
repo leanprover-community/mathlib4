@@ -24,6 +24,7 @@ the literature while the compact coherentification is often called the k-ificati
   `A ∩ B` is open in `B`.
 
 ## Main results
+
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
