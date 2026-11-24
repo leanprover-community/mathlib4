@@ -298,7 +298,7 @@ into one that never fails and returns `.none` instead.
 This works in `MetaM` and in `PositivityM`. -/
 def catchNone {m : Type → Type} [Monad m] [MonadExceptOf Exception m] [MonadLiftT MetaM m]
     {e pα?} (t : m (Strictness zα e pα?)) : m (Strictness zα e pα?) :=
-  tryCatch t fun e => do
+  try t catch e =>
     liftM (m := MetaM) (do trace[Tactic.positivity.failure] "{e.toMessageData}")
     pure .none
 
