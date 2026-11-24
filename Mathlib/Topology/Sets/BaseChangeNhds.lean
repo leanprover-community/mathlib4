@@ -101,7 +101,7 @@ def properPreimage (K : Compacts β) : Compacts α :=
   ⟨f ⁻¹' K.carrier, IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
 
 lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
-  fun _ _ h ↦ preimage_mono (f := f) h
+  fun _ _ ↦ preimage_mono
 
 /-- The base change of compactNhds induced by `properPreimage` -/
 @[simps, implicit_reducible]
@@ -111,8 +111,7 @@ def baseChangeCompactNhdsByProperPreimage (K : Compacts β) (L : K.compactNhds) 
     obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
     exact (compactNhdsMkOfOpens _
       ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f proper_f.toContinuous))).obj U)
-      (preimage_mono (f := f) hU1)
-      (preimage_mono (f := f) hU2)).property⟩
+      (preimage_mono hU1) (preimage_mono hU2)).property⟩
 
 lemma baseChangeCompactNhdsByProperPreimage_mono (K : Compacts β) :
     Monotone (baseChangeCompactNhdsByProperPreimage proper_f K) :=
