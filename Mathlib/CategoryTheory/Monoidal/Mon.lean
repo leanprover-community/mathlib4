@@ -1072,7 +1072,7 @@ def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{w + 1}) C ⥤ Mon C w
   map α := ((Functor.mapMonFunctor (Discrete PUnit) C).map α).app _
 
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
-@[to_additive (attr := simps! obj) addMonToLaxMonoidalObj
+@[to_additive (attr := simps! obj, implicit_reducible) addMonToLaxMonoidalObj
 /-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def monToLaxMonoidalObj (A : Mon C) :
     Discrete PUnit.{w + 1} ⥤ C := (Functor.const _).obj A.X
