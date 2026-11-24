@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kaplansky criterion for factoriality
 

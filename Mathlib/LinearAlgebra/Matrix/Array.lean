@@ -8,6 +8,9 @@ module
 public import Batteries.Data.Fin.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Array representation of matrices
 

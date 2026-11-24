@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction, translation, norm and trace
 

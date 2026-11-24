@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representation of components by a set of vertices
 

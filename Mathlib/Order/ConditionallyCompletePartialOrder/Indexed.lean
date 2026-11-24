@@ -9,6 +9,9 @@ public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
 
 import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed sup / inf in conditionally complete lattices
 

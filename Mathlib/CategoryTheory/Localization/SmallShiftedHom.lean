@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.SmallHom
 public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking morphisms in localized categories equipped with shifts
 
@@ -193,7 +196,6 @@ lemma equiv_apply [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M}
 section
 variable [W.IsCompatibleWithShift M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
@@ -235,7 +237,6 @@ lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} (f : ShiftedHom
   ((L.commShiftIso m).app Y).homToEquiv.symm.injective
     ((Equiv.symm_apply_apply ..).trans (by simp [ShiftedHom.map, mk]))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
@@ -370,7 +371,6 @@ noncomputable def chgUniv {X Y : C} {m : M}
     SmallShiftedHom.{w} W X Y m ≃ SmallShiftedHom.{w''} W X Y m :=
   SmallHom.chgUniv
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C} {m : M}
     [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w''} W M X Y]
