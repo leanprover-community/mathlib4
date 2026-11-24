@@ -96,7 +96,7 @@ lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 @[simp]
 lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
-grind_pattern nnrpow_nonneg => a ^ x
+grind_pattern nnrpow_nonneg => StarOrderedRing A, a ^ x
 
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
 
@@ -231,7 +231,7 @@ noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 @[simp]
 lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
-grind_pattern sqrt_nonneg => sqrt a
+grind_pattern sqrt_nonneg => StarOrderedRing A, sqrt a
 
 lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
@@ -404,7 +404,7 @@ lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 @[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
-grind_pattern rpow_nonneg => a ^ y
+grind_pattern rpow_nonneg => StarOrderedRing A, a ^ y
 
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
