@@ -36,9 +36,11 @@ A polynomial is represented by the list of its coefficients, constant term first
 A list may end in zeros, so `coeffLead p` is the leading coefficient only when it is nonzero.
 -/
 
-@[expose] public section
+public section
 
 namespace Mathlib.Tactic.RealRootCount
+
+@[expose] section
 
 variable {R : Type*}
 
@@ -156,6 +158,8 @@ def realRootCountIoo? (d : SturmCertificate) (an : ℤ) (ad : ℕ) (bn : ℤ) (b
       let atB := (sturmSeq.map (evalScaled bn bd)).signVariations
       atA - atB
   else none
+
+end
 
 end Mathlib.Tactic.RealRootCount
 
