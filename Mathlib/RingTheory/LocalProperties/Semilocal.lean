@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.KrullDimension.PID
 
 import Mathlib.RingTheory.DedekindDomain.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties for semilocal rings
 
@@ -64,7 +67,7 @@ theorem Module.Finite.of_isLocalized_maximal
   intro x hx
   lift x to s ⟨P, hP⟩ using hx
   rw [SetLike.mem_coe, ← IsLocalization.smul_mem_iff (s := (frac ⟨P, hP⟩ x).2), hfrac]
-  exact Submodule.subset_span ⟨_, by simpa using ⟨_, _, x.2, rfl⟩, rfl⟩
+  exact Submodule.subset_span ⟨_, by simpa using ⟨_, _, x.property, rfl⟩, rfl⟩
 
 variable {M} in
 /-- A submodule `N` of a module `M` over a semilocal ring `R` is finitely generated if

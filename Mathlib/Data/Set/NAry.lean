@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N-ary images of sets
 
@@ -26,6 +29,11 @@ open Function
 namespace Set
 variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ}
 variable {s s' : Set α} {t t' : Set β} {u : Set γ} {v : Set δ} {a : α} {b : β}
+
+theorem image2_eq_range (f : α → β → γ) (s : Set α) (t : Set β) :
+    image2 f s t = range fun x : s × t ↦ f x.1 x.2 := by
+  ext
+  simp
 
 theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by
@@ -172,8 +180,14 @@ theorem image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪
 theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
   rw [insert_eq, image2_union_right, image2_singleton_right]
 
+theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s t := by
+  grind
+
 @[congr]
-theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
+theorem image2_congr'' {s' : Set α} {t' : Set β}
+    (hs : s = s') (ht : t = t') (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s' t' := by
   grind
 
 /-- A common special case of `image2_congr` -/

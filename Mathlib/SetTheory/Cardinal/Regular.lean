@@ -70,6 +70,7 @@ lemma IsRegular.ne_zero (H : c.IsRegular) : c ≠ 0 :=
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
   ⟨le_rfl, by simp⟩
 
+@[instance]
 lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 
@@ -83,7 +84,7 @@ theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) :
   refine card_iSup_Iio_le ?_ fun i ↦ ?_
   · simpa using hc'
   · rw [card_le_iff]
-    exact (isSuccLimit_ord hc₀).add_one_lt (f i).2
+    exact (isSuccLimit_ord hc₀).add_one_lt (f i).property
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
@@ -204,7 +205,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [derivFamily_limit f hb]
     apply Ordinal.lift_iSup_lt_of_lt_cof
     · rwa [← lift_cof, hc.cof_ord, cardinalMk_Iio, lift_lift, lift_lt, ← lt_ord]
-    · exact fun i ↦ H i.1 i.2 <| i.2.trans hb'
+    · exact fun i ↦ H i.val i.property <| i.property.trans hb'
 
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
     (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a} :

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products and coproducts in the category of topological spaces
 -/
@@ -292,7 +295,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             · exact g.hom.continuous_toFun
             · apply Continuous.comp (by fun_prop)
               rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
-              exact continuous_subtype_val
+              exact continuous_subtypeVal
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.isOpen_range

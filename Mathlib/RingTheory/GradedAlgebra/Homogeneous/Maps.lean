@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps on homogeneous ideals
 

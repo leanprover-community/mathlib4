@@ -102,7 +102,7 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
 @[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover :=
   X.openCoverOfIsOpenCover (fun i : { r // IsAffineOpen (X.basicOpen (U := ⊤) r) } ↦
-    X.basicOpen i.1) <| top_le_iff.mp fun x _ ↦ by
+    X.basicOpen i.val) <| top_le_iff.mp fun x _ ↦ by
   obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
@@ -127,11 +127,11 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
       CommRingCat.Hom.hom (f.appTop ≫ X.presheaf.map _)
     rw [f.map_appLE, Scheme.Hom.appLE]
   refine isPullback_of_openCover _ _ _ _ Y.openCoverBasicOpenTop fun r ↦ ?_
-  let e : pullback f (Y.basicOpen r.1).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
-    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.1) ≪≫
-    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.2.preimage f)
-  refine .of_iso ((this r.1).op.map Scheme.Spec) e.symm r.2.isoSpec.symm (.refl _) (.refl _)
-    ?_ ?_ (by simp) (by simp)
+  let e : pullback f (Y.basicOpen r.val).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.val)) :=
+    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.val) ≪≫
+    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.property.preimage f)
+  refine .of_iso ((this r.val).op.map Scheme.Spec) e.symm r.property.isoSpec.symm (.refl _)
+    (.refl _) ?_ ?_ (by simp) (by simp)
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
     simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,

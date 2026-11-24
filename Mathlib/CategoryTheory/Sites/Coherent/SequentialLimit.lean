@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Sites.EpiMono
 
 import Mathlib.CategoryTheory.Sites.Subcanonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of epimorphisms in coherent topoi
 

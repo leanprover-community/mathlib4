@@ -5,9 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
+
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`

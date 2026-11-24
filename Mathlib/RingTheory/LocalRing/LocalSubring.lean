@@ -110,10 +110,10 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   intro x y e
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
   obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
-  have H : ∀ x : P.primeCompl, x.1 ≠ 0 := by rintro ⟨x, hx⟩ rfl; aesop
-  have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
+  have H : ∀ x : P.primeCompl, x.val ≠ 0 := by rintro ⟨x, hx⟩ rfl; aesop
+  have : x.val = y.val * t.val.val⁻¹ * s.val.val := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,
-      Algebra.algebraMap_ofSubsemiring_apply, IsUnit.coe_liftRight] using congr($e * s.1.1)
+      Algebra.algebraMap_ofSubsemiring_apply, IsUnit.coe_liftRight] using congr($e * s.val.val)
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext

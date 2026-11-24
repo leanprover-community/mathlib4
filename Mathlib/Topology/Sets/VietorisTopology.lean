@@ -341,7 +341,7 @@ instance [T1Space α] : T0Space (Set α) where
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
   rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-  · simp +contextual [and_iff_right_of_imp, Set.nonempty_iff_ne_empty, isPreconnected_empty]
+  · simp +contextual [and_iff_right_of_imp, ← ne_empty_iff_nonempty, isPreconnected_empty]
   suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
       ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
     rw [this]
@@ -509,11 +509,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
-    #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
-    The new canonicalizer using `isDefEq` less,
-    and so does not unify as many of the conditions that `grind` wants to case split on.
-    Alternatively `simp; grind` also works here. -/
-    grind (splits := 12)
+    grind
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form
 `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets.
@@ -624,7 +620,7 @@ instance [T2Space α] : T2Space (Compacts α) where
   t2 K₁ K₂ h := by
     wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
     · grind [Disjoint.symm, le_antisymm]
-    rw [IsConcreteLE.not_le_iff_exists] at h'
+    rw [not_le_iff_exists_mem_notMem] at h'
     obtain ⟨x, hx₁, hx₂⟩ := h'
     obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
     exact ⟨_, _, isOpen_inter_nonempty_of_isOpen hV, isOpen_subsets_of_isOpen hU, ⟨x, hx₁, hV'⟩,
@@ -821,11 +817,11 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
       {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
     rw [this]
     exact .image
-      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.2).2)
+      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.property).2)
       _ (by fun_prop)
   apply subset_antisymm
   · exact fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
-      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
+      fun U _ => ⟨hK₂ U U.property, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
   · simp_rw [image_subset_iff, preimage_ofPred_eq, coe_finset_sup, Finset.sup_eq_iSup,
       iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
     refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩

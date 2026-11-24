@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional expectation of indicator functions
 

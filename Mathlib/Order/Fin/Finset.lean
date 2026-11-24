@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Insert
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order isomorphisms from Fin to finsets
 

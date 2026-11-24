@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Defs
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Extension of algebras
@@ -275,7 +276,7 @@ lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
 def Hom.mapKer (f : P.Hom P')
     [alg : Algebra P.Ring P'.Ring] (halg : algebraMap P.Ring P'.Ring = f.toRingHom) :
     P.ker →ₗ[P.Ring] P'.ker where
-  toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
+  toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.property]⟩
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
 
@@ -478,7 +479,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :
     Cotangent.map f (.mk x) =
-      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using congr(algebraMap S S' $(x.2))⟩ :=
+      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using congr(algebraMap S S' $(x.property))⟩ :=
   rfl
 
 @[simp]

@@ -227,10 +227,11 @@ def lift₂ :
       (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
-      (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
+      (fun (a : α × α) (b : β × β) => f.val a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
+        exacts [rfl, (f.property _ _ _ _).2, (f.property _ _ _ _).1,
+          (f.property _ _ _ _).1.trans (f.property _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
@@ -414,7 +415,9 @@ theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ 
   aesop
 
 @[congr]
-theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) : map f s = map g s := by
+theorem map_congr {f g : α → β} {s s' : Sym2 α} (hs : s = s') (h : ∀ x ∈ s, f x = g x) :
+    map f s = map g s' := by
+  subst hs
   ext y
   simp only [mem_map]
   constructor <;>
@@ -566,7 +569,7 @@ theorem mk_fiber_of_isDiag (hz : z.IsDiag) :
 /-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
 @[simps]
 def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
-  toFun x := x.1.diagElem x.2
+  toFun x := x.val.diagElem x.property
   invFun a := ⟨diag a, rfl⟩
   left_inv x := by ext; simp
   right_inv a := by simp [diag]
@@ -814,8 +817,12 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 @[simp]
+theorem toFinset_nonempty (z : Sym2 α) : z.toFinset.Nonempty :=
+  ⟨_, mem_toFinset.mpr (out_fst_mem _)⟩
+
+@[deprecated toFinset_nonempty +typeChanged (since := "2026-11-11")]
 theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ :=
-  Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
+  z.toFinset_nonempty.ne_empty
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]

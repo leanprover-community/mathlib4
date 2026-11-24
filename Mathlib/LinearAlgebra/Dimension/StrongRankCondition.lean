@@ -639,7 +639,7 @@ theorem exists_fun_fin_finrank_span_eq :
       LinearIndependent K f := by
   rcases exists_finset_span_eq_linearIndepOn K s with ⟨t, hts, ht_card, ht_span, ht_indep⟩
   set e := (Finset.equivFinOfCardEq ht_card).symm
-  exact ⟨(↑) ∘ e, fun i ↦ hts (e i).2, by simpa, ht_indep.comp _ e.injective⟩
+  exact ⟨(↑) ∘ e, fun i ↦ hts (e i).property, by simpa, ht_indep.comp _ e.injective⟩
 
 /-- This is a version of `mem_span_set` with an estimate on the number of terms in the sum. -/
 theorem mem_span_set_iff_exists_finsupp_le_finrank :
