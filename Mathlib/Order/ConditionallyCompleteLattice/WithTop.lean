@@ -40,13 +40,16 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 variable [LE α]
 
 open scoped Classical in
-/-- This instance ensures `OrderSupSet (WithTop α)` whenever `OrderSupSet α`. -/
+/-- This instance ensures `OrderSupSet (WithTop α)` whenever `OrderSupSet α`.
+
+The supremum of the empty set is the bottom element, if there is one. -/
 @[no_expose, to_dual
-/-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/]
+/-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`.
+
+The infimum of the empty set is the top element, if there is one. -/]
 instance instSupSet [SupSet α] : SupSet (WithTop α) where
   sSup S :=
     if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤
-    -- The supremum of the empty set is the bottom element, if there is one.
     else if h : S = ∅ ∧ ∃ a : α, IsBot a then ↑h.2.choose
     else ↑(sSup ((↑) ⁻¹' S : Set α))
 
@@ -62,7 +65,7 @@ open scoped Classical in
 lemma sSup_def [SupSet α] (s : Set (WithTop α)) :
     sSup s = if ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set α) then ⊤
       else if h : s = ∅ ∧ ∃ a : α, IsBot a then ↑h.2.choose
-      else ↑(sSup ((↑) ⁻¹' s : Set α)) := by unfold sSup instSupSet; rfl
+      else ↑(sSup ((↑) ⁻¹' s : Set α)) := (rfl)
 
 @[to_dual]
 theorem sSup_eq_top_iff [SupSet α] {s : Set (WithTop α)} :
