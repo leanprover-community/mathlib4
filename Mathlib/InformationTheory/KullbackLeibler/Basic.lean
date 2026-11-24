@@ -32,7 +32,7 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 * `klDiv_eq_zero_iff` : the Kullback-Leibler divergence between two finite measures is zero if and
   only if the two measures are equal.
 
-## Implementation details
+## Implementation notes
 
 The Kullback-Leibler divergence on probability measures is `∫ x, llr μ ν x ∂μ` if `μ ≪ ν`
 (and the log-likelihood ratio is integrable) and `∞` otherwise.

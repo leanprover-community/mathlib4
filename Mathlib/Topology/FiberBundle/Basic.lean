@@ -163,6 +163,7 @@ Or for the pullback of a `FiberBundleCore`, the indexing type will be the same a
 for the initial bundle.
 
 ## Tags
+
 Fiber bundle, topological bundle, structure group
 -/
 

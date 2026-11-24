@@ -42,6 +42,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 

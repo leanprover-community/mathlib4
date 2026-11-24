@@ -16,6 +16,7 @@ A binary (co)fan is a (co)cone over a walking-pair diagram. These will be used (
 file) to define binary products and coproducts.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/

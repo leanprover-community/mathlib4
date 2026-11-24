@@ -20,7 +20,7 @@ If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-semim
 in the universe `v`. We show that it is preadditive and show that being an isomorphism and
 monomorphism are equivalent to being a linear equivalence and an injective linear map respectively.
 
-## Implementation details
+## Implementation notes
 
 To construct an object in the category of `R`-semimodules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.

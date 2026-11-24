@@ -21,7 +21,7 @@ This file deals with taking quotients of powers of principal ideals.
 
 * `Ideal.quotEquivPowQuotPowSucc`: for a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`
 
-## Implementation details
+## Implementation notes
 
 At site of usage, calling `LinearEquiv.toEquiv` can cause timeouts in the search for a complex
 synthesis like `Module 𝒪[K] 𝓀[k]`, so the plain equiv versions are provided.

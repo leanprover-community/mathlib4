@@ -30,7 +30,7 @@ We define the following properties for sets in a topological space:
 * `isLindelof_iff_countable_subcover`: A set is Lindelöf iff every open cover has a
   countable subcover.
 
-## Implementation details
+## Implementation notes
 
 * This API is mainly based on the API for IsCompact and follows notation and style as much
   as possible.

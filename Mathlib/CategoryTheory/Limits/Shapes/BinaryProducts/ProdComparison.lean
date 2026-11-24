@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 Naturality of the product and coproduct constructions with respect to functors.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/

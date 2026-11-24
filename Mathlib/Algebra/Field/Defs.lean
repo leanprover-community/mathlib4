@@ -26,7 +26,7 @@ statements about them. For a more extensive theory of fields, see the `FieldTheo
   to an element of the field its multiplicative inverse, this predicate only assumes the existence
   and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 
-## Implementation details
+## Implementation notes
 
 By convention `0⁻¹ = 0` in a field or division ring. This is due to the fact that working with total
 functions has the advantage of not constantly having to check that `x ≠ 0` when writing `x⁻¹`. With

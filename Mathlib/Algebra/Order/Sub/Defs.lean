@@ -16,7 +16,7 @@ This file proves lemmas relating (truncated) subtraction with an order. We provi
 The subtraction discussed here could both be normal subtraction in an additive group or truncated
 subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `ENNReal`, ...)
 
-## Implementation details
+## Implementation notes
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
 where we don't have a `CanonicallyOrderedAdd` instance

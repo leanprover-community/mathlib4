@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 In this file we define subspaces of a projective space, and show that the subspaces of a projective
 space form a complete lattice under inclusion.
 
-## Implementation Details
+## Implementation notes
 
 A subspace of a projective space ℙ K V is defined to be a structure consisting of a subset of
 ℙ K V such that if two nonzero vectors in V determine points in ℙ K V which are in the subset, and

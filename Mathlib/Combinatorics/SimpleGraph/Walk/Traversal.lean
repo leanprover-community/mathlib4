@@ -23,6 +23,7 @@ Functions that help access different parts of a walk.
 * `SimpleGraph.Walk.lastDart`: The last dart of a non-empty walk
 
 ## Tags
+
 walks
 -/
 

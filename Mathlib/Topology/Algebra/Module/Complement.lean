@@ -52,7 +52,7 @@ change to something less misleading.
 * `Submodule.IsTopCompl.isClosed`: if `p` and `q` are topological complements in a Hausdorff space,
   they are closed.
 
-## Implementation details
+## Implementation notes
 
 In the definition of `Submodule.IsTopCompl`, we choose to ask for the continuity of the projection
 on the left submodule along the right one, because it is a simpler map to work with than the

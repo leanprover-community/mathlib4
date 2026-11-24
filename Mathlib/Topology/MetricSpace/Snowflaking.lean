@@ -45,6 +45,7 @@ However, if we change the metric on the first component to the one introduced in
 then these sets become balls, and we can apply Vitali theorem.
 
 ## References
+
 * [Carlos Gustavo T. de A. Moreira, *Hausdorff measures and the Morse-Sard theorem*][Moreira2001]
 -/
 

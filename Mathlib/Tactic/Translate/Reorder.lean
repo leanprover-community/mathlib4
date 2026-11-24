@@ -43,7 +43,7 @@ The universe reordering is always inferred automatically, using `guessUnivReorde
   For example, `le_total : ∀ a b : α, a ≤ b ∨ b ≤ a` is dual to itself after swapping `a` and `b`.
   Thanks to the heuristic in `guessReorder`, it suffices to write `@[to_dual self]`.
 
-## Implementation details
+## Implementation notes
 
 Permutation are stored as their disjoint cycle representation (`Permutation`).
 This allows efficiently permuting an array/list of arguments/universes
