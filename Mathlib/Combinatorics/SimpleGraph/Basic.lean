@@ -968,8 +968,8 @@ theorem Adj.commonNeighbors_ssubset_neighborSet_left (h : G.Adj u v) :
 
 variable {G} in
 theorem Adj.commonNeighbors_ssubset_neighborSet_right (h : G.Adj u v) :
-    G.commonNeighbors u v ⊂ G.neighborSet v :=
-  G.commonNeighbors_symm u v ▸ h.symm.commonNeighbors_ssubset_neighborSet_left
+    G.commonNeighbors u v ⊂ G.neighborSet v := by
+  grw [commonNeighbors_symm, h.symm.commonNeighbors_ssubset_neighborSet_left]
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
