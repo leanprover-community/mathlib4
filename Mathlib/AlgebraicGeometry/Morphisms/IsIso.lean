@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Being an isomorphism is local at the target
 -/
@@ -37,7 +40,7 @@ lemma isomorphisms_eq_stalkwise :
   congr 1
   ext X Y f
   exact ⟨fun H ↦ inferInstanceAs (IsIso (TopCat.isoOfHomeo
-    (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
+    (H.1.toIsEmbedding.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
 example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance

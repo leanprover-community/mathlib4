@@ -44,8 +44,8 @@ theorem IsPrefixFree.finsetSum_one_div_card_pow_length_le_one
     {S : Finset (List α)} (hS : IsPrefixFree (S : Set (List α))) :
     ∑ w ∈ S, (1 / (Fintype.card α : ℝ)) ^ w.length ≤ 1 := by
   by_cases hε : [] ∈ S
-  · have hS' : S = {[]} := by
-      exact mod_cast hS.eq_singleton_empty_of_empty_mem hε
+  · have hS' : S = {[]} :=
+      mod_cast hS.eq_singleton_empty_of_empty_mem hε
     simp [hS']
   · exact (hS.isUniquelyDecodable hε).finsetSum_one_div_card_pow_length_le_one
 

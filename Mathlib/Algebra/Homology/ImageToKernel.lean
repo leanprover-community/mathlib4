@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Image-to-kernel comparison maps
 

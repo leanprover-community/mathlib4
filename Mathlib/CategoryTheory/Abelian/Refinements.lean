@@ -64,6 +64,7 @@ with morphisms `A ⟶ X` in `C` which we may consider as being
 these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
+
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
   and exact embedding in abelian groups (1974)
   http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf

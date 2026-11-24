@@ -144,7 +144,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
       have : ∀ (l) (z : s (n + l)), ∃ z' : s (n + l + 1), edist (z : α) z' ≤ B n / 2 ^ l := by
         intro l z
         obtain ⟨z', z'_mem, hz'⟩ : ∃ z' ∈ s (n + l + 1), edist (z : α) z' < B n / 2 ^ l := by
-          refine exists_edist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.2 ?_
+          refine exists_edist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.property ?_
           simp only [ENNReal.inv_pow, div_eq_mul_inv]
           rw [← pow_add]
           apply hs <;> simp
@@ -164,7 +164,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by lia, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by lia, (z m).property⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.

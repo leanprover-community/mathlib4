@@ -64,7 +64,7 @@ noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := exp ∘ (↑)
   left_inv _ := argPartialEquiv.left_inv trivial
-  right_inv x := Subtype.ext <| argPartialEquiv.right_inv x.2
+  right_inv x := Subtype.ext <| argPartialEquiv.right_inv x.property
 
 lemma leftInverse_exp_arg : LeftInverse exp (arg ∘ (↑)) := exp_arg
 lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartialEquiv.symm.invOn
@@ -427,7 +427,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   continuous_invFun := by
     rw [continuous_iff_continuousAt]
     intro x
-    exact (continuousAt_arg_coe_angle x.coe_ne_zero).comp continuousAt_subtype_val
+    exact (continuousAt_arg_coe_angle x.coe_ne_zero).comp continuousAt_subtypeVal
 
 theorem homeomorphCircle'_apply_mk (x : ℝ) : homeomorphCircle' x = Circle.exp x := rfl
 

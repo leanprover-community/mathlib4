@@ -97,7 +97,7 @@ noncomputable def associatesEquivIsPrincipal :
     Associates R ≃ {I : Ideal R // IsPrincipal I} where
   toFun := _root_.Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
-  invFun I := .mk I.2.generator
+  invFun I := .mk I.property.generator
   left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using!
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp [← Associates.quotient_mk_eq_mk]
@@ -145,7 +145,7 @@ variable (R) in
 noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
     Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
   calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
-    _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
+    _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.val ∈ (Ideal R)⁰} :=
       Equiv.subtypeEquiv (associatesEquivIsPrincipal R)
         (fun x ↦ by rw [← quot_out x, mk_mem_nonZeroDivisors_associates,
           associatesEquivIsPrincipal_apply, span_singleton_nonZeroDivisors])
@@ -153,7 +153,7 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
     _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} :=
       .subtypeEquivProp <| by simp_rw [and_comm]
-    _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
+    _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.val} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
 
 @[simp]
 theorem associatesNonZeroDivisorsEquivIsPrincipal_apply (x : R⁰) :

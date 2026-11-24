@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Group.ModEq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence modulo multiples of an element in a (semi)field
 

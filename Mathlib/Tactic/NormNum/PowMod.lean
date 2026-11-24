@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.
 

@@ -67,7 +67,7 @@ in order to conveniently use the full strength of Fredholmness.
 * `IsFredholm.nonempty_fredholmPackage`: every Fredholm operator admits a Fredholm package.
   This is the primary way to obtain Fredholm packages.
 
-## Implementation details
+## Implementation notes
 
 We largely follow [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023],
 in particular for the proof of equivalence of the four conditions above.

@@ -33,6 +33,7 @@ counterparts in [Chou1994].
 * `SimpleGraph.Walk.edgeSet`: The set of edges of a walk visits
 
 ## Tags
+
 walks
 -/
 
@@ -368,6 +369,14 @@ theorem edgeSet_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
     (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
   simp [edgeSet]
+
+theorem finite_edgeSet (p : G.Walk v w) : p.edgeSet.Finite :=
+  p.edges.finite_toSet
+
+/-- The edge set of a walk is a `Fintype`. -/
+@[implicit_reducible]
+def fintypeEdgeSet [DecidableEq V] (p : G.Walk v w) : Fintype p.edgeSet :=
+  List.Subtype.fintype p.edges
 
 /-- Predicate for the empty walk.
 

@@ -6,8 +6,11 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 public import Mathlib.CategoryTheory.Monad.Algebra
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Special coequalizers associated to a monad

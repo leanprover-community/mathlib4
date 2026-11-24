@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points of a site
 
@@ -137,7 +140,7 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
     Cocone ((Functor.Elements.π Φ.fiber).op ⋙ P) where
   pt := Φ.presheafFiber.obj P
-  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+  ι.app x := Φ.toPresheafFiber x.unop.obj x.unop.val P
 
 /-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
 noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
@@ -179,7 +182,7 @@ set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :
     Φ.presheafFiber.obj P ⟶ T :=
-  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.1 x.unop.2 })
+  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.obj x.unop.val })
 
 set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]

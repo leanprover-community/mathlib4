@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exterior algebra of product module
 
@@ -60,8 +63,8 @@ variable {M N} in
 lemma map_inl_inr_anticomm (i j : ℕ) (a : ⋀[R]^i M) (b : ⋀[R]^j N) :
     (map (LinearMap.inl R M N)) a * (map (LinearMap.inr R M N)) b =
       (-1) ^ (j * i) • ((map (LinearMap.inr R M N)) b * (map (LinearMap.inl R M N)) a) := by
-  have amem : a.1 ∈ ⋀[R]^i M := a.2
-  have bmem : b.1 ∈ ⋀[R]^j N := b.2
+  have amem : a.val ∈ ⋀[R]^i M := a.property
+  have bmem : b.val ∈ ⋀[R]^j N := b.property
   rw [← (Submodule.ext_iff.mp (ιMulti_span_fixedDegree R _))] at amem bmem
   refine Submodule.span_induction₂ (p := fun x y hx hy ↦
     (map (LinearMap.inl R M N)) x * (map (LinearMap.inr R M N)) y =

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The evaluation functor on subcomplexes
 

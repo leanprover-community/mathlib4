@@ -18,6 +18,7 @@ canonical map that sends a one by one matrix `!![a]` to `a`.
 - `Matrix.uniqueAlgEquiv`
 
 ## Tags
+
 Matrix, Unique, AlgEquiv
 -/
 
@@ -57,6 +58,6 @@ def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
 @[simps!]
 def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
-  commutes' r := by aesop
+  map_smul' r := by aesop
 
 end Matrix

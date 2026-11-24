@@ -39,7 +39,7 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 * `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
   `Set.toFinite`. This will work for `s : Set α` where there is a `Finite α` instance.
 
-## Implementation Notes
+## Implementation notes
 
 The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
 `Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then
@@ -112,10 +112,10 @@ theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   rw [encard_eq_zero]
 
 theorem nonempty_of_encard_ne_zero (h : s.encard ≠ 0) : s.Nonempty := by
-  rwa [nonempty_iff_ne_empty, Ne, ← encard_eq_zero]
+  simpa using h
 
 theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
-  rw [ne_eq, encard_eq_zero, nonempty_iff_ne_empty]
+  simp
 
 @[simp] theorem encard_pos : 0 < s.encard ↔ s.Nonempty := by
   rw [pos_iff_ne_zero, encard_ne_zero]
@@ -215,7 +215,7 @@ theorem encard_sdiff (h : s ⊆ t) (hs : s.Finite) :
 @[deprecated (since := "2026-06-03")] alias encard_diff := encard_sdiff
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
+  simp [Order.one_le_iff_ne_zero]
 
 lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp
 
@@ -408,7 +408,7 @@ theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := 
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
-  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ← nonempty_iff_ne_empty]
+  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ne_empty_iff_nonempty]
   refine ⟨fun h a b has hbs ↦ ?_,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
@@ -504,7 +504,7 @@ theorem le_encard_iff_exists_fin_injective (s : Set α) (n : ℕ) :
     obtain ⟨t, hts, hte⟩ := exists_subset_encard_eq h
     let := (finite_of_encard_eq_coe hte).fintype
     let e := Fintype.equivFinOfCardEq <| ENat.natCast_inj.mp <| (coe_fintypeCard t).trans hte
-    exact ⟨Subtype.val ∘ e.symm, fun i ↦ hts (e.symm i).2,
+    exact ⟨Subtype.val ∘ e.symm, fun i ↦ hts (e.symm i).property,
       (Equiv.injective_comp e.symm Subtype.val).mpr Subtype.val_injective⟩
   · rintro ⟨f, hf, hfi⟩
     simpa only [ENat.card_eq_coe_fintype_card, Fintype.card_fin,
@@ -713,7 +713,7 @@ theorem ncard_le_card [Finite α] (s : Set α) : s.ncard ≤ Nat.card α :=
   rw [ncard_eq_zero]
 
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
-  rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, nonempty_iff_ne_empty]
+  simp [pos_iff_ne_zero, ncard_eq_zero hs]
 
 protected alias ⟨_, Nonempty.ncard_pos⟩ := ncard_pos
 
@@ -727,7 +727,7 @@ theorem finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
   finite_of_ncard_ne_zero hs.ne.symm
 
 theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
-  rw [nonempty_iff_ne_empty]; rintro rfl; simp at hs
+  by_contra! rfl; simp at hs
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
   simp [ncard]
@@ -931,7 +931,7 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
     (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
     s.ncard = t.ncard := by
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, h₁ _ _⟩
   have hbij : f'.Bijective := by
     constructor
     · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
@@ -981,7 +981,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   intro b hb
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, hf _ _⟩
   have finj : f'.Injective := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [f', Subtype.mk.injEq] at hxy ⊢
@@ -1002,7 +1002,7 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) (hs : s.Finite := by toFinite_tac) :
     a₁ = a₂ := by
   classical
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
+  set f' : s → t := fun x ↦ ⟨f x.val x.property, hf _ _⟩
   have hsurj : f'.Surjective := by
     rintro ⟨y, hy⟩
     obtain ⟨a, ha, rfl⟩ := hsurj y hy
@@ -1127,9 +1127,8 @@ theorem ncard_sdiff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
 @[deprecated (since := "2026-06-03")] alias ncard_diff_add_ncard := ncard_sdiff_add_ncard
 
 theorem sdiff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard)
-    (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty := by
-  rw [Set.nonempty_iff_ne_empty, Ne, sdiff_eq_empty]
-  exact fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
+    (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty :=
+  sdiff_nonempty.2 fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
 
 @[deprecated (since := "2026-06-03")]
 alias diff_nonempty_of_ncard_lt_ncard := sdiff_nonempty_of_ncard_lt_ncard
