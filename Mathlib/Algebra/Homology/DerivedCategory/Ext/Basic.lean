@@ -51,7 +51,10 @@ open Localization Limits ZeroObject DerivedCategory Pretriangulated
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
-abbrev HasExt : Prop :=
+-- Not an `abbrev`: the kernel unfolds an `abbrev` before comparing its arguments, so two copies
+-- of `HasExt C` whose universe levels are equal but written differently (as happens for
+-- categories of sheaves) would be compared by unfolding the whole definition.
+@[reducible] def HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
