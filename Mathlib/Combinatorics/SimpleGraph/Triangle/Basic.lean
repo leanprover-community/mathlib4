@@ -98,9 +98,9 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
-      any_goals
+      all_goals
         simp only [*, adj_comm, true_and, Ne, not_true] at *
-      any_goals
+      all_goals
         first
         | exact ⟨c, by aesop⟩
         | exact ⟨d, by aesop⟩
@@ -221,7 +221,7 @@ private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Fins
     rw [is3Clique_triple_iff]
     refine ⟨h _ _ ?_ ?_ xy.ne xy, h _ _ ?_ ?_ xz.ne xz, h _ _ ?_ ?_ yz.ne yz⟩ <;> simp
   choose fx fy hfx hfy hfne fmem using this
-  let f (t : {x // x ∈ tris}) : Sym2 α := s(fx t.2, fy t.2)
+  let f (t : {x // x ∈ tris}) : Sym2 α := s(fx t.property, fy t.property)
   have hf (x) (_ : x ∈ tris.attach) : f x ∈ G.edgeFinset \ H.edgeFinset := fmem _
   obtain ⟨⟨t₁, ht₁⟩, -, ⟨t₂, ht₂⟩, -, tne, t : s(_, _) = s(_, _)⟩ :=
     exists_ne_map_eq_of_card_lt_of_maps_to hG hf

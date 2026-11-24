@@ -142,7 +142,6 @@ end Cardinal
 
 namespace Cardinal
 
-set_option backward.isDefEq.respectTransparency false in
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -165,10 +164,6 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
 
 theorem bddAbove_of_small {s : Set Cardinal.{u}} [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
-
-@[deprecated bddAbove_of_small +typeChanged (since := "2026-04-04")]
-theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
-  bddAbove_of_small
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
@@ -338,12 +333,9 @@ protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
 @[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := natCast_lt_aleph0
 @[simp] lemma ofNat_le_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) ≤ ℵ₀ := natCast_le_aleph0
 
-@[simp]
-theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using natCast_lt_aleph0 (n := 1)
-
-@[simp]
-theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
-  one_lt_aleph0.le
+@[simp] theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using natCast_lt_aleph0 (n := 1)
+@[simp] theorem aleph0_ne_one : ℵ₀ ≠ 1 := one_lt_aleph0.ne'
+@[simp] theorem one_le_aleph0 : 1 ≤ ℵ₀ := one_lt_aleph0.le
 
 theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
   ⟨fun h => by
@@ -377,7 +369,7 @@ theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
   exact ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
 lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})
-  | 0, e => e.1 isMin_bot
+  | 0, e => e.not_isMin isMin_bot
   | Nat.succ n, h => by
     rw [Nat.cast_succ, ← succ_natCast] at h
     exact Order.not_isSuccLimit_succ _ h
@@ -397,12 +389,6 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
-
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
-lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
-    (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n := by
-  rw [← h]
-  exact exists_eq_ciSup_of_not_isSuccLimit hf (h ▸ not_isSuccLimit_natCast n)
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
@@ -765,12 +751,12 @@ theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆
   apply mk_iUnion_le
 
 theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
-    #(⋃ x ∈ s, A x) ≤ #s * ⨆ x : s, #(A x.1) := by
+    #(⋃ x ∈ s, A x) ≤ #s * ⨆ x : s, #(A x.val) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 
 theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : Set ι) :
-    lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.1) := by
+    lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.val) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le_lift
 
@@ -887,13 +873,13 @@ theorem mk_union_le_aleph0 {α} {P Q : Set α} :
   simp only [le_aleph0_iff_subtype_countable, ofPred_mem_eq, Set.union_def,
     ← countable_union]
 
-theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=
+theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.val } :=
   mk_congr (Equiv.Set.sep s t)
 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
+  use Subtype.coind (fun x => f x.val) fun x => mem_preimage.mp x.property
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)

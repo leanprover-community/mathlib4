@@ -29,7 +29,6 @@ we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
 or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
-
 -/
 
 @[expose] public section
@@ -177,7 +176,6 @@ def flipEquivalence : Square C ≌ Square C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
@@ -215,7 +213,6 @@ def arrowArrowEquivalence : Square C ≌ Arrow (Arrow C) where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/

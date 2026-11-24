@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Transport a symmetric monoidal structure along an equivalence of categories
 -/
 
@@ -60,7 +62,6 @@ braided, this causes a diamond.
 def transportedFunctorCompInverseBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] transportedFunctorCompInverseBraided in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where

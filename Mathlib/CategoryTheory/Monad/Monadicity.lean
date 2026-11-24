@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Monad.Coequalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monadicity theorems
 
@@ -34,7 +37,6 @@ Please try to keep them in sync.
 ## Tags
 
 Beck, monadicity, descent
-
 -/
 
 @[expose] public section
@@ -229,7 +231,6 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {G : D ⥤ C} {F : C ⥤ D} (adj : F ⊣ G)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `G` is monadic, it creates colimits of `G`-split pairs. This is the "boring" direction of Beck's

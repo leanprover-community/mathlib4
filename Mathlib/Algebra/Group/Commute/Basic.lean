@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Semiconj.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional lemmas about commuting pairs of elements in monoids
-
 -/
 
 public section

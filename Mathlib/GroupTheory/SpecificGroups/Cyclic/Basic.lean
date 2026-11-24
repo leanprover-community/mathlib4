@@ -5,13 +5,16 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Contrapose
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cyclic groups
@@ -39,14 +42,14 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 @[simp]
 theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
     IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
-  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+  ⟨fun H ↦ ⟨H.exists_zpow_surjective⟩, fun H ↦ ⟨H.exists_zsmul_surjective⟩⟩
 
 instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
 theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
-  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+  ⟨fun H ↦ ⟨H.exists_zsmul_surjective⟩, fun H ↦ ⟨H.exists_zpow_surjective⟩⟩
 
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
@@ -58,11 +61,6 @@ instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative �
     let ⟨_, hx⟩ := hg x
     let ⟨_, hy⟩ := hg y
     hy ▸ hx ▸ zpow_mul_comm ..
-
-@[deprecated (since := "2026-04-09")]
-alias IsAddCyclic.commutative := IsAddCyclic.isAddCommutative
-@[to_additive existing, deprecated (since := "2026-04-09")]
-alias IsCyclic.commutative := IsCyclic.isMulCommutative
 
 open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better

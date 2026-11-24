@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner fibrations
 
@@ -15,7 +18,6 @@ property with respect to all inner horn inclusions.
 
 Basic consequences of inner fibrations with respect to the definition of quasi-categories are
 formalized.
-
 -/
 
 public section

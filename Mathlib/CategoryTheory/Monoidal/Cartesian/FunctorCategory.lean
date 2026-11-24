@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functor categories have chosen finite products
 
 If `C` is a category with chosen finite products, then so is `J ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -28,14 +30,13 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 namespace Functor
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
   fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }
   snd X Y := { app _ := CartesianMonoidalCategory.snd _ _ }
   tensorProductIsBinaryProduct X Y :=
     evaluationJointlyReflectsLimits _ (fun j =>
       (IsLimit.postcomposeHomEquiv
-        (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
+        (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).toFun
         (IsLimit.ofIsoLimit
           (tensorProductIsBinaryProduct (X := X.obj j) (Y := Y.obj j))
           (Cone.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
@@ -74,27 +75,17 @@ lemma fst_app (F₁ F₂ : J ⥤ C) (j : J) : (fst F₁ F₂).app j = fst (F₁.
 @[simp]
 lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.obj j) (F₂.obj j) := rfl
 
-@[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
     (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
-    (λ_ F).inv.app j = (λ_ (F.obj j)).inv := by
-  rw [← cancel_mono ((λ_ (F.obj j)).hom), Iso.inv_hom_id, ← leftUnitor_hom_app,
-    Iso.inv_hom_id_app]
+    (λ_ F).inv.app j = (λ_ (F.obj j)).inv := rfl
 
-@[simp]
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
     (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
-    (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := by
-  rw [← cancel_mono ((ρ_ (F.obj j)).hom), Iso.inv_hom_id, ← rightUnitor_hom_app,
-    Iso.inv_hom_id_app]
+    (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := rfl
 
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
@@ -120,18 +111,12 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
 
-@[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
-    (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
-  simp
+    (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
-    (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
-  rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
+    (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
@@ -141,7 +126,6 @@ instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
   exact preservesColimitsOfShape_of_natIso this.symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A finite-products-preserving functor distributes over the tensor product of functors. -/
 @[simps!]
 noncomputable def tensorObjComp (F G : D ⥤ C) (H : C ⥤ E) [PreservesFiniteProducts H] :

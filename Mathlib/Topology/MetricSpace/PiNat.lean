@@ -55,7 +55,6 @@ in general), and `ι` is countable.
 * `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
 * `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
   continuous functions to metric spaces, can be embedded inside their product.
-
 -/
 
 open scoped Finset
@@ -77,22 +76,27 @@ namespace PiNat
 open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
-irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
+@[no_expose] def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
+
+open scoped Classical in
+lemma firstDiff_def (x y : ∀ n, E n) :
+    firstDiff x y = (if h : x ≠ y then Nat.find (ne_iff.1 h) else 0) :=
+  (rfl)
 
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
-  rw [firstDiff_def, dite_eq_left h]
+  rw [firstDiff, dite_eq_left h]
   classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
-  rw [firstDiff_def] at hn
+  rw [firstDiff] at hn
   aesop
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical
-  simp only [firstDiff_def, ne_comm]
+  simp only [firstDiff, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by
@@ -687,7 +691,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
   obtain ⟨f, fs, rfl, f_cont⟩ :
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
-  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.ext <| fs x x.2
+  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.ext <| fs x x.property
   exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
@@ -711,31 +715,31 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
-  let g : s → α := fun x => x.2.some
+  let g : s → α := fun x => x.property.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
-    (mem_iInter.1 x.2.some_mem n :)
+    (mem_iInter.1 x.property.some_mem n :)
   have g_cont : Continuous g := by
     refine continuous_iff_continuousAt.2 fun y => ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
     rcases eq_or_ne x y with (rfl | hne)
     · simp
-    have hne' : x.1 ≠ y.1 := Subtype.coe_injective.ne hne
-    have dist' : dist x y = dist x.1 y.1 := rfl
-    let n := firstDiff x.1 y.1 - 1
-    have diff_pos : 0 < firstDiff x.1 y.1 := by
+    have hne' : x.val ≠ y.val := Subtype.coe_injective.ne hne
+    have dist' : dist x y = dist x.val y.val := rfl
+    let n := firstDiff x.val y.val - 1
+    have diff_pos : 0 < firstDiff x.val y.val := by
       by_contra! h
       apply apply_firstDiff_ne hne'
       rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy
-    have hn : firstDiff x.1 y.1 = n + 1 := (Nat.succ_pred_eq_of_pos diff_pos).symm
+    have hn : firstDiff x.val y.val = n + 1 := (Nat.succ_pred_eq_of_pos diff_pos).symm
     rw [dist', dist_eq_of_ne hne', hn]
-    have B : x.1 n = y.1 n := mem_cylinder_firstDiff x.1 y.1 n (Nat.pred_lt diff_pos.ne')
+    have B : x.val n = y.val n := mem_cylinder_firstDiff x.val y.val n (Nat.pred_lt diff_pos.ne')
     calc
-      dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
+      dist (g x) (g y) ≤ dist (g x) (u (x.val n)) + dist (g y) (u (x.val n)) :=
         dist_triangle_right _ _ _
-      _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
+      _ = dist (g x) (u (x.val n)) + dist (g y) (u (y.val n)) := by rw [← B]
       _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
@@ -811,7 +815,7 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
-  grw [edist_eq_tsum, ← ENNReal.le_tsum i]
+  grw [edist_eq_tsum, ← le_tsum _ i]
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
@@ -844,7 +848,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
          min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
       gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
-    _ = _ := ENNReal.tsum_add ..
+    _ = _ := tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_ofPred_eq, comap_principal,
@@ -868,7 +872,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
-            (ENNReal.sum_add_tsum_compl ..).symm
+            (sum_add_tsum_compl ..).symm
           _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
             gcongr
             · apply min_le_right

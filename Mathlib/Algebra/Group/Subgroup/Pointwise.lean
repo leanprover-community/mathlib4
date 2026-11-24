@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
+
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -400,7 +401,7 @@ theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup 
 
 @[to_additive]
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
-    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ᵉ (g ∈ s) (x ∈ t), g • x ∈ t) {g : G}
+    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ g ∈ s, ∀ x ∈ t, g • x ∈ t) {g : G}
     (hg : g ∈ Subgroup.closure s) {x : X} (hx : x ∈ t) : g • x ∈ t := by
   induction hg using Subgroup.closure_induction'' generalizing x with
   | one => simpa
@@ -512,7 +513,7 @@ theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
   rintro - ⟨g, hg, rfl⟩
-  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
+  exact H.mul_mem (H.mul_mem h.property (hP hg)) (H.inv_mem h.property)
 
 theorem conj_smul_eq_self_of_mem {H : Subgroup G} {h : G} (hh : h ∈ H) :
     MulAut.conj h • H = H := by

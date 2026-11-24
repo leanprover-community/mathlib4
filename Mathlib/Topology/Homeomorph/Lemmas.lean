@@ -8,15 +8,15 @@ module
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Connected.LocallyConnected
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.DenseEmbedding
+
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Further properties of homeomorphisms
 
 This file proves further properties of homeomorphisms between topological spaces.
 Pretty much every topological property is preserved under homeomorphisms.
-
 -/
 
 @[expose] public section
@@ -133,15 +133,15 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
       (h.symm '' ·) := fun x ↦ by
     rw [← h.symm_map_nhds_eq]
-    exact (i.1 _).map _
+    exact (i.open_connected_basis _).map _
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
 /-- The codomain of a homeomorphism is a locally compact space if and only if
 the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
-    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
-  exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y :=
+  ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
     fun _ => h.isClosedEmbedding.locallyCompactSpace⟩
 
 @[simp]
@@ -172,7 +172,6 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
   h.subtype <| Set.ext_iff.mp h_eq
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Set.equivOfEq h
@@ -269,6 +268,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
@@ -298,6 +298,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   rw [Fin.appendEquiv_eq_homeomorph]
   exact Homeomorph.continuous_toFun _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
 `Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
@@ -329,6 +330,7 @@ set_option backward.defeqAttrib.useBackward true in
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
@@ -345,9 +347,10 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   -- TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.mapsToRestrict (mapsTo_image _ _)
-  continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
+  continuous_invFun := (e.symm.continuous.comp continuous_subtypeVal).codRestrict _
   toEquiv := e.toEquiv.image s
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
@@ -358,14 +361,15 @@ def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
 def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
+    (continuous_subtypeVal.fst.subtype_mk _).prodMk (continuous_subtypeVal.snd.subtype_mk _)
   continuous_invFun :=
-    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
+    (continuous_subtypeVal.fst'.prodMk continuous_subtypeVal.snd').subtype_mk _
 
 section
 
 variable {ι : Type*}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not. -/
 @[simps!]
@@ -379,6 +383,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
 
 variable [DecidableEq ι] (i : ι)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]
@@ -541,11 +546,25 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   refine and_congr_right fun hf ↦ ?_
   rw [eq_true hf.isClosedMap, true_and]
 
+@[simp]
+lemma Equiv.isHomeomorph_symm_iff (e : X ≃ Y) : IsHomeomorph e.symm ↔ IsHomeomorph e := by
+  simp [Equiv.isHomeomorph_iff, and_comm]
+
+lemma Equiv.isHomeomorph_iff_isInducing (e : X ≃ Y) : IsHomeomorph e ↔ IsInducing e := by
+  simp [isHomeomorph_iff_isEmbedding_surjective, isEmbedding_iff, e.injective, e.surjective]
+
+lemma Equiv.isHomeomorph_iff_isCoinducing (e : X ≃ Y) : IsHomeomorph e ↔ IsCoinducing e := by
+  simp [isHomeomorph_iff_isQuotientMap_injective, isQuotientMap_iff, e.injective, e.surjective]
+
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
+    IsHomeomorph (Sum.map f g) :=
+  ⟨hf.continuous.sumMap hg.continuous, hf.isOpenMap.sumMap hg.isOpenMap,
+    hf.bijective.sumMap hg.bijective⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
+    IsHomeomorph (Prod.map f g) :=
+  ⟨hf.continuous.prodMap hg.continuous, hf.isOpenMap.prodMap hg.isOpenMap,
+    hf.bijective.prodMap hg.bijective⟩
 
 lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}
@@ -566,6 +585,48 @@ def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y
 theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
   (Homeomorph.ofDiscrete f).isHomeomorph
+
+/- The equivalence between a disjoint union of sets and a disjoint union of the corresponding
+subtypes is a homeomorphism if and only if each set has a neighbourhood that is disjoint from all
+other sets. -/
+lemma Set.isHomeomorph_unionEqSigmaOfDisjoint_iff {ι : Type*} {s : ι → Set X}
+    (hs : Pairwise (Disjoint on s)) :
+    IsHomeomorph (unionEqSigmaOfDisjoint hs) ↔
+      ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j) := by
+  rw [← Equiv.isHomeomorph_symm_iff, Equiv.isHomeomorph_iff_isInducing, inducing_sigma]
+  refine ⟨fun h i ↦ ?_, fun h ↦ ⟨?_, fun i ↦ ?_⟩⟩
+  · obtain ⟨u, hu, h⟩ := h.2 i
+    obtain ⟨v, hv, rfl⟩ := IsInducing.subtypeVal.isOpen_iff.1 hu
+    exact ⟨v, hv.mem_nhdsSet.2 fun x hx ↦ by simpa using h ⟨i, x, hx⟩,
+      fun j hj ↦ Set.disjoint_iff.2 fun x hx ↦ by simpa [hx.1, hj] using h ⟨j, x, hx.2⟩⟩
+  · simp [Function.comp_def, ← IsInducing.subtypeVal.of_comp_iff, IsInducing.subtypeVal]
+  · obtain ⟨u, hu, hu'⟩ := h i
+    obtain ⟨v, hvu, hv, hv'⟩ := mem_nhdsSet.1 hu
+    refine ⟨(↑) ⁻¹' v, hv.preimage_val, fun x ↦ ⟨fun h ↦ ?_, ?_⟩⟩
+    · simp only [mem_preimage, coe_unionEqSigmaOfDisjoint_symm_apply] at h
+      contrapose! h
+      exact notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.property
+    · intro rfl
+      simp [hv' x.snd.property]
+
+/-- The homeomorphism between a disjoint union of sets and a disjoint union of the corresponding
+subtypes when each set has a neighbourhood that is disjoint from all other sets. -/
+@[simps! symm_apply_coe]
+noncomputable def Homeomorph.Set.iUnion {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
+    ⋃ i, s i ≃ₜ Σ i, s i :=
+  (unionEqSigmaOfDisjoint fun i j h ↦ ?_).toHomeomorphOfIsInducing <|
+    ((Set.isHomeomorph_unionEqSigmaOfDisjoint_iff _).2 hs).isInducing
+where finally
+  obtain ⟨u, hu, hu'⟩ := hs i
+  exact (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
+
+@[simp]
+lemma Homeomorph.Set.iUnion_apply_snd_coe {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
+    ((Homeomorph.Set.iUnion hs x).snd : X) = x := by
+  rw [iUnion, Equiv.toHomeomorphOfIsInducing_apply]
+  exact coe_snd_unionEqSigmaOfDisjoint _ _
 
 section
 

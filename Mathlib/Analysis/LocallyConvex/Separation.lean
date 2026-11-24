@@ -5,11 +5,12 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Cone.Extension
-public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+import Mathlib.Analysis.Convex.Cone.Extension
+import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Separation Hahn-Banach theorem
@@ -66,7 +67,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
       (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_isOpen hs₂ hx)
     refine ⟨⟨φ, ?_⟩, hφ₃, hφ₄⟩
     refine
-      φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩) ?_
+      φ.continuous_of_ne_zero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩) ?_
     rintro _ ⟨x, hx, rfl⟩
     change φ (-x₀ + x) ≠ 0
     rw [map_add, map_neg]

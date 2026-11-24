@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integer powers of square matrices
 

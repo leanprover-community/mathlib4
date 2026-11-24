@@ -571,7 +571,7 @@ theorem adjoin_toSubmodule (s : Set A) :
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R hx
 
 @[simp]
@@ -735,11 +735,11 @@ theorem toNonUnitalSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R
   simp [← SetLike.coe_set_eq]
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← IsConcreteLE.le_iff]
+  rw [← le_iff_mem_imp_mem]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -1029,7 +1029,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           dsimp
           apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)
-          all_goals simp }
+          simp }
 
 variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· ≤ ·) K}
   {f : ∀ i, K i →ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}

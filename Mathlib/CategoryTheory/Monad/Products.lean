@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Monad.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebras for the coproduct monad
 
@@ -40,7 +43,6 @@ open Comonad
 
 variable [HasBinaryProducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `X ⨯ -` has a comonad structure. This is sometimes called the writer comonad. -/
 @[simps!]
 def prodComonad : Comonad C where

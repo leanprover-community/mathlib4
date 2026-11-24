@@ -5,11 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Tactic.Attr.Core
 
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.Common
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Set enumeration

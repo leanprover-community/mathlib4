@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Topology.Category.TopCat.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological simplices
 
@@ -44,7 +47,6 @@ associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
   toTop₀ ⋙ TopCat.uliftFunctor
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : SimplexCategory) : Nonempty (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : Nonempty (toTop.{u}.obj n) := inferInstanceAs (Nonempty (ULift _))
@@ -53,7 +55,6 @@ noncomputable instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Uniqu
 
 noncomputable instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=

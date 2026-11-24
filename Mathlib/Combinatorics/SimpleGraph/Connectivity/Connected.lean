@@ -158,6 +158,13 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   }
   exact aux hu hr.some
 
+lemma Walk.reachable_of_mem_support {u v x y} {w : G.Walk u v} (hx : x ∈ w.support)
+    (hy : y ∈ w.support) : G.Reachable x y := by
+  induction w generalizing x y with
+  | nil => simp_all
+  | cons hadj w ih =>
+    grind [w.start_mem_support, Adj.reachable, Adj.symm, Reachable.trans]
+
 variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
@@ -304,6 +311,44 @@ theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
+variable {G} in
+theorem Preconnected.finite_dart_iff_finite (h : G.Preconnected) : Finite G.Dart ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ inferInstance⟩
+  nontriviality V
+  exact finite_dart_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
+
+variable {G} in
+theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact h.finite_dart_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
+    G.support.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.support.toFinite⟩
+  nontriviality V
+  rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
+
+variable {G} in
+theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
+    G.support.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_support_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
+    G.edgeSet.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.edgeSet.toFinite⟩
+  nontriviality V
+  rwa [finite_edgeSet_iff_finite_support, h.finite_support_iff_finite] at hfin
+
+variable {G} in
+theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
+    G.edgeSet.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_edgeSet_iff_finite
+
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
 exactly one connected component.
@@ -437,7 +482,7 @@ theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
 assumption that the vertices are connected by a path. -/
 protected def lift {β : Sort*} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
-  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
+  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.property
 
 @[simp]
 protected theorem lift_mk {β : Sort*} {f : V → β}
@@ -453,9 +498,28 @@ protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
   Quot.mk_surjective.forall
 
-theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
-    Subsingleton G.ConnectedComponent :=
-  ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
+theorem _root_.SimpleGraph.nonempty_connectedComponent_iff :
+    Nonempty G.ConnectedComponent ↔ Nonempty V :=
+  nonempty_quotient_iff G.reachableSetoid
+
+theorem _root_.SimpleGraph.isEmpty_connectedComponent_iff :
+    IsEmpty G.ConnectedComponent ↔ IsEmpty V := by
+  contrapose!
+  exact nonempty_connectedComponent_iff
+
+theorem _root_.SimpleGraph.subsingleton_connectedComponent_iff :
+    Subsingleton G.ConnectedComponent ↔ G.Preconnected := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  simp [preconnected_iff_reachable_eq_top, this, reachableSetoid]
+
+alias ⟨_, _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent⟩ :=
+  subsingleton_connectedComponent_iff
+
+theorem _root_.SimpleGraph.card_connectedComponent_eq_one_iff :
+    Nat.card G.ConnectedComponent = 1 ↔ G.Connected := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  rw [Nat.card_eq_one_iff_unique, subsingleton_connectedComponent_iff, this, nonempty_quotient_iff,
+    connected_iff]
 
 /-- This is `Quot.recOn` specialized to connected components.
 For convenience, it strengthens the assumptions in the hypothesis
@@ -468,7 +532,7 @@ def recOn
     (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ConnectedComponent.sound p.reachable ▸ f u = f v) :
     motive c :=
-  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.property
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
@@ -574,6 +638,14 @@ lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w)
   constructor <;> intro h <;> simp only [← h] <;> apply connectedComponentMk_eq_of_adj
   · exact hadj.symm
   · exact hadj
+
+@[simp]
+theorem encard_supp (C : G.ConnectedComponent) : C.supp.encard = ENat.card C :=
+  rfl
+
+@[simp]
+theorem ncard_supp (C : G.ConnectedComponent) : C.supp.ncard = Nat.card C :=
+  rfl
 
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
@@ -704,6 +776,29 @@ theorem maximal_connected_induce_iff (s : Set V) :
   · exact h ▸ maximal_connected_induce_supp _
 
 end ConnectedComponent
+
+variable (G) in
+/-- The vertices of a graph are partitioned among its connected components. -/
+@[simps!]
+def verticesEquivSigmaConnectedComponent : V ≃ Σ c : G.ConnectedComponent, c :=
+  .symm <| .sigmaFiberEquiv G.connectedComponentMk
+
+variable (G) in
+/-- The edges of a graph are partitioned among its connected components. -/
+@[simps!]
+def edgeSetEquivSigmaConnectedComponent :
+    G.edgeSet ≃ Σ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet :=
+  .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
+
+variable (G) in
+theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
+  simp [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
+
+variable (G) in
+theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
+  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
 homomorphism from `G` to `H`. -/
@@ -978,5 +1073,13 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro w hwp
   by_contra hws
   exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
+
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+  have : Nontrivial V := nontrivial_of_degree_ne_zero <| ne_zero_of_eq_one hdeg
+  have := Set.nonempty_compl_of_nontrivial v |>.to_subtype
+  refine ⟨hconn.preconnected.induce_of_degree_eq_one ?_⟩
+  simp [← Set.ncard_le_one_iff_subsingleton, hdeg]
 
 end SimpleGraph

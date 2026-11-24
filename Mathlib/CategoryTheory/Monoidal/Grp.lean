@@ -518,7 +518,6 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   isTerminalTensorUnit :=
@@ -675,7 +674,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[to_additive (attr := simps)
 /-- `mapAddGrp` is functorial in the left-exact functor. -/]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
-  obj F := F.1.mapGrp
+  obj F := F.obj.mapGrp
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/

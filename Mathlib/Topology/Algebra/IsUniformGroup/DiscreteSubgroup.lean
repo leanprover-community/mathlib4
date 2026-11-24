@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.OpenSubgroup
 
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete subgroups of topological groups
 
@@ -41,7 +44,7 @@ def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K)
 @[to_additive (attr := simp)]
 lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
     {H K : Subgroup G} (hHK : H ≤ K) (g : H) :
-    (subgroupOfContinuousMulEquivOfLe hHK).symm g = ⟨⟨g.1, hHK g.2⟩, g.2⟩ :=
+    (subgroupOfContinuousMulEquivOfLe hHK).symm g = ⟨⟨g.val, hHK g.property⟩, g.property⟩ :=
   rfl
 
 @[to_additive (attr := simp)]

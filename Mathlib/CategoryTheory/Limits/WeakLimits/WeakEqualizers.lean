@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak equalizers
 
 These are weak limits for diagrams of shape `WalkingParallelPair`.
-
 -/
 
 @[expose] public section
@@ -63,7 +65,6 @@ theorem weakEqualizer.fork_π_app_zero :
 theorem weakEqualizer.condition : weakEqualizer.ι f g ≫ f = weakEqualizer.ι f g ≫ g :=
   Fork.condition <| weakLimit.cone <| parallelPair f g
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The weak equalizer built from `weakEqualizer.ι f g` is weakly limiting. -/
 def weakEqualizerIsWeakEqualizer : IsWeakLimit (Fork.ofι (weakEqualizer.ι f g)
     (weakEqualizer.condition f g)) :=
@@ -122,6 +123,6 @@ same `s` for all parts. -/
 def Fork.IsWeakLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι}) :
     IsWeakLimit t :=
-  Fork.IsWeakLimit.mk t (fun s => (create s).1) (fun s => (create s).2)
+  Fork.IsWeakLimit.mk t (fun s => (create s).val) (fun s => (create s).property)
 
 end CategoryTheory.Limits

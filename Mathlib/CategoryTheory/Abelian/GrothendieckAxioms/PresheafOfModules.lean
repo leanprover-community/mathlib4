@@ -12,9 +12,11 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of presheaves of modules is Grothendieck abelian
-
 -/
 
 universe u

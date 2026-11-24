@@ -74,30 +74,32 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   introv R hs H
   algebraize [f]
   refine ⟨fun P _ ↦ ?_⟩
-  have (r : s) : Module.Finite P.ResidueField (P.Fiber (Localization.Away r.1)) := by
-    have : Algebra.QuasiFinite R (Localization.Away r.1) := quasiFinite_algebraMap.mp (H r)
+  have (r : s) : Module.Finite P.ResidueField (P.Fiber (Localization.Away r.val)) := by
+    have : Algebra.QuasiFinite R (Localization.Away r.val) := quasiFinite_algebraMap.mp (H r)
     infer_instance
-  let φ (r : s) : P.Fiber S →ₐ[P.ResidueField] P.Fiber (Localization.Away r.1) :=
+  let φ (r : s) : P.Fiber S →ₐ[P.ResidueField] P.Fiber (Localization.Away r.val) :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
-  let f : P.Fiber S →ₐ[P.ResidueField] Π r : s, (P.Fiber (Localization.Away r.1)) :=
+  let f : P.Fiber S →ₐ[P.ResidueField] Π r : s, (P.Fiber (Localization.Away r.val)) :=
     AlgHom.pi φ
-  have : IsNoetherian P.ResidueField (Π r : s, (P.Fiber (Localization.Away r.1))) :=
+  have : IsNoetherian P.ResidueField (Π r : s, (P.Fiber (Localization.Away r.val))) :=
     isNoetherian_of_isNoetherianRing_of_finite ..
   suffices Function.Injective f from .of_injective f.toLinearMap this
   rw [injective_iff_map_eq_zero]
   intro a ha
   apply eq_zero_of_localization _ fun J hJ ↦ ?_
   let I := (PrimeSpectrum.primesOverOrderIsoFiber R S P).symm ⟨J, inferInstance⟩
-  have : ¬ (s : Set S) ⊆ I.1 := fun h ↦
+  have : ¬ (s : Set S) ⊆ I.val := fun h ↦
     Ideal.IsPrime.ne_top' (top_le_iff.mp (hs.symm.trans_le (Ideal.span_le.mpr h)))
   obtain ⟨r, hrs, hrI⟩ := Set.not_subset.mp this
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨IsLocalization.map (M := .powers r)
-      (T := J.primeCompl) _ Algebra.TensorProduct.includeRight.toRingHom (by
-      simpa [Submonoid.powers_le] using! hrI), by
-      simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
-        -Algebra.TensorProduct.algebraMap_apply,
-        ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)
+    Algebra.TensorProduct.lift (Algebra.ofId _ _)
+      { toRingHom := IsLocalization.map (M := .powers r) (T := J.primeCompl) _
+          Algebra.TensorProduct.includeRight.toRingHom (by simpa [Submonoid.powers_le] using! hrI),
+        commutes' := by
+          simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
+            -Algebra.TensorProduct.algebraMap_apply,
+            ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)] }
+      (fun _ _ ↦ .all _ _)
   have hψ : ψ.comp (φ ⟨r, hrs⟩) = IsScalarTower.toAlgHom _ _ _ := by ext; simp [φ, ψ]
   refine congr($hψ a).symm.trans
     (show ψ (f a ⟨r, hrs⟩) = 0 by simp only [ha, Pi.zero_apply, map_zero])

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.AdjoinRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining elements to a field
 

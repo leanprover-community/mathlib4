@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Over X` when `C` has strict initial objects
 
@@ -26,7 +29,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `Over X` is equivalent to a point. -/
 @[simps, pp_with_univ]
@@ -40,7 +42,6 @@ def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `Under X` is equivalent to a point. -/
 @[simps, pp_with_univ]

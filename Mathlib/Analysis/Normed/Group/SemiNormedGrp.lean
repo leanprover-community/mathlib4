@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of seminormed groups
 
@@ -234,23 +237,23 @@ structure Hom (M N : SemiNormedGrp₁.{u}) where
 instance : LargeCategory.{u} SemiNormedGrp₁ where
   Hom := Hom
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
+  comp {_ _ _} f g := ⟨g.hom'.comp f.hom', g.normNoninc.comp f.normNoninc⟩
 
 @[macro_inline]
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
-  coe f := f.1.toFun
+  coe f := f.val.toFun
   coe_injective _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
     fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where
-  hom f := ⟨f.1, f.2⟩
-  ofHom f := ⟨f.1, f.2⟩
+  hom f := ⟨f.hom', f.normNoninc⟩
+  ofHom f := ⟨f.val, f.property⟩
 
 instance (X Y : SemiNormedGrp₁) :
     AddMonoidHomClass { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
-  map_add f := map_add f.1
-  map_zero f := map_zero f.1
+  map_add f := map_add f.val
+  map_zero f := map_zero f.val
 
 /-- Turn a morphism in `SemiNormedGrp₁` back into a norm-nonincreasing `NormedAddGroupHom`. -/
 abbrev Hom.hom {M N : SemiNormedGrp₁.{u}} (f : Hom M N) :=
@@ -269,7 +272,7 @@ def Hom.Simps.hom (M N : SemiNormedGrp₁.{u}) (f : Hom M N) : NormedAddGroupHom
 initialize_simps_projections Hom (hom' → hom)
 
 instance (X Y : SemiNormedGrp₁) : CoeFun (X ⟶ Y) (fun _ => X → Y) where
-  coe f := f.hom.1
+  coe f := f.hom.val
 
 theorem mkHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (i : f.NormNoninc) (x) :
@@ -292,7 +295,7 @@ lemma id_apply (M : SemiNormedGrp₁) (r : M) :
 
 @[simp]
 lemma hom_comp {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom.1 = g.hom.1.comp f.hom.1 := rfl
+    (f ≫ g).hom.val = g.hom.val.comp f.hom.val := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
@@ -344,7 +347,7 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun f => SemiNormedGrp.ofHom f.1 }
+      map := fun f => SemiNormedGrp.ofHom f.hom' }
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
   rfl
@@ -380,10 +383,10 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
   refine AddMonoidHomClass.isometry_of_norm _ ?_
   intro v
-  apply le_antisymm (i.hom.2 v)
+  apply le_antisymm (i.hom.normNoninc v)
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
-    _ ≤ ‖i.hom v‖ := i.inv.2 _
+    _ ≤ ‖i.hom v‖ := i.inv.normNoninc _
 
 end SemiNormedGrp₁
 

@@ -8,13 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes of a simplicial set
 
 Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
-
 -/
 
 @[expose] public section
@@ -226,7 +228,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).val = f.app _ x := rfl
 
 end
 
@@ -291,7 +293,6 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :

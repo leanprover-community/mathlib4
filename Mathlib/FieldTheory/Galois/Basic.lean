@@ -35,7 +35,6 @@ Together, these two results prove the Galois correspondence.
 
 - Instances for `Algebra.IsQuadraticExtension`: a quadratic extension is Galois (if separable)
   with cyclic and thus abelian Galois group.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h => ⟨h.to_isSeparable, h.to_normal⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 
@@ -108,11 +107,11 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Nat.card Gal(E/F) = finrank F E := by
   obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
-    { toFun := fun e => e.val
-      invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      map_mul' := fun _ _ => rfl
-      map_add' := fun _ _ => rfl
-      commutes' := fun _ => rfl }
+    { toFun e := e.val
+      invFun e := ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
+      map_mul' _ _ := rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
@@ -227,8 +226,10 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] :
 nonrec def fixingSubgroup : Subgroup Gal(E/F) :=
   fixingSubgroup Gal(E/F) (K : Set E)
 
-theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
+theorem le_fixedField_iff_le_fixingSubgroup : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
+
+@[deprecated (since := "2026-10-09")] alias le_iff_le := le_fixedField_iff_le_fixingSubgroup
 
 /-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
 theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
@@ -260,26 +261,27 @@ theorem fixingSubgroup_sup {K L : IntermediateField F E} :
     (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
   ext φ
   exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
-    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
+    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_fixedField_iff_le_fixingSubgroup]⟩
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `Gal(E/K)`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
-  toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : Gal(E/F)) with commutes' := ϕ.mem }
+  toFun ϕ := .ofCommutes (AlgEquiv.toRingEquiv (ϕ : Gal(E/F))) ϕ.mem
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
 @[simp]
 theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
-    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.val :=
   rfl
 
 @[simp]
 theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
-    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+    ⇑(K.fixingSubgroupEquiv.symm σ).val = ⇑σ :=
   rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
-  have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
+  have H_le : H ≤ fixingSubgroup (fixedField H) :=
+    (le_fixedField_iff_le_fixingSubgroup _ _).mp le_rfl
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
     exact SetLike.coe_injective (Set.eq_of_inclusion_surjective
       ((Nat.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
@@ -298,17 +300,18 @@ def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
 
 @[simp]
 theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
-    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.val :=
   rfl
 
 @[simp]
 theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
-    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+    ⇑((subgroupEquivAlgEquiv H).symm σ).val = ⇑σ :=
   rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
-    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
+    rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.property x,
+      show ϕ • (y : E) = ↑y from y.property ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   algebraMap :=
@@ -332,7 +335,7 @@ i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
-    (IntermediateField.le_iff_le _ _).mpr le_rfl
+    (IntermediateField.le_fixedField_iff_le_fixingSubgroup _ _).mpr le_rfl
   suffices
     finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
     exact (IntermediateField.eq_of_le_of_finrank_eq' K_le this).symm
@@ -372,7 +375,8 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
   left_inv K := fixedField_fixingSubgroup K
   right_inv H := IntermediateField.fixingSubgroup_fixedField H
   map_rel_iff' {K L} := by
-    rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
+    rw [← fixedField_fixingSubgroup L, le_fixedField_iff_le_fixingSubgroup,
+      fixedField_fixingSubgroup L]
     rfl
 
 section
@@ -392,6 +396,10 @@ theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Sub
   simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
     eq_comm]
 
+theorem fixedField_le_iff_fixingSubgroup_le {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    IntermediateField.fixedField H ≤ K ↔ K.fixingSubgroup ≤ H :=
+  intermediateFieldEquivSubgroup.symm_apply_le
+
 end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
@@ -401,7 +409,7 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
       ((IntermediateField.fixedField : Subgroup Gal(E/F) → IntermediateField F E) ∘
         OrderDual.toDual) where
   choice K _ := IntermediateField.fixingSubgroup K
-  gc K H := (IntermediateField.le_iff_le H K).symm
+  gc K H := (IntermediateField.le_fixedField_iff_le_fixingSubgroup H K).symm
   le_l_u H := le_of_eq (IntermediateField.fixingSubgroup_fixedField H).symm
   choice_eq _ _ := rfl
 
@@ -425,11 +433,11 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 open IntermediateField
 
 open scoped Pointwise
-
+-- #count_heartbeats in
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
-    restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
+  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, AlgEquiv.one_apply,
+    Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois
 
@@ -442,7 +450,7 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
   to_normal := by
     apply normal_iff_forall_map_le'.mpr
     rintro σ x ⟨a, ha, rfl⟩ τ
-    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
+    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.val τ.property σ⟩)
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/
@@ -802,9 +810,5 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
-theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
-  inferInstance
 
 end Algebra
