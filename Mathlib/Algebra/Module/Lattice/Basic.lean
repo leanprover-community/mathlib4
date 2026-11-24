@@ -97,6 +97,12 @@ theorem finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg A M
 
+/-- The `R`-rank of a lattice is at most the `A`-rank of its `A`-span. -/
+theorem rank_le_rank_span [Nontrivial A] [IsLattice A M] :
+    Module.rank R M ≤ Module.rank A (span A (M : Set V)) :=
+  have : Nontrivial R := (algebraMap R A).domain_nontrivial
+  M.rank_le_rank_span_of_linearIndepOn linearIndepOn
+
 /-- A finitely generated submodule of a lattice is a lattice. -/
 theorem mono_of_fg {M N : Submodule R V} (hle : M ≤ N) (hfg : M.FG) [IsLattice A N] :
     IsLattice A M where
@@ -131,6 +137,50 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     rw [← linearIndepOn_id_smul_set_iff a⁻¹] at hs ⊢
     exact linearIndepOn _ hsM hs
 
+variable [IsDomain R]
+
+/-- If a lattice contains an element that is not `R`-torsion, then `A` has no `R`-torsion. -/
+theorem isTorsionFree [IsLattice A M] {m : V} (hmM : m ∈ M)
+    (hm : ∀ r : R, r • m = 0 → r = 0) : Module.IsTorsionFree R A := by
+  refine .of_smul_eq_zero fun r a hra ↦ or_iff_not_imp_left.mpr fun hr ↦ ?_
+  refine linearIndepOn _ (Set.singleton_subset_iff.mpr (M.smul_mem r hmM))
+    (.singleton' fun c hc ↦ ?_) |>.eq_zero_of_smul_mem_span rfl a ?_
+  · rw [id, smul_smul] at hc
+    exact (mul_eq_zero.mp (hm _ hc)).resolve_right hr
+  simp [smul_comm a r m, ← smul_assoc, hra]
+
+/-- The `R`-rank of a lattice equals the `A`-rank of its `A`-span. -/
+theorem rank_span_eq_rank [FaithfulSMul R A] [IsLattice A M] :
+    Module.rank A (span A (M : Set V)) = Module.rank R M := by
+  have : Nontrivial A := (FaithfulSMul.algebraMap_injective R A).nontrivial
+  refine le_antisymm ?_ (rank_le_rank_span A M)
+  obtain ⟨S, hS⟩ := fg A M
+  obtain ⟨s, hs, r, hr0, hr⟩ := exists_linearIndepOn_smul_mem_span' (R := R) ((↑) : S → V)
+  rw [Subtype.range_coe, hS] at hr
+  set s' := ((↑) : S → V) '' s
+  have hsub : s' ⊆ M := by rintro _ ⟨x, _, rfl⟩; exact hS ▸ subset_span x.property
+  have hs' : LinearIndepOn R id s' := hs.id_image
+  have hrV : r • span A (M : Set V) ≤ span A s' := by
+    rw [← span_smul]
+    exact (span_mono (Set.smul_set_subset_iff.mpr hr)).trans (span_span_of_tower R A s').le
+  rcases s'.eq_empty_or_nonempty with hs₀ | ⟨m₀, hm₀⟩
+  · refine (rank_eq_zero_iff.mpr fun x ↦ ⟨algebraMap R A r, ?_, Subtype.ext ?_⟩).trans_le zero_le
+    · exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective R A)).mpr hr0
+    · simpa [hs₀] using hrV ⟨x.val, x.property, rfl⟩
+  have := isTorsionFree A M (hsub hm₀) fun c hc ↦ hs'.eq_zero_of_smul_mem_span hm₀ _ (by simp [hc])
+  have hc : IsRightRegular (algebraMap R A r) :=
+    ((isSMulRegular_algebraMap_iff A).mpr (.of_ne_zero hr0)).isLeftRegular.right_of_commute
+      (Commute.all _)
+  grw [rank_le_of_isRightRegular _ _ hc fun x hx ↦ by simpa using hrV ⟨x, hx, rfl⟩,
+    rank_span_set (linearIndepOn s' hsub hs'), ← rank_span_set hs']
+  exact Submodule.rank_mono (span_le.mpr hsub)
+
+/-- The `R`-rank of a lattice equals the `A`-rank of its `A`-span.
+This is the finrank version of `rank_span_eq_rank`. -/
+theorem finrank_span_eq_finrank [FaithfulSMul R A] [IsLattice A M] :
+    finrank A (span A (M : Set V)) = finrank R M :=
+  congr(Cardinal.toNat $(rank_span_eq_rank A M))
+
 end CommRing
 
 section Field
@@ -138,17 +188,6 @@ section Field
 variable (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 variable (M : Submodule R V)
-
-/-- The `R`-rank of a lattice equals the `K`-dimension of its `K`-span. -/
-theorem rank_span_eq_rank [IsLattice K M] :
-    Module.rank K (span K (M : Set V)) = Module.rank R M :=
-  have : Nontrivial R := (algebraMap R K).domain_nontrivial
-  rank_span_eq_rank_of_linearIndepOn M linearIndepOn
-
-/-- The `R`-rank of a lattice equals the `K`-dimension of its `K`-span.
-This is the finrank version of `rank_span_eq_rank`. -/
-theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V)) = finrank R M :=
-  congr(Cardinal.toNat $(rank_span_eq_rank K M))
 
 /-- An `R`-module `M` is a lattice in an ambient `K`-module `V` if and only if `M`
 is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span. -/
