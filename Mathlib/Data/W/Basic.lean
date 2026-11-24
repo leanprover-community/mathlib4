@@ -24,7 +24,7 @@ are commonly used to formalize syntax, e.g. terms and expressions in a given lan
 is illustrated in the example found in the file `prop_encodable` in the `archive/examples` folder of
 mathlib.
 
-## Implementation details
+## Implementation notes
 
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.

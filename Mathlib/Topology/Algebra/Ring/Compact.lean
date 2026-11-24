@@ -19,6 +19,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 # Compact Hausdorff Rings
 
 ## Main results
+
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
   Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:

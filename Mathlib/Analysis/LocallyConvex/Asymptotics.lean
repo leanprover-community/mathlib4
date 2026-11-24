@@ -19,7 +19,7 @@ set_option doc.verso.suggestions false
 We provide a characterization of `IsBigOTVS` and `IsLittleOTVS` in terms of continuous seminorms
 and families of seminorms.
 
-## Main results:
+## Main results
 
 * `PolynormableSpace.isBigOTVS_iff`
 * `PolynormableSpace.isLittleOTVS_iff`

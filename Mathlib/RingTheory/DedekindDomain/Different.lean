@@ -16,12 +16,14 @@ import Mathlib.RingTheory.Finiteness.Quotient
 /-!
 # The different ideal
 
-## Main definition
+## Main definitions
+
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 - `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## Main results
+
 - `conductor_mul_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
     with `f` being the minimal polynomial of `x`.
@@ -33,6 +35,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 - `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
+
 - Show properties of the different ideal
 -/
 

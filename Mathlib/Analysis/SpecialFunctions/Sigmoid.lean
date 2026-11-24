@@ -53,6 +53,7 @@ that the composition of this embedding with the measurable embedding from a stan
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
 ## Tags
+
 sigmoid, embedding, measurable embedding, topological embedding
 -/
 

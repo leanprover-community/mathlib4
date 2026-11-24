@@ -21,12 +21,13 @@ inside its field of fractions.
 - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results
+
 - `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
   where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
 - `ClassGroup.mk0_eq_quotientMk` identifies `ClassGroup.mk0` with the canonical quotient
   projection on `(FractionalIdeal R⁰ (FractionRing R))ˣ`
 
-## Implementation details
+## Implementation notes
 
 The definition of `ClassGroup R` involves `FractionRing R`. However, the API should be completely
 identical no matter the choice of field of fractions for `R`.

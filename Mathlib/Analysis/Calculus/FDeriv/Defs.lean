@@ -50,7 +50,7 @@ Other files in the folder `Analysis/Calculus/FDeriv/` contain the usual formulas
 * inverse function (`Mul.lean`)
   (assuming that it exists; the inverse function theorem is in `../Inverse.lean`)
 
-## Implementation details
+## Implementation notes
 
 The derivative is defined in terms of the `IsLittleOTVS` relation to ensure the definition does not
 ingrain a choice of norm, and is then quickly translated to the more convenient `IsLittleO` in the

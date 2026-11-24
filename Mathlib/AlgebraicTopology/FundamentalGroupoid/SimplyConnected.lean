@@ -20,11 +20,11 @@ A topological space is simply connected if its fundamental groupoid is equivalen
 
 We also define the corresponding predicate for sets.
 
-## Main theorems
-  - `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
-    nonempty and there is a unique path up to homotopy between any two points
+## Main results
 
-  - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
+- `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
+  nonempty and there is a unique path up to homotopy between any two points
+- `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
 
 @[expose] public section

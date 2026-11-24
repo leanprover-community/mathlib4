@@ -37,6 +37,7 @@ equivalent to `CatCommSqOver F G X`.
   `CategoricalPullback (whiskeringRight X A B|>.obj F) (whiskeringRight X C B|>.obj G)`.
 
 ## References
+
 * [Kerodon: section 1.4.5.2](https://kerodon.net/tag/032Y)
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
