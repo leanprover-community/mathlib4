@@ -525,7 +525,7 @@ instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
 
 @[simp]
-theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
+theorem coe_refl : (Homeomorph.refl α) = ContinuousMap.id α :=
   rfl
 
 @[simp]

@@ -89,7 +89,10 @@ instance instContinuousMapClass : ContinuousMapClass (A →ₜ* B) A B where
 lemma coe_toMonoidHom (f : A →ₜ* B) : f.toMonoidHom = f := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_toContinuousMap (f : A →ₜ* B) : f.toContinuousMap = f := rfl
+lemma coe_toContinuousMap (f : A →ₜ* B) : ⇑f.toContinuousMap = f := rfl
+
+@[to_additive]
+lemma toContinuousMap_eq_ofClass (f : A →ₜ* B) : f.toContinuousMap = .ofClass f := rfl
 
 section
 
@@ -131,7 +134,7 @@ lemma toMonoidHom_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f :
 
 @[to_additive (attr := simp)]
 lemma toContinuousMap_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B]
-    (f : F) : (ofClass f : C(A, B)) = f := rfl
+    (f : F) : (ofClass f).toContinuousMap = .ofClass f := rfl
 
 @[deprecated (since := "2026-11-24")] alias
     _root_.ContinuousAddMonoidHom.toContinuousMap_toContinuousAddMonoidHom :=
